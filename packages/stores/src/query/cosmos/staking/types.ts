@@ -1,4 +1,4 @@
-import { CoinPrimitive } from "../../../common";
+import { CoinPrimitive } from '../../../common';
 
 export type Rewards = {
   height: string;
@@ -108,9 +108,9 @@ export type Validators = {
 };
 
 export enum BondStatus {
-  Unbonded = "Unbonded",
-  Unbonding = "Unbonding",
-  Bonded = "Bonded",
+  Unbonded = 'Unbonded',
+  Unbonding = 'Unbonding',
+  Bonded = 'Bonded'
 }
 
 export type StakingParams = {

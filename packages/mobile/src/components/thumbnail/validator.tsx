@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
-import FastImage from "react-native-fast-image";
-import { useStyle } from "../../styles";
-import { PersonIcon } from "../icon";
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { useStyle } from '../../styles';
+import { PersonIcon } from '../icon';
 
 export const ValidatorThumbnail: FunctionComponent<{
   style?: ViewStyle;
@@ -15,28 +15,28 @@ export const ValidatorThumbnail: FunctionComponent<{
     <View
       style={StyleSheet.flatten([
         style.flatten([
-          "overflow-hidden",
-          "border-width-1",
-          "border-color-border-white",
-          "items-center",
-          "justify-center",
+          'overflow-hidden',
+          'border-width-1',
+          'border-color-border-white',
+          'items-center',
+          'justify-center'
         ]),
         {
           width: size,
           height: size,
-          borderRadius: size,
+          borderRadius: size
         },
-        propStyle,
+        propStyle
       ])}
     >
       {url ? (
         <FastImage
           style={{
             width: size,
-            height: size,
+            height: size
           }}
           source={{
-            uri: url,
+            uri: url
           }}
           resizeMode={FastImage.resizeMode.contain}
         />

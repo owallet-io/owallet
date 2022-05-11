@@ -1,18 +1,19 @@
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
-import { RegisterOption } from "@keplr-wallet/hooks";
+import { RegisterOption } from '@keplr-wallet/hooks';
 import {
   ETHEREUM_ENDPOINT,
   ADDITIONAL_INTL_MESSAGES,
   ADDITIONAL_SIGN_IN_PREPEND,
-} from "./config.ui.var";
+  AMPLITUDE_API_KEY
+} from './config.ui.var';
 import {
   IntlMessages,
-  LanguageToFiatCurrency as TypeLanguageToFiatCurrency,
-} from "./languages";
-import { FiatCurrency } from "@keplr-wallet/types";
+  LanguageToFiatCurrency as TypeLanguageToFiatCurrency
+} from './languages';
+import { FiatCurrency } from '@keplr-wallet/types';
 
-export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
-export const CoinGeckoGetPrice = "/simple/price";
+export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
+export const CoinGeckoGetPrice = '/simple/price';
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
 export const AutoFetchingAssetsInterval = 15 * 1000; // 15sec
@@ -23,76 +24,76 @@ export const EthereumEndpoint = ETHEREUM_ENDPOINT;
 
 export const FiatCurrencies: FiatCurrency[] = [
   {
-    currency: "usd",
-    symbol: "$",
+    currency: 'usd',
+    symbol: '$',
     maxDecimals: 2,
-    locale: "en-US",
+    locale: 'en-US'
   },
   {
-    currency: "eur",
-    symbol: "€",
+    currency: 'eur',
+    symbol: '€',
     maxDecimals: 2,
-    locale: "de-DE",
+    locale: 'de-DE'
   },
   {
-    currency: "gbp",
-    symbol: "£",
+    currency: 'gbp',
+    symbol: '£',
     maxDecimals: 2,
-    locale: "en-GB",
+    locale: 'en-GB'
   },
   {
-    currency: "cad",
-    symbol: "CA$",
+    currency: 'cad',
+    symbol: 'CA$',
     maxDecimals: 2,
-    locale: "en-CA",
+    locale: 'en-CA'
   },
   {
-    currency: "aud",
-    symbol: "AU$",
+    currency: 'aud',
+    symbol: 'AU$',
     maxDecimals: 2,
-    locale: "en-AU",
+    locale: 'en-AU'
   },
   {
-    currency: "rub",
-    symbol: "₽",
+    currency: 'rub',
+    symbol: '₽',
     maxDecimals: 0,
-    locale: "ru",
+    locale: 'ru'
   },
   {
-    currency: "krw",
-    symbol: "₩",
+    currency: 'krw',
+    symbol: '₩',
     maxDecimals: 0,
-    locale: "ko-KR",
+    locale: 'ko-KR'
   },
   {
-    currency: "hkd",
-    symbol: "HK$",
+    currency: 'hkd',
+    symbol: 'HK$',
     maxDecimals: 1,
-    locale: "en-HK",
+    locale: 'en-HK'
   },
   {
-    currency: "cny",
-    symbol: "¥",
+    currency: 'cny',
+    symbol: '¥',
     maxDecimals: 1,
-    locale: "zh-CN",
+    locale: 'zh-CN'
   },
   {
-    currency: "jpy",
-    symbol: "¥",
+    currency: 'jpy',
+    symbol: '¥',
     maxDecimals: 0,
-    locale: "ja-JP",
+    locale: 'ja-JP'
   },
   {
-    currency: "inr",
-    symbol: "₹",
+    currency: 'inr',
+    symbol: '₹',
     maxDecimals: 1,
-    locale: "en-IN",
-  },
+    locale: 'en-IN'
+  }
 ];
 
 export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
-  default: "usd",
-  ko: "krw",
+  default: 'usd',
+  ko: 'krw'
 };
 
 export const AdditionalSignInPrepend:

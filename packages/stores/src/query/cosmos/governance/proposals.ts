@@ -1,18 +1,18 @@
-import { ObservableChainQuery } from "../../chain-query";
-import { GovProposals } from "./types";
-import { computed, makeObservable, observable, runInAction } from "mobx";
+import { ObservableChainQuery } from '../../chain-query';
+import { GovProposals } from './types';
+import { computed, makeObservable, observable, runInAction } from 'mobx';
 import {
   ObservableQueryGovParamDeposit,
   ObservableQueryGovParamTally,
-  ObservableQueryGovParamVoting,
-} from "./params";
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "../../../common";
-import { StakingPool } from "../staking/types";
-import { DeepReadonly } from "utility-types";
-import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
-import { computedFn } from "mobx-utils";
-import { ObservableQueryProposal } from "./proposal";
+  ObservableQueryGovParamVoting
+} from './params';
+import { KVStore } from '@keplr-wallet/common';
+import { ChainGetter } from '../../../common';
+import { StakingPool } from '../staking/types';
+import { DeepReadonly } from 'utility-types';
+import { Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
+import { computedFn } from 'mobx-utils';
+import { ObservableQueryProposal } from './proposal';
 
 export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals> {
   @observable.ref
@@ -28,7 +28,7 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     chainGetter: ChainGetter,
     protected readonly _queryPool: ObservableChainQuery<StakingPool>
   ) {
-    super(kvStore, chainId, chainGetter, "/gov/proposals");
+    super(kvStore, chainId, chainGetter, '/gov/proposals?limit=1000');
     makeObservable(this);
   }
 
@@ -100,6 +100,14 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     if (!this.response) {
       return [];
     }
+
+    // XXX: In the current mobile, this getter is executed first on the home screen.
+    //      Because there is an issue related to networking in mobile,
+    //      we need temporarily log the console to check the response until this problem is sufficiently resolved.
+    // https://github.com/chainapsis/keplr-wallet/issues/275
+    // https://github.com/chainapsis/keplr-wallet/issues/278
+    // TODO: Erase this part soon
+    // console.log("proposals response data", this.response.data);
 
     const result: ObservableQueryProposal[] = [];
 
