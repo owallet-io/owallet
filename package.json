@@ -34,17 +34,7 @@
     "lint-fix": "lerna run lint-fix",
     "ci": "yarn install --frozen-lockfile && yarn build && yarn test",
     "ci-lint": "yarn install --frozen-lockfile && yarn lint-test",
-    "ci-publish": "yarn clean && yarn install --frozen-lockfile && lerna run build --ignore @keplr-wallet/extension && lerna publish from-git --yes",
-    "pre-commit": "lint-staged"
-  },
-  "pre-commit": [
-    "pre-commit"
-  ],
-  "lint-staged": {
-    "*": [
-      "eslint",
-      "prettier --check"
-    ]
+    "version": "npx zx ./scripts/lerna-lifecyle-check-version.mjs"
   },
   "keywords": [],
   "author": "chainapsis",
@@ -64,7 +54,6 @@
     "eslint-plugin-unicorn": "^24.0.0",
     "lerna": "^3.22.1",
     "lint-staged": "^10.5.4",
-    "pre-commit": "^1.2.2",
     "prettier": "^2.2.1",
     "ts-loader": "^8.0.14",
     "ts-node": "^9.1.1",

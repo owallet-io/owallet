@@ -1,14 +1,14 @@
 import {
   AddressBookData,
   AddressBookConfigMap,
-  RegisterConfig,
-} from "@keplr-wallet/hooks";
-import WalletConnect from "@walletconnect/client";
-import AES, { Counter } from "aes-js";
-import { Buffer } from "buffer/";
-import { ExportKeyRingData } from "@keplr-wallet/background";
-import { KeyRingStore } from "@keplr-wallet/stores";
-import { Hash } from "@keplr-wallet/crypto";
+  RegisterConfig
+} from '@keplr-wallet/hooks';
+import WalletConnect from '@walletconnect/client';
+import AES, { Counter } from 'aes-js';
+import { Buffer } from 'buffer/';
+import { ExportKeyRingData } from '@keplr-wallet/background';
+import { KeyRingStore } from '@keplr-wallet/stores';
+import { Hash } from '@keplr-wallet/crypto';
 
 export interface QRCodeSharedData {
   // The uri for the wallet connect
@@ -34,7 +34,7 @@ export function parseQRCodeDataForImportFromMobile(
 ): QRCodeSharedData {
   const sharedData = JSON.parse(data) as QRCodeSharedData;
   if (!sharedData.wcURI || !sharedData.sharedPassword) {
-    throw new Error("Invalid qr code");
+    throw new Error('Invalid qr code');
   }
   return sharedData;
 }
@@ -47,7 +47,7 @@ export async function importFromMobile(
   addressBooks: { [chainId: string]: AddressBookData[] | undefined };
 }> {
   const connector = new WalletConnect({
-    uri: sharedData.wcURI,
+    uri: sharedData.wcURI
   });
 
   if (connector.connected) {
@@ -55,7 +55,7 @@ export async function importFromMobile(
   }
 
   await new Promise<void>((resolve, reject) => {
-    connector.on("session_request", (error) => {
+    connector.on('session_request', (error) => {
       if (error) {
         reject(error);
       } else {
@@ -69,24 +69,24 @@ export async function importFromMobile(
   const result = (
     await connector.sendCustomRequest({
       id: Math.floor(Math.random() * 100000),
-      method: "keplr_request_export_keyring_datas_wallet_connect_v1",
+      method: 'keplr_request_export_keyring_datas_wallet_connect_v1',
       params: [
         {
-          addressBookChainIds: chainIdsForAddressBook,
-        },
-      ],
+          addressBookChainIds: chainIdsForAddressBook
+        }
+      ]
     })
   )[0] as WCExportKeyRingDatasResponse;
 
   const counter = new Counter(0);
-  counter.setBytes(Buffer.from(result.encrypted.iv, "hex"));
+  counter.setBytes(Buffer.from(result.encrypted.iv, 'hex'));
   const aesCtr = new AES.ModeOfOperation.ctr(
-    Buffer.from(sharedData.sharedPassword, "hex"),
+    Buffer.from(sharedData.sharedPassword, 'hex'),
     counter
   );
 
   const decrypted = aesCtr.decrypt(
-    Buffer.from(result.encrypted.ciphertext, "hex")
+    Buffer.from(result.encrypted.ciphertext, 'hex')
   );
 
   const exportedKeyRingDatas = JSON.parse(
@@ -95,12 +95,12 @@ export async function importFromMobile(
 
   return {
     KeyRingDatas: exportedKeyRingDatas,
-    addressBooks: result.addressBooks,
+    addressBooks: result.addressBooks
   };
 }
 
 function sortedObject(obj: any): any {
-  if (typeof obj !== "object" || obj === null) {
+  if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
   if (Array.isArray(obj)) {
@@ -177,21 +177,21 @@ export async function registerExportedKeyRingDatas(
         0,
         8
       )
-    ).toString("hex");
+    ).toString('hex');
 
     if (duplicationCheck.get(exportKeyRingDataDuplicationCheckKey)) {
       continue;
     }
 
-    const name = exportKeyRingData.meta["name"] || "Keplr Account";
-    if (exportKeyRingData.type === "mnemonic") {
+    const name = exportKeyRingData.meta['name'] || 'Keplr Account';
+    if (exportKeyRingData.type === 'mnemonic') {
       await registerConfig.createMnemonic(
         name,
         exportKeyRingData.key,
         password,
         exportKeyRingData.bip44HDPath,
         {
-          exportKeyRingDataDuplicationCheckKey,
+          exportKeyRingDataDuplicationCheckKey
         }
       );
 
@@ -207,16 +207,15 @@ export async function registerExportedKeyRingDatas(
       */
     }
 
-    if (exportKeyRingData.type === "privateKey") {
-      const email = exportKeyRingData.meta["email"];
-
+    if (exportKeyRingData.type === 'privateKey') {
       await registerConfig.createPrivateKey(
         name,
-        Buffer.from(exportKeyRingData.key, "hex"),
+        Buffer.from(exportKeyRingData.key, 'hex'),
         password,
         email,
         {
-          exportKeyRingDataDuplicationCheckKey,
+          ...exportKeyRingData.meta,
+          exportKeyRingDataDuplicationCheckKey
         }
       );
     }
