@@ -1,43 +1,43 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect } from 'react';
 
-import { EmptyLayout } from "../../layouts/empty-layout";
+import { EmptyLayout } from '../../layouts/empty-layout';
 
-import { observer } from "mobx-react-lite";
+import { observer } from 'mobx-react-lite';
 
-import style from "./style.module.scss";
+import style from './style.module.scss';
 
-import { Button } from "reactstrap";
+import { Button } from 'reactstrap';
 
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage } from 'react-intl';
 
-import { useRegisterConfig } from "@keplr-wallet/hooks";
-import { useStore } from "../../stores";
-import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from "./mnemonic";
+import { useRegisterConfig } from '@keplr-wallet/hooks';
+import { useStore } from '../../stores';
+import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from './mnemonic';
 import {
   RecoverMnemonicIntro,
   RecoverMnemonicPage,
-  TypeRecoverMnemonic,
-} from "./mnemonic";
+  TypeRecoverMnemonic
+} from './mnemonic';
 import {
   ImportLedgerIntro,
   ImportLedgerPage,
-  TypeImportLedger,
-} from "./ledger";
-import { WelcomePage } from "./welcome";
-import { AdditionalSignInPrepend } from "../../config.ui";
+  TypeImportLedger
+} from './ledger';
+import { WelcomePage } from './welcome';
+import { AdditionalSignInPrepend } from '../../config.ui';
 
 export enum NunWords {
   WORDS12,
-  WORDS24,
+  WORDS24
 }
 
 export const BackButton: FunctionComponent<{ onClick: () => void }> = ({
-  onClick,
+  onClick
 }) => {
   return (
     <div className={style.backButton}>
       <Button color="link" onClick={onClick}>
-        <i className="fas fa-angle-left" style={{ marginRight: "8px" }} />
+        <i className="fas fa-angle-left" style={{ marginRight: '8px' }} />
         <FormattedMessage id="register.button.back" />
       </Button>
     </div>
@@ -46,10 +46,10 @@ export const BackButton: FunctionComponent<{ onClick: () => void }> = ({
 
 export const RegisterPage: FunctionComponent = observer(() => {
   useEffect(() => {
-    document.body.setAttribute("data-centered", "true");
+    document.body.setAttribute('data-centered', 'true');
 
     return () => {
-      document.body.removeAttribute("data-centered");
+      document.body.removeAttribute('data-centered');
     };
   }, []);
 
@@ -60,35 +60,35 @@ export const RegisterPage: FunctionComponent = observer(() => {
     {
       type: TypeNewMnemonic,
       intro: NewMnemonicIntro,
-      page: NewMnemonicPage,
+      page: NewMnemonicPage
     },
     {
       type: TypeRecoverMnemonic,
       intro: RecoverMnemonicIntro,
-      page: RecoverMnemonicPage,
+      page: RecoverMnemonicPage
     },
     {
       type: TypeImportLedger,
       intro: ImportLedgerIntro,
-      page: ImportLedgerPage,
-    },
+      page: ImportLedgerPage
+    }
   ]);
 
   return (
     <EmptyLayout
       className={style.container}
-      style={{ height: "100%", backgroundColor: "white", padding: 0 }}
+      style={{ height: '100%', backgroundColor: 'white', padding: 0 }}
     >
       <div className={style.logoContainer}>
         <img
           className={style.icon}
-          src={require("../../public/assets/temp-icon.svg")}
+          src={require('../../public/assets/orai_wallet_logo.png')}
           alt="logo"
         />
         <div className={style.logoInnerContainer}>
           <img
             className={style.logo}
-            src={require("../../public/assets/logo-temp.png")}
+            src={require('../../public/assets/logo-temp.png')}
             alt="logo"
           />
           <div className={style.paragraph}>Wallet for the Interchain</div>
@@ -101,7 +101,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
           <FormattedMessage
             id="register.intro.sub-content"
             values={{
-              br: <br />,
+              br: <br />
             }}
           />
         </div>

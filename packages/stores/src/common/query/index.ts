@@ -7,13 +7,13 @@ import {
   observable,
   onBecomeObserved,
   onBecomeUnobserved,
-  reaction,
-} from "mobx";
-import Axios, { AxiosInstance, CancelToken, CancelTokenSource } from "axios";
-import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { DeepReadonly } from "utility-types";
-import { HasMapStore } from "../map";
-import EventEmitter from "eventemitter3";
+  reaction
+} from 'mobx';
+import Axios, { AxiosInstance, CancelToken, CancelTokenSource } from 'axios';
+import { KVStore, toGenerator } from '@keplr-wallet/common';
+import { DeepReadonly } from 'utility-types';
+import { HasMapStore } from '../map';
+import EventEmitter from 'eventemitter3';
 
 export type QueryOptions = {
   // millisec
@@ -24,7 +24,7 @@ export type QueryOptions = {
 
 export const defaultOptions: QueryOptions = {
   cacheMaxAge: Number.MAX_VALUE,
-  fetchingInterval: 0,
+  fetchingInterval: 0
 };
 
 export type QueryError<E> = {
@@ -46,6 +46,11 @@ export type QueryResponse<T> = {
  * This recommends to use the Axios to query the response.
  */
 export abstract class ObservableQueryBase<T = unknown, E = unknown> {
+  protected static suspectedResponseDatasWithInvalidValue: string[] = [
+    'The network connection was lost.',
+    'The request timed out.'
+  ];
+
   protected options: QueryOptions;
 
   // Just use the oberable ref because the response is immutable and not directly adjusted.
@@ -79,20 +84,20 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
   ) {
     this.options = {
       ...options,
-      ...defaultOptions,
+      ...defaultOptions
     };
 
     this._instance = instance;
 
     makeObservable(this);
 
-    onBecomeObserved(this, "_response", this.becomeObserved);
-    onBecomeObserved(this, "_isFetching", this.becomeObserved);
-    onBecomeObserved(this, "_error", this.becomeObserved);
+    onBecomeObserved(this, '_response', this.becomeObserved);
+    onBecomeObserved(this, '_isFetching', this.becomeObserved);
+    onBecomeObserved(this, '_error', this.becomeObserved);
 
-    onBecomeUnobserved(this, "_response", this.becomeUnobserved);
-    onBecomeUnobserved(this, "_isFetching", this.becomeUnobserved);
-    onBecomeUnobserved(this, "_error", this.becomeUnobserved);
+    onBecomeUnobserved(this, '_response', this.becomeUnobserved);
+    onBecomeUnobserved(this, '_isFetching', this.becomeUnobserved);
+    onBecomeUnobserved(this, '_error', this.becomeUnobserved);
   }
 
   private becomeObserved = (): void => {
@@ -206,7 +211,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       // Make the existing response as staled.
       this.setResponse({
         ...this._response,
-        staled: true,
+        staled: true
       });
     }
 
@@ -214,11 +219,46 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       const response = yield* toGenerator(
         this.fetchResponse(this.cancelToken.token)
       );
+      if (
+        response.data &&
+        typeof response.data === 'string' &&
+        (response.data.startsWith('stream was reset:') ||
+          ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
+            response.data
+          ))
+      ) {
+        // In some devices, it is a http ok code, but a strange response is sometimes returned.
+        // It's not that they can't query at all, it seems that they get weird response from time to time.
+        // These causes are not clear.
+        // To solve this problem, if this problem occurs, try the query again, and if that fails, an error is raised.
+        // https://github.com/chainapsis/keplr-wallet/issues/275
+        // https://github.com/chainapsis/keplr-wallet/issues/278
+        if (this.cancelToken && this.cancelToken.token.reason) {
+          // In this case, it is assumed that it is caused by cancel() and do nothing.
+          return;
+        }
+
+        // Try to query again.
+        response = yield* toGenerator(
+          this.fetchResponse(this.cancelToken.token)
+        );
+
+        if (
+          response.data &&
+          typeof response.data === 'string' &&
+          (response.data.startsWith('stream was reset:') ||
+            ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
+              response.data
+            ))
+        ) {
+          throw new Error(response.data);
+        }
+      }
       this.setResponse(response);
       // Clear the error if fetching succeeds.
       this.setError(undefined);
       yield this.saveResponse(response);
-    } catch (e) {
+    } catch (e: any) {
       // If canceld, do nothing.
       if (Axios.isCancel(e)) {
         return;
@@ -230,7 +270,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           status: e.response.status,
           statusText: e.response.statusText,
           message: e.response.statusText,
-          data: e.response.data,
+          data: e.response.data
         };
 
         this.setError(error);
@@ -238,8 +278,8 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         // if can't get the response.
         const error: QueryError<E> = {
           status: 0,
-          statusText: "Failed to get response",
-          message: "Failed to get response",
+          statusText: 'Failed to get response',
+          message: 'Failed to get response'
         };
 
         this.setError(error);
@@ -248,7 +288,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           status: 0,
           statusText: e.message,
           message: e.message,
-          data: e,
+          data: e
         };
 
         this.setError(error);
@@ -318,7 +358,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         }
       },
       {
-        fireImmediately: true,
+        fireImmediately: true
       }
     );
 
@@ -361,17 +401,17 @@ export class ObservableQuery<
   protected static eventListener: EventEmitter = new EventEmitter();
 
   public static refreshAllObserved() {
-    ObservableQuery.eventListener.emit("refresh");
+    ObservableQuery.eventListener.emit('refresh');
   }
 
   public static refreshAllObservedIfError() {
-    ObservableQuery.eventListener.emit("refresh", {
-      ifError: true,
+    ObservableQuery.eventListener.emit('refresh', {
+      ifError: true
     });
   }
 
   @observable
-  protected _url: string = "";
+  protected _url: string = '';
 
   constructor(
     protected readonly kvStore: KVStore,
@@ -388,13 +428,13 @@ export class ObservableQuery<
   protected onStart() {
     super.onStart();
 
-    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
+    ObservableQuery.eventListener.addListener('refresh', this.refreshHandler);
   }
 
   protected onStop() {
     super.onStop();
 
-    ObservableQuery.eventListener.addListener("refresh", this.refreshHandler);
+    ObservableQuery.eventListener.addListener('refresh', this.refreshHandler);
   }
 
   protected readonly refreshHandler = (data: any) => {
@@ -424,13 +464,13 @@ export class ObservableQuery<
     cancelToken: CancelToken
   ): Promise<QueryResponse<T>> {
     const result = await this.instance.get<T>(this.url, {
-      cancelToken,
+      cancelToken
     });
     return {
       data: result.data,
       status: result.status,
       staled: false,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
   }
 
@@ -438,7 +478,7 @@ export class ObservableQuery<
     return `${this.instance.name}-${
       this.instance.defaults.baseURL
     }${this.instance.getUri({
-      url: this.url,
+      url: this.url
     })}`;
   }
 
@@ -455,7 +495,7 @@ export class ObservableQuery<
     if (response) {
       return {
         ...response,
-        staled: true,
+        staled: true
       };
     }
     return undefined;

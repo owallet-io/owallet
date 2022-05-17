@@ -1,9 +1,9 @@
-import { ObservableQuery } from "../common";
-import { KVStore } from "@keplr-wallet/common";
-import Axios, { AxiosInstance } from "axios";
-import { override } from "mobx";
-import { ChainGetter } from "../common";
-import { HasMapStore } from "../common";
+import { ObservableQuery } from '../common';
+import { KVStore } from '@keplr-wallet/common';
+import Axios, { AxiosInstance } from 'axios';
+import { override } from 'mobx';
+import { ChainGetter } from '../common';
+import { HasMapStore } from '../common';
 
 export class ObservableChainQuery<
   T = unknown,
@@ -11,6 +11,7 @@ export class ObservableChainQuery<
 > extends ObservableQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
+  protected readonly _beta: boolean | undefined;
   protected readonly chainGetter: ChainGetter;
 
   constructor(
@@ -23,14 +24,15 @@ export class ObservableChainQuery<
 
     const instance = Axios.create({
       ...{
-        baseURL: chainInfo.rest,
+        baseURL: chainInfo.rest
       },
-      ...chainInfo.restConfig,
+      ...chainInfo.restConfig
     });
 
     super(kvStore, instance, url);
 
     this._chainId = chainId;
+    this._beta = chainInfo.beta;
     this.chainGetter = chainGetter;
   }
 
@@ -40,14 +42,18 @@ export class ObservableChainQuery<
 
     return Axios.create({
       ...{
-        baseURL: chainInfo.rest,
+        baseURL: chainInfo.rest
       },
-      ...chainInfo.restConfig,
+      ...chainInfo.restConfig
     });
   }
 
   get chainId(): string {
     return this._chainId;
+  }
+
+  get beta(): boolean {
+    return this._beta ?? false;
   }
 }
 

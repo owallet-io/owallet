@@ -1,92 +1,97 @@
-import React, { FunctionComponent } from "react";
-import ReactDOM from "react-dom";
+import React, { FunctionComponent } from 'react';
+import ReactDOM from 'react-dom';
 
-import { AppIntlProvider } from "./languages";
+import { AppIntlProvider } from './languages';
 
-import "./styles/global.scss";
+import './styles/global.scss';
 
-import { HashRouter, Route } from "react-router-dom";
+import { HashRouter, Route } from 'react-router-dom';
 
-import { AccessPage, Secret20ViewingKeyAccessPage } from "./pages/access";
-import { RegisterPage } from "./pages/register";
-import { MainPage } from "./pages/main";
-import { LockPage } from "./pages/lock";
-import { SendPage } from "./pages/send";
-import { IBCTransferPage } from "./pages/ibc-transfer";
-import { SetKeyRingPage } from "./pages/setting/keyring";
+import { AccessPage, Secret20ViewingKeyAccessPage } from './pages/access';
+import { RegisterPage } from './pages/register';
+import { MainPage } from './pages/main';
+import { LockPage } from './pages/lock';
+import { SendPage } from './pages/send';
+import { IBCTransferPage } from './pages/ibc-transfer';
+import { SetKeyRingPage } from './pages/setting/keyring';
 
-import { Banner } from "./components/banner";
+import { Banner } from './components/banner';
 
 import {
   NotificationProvider,
-  NotificationStoreProvider,
-} from "./components/notification";
-import { ConfirmProvider } from "./components/confirm";
-import { LoadingIndicatorProvider } from "./components/loading-indicator";
+  NotificationStoreProvider
+} from './components/notification';
+import { ConfirmProvider } from './components/confirm';
+import { LoadingIndicatorProvider } from './components/loading-indicator';
 
-import { configure } from "mobx";
-import { observer } from "mobx-react-lite";
+import { configure } from 'mobx';
+import { observer } from 'mobx-react-lite';
 
-import { StoreProvider, useStore } from "./stores";
-import { KeyRingStatus } from "@keplr-wallet/background";
-import { SignPage } from "./pages/sign";
-import { ChainSuggestedPage } from "./pages/chain/suggest";
-import Modal from "react-modal";
-import { SettingPage } from "./pages/setting";
-import { SettingLanguagePage } from "./pages/setting/language";
-import { SettingFiatPage } from "./pages/setting/fiat";
+import { StoreProvider, useStore } from './stores';
+import { KeyRingStatus } from '@keplr-wallet/background';
+import { SignPage } from './pages/sign';
+import { ChainSuggestedPage } from './pages/chain/suggest';
+import Modal from 'react-modal';
+import { SettingPage } from './pages/setting';
+import { SettingLanguagePage } from './pages/setting/language';
+import { SettingFiatPage } from './pages/setting/fiat';
 import {
   SettingConnectionsPage,
-  SettingSecret20ViewingKeyConnectionsPage,
-} from "./pages/setting/connections";
-import { AddressBookPage } from "./pages/setting/address-book";
-import { CreditPage } from "./pages/setting/credit";
-import { ChangeNamePage } from "./pages/setting/keyring/change";
-import { ClearPage } from "./pages/setting/clear";
-import { ExportPage } from "./pages/setting/export";
-import { LedgerGrantPage } from "./pages/ledger";
-import { AddTokenPage } from "./pages/setting/token/add";
-import { ManageTokenPage } from "./pages/setting/token/manage";
+  SettingSecret20ViewingKeyConnectionsPage
+} from './pages/setting/connections';
+import { AddressBookPage } from './pages/setting/address-book';
+import { CreditPage } from './pages/setting/credit';
+import { ChangeNamePage } from './pages/setting/keyring/change';
+import { ClearPage } from './pages/setting/clear';
+import { ExportPage } from './pages/setting/export';
+import { LedgerGrantPage } from './pages/ledger';
+import { AddTokenPage } from './pages/setting/token/add';
+import { ManageTokenPage } from './pages/setting/token/manage';
 
 // import * as BackgroundTxResult from "../../background/tx/foreground";
 
-import { AdditonalIntlMessages, LanguageToFiatCurrency } from "./config.ui";
+import { AdditonalIntlMessages, LanguageToFiatCurrency } from './config.ui';
 
-import manifest from "./manifest.json";
-import { Keplr } from "@keplr-wallet/provider";
-import { InExtensionMessageRequester } from "@keplr-wallet/router";
-import { ExportToMobilePage } from "./pages/setting/export-to-mobile";
+import manifest from './manifest.json';
+import { Keplr } from '@keplr-wallet/provider';
+import { InExtensionMessageRequester } from '@keplr-wallet/router-extension';
+import { ExportToMobilePage } from './pages/setting/export-to-mobile';
+import { LogPageViewWrapper } from './components/analytics';
 
-window.keplr = new Keplr(manifest.version, new InExtensionMessageRequester());
+window.keplr = new Keplr(
+  manifest.version,
+  'core',
+  new InExtensionMessageRequester()
+);
 
 // Make sure that icon file will be included in bundle
-require("./public/assets/temp-icon.svg");
-require("./public/assets/icon/icon-16.png");
-require("./public/assets/icon/icon-48.png");
-require("./public/assets/icon/icon-128.png");
+require('./public/assets/orai_wallet_logo.png');
+require('./public/assets/icon/icon-16.png');
+require('./public/assets/icon/icon-48.png');
+require('./public/assets/icon/icon-128.png');
 
 configure({
-  enforceActions: "always", // Make mobx to strict mode.
+  enforceActions: 'always' // Make mobx to strict mode.
 });
 
-Modal.setAppElement("#app");
+Modal.setAppElement('#app');
 Modal.defaultStyles = {
   content: {
     ...Modal.defaultStyles.content,
-    minWidth: "300px",
-    maxWidth: "600px",
-    minHeight: "250px",
-    maxHeight: "500px",
-    left: "50%",
-    right: "auto",
-    top: "50%",
-    bottom: "auto",
-    transform: "translate(-50%, -50%)",
+    minWidth: '300px',
+    maxWidth: '600px',
+    minHeight: '250px',
+    maxHeight: '500px',
+    left: '50%',
+    right: 'auto',
+    top: '50%',
+    bottom: 'auto',
+    transform: 'translate(-50%, -50%)'
   },
   overlay: {
     zIndex: 1000,
-    ...Modal.defaultStyles.overlay,
-  },
+    ...Modal.defaultStyles.overlay
+  }
 };
 
 const StateRenderer: FunctionComponent = observer(() => {
@@ -98,24 +103,24 @@ const StateRenderer: FunctionComponent = observer(() => {
     return <LockPage />;
   } else if (keyRingStore.status === KeyRingStatus.EMPTY) {
     browser.tabs.create({
-      url: "/popup.html#/register",
+      url: '/popup.html#/register'
     });
     window.close();
     return (
-      <div style={{ height: "100%" }}>
+      <div style={{ height: '100%' }}>
         <Banner
-          icon={require("./public/assets/temp-icon.svg")}
-          logo={require("./public/assets/logo-temp.png")}
+          icon={require('./public/assets/orai_wallet_logo.png')}
+          logo={require('./public/assets/logo-temp.png')}
           subtitle="Wallet for the Interchain"
         />
       </div>
     );
   } else if (keyRingStore.status === KeyRingStatus.NOTLOADED) {
     return (
-      <div style={{ height: "100%" }}>
+      <div style={{ height: '100%' }}>
         <Banner
-          icon={require("./public/assets/temp-icon.svg")}
-          logo={require("./public/assets/logo-temp.png")}
+          icon={require('./public/assets/orai_wallet_logo.png')}
+          logo={require('./public/assets/logo-temp.png')}
           subtitle="Wallet for the Interchain"
         />
       </div>
@@ -215,5 +220,5 @@ ReactDOM.render(
       </LoadingIndicatorProvider>
     </AppIntlProvider>
   </StoreProvider>,
-  document.getElementById("app")
+  document.getElementById('app')
 );

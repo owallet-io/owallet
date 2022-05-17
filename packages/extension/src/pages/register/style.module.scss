@@ -1,3 +1,5 @@
+@use "sass:math";
+
 @import "../../styles/var";
 
 $container-width: 420px;
@@ -21,7 +23,7 @@ $container-width: 420px;
 
 .container {
   width: $container-width;
-  margin-left: ($popup-size-width - $container-width) / 2;
+  margin-left: math.div(($popup-size-width - $container-width), 2);
 
   display: flex;
   flex-direction: column;
@@ -54,6 +56,7 @@ $container-width: 420px;
 
       .logo {
         height: 50px;
+        max-width: 100%;
       }
 
       .paragraph {

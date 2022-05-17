@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useMemo } from "react";
+import React, { FunctionComponent, useMemo } from 'react';
 
-import { useInteractionInfo } from "@keplr-wallet/hooks";
-import { Button } from "reactstrap";
+import { useInteractionInfo } from '@keplr-wallet/hooks';
+import { Button } from 'reactstrap';
 
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-import style from "./style.module.scss";
-import { EmptyLayout } from "../../layouts/empty-layout";
-import { FormattedMessage } from "react-intl";
+import style from './style.module.scss';
+import { EmptyLayout } from '../../layouts/empty-layout';
+import { FormattedMessage } from 'react-intl';
 
 export const AccessPage: FunctionComponent = observer(() => {
   const { chainStore, permissionStore } = useStore();
@@ -27,7 +27,7 @@ export const AccessPage: FunctionComponent = observer(() => {
       for (const chainId of waitingPermission.data.chainIds) {
         if (chainStore.hasChain(chainId)) {
           const chainInfo = chainStore.getChain(chainId);
-          if (chainInfo.features && chainInfo.features.includes("secretwasm")) {
+          if (chainInfo.features && chainInfo.features.includes('secretwasm')) {
             return true;
           }
         }
@@ -42,27 +42,27 @@ export const AccessPage: FunctionComponent = observer(() => {
         .map((origin) => {
           return new URL(origin).host;
         })
-        .join(", ");
+        .join(', ');
     } else {
-      return "";
+      return '';
     }
   }, [waitingPermission]);
 
   const chainIds = useMemo(() => {
     if (!waitingPermission) {
-      return "";
+      return '';
     }
 
-    return waitingPermission.data.chainIds.join(", ");
+    return waitingPermission.data.chainIds.join(', ');
   }, [waitingPermission]);
 
   return (
-    <EmptyLayout style={{ height: "100%", paddingTop: "80px" }}>
+    <EmptyLayout style={{ height: '100%', paddingTop: '80px' }}>
       <div className={style.container}>
         <img
-          src={require("../../public/assets/temp-icon.svg")}
+          src={require('../../public/assets/orai_wallet_logo.png')}
           alt="logo"
-          style={{ height: "92px" }}
+          style={{ height: '92px', maxWidth: 92, margin: '0 auto' }}
         />
         <h1 className={style.header}>
           <FormattedMessage id="access.title" />
@@ -74,7 +74,7 @@ export const AccessPage: FunctionComponent = observer(() => {
               host,
               chainId: chainIds,
               // eslint-disable-next-line react/display-name
-              b: (...chunks: any) => <b>{chunks}</b>,
+              b: (...chunks: any) => <b>{chunks}</b>
             }}
           />
         </p>

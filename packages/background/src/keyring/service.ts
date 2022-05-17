@@ -1,35 +1,42 @@
-import { delay, inject, singleton } from "tsyringe";
-import { TYPES } from "../types";
+import { delay, inject, singleton } from 'tsyringe';
+import { TYPES } from '../types';
 
 import {
   Key,
   KeyRing,
   KeyRingStatus,
-  MultiKeyStoreInfoWithSelected,
-} from "./keyring";
+  MultiKeyStoreInfoWithSelected
+} from './keyring';
 
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from "./types";
+import {
+  Bech32Address,
+  checkAndValidateADR36AminoSignDoc,
+  makeADR36AminoSignDoc,
+  verifyADR36AminoSignDoc
+} from '@keplr-wallet/cosmos';
+import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from '@keplr-wallet/common';
 
-import { ChainsService } from "../chains";
-import { LedgerService } from "../ledger";
-import { BIP44, ChainInfo, KeplrSignOptions } from "@keplr-wallet/types";
-import { APP_PORT, Env, WEBPAGE_PORT } from "@keplr-wallet/router";
-import { InteractionService } from "../interaction";
-import { PermissionService } from "../permission";
+import { ChainsService } from '../chains';
+import { LedgerService } from '../ledger';
+import { BIP44, ChainInfo, KeplrSignOptions } from '@keplr-wallet/types';
+import { APP_PORT, Env, WEBPAGE_PORT } from '@keplr-wallet/router';
+import { InteractionService } from '../interaction';
+import { PermissionService } from '../permission';
 
 import {
   encodeSecp256k1Signature,
   serializeSignDoc,
   AminoSignResponse,
   StdSignDoc,
-} from "@cosmjs/launchpad";
-import { DirectSignResponse, makeSignBytes } from "@cosmjs/proto-signing";
+  StdSignature
+} from '@cosmjs/launchpad';
+import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
 
-import { RNG } from "@keplr-wallet/crypto";
-import { cosmos } from "@keplr-wallet/cosmos";
+import { RNG } from '@keplr-wallet/crypto';
+import { cosmos } from '@keplr-wallet/cosmos';
+import { Buffer } from 'buffer/';
 
 @singleton()
 export class KeyRingService {
@@ -69,7 +76,7 @@ export class KeyRingService {
     await this.keyRing.restore();
     return {
       status: this.keyRing.status,
-      multiKeyStoreInfo: this.keyRing.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: this.keyRing.getMultiKeyStoreInfo()
     };
   }
 
@@ -83,7 +90,7 @@ export class KeyRingService {
     }
 
     if (this.keyRing.status === KeyRingStatus.LOCKED) {
-      await this.interactionService.waitApprove(env, "/unlock", "unlock", {});
+      await this.interactionService.waitApprove(env, '/unlock', 'unlock', {});
       return this.keyRing.status;
     }
 
@@ -101,11 +108,24 @@ export class KeyRingService {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
     status: KeyRingStatus;
   }> {
-    const multiKeyStoreInfo = await this.keyRing.deleteKeyRing(index, password);
-    return {
-      multiKeyStoreInfo,
-      status: this.keyRing.status,
-    };
+    let keyStoreChanged = false;
+
+    try {
+      const result = await this.keyRing.deleteKeyRing(index, password);
+      keyStoreChanged = result.keyStoreChanged;
+      return {
+        multiKeyStoreInfo: result.multiKeyStoreInfo,
+        status: this.keyRing.status
+      };
+    } finally {
+      if (keyStoreChanged) {
+        this.interactionService.dispatchEvent(
+          WEBPAGE_PORT,
+          'keystore-changed',
+          {}
+        );
+      }
+    }
   }
 
   async updateNameKeyRing(
@@ -116,7 +136,7 @@ export class KeyRingService {
   }> {
     const multiKeyStoreInfo = await this.keyRing.updateNameKeyRing(index, name);
     return {
-      multiKeyStoreInfo,
+      multiKeyStoreInfo
     };
   }
 
@@ -125,7 +145,7 @@ export class KeyRingService {
   }
 
   async createMnemonicKey(
-    kdf: "scrypt" | "sha256",
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
     mnemonic: string,
     password: string,
     meta: Record<string, string>,
@@ -145,7 +165,7 @@ export class KeyRingService {
   }
 
   async createPrivateKey(
-    kdf: "scrypt" | "sha256",
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
     privateKey: Uint8Array,
     password: string,
     meta: Record<string, string>
@@ -158,7 +178,7 @@ export class KeyRingService {
 
   async createLedgerKey(
     env: Env,
-    kdf: "scrypt" | "sha256",
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
     password: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath
@@ -217,22 +237,53 @@ export class KeyRingService {
         .bech32PrefixAccAddr
     );
     if (signer !== bech32Address) {
-      throw new Error("Signer mismatched");
+      throw new Error('Signer mismatched');
+    }
+
+    const isADR36SignDoc = checkAndValidateADR36AminoSignDoc(
+      signDoc,
+      bech32Prefix
+    );
+    if (isADR36SignDoc) {
+      if (signDoc.msgs[0].value.signer !== signer) {
+        throw new Error('Unmatched signer in sign doc');
+      }
+    }
+
+    if (signOptions.isADR36WithString != null && !isADR36SignDoc) {
+      throw new Error(
+        'Sign doc is not for ADR-36. But, "isADR36WithString" option is defined'
+      );
     }
 
     const newSignDoc = (await this.interactionService.waitApprove(
       env,
-      "/sign",
-      "request-sign",
+      '/sign',
+      'request-sign',
       {
         msgOrigin,
         chainId,
-        mode: "amino",
+        mode: 'amino',
         signDoc,
         signer,
         signOptions,
+        isADR36SignDoc,
+        isADR36WithString: signOptions.isADR36WithString
       }
     )) as StdSignDoc;
+
+    if (isADR36SignDoc) {
+      // Validate the new sign doc, if it was for ADR-36.
+      if (checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix)) {
+        if (signDoc.msgs[0].value.signer !== signer) {
+          throw new Error('Unmatched signer in new sign doc');
+        }
+      } else {
+        throw new Error(
+          'Signing request was for ADR-36. But, accidentally, new sign doc is not for ADR-36'
+        );
+      }
+    }
 
     try {
       const signature = await this.keyRing.sign(
@@ -244,10 +295,10 @@ export class KeyRingService {
 
       return {
         signed: newSignDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature),
+        signature: encodeSecp256k1Signature(key.pubKey, signature)
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
     }
   }
 
@@ -267,20 +318,20 @@ export class KeyRingService {
         .bech32PrefixAccAddr
     );
     if (signer !== bech32Address) {
-      throw new Error("Signer mismatched");
+      throw new Error('Signer mismatched');
     }
 
     const newSignDocBytes = (await this.interactionService.waitApprove(
       env,
-      "/sign",
-      "request-sign",
+      '/sign',
+      'request-sign',
       {
         msgOrigin,
         chainId,
-        mode: "direct",
+        mode: 'direct',
         signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
         signer,
-        signOptions,
+        signOptions
       }
     )) as Uint8Array;
 
@@ -296,11 +347,45 @@ export class KeyRingService {
 
       return {
         signed: newSignDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature),
+        signature: encodeSecp256k1Signature(key.pubKey, signature)
       };
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, "request-sign-end", {});
+      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
     }
+  }
+
+  async verifyADR36AminoSignDoc(
+    chainId: string,
+    signer: string,
+    data: Uint8Array,
+    signature: StdSignature
+  ): Promise<boolean> {
+    const coinType = await this.chainsService.getChainCoinType(chainId);
+
+    const key = await this.keyRing.getKey(chainId, coinType);
+    const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
+      .bech32Config.bech32PrefixAccAddr;
+    const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
+    if (signer !== bech32Address) {
+      throw new Error('Signer mismatched');
+    }
+    if (signature.pub_key.type !== 'tendermint/PubKeySecp256k1') {
+      throw new Error(`Unsupported type of pub key: ${signature.pub_key.type}`);
+    }
+    if (
+      Buffer.from(key.pubKey).toString('base64') !== signature.pub_key.value
+    ) {
+      throw new Error('Pub key unmatched');
+    }
+
+    const signDoc = makeADR36AminoSignDoc(signer, data);
+
+    return verifyADR36AminoSignDoc(
+      bech32Prefix,
+      signDoc,
+      Buffer.from(signature.pub_key.value, 'base64'),
+      Buffer.from(signature.signature, 'base64')
+    );
   }
 
   async sign(
@@ -317,7 +402,7 @@ export class KeyRingService {
   }
 
   async addMnemonicKey(
-    kdf: "scrypt" | "sha256",
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
     mnemonic: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath
@@ -328,7 +413,7 @@ export class KeyRingService {
   }
 
   async addPrivateKey(
-    kdf: "scrypt" | "sha256",
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
     privateKey: Uint8Array,
     meta: Record<string, string>
   ): Promise<{
@@ -339,7 +424,7 @@ export class KeyRingService {
 
   async addLedgerKey(
     env: Env,
-    kdf: "scrypt" | "sha256",
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2',
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath
   ): Promise<{
@@ -358,7 +443,7 @@ export class KeyRingService {
     } finally {
       this.interactionService.dispatchEvent(
         WEBPAGE_PORT,
-        "keystore-changed",
+        'keystore-changed',
         {}
       );
     }
@@ -378,6 +463,14 @@ export class KeyRingService {
 
   async setKeyStoreCoinType(chainId: string, coinType: number): Promise<void> {
     await this.keyRing.setKeyStoreCoinType(chainId, coinType);
+
+    if (prevCoinType !== coinType) {
+      this.interactionService.dispatchEvent(
+        WEBPAGE_PORT,
+        'keystore-changed',
+        {}
+      );
+    }
   }
 
   async getKeyStoreBIP44Selectables(
@@ -392,14 +485,14 @@ export class KeyRingService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     for (const path of paths) {
-      const key = await this.keyRing.getKeyFromCoinType(path.coinType);
+      const key = this.keyRing.getKeyFromCoinType(path.coinType);
       const bech32Address = new Bech32Address(key.address).toBech32(
         chainInfo.bech32Config.bech32PrefixAccAddr
       );
 
       result.push({
         path,
-        bech32Address,
+        bech32Address
       });
     }
 

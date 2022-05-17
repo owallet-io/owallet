@@ -1,5 +1,5 @@
-import { Int } from "@keplr-wallet/unit";
-import { AxiosInstance } from "axios";
+import { Int } from '@keplr-wallet/unit';
+import { AxiosInstance } from 'axios';
 
 export interface Account {
   getType(): string;
@@ -20,7 +20,7 @@ export class BaseAccount implements Account {
 
     return BaseAccount.fromAminoJSON(
       result.data,
-      defaultBech32Address ? address : ""
+      defaultBech32Address ? address : ''
     );
   }
 
@@ -36,15 +36,15 @@ export class BaseAccount implements Account {
       | { type: string; value: any },
     // If the account doesn't exist, the result from `auth/accounts` would not have the address.
     // In this case, if `defaultBech32Address` param is provided, this will use it instead of the result from rest.
-    defaultBech32Address: string = ""
+    defaultBech32Address: string = ''
   ): BaseAccount {
-    if ("height" in obj) {
+    if ('height' in obj) {
       obj = obj.result;
     }
 
-    const type = obj.type || "";
+    const type = obj.type || '';
 
-    let value = "value" in obj ? obj.value : obj;
+    let value = 'value' in obj ? obj.value : obj;
 
     // If the account is the vesting account that embeds the base vesting account,
     // the actual base account exists under the base vesting account.
@@ -81,8 +81,8 @@ export class BaseAccount implements Account {
     return new BaseAccount(
       type,
       address,
-      new Int(accountNumber),
-      new Int(sequence ?? "0")
+      new Int(accountNumber ?? '0'),
+      new Int(sequence ?? '0')
     );
   }
 

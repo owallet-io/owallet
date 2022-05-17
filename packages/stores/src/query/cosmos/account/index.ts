@@ -1,12 +1,12 @@
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap,
-} from "../../chain-query";
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "../../../common";
-import { AuthAccount } from "./types";
-import { computed, makeObservable } from "mobx";
-import { BaseAccount } from "@keplr-wallet/cosmos";
+  ObservableChainQueryMap
+} from '../../chain-query';
+import { KVStore } from '@keplr-wallet/common';
+import { ChainGetter } from '../../../common';
+import { AuthAccount } from './types';
+import { computed, makeObservable } from 'mobx';
+import { BaseAccount } from '@keplr-wallet/cosmos';
 
 export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccount> {
   constructor(
@@ -23,7 +23,7 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
   @computed
   get sequence(): string {
     if (!this.response) {
-      return "0";
+      return '0';
     }
 
     try {
@@ -33,7 +33,7 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
       );
       return account.getSequence().toString();
     } catch {
-      return "0";
+      return '0';
     }
   }
 }
