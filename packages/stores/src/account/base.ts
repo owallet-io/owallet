@@ -420,6 +420,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       throw new Error('There is no msg to send');
     }
 
+    if (
+      this.hasNoLegacyStdFeature() &&
+      (!protoMsgs || protoMsgs.length === 0)
+    ) {
+      throw new Error(
+        "Chain can't send legecy stdTx. But, proto any type msgs are not provided"
+      );
+    }
+
     const account = await BaseAccount.fetchFromRest(
       this.instance,
       this.bech32Address,
