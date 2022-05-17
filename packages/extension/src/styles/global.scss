@@ -35,18 +35,15 @@ $body-color: black;
 html {
   width: $popup-size-width;
   height: $popup-size-height;
-  margin: auto;
-  background-color: white;
-
+  margin: auto;  
   overflow: auto;
 }
 
 body {
+  color: $color;
+  background-color: $background-color;
   width: $popup-size-width;
   height: $popup-size-height;
-
-  background-color: $background-color;
-
   &[data-lang="ko"] {
     word-break: keep-all;
     word-wrap: break-word;
@@ -104,4 +101,17 @@ button[data-loading="true"] {
     height: 1em;
     width: 1em;
   }
+}
+
+
+.btn-primary{
+  color: #fff;
+  background: #123f75;
+  border: 1px solid #123f75;
+  border-radius: 24px;
+  height: 48px;
+}
+
+.form-control-label{
+  color:#fff;
 }
