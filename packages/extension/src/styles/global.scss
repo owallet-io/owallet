@@ -19,17 +19,18 @@ $body-color: black;
 @import "var";
 
 html {
-  width: $popup-size-width;
-  height: $popup-size-height;
-  margin: auto;  
-  overflow: auto;
+  // width: $popup-size-width;
+  // height: $popup-size-height;
+  // margin: auto;  
+  // overflow: auto;
 }
 
 body {
   color: $color;
   background-color: $background-color;
   width: $popup-size-width;
-  height: $popup-size-height;
+  height: $popup-size-height;  
+
   &[data-lang="ko"] {
     word-break: keep-all;
     word-wrap: break-word;

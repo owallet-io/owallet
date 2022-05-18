@@ -11,7 +11,7 @@ export interface UIConfigOptions {
 export class UIConfigStore {
   @observable.deep
   protected options: UIConfigOptions = {
-    showAdvancedIBCTransfer: false
+    showAdvancedIBCTransfer: true
   };
 
   constructor(protected readonly kvStore: KVStore) {
