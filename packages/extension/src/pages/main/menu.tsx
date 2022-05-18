@@ -78,7 +78,7 @@ export const Menu: FunctionComponent = observer(() => {
       <div className={styleMenu.footer}>
         <a
           className={styleMenu.inner}
-          href="https://github.com/everett-protocol/owallet-extension"
+          href="https://github.com/oraichain/oraichain-wallet-v2.git"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -4,13 +4,14 @@
   .header {
     width: 100%;
     height: $header-height;
-
-    position: relative;
-
-    // border-bottom-style: solid;
-    // border-width: 1px;
-    // border-bottom-color: gray;
-
+    top:0;
+    position: sticky;
+    background-color: $background-color;
+    border-bottom-style: solid;
+    border-width: 1px;
+    border-bottom-color: $background-color-lighter;
+    z-index: 9999;
+    margin-bottom: 10px;
     &.fixed {
       position: fixed;
     }

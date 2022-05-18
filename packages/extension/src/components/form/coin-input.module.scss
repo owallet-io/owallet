@@ -1,6 +1,7 @@
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import "../../styles/var";
 
 .input {
   box-shadow: $input-alternative-box-shadow !important;
@@ -17,11 +18,10 @@
 .token-selector {
   width: 100%;
   height: 46px;
-
+  border-radius: .375rem;
+  background-color: $background-color-lighter;
   button {
     width: 100%;
-
-    background: white;
     text-align: left;
     font-weight: normal;
   }
@@ -41,7 +41,7 @@
       transform: rotate(-45deg);
       transform-origin: center;
       width: 0.625em;
-      border: 0 solid black;
+      border: 0 solid $color;
       border-bottom-width: 3px;
       border-left-width: 3px;
       right: 1.125em;
@@ -51,6 +51,7 @@
 
   :global(.dropdown-menu.show) {
     width: 100%;
+    background-color: $background-color-lighter;
   }
 
   &:global(.disabled) {
@@ -64,18 +65,18 @@
 .balance {
   float: right;
   font-weight: normal;
-  color: #555555;
+  color: $color;
 
   &.clickable {
     cursor: pointer;
     text-decoration: underline;
 
     &:hover {
-      color: black;
+      color: $color-darker;
     }
 
     &.clicked {
-      color: black;
+      color: $color-darker;
     }
   }
 }

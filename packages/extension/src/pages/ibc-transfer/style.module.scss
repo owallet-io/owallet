@@ -1,3 +1,5 @@
+@import '../../styles/var';
+
 .form-container {
   height: 100%;
 }
@@ -11,7 +13,8 @@
 .chain-selector {
   width: 100%;
   height: 46px;
-
+  background-color: $background-color-lighter;
+  border-radius: 8px;
   button {
     width: 100%;
   }
@@ -23,9 +26,9 @@
 
 .alert {
   display: flex;
-  border: solid 1px #9092b6;
-  background-color: #ffffff;
-  color: #ffffff;
+  border: solid 1px $background-color;
+  background-color: $background-color-lighter;
+  color: $color;
 
   i {
     font-size: 24px;
@@ -35,7 +38,7 @@
   h1 {
     font-size: 16px;
     font-weight: bold;
-    color: #ffffff;
+    color: $color;
     margin-bottom: 4px;
   }
 

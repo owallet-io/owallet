@@ -1,6 +1,10 @@
+
+@import '../../../styles/var';
+
 .buttons {
   display: flex;
-
+  background-color: $background-color-lighter;
+  border-radius: 18px;
   .button {
     flex: 1;
 

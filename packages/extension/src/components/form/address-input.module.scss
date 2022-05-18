@@ -1,6 +1,7 @@
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import '../../styles/var';
 
 .full-modal {
   width: 100%;
@@ -10,6 +11,8 @@
   border: 0;
   margin: 0;
   padding: 0;
+  color:$color;
+  background-color: $background-color;
 
   &:global(.modal-content) {
     box-shadow: none;
@@ -25,7 +28,7 @@
 }
 
 .address-book-button {
-  background: white;
+  background: #7664E4;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   border-width: 0;

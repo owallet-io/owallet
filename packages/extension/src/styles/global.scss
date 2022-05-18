@@ -63,11 +63,39 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6{
 }
 
 .form-control {
-  color: black;
-
+  color: $color;
+  background-color: $background-color-lighter;
   &:focus {
-    color: black;
+    background-color: $background-color-lighter;
+    color: $color-darker;
   }
+}
+
+.input-group{
+  background-color: $background-color-lighter;
+  .btn-outline-primary.disabled, .btn-outline-primary:disabled{
+    background-color: $primary-color;
+    color:$color;
+  }
+}
+.modal-content{
+  background-color: $background-color;
+}
+
+.btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active, .show > .btn-secondary.dropdown-toggle{
+  color:$color-lighter;
+}
+
+.ReactModalPortal{
+  .ReactModal__Overlay--after-open{
+    background-color: $background-color-lighter!important;
+  }
+
+}
+
+.form-control:disabled, .form-control[readonly]{
+  background-color: $background-color-lighter;
+  opacity: 0.85;
 }
 
 button[data-loading="true"] {
@@ -92,11 +120,14 @@ button[data-loading="true"] {
   }
 }
 
+.btn-outline-primary{
+  color:$color;
+}
 
 .btn-primary{
   color:$color;
-  background: #123f75;
-  border: 1px solid #123f75;
+  background: $primary-color;
+  border: 1px solid $primary-color;
   border-radius: 18px;  
 }
 

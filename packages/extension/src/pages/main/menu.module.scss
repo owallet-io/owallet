@@ -1,3 +1,5 @@
+@import '../../styles/var';
+
 .container {
   display: flex;
   flex-direction: column;
@@ -10,7 +12,10 @@
   padding: 8px 20px;
   font-size: 18px;
   font-weight: bold;
-  color: #F6F7FB;
+  color: $color-darker;
+  &:hover,&:active{
+    color:$color-lighter;
+  }
 }
 
 .footer {
@@ -20,7 +25,7 @@
   .inner {
     display: flex;
     cursor: pointer;
-    color: #8898aa;
+    color: $color-lighter;
 
     i {
       margin-right: 6px;

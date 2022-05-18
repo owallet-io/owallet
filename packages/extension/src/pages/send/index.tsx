@@ -137,7 +137,7 @@ export const SendPage: FunctionComponent = observer(() => {
               style={{
                 cursor: 'pointer',
                 padding: '4px',
-                color: '#8B8B9A'
+                color: '#ffffff'
               }}
               onClick={async (e) => {
                 e.preventDefault();
