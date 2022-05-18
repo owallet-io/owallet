@@ -216,9 +216,10 @@ export const TokensView: FunctionComponent = observer(() => {
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(accountInfo.bech32Address)
     .unstakables.filter((bal) => {
+      const denomHelper = new DenomHelper(bal.currency.coinMinimalDenom);
       // Temporary implementation for trimming the 0 balanced native tokens.
       // TODO: Remove this part.
-      if (new DenomHelper(bal.currency.coinMinimalDenom).type === 'native') {
+      if (denomHelper.type === 'native') {
         return bal.balance.toDec().gt(new Dec('0'));
       }
       return true;
