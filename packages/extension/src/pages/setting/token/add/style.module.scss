@@ -7,9 +7,7 @@
 
   input:read-only {
     box-shadow: none !important;
-    background: transparent;
-    color:$color;
-    padding: 0;
-    height: 20px;
+    background: transparent;    
+    color: $color-lighter;        
   }
 }

@@ -127,7 +127,18 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     bech32Config: Bech32Address.defaultBech32Config('orai'),
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'AIRI',
+          coinMinimalDenom:
+            'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
+          coinDecimals: 6,
+          coinGeckoId: 'airight',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+        }
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
@@ -150,7 +161,9 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDenom: 'ATOM',
       coinMinimalDenom: 'uatom',
       coinDecimals: 6,
-      coinGeckoId: 'cosmos'
+      coinGeckoId: 'cosmos',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png'
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
@@ -169,7 +182,9 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: 'ATOM',
         coinMinimalDenom: 'uatom',
         coinDecimals: 6,
-        coinGeckoId: 'cosmos'
+        coinGeckoId: 'cosmos',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png'
       }
     ],
     feeCurrencies: [
@@ -177,7 +192,9 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: 'ATOM',
         coinMinimalDenom: 'uatom',
         coinDecimals: 6,
-        coinGeckoId: 'cosmos'
+        coinGeckoId: 'cosmos',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png'
       }
     ],
     coinType: 118,
@@ -194,7 +211,9 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDenom: 'OSMO',
       coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
-      coinGeckoId: 'osmosis'
+      coinGeckoId: 'osmosis',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/12220.png'
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
@@ -211,7 +230,9 @@ export const EmbedChainInfos: ChainInfo[] = [
         coinDenom: 'OSMO',
         coinMinimalDenom: 'uosmo',
         coinDecimals: 6,
-        coinGeckoId: 'osmosis'
+        coinGeckoId: 'osmosis',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12220.png'
       },
       {
         coinDenom: 'ION',
