@@ -19,10 +19,8 @@ $body-color: black;
 @import "var";
 
 html {
-  // width: $popup-size-width;
-  // height: $popup-size-height;
-  // margin: auto;  
-  // overflow: auto;
+  width: 100%;
+  height: 100%;
 }
 
 body {
