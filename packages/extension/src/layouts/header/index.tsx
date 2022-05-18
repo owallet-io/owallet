@@ -1,17 +1,17 @@
-import React, { FunctionComponent, ReactNode } from "react";
+import React, { FunctionComponent, ReactNode } from 'react';
 
-import { Header as CompHeader } from "../../components/header";
+import { Header as CompHeader } from '../../components/header';
 
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-import style from "./style.module.scss";
-import { ToolTip } from "../../components/tooltip";
+import style from './style.module.scss';
+import { ToolTip } from '../../components/tooltip';
 
-import { ChainList } from "./chain-list";
-import { Menu, useMenu, MenuButton } from "../menu";
+import { ChainList } from './chain-list';
+import { Menu, useMenu, MenuButton } from '../menu';
 
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 export interface Props {
   showChainName: boolean;
@@ -35,7 +35,7 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
     menuRenderer,
     rightRenderer,
     isMenuOpen,
-    onBackButton,
+    onBackButton
   }) => {
     const { chainStore } = useStore();
     const menu = useMenu();
@@ -53,9 +53,9 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
               <>
                 <Menu isOpen={isMenuOpen}>{menuRenderer}</Menu>
                 <motion.div
-                  className={style["menu-img"]}
+                  className={style['menu-img']}
                   style={{ zIndex: 901 }}
-                  animate={isMenuOpen ? "open" : "closed"}
+                  animate={isMenuOpen ? 'open' : 'closed'}
                   onClick={menu.toggle}
                 >
                   <MenuButton />
@@ -64,7 +64,7 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
             ) : null}
             {onBackButton ? (
               <div
-                className={style["menu-img"]}
+                className={style['menu-img']}
                 onClick={() => {
                   if (onBackButton) {
                     onBackButton();
@@ -88,12 +88,12 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
       >
         {showChainName || alternativeTitle ? (
           <ToolTip
-            trigger={chainInfoChangable ? "click" : "static"}
+            trigger={chainInfoChangable ? 'click' : 'static'}
             tooltip={<ChainList />}
           >
             <div
               className={style.chainListContainer}
-              style={{ cursor: chainInfoChangable ? undefined : "default" }}
+              style={{ cursor: chainInfoChangable ? undefined : 'default' }}
             >
               <div className={style.title}>
                 {showChainName

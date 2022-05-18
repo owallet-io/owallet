@@ -1,17 +1,17 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from '@keplr-wallet/unit';
 
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import styleAsset from "./asset.module.scss";
-import { ToolTip } from "../../components/tooltip";
-import { FormattedMessage, useIntl } from "react-intl";
-import { useLanguage } from "../../languages";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import styleAsset from './asset.module.scss';
+import { ToolTip } from '../../components/tooltip';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useLanguage } from '../../languages';
 
 const LazyDoughnut = React.lazy(async () => {
   const module = await import(
-    /* webpackChunkName: "reactChartJS" */ "react-chartjs-2"
+    /* webpackChunkName: "reactChartJS" */ 'react-chartjs-2'
   );
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -24,7 +24,7 @@ const LazyDoughnut = React.lazy(async () => {
         x: (chart.chartArea.left + chart.chartArea.right) / 2,
         y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
         radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2,
+        thickness: (chart.outerRadius - chart.innerRadius) / 2
       };
 
       const ctx = chart.chart.ctx;
@@ -35,7 +35,7 @@ const LazyDoughnut = React.lazy(async () => {
       ctx.arc(round.x, round.y, round.radius, 0, 2 * Math.PI);
       ctx.closePath();
       ctx.lineWidth = round.thickness * 2;
-      ctx.strokeStyle = "#f4f5f7";
+      ctx.strokeStyle = '#f4f5f7';
       ctx.stroke();
       ctx.restore();
     },
@@ -46,7 +46,7 @@ const LazyDoughnut = React.lazy(async () => {
         x: (chart.chartArea.left + chart.chartArea.right) / 2,
         y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
         radius: (chart.outerRadius + chart.innerRadius) / 2,
-        thickness: (chart.outerRadius - chart.innerRadius) / 2,
+        thickness: (chart.outerRadius - chart.innerRadius) / 2
       };
 
       const ctx = chart.chart.ctx;
@@ -100,7 +100,7 @@ const LazyDoughnut = React.lazy(async () => {
       if (data.length == 2) {
         drawCircleEndEachOther(data[0], data[1]);
       }
-    },
+    }
   });
 
   return { default: module.Doughnut };
@@ -152,7 +152,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
       : parseFloat(stakable.toDec().toString()),
     stakedSumPrice
       ? parseFloat(stakedSumPrice.toDec().toString())
-      : parseFloat(stakedSum.toDec().toString()),
+      : parseFloat(stakedSum.toDec().toString())
   ];
 
   return (
@@ -180,7 +180,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                   theme="dark"
                   trigger="hover"
                   options={{
-                    placement: "top",
+                    placement: 'top'
                   }}
                 >
                   <i className="fas fa-exclamation-triangle text-danger" />
@@ -189,31 +189,31 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
             </React.Fragment>
           </div>
         </div>
-        <React.Suspense fallback={<div style={{ height: "150px" }} />}>
+        <React.Suspense fallback={<div style={{ height: '150px' }} />}>
           <LazyDoughnut
             data={{
               datasets: [
                 {
                   data,
-                  backgroundColor: ["#5e72e4", "#11cdef"],
-                  borderWidth: [0, 0],
-                },
+                  backgroundColor: ['#5e72e4', '#11cdef'],
+                  borderWidth: [0, 0]
+                }
               ],
 
               labels: [
                 intl.formatMessage({
-                  id: "main.account.chart.available-balance",
+                  id: 'main.account.chart.available-balance'
                 }),
                 intl.formatMessage({
-                  id: "main.account.chart.staked-balance",
-                }),
-              ],
+                  id: 'main.account.chart.staked-balance'
+                })
+              ]
             }}
             options={{
               rotation: 0.5 * Math.PI,
               cutoutPercentage: 85,
               legend: {
-                display: false,
+                display: false
               },
               tooltips: {
                 callbacks: {
@@ -232,7 +232,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                         stakablePrice
                           ? stakablePrice.toString()
                           : stakable
-                              .separator("")
+                              .separator('')
                               .trim(true)
                               .shrink(true)
                               .maxDecimals(6)
@@ -250,7 +250,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                         stakedSumPrice
                           ? stakedSumPrice.toString()
                           : stakedSum
-                              .separator("")
+                              .separator('')
                               .trim(true)
                               .shrink(true)
                               .maxDecimals(6)
@@ -258,44 +258,44 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                       } (${ratio.toString(1)}%)`;
                     }
 
-                    return "Unexpected error";
-                  },
-                },
-              },
+                    return 'Unexpected error';
+                  }
+                }
+              }
             }}
           />
         </React.Suspense>
       </div>
-      <div style={{ marginTop: "12px", width: "100%" }}>
+      <div style={{ marginTop: '12px', width: '100%' }}>
         <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: "#5e72e4" }}>
+          <div className={styleAsset.label} style={{ color: '#5e72e4' }}>
             <span className="badge-dot badge badge-secondary">
               <i className="bg-primary" />
             </span>
             <FormattedMessage id="main.account.chart.available-balance" />
           </div>
-          <div style={{ minWidth: "16px" }} />
+          <div style={{ minWidth: '16px' }} />
           <div
             className={styleAsset.value}
             style={{
-              color: "#525f7f",
+              color: '#D6CCF4'
             }}
           >
             {stakable.shrink(true).maxDecimals(6).toString()}
           </div>
         </div>
         <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: "#11cdef" }}>
+          <div className={styleAsset.label} style={{ color: '#11cdef' }}>
             <span className="badge-dot badge badge-secondary">
               <i className="bg-info" />
             </span>
             <FormattedMessage id="main.account.chart.staked-balance" />
           </div>
-          <div style={{ minWidth: "16px" }} />
+          <div style={{ minWidth: '16px' }} />
           <div
             className={styleAsset.value}
             style={{
-              color: "#525f7f",
+              color: '#D6CCF4'
             }}
           >
             {stakedSum.shrink(true).maxDecimals(6).toString()}

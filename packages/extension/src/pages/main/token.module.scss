@@ -14,8 +14,15 @@
   .icon {
     width: 36px;
     height: 36px;
-
+    >div{
+      overflow: hidden;
+    }
     margin-right: 8px;
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
   }
 
   .inner-container {
@@ -30,7 +37,7 @@
 
       .name {
         font-size: 14px;
-        color: #525f7f;
+        color: #F6F7FB;
 
         max-width: 216px;
         white-space: nowrap;
@@ -42,12 +49,16 @@
         font-size: 16px;
         line-height: 1.13;
         letter-spacing: -0.3px;
-        color: #32325d;
+        color: #D6CCF4;
 
         max-width: 216px;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
+      }
+      .price{
+        font-size: 14px;
+        color: #92929d;
       }
     }
 
@@ -64,7 +75,7 @@
   .title {
     font-size: 14px;
     font-weight: bold;
-    color: #525f7f;
+    color: #F6F7FB;
 
     margin-bottom: 12px;
   }

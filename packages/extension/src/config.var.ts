@@ -1,5 +1,10 @@
 import { AxiosRequestConfig } from 'axios';
 
+export const ORAICHAIN_RPC_ENDPOINT = '';
+export const ORAICHAIN_RPC_CONFIG: AxiosRequestConfig | undefined = undefined;
+export const ORAICHAIN_REST_ENDPOINT = '';
+export const ORAICHAIN_REST_CONFIG: AxiosRequestConfig | undefined = undefined;
+
 export const COSMOS_RPC_ENDPOINT = '';
 export const COSMOS_RPC_CONFIG: AxiosRequestConfig | undefined = undefined;
 export const COSMOS_REST_ENDPOINT = '';

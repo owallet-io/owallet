@@ -1,11 +1,11 @@
-import { ObservableChainQuery } from "./chain-query";
-import { DenomHelper, KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "../common";
-import { computed, makeObservable, observable, runInAction } from "mobx";
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
-import { AppCurrency } from "@keplr-wallet/types";
-import { HasMapStore } from "../common";
-import { computedFn } from "mobx-utils";
+import { ObservableChainQuery } from './chain-query';
+import { DenomHelper, KVStore } from '@keplr-wallet/common';
+import { ChainGetter } from '../common';
+import { computed, makeObservable, observable, runInAction } from 'mobx';
+import { CoinPretty, Dec, Int } from '@keplr-wallet/unit';
+import { AppCurrency } from '@keplr-wallet/types';
+import { HasMapStore } from '../common';
+import { computedFn } from 'mobx-utils';
 
 export abstract class ObservableQueryBalanceInner<
   T = unknown,
@@ -76,8 +76,8 @@ export class ObservableQueryBalancesInner {
   ): ObservableQueryBalanceInner {
     let key = currency.coinMinimalDenom;
     // If the currency is secret20, it will be different according to not only the minimal denom but also the viewing key of the currency.
-    if ("type" in currency && currency.type === "secret20") {
-      key = currency.coinMinimalDenom + "/" + currency.viewingKey;
+    if ('type' in currency && currency.type === 'secret20') {
+      key = currency.coinMinimalDenom + '/' + currency.viewingKey;
     }
 
     if (!this.balanceMap.has(key)) {
@@ -149,7 +149,7 @@ export class ObservableQueryBalancesInner {
   get nonNativeBalances(): ObservableQueryBalanceInner[] {
     const balances = this.balances;
     return balances.filter(
-      (bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== "native"
+      (bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native'
     );
   }
 
@@ -164,7 +164,7 @@ export class ObservableQueryBalancesInner {
     const balances = this.balances;
     return balances.filter(
       (bal) =>
-        new DenomHelper(bal.currency.coinMinimalDenom).type === "native" &&
+        new DenomHelper(bal.currency.coinMinimalDenom).type === 'native' &&
         bal.balance.toDec().gt(new Dec(0)) &&
         bal.currency.coinMinimalDenom !==
           chainInfo.stakeCurrency.coinMinimalDenom

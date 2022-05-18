@@ -51,6 +51,9 @@ body {
     font-family: "Nanum Barun Gothic", sans-serif !important;
   }
 }
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6{
+ color:#7664E4; 
+}
 
 #app {
   width: $popup-size-width;
@@ -108,8 +111,7 @@ button[data-loading="true"] {
   color: #fff;
   background: #123f75;
   border: 1px solid #123f75;
-  border-radius: 24px;
-  height: 48px;
+  border-radius: 18px;  
 }
 
 .form-control-label{
