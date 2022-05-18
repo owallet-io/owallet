@@ -3,10 +3,10 @@ import {
   ChainInfo,
   Currency,
   CW20Currency,
-  Secret20Currency,
-} from "@keplr-wallet/types";
+  Secret20Currency
+} from '@owallet-wallet/types';
 
-import Joi, { ObjectSchema } from "joi";
+import Joi, { ObjectSchema } from 'joi';
 
 export type ChainInfoWithEmbed = ChainInfo & {
   embeded: boolean;
@@ -17,13 +17,13 @@ export const CurrencySchema = Joi.object<Currency>({
   coinMinimalDenom: Joi.string().required(),
   coinDecimals: Joi.number().integer().min(0).max(18).required(),
   coinGeckoId: Joi.string(),
-  coinImageUrl: Joi.string().uri(),
+  coinImageUrl: Joi.string().uri()
 });
 
 export const CW20CurrencyShema = (CurrencySchema as ObjectSchema<CW20Currency>)
   .keys({
-    type: Joi.string().equal("cw20").required(),
-    contractAddress: Joi.string().required(),
+    type: Joi.string().equal('cw20').required(),
+    contractAddress: Joi.string().required()
   })
   .custom((value: CW20Currency) => {
     if (
@@ -36,16 +36,16 @@ export const CW20CurrencyShema = (CurrencySchema as ObjectSchema<CW20Currency>)
       return {
         ...value,
         coinMinimalDenom:
-          `${value.type}:${value.contractAddress}:` + value.coinMinimalDenom,
+          `${value.type}:${value.contractAddress}:` + value.coinMinimalDenom
       };
     }
   });
 
 export const Secret20CurrencyShema = (CurrencySchema as ObjectSchema<Secret20Currency>)
   .keys({
-    type: Joi.string().equal("secret20").required(),
+    type: Joi.string().equal('secret20').required(),
     contractAddress: Joi.string().required(),
-    viewingKey: Joi.string().required(),
+    viewingKey: Joi.string().required()
   })
   .custom((value: Secret20Currency) => {
     if (
@@ -58,7 +58,7 @@ export const Secret20CurrencyShema = (CurrencySchema as ObjectSchema<Secret20Cur
       return {
         ...value,
         coinMinimalDenom:
-          `${value.type}:${value.contractAddress}:` + value.coinMinimalDenom,
+          `${value.type}:${value.contractAddress}:` + value.coinMinimalDenom
       };
     }
   });
@@ -69,11 +69,11 @@ export const Bech32ConfigSchema = Joi.object<Bech32Config>({
   bech32PrefixValAddr: Joi.string().required(),
   bech32PrefixValPub: Joi.string().required(),
   bech32PrefixConsAddr: Joi.string().required(),
-  bech32PrefixConsPub: Joi.string().required(),
+  bech32PrefixConsPub: Joi.string().required()
 });
 
 export const SuggestingBIP44Schema = Joi.object<{ coinType: number }>({
-  coinType: Joi.number().integer().min(0).required(),
+  coinType: Joi.number().integer().min(0).required()
   // Alow the any keys for compatibility of cosmosJS's BIP44 (for legacy).
 }).unknown(true);
 
@@ -99,18 +99,25 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
   gasPriceStep: Joi.object({
     low: Joi.number().required(),
     average: Joi.number().required(),
-    high: Joi.number().required(),
+    high: Joi.number().required()
   }),
   features: Joi.array()
     .items(
-      Joi.string().valid("stargate", "cosmwasm", "secretwasm", "ibc-transfer")
+      Joi.string().valid(
+        'stargate',
+        'cosmwasm',
+        'secretwasm',
+        'ibc-transfer',
+        'no-legacy-stdTx',
+        'ibc-go'
+      )
     )
     .unique()
     .custom((value: string[]) => {
-      if (value.indexOf("cosmwasm") >= 0 && value.indexOf("secretwasm") >= 0) {
-        throw new Error("cosmwasm and secretwasm are not compatible");
+      if (value.indexOf('cosmwasm') >= 0 && value.indexOf('secretwasm') >= 0) {
+        throw new Error('cosmwasm and secretwasm are not compatible');
       }
 
       return value;
-    }),
+    })
 });

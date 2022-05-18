@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 import {
   AccountSetOpts,
   CosmosMsgOpts,
-  SecretMsgOpts,
-} from "@keplr-wallet/stores";
+  SecretMsgOpts
+} from '@owallet-wallet/stores';
 import {
   MessageObj,
   MsgBeginRedelegate,
@@ -20,12 +20,12 @@ import {
   renderMsgUndelegate,
   renderMsgDelegate,
   renderMsgWithdrawDelegatorReward,
-  renderMsgVote,
-} from "./messages";
-import { AppCurrency } from "@keplr-wallet/types";
+  renderMsgVote
+} from './messages';
+import { AppCurrency } from '@owallet-wallet/types';
 
 export function renderAminoMessage(
-  msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>["msgOpts"],
+  msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>['msgOpts'],
   msg: MessageObj,
   currencies: AppCurrency[]
 ): {
@@ -34,12 +34,12 @@ export function renderAminoMessage(
   scrollViewHorizontal?: boolean;
 } {
   if (msg.type === msgOpts.send.native.type) {
-    const value = msg.value as MsgSend["value"];
+    const value = msg.value as MsgSend['value'];
     return renderMsgSend(currencies, value.amount, value.to_address);
   }
 
   if (msg.type === msgOpts.ibcTransfer.type) {
-    const value = msg.value as MsgTransfer["value"];
+    const value = msg.value as MsgTransfer['value'];
     return renderMsgTransfer(
       currencies,
       value.token,
@@ -49,7 +49,7 @@ export function renderAminoMessage(
   }
 
   if (msg.type === msgOpts.redelegate.type) {
-    const value = msg.value as MsgBeginRedelegate["value"];
+    const value = msg.value as MsgBeginRedelegate['value'];
     return renderMsgBeginRedelegate(
       currencies,
       value.amount,
@@ -59,7 +59,7 @@ export function renderAminoMessage(
   }
 
   if (msg.type === msgOpts.undelegate.type) {
-    const value = msg.value as MsgUndelegate["value"];
+    const value = msg.value as MsgUndelegate['value'];
     return renderMsgUndelegate(
       currencies,
       value.amount,
@@ -68,17 +68,17 @@ export function renderAminoMessage(
   }
 
   if (msg.type === msgOpts.delegate.type) {
-    const value = msg.value as MsgDelegate["value"];
+    const value = msg.value as MsgDelegate['value'];
     return renderMsgDelegate(currencies, value.amount, value.validator_address);
   }
 
   if (msg.type === msgOpts.withdrawRewards.type) {
-    const value = msg.value as MsgWithdrawDelegatorReward["value"];
+    const value = msg.value as MsgWithdrawDelegatorReward['value'];
     return renderMsgWithdrawDelegatorReward(value.validator_address);
   }
 
   if (msg.type === msgOpts.govVote.type) {
-    const value = msg.value as MsgVote["value"];
+    const value = msg.value as MsgVote['value'];
     return renderMsgVote(value.proposal_id, value.option);
   }
 

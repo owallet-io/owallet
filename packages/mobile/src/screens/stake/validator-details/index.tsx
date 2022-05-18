@@ -1,15 +1,13 @@
-import React, { FunctionComponent } from "react";
-import { PageWithScrollView } from "../../../components/page";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { ValidatorDetailsCard } from "./validator-details-card";
-import { useStyle } from "../../../styles";
-import { DelegatedCard } from "./delegated-card";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import { Dec } from "@keplr-wallet/unit";
-import { UnbondingCard } from "./unbonding-card";
-import { useLogScreenView } from "../../../hooks";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
+import React, { FunctionComponent } from 'react';
+import { PageWithScrollView } from '../../../components/page';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { ValidatorDetailsCard } from './validator-details-card';
+import { useStyle } from '../../../styles';
+import { DelegatedCard } from './delegated-card';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { Dec } from '@owallet-wallet/unit';
+import { UnbondingCard } from './unbonding-card';
 
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -58,12 +56,12 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView>
       <ValidatorDetailsCard
-        containerStyle={style.flatten(["margin-y-card-gap"])}
+        containerStyle={style.flatten(['margin-y-card-gap'])}
         validatorAddress={validatorAddress}
       />
       {staked.toDec().gt(new Dec(0)) ? (
         <DelegatedCard
-          containerStyle={style.flatten(["margin-bottom-card-gap"])}
+          containerStyle={style.flatten(['margin-bottom-card-gap'])}
           validatorAddress={validatorAddress}
         />
       ) : null}

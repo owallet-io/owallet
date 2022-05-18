@@ -1,14 +1,15 @@
-import { ChainInfo } from "../chain-info";
+import { ChainInfo } from '../chain-info';
 import {
   BroadcastMode,
   AminoSignResponse,
   StdSignDoc,
   StdTx,
   OfflineSigner,
-} from "@cosmjs/launchpad";
-import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
-import { SecretUtils } from "secretjs/types/enigmautils";
-import Long from "long";
+  StdSignature
+} from '@cosmjs/launchpad';
+import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
+import { SecretUtils } from 'secretjs/types/enigmautils';
+import Long from 'long';
 
 export interface Key {
   // Name of the selected key store.
@@ -23,18 +24,26 @@ export interface Key {
   readonly isNanoLedger: boolean;
 }
 
-export interface KeplrIntereactionOptions {
-  readonly sign?: KeplrSignOptions;
+export type OWalletMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
+
+export interface OWalletIntereactionOptions {
+  readonly sign?: OWalletSignOptions;
 }
 
-export interface KeplrSignOptions {
+export interface OWalletSignOptions {
   readonly preferNoSetFee?: boolean;
   readonly preferNoSetMemo?: boolean;
 }
 
-export interface Keplr {
+export interface OWallet {
   readonly version: string;
-  defaultOptions: KeplrIntereactionOptions;
+  /**
+   * mode means that how OWallet is connected.
+   * If the connected OWallet is browser's extension, the mode should be "extension".
+   * If the connected OWallet is on the mobile app with the embeded web browser, the mode should be "mobile-web".
+   */
+  readonly mode: OWalletMode;
+  defaultOptions: OWalletIntereactionOptions;
 
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
   enable(chainIds: string | string[]): Promise<void>;
@@ -43,7 +52,7 @@ export interface Keplr {
     chainId: string,
     signer: string,
     signDoc: StdSignDoc,
-    signOptions?: KeplrSignOptions
+    signOptions?: OWalletSignOptions
   ): Promise<AminoSignResponse>;
   signDirect(
     chainId: string,
@@ -61,7 +70,7 @@ export interface Keplr {
       /** SignDoc accountNumber */
       accountNumber?: Long | null;
     },
-    signOptions?: KeplrSignOptions
+    signOptions?: OWalletSignOptions
   ): Promise<DirectSignResponse>;
   sendTx(
     chainId: string,

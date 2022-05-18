@@ -1,25 +1,24 @@
-import React, { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { PageWithScrollView } from "../../components/page";
-import { Platform, StyleSheet, Text, View, ViewStyle } from "react-native";
-import { Card, CardBody, CardDivider } from "../../components/card";
-import { useStyle } from "../../styles";
-import { Button } from "../../components/button";
-import { useStore } from "../../stores";
-import { useRoute, RouteProp } from "@react-navigation/native";
-import { LoadingSpinner } from "../../components/spinner";
-import { Governance } from "@keplr-wallet/stores";
-import { GovernanceProposalStatusChip } from "./card";
-import { IntPretty } from "@keplr-wallet/unit";
-import { useIntl } from "react-intl";
-import { dateToLocalString } from "./utils";
-import { registerModal } from "../../modals/base";
-import { RectButton } from "../../components/rect-button";
-import { useSmartNavigation } from "../../navigation";
-import { useLogScreenView } from "../../hooks";
+import React, { FunctionComponent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { PageWithScrollView } from '../../components/page';
+import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Card, CardBody, CardDivider } from '../../components/card';
+import { useStyle } from '../../styles';
+import { Button } from '../../components/button';
+import { useStore } from '../../stores';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import { LoadingSpinner } from '../../components/spinner';
+import { Governance } from '@owallet-wallet/stores';
+import { GovernanceProposalStatusChip } from './card';
+import { IntPretty } from '@owallet-wallet/unit';
+import { useIntl } from 'react-intl';
+import { dateToLocalString } from './utils';
+import { registerModal } from '../../modals/base';
+import { RectButton } from '../../components/rect-button';
+import { useSmartNavigation } from '../../navigation';
 
 export const TallyVoteInfoView: FunctionComponent<{
-  vote: "yes" | "no" | "abstain" | "noWithVeto";
+  vote: 'yes' | 'no' | 'abstain' | 'noWithVeto';
   percentage: IntPretty;
   hightlight?: boolean;
 }> = ({ vote, percentage, hightlight = false }) => {
@@ -27,14 +26,14 @@ export const TallyVoteInfoView: FunctionComponent<{
 
   const text = (() => {
     switch (vote) {
-      case "yes":
-        return "Yes";
-      case "no":
-        return "No";
-      case "abstain":
-        return "Abstain";
-      case "noWithVeto":
-        return "No with veto";
+      case 'yes':
+        return 'Yes';
+      case 'no':
+        return 'No';
+      case 'abstain':
+        return 'Abstain';
+      case 'noWithVeto':
+        return 'No with veto';
     }
   })();
 
@@ -42,35 +41,35 @@ export const TallyVoteInfoView: FunctionComponent<{
     <View
       style={style.flatten(
         [
-          "height-56",
-          "padding-8",
-          "border-radius-4",
-          "border-width-1",
-          "border-color-border-white",
+          'height-56',
+          'padding-8',
+          'border-radius-4',
+          'border-width-1',
+          'border-color-border-white'
         ],
-        [hightlight && "background-color-primary-10"]
+        [hightlight && 'background-color-primary-10']
       )}
     >
-      <View style={style.flatten(["flex-row", "height-full"])}>
+      <View style={style.flatten(['flex-row', 'height-full'])}>
         <View
           style={style.flatten([
-            "width-4",
-            "background-color-primary",
-            "margin-right-8",
+            'width-4',
+            'background-color-primary',
+            'margin-right-8'
           ])}
         />
-        <View style={style.flatten(["justify-center"])}>
+        <View style={style.flatten(['justify-center'])}>
           <Text
             style={style.flatten([
-              "text-caption1",
-              "color-text-black-low",
-              "margin-bottom-2",
+              'text-caption1',
+              'color-text-black-low',
+              'margin-bottom-2'
             ])}
           >
             {text}
           </Text>
           <Text
-            style={style.flatten(["text-button3", "color-text-black-medium"])}
+            style={style.flatten(['text-button3', 'color-text-black-medium'])}
           >{`${percentage.trim(true).maxDecimals(1).toString()}%`}</Text>
         </View>
       </View>
@@ -106,43 +105,43 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
         <View style={containerStyle}>
           <View
             style={style.flatten([
-              "flex-row",
-              "items-center",
-              "margin-bottom-8",
+              'flex-row',
+              'items-center',
+              'margin-bottom-8'
             ])}
           >
             <Text
-              style={style.flatten(["h6", "color-text-black-high"])}
+              style={style.flatten(['h6', 'color-text-black-high'])}
             >{`#${proposal.id}`}</Text>
-            <View style={style.flatten(["flex-1"])} />
+            <View style={style.flatten(['flex-1'])} />
             <GovernanceProposalStatusChip status={proposal.proposalStatus} />
           </View>
           <Text
             style={style.flatten([
-              "h6",
-              "color-text-black-high",
-              "margin-bottom-16",
+              'h6',
+              'color-text-black-high',
+              'margin-bottom-16'
             ])}
             // Text selection is only supported well in android.
             // In IOS, the whole text would be selected, this process is somewhat strange, so it is disabled in IOS.
-            selectable={Platform.OS === "android"}
+            selectable={Platform.OS === 'android'}
           >
             {proposal.title}
           </Text>
-          <View style={style.flatten(["margin-bottom-12"])}>
+          <View style={style.flatten(['margin-bottom-12'])}>
             <View
               style={style.flatten([
-                "flex-row",
-                "items-center",
-                "margin-bottom-6",
+                'flex-row',
+                'items-center',
+                'margin-bottom-6'
               ])}
             >
-              <Text style={style.flatten(["h7", "color-text-black-medium"])}>
+              <Text style={style.flatten(['h7', 'color-text-black-medium'])}>
                 Turnout
               </Text>
-              <View style={style.flatten(["flex-1"])} />
+              <View style={style.flatten(['flex-1'])} />
               <Text
-                style={style.flatten(["body3", "color-text-black-medium"])}
+                style={style.flatten(['body3', 'color-text-black-medium'])}
               >{`${proposal.turnout
                 .trim(true)
                 .maxDecimals(1)
@@ -150,104 +149,104 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
             </View>
             <View
               style={style.flatten([
-                "height-8",
-                "background-color-border-white",
-                "border-radius-32",
-                "overflow-hidden",
+                'height-8',
+                'background-color-border-white',
+                'border-radius-32',
+                'overflow-hidden'
               ])}
             >
               <View
                 style={StyleSheet.flatten([
                   style.flatten([
-                    "height-8",
-                    "background-color-primary",
-                    "border-radius-32",
+                    'height-8',
+                    'background-color-primary',
+                    'border-radius-32'
                   ]),
                   {
                     width: `${parseFloat(
                       proposal.turnout.toDec().toString(1)
-                    )}%`,
-                  },
+                    )}%`
+                  }
                 ])}
               />
             </View>
           </View>
           <View>
-            <View style={style.flatten(["flex-row", "margin-bottom-8"])}>
-              <View style={style.flatten(["flex-1"])}>
+            <View style={style.flatten(['flex-row', 'margin-bottom-8'])}>
+              <View style={style.flatten(['flex-1'])}>
                 <TallyVoteInfoView
                   vote="yes"
                   percentage={proposal.tallyRatio.yes}
-                  hightlight={voted === "Yes"}
+                  hightlight={voted === 'Yes'}
                 />
               </View>
-              <View style={style.flatten(["width-12"])} />
-              <View style={style.flatten(["flex-1"])}>
+              <View style={style.flatten(['width-12'])} />
+              <View style={style.flatten(['flex-1'])}>
                 <TallyVoteInfoView
                   vote="no"
                   percentage={proposal.tallyRatio.no}
-                  hightlight={voted === "No"}
+                  hightlight={voted === 'No'}
                 />
               </View>
             </View>
-            <View style={style.flatten(["flex-row"])}>
-              <View style={style.flatten(["flex-1"])}>
+            <View style={style.flatten(['flex-row'])}>
+              <View style={style.flatten(['flex-1'])}>
                 <TallyVoteInfoView
                   vote="noWithVeto"
                   percentage={proposal.tallyRatio.noWithVeto}
-                  hightlight={voted === "NoWithVeto"}
+                  hightlight={voted === 'NoWithVeto'}
                 />
               </View>
-              <View style={style.flatten(["width-12"])} />
-              <View style={style.flatten(["flex-1"])}>
+              <View style={style.flatten(['width-12'])} />
+              <View style={style.flatten(['flex-1'])}>
                 <TallyVoteInfoView
                   vote="abstain"
                   percentage={proposal.tallyRatio.abstain}
-                  hightlight={voted === "Abstain"}
+                  hightlight={voted === 'Abstain'}
                 />
               </View>
             </View>
           </View>
-          <CardDivider style={style.flatten(["margin-x-0", "margin-y-16"])} />
-          <View style={style.flatten(["flex-row", "margin-bottom-12"])}>
-            <View style={style.flatten(["flex-1"])}>
-              <Text style={style.flatten(["h7", "color-text-black-medium"])}>
+          <CardDivider style={style.flatten(['margin-x-0', 'margin-y-16'])} />
+          <View style={style.flatten(['flex-row', 'margin-bottom-12'])}>
+            <View style={style.flatten(['flex-1'])}>
+              <Text style={style.flatten(['h7', 'color-text-black-medium'])}>
                 Voting Start
               </Text>
-              <Text style={style.flatten(["body3", "color-text-black-medium"])}>
+              <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
                 {dateToLocalString(intl, proposal.raw.voting_start_time)}
               </Text>
             </View>
-            <View style={style.flatten(["flex-1"])}>
-              <Text style={style.flatten(["h7", "color-text-black-medium"])}>
+            <View style={style.flatten(['flex-1'])}>
+              <Text style={style.flatten(['h7', 'color-text-black-medium'])}>
                 Voting End
               </Text>
-              <Text style={style.flatten(["body3", "color-text-black-medium"])}>
+              <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
                 {dateToLocalString(intl, proposal.raw.voting_end_time)}
               </Text>
             </View>
           </View>
           <Text
             style={style.flatten([
-              "h7",
-              "color-text-black-medium",
-              "margin-bottom-4",
+              'h7',
+              'color-text-black-medium',
+              'margin-bottom-4'
             ])}
           >
             Description
           </Text>
           <Text
-            style={style.flatten(["body3", "color-text-black-medium"])}
+            style={style.flatten(['body3', 'color-text-black-medium'])}
             // Text selection is only supported well in android.
             // In IOS, the whole text would be selected, this process is somewhat strange, so it is disabled in IOS.
-            selectable={Platform.OS === "android"}
+            selectable={Platform.OS === 'android'}
           >
             {proposal.description}
           </Text>
         </View>
       ) : (
         <LoadingSpinner
-          color={style.flatten(["color-loading-spinner"]).color}
+          color={style.flatten(['color-loading-spinner']).color}
           size={20}
         />
       )}
@@ -268,8 +267,8 @@ export const GovernanceVoteModal: FunctionComponent<{
     const {
       chainStore,
       accountStore,
-      analyticsStore,
       queriesStore,
+      analyticsStore
     } = useStore();
 
     const account = accountStore.getAccount(chainStore.current.chainId);
@@ -280,28 +279,28 @@ export const GovernanceVoteModal: FunctionComponent<{
     const style = useStyle();
 
     const [vote, setVote] = useState<
-      "Yes" | "No" | "NoWithVeto" | "Abstain" | "Unspecified"
-    >("Unspecified");
+      'Yes' | 'No' | 'NoWithVeto' | 'Abstain' | 'Unspecified'
+    >('Unspecified');
 
     const renderBall = (selected: boolean) => {
       if (selected) {
         return (
           <View
             style={style.flatten([
-              "width-24",
-              "height-24",
-              "border-radius-32",
-              "background-color-primary",
-              "items-center",
-              "justify-center",
+              'width-24',
+              'height-24',
+              'border-radius-32',
+              'background-color-primary',
+              'items-center',
+              'justify-center'
             ])}
           >
             <View
               style={style.flatten([
-                "width-12",
-                "height-12",
-                "border-radius-32",
-                "background-color-white",
+                'width-12',
+                'height-12',
+                'border-radius-32',
+                'background-color-white'
               ])}
             />
           </View>
@@ -310,12 +309,12 @@ export const GovernanceVoteModal: FunctionComponent<{
         return (
           <View
             style={style.flatten([
-              "width-24",
-              "height-24",
-              "border-radius-32",
-              "background-color-white",
-              "border-width-1",
-              "border-color-text-black-very-low",
+              'width-24',
+              'height-24',
+              'border-radius-32',
+              'background-color-white',
+              'border-width-1',
+              'border-color-text-black-very-low'
             ])}
           />
         );
@@ -323,148 +322,144 @@ export const GovernanceVoteModal: FunctionComponent<{
     };
 
     return (
-      <View style={style.flatten(["padding-page"])}>
+      <View style={style.flatten(['padding-page'])}>
         <View
           style={style.flatten([
-            "border-radius-8",
-            "overflow-hidden",
-            "background-color-white",
+            'border-radius-8',
+            'overflow-hidden',
+            'background-color-white'
           ])}
         >
           <RectButton
             style={style.flatten(
               [
-                "height-64",
-                "padding-left-36",
-                "padding-right-28",
-                "flex-row",
-                "items-center",
-                "justify-between",
+                'height-64',
+                'padding-left-36',
+                'padding-right-28',
+                'flex-row',
+                'items-center',
+                'justify-between'
               ],
-              [vote === "Yes" && "background-color-primary-10"]
+              [vote === 'Yes' && 'background-color-primary-10']
             )}
-            onPress={() => setVote("Yes")}
+            onPress={() => setVote('Yes')}
           >
             <Text
-              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+              style={style.flatten(['subtitle1', 'color-text-black-medium'])}
             >
               Yes
             </Text>
-            {renderBall(vote === "Yes")}
+            {renderBall(vote === 'Yes')}
           </RectButton>
           <View
-            style={style.flatten(["height-1", "background-color-divider"])}
+            style={style.flatten(['height-1', 'background-color-divider'])}
           />
           <RectButton
             style={style.flatten(
               [
-                "height-64",
-                "padding-left-36",
-                "padding-right-28",
-                "flex-row",
-                "items-center",
-                "justify-between",
+                'height-64',
+                'padding-left-36',
+                'padding-right-28',
+                'flex-row',
+                'items-center',
+                'justify-between'
               ],
-              [vote === "No" && "background-color-primary-10"]
+              [vote === 'No' && 'background-color-primary-10']
             )}
-            onPress={() => setVote("No")}
+            onPress={() => setVote('No')}
           >
             <Text
-              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+              style={style.flatten(['subtitle1', 'color-text-black-medium'])}
             >
               No
             </Text>
-            {renderBall(vote === "No")}
+            {renderBall(vote === 'No')}
           </RectButton>
           <View
-            style={style.flatten(["height-1", "background-color-divider"])}
+            style={style.flatten(['height-1', 'background-color-divider'])}
           />
           <RectButton
             style={style.flatten(
               [
-                "height-64",
-                "padding-left-36",
-                "padding-right-28",
-                "flex-row",
-                "items-center",
-                "justify-between",
+                'height-64',
+                'padding-left-36',
+                'padding-right-28',
+                'flex-row',
+                'items-center',
+                'justify-between'
               ],
-              [vote === "NoWithVeto" && "background-color-primary-10"]
+              [vote === 'NoWithVeto' && 'background-color-primary-10']
             )}
-            onPress={() => setVote("NoWithVeto")}
+            onPress={() => setVote('NoWithVeto')}
           >
             <Text
-              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+              style={style.flatten(['subtitle1', 'color-text-black-medium'])}
             >
               No with veto
             </Text>
-            {renderBall(vote === "NoWithVeto")}
+            {renderBall(vote === 'NoWithVeto')}
           </RectButton>
           <View
-            style={style.flatten(["height-1", "background-color-divider"])}
+            style={style.flatten(['height-1', 'background-color-divider'])}
           />
           <RectButton
             style={style.flatten(
               [
-                "height-64",
-                "padding-left-36",
-                "padding-right-28",
-                "flex-row",
-                "items-center",
-                "justify-between",
+                'height-64',
+                'padding-left-36',
+                'padding-right-28',
+                'flex-row',
+                'items-center',
+                'justify-between'
               ],
-              [vote === "Abstain" && "background-color-primary-10"]
+              [vote === 'Abstain' && 'background-color-primary-10']
             )}
-            onPress={() => setVote("Abstain")}
+            onPress={() => setVote('Abstain')}
           >
             <Text
-              style={style.flatten(["subtitle1", "color-text-black-medium"])}
+              style={style.flatten(['subtitle1', 'color-text-black-medium'])}
             >
               Abstain
             </Text>
-            {renderBall(vote === "Abstain")}
+            {renderBall(vote === 'Abstain')}
           </RectButton>
         </View>
         <Button
-          containerStyle={style.flatten(["margin-top-12"])}
+          containerStyle={style.flatten(['margin-top-12'])}
           text="Vote"
           size="large"
-          disabled={vote === "Unspecified" || !account.isReadyToSendMsgs}
-          loading={account.isSendingMsg === "govVote"}
+          disabled={vote === 'Unspecified' || !account.isReadyToSendMsgs}
+          loading={account.isSendingMsg === 'govVote'}
           onPress={async () => {
-            if (vote !== "Unspecified" && account.isReadyToSendMsgs) {
+            if (vote !== 'Unspecified' && account.isReadyToSendMsgs) {
               try {
                 await account.cosmos.sendGovVoteMsg(
                   proposalId,
                   vote,
-                  "",
+                  '',
                   {},
                   {},
                   {
                     onBroadcasted: (txHash) => {
-                      smartNavigation.pushSmart("TxPendingResult", {
-                        txHash: Buffer.from(txHash).toString("hex"),
-                      });
-                    },
-                    onFulfill: (tx) => {
-                      const isSuccess = tx.code == null || tx.code === 0;
-                      analyticsStore.logEvent("Vote finished", {
+                      analyticsStore.logEvent('Vote tx broadcasted', {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,
                         proposalId,
-                        proposalTitle: proposal?.title,
-                        isSuccess,
+                        proposalTitle: proposal?.title
                       });
-                    },
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: Buffer.from(txHash).toString('hex')
+                      });
+                    }
                   }
                 );
                 close();
               } catch (e) {
-                if (e?.message === "Request rejected") {
+                if (e?.message === 'Request rejected') {
                   return;
                 }
                 console.log(e);
-                smartNavigation.navigateSmart("Home", {});
+                smartNavigation.navigateSmart('Home', {});
               }
             }
           }}
@@ -504,15 +499,15 @@ export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
 
   const voteText = (() => {
     if (!proposal) {
-      return "Loading...";
+      return 'Loading...';
     }
     switch (proposal.proposalStatus) {
       case Governance.ProposalStatus.DEPOSIT_PERIOD:
-        return "Vote Not Started";
+        return 'Vote Not Started';
       case Governance.ProposalStatus.VOTING_PERIOD:
-        return "Vote";
+        return 'Vote';
       default:
-        return "Vote Ended";
+        return 'Vote Ended';
     }
   })();
 
@@ -529,10 +524,10 @@ export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
     <PageWithScrollView
       fixed={
         <View
-          style={style.flatten(["flex-1", "padding-page"])}
+          style={style.flatten(['flex-1', 'padding-page'])}
           pointerEvents="box-none"
         >
-          <View style={style.flatten(["flex-1"])} pointerEvents="box-none" />
+          <View style={style.flatten(['flex-1'])} pointerEvents="box-none" />
           {!isModalOpen ? (
             <Button
               text={voteText}
@@ -558,28 +553,28 @@ export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
         proposalId={proposalId}
         smartNavigation={smartNavigation}
       />
-      <Card style={style.flatten(["margin-top-card-gap"])}>
+      <Card style={style.flatten(['margin-top-card-gap'])}>
         <GovernanceDetailsCardBody
           proposalId={proposalId}
           containerStyle={(() => {
             let marginBottom = 0;
 
-            const buttonHeight = style.get("height-button-large").height;
-            if (typeof buttonHeight === "string") {
+            const buttonHeight = style.get('height-button-large').height;
+            if (typeof buttonHeight === 'string') {
               marginBottom += parseFloat(buttonHeight);
             } else {
               marginBottom += buttonHeight;
             }
 
-            const padding = style.get("padding-page").paddingBottom;
-            if (typeof padding === "string") {
+            const padding = style.get('padding-page').paddingBottom;
+            if (typeof padding === 'string') {
               marginBottom += parseFloat(padding);
             } else {
               marginBottom += padding;
             }
 
             return {
-              marginBottom,
+              marginBottom
             };
           })()}
         />

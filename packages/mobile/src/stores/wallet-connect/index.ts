@@ -1,29 +1,29 @@
-import WalletConnect from "@walletconnect/client";
-import { KeyRingStore, PermissionStore } from "@keplr-wallet/stores";
+import WalletConnect from '@walletconnect/client';
+import { KeyRingStore, PermissionStore } from '@owallet-wallet/stores';
 import {
   autorun,
   computed,
   makeObservable,
   observable,
-  runInAction,
-} from "mobx";
-import { ChainStore } from "../chain";
-import { Keplr } from "@keplr-wallet/provider";
-import { Buffer } from "buffer/";
-import { KVStore } from "@keplr-wallet/common";
-import { WCMessageRequester } from "./msg-requester";
-import { RNRouterBackground } from "../../router";
+  runInAction
+} from 'mobx';
+import { ChainStore } from '../chain';
+import { OWallet } from '@owallet-wallet/provider';
+import { Buffer } from 'buffer/';
+import { KVStore } from '@owallet-wallet/common';
+import { WCMessageRequester } from './msg-requester';
+import { RNRouterBackground } from '../../router';
 import {
   getBasicAccessPermissionType,
-  KeyRingStatus,
-} from "@keplr-wallet/background";
-import { computedFn } from "mobx-utils";
-import { Key } from "@keplr-wallet/types";
-import { Linking } from "react-native";
+  KeyRingStatus
+} from '@owallet-wallet/background';
+import { computedFn } from 'mobx-utils';
+import { Key } from '@owallet-wallet/types';
+import { AppState, Linking } from 'react-native';
 
 export interface WalletConnectV1SessionRequest {
   id: number;
-  jsonrpc: "2.0";
+  jsonrpc: '2.0';
   method: string;
   params: [
     {
@@ -41,11 +41,11 @@ export interface WalletConnectV1SessionRequest {
 // Wallet connect v1.0 is not suitable for handling multiple chains.
 // When the session requested, you cannot receive information from multiple chains,
 // so open a session unconditionally and manage permissions through custom requests.
-// Frontend should request the "keplr_enable_wallet_connect_V1" method with "chains" params.
+// Frontend should request the "owallet_enable_wallet_connect_V1" method with "chains" params.
 // "chains" params should be in form of https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md
 export interface SessionRequestApproval {
   key: string;
-  peerMeta: WalletConnectV1SessionRequest["params"][0]["peerMeta"];
+  peerMeta: WalletConnectV1SessionRequest['params'][0]['peerMeta'];
   params: [
     {
       chains: string[];
@@ -77,26 +77,26 @@ export abstract class WalletConnectManager {
     return this.clientMap.get(uri);
   }
 
-  async restoreClient(session: WalletConnect["session"]) {
+  async restoreClient(session: WalletConnect['session']) {
     const client = new WalletConnect({
       // TODO: Set metadata properly.
       clientMeta: {
-        name: "Keplr",
-        description: "Wallet for interchain",
-        url: "#",
-        icons: ["https://walletconnect.org/walletconnect-logo.png"],
+        name: 'OWallet',
+        description: 'Wallet for interchain',
+        url: '#',
+        icons: ['https://dhj8dql1kzq2v.cloudfront.net/owallet-256x256.png']
       },
-      session,
+      session
     });
 
     if (client.connected) {
       this.onSessionConnected(client);
 
-      client.on("call_request", (error, payload) => {
+      client.on('call_request', (error, payload) => {
         this.onCallRequest(client, error, payload);
       });
 
-      client.on("disconnect", (error) => {
+      client.on('disconnect', (error) => {
         if (error) {
           console.log(error);
           return;
@@ -141,22 +141,22 @@ export abstract class WalletConnectManager {
     await this.waitInitStores();
 
     if (this.clientMap.has(uri)) {
-      throw new Error("Client already initialized");
+      throw new Error('Client already initialized');
     }
 
     if (this.pendingClientMap.has(uri)) {
-      throw new Error("Client is waiting session");
+      throw new Error('Client is waiting session');
     }
 
     const client = new WalletConnect({
       uri,
       // TODO: Set metadata properly.
       clientMeta: {
-        name: "Keplr",
-        description: "Wallet for interchain",
-        url: "#",
-        icons: ["https://walletconnect.org/walletconnect-logo.png"],
-      },
+        name: 'OWallet',
+        description: 'Wallet for interchain',
+        url: '#',
+        icons: ['https://dhj8dql1kzq2v.cloudfront.net/owallet-256x256.png']
+      }
     });
 
     runInAction(() => {
@@ -171,7 +171,7 @@ export abstract class WalletConnectManager {
     });
 
     const timeout = setTimeout(() => {
-      rejector(new Error("Timeout"));
+      rejector(new Error('Timeout'));
     }, 10000);
 
     const handler = (error: Error | null) => {
@@ -180,7 +180,7 @@ export abstract class WalletConnectManager {
         return;
       }
 
-      client.on("disconnect", (error) => {
+      client.on('disconnect', (error) => {
         if (error) {
           console.log(error);
           return;
@@ -191,7 +191,7 @@ export abstract class WalletConnectManager {
 
       if (!client.peerMeta?.url) {
         client.rejectSession({
-          message: "Should provide the peer url",
+          message: 'Should provide the peer url'
         });
         resolver();
         return;
@@ -204,24 +204,24 @@ export abstract class WalletConnectManager {
         // When the session requested, you cannot receive information from multiple chains,
         // so open a session unconditionally and manage permissions through custom requests.
         chainId: 99999,
-        accounts: [],
+        accounts: []
       });
       this.onSessionConnected(client);
       resolver();
     };
 
-    client.on("session_request", handler);
+    client.on('session_request', handler);
 
     try {
       await promise;
 
-      client.off("session_request");
+      client.off('session_request');
 
       runInAction(() => {
         this.clientMap.set(uri, client);
       });
 
-      client.on("call_request", (error, payload) => {
+      client.on('call_request', (error, payload) => {
         this.onCallRequest(client, error, payload);
       });
 
@@ -234,9 +234,11 @@ export abstract class WalletConnectManager {
     }
   }
 
-  protected createKeplrAPI(sessionId: string) {
-    return new Keplr(
-      "",
+  protected createOWalletAPI(sessionId: string) {
+    return new OWallet(
+      // TODO: Set version
+      '',
+      'core',
       new WCMessageRequester(RNRouterBackground.EventEmitter, sessionId)
     );
   }
@@ -259,55 +261,55 @@ export abstract class WalletConnectManager {
 
     await this.waitInitStores();
 
-    const keplr = this.createKeplrAPI(client.session.key);
+    const owallet = this.createOWalletAPI(client.session.key);
 
     try {
       switch (payload.method) {
-        case "keplr_enable_wallet_connect_v1": {
+        case 'owallet_enable_wallet_connect_v1': {
           if (payload.params.length === 0) {
-            throw new Error("Invalid parmas");
+            throw new Error('Invalid parmas');
           }
           for (const param of payload.params) {
-            if (typeof param !== "string") {
-              throw new Error("Invalid parmas");
+            if (typeof param !== 'string') {
+              throw new Error('Invalid parmas');
             }
           }
-          await keplr.enable(payload.params);
+          await owallet.enable(payload.params);
           client.approveRequest({
             id,
-            result: [],
+            result: []
           });
           break;
         }
-        case "keplr_get_key_wallet_connect_v1": {
+        case 'owallet_get_key_wallet_connect_v1': {
           if (payload.params.length !== 1) {
-            throw new Error("Invalid parmas");
+            throw new Error('Invalid parmas');
           }
-          if (typeof payload.params[0] !== "string") {
-            throw new Error("Invalid parmas");
+          if (typeof payload.params[0] !== 'string') {
+            throw new Error('Invalid parmas');
           }
-          const key = await keplr.getKey(payload.params[0]);
+          const key = await owallet.getKey(payload.params[0]);
           client.approveRequest({
             id,
             result: [
               {
                 name: key.name,
                 algo: key.algo,
-                pubKey: Buffer.from(key.pubKey).toString("hex"),
-                address: Buffer.from(key.address).toString("hex"),
+                pubKey: Buffer.from(key.pubKey).toString('hex'),
+                address: Buffer.from(key.address).toString('hex'),
                 bech32Address: key.bech32Address,
-                isNanoLedger: key.isNanoLedger,
-              },
-            ],
+                isNanoLedger: key.isNanoLedger
+              }
+            ]
           });
           break;
         }
-        case "keplr_sign_amino_wallet_connect_v1": {
+        case 'owallet_sign_amino_wallet_connect_v1': {
           if (payload.params.length !== 3 && payload.params.length !== 4) {
-            throw new Error("Invalid parmas");
+            throw new Error('Invalid parmas');
           }
 
-          const result = await keplr.signAmino(
+          const result = await owallet.signAmino(
             payload.params[0],
             payload.params[1],
             payload.params[2],
@@ -315,7 +317,7 @@ export abstract class WalletConnectManager {
           );
           client.approveRequest({
             id,
-            result: [result],
+            result: [result]
           });
           break;
         }
@@ -326,8 +328,8 @@ export abstract class WalletConnectManager {
       client.rejectRequest({
         id,
         error: {
-          message: e.message,
-        },
+          message: e.message
+        }
       });
     }
   };
@@ -360,21 +362,42 @@ export class WalletConnectStore extends WalletConnectManager {
     this.initDeepLink();
 
     /*
-     Unfortunately, keplr can handle the one key at the same time.
+     Unfortunately, owallet can handle the one key at the same time.
      So, if the other key was selected when the wallet connect connected and the frontend uses that account
-     after the user changes the key on Keplr, the requests can't be handled properly.
-     To reduce this problem, Keplr send the "keplr_keystore_may_changed_event_wallet_connect_v1" to the connected clients
+     after the user changes the key on OWallet, the requests can't be handled properly.
+     To reduce this problem, OWallet send the "owallet_keystore_may_changed_event_wallet_connect_v1" to the connected clients
      whenever the app is unlocked or user changes the key.
      */
-    this.eventListener.addEventListener("keplr_keystoreunlock", () =>
+    this.eventListener.addEventListener('owallet_keystoreunlock', () =>
       this.sendAccountMayChangedEventToClients()
     );
-    this.eventListener.addEventListener("keplr_keystorechange", () =>
+    this.eventListener.addEventListener('owallet_keystorechange', () =>
       this.sendAccountMayChangedEventToClients()
     );
   }
 
   protected async initDeepLink() {
+    await this.checkInitialURL();
+
+    Linking.addEventListener('url', (e) => {
+      this.processDeepLinkURL(e.url);
+    });
+
+    AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        if (this._isAndroidActivityKilled) {
+          // If the android activity restored, the deep link url handler will not work.
+          // We should recheck the initial URL()
+          this.checkInitialURL();
+        }
+        this._isAndroidActivityKilled = false;
+      } else {
+        this.clearNeedGoBackToBrowser();
+      }
+    });
+  }
+
+  protected async checkInitialURL() {
     const initialURL = await Linking.getInitialURL();
     if (initialURL) {
       this.processDeepLinkURL(initialURL);
@@ -388,18 +411,72 @@ export class WalletConnectStore extends WalletConnectManager {
   protected processDeepLinkURL(_url: string) {
     try {
       const url = new URL(_url);
-      if (url.protocol === "keplrwallet:" && url.host === "wcV1") {
+      if (url.protocol === 'owalletwallet:' && url.host === 'wcV1') {
         let params = url.search;
         if (params) {
-          if (params.startsWith("?")) {
+          if (params.startsWith('?')) {
             params = params.slice(1);
           }
-          this.initClient(params);
+          if (this.canInitClient(params)) {
+            runInAction(() => {
+              this._isPendingClientFromDeepLink = true;
+            });
+
+            this.initClient(params)
+              .then((client) => {
+                this.deepLinkClientKeyMap[client.key] = true;
+                this.saveDeepLinkClientKeyMap(this.deepLinkClientKeyMap);
+              })
+              .catch((e) => {
+                console.log('Failed to init wallet connect v1 client', e);
+              })
+              .finally(() => {
+                runInAction(() => {
+                  this._isPendingClientFromDeepLink = false;
+                });
+              });
+          }
         }
       }
     } catch (e) {
       console.log(e);
     }
+  }
+
+  onAndroidActivityKilled() {
+    this._isAndroidActivityKilled = true;
+  }
+
+  protected onCallBeforeRequested(client: WalletConnect) {
+    super.onCallBeforeRequested(client);
+
+    this.wcCallCount++;
+
+    if (this.deepLinkClientKeyMap[client.session.key]) {
+      this.isPendingWcCallFromDeepLinkClient = true;
+    }
+  }
+
+  @action
+  protected onCallAfterRequested(client: WalletConnect) {
+    super.onCallAfterRequested(client);
+
+    this.wcCallCount--;
+    if (this.wcCallCount == 0 && this.isPendingWcCallFromDeepLinkClient) {
+      this.isPendingWcCallFromDeepLinkClient = false;
+
+      if (AppState.currentState === 'active') {
+        this._needGoBackToBrowser = true;
+      }
+    }
+  }
+
+  /**
+   clearNeedGoBackToBrowser is used in the component to set the needGoBackToBrowser as false.
+   */
+  @action
+  clearNeedGoBackToBrowser() {
+    this._needGoBackToBrowser = false;
   }
 
   protected async sendAccountMayChangedEventToClients() {
@@ -423,7 +500,7 @@ export class WalletConnectStore extends WalletConnectManager {
           }
         | undefined;
 
-      const keplr = this.createKeplrAPI(client.session.key);
+      const owallet = this.createOWalletAPI(client.session.key);
 
       const permittedChains = await this.permissionStore.getOriginPermittedChains(
         WCMessageRequester.getVirtualSessionURL(client.session.key),
@@ -431,7 +508,7 @@ export class WalletConnectStore extends WalletConnectManager {
       );
 
       for (const chain of permittedChains) {
-        const key = keyForChainCache[chain] ?? (await keplr.getKey(chain));
+        const key = keyForChainCache[chain] ?? (await owallet.getKey(chain));
         if (!keyForChainCache[chain]) {
           keyForChainCache[chain] = key;
         }
@@ -444,18 +521,18 @@ export class WalletConnectStore extends WalletConnectManager {
             keys: [
               {
                 chainIdentifier: chain,
-                pubKey: Buffer.from(key.pubKey).toString("hex"),
-                address: Buffer.from(key.address).toString("hex"),
-                bech32Address: key.bech32Address,
-              },
-            ],
+                pubKey: Buffer.from(key.pubKey).toString('hex'),
+                address: Buffer.from(key.address).toString('hex'),
+                bech32Address: key.bech32Address
+              }
+            ]
           };
         } else {
           keys.keys.push({
             chainIdentifier: chain,
-            pubKey: Buffer.from(key.pubKey).toString("hex"),
-            address: Buffer.from(key.address).toString("hex"),
-            bech32Address: key.bech32Address,
+            pubKey: Buffer.from(key.pubKey).toString('hex'),
+            address: Buffer.from(key.address).toString('hex'),
+            bech32Address: key.bech32Address
           });
         }
       }
@@ -463,9 +540,9 @@ export class WalletConnectStore extends WalletConnectManager {
       if (keys) {
         client.sendCustomRequest({
           id: Math.floor(Math.random() * 100000),
-          jsonrpc: "2.0",
-          method: "keplr_keystore_may_changed_event_wallet_connect_v1",
-          params: [keys],
+          jsonrpc: '2.0',
+          method: 'owallet_keystore_may_changed_event_wallet_connect_v1',
+          params: [keys]
         });
       }
     }
@@ -476,13 +553,20 @@ export class WalletConnectStore extends WalletConnectManager {
   });
 
   @computed
-  get sessions(): WalletConnect["session"][] {
+  get sessions(): WalletConnect['session'][] {
     return this._clients.map((client) => {
       return client.session;
     });
   }
 
   protected async restore(): Promise<void> {
+    const deepLinkClientMap = await this.kvStore.get<
+      Record<string, true | undefined>
+    >('deep_link_client_keys');
+    if (deepLinkClientMap) {
+      this.deepLinkClientKeyMap = deepLinkClientMap;
+    }
+
     const persistentSessions = await this.getPersistentSessions();
 
     for (const session of persistentSessions) {
@@ -496,14 +580,14 @@ export class WalletConnectStore extends WalletConnectManager {
     );
     if (client) {
       await client.killSession({
-        message: "User requests disconnection",
+        message: 'User requests disconnection'
       });
     }
   }
 
-  protected async getPersistentSessions(): Promise<WalletConnect["session"][]> {
-    const result = await this.kvStore.get<WalletConnect["session"][]>(
-      "persistent_session_v1"
+  protected async getPersistentSessions(): Promise<WalletConnect['session'][]> {
+    const result = await this.kvStore.get<WalletConnect['session'][]>(
+      'persistent_session_v1'
     );
     if (!result) {
       return [];
@@ -512,9 +596,16 @@ export class WalletConnectStore extends WalletConnectManager {
   }
 
   protected async setPersistentSessions(
-    value: WalletConnect["session"][]
+    value: WalletConnect['session'][]
   ): Promise<void> {
-    await this.kvStore.set("persistent_session_v1", value);
+    await this.kvStore.set('persistent_session_v1', value);
+  }
+
+  protected async saveDeepLinkClientKeyMap(
+    keys: Record<string, true | undefined>
+  ): Promise<void> {
+    this.deepLinkClientKeyMap = keys;
+    await this.kvStore.set('deep_link_client_keys', keys);
   }
 
   protected async onSessionConnected(client: WalletConnect): Promise<void> {

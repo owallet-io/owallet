@@ -1,7 +1,7 @@
-import { DenomHelper, KVStore } from '@keplr-wallet/common';
+import { DenomHelper, KVStore } from '@owallet-wallet/common';
 import { ChainGetter, QueryResponse } from '../../../common';
 import { computed, makeObservable, override } from 'mobx';
-import { CoinPretty, Int } from '@keplr-wallet/unit';
+import { CoinPretty, Int } from '@owallet-wallet/unit';
 import { StoreUtils } from '../../../common';
 import { BalanceRegistry, ObservableQueryBalanceInner } from '../../balances';
 import { ObservableChainQuery } from '../../chain-query';

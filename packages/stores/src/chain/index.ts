@@ -12,9 +12,9 @@ import {
   BIP44,
   ChainInfo,
   Currency
-} from '@keplr-wallet/types';
+} from '@owallet-wallet/types';
 import { ChainGetter } from '../common';
-import { ChainIdHelper } from '@keplr-wallet/cosmos';
+import { ChainIdHelper } from '@owallet-wallet/cosmos';
 import { DeepReadonly } from 'utility-types';
 import { AxiosRequestConfig } from 'axios';
 import { keepAlive } from 'mobx-utils';

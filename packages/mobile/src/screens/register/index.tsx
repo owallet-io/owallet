@@ -1,15 +1,15 @@
-import React, { FunctionComponent } from "react";
-import { useHeaderHeight } from "@react-navigation/stack";
-import { PageWithScrollView } from "../../components/page";
-import { KeplrLogo } from "../../components/svg";
-import { useStyle } from "../../styles";
-import { View, Dimensions } from "react-native";
-import { Button } from "../../components/button";
-import { useSmartNavigation } from "../../navigation";
-import { useRegisterConfig } from "@keplr-wallet/hooks";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useLogScreenView } from "../../hooks";
+import React, { FunctionComponent } from 'react';
+import { useHeaderHeight } from '@react-navigation/stack';
+import { PageWithScrollView } from '../../components/page';
+import { OWalletLogo } from '../../components/svg';
+import { useStyle } from '../../styles';
+import { View, Dimensions } from 'react-native';
+import { Button } from '../../components/button';
+import { useSmartNavigation } from '../../navigation';
+import { useRegisterConfig } from '@owallet-wallet/hooks';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -26,36 +26,36 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get("flex-grow-1")}
+      contentContainerStyle={style.get('flex-grow-1')}
       style={{
-        ...style.flatten(["padding-x-42"]),
-        paddingTop: Dimensions.get("window").height * 0.22 - headerHeight,
-        paddingBottom: Dimensions.get("window").height * 0.11,
+        ...style.flatten(['padding-x-42']),
+        paddingTop: Dimensions.get('window').height * 0.22 - actualHeightHeight,
+        paddingBottom: Dimensions.get('window').height * 0.11
       }}
     >
       <View
-        style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
+        style={style.flatten(['flex-grow-1', 'items-center', 'padding-x-18'])}
       >
-        <KeplrLogo width="100%" />
+        <OWalletLogo width="100%" />
       </View>
       <Button
-        containerStyle={style.flatten(["margin-bottom-16"])}
+        containerStyle={style.flatten(['margin-bottom-16'])}
         text="Create a new wallet"
         size="large"
         mode="light"
         onPress={() => {
-          smartNavigation.navigateSmart("Register.NewUser", {
-            registerConfig,
+          smartNavigation.navigateSmart('Register.NewUser', {
+            registerConfig
           });
         }}
       />
       <Button
-        containerStyle={style.flatten(["margin-bottom-16"])}
+        containerStyle={style.flatten(['margin-bottom-16'])}
         text="Import existing wallet"
         size="large"
         onPress={() => {
-          smartNavigation.navigateSmart("Register.NotNewUser", {
-            registerConfig,
+          smartNavigation.navigateSmart('Register.NotNewUser', {
+            registerConfig
           });
         }}
       />
@@ -64,8 +64,8 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         size="large"
         mode="text"
         onPress={() => {
-          smartNavigation.navigateSmart("Register.NewLedger", {
-            registerConfig,
+          smartNavigation.navigateSmart('Register.NewLedger', {
+            registerConfig
           });
         }}
       />

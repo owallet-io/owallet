@@ -1,7 +1,7 @@
-import { flow, makeObservable, observable } from "mobx";
-import * as Keychain from "react-native-keychain";
-import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { KeyRingStore } from "@keplr-wallet/stores";
+import { flow, makeObservable, observable } from 'mobx';
+import * as Keychain from 'react-native-keychain';
+import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { KeyRingStore } from '@owallet-wallet/stores';
 
 export class KeychainStore {
   @observable
@@ -12,10 +12,10 @@ export class KeychainStore {
 
   protected static defaultOptions: Keychain.Options = {
     authenticationPrompt: {
-      title: "Biometric Authentication",
+      title: 'Biometric Authentication'
     },
     accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-    accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET,
+    accessControl: Keychain.ACCESS_CONTROL.BIOMETRY_CURRENT_SET
   };
 
   constructor(
@@ -38,7 +38,7 @@ export class KeychainStore {
   @flow
   *tryUnlockWithBiometry() {
     if (!this.isBiometryOn) {
-      throw new Error("Biometry is off");
+      throw new Error('Biometry is off');
     }
 
     const credentials = yield* toGenerator(
@@ -47,7 +47,7 @@ export class KeychainStore {
     if (credentials) {
       yield this.keyRingStore.unlock(credentials.password);
     } else {
-      throw new Error("Failed to get credentials from keychain");
+      throw new Error('Failed to get credentials from keychain');
     }
   }
 
@@ -57,7 +57,7 @@ export class KeychainStore {
     if (valid) {
       const result = yield* toGenerator(
         Keychain.setGenericPassword(
-          "keplr",
+          'owallet',
           password,
           KeychainStore.defaultOptions
         )
@@ -67,7 +67,7 @@ export class KeychainStore {
         yield this.save();
       }
     } else {
-      throw new Error("Invalid password");
+      throw new Error('Invalid password');
     }
   }
 
@@ -90,7 +90,30 @@ export class KeychainStore {
             this._isBiometryOn = false;
             yield this.save();
           }
+        } else {
+          throw new Error(
+            'Failed to get valid password from keychain. This may be due to changes of biometry information'
+          );
         }
+      } else {
+        throw new Error('Failed to get credentials from keychain');
+      }
+    }
+  }
+
+  @flow
+  *turnOffBiometryWithPassword(password: string) {
+    if (this.isBiometryOn) {
+      if (yield* toGenerator(this.keyRingStore.checkPassword(password))) {
+        const result = yield* toGenerator(
+          Keychain.resetGenericPassword(KeychainStore.defaultOptions)
+        );
+        if (result) {
+          this._isBiometryOn = false;
+          yield this.save();
+        }
+      } else {
+        throw new Error('Invalid password');
       }
     }
   }
@@ -121,11 +144,11 @@ export class KeychainStore {
 
   @flow
   protected *restore() {
-    const saved = yield* toGenerator(this.kvStore.get("isBiometryOn"));
+    const saved = yield* toGenerator(this.kvStore.get('isBiometryOn'));
     this._isBiometryOn = saved === true;
   }
 
   protected async save() {
-    await this.kvStore.set("isBiometryOn", this.isBiometryOn);
+    await this.kvStore.set('isBiometryOn', this.isBiometryOn);
   }
 }

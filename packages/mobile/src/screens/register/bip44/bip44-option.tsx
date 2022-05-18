@@ -1,6 +1,6 @@
-import { action, computed, makeObservable, observable } from "mobx";
-import { BIP44HDPath } from "@keplr-wallet/background";
-import { useState } from "react";
+import { action, computed, makeObservable, observable } from 'mobx';
+import { BIP44HDPath } from '@owallet-wallet/background';
+import { useState } from 'react';
 
 export class BIP44Option {
   @observable
@@ -42,7 +42,7 @@ export class BIP44Option {
     return {
       account: this.account,
       change: this.change,
-      addressIndex: this.index,
+      addressIndex: this.index
     };
   }
 

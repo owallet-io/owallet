@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
-import { IAmountConfig } from "@keplr-wallet/hooks";
-import { TextStyle, ViewStyle } from "react-native";
-import { Selector } from "./selector";
+import React, { FunctionComponent } from 'react';
+import { observer } from 'mobx-react-lite';
+import { IAmountConfig } from '@owallet-wallet/hooks';
+import { TextStyle, ViewStyle } from 'react-native';
+import { Selector } from './selector';
 
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -22,12 +22,12 @@ export const CurrencySelector: FunctionComponent<{
     textStyle,
     label,
     placeHolder,
-    amountConfig,
+    amountConfig
   }) => {
     const items = amountConfig.sendableCurrencies.map((currency) => {
       return {
         key: currency.coinMinimalDenom,
-        label: currency.coinDenom,
+        label: currency.coinDenom
       };
     });
 

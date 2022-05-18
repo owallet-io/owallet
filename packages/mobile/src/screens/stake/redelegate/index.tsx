@@ -1,22 +1,22 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
-import { useRedelegateTxConfig } from "@keplr-wallet/hooks";
-import { PageWithScrollView } from "../../../components/page";
-import { Card, CardBody, CardDivider } from "../../../components/card";
-import { Text, View } from "react-native";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useStore } from '../../../stores';
+import { useStyle } from '../../../styles';
+import { BondStatus } from '@owallet-wallet/stores/build/query/cosmos/staking/types';
+import { useRedelegateTxConfig } from '@owallet-wallet/hooks';
+import { PageWithScrollView } from '../../../components/page';
+import { Card, CardBody, CardDivider } from '../../../components/card';
+import { Text, View } from 'react-native';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
 import {
   AmountInput,
   FeeButtons,
   MemoInput,
-  SelectorButtonWithoutModal,
-} from "../../../components/input";
-import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
+  SelectorButtonWithoutModal
+} from '../../../components/input';
+import { Button } from '../../../components/button';
+import { useSmartNavigation } from '../../../navigation';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -72,14 +72,14 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const sendConfigs = useRedelegateTxConfig(
     chainStore,
     chainStore.current.chainId,
-    account.msgOpts["undelegate"].gas,
+    account.msgOpts['undelegate'].gas,
     account.bech32Address,
     queries.queryBalances,
     queries.cosmos.queryDelegations,
     validatorAddress
   );
 
-  const [dstValidatorAddress, setDstValidatorAddress] = useState("");
+  const [dstValidatorAddress, setDstValidatorAddress] = useState('');
 
   const dstValidator =
     queries.cosmos.queryValidators
@@ -106,37 +106,37 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      style={style.flatten(["padding-x-page"])}
-      contentContainerStyle={style.get("flex-grow-1")}
+      style={style.flatten(['padding-x-page'])}
+      contentContainerStyle={style.get('flex-grow-1')}
     >
-      <View style={style.flatten(["height-page-pad"])} />
-      <Card style={style.flatten(["margin-bottom-12", "border-radius-8"])}>
+      <View style={style.flatten(['height-page-pad'])} />
+      <Card style={style.flatten(['margin-bottom-12', 'border-radius-8'])}>
         <CardBody>
-          <View style={style.flatten(["flex-row", "items-center"])}>
+          <View style={style.flatten(['flex-row', 'items-center'])}>
             <ValidatorThumbnail
-              style={style.flatten(["margin-right-12"])}
+              style={style.flatten(['margin-right-12'])}
               size={36}
               url={srcValidatorThumbnail}
             />
-            <Text style={style.flatten(["h6", "color-text-black-high"])}>
-              {srcValidator ? srcValidator.description.moniker : "..."}
+            <Text style={style.flatten(['h6', 'color-text-black-high'])}>
+              {srcValidator ? srcValidator.description.moniker : '...'}
             </Text>
           </View>
           <CardDivider
             style={style.flatten([
-              "margin-x-0",
-              "margin-top-8",
-              "margin-bottom-15",
+              'margin-x-0',
+              'margin-top-8',
+              'margin-bottom-15'
             ])}
           />
-          <View style={style.flatten(["flex-row", "items-center"])}>
+          <View style={style.flatten(['flex-row', 'items-center'])}>
             <Text
-              style={style.flatten(["subtitle2", "color-text-black-medium"])}
+              style={style.flatten(['subtitle2', 'color-text-black-medium'])}
             >
               Staked
             </Text>
-            <View style={style.get("flex-1")} />
-            <Text style={style.flatten(["body2", "color-text-black-medium"])}>
+            <View style={style.get('flex-1')} />
+            <Text style={style.flatten(['body2', 'color-text-black-medium'])}>
               {staked.trim(true).shrink(true).maxDecimals(6).toString()}
             </Text>
           </View>
@@ -164,15 +164,15 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           dstValidator
             ? {
                 key: dstValidatorAddress,
-                label: dstValidator.description.moniker || dstValidatorAddress,
+                label: dstValidator.description.moniker || dstValidatorAddress
               }
             : undefined
         }
         onPress={() => {
-          smartNavigation.pushSmart("Validator.List", {
+          smartNavigation.pushSmart('Validator.List', {
             validatorSelector: (validatorAddress: string) => {
               setDstValidatorAddress(validatorAddress);
-            },
+            }
           });
         }}
       />
@@ -184,12 +184,12 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(["flex-1"])} />
+      <View style={style.flatten(['flex-1'])} />
       <Button
         text="Switch Validator"
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === "redelegate"}
+        loading={account.isSendingMsg === 'redelegate'}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
@@ -201,38 +201,34 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetMemo: true,
-                  preferNoSetFee: true,
+                  preferNoSetFee: true
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
-                  },
-                  onFulfill: (tx) => {
-                    const isSuccess = tx.code == null || tx.code === 0;
-                    analyticsStore.logEvent("Redelgate finished", {
+                    analyticsStore.logEvent('Redelgate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
                       validatorName: srcValidator?.description.moniker,
                       toValidatorName: dstValidator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType,
-                      isSuccess,
+                      feeType: sendConfigs.feeConfig.feeType
                     });
-                  },
+                    smartNavigation.pushSmart('TxPendingResult', {
+                      txHash: Buffer.from(txHash).toString('hex')
+                    });
+                  }
                 }
               );
             } catch (e) {
-              if (e?.message === "Request rejected") {
+              if (e?.message === 'Request rejected') {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart('Home', {});
             }
           }
         }}
       />
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );
 });

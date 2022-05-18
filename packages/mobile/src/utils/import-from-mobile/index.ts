@@ -2,13 +2,13 @@ import {
   AddressBookData,
   AddressBookConfigMap,
   RegisterConfig
-} from '@keplr-wallet/hooks';
+} from '@owallet-wallet/hooks';
 import WalletConnect from '@walletconnect/client';
 import AES, { Counter } from 'aes-js';
 import { Buffer } from 'buffer/';
-import { ExportKeyRingData } from '@keplr-wallet/background';
-import { KeyRingStore } from '@keplr-wallet/stores';
-import { Hash } from '@keplr-wallet/crypto';
+import { ExportKeyRingData } from '@owallet-wallet/background';
+import { KeyRingStore } from '@owallet-wallet/stores';
+import { Hash } from '@owallet-wallet/crypto';
 
 export interface QRCodeSharedData {
   // The uri for the wallet connect
@@ -69,7 +69,7 @@ export async function importFromMobile(
   const result = (
     await connector.sendCustomRequest({
       id: Math.floor(Math.random() * 100000),
-      method: 'keplr_request_export_keyring_datas_wallet_connect_v1',
+      method: 'owallet_request_export_keyring_datas_wallet_connect_v1',
       params: [
         {
           addressBookChainIds: chainIdsForAddressBook
@@ -183,7 +183,7 @@ export async function registerExportedKeyRingDatas(
       continue;
     }
 
-    const name = exportKeyRingData.meta['name'] || 'Keplr Account';
+    const name = exportKeyRingData.meta['name'] || 'OWallet Account';
     if (exportKeyRingData.type === 'mnemonic') {
       await registerConfig.createMnemonic(
         name,

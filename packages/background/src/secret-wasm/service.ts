@@ -1,17 +1,17 @@
-import { delay, inject, singleton } from "tsyringe";
-import { TYPES } from "../types";
+import { delay, inject, singleton } from 'tsyringe';
+import { TYPES } from '../types';
 
-import { EnigmaUtils } from "secretjs";
-import { KeyRingService } from "../keyring";
-import { ChainsService } from "../chains";
-import { PermissionService } from "../permission";
-import { Hash } from "@keplr-wallet/crypto";
-import { KVStore, Debouncer } from "@keplr-wallet/common";
-import { ChainInfo } from "@keplr-wallet/types";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { Env } from "@keplr-wallet/router";
+import { EnigmaUtils } from 'secretjs';
+import { KeyRingService } from '../keyring';
+import { ChainsService } from '../chains';
+import { PermissionService } from '../permission';
+import { Hash } from '@owallet-wallet/crypto';
+import { KVStore, Debouncer } from '@owallet-wallet/common';
+import { ChainInfo } from '@owallet-wallet/types';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Env } from '@owallet-wallet/router';
 
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer/';
 
 @singleton()
 export class SecretWasmService {
@@ -47,8 +47,8 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = await this.keyRingService.getKeyRingType();
-    if (keyRingType === "none") {
-      throw new Error("Key ring is not initialized");
+    if (keyRingType === 'none') {
+      throw new Error('Key ring is not initialized');
     }
 
     const seed = await this.getSeed(env, chainInfo);
@@ -65,8 +65,8 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = await this.keyRingService.getKeyRingType();
-    if (keyRingType === "none") {
-      throw new Error("Key ring is not initialized");
+    if (keyRingType === 'none') {
+      throw new Error('Key ring is not initialized');
     }
 
     const seed = await this.getSeed(env, chainInfo);
@@ -85,12 +85,12 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = await this.keyRingService.getKeyRingType();
-    if (keyRingType === "none") {
-      throw new Error("Key ring is not initialized");
+    if (keyRingType === 'none') {
+      throw new Error('Key ring is not initialized');
     }
 
-    // XXX: Keplr should generate the seed deterministically according to the account.
-    // Otherwise, it will lost the encryption/decryption key if Keplr is uninstalled or local storage is cleared.
+    // XXX: OWallet should generate the seed deterministically according to the account.
+    // Otherwise, it will lost the encryption/decryption key if OWallet is uninstalled or local storage is cleared.
     // For now, use the signature of some string to generate the seed.
     // It need to more research.
     const seed = await this.getSeed(env, chainInfo);
@@ -109,12 +109,12 @@ export class SecretWasmService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
     const keyRingType = await this.keyRingService.getKeyRingType();
-    if (keyRingType === "none") {
-      throw new Error("Key ring is not initialized");
+    if (keyRingType === 'none') {
+      throw new Error('Key ring is not initialized');
     }
 
-    // XXX: Keplr should generate the seed deterministically according to the account.
-    // Otherwise, it will lost the encryption/decryption key if Keplr is uninstalled or local storage is cleared.
+    // XXX: OWallet should generate the seed deterministically according to the account.
+    // Otherwise, it will lost the encryption/decryption key if OWallet is uninstalled or local storage is cleared.
     // For now, use the signature of some string to generate the seed.
     // It need to more research.
     const seed = await this.getSeed(env, chainInfo);
@@ -125,7 +125,7 @@ export class SecretWasmService {
   }
 
   private getEnigmaUtils(chainInfo: ChainInfo, seed: Uint8Array): EnigmaUtils {
-    const key = `${chainInfo.chainId}-${Buffer.from(seed).toString("hex")}`;
+    const key = `${chainInfo.chainId}-${Buffer.from(seed).toString('hex')}`;
 
     if (this.cacheEnigmaUtils.has(key)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -172,7 +172,7 @@ export class SecretWasmService {
 
     const cached = await this.kvStore.get<string>(storeKey);
     if (cached) {
-      return Buffer.from(cached, "hex");
+      return Buffer.from(cached, 'hex');
     }
 
     const seed = Hash.sha256(
@@ -186,16 +186,16 @@ export class SecretWasmService {
               chain_id: chainInfo.chainId,
               fee: [],
               memo:
-                "Create Keplr Secret encryption key. Only approve requests by Keplr.",
+                'Create OWallet Secret encryption key. Only approve requests by OWallet.',
               msgs: [],
-              sequence: 0,
+              sequence: 0
             })
           )
         )
       )
     );
 
-    await this.kvStore.set(storeKey, Buffer.from(seed).toString("hex"));
+    await this.kvStore.set(storeKey, Buffer.from(seed).toString('hex'));
 
     return seed;
   }

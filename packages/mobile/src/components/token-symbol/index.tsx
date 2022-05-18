@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
-import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { useStyle } from "../../styles";
+import React, { FunctionComponent, useMemo } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { AppCurrency, Currency } from '@owallet-wallet/types';
+import { useStyle } from '../../styles';
 import {
   Circle,
   Defs,
   LinearGradient,
   Path,
   Stop,
-  Svg,
-} from "react-native-svg";
-import FastImage from "react-native-fast-image";
-import { Hash } from "@keplr-wallet/crypto";
-import { Buffer } from "buffer/";
-import { VectorCharacter } from "../vector-character";
+  Svg
+} from 'react-native-svg';
+import FastImage from 'react-native-fast-image';
+import { Hash } from '@owallet-wallet/crypto';
+import { Buffer } from 'buffer/';
+import { VectorCharacter } from '../vector-character';
 
 export const StakedTokenSymbol: FunctionComponent<{
   size: number;
@@ -50,7 +50,7 @@ export const TokenSymbol: FunctionComponent<{
   size,
   currency,
   chainInfo,
-  imageScale = 32 / 44,
+  imageScale = 32 / 44
 }) => {
   const style = useStyle();
 
@@ -66,14 +66,14 @@ export const TokenSymbol: FunctionComponent<{
 
   const profileColor = useMemo(() => {
     const colors = [
-      "sky-blue",
-      "mint",
-      "green",
-      "yellow-green",
-      "purple",
-      "red",
-      "orange",
-      "yellow",
+      'sky-blue',
+      'mint',
+      'green',
+      'yellow-green',
+      'purple',
+      'red',
+      'orange',
+      'yellow'
     ];
 
     return colors[deterministicNumber % colors.length];
@@ -85,29 +85,29 @@ export const TokenSymbol: FunctionComponent<{
         {
           width: size,
           height: size,
-          borderRadius: size,
+          borderRadius: size
         },
         style.flatten(
           [
-            "items-center",
-            "justify-center",
-            "overflow-hidden",
-            `background-color-profile-${profileColor}` as any,
+            'items-center',
+            'justify-center',
+            'overflow-hidden',
+            `background-color-profile-${profileColor}` as any
           ],
-          [isStakeCurrency && "background-color-primary"]
+          [isStakeCurrency && 'background-color-primary']
         ),
-        propStyle,
+        propStyle
       ])}
     >
       {currency.coinImageUrl ? (
         <FastImage
           style={{
             width: size * imageScale,
-            height: size * imageScale,
+            height: size * imageScale
           }}
           resizeMode={FastImage.resizeMode.contain}
           source={{
-            uri: currency.coinImageUrl,
+            uri: currency.coinImageUrl
           }}
         />
       ) : (

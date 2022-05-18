@@ -1,15 +1,15 @@
-import { AppCurrency } from "@keplr-wallet/types";
-import { cosmos, UnknownMessage } from "@keplr-wallet/cosmos";
+import { AppCurrency } from '@owallet-wallet/types';
+import { cosmos, UnknownMessage } from '@owallet-wallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgSend,
   renderMsgUndelegate,
-  renderUnknownMessage,
-} from "./messages";
-import { CoinPrimitive } from "@keplr-wallet/stores";
+  renderUnknownMessage
+} from './messages';
+import { CoinPrimitive } from '@owallet-wallet/stores';
 
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer/';
 
 export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
   if (msg instanceof cosmos.bank.v1beta1.MsgSend) {
@@ -50,7 +50,7 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
   }
 
   return renderUnknownMessage({
-    typeUrl: msg.typeUrl || msg.type_url || "Unknown",
-    value: Buffer.from(msg.value).toString("base64"),
+    typeUrl: msg.typeUrl || msg.type_url || 'Unknown',
+    value: Buffer.from(msg.value).toString('base64')
   });
 }

@@ -1,9 +1,9 @@
-import { autorun, flow, makeObservable, observable, toJS } from "mobx";
-import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { ChainInfo } from "@keplr-wallet/types";
-import { ChainGetter, HasMapStore } from "@keplr-wallet/stores";
-import { DeepReadonly } from "utility-types";
-import { useState } from "react";
+import { autorun, flow, makeObservable, observable, toJS } from 'mobx';
+import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { ChainInfo } from '@owallet-wallet/types';
+import { ChainGetter, HasMapStore } from '@owallet-wallet/stores';
+import { DeepReadonly } from 'utility-types';
+import { useState } from 'react';
 
 export interface AddressBookSelectHandler {
   setRecipient(recipient: string): void;

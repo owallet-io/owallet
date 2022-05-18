@@ -1,18 +1,17 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../../stores";
-import { PageWithScrollViewInBottomTabView } from "../../../../components/page";
-import { KeyStoreItem, KeyStoreSectionTitle } from "../../components";
-import Svg, { Path } from "react-native-svg";
-import { useStyle } from "../../../../styles";
-import { useLoadingScreen } from "../../../../providers/loading-screen";
+import React, { FunctionComponent, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../../stores';
+import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
+import { KeyStoreItem, KeyStoreSectionTitle } from '../../components';
+import Svg, { Path } from 'react-native-svg';
+import { useStyle } from '../../../../styles';
+import { useLoadingScreen } from '../../../../providers/loading-screen';
 import {
   MultiKeyStoreInfoElem,
-  MultiKeyStoreInfoWithSelectedElem,
-} from "@keplr-wallet/background";
-import { View } from "react-native";
-import { useSmartNavigation } from "../../../../navigation";
-import { useLogScreenView } from "../../../../hooks";
+  MultiKeyStoreInfoWithSelectedElem
+} from '@owallet-wallet/background';
+import { View } from 'react-native';
+import { useSmartNavigation } from '../../../../navigation';
 
 const CheckIcon: FunctionComponent<{
   color: string;
@@ -24,7 +23,7 @@ const CheckIcon: FunctionComponent<{
       viewBox="0 0 19 17"
       style={{
         height,
-        aspectRatio: 19 / 17,
+        aspectRatio: 19 / 17
       }}
     >
       <Path
@@ -44,17 +43,17 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
     : {
         account: 0,
         change: 0,
-        addressIndex: 0,
+        addressIndex: 0
       };
 
   switch (keyStore.type) {
-    case "ledger":
+    case 'ledger':
       return `Ledger - m/44'/118'/${bip44HDPath.account}'${
         bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
           ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-          : ""
+          : ''
       }`;
-    case "mnemonic":
+    case 'mnemonic':
       if (
         bip44HDPath.account !== 0 ||
         bip44HDPath.change !== 0 ||
@@ -63,11 +62,11 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
         return `Mnemonic - m/44'/-/${bip44HDPath.account}'${
           bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
             ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-            : ""
+            : ''
         }`;
       }
       return;
-    case "privateKey":
+    case 'privateKey':
       // Torus key
       if (keyStore.meta?.email) {
         return keyStore.meta.email;
@@ -83,30 +82,45 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  useLogScreenView("Select account");
+  const googleTorusKeyStores = useMemo(() => {
+    return keyRingStore.multiKeyStoreInfo.filter(
+      (keyStore) =>
+        keyStore.type === 'privateKey' &&
+        keyStore.meta &&
+        keyStore.meta.email &&
+        // In prior version, only the google sign in option exists.
+        // But, now, there are two types of sign in (google, apple).
+        // `socialType` in meta is introduced to determine which social sign in was used.
+        // If there is no `socialType` field in meta, just assume that it was google sign in.
+        (!keyStore.meta.socialType || keyStore.meta.socialType === 'google')
+    );
+  }, [keyRingStore.multiKeyStoreInfo]);
 
   const torusKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
       (keyStore) =>
-        keyStore.type === "privateKey" && keyStore.meta && keyStore.meta.email
+        keyStore.type === 'privateKey' &&
+        keyStore.meta &&
+        keyStore.meta.email &&
+        keyStore.meta.socialType === 'apple'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => !keyStore.type || keyStore.type === "mnemonic"
+      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === "ledger"
+      (keyStore) => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === "privateKey" && !keyStore.meta?.email
+      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -121,7 +135,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
       await keyRingStore.changeKeyRing(index);
       loadingScreen.setIsLoading(false);
 
-      smartNavigation.navigateSmart("Home", {});
+      smartNavigation.navigateSmart('Home', {});
     }
   };
 
@@ -138,20 +152,20 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
               return (
                 <KeyStoreItem
                   key={i.toString()}
-                  label={keyStore.meta?.name || "Keplr Account"}
+                  label={keyStore.meta?.name || 'OWallet Account'}
                   paragraph={getKeyStoreParagraph(keyStore)}
                   topBorder={i === 0}
                   bottomBorder={keyStores.length - 1 !== i}
                   right={
                     keyStore.selected ? (
                       <CheckIcon
-                        color={style.get("color-primary").color}
+                        color={style.get('color-primary').color}
                         height={16}
                       />
                     ) : undefined
                   }
                   onPress={async () => {
-                    analyticsStore.logEvent("Account changed");
+                    analyticsStore.logEvent('Account changed');
                     await selectKeyStore(keyStore);
                   }}
                 />
@@ -165,12 +179,13 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView>
-      {renderKeyStores("google account", torusKeyStores)}
-      {renderKeyStores("mnemonic seed", mnemonicKeyStores)}
-      {renderKeyStores("hardware wallet", ledgerKeyStores)}
-      {renderKeyStores("private key", privateKeyStores)}
+      {renderKeyStores('apple id', appleTorusKeyStores)}
+      {renderKeyStores('google account', googleTorusKeyStores)}
+      {renderKeyStores('mnemonic seed', mnemonicKeyStores)}
+      {renderKeyStores('hardware wallet', ledgerKeyStores)}
+      {renderKeyStores('private key', privateKeyStores)}
       {/* Margin bottom for last */}
-      <View style={style.get("height-16")} />
+      <View style={style.get('height-16')} />
     </PageWithScrollViewInBottomTabView>
   );
 });

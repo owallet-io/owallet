@@ -1,11 +1,11 @@
-import { KVStore } from "@keplr-wallet/common";
+import { KVStore } from '@owallet-wallet/common';
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap,
-} from "../../chain-query";
-import { ChainGetter } from "../../../common";
-import { ClientStateResponse } from "./types";
-import { computed } from "mobx";
+  ObservableChainQueryMap
+} from '../../chain-query';
+import { ChainGetter } from '../../../common';
+import { ClientStateResponse } from './types';
+import { autorun, computed } from 'mobx';
 
 export class ObservableChainQueryClientState extends ObservableChainQuery<ClientStateResponse> {
   constructor(
@@ -21,6 +21,15 @@ export class ObservableChainQueryClientState extends ObservableChainQuery<Client
       chainGetter,
       `/ibc/core/channel/v1beta1/channels/${channelId}/ports/${portId}/client_state`
     );
+
+    autorun(() => {
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+      if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
+        this.setUrl(
+          `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}/client_state`
+        );
+      }
+    });
   }
 
   /**
@@ -59,7 +68,7 @@ export class ObservableQueryIBCClientState extends ObservableChainQueryMap<Clien
   getClientStateOnTransferPort(
     channelId: string
   ): ObservableChainQueryClientState {
-    return this.getClientState("transfer", channelId);
+    return this.getClientState('transfer', channelId);
   }
 
   getClientState(
@@ -69,7 +78,7 @@ export class ObservableQueryIBCClientState extends ObservableChainQueryMap<Clien
     // Use key as the JSON encoded Object.
     const key = JSON.stringify({
       portId,
-      channelId,
+      channelId
     });
 
     return this.get(key) as ObservableChainQueryClientState;

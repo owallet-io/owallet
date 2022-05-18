@@ -1,4 +1,4 @@
-import { EmbedChainInfos } from "../config";
+import { EmbedChainInfos } from '../config';
 import {
   KeyRingStore,
   InteractionStore,
@@ -11,18 +11,22 @@ import {
   AccountWithCosmosAndSecret,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
-  PermissionStore,
-} from "@keplr-wallet/stores";
-import { AsyncKVStore } from "../common";
-import { APP_PORT } from "@keplr-wallet/router";
-import { ChainInfoWithEmbed } from "@keplr-wallet/background";
-import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from "../router";
-import { ChainStore } from "./chain";
-import EventEmitter from "eventemitter3";
-import { Keplr } from "@keplr-wallet/provider";
-import { KeychainStore } from "./keychain";
-import { WalletConnectStore } from "./wallet-connect";
-import { AnalyticsStore } from "./analytics";
+  PermissionStore
+} from '@owallet-wallet/stores';
+import { AsyncKVStore } from '../common';
+import { APP_PORT } from '@owallet-wallet/router';
+import { ChainInfoWithEmbed } from '@owallet-wallet/background';
+import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
+import { ChainStore } from './chain';
+import EventEmitter from 'eventemitter3';
+import { OWallet } from '@owallet-wallet/provider';
+import { KeychainStore } from './keychain';
+import { WalletConnectStore } from './wallet-connect';
+import { FeeType } from '@owallet-wallet/hooks';
+import { AmplitudeApiKey } from '../config';
+import { AnalyticsStore, NoopAnalyticsClient } from '@owallet-wallet/analytics';
+import { Amplitude } from '@amplitude/react-native';
+import { ChainIdHelper } from '@owallet-wallet/cosmos';
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -42,7 +46,28 @@ export class RootStore {
 
   public readonly keychainStore: KeychainStore;
   public readonly walletConnectStore: WalletConnectStore;
-  public readonly analyticsStore: AnalyticsStore;
+
+  public readonly analyticsStore: AnalyticsStore<
+    {
+      chainId?: string;
+      chainName?: string;
+      toChainId?: string;
+      toChainName?: string;
+      registerType?: 'seed' | 'google' | 'apple' | 'ledger' | 'qr';
+      feeType?: FeeType | undefined;
+      isIbc?: boolean;
+      validatorName?: string;
+      toValidatorName?: string;
+      proposalId?: string;
+      proposalTitle?: string;
+    },
+    {
+      registerType?: 'seed' | 'google' | 'ledger' | 'qr' | 'apple';
+      accountType?: 'mnemonic' | 'privateKey' | 'ledger';
+      currency?: string;
+      language?: string;
+    }
+  >;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -67,27 +92,31 @@ export class RootStore {
     this.chainStore = new ChainStore(
       EmbedChainInfos,
       new RNMessageRequesterInternal(),
-      new AsyncKVStore("store_chains")
+      new AsyncKVStore('store_chains')
     );
 
     this.keyRingStore = new KeyRingStore(
       {
         dispatchEvent: (type: string) => {
           eventEmitter.emit(type);
-        },
+        }
       },
-      "sha256",
+      'pbkdf2',
       this.chainStore,
       new RNMessageRequesterInternal(),
       this.interactionStore
     );
 
     this.queriesStore = new QueriesStore(
-      new AsyncKVStore("store_queries"),
+      // Fix prefix key because there was a problem with storage being corrupted.
+      // In the case of storage where the prefix key is "store_queries" or "store_queries_fix", we should not use it because it is already corrupted in some users.
+      // https://github.com/chainapsis/owallet-wallet/issues/275
+      // https://github.com/chainapsis/owallet-wallet/issues/278
+      new AsyncKVStore('store_queries_fix2'),
       this.chainStore,
       async () => {
-        // TOOD: Set version for Keplr API
-        return new Keplr("", new RNMessageRequesterInternal());
+        // TOOD: Set version for OWallet API
+        return new OWallet('', 'core', new RNMessageRequesterInternal());
       },
       QueriesWithCosmosAndSecret
     );
@@ -99,7 +128,7 @@ export class RootStore {
         },
         removeEventListener: (type: string, fn: () => void) => {
           eventEmitter.removeListener(type, fn);
-        },
+        }
       },
       AccountWithCosmosAndSecret,
       this.chainStore,
@@ -109,79 +138,94 @@ export class RootStore {
           prefetching: false,
           suggestChain: false,
           autoInit: true,
-          getKeplr: async () => {
-            return new Keplr("", new RNMessageRequesterInternal());
-          },
+          getOWallet: async () => {
+            // TOOD: Set version for OWallet API
+            return new OWallet('', 'core', new RNMessageRequesterInternal());
+          }
         },
+        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
+          if (chainInfo.chainId.startsWith('osmosis')) {
+            return {
+              chainId: chainInfo.chainId,
+              msgOpts: {
+                withdrawRewards: {
+                  gas: 200000
+                }
+              }
+            };
+          }
+
+          return { chainId: chainInfo.chainId };
+        })
       }
     );
 
     this.priceStore = new CoinGeckoPriceStore(
-      new AsyncKVStore("store_prices"),
+      new AsyncKVStore('store_prices'),
       {
         usd: {
-          currency: "usd",
-          symbol: "$",
+          currency: 'usd',
+          symbol: '$',
           maxDecimals: 2,
-          locale: "en-US",
+          locale: 'en-US'
         },
         eur: {
-          currency: "eur",
-          symbol: "€",
+          currency: 'eur',
+          symbol: '€',
           maxDecimals: 2,
-          locale: "de-DE",
+          locale: 'de-DE'
         },
         gbp: {
-          currency: "gbp",
-          symbol: "£",
+          currency: 'gbp',
+          symbol: '£',
           maxDecimals: 2,
-          locale: "en-GB",
+          locale: 'en-GB'
         },
         cad: {
-          currency: "cad",
-          symbol: "CA$",
+          currency: 'cad',
+          symbol: 'CA$',
           maxDecimals: 2,
-          locale: "en-CA",
+          locale: 'en-CA'
         },
         rub: {
-          currency: "rub",
-          symbol: "₽",
+          currency: 'rub',
+          symbol: '₽',
           maxDecimals: 0,
-          locale: "ru",
+          locale: 'ru'
         },
         krw: {
-          currency: "krw",
-          symbol: "₩",
+          currency: 'krw',
+          symbol: '₩',
           maxDecimals: 0,
-          locale: "ko-KR",
+          locale: 'ko-KR'
         },
         hkd: {
-          currency: "hkd",
-          symbol: "HK$",
+          currency: 'hkd',
+          symbol: 'HK$',
           maxDecimals: 1,
-          locale: "en-HK",
+          locale: 'en-HK'
         },
         cny: {
-          currency: "cny",
-          symbol: "¥",
+          currency: 'cny',
+          symbol: '¥',
           maxDecimals: 1,
-          locale: "zh-CN",
+          locale: 'zh-CN'
         },
         jpy: {
-          currency: "jpy",
-          symbol: "¥",
+          currency: 'jpy',
+          symbol: '¥',
           maxDecimals: 0,
-          locale: "ja-JP",
-        },
+          locale: 'ja-JP'
+        }
       },
-      "usd"
+      'usd'
     );
 
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
-        },
+        }
       },
       this.chainStore,
       new RNMessageRequesterInternal(),
@@ -189,7 +233,7 @@ export class RootStore {
     );
 
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
-      new AsyncKVStore("store_test_ibc_currency_registrar"),
+      new AsyncKVStore('store_test_ibc_currency_registrar'),
       24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
@@ -199,19 +243,19 @@ export class RootStore {
     router.listen(APP_PORT);
 
     this.keychainStore = new KeychainStore(
-      new AsyncKVStore("store_keychain"),
+      new AsyncKVStore('store_keychain'),
       this.keyRingStore
     );
 
     this.walletConnectStore = new WalletConnectStore(
-      new AsyncKVStore("store_wallet_connect"),
+      new AsyncKVStore('store_wallet_connect'),
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
         },
         removeEventListener: (type: string, fn: () => void) => {
           eventEmitter.removeListener(type, fn);
-        },
+        }
       },
       this.chainStore,
       this.keyRingStore,
@@ -219,9 +263,42 @@ export class RootStore {
     );
 
     this.analyticsStore = new AnalyticsStore(
-      "KeplrMobile",
-      this.accountStore,
-      this.keyRingStore
+      (() => {
+        if (!AmplitudeApiKey) {
+          return new NoopAnalyticsClient();
+        } else {
+          const amplitudeClient = Amplitude.getInstance();
+          amplitudeClient.init(AmplitudeApiKey);
+
+          return amplitudeClient;
+        }
+      })(),
+      {
+        logEvent: (eventName, eventProperties) => {
+          if (eventProperties?.chainId || eventProperties?.toChainId) {
+            eventProperties = {
+              ...eventProperties
+            };
+
+            if (eventProperties.chainId) {
+              eventProperties.chainId = ChainIdHelper.parse(
+                eventProperties.chainId
+              ).identifier;
+            }
+
+            if (eventProperties.toChainId) {
+              eventProperties.toChainId = ChainIdHelper.parse(
+                eventProperties.toChainId
+              ).identifier;
+            }
+          }
+
+          return {
+            eventName,
+            eventProperties
+          };
+        }
+      }
     );
   }
 }

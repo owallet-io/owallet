@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { HeaderLayout } from "../../../../layouts";
-import { useHistory } from "react-router";
-import { useIntl, FormattedMessage } from "react-intl";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { HeaderLayout } from '../../../../layouts';
+import { useHistory } from 'react-router';
+import { useIntl, FormattedMessage } from 'react-intl';
 
-import style from "./style.module.scss";
-import { Button, Form } from "reactstrap";
-import { Input } from "../../../../components/form";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../../stores";
-import useForm from "react-hook-form";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CW20Currency, Secret20Currency } from "@keplr-wallet/types";
-import { useInteractionInfo } from "@keplr-wallet/hooks";
-import { useLoadingIndicator } from "../../../../components/loading-indicator";
-import { useNotification } from "../../../../components/notification";
+import style from './style.module.scss';
+import { Button, Form } from 'reactstrap';
+import { Input } from '../../../../components/form';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../../stores';
+import useForm from 'react-hook-form';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { CW20Currency, Secret20Currency } from '@owallet-wallet/types';
+import { useInteractionInfo } from '@owallet-wallet/hooks';
+import { useLoadingIndicator } from '../../../../components/loading-indicator';
+import { useNotification } from '../../../../components/notification';
 
 interface FormData {
   contractAddress: string;
@@ -33,19 +33,19 @@ export const AddTokenPage: FunctionComponent = observer(() => {
   const interactionInfo = useInteractionInfo(() => {
     // When creating the secret20 viewing key, this page will be moved to "/sign" page to generate the signature.
     // So, if it is creating phase, don't reject the waiting datas.
-    if (accountInfo.isSendingMsg !== "createSecret20ViewingKey") {
+    if (accountInfo.isSendingMsg !== 'createSecret20ViewingKey') {
       tokensStore.rejectAllSuggestedTokens();
     }
   });
 
   const form = useForm<FormData>({
     defaultValues: {
-      contractAddress: "",
-      viewingKey: "",
-    },
+      contractAddress: '',
+      viewingKey: ''
+    }
   });
 
-  const contractAddress = form.watch("contractAddress");
+  const contractAddress = form.watch('contractAddress');
 
   useEffect(() => {
     if (tokensStore.waitingSuggestedToken) {
@@ -55,7 +55,7 @@ export const AddTokenPage: FunctionComponent = observer(() => {
         tokensStore.waitingSuggestedToken.data.contractAddress
       ) {
         form.setValue(
-          "contractAddress",
+          'contractAddress',
           tokensStore.waitingSuggestedToken.data.contractAddress
         );
       }
@@ -71,7 +71,7 @@ export const AddTokenPage: FunctionComponent = observer(() => {
 
   const isSecret20 =
     (chainStore.current.features ?? []).find(
-      (feature) => feature === "secretwasm"
+      (feature) => feature === 'secretwasm'
     ) != null;
 
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] = useState(
@@ -86,17 +86,17 @@ export const AddTokenPage: FunctionComponent = observer(() => {
       accountInfo.secret
         .createSecret20ViewingKey(
           contractAddress,
-          "",
+          '',
           {},
           {},
           (_, viewingKey) => {
-            loadingIndicator.setIsLoading("create-veiwing-key", false);
+            loadingIndicator.setIsLoading('create-veiwing-key', false);
 
             resolve(viewingKey);
           }
         )
         .then(() => {
-          loadingIndicator.setIsLoading("create-veiwing-key", true);
+          loadingIndicator.setIsLoading('create-veiwing-key', true);
         })
         .catch(reject);
     });
@@ -107,7 +107,7 @@ export const AddTokenPage: FunctionComponent = observer(() => {
       showChainName={false}
       canChangeChainInfo={false}
       alternativeTitle={intl.formatMessage({
-        id: "setting.token.add",
+        id: 'setting.token.add'
       })}
       onBackButton={
         interactionInfo.interaction
@@ -127,11 +127,11 @@ export const AddTokenPage: FunctionComponent = observer(() => {
           ) {
             if (!isSecret20) {
               const currency: CW20Currency = {
-                type: "cw20",
+                type: 'cw20',
                 contractAddress: data.contractAddress,
                 coinMinimalDenom: tokenInfo.name,
                 coinDenom: tokenInfo.symbol,
-                coinDecimals: tokenInfo.decimals,
+                coinDecimals: tokenInfo.decimals
               };
 
               if (
@@ -149,14 +149,14 @@ export const AddTokenPage: FunctionComponent = observer(() => {
                   viewingKey = await createViewingKey();
                 } catch (e) {
                   notification.push({
-                    placement: "top-center",
-                    type: "danger",
+                    placement: 'top-center',
+                    type: 'danger',
                     duration: 2,
                     content: `Failed to create the viewing key: ${e.message}`,
                     canDelete: true,
                     transition: {
-                      duration: 0.25,
-                    },
+                      duration: 0.25
+                    }
                   });
 
                   if (
@@ -173,7 +173,7 @@ export const AddTokenPage: FunctionComponent = observer(() => {
                     window.close();
                   } else {
                     history.push({
-                      pathname: "/",
+                      pathname: '/'
                     });
                   }
 
@@ -183,23 +183,23 @@ export const AddTokenPage: FunctionComponent = observer(() => {
 
               if (!viewingKey) {
                 notification.push({
-                  placement: "top-center",
-                  type: "danger",
+                  placement: 'top-center',
+                  type: 'danger',
                   duration: 2,
-                  content: "Failed to create the viewing key",
+                  content: 'Failed to create the viewing key',
                   canDelete: true,
                   transition: {
-                    duration: 0.25,
-                  },
+                    duration: 0.25
+                  }
                 });
               } else {
                 const currency: Secret20Currency = {
-                  type: "secret20",
+                  type: 'secret20',
                   contractAddress: data.contractAddress,
                   viewingKey,
                   coinMinimalDenom: tokenInfo.name,
                   coinDenom: tokenInfo.symbol,
-                  coinDecimals: tokenInfo.decimals,
+                  coinDecimals: tokenInfo.decimals
                 };
 
                 if (
@@ -220,7 +220,7 @@ export const AddTokenPage: FunctionComponent = observer(() => {
               window.close();
             } else {
               history.push({
-                pathname: "/",
+                pathname: '/'
               });
             }
           }
@@ -229,13 +229,13 @@ export const AddTokenPage: FunctionComponent = observer(() => {
         <Input
           type="text"
           label={intl.formatMessage({
-            id: "setting.token.add.contract-address",
+            id: 'setting.token.add.contract-address'
           })}
           name="contractAddress"
           autoComplete="off"
           readOnly={tokensStore.waitingSuggestedToken != null}
           ref={form.register({
-            required: "Contract address is required",
+            required: 'Contract address is required',
             validate: (value: string): string | undefined => {
               try {
                 Bech32Address.validate(
@@ -243,9 +243,9 @@ export const AddTokenPage: FunctionComponent = observer(() => {
                   chainStore.current.bech32Config.bech32PrefixAccAddr
                 );
               } catch {
-                return "Invalid address";
+                return 'Invalid address';
               }
-            },
+            }
           })}
           error={
             form.errors.contractAddress
@@ -264,37 +264,37 @@ export const AddTokenPage: FunctionComponent = observer(() => {
         <Input
           type="text"
           label={intl.formatMessage({
-            id: "setting.token.add.name",
+            id: 'setting.token.add.name'
           })}
-          value={tokenInfo?.name ?? "-"}
+          value={tokenInfo?.name ?? '-'}
           readOnly={true}
         />
         <Input
           type="text"
           label={intl.formatMessage({
-            id: "setting.token.add.symbol",
+            id: 'setting.token.add.symbol'
           })}
-          value={tokenInfo?.symbol ?? "-"}
+          value={tokenInfo?.symbol ?? '-'}
           readOnly={true}
         />
         <Input
           type="text"
           label={intl.formatMessage({
-            id: "setting.token.add.decimals",
+            id: 'setting.token.add.decimals'
           })}
-          value={tokenInfo?.decimals ?? "-"}
+          value={tokenInfo?.decimals ?? '-'}
           readOnly={true}
         />
         {isSecret20 && isOpenSecret20ViewingKey ? (
           <Input
             type="text"
             label={intl.formatMessage({
-              id: "setting.token.add.secret20.viewing-key",
+              id: 'setting.token.add.secret20.viewing-key'
             })}
             name="viewingKey"
             autoComplete="off"
             ref={form.register({
-              required: "Viewing key is required",
+              required: 'Viewing key is required'
             })}
             error={
               form.errors.viewingKey
@@ -304,29 +304,31 @@ export const AddTokenPage: FunctionComponent = observer(() => {
           />
         ) : null}
         <div style={{ flex: 1 }} />
-        <div className="custom-control custom-checkbox mb-2">
-          <input
-            className="custom-control-input"
-            id="viewing-key-checkbox"
-            type="checkbox"
-            checked={isOpenSecret20ViewingKey}
-            onChange={() => {
-              setIsOpenSecret20ViewingKey((value) => !value);
-            }}
-          />
-          <label
-            className="custom-control-label"
-            htmlFor="viewing-key-checkbox"
-            style={{ color: "#666666", paddingTop: "1px" }}
-          >
-            <FormattedMessage id="setting.token.add.secret20.checkbox.import-viewing-key" />
-          </label>
-        </div>
+        {isSecret20 ? (
+          <div className="custom-control custom-checkbox mb-2">
+            <input
+              className="custom-control-input"
+              id="viewing-key-checkbox"
+              type="checkbox"
+              checked={isOpenSecret20ViewingKey}
+              onChange={() => {
+                setIsOpenSecret20ViewingKey((value) => !value);
+              }}
+            />
+            <label
+              className="custom-control-label"
+              htmlFor="viewing-key-checkbox"
+              style={{ color: '#666666', paddingTop: '1px' }}
+            >
+              <FormattedMessage id="setting.token.add.secret20.checkbox.import-viewing-key" />
+            </label>
+          </div>
+        ) : null}
         <Button
           type="submit"
           color="primary"
           disabled={tokenInfo == null || !accountInfo.isReadyToSendMsgs}
-          data-loading={accountInfo.isSendingMsg === "createSecret20ViewingKey"}
+          data-loading={accountInfo.isSendingMsg === 'createSecret20ViewingKey'}
         >
           <FormattedMessage id="setting.token.add.button.submit" />
         </Button>

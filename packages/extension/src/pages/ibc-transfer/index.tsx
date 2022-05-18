@@ -20,7 +20,7 @@ import {
   IMemoConfig,
   IRecipientConfig,
   useIBCTransferConfig
-} from '@keplr-wallet/hooks';
+} from '@owallet-wallet/hooks';
 import { useStore } from '../../stores';
 import { EthereumEndpoint } from '../../config.ui';
 import { useNotification } from '../../components/notification';

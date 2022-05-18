@@ -1,25 +1,25 @@
-import React, { FunctionComponent, useState } from "react";
-import { FullScreenCameraView } from "../../../components/camera";
-import { RNCamera } from "react-native-camera";
-import { useSmartNavigation } from "../../../navigation";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent, useState } from 'react';
+import { FullScreenCameraView } from '../../../components/camera';
+import { RNCamera } from 'react-native-camera';
+import { useSmartNavigation } from '../../../navigation';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   AddressBookConfigMap,
   AddressBookData,
-  RegisterConfig,
-} from "@keplr-wallet/hooks";
+  RegisterConfig
+} from '@owallet-wallet/hooks';
 import {
   parseQRCodeDataForImportFromMobile,
   importFromMobile,
   registerExportedAddressBooks,
-  registerExportedKeyRingDatas,
-} from "../../../utils/import-from-mobile";
-import { AsyncKVStore } from "../../../common";
+  registerExportedKeyRingDatas
+} from '../../../utils/import-from-mobile';
+import { AsyncKVStore } from '../../../common';
 
-export * from "./intro";
-export * from "./set-password";
+export * from './intro';
+export * from './set-password';
 
 export interface QRCodeSharedData {
   // The uri for the wallet connect
@@ -44,7 +44,7 @@ export const ImportFromExtensionScreen: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore } = useStore();
 
   const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
+    () => new AddressBookConfigMap(new AsyncKVStore('address_book'), chainStore)
   );
 
   const route = useRoute<
@@ -77,6 +77,10 @@ export const ImportFromExtensionScreen: FunctionComponent = observer(() => {
         sharedData,
         chainStore.chainInfosInUI.map((chainInfo) => chainInfo.chainId)
       );
+      analyticsStore.setUserProperties({
+        registerType: 'qr',
+        accountType: imported.KeyRingDatas[0].type
+      });
 
       if (keyRingStore.multiKeyStoreInfo.length > 0) {
         // If already has accounts,
@@ -84,7 +88,7 @@ export const ImportFromExtensionScreen: FunctionComponent = observer(() => {
           keyRingStore,
           route.params.registerConfig,
           imported.KeyRingDatas,
-          ""
+          ''
         );
 
         await registerExportedAddressBooks(
@@ -96,20 +100,20 @@ export const ImportFromExtensionScreen: FunctionComponent = observer(() => {
           index: 0,
           routes: [
             {
-              name: "Register.End",
-              params: {},
-            },
-          ],
+              name: 'Register.End',
+              params: {}
+            }
+          ]
         });
       } else {
         // If there is no account,
         // should set the password.
         smartNavigation.replaceSmart(
-          "Register.ImportFromExtension.SetPassword",
+          'Register.ImportFromExtension.SetPassword',
           {
             registerConfig: route.params.registerConfig,
             exportKeyRingDatas: imported.KeyRingDatas,
-            addressBooks: imported.addressBooks,
+            addressBooks: imported.addressBooks
           }
         );
       }

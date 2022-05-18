@@ -1,7 +1,7 @@
 {
   "name": "docs",
   "version": "0.8.0",
-  "description": "Keplr wallet Documentation",
+  "description": "Oraichain wallet Documentation",
   "scripts": {
     "serve": "trap 'exit 0' SIGINT; vuepress dev --no-cache",
     "build": "trap 'exit 0' SIGINT; vuepress build --no-cache"

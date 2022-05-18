@@ -1,16 +1,11 @@
-import { RNInjectedKeplr } from "./injected-provider";
-import { init } from "./init";
+import { RNInjectedOWallet } from './injected-provider';
+import { init } from './init';
 
-// TODO: Set the Keplr version properly
-const keplr = new RNInjectedKeplr("0.0.1");
+// TODO: Set the OWallet version properly
+const owallet = new RNInjectedOWallet('0.9.6', 'mobile-web');
 
 init(
-  keplr,
-  (chainId: string) => keplr.getOfflineSigner(chainId),
-  // TODO: Below line makes error because the secretjs version unmatched.
-  //       But, the production on the Keplr already uses the latest version of secretjs.
-  //       Match the version before production.
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  (chainId: string) => keplr.getEnigmaUtils(chainId)
+  owallet,
+  (chainId: string) => owallet.getOfflineSigner(chainId),
+  (chainId: string) => owallet.getEnigmaUtils(chainId)
 );

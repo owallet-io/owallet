@@ -1,63 +1,66 @@
 module.exports = {
-  theme: "cosmos",
-  title: "Keplr wallet",
+  theme: 'cosmos',
+  title: 'Oraichain wallet',
   locales: {
-    "/": {
-      lang: "en-US",
-    },
+    '/': {
+      lang: 'en-US'
+    }
   },
-  base: process.env.VUEPRESS_BASE || "/",
+  base: process.env.VUEPRESS_BASE || '/',
   head: [
-    ["link", { rel: "icon", type: "image/svg+xml", href: "/favicon-svg.svg" }],
-    ["meta", { property: "og:type", content: "website" }],
-    ["meta", { property: "og:url", content: "https://docs.keplr.app" }],
-    ["meta", { property: "og:title", content: "Documentation | Keplr Wallet" }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon-svg.svg' }],
+    ['meta', { property: 'og:type', content: 'website' }],
+    ['meta', { property: 'og:url', content: 'https://docs.owallet.app' }],
     [
-      "meta",
+      'meta',
+      { property: 'og:title', content: 'Documentation | Oraichain Wallet' }
+    ],
+    [
+      'meta',
       {
-        property: "og:description",
+        property: 'og:description',
         content:
-          "Keplr is a non-custodial blockchain wallets for webpages that allow users to interact with blockchain applications.",
-      },
+          'OWallet is a non-custodial blockchain wallets for webpages that allow users to interact with blockchain applications.'
+      }
     ],
     [
-      "meta",
-      { property: "og:image", content: "https://docs.keplr.app/og-image.jpg" },
+      'meta',
+      { property: 'og:image', content: 'https://docs.owallet.app/og-image.jpg' }
     ],
-    ["meta", { name: "twitter:card", content: "summary_large_image" }],
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }]
   ],
   themeConfig: {
     custom: true,
     editLinks: true,
-    repo: "chainapsis/keplr-extension",
-    docsRepo: "chainapsis/keplr-extension",
-    docsDir: "docs",
+    repo: 'chainapsis/owallet-extension',
+    docsRepo: 'chainapsis/owallet-extension',
+    docsDir: 'docs',
     logo: {
-      src: "/Keplr_Black.png",
+      src: '/OWallet_Black.png'
     },
     topbar: {
-      banner: false,
+      banner: false
     },
     sidebar: {
       auto: false,
       nav: [
         {
-          title: "API",
+          title: 'API',
           children: [
             {
-              title: "Keplr API",
+              title: 'OWallet API',
               directory: true,
-              path: "/api",
-            },
-          ],
-        },
-      ],
-    },
+              path: '/api'
+            }
+          ]
+        }
+      ]
+    }
   },
   plugins: [],
   markdown: {
     extendMarkdown: (md) => {
-      md.use(require("markdown-it-container"), "suggest-chain-example-table");
-    },
-  },
+      md.use(require('markdown-it-container'), 'suggest-chain-example-table');
+    }
+  }
 };

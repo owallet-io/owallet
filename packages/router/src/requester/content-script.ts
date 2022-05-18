@@ -1,6 +1,9 @@
-import { MessageRequester } from "../types";
-import { Message } from "../message";
-import { JSONUint8Array } from "../json-uint8-array";
+import {
+  MessageRequester,
+  Message,
+  JSONUint8Array
+} from '@owallet-wallet/router';
+import { getOWalletExtensionRouterId } from '../utils';
 
 // The message requester to send the message to the content scripts.
 // This will send message to the tab with the content script.
@@ -16,13 +19,17 @@ export class ContentScriptMessageRequester implements MessageRequester {
     // Set message's origin.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    msg["origin"] = window.location.origin;
+    msg['origin'] = window.location.origin;
+    msg.routerMeta = {
+      ...msg.routerMeta,
+      routerId: getOWalletExtensionRouterId()
+    };
 
     const wrappedMsg = JSONUint8Array.wrap(msg);
 
     const tabs = await browser.tabs.query({
       discarded: false,
-      status: "complete",
+      status: 'complete'
     });
 
     for (let i = 0; i < tabs.length; i++) {
@@ -32,7 +39,7 @@ export class ContentScriptMessageRequester implements MessageRequester {
           await browser.tabs.sendMessage(tabId, {
             port,
             type: msg.type(),
-            msg: wrappedMsg,
+            msg: wrappedMsg
           });
           // Ignore the failure
         } catch {}

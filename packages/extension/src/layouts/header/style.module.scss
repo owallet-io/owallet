@@ -15,7 +15,7 @@ $menu-icon-gap: 14px;
 .menu-img {
   width: $menu-icon-size;
   height: $menu-icon-size;
-
+  position: fixed;
   margin-left: $menu-icon-gap;
   margin-bottom: 4px;
 
@@ -50,11 +50,11 @@ $menu-icon-gap: 14px;
 
   &:hover {
     .title {
-      // color: $primary-color;
+      color: $color;
     }
 
     .title-icon {
-      // fill: $primary-color;
+      fill: $color;
     }
   }
 }
@@ -62,11 +62,11 @@ $menu-icon-gap: 14px;
 :global(.show) {
   .chain-list-container {
     .title {
-      // color: $primary-color;
+      color: $color;
     }
 
     .title-icon {
-      // fill: $primary-color;
+      fill: $color;
     }
   }
 }

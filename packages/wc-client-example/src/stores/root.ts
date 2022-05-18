@@ -3,12 +3,12 @@ import {
   QueriesStore,
   AccountStore,
   QueriesWithCosmos,
-  AccountWithCosmos,
-} from "@keplr-wallet/stores";
-import { IndexedDBKVStore } from "@keplr-wallet/common";
-import { ChainInfo } from "@keplr-wallet/types";
-import { getWCKeplr } from "../get-wc-keplr";
-import { EmbedChainInfos } from "../config";
+  AccountWithCosmos
+} from '@owallet-wallet/stores';
+import { IndexedDBKVStore } from '@owallet-wallet/common';
+import { ChainInfo } from '@owallet-wallet/types';
+import { getWCOWallet } from '../get-wc-owallet';
+import { EmbedChainInfos } from '../config';
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -20,9 +20,9 @@ export class RootStore {
     this.chainStore = new ChainStore<ChainInfo>(EmbedChainInfos);
 
     this.queriesStore = new QueriesStore(
-      new IndexedDBKVStore("store_queries"),
+      new IndexedDBKVStore('store_queries'),
       this.chainStore,
-      getWCKeplr,
+      getWCOWallet,
       QueriesWithCosmos
     );
 
@@ -36,8 +36,8 @@ export class RootStore {
           prefetching: false,
           suggestChain: false,
           autoInit: true,
-          getKeplr: getWCKeplr,
-        },
+          getOWallet: getWCOWallet
+        }
       }
     );
   }

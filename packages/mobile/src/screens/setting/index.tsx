@@ -1,18 +1,17 @@
-import React, { FunctionComponent } from "react";
-import { PageWithScrollViewInBottomTabView } from "../../components/page";
-import { RightArrow, SettingItem, SettingSectionTitle } from "./components";
-import { SettingSelectAccountItem } from "./items/select-account";
-import { useSmartNavigation } from "../../navigation";
-import { SettingFiatCurrencyItem } from "./items/fiat-currency";
-import { SettingBiometricLockItem } from "./items/biometric-lock";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { SettingRemoveAccountItem } from "./items/remove-account";
-import { canShowPrivateData } from "./screens/view-private-data";
-import { SettingViewPrivateDataItem } from "./items/view-private-data";
-import { useStyle } from "../../styles";
-import { useLogScreenView } from "../../hooks";
-import { View } from "react-native";
+import React, { FunctionComponent } from 'react';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { RightArrow, SettingItem, SettingSectionTitle } from './components';
+import { SettingSelectAccountItem } from './items/select-account';
+import { useSmartNavigation } from '../../navigation';
+import { SettingFiatCurrencyItem } from './items/fiat-currency';
+import { SettingBiometricLockItem } from './items/biometric-lock';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { SettingRemoveAccountItem } from './items/remove-account';
+import { canShowPrivateData } from './screens/view-private-data';
+import { SettingViewPrivateDataItem } from './items/view-private-data';
+import { useStyle } from '../../styles';
+import { View } from 'react-native';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
@@ -25,7 +24,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView
-      backgroundColor={style.get("color-setting-screen-background").color}
+      backgroundColor={style.get('color-setting-screen-background').color}
     >
       <SettingSelectAccountItem />
       <SettingSectionTitle title="General" />
@@ -34,7 +33,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
         label="Address book"
         right={<RightArrow />}
         onPress={() => {
-          smartNavigation.navigateSmart("AddressBook", {});
+          smartNavigation.navigateSmart('AddressBook', {});
         }}
       />
       <SettingSectionTitle title="Security" />
@@ -48,15 +47,15 @@ export const SettingScreen: FunctionComponent = observer(() => {
       ) : null}
       <SettingSectionTitle title="Others" />
       <SettingItem
-        label="Keplr version"
+        label="OWallet version"
         topBorder={true}
         onPress={() => {
-          smartNavigation.navigateSmart("Setting.Version", {});
+          smartNavigation.navigateSmart('Setting.Version', {});
         }}
       />
       <SettingRemoveAccountItem topBorder={true} />
       {/* Mock element for padding bottom */}
-      <View style={style.get("height-16")} />
+      <View style={style.get('height-16')} />
     </PageWithScrollViewInBottomTabView>
   );
 });

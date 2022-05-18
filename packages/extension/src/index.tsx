@@ -28,7 +28,7 @@ import { configure } from 'mobx';
 import { observer } from 'mobx-react-lite';
 
 import { StoreProvider, useStore } from './stores';
-import { KeyRingStatus } from '@keplr-wallet/background';
+import { KeyRingStatus } from '@owallet-wallet/background';
 import { SignPage } from './pages/sign';
 import { ChainSuggestedPage } from './pages/chain/suggest';
 import Modal from 'react-modal';
@@ -53,12 +53,12 @@ import { ManageTokenPage } from './pages/setting/token/manage';
 import { AdditonalIntlMessages, LanguageToFiatCurrency } from './config.ui';
 
 import manifest from './manifest.json';
-import { Keplr } from '@keplr-wallet/provider';
-import { InExtensionMessageRequester } from '@keplr-wallet/router-extension';
+import { OWallet } from '@owallet-wallet/provider';
+import { InExtensionMessageRequester } from '@owallet-wallet/router-extension';
 import { ExportToMobilePage } from './pages/setting/export-to-mobile';
 import { LogPageViewWrapper } from './components/analytics';
 
-window.keplr = new Keplr(
+window.owallet = new OWallet(
   manifest.version,
   'core',
   new InExtensionMessageRequester()

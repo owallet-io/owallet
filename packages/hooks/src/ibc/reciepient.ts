@@ -1,7 +1,7 @@
-import { RecipientConfig } from "../tx";
-import { ChainGetter } from "@keplr-wallet/stores";
-import { IIBCChannelConfig } from "./types";
-import { useState } from "react";
+import { RecipientConfig } from '../tx';
+import { ChainGetter } from '@owallet-wallet/stores';
+import { IIBCChannelConfig } from './types';
+import { useState } from 'react';
 
 /**
  * IBCRecipientConfig returns the recipient config for IBC transfer.

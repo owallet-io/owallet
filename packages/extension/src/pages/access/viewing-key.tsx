@@ -1,9 +1,9 @@
 import React, { FunctionComponent, useEffect, useMemo } from 'react';
 
-import { useInteractionInfo } from '@keplr-wallet/hooks';
+import { useInteractionInfo } from '@owallet-wallet/hooks';
 import { Button } from 'reactstrap';
 
-import { ChainIdHelper } from '@keplr-wallet/cosmos';
+import { ChainIdHelper } from '@owallet-wallet/cosmos';
 
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';

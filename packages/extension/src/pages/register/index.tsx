@@ -10,7 +10,7 @@ import { Button } from 'reactstrap';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useRegisterConfig } from '@keplr-wallet/hooks';
+import { useRegisterConfig } from '@owallet-wallet/hooks';
 import { useStore } from '../../stores';
 import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from './mnemonic';
 import {
@@ -77,7 +77,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
   return (
     <EmptyLayout
       className={style.container}
-      style={{ height: '100%', backgroundColor: 'white', padding: 0 }}
+      style={{ height: '100%', backgroundColor: '#302737', padding: 0 }}
     >
       <div className={style.logoContainer}>
         <img

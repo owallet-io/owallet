@@ -1,8 +1,8 @@
-import "./src/background/background";
+import './src/background/background';
 
-import { Keplr } from "@keplr-wallet/provider";
-import { RNMessageRequesterInternal } from "./src/router";
+import { OWallet } from '@owallet-wallet/provider';
+import { RNMessageRequesterInternal } from './src/router';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-window.keplr = new Keplr("", new RNMessageRequesterInternal());
+window.owallet = new OWallet('', new RNMessageRequesterInternal());

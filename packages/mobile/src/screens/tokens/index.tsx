@@ -1,16 +1,16 @@
-import React, { FunctionComponent } from "react";
-import { PageWithScrollView } from "../../components/page";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { StyleSheet, Text, View, ViewStyle } from "react-native";
-import { CoinPretty } from "@keplr-wallet/unit";
-import { useStyle } from "../../styles";
-import { useSmartNavigation } from "../../navigation";
-import { RightArrowIcon } from "../../components/icon";
-import { Card } from "../../components/card";
-import { RectButton } from "../../components/rect-button";
-import { Currency } from "@keplr-wallet/types";
-import { TokenSymbol } from "../../components/token-symbol";
+import React, { FunctionComponent } from 'react';
+import { PageWithScrollView } from '../../components/page';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { CoinPretty } from '@owallet-wallet/unit';
+import { useStyle } from '../../styles';
+import { useSmartNavigation } from '../../navigation';
+import { RightArrowIcon } from '../../components/icon';
+import { Card } from '../../components/card';
+import { RectButton } from '../../components/rect-button';
+import { Currency } from '@owallet-wallet/types';
+import { TokenSymbol } from '../../components/token-symbol';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -29,7 +29,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView>
-      <Card style={style.flatten(["padding-bottom-14"])}>
+      <Card style={style.flatten(['padding-bottom-14'])}>
         {tokens.map((token) => {
           return (
             <TokenItem
@@ -60,7 +60,7 @@ export const TokenItem: FunctionComponent<{
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   const balanceCoinDenom = (() => {
     if (
-      "originCurrency" in balance.currency &&
+      'originCurrency' in balance.currency &&
       balance.currency.originCurrency
     ) {
       return balance.currency.originCurrency.coinDenom;
@@ -72,21 +72,21 @@ export const TokenItem: FunctionComponent<{
     <RectButton
       style={StyleSheet.flatten([
         style.flatten([
-          "flex-row",
-          "items-center",
-          "padding-x-card-horizontal",
-          "padding-y-14",
+          'flex-row',
+          'items-center',
+          'padding-x-card-horizontal',
+          'padding-y-14'
         ]),
-        containerStyle,
+        containerStyle
       ])}
       onPress={() => {
-        smartNavigation.navigateSmart("Send", {
-          currency: balance.currency.coinMinimalDenom,
+        smartNavigation.navigateSmart('Send', {
+          currency: balance.currency.coinMinimalDenom
         });
       }}
     >
       <TokenSymbol
-        style={style.flatten(["margin-right-12"])}
+        style={style.flatten(['margin-right-12'])}
         size={44}
         chainInfo={chainInfo}
         currency={balance.currency}
@@ -94,19 +94,19 @@ export const TokenItem: FunctionComponent<{
       <View>
         <Text
           style={style.flatten([
-            "subtitle3",
-            "color-text-black-low",
-            "margin-bottom-4",
-            "uppercase",
+            'subtitle3',
+            'color-text-black-low',
+            'margin-bottom-4',
+            'uppercase'
           ])}
         >
           {balance.currency.coinDenom}
         </Text>
         <Text
           style={style.flatten([
-            "h5",
-            "color-text-black-medium",
-            "max-width-240",
+            'h5',
+            'color-text-black-medium',
+            'max-width-240'
           ])}
           numberOfLines={1}
           ellipsizeMode="tail"
@@ -120,10 +120,10 @@ export const TokenItem: FunctionComponent<{
             .toString()} ${balanceCoinDenom}`}
         </Text>
       </View>
-      <View style={style.get("flex-1")} />
+      <View style={style.get('flex-1')} />
       <RightArrowIcon
         height={16}
-        color={style.get("color-text-black-very-very-low").color}
+        color={style.get('color-text-black-very-very-low').color}
       />
     </RectButton>
   );

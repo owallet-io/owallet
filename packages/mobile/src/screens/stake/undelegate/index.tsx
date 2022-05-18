@@ -1,18 +1,18 @@
-import React, { FunctionComponent, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useStore } from "../../../stores";
-import { useStyle } from "../../../styles";
-import { useUndelegateTxConfig } from "@keplr-wallet/hooks";
-import { PageWithScrollView } from "../../../components/page";
-import { AmountInput, FeeButtons, MemoInput } from "../../../components/input";
-import { Text, View } from "react-native";
-import { Button } from "../../../components/button";
-import { Card, CardBody, CardDivider } from "../../../components/card";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
-import { Buffer } from "buffer/";
-import { useSmartNavigation } from "../../../navigation";
+import React, { FunctionComponent, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useStore } from '../../../stores';
+import { useStyle } from '../../../styles';
+import { useUndelegateTxConfig } from '@owallet-wallet/hooks';
+import { PageWithScrollView } from '../../../components/page';
+import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
+import { Text, View } from 'react-native';
+import { Button } from '../../../components/button';
+import { Card, CardBody, CardDivider } from '../../../components/card';
+import { BondStatus } from '@owallet-wallet/stores/build/query/cosmos/staking/types';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { Buffer } from 'buffer/';
+import { useSmartNavigation } from '../../../navigation';
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -67,7 +67,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const sendConfigs = useUndelegateTxConfig(
     chainStore,
     chainStore.current.chainId,
-    account.msgOpts["undelegate"].gas,
+    account.msgOpts['undelegate'].gas,
     account.bech32Address,
     queries.queryBalances,
     queries.cosmos.queryDelegations,
@@ -88,37 +88,37 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      style={style.flatten(["padding-x-page"])}
-      contentContainerStyle={style.get("flex-grow-1")}
+      style={style.flatten(['padding-x-page'])}
+      contentContainerStyle={style.get('flex-grow-1')}
     >
-      <View style={style.flatten(["height-page-pad"])} />
-      <Card style={style.flatten(["margin-bottom-12", "border-radius-8"])}>
+      <View style={style.flatten(['height-page-pad'])} />
+      <Card style={style.flatten(['margin-bottom-12', 'border-radius-8'])}>
         <CardBody>
-          <View style={style.flatten(["flex-row", "items-center"])}>
+          <View style={style.flatten(['flex-row', 'items-center'])}>
             <ValidatorThumbnail
-              style={style.flatten(["margin-right-12"])}
+              style={style.flatten(['margin-right-12'])}
               size={36}
               url={validatorThumbnail}
             />
-            <Text style={style.flatten(["h6", "color-text-black-high"])}>
-              {validator ? validator.description.moniker : "..."}
+            <Text style={style.flatten(['h6', 'color-text-black-high'])}>
+              {validator ? validator.description.moniker : '...'}
             </Text>
           </View>
           <CardDivider
             style={style.flatten([
-              "margin-x-0",
-              "margin-top-8",
-              "margin-bottom-15",
+              'margin-x-0',
+              'margin-top-8',
+              'margin-bottom-15'
             ])}
           />
-          <View style={style.flatten(["flex-row", "items-center"])}>
+          <View style={style.flatten(['flex-row', 'items-center'])}>
             <Text
-              style={style.flatten(["subtitle2", "color-text-black-medium"])}
+              style={style.flatten(['subtitle2', 'color-text-black-medium'])}
             >
               Staked
             </Text>
-            <View style={style.get("flex-1")} />
-            <Text style={style.flatten(["body2", "color-text-black-medium"])}>
+            <View style={style.get('flex-1')} />
+            <Text style={style.flatten(['body2', 'color-text-black-medium'])}>
               {staked.trim(true).shrink(true).maxDecimals(6).toString()}
             </Text>
           </View>
@@ -147,12 +147,12 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(["flex-1"])} />
+      <View style={style.flatten(['flex-1'])} />
       <Button
         text="Unstake"
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === "undelegate"}
+        loading={account.isSendingMsg === 'undelegate'}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
@@ -163,37 +163,33 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetMemo: true,
-                  preferNoSetFee: true,
+                  preferNoSetFee: true
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
-                    });
-                  },
-                  onFulfill: (tx) => {
-                    const isSuccess = tx.code == null || tx.code === 0;
-                    analyticsStore.logEvent("Undelegate finished", {
+                    analyticsStore.logEvent('Undelegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
                       validatorName: validator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType,
-                      isSuccess,
+                      feeType: sendConfigs.feeConfig.feeType
                     });
-                  },
+                    smartNavigation.pushSmart('TxPendingResult', {
+                      txHash: Buffer.from(txHash).toString('hex')
+                    });
+                  }
                 }
               );
             } catch (e) {
-              if (e?.message === "Request rejected") {
+              if (e?.message === 'Request rejected') {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart('Home', {});
             }
           }
         }}
       />
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );
 });

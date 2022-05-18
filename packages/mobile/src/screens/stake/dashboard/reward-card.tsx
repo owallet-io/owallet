@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import { Card, CardBody } from "../../../components/card";
-import { Text, View, ViewStyle } from "react-native";
-import { useStyle } from "../../../styles";
-import { Button } from "../../../components/button";
-import { Dec } from "@keplr-wallet/unit";
-import { useSmartNavigation } from "../../../navigation";
+import React, { FunctionComponent } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { Card, CardBody } from '../../../components/card';
+import { Text, View, ViewStyle } from 'react-native';
+import { useStyle } from '../../../styles';
+import { Button } from '../../../components/button';
+import { Dec } from '@owallet-wallet/unit';
+import { useSmartNavigation } from '../../../navigation';
 
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -34,20 +34,20 @@ export const MyRewardCard: FunctionComponent<{
       <CardBody>
         <Text
           style={style.flatten([
-            "body3",
-            "color-text-black-medium",
-            "margin-bottom-12",
+            'body3',
+            'color-text-black-medium',
+            'margin-bottom-12'
           ])}
         >
           My Pending Rewards
         </Text>
-        <View style={style.flatten(["flex-row", "items-end"])}>
+        <View style={style.flatten(['flex-row', 'items-end'])}>
           <View>
             <Text
               style={style.flatten([
-                "h3",
-                "color-text-black-medium",
-                "margin-bottom-20",
+                'h3',
+                'color-text-black-medium',
+                'margin-bottom-20'
               ])}
             >
               {pendingStakableReward
@@ -57,16 +57,16 @@ export const MyRewardCard: FunctionComponent<{
                 .upperCase(true)
                 .toString()}
             </Text>
-            <Text style={style.flatten(["h7", "color-primary"])}>
+            <Text style={style.flatten(['h7', 'color-primary'])}>
               {`${apy.maxDecimals(2).trim(true).toString()}% per year`}
             </Text>
           </View>
-          <View style={style.flatten(["flex-1"])} />
+          <View style={style.flatten(['flex-1'])} />
           <Button
             size="small"
             text="Claim"
             mode="light"
-            containerStyle={style.flatten(["min-width-72"])}
+            containerStyle={style.flatten(['min-width-72'])}
             onPress={async () => {
               try {
                 analyticsStore.logEvent("Claim reward started", {
@@ -76,31 +76,27 @@ export const MyRewardCard: FunctionComponent<{
 
                 await account.cosmos.sendWithdrawDelegationRewardMsgs(
                   queryReward.getDescendingPendingRewardValidatorAddresses(8),
-                  "",
+                  '',
                   {},
                   {},
                   {
                     onBroadcasted: (txHash) => {
-                      smartNavigation.pushSmart("TxPendingResult", {
-                        txHash: Buffer.from(txHash).toString("hex"),
-                      });
-                    },
-                    onFulfill: (tx) => {
-                      const isSuccess = tx.code == null || tx.code === 0;
-                      analyticsStore.logEvent("Claim reward finished", {
+                      analyticsStore.logEvent('Claim reward tx broadcasted', {
                         chainId: chainStore.current.chainId,
-                        chainName: chainStore.current.chainName,
-                        isSuccess,
+                        chainName: chainStore.current.chainName
                       });
-                    },
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: Buffer.from(txHash).toString('hex')
+                      });
+                    }
                   }
                 );
               } catch (e) {
-                if (e?.message === "Request rejected") {
+                if (e?.message === 'Request rejected') {
                   return;
                 }
                 console.log(e);
-                smartNavigation.navigateSmart("Home", {});
+                smartNavigation.navigateSmart('Home', {});
               }
             }}
             disabled={
@@ -108,7 +104,7 @@ export const MyRewardCard: FunctionComponent<{
               pendingStakableReward.toDec().equals(new Dec(0)) ||
               queryReward.pendingRewardValidatorAddresses.length === 0
             }
-            loading={account.isSendingMsg === "withdrawRewards"}
+            loading={account.isSendingMsg === 'withdrawRewards'}
           />
         </View>
       </CardBody>

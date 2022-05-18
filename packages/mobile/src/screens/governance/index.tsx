@@ -1,12 +1,11 @@
-import React, { FunctionComponent } from "react";
-import { GovernanceCardBody } from "./card";
-import { observer } from "mobx-react-lite";
-import { PageWithSectionList } from "../../components/page";
-import { useStore } from "../../stores";
-import { ObservableQueryProposal } from "@keplr-wallet/stores";
-import { Card, CardDivider } from "../../components/card";
-import { useStyle } from "../../styles";
-import { useLogScreenView } from "../../hooks";
+import React, { FunctionComponent } from 'react';
+import { GovernanceCardBody } from './card';
+import { observer } from 'mobx-react-lite';
+import { PageWithSectionList } from '../../components/page';
+import { useStore } from '../../stores';
+import { ObservableQueryProposal } from '@owallet-wallet/stores';
+import { Card, CardDivider } from '../../components/card';
+import { useStyle } from '../../styles';
 
 export const GovernanceScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore } = useStore();
@@ -35,7 +34,7 @@ export const GovernanceScreen: FunctionComponent = observer(() => {
       renderItem={({
         item,
         index,
-        section,
+        section
       }: {
         item: ObservableQueryProposal;
         index: number;
@@ -47,8 +46,8 @@ export const GovernanceScreen: FunctionComponent = observer(() => {
               style={style.flatten(
                 [],
                 [
-                  index === 0 && "margin-top-card-gap",
-                  index === section.data.length - 1 && "margin-bottom-card-gap",
+                  index === 0 && 'margin-top-card-gap',
+                  index === section.data.length - 1 && 'margin-bottom-card-gap'
                 ]
               )}
             >
@@ -63,4 +62,4 @@ export const GovernanceScreen: FunctionComponent = observer(() => {
 });
 
 export { GovernanceCardBody };
-export * from "./details";
+export * from './details';

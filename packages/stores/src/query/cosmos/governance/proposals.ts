@@ -6,11 +6,11 @@ import {
   ObservableQueryGovParamTally,
   ObservableQueryGovParamVoting
 } from './params';
-import { KVStore } from '@keplr-wallet/common';
+import { KVStore } from '@owallet-wallet/common';
 import { ChainGetter } from '../../../common';
 import { StakingPool } from '../staking/types';
 import { DeepReadonly } from 'utility-types';
-import { Dec, DecUtils, Int, IntPretty } from '@keplr-wallet/unit';
+import { Dec, DecUtils, Int, IntPretty } from '@owallet-wallet/unit';
 import { computedFn } from 'mobx-utils';
 import { ObservableQueryProposal } from './proposal';
 
@@ -104,8 +104,8 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     // XXX: In the current mobile, this getter is executed first on the home screen.
     //      Because there is an issue related to networking in mobile,
     //      we need temporarily log the console to check the response until this problem is sufficiently resolved.
-    // https://github.com/chainapsis/keplr-wallet/issues/275
-    // https://github.com/chainapsis/keplr-wallet/issues/278
+    // https://github.com/chainapsis/owallet-wallet/issues/275
+    // https://github.com/chainapsis/owallet-wallet/issues/278
     // TODO: Erase this part soon
     // console.log("proposals response data", this.response.data);
 

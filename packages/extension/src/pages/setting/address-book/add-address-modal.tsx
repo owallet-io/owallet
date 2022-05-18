@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { HeaderLayout } from "../../../layouts";
-import { AddressInput, Input, MemoInput } from "../../../components/form";
-import { Button } from "reactstrap";
-import { FormattedMessage, useIntl } from "react-intl";
-import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { HeaderLayout } from '../../../layouts';
+import { AddressInput, Input, MemoInput } from '../../../components/form';
+import { Button } from 'reactstrap';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { observer } from 'mobx-react-lite';
 import {
   AddressBookConfig,
   MemoConfig,
-  RecipientConfig,
-} from "@keplr-wallet/hooks";
+  RecipientConfig
+} from '@owallet-wallet/hooks';
 
 /**
  *
@@ -29,7 +29,7 @@ export const AddAddressModal: FunctionComponent<{
   ({ closeModal, recipientConfig, memoConfig, addressBookConfig, index }) => {
     const intl = useIntl();
 
-    const [name, setName] = useState("");
+    const [name, setName] = useState('');
 
     useEffect(() => {
       if (index >= 0) {
@@ -42,7 +42,7 @@ export const AddAddressModal: FunctionComponent<{
       addressBookConfig.addressBookDatas,
       index,
       memoConfig,
-      recipientConfig,
+      recipientConfig
     ]);
 
     return (
@@ -52,25 +52,25 @@ export const AddAddressModal: FunctionComponent<{
         alternativeTitle={
           index >= 0
             ? intl.formatMessage({
-                id: "setting.address-book.edit-address.title",
+                id: 'setting.address-book.edit-address.title'
               })
             : intl.formatMessage({
-                id: "setting.address-book.add-address.title",
+                id: 'setting.address-book.add-address.title'
               })
         }
         onBackButton={() => {
           // Clear the recipient and memo before closing
-          recipientConfig.setRawRecipient("");
-          memoConfig.setMemo("");
+          recipientConfig.setRawRecipient('');
+          memoConfig.setMemo('');
           closeModal();
         }}
       >
         <form
-          style={{ display: "flex", flexDirection: "column", height: "100%" }}
+          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
         >
           <Input
             type="text"
-            label={intl.formatMessage({ id: "setting.address-book.name" })}
+            label={intl.formatMessage({ id: 'setting.address-book.name' })}
             autoComplete="off"
             value={name}
             onChange={(e) => {
@@ -79,12 +79,12 @@ export const AddAddressModal: FunctionComponent<{
           />
           <AddressInput
             recipientConfig={recipientConfig}
-            label={intl.formatMessage({ id: "setting.address-book.address" })}
+            label={intl.formatMessage({ id: 'setting.address-book.address' })}
             disableAddressBook={true}
           />
           <MemoInput
             memoConfig={memoConfig}
-            label={intl.formatMessage({ id: "setting.address-book.memo" })}
+            label={intl.formatMessage({ id: 'setting.address-book.memo' })}
           />
           <div style={{ flex: 1 }} />
           <Button
@@ -100,30 +100,30 @@ export const AddAddressModal: FunctionComponent<{
               e.stopPropagation();
 
               if (!recipientConfig.recipient) {
-                throw new Error("Invalid address");
+                throw new Error('Invalid address');
               }
 
               if (index < 0) {
                 await addressBookConfig.addAddressBook({
                   name,
                   address: recipientConfig.recipient,
-                  memo: memoConfig.memo,
+                  memo: memoConfig.memo
                 });
               } else {
                 await addressBookConfig.editAddressBookAt(index, {
                   name,
                   address: recipientConfig.recipient,
-                  memo: memoConfig.memo,
+                  memo: memoConfig.memo
                 });
               }
 
               // Clear the recipient and memo before closing
-              recipientConfig.setRawRecipient("");
-              memoConfig.setMemo("");
+              recipientConfig.setRawRecipient('');
+              memoConfig.setMemo('');
               closeModal();
             }}
           >
-            <FormattedMessage id={"setting.address-book.button.save"} />
+            <FormattedMessage id={'setting.address-book.button.save'} />
           </Button>
         </form>
       </HeaderLayout>

@@ -1,9 +1,9 @@
-import { ChainGetter } from "../../../../common";
-import { ObservableChainQuery } from "../../../chain-query";
-import { MintParmas } from "./types";
-import { KVStore } from "@keplr-wallet/common";
-import { computed, makeObservable } from "mobx";
-import { Dec } from "@keplr-wallet/unit";
+import { ChainGetter } from '../../../../common';
+import { ObservableChainQuery } from '../../../chain-query';
+import { MintParmas } from './types';
+import { KVStore } from '@owallet-wallet/common';
+import { computed, makeObservable } from 'mobx';
+import { Dec } from '@owallet-wallet/unit';
 
 export class ObservableQueryOsmosisMintParmas extends ObservableChainQuery<MintParmas> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
@@ -30,7 +30,7 @@ export class ObservableQueryOsmosisMintParmas extends ObservableChainQuery<MintP
       return {
         staking: new Dec(0),
         poolIncentives: new Dec(0),
-        developerRewards: new Dec(0),
+        developerRewards: new Dec(0)
       };
     }
 
@@ -43,7 +43,7 @@ export class ObservableQueryOsmosisMintParmas extends ObservableChainQuery<MintP
       ),
       developerRewards: new Dec(
         this.response.data.params.distribution_proportions.developer_rewards
-      ),
+      )
     };
   }
 }

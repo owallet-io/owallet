@@ -1,6 +1,6 @@
-import { Currency } from '@keplr-wallet/types';
+import { Currency } from '@owallet-wallet/types';
 import { IntlShape } from 'react-intl';
-import { cosmos, cosmwasm, UnknownMessage } from '@keplr-wallet/cosmos';
+import { cosmos, cosmwasm, UnknownMessage } from '@owallet-wallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
@@ -8,7 +8,7 @@ import {
   renderMsgUndelegate,
   renderUnknownMessage
 } from './messages';
-import { CoinPrimitive } from '@keplr-wallet/stores';
+import { CoinPrimitive } from '@owallet-wallet/stores';
 
 import { Buffer } from 'buffer/';
 import { fromUtf8 } from '@cosmjs/encoding';

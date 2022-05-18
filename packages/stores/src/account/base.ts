@@ -6,11 +6,15 @@ import {
   observable,
   runInAction
 } from 'mobx';
-import { AppCurrency, Keplr, KeplrSignOptions } from '@keplr-wallet/types';
+import {
+  AppCurrency,
+  OWallet,
+  OWalletSignOptions
+} from '@owallet-wallet/types';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator } from '@keplr-wallet/common';
+import { DenomHelper, toGenerator } from '@owallet-wallet/common';
 import {
   BroadcastMode,
   makeSignDoc,
@@ -23,7 +27,7 @@ import {
   cosmos,
   google,
   TendermintTxTracer
-} from '@keplr-wallet/cosmos';
+} from '@owallet-wallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer/';
 import Long from 'long';
@@ -49,7 +53,7 @@ export interface AccountSetOpts<MsgOpts> {
   readonly prefetching: boolean;
   readonly suggestChain: boolean;
   readonly suggestChainFn?: (
-    keplr: Keplr,
+    owallet: OWallet,
     chainInfo: ReturnType<ChainGetter['getChain']>
   ) => Promise<void>;
   readonly autoInit: boolean;
@@ -58,7 +62,7 @@ export interface AccountSetOpts<MsgOpts> {
     onBroadcasted?: (txHash: Uint8Array) => void;
     onFulfill?: (tx: any) => void;
   };
-  readonly getKeplr: () => Promise<Keplr | undefined>;
+  readonly getOWallet: () => Promise<OWallet | undefined>;
   readonly msgOpts: MsgOpts;
   readonly wsObject?: new (
     url: string,
@@ -94,7 +98,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     recipient: string,
     memo: string,
     stdFee: Partial<StdFee>,
-    signOptions?: KeplrSignOptions,
+    signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -123,8 +127,8 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
 
-  getKeplr(): Promise<Keplr | undefined> {
-    return this.opts.getKeplr();
+  getOWallet(): Promise<OWallet | undefined> {
+    return this.opts.getOWallet();
   }
 
   get msgOpts(): MsgOpts {
@@ -138,7 +142,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       recipient: string,
       memo: string,
       stdFee: Partial<StdFee>,
-      signOptions?: KeplrSignOptions,
+      signOptions?: OWalletSignOptions,
       onTxEvents?:
         | ((tx: any) => void)
         | {
@@ -150,24 +154,24 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.sendTokenFns.push(fn);
   }
 
-  protected async enable(keplr: Keplr, chainId: string): Promise<void> {
+  protected async enable(owallet: OWallet, chainId: string): Promise<void> {
     const chainInfo = this.chainGetter.getChain(chainId);
 
     if (this.opts.suggestChain) {
       if (this.opts.suggestChainFn) {
-        await this.opts.suggestChainFn(keplr, chainInfo);
+        await this.opts.suggestChainFn(owallet, chainInfo);
       } else {
-        await this.suggestChain(keplr, chainInfo);
+        await this.suggestChain(owallet, chainInfo);
       }
     }
-    await keplr.enable(chainId);
+    await owallet.enable(chainId);
   }
 
   protected async suggestChain(
-    keplr: Keplr,
+    owallet: OWallet,
     chainInfo: ReturnType<ChainGetter['getChain']>
   ): Promise<void> {
-    await keplr.experimentalSuggestChain(chainInfo.raw);
+    await owallet.experimentalSuggestChain(chainInfo.raw);
   }
 
   private readonly handleInit = () => this.init();
@@ -181,9 +185,9 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     // If the store has never been initialized, add the event listener.
     if (!this.hasInited) {
-      // If key store in the keplr extension is changed, this event will be dispatched.
+      // If key store in the owallet extension is changed, this event will be dispatched.
       this.eventListener.addEventListener(
-        'keplr_keystorechange',
+        'owallet_keystorechange',
         this.handleInit
       );
     }
@@ -192,22 +196,23 @@ export class AccountSetBase<MsgOpts, Queries> {
     // Set wallet status as loading whenever try to init.
     this._walletStatus = WalletStatus.Loading;
 
-    const keplr = yield* toGenerator(this.getKeplr());
-    if (!keplr) {
+    const owallet = yield* toGenerator(this.getOWallet());
+    if (!owallet) {
       this._walletStatus = WalletStatus.NotExist;
       return;
     }
 
-    this._walletVersion = keplr.version;
+    this._walletVersion = owallet.version;
 
     try {
-      yield this.enable(keplr, this.chainId);
-    } catch {
+      yield this.enable(owallet, this.chainId);
+    } catch (e) {
+      console.log(e);
       this._walletStatus = WalletStatus.Rejected;
       return;
     }
 
-    const key = yield* toGenerator(keplr.getKey(this.chainId));
+    const key = yield* toGenerator(owallet.getKey(this.chainId));
     this._bech32Address = key.bech32Address;
     this._name = key.name;
     this.pubKey = key.pubKey;
@@ -221,7 +226,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._walletStatus = WalletStatus.NotInit;
     this.hasInited = false;
     this.eventListener.removeEventListener(
-      'keplr_keystorechange',
+      'owallet_keystorechange',
       this.handleInit
     );
     this._bech32Address = '';
@@ -247,7 +252,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       | (() => Promise<AminoMsgsOrWithProtoMsgs> | AminoMsgsOrWithProtoMsgs),
     memo: string = '',
     fee: StdFee,
-    signOptions?: KeplrSignOptions,
+    signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -362,7 +367,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     recipient: string,
     memo: string = '',
     stdFee: Partial<StdFee> = {},
-    signOptions?: KeplrSignOptions,
+    signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -398,7 +403,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     msgs: Msg[],
     fee: StdFee,
     memo: string = '',
-    signOptions?: KeplrSignOptions,
+    signOptions?: OWalletSignOptions,
     mode: 'block' | 'async' | 'sync' = 'async'
   ): Promise<{
     txHash: Uint8Array;
@@ -436,12 +441,12 @@ export class AccountSetBase<MsgOpts, Queries> {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const keplr = (await this.getKeplr())!;
+    const owallet = (await this.getOWallet())!;
 
     let signedTx;
 
     if (this.hasNoLegacyStdFeature()) {
-      const key = await keplr.getKey(this.chainId);
+      const key = await owallet.getKey(this.chainId);
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
           messages: protoMsgs,
@@ -476,7 +481,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         chainId: this.chainId
       };
 
-      const signResponse = await keplr.signDirect(
+      const signResponse = await owallet.signDirect(
         this.chainId,
         this.bech32Address,
         signDoc,
@@ -484,7 +489,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       );
 
       signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-        bodyBytes: signResponse.signed.bodyBytes, // has to collect body bytes & auth info bytes since Keplr overrides data when signing
+        bodyBytes: signResponse.signed.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
         authInfoBytes: signResponse.signed.authInfoBytes,
         signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
       }).finish();
@@ -497,7 +502,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         account.getAccountNumber().toString(),
         account.getSequence().toString()
       );
-      const signResponse = await keplr.signAmino(
+      const signResponse = await owallet.signAmino(
         this.chainId,
         this.bech32Address,
         signDoc,
@@ -508,7 +513,11 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     return {
-      txHash: await keplr.sendTx(this.chainId, signedTx, mode as BroadcastMode)
+      txHash: await owallet.sendTx(
+        this.chainId,
+        signedTx,
+        mode as BroadcastMode
+      )
     };
   }
 

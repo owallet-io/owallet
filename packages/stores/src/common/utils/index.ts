@@ -1,6 +1,6 @@
-import { Currency } from "@keplr-wallet/types";
-import { CoinPrimitive } from "../types";
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { Currency } from '@owallet-wallet/types';
+import { CoinPrimitive } from '../types';
+import { CoinPretty, Dec, Int } from '@owallet-wallet/unit';
 
 export class StoreUtils {
   public static getBalancesFromCurrencies(
@@ -29,7 +29,7 @@ export class StoreUtils {
   ): CoinPretty {
     const result = StoreUtils.getBalancesFromCurrencies(
       {
-        [currency.coinMinimalDenom]: currency,
+        [currency.coinMinimalDenom]: currency
       },
       bals
     );

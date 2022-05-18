@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from "react";
-import classnames from "classnames";
+import React, { FunctionComponent } from 'react';
+import classnames from 'classnames';
 
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-import style from "./chain-list.module.scss";
-import { ChainInfoWithEmbed } from "@keplr-wallet/background";
-import { useConfirm } from "../../components/confirm";
-import { useIntl } from "react-intl";
+import style from './chain-list.module.scss';
+import { ChainInfoWithEmbed } from '@owallet-wallet/background';
+import { useConfirm } from '../../components/confirm';
+import { useIntl } from 'react-intl';
 
 const ChainElement: FunctionComponent<{
   chainInfo: ChainInfoWithEmbed;
@@ -22,10 +22,16 @@ const ChainElement: FunctionComponent<{
     <div
       className={classnames({
         [style.chainName]: true,
-        selected: chainInfo.chainId === chainStore.current.chainId,
+        selected: chainInfo.chainId === chainStore.current.chainId
       })}
       onClick={() => {
         if (chainInfo.chainId !== chainStore.current.chainId) {
+          analyticsStore.logEvent('Chain changed', {
+            chainId: chainStore.current.chainId,
+            chainName: chainStore.current.chainName,
+            toChainId: chainInfo.chainId,
+            toChainName: chainInfo.chainName
+          });
           chainStore.selectChain(chainInfo.chainId);
           chainStore.saveLastViewChainId();
         }
@@ -45,12 +51,12 @@ const ChainElement: FunctionComponent<{
                 await confirm.confirm({
                   paragraph: intl.formatMessage(
                     {
-                      id: "chain.remove.confirm.paragraph",
+                      id: 'chain.remove.confirm.paragraph'
                     },
                     {
-                      chainName: chainInfo.chainName,
+                      chainName: chainInfo.chainName
                     }
-                  ),
+                  )
                 })
               ) {
                 await chainStore.removeChainInfo(chainInfo.chainId);
@@ -79,19 +85,19 @@ export const ChainList: FunctionComponent = observer(() => {
         <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
       ))}
       {betaChainList.length > 0 ? (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <hr
             className="my-3"
             style={{
               flex: 1,
-              borderTop: "1px solid rgba(255, 255, 255)",
+              borderTop: '1px solid rgba(255, 255, 255)'
             }}
           />
           <div
             style={{
-              fontSize: "14px",
-              color: "rgba(255, 255, 255)",
-              margin: "0 8px",
+              fontSize: '14px',
+              color: 'rgba(255, 255, 255)',
+              margin: '0 8px'
             }}
           >
             Beta support
@@ -100,7 +106,7 @@ export const ChainList: FunctionComponent = observer(() => {
             className="my-3"
             style={{
               flex: 1,
-              borderTop: "1px solid rgba(255, 255, 255)",
+              borderTop: '1px solid rgba(255, 255, 255)'
             }}
           />
         </div>

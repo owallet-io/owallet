@@ -1,4 +1,4 @@
-package com.chainapsis.keplr.generated;
+package com.chainapsis.owallet.generated;
 
 import java.util.Arrays;
 import java.util.List;

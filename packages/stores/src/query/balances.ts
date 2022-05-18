@@ -1,9 +1,9 @@
 import { ObservableChainQuery } from './chain-query';
-import { DenomHelper, KVStore } from '@keplr-wallet/common';
+import { DenomHelper, KVStore } from '@owallet-wallet/common';
 import { ChainGetter } from '../common';
 import { computed, makeObservable, observable, runInAction } from 'mobx';
-import { CoinPretty, Dec, Int } from '@keplr-wallet/unit';
-import { AppCurrency } from '@keplr-wallet/types';
+import { CoinPretty, Dec, Int } from '@owallet-wallet/unit';
+import { AppCurrency } from '@owallet-wallet/types';
 import { HasMapStore } from '../common';
 import { computedFn } from 'mobx-utils';
 

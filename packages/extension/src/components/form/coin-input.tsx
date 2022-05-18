@@ -1,7 +1,7 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, { FunctionComponent, useMemo, useState } from 'react';
 
-import classnames from "classnames";
-import styleCoinInput from "./coin-input.module.scss";
+import classnames from 'classnames';
+import styleCoinInput from './coin-input.module.scss';
 
 import {
   ButtonDropdown,
@@ -11,20 +11,20 @@ import {
   FormFeedback,
   FormGroup,
   Input,
-  Label,
-} from "reactstrap";
-import { observer } from "mobx-react-lite";
+  Label
+} from 'reactstrap';
+import { observer } from 'mobx-react-lite';
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
   ZeroAmountError,
   NagativeAmountError,
   InsufficientAmountError,
-  IAmountConfig,
-} from "@keplr-wallet/hooks";
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
-import { FormattedMessage, useIntl } from "react-intl";
-import { useStore } from "../../stores";
+  IAmountConfig
+} from '@owallet-wallet/hooks';
+import { CoinPretty, Dec, DecUtils, Int } from '@owallet-wallet/unit';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useStore } from '../../stores';
 
 export interface CoinInputProps {
   amountConfig: IAmountConfig;
@@ -58,7 +58,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
     const [randomId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return Buffer.from(bytes).toString("hex");
+      return Buffer.from(bytes).toString('hex');
     });
 
     const error = amountConfig.getError();
@@ -70,22 +70,22 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             return;
           case InvalidNumberAmountError:
             return intl.formatMessage({
-              id: "input.amount.error.invalid-number",
+              id: 'input.amount.error.invalid-number'
             });
           case ZeroAmountError:
             return intl.formatMessage({
-              id: "input.amount.error.is-zero",
+              id: 'input.amount.error.is-zero'
             });
           case NagativeAmountError:
             return intl.formatMessage({
-              id: "input.amount.error.is-negative",
+              id: 'input.amount.error.is-negative'
             });
           case InsufficientAmountError:
             return intl.formatMessage({
-              id: "input.amount.error.insufficient",
+              id: 'input.amount.error.insufficient'
             });
           default:
-            return intl.formatMessage({ id: "input.amount.error.unknown" });
+            return intl.formatMessage({ id: 'input.amount.error.unknown' });
         }
       }
     }, [intl, error]);
@@ -98,14 +98,14 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           <Label
             for={`selector-${randomId}`}
             className="form-control-label"
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
           >
             <FormattedMessage id="component.form.coin-input.token.label" />
           </Label>
           <ButtonDropdown
             id={`selector-${randomId}`}
             className={classnames(styleCoinInput.tokenSelector, {
-              disabled: amountConfig.isMax,
+              disabled: amountConfig.isMax
             })}
             isOpen={isOpenTokenSelector}
             toggle={() => setIsOpenTokenSelector((value) => !value)}
@@ -141,7 +141,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             <Label
               for={`input-${randomId}`}
               className="form-control-label"
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
             >
               {label}
               {!disableAllBalance ? (
@@ -150,7 +150,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                     styleCoinInput.balance,
                     styleCoinInput.clickable,
                     {
-                      [styleCoinInput.clicked]: amountConfig.isMax,
+                      [styleCoinInput.clicked]: amountConfig.isMax
                     }
                   )}
                   onClick={(e) => {
@@ -166,7 +166,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
           ) : null}
           <Input
             className={classnames(
-              "form-control-alternative",
+              'form-control-alternative',
               styleCoinInput.input
             )}
             id={`input-${randomId}`}
@@ -189,7 +189,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             autoComplete="off"
           />
           {errorText != null ? (
-            <FormFeedback style={{ display: "block" }}>
+            <FormFeedback style={{ display: 'block' }}>
               {errorText}
             </FormFeedback>
           ) : null}

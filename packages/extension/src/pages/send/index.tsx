@@ -20,13 +20,13 @@ import { Button } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 
-import { useSendTxConfig } from '@keplr-wallet/hooks';
+import { useSendTxConfig } from '@owallet-wallet/hooks';
 import { EthereumEndpoint } from '../../config.ui';
 import {
   fitPopupWindow,
   openPopupWindow,
   PopupSize
-} from '@keplr-wallet/popup';
+} from '@owallet-wallet/popup';
 
 export const SendPage: FunctionComponent = observer(() => {
   const history = useHistory();

@@ -2,11 +2,11 @@ import { AccountSetBase, AccountSetOpts, MsgOpt } from './base';
 import { HasCosmwasmQueries, QueriesSetBase, QueriesStore } from '../query';
 import { ChainGetter, CoinPrimitive } from '../common';
 import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper } from '@keplr-wallet/common';
-import { Dec, DecUtils } from '@keplr-wallet/unit';
-import { AppCurrency, KeplrSignOptions } from '@keplr-wallet/types';
+import { DenomHelper } from '@owallet-wallet/common';
+import { Dec, DecUtils } from '@owallet-wallet/unit';
+import { AppCurrency, OWalletSignOptions } from '@owallet-wallet/types';
 import { DeepReadonly, Optional } from 'utility-types';
-import { cosmwasm } from '@keplr-wallet/cosmos';
+import { cosmwasm } from '@owallet-wallet/cosmos';
 import { Buffer } from 'buffer/';
 
 export interface HasCosmwasmAccount {
@@ -82,7 +82,7 @@ export class CosmwasmAccount {
     recipient: string,
     memo: string,
     stdFee: Partial<StdFee>,
-    signOptions?: KeplrSignOptions,
+    signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {
@@ -153,7 +153,7 @@ export class CosmwasmAccount {
     funds: CoinPrimitive[],
     memo: string = '',
     stdFee: Optional<StdFee, 'amount'>,
-    signOptions?: KeplrSignOptions,
+    signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {

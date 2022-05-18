@@ -1,14 +1,14 @@
-import { singleton, inject } from "tsyringe";
-import { TYPES } from "../types";
+import { singleton, inject } from 'tsyringe';
+import { TYPES } from '../types';
 
-import { InteractionWaitingData } from "./types";
+import { InteractionWaitingData } from './types';
 import {
   Env,
   FnRequestInteractionOptions,
-  MessageRequester,
-} from "@keplr-wallet/router";
-import { PushEventDataMsg, PushInteractionDataMsg } from "./foreground";
-import { RNG } from "@keplr-wallet/crypto";
+  MessageRequester
+} from '@owallet-wallet/router';
+import { PushEventDataMsg, PushInteractionDataMsg } from './foreground';
+import { RNG } from '@owallet-wallet/crypto';
 
 @singleton()
 export class InteractionService {
@@ -28,12 +28,12 @@ export class InteractionService {
   // And, don't ensure that the event is delivered successfully, just ignore the any errors.
   dispatchEvent(port: string, type: string, data: unknown) {
     if (!type) {
-      throw new Error("Type should not be empty");
+      throw new Error('Type should not be empty');
     }
 
     const msg = new PushEventDataMsg({
       type,
-      data,
+      data
     });
 
     this.eventMsgRequester.sendMessage(port, msg).catch((e) => {
@@ -49,7 +49,7 @@ export class InteractionService {
     options?: FnRequestInteractionOptions
   ): Promise<unknown> {
     if (!type) {
-      throw new Error("Type should not be empty");
+      throw new Error('Type should not be empty');
     }
 
     // TODO: Add timeout?
@@ -68,13 +68,13 @@ export class InteractionService {
 
   protected async wait(id: string, fn: () => void): Promise<unknown> {
     if (this.resolverMap.has(id)) {
-      throw new Error("Id is aleady in use");
+      throw new Error('Id is aleady in use');
     }
 
     return new Promise<unknown>((resolve, reject) => {
       this.resolverMap.set(id, {
         onApprove: resolve,
-        onReject: reject,
+        onReject: reject
       });
 
       fn();
@@ -94,7 +94,7 @@ export class InteractionService {
   reject(id: string) {
     if (this.resolverMap.has(id)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.resolverMap.get(id)!.onReject(new Error("Request rejected"));
+      this.resolverMap.get(id)!.onReject(new Error('Request rejected'));
       this.resolverMap.delete(id);
     }
 
@@ -111,17 +111,17 @@ export class InteractionService {
       .map((value) => {
         return value.toString(16);
       })
-      .join("");
+      .join('');
 
     const interactionWaitingData: InteractionWaitingData = {
       id,
       type,
       isInternal,
-      data,
+      data
     };
 
     if (this.waitingMap.has(id)) {
-      throw new Error("Id is aleady in use");
+      throw new Error('Id is aleady in use');
     }
 
     this.waitingMap.set(id, interactionWaitingData);

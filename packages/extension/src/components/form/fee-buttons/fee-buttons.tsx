@@ -2,10 +2,10 @@ import React, {
   FunctionComponent,
   MouseEvent,
   useEffect,
-  useState,
-} from "react";
+  useState
+} from 'react';
 
-import styleFeeButtons from "./fee-buttons.module.scss";
+import styleFeeButtons from './fee-buttons.module.scss';
 
 import {
   Button,
@@ -13,22 +13,22 @@ import {
   FormFeedback,
   FormGroup,
   FormText,
-  Label,
-} from "reactstrap";
+  Label
+} from 'reactstrap';
 
-import classnames from "classnames";
-import { observer } from "mobx-react-lite";
+import classnames from 'classnames';
+import { observer } from 'mobx-react-lite';
 import {
   IFeeConfig,
   IGasConfig,
   InsufficientFeeError,
-  NotLoadedFeeError,
-} from "@keplr-wallet/hooks";
-import { CoinGeckoPriceStore } from "@keplr-wallet/stores";
-import { useLanguage } from "../../../languages";
-import { useIntl } from "react-intl";
-import { GasInput } from "../gas-input";
-import { action, makeObservable, observable } from "mobx";
+  NotLoadedFeeError
+} from '@owallet-wallet/hooks';
+import { CoinGeckoPriceStore } from '@owallet-wallet/stores';
+import { useLanguage } from '../../../languages';
+import { useIntl } from 'react-intl';
+import { GasInput } from '../gas-input';
+import { action, makeObservable, observable } from 'mobx';
 
 export interface FeeButtonsProps {
   feeConfig: IFeeConfig;
@@ -70,8 +70,8 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     gasConfig,
     priceStore,
     label,
-    feeSelectLabels = { low: "Low", average: "Average", high: "High" },
-    gasLabel,
+    feeSelectLabels = { low: 'Low', average: 'Average', high: 'High' },
+    gasLabel
   }) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
@@ -99,19 +99,19 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
 export const FeeButtonsInner: FunctionComponent<
   Pick<
     FeeButtonsProps,
-    "feeConfig" | "priceStore" | "label" | "feeSelectLabels"
+    'feeConfig' | 'priceStore' | 'label' | 'feeSelectLabels'
   > & { feeButtonState: FeeButtonState }
 > = observer(
   ({
     feeConfig,
     priceStore,
     label,
-    feeSelectLabels = { low: "Low", average: "Average", high: "High" },
-    feeButtonState,
+    feeSelectLabels = { low: 'Low', average: 'Average', high: 'High' },
+    feeButtonState
   }) => {
     useEffect(() => {
       if (feeConfig.feeCurrency && !feeConfig.fee) {
-        feeConfig.setFeeType("average");
+        feeConfig.setFeeType('average');
       }
     }, [feeConfig, feeConfig.feeCurrency, feeConfig.fee]);
 
@@ -120,12 +120,12 @@ export const FeeButtonsInner: FunctionComponent<
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return `input-${Buffer.from(bytes).toString("hex")}`;
+      return `input-${Buffer.from(bytes).toString('hex')}`;
     });
 
     const language = useLanguage();
 
-    // For chains without feeCurrencies, Keplr assumes tx doesn’t need to include information about the fee and the fee button does not have to be rendered.
+    // For chains without feeCurrencies, OWallet assumes tx doesn’t need to include information about the fee and the fee button does not have to be rendered.
     // The architecture is designed so that fee button is not rendered if the parental component doesn’t have a feeCurrency.
     // However, because there may be situations where the fee buttons is rendered before the chain information is changed,
     // and the fee button is an observer, and the sequence of rendering the observer may not appear stabilized,
@@ -139,13 +139,13 @@ export const FeeButtonsInner: FunctionComponent<
 
     const fiatCurrency = language.fiatCurrency;
 
-    const lowFee = feeConfig.getFeeTypePretty("low");
+    const lowFee = feeConfig.getFeeTypePretty('low');
     const lowFeePrice = priceStore.calculatePrice(lowFee, fiatCurrency);
 
-    const averageFee = feeConfig.getFeeTypePretty("average");
+    const averageFee = feeConfig.getFeeTypePretty('average');
     const averageFeePrice = priceStore.calculatePrice(averageFee, fiatCurrency);
 
-    const highFee = feeConfig.getFeeTypePretty("high");
+    const highFee = feeConfig.getFeeTypePretty('high');
     const highFeePrice = priceStore.calculatePrice(highFee, fiatCurrency);
 
     let isFeeLoading = false;
@@ -156,19 +156,22 @@ export const FeeButtonsInner: FunctionComponent<
         switch (error.constructor) {
           case InsufficientFeeError:
             return intl.formatMessage({
-              id: "input.fee.error.insufficient",
+              id: 'input.fee.error.insufficient'
             });
           case NotLoadedFeeError:
             isFeeLoading = true;
             return undefined;
           default:
-            return intl.formatMessage({ id: "input.fee.error.unknown" });
+            return (
+              error.message ||
+              intl.formatMessage({ id: 'input.fee.error.unknown' })
+            );
         }
       }
     })();
 
     return (
-      <FormGroup style={{ position: "relative" }}>
+      <FormGroup style={{ position: 'relative' }}>
         {label ? (
           <Label for={inputId} className="form-control-label">
             {label}
@@ -178,9 +181,9 @@ export const FeeButtonsInner: FunctionComponent<
           <Button
             type="button"
             className={styleFeeButtons.button}
-            color={feeConfig.feeType === "low" ? "primary" : undefined}
+            color={feeConfig.feeType === 'low' ? 'primary' : undefined}
             onClick={(e: MouseEvent) => {
-              feeConfig.setFeeType("low");
+              feeConfig.setFeeType('low');
               e.preventDefault();
             }}
           >
@@ -188,7 +191,7 @@ export const FeeButtonsInner: FunctionComponent<
             {lowFeePrice ? (
               <div
                 className={classnames(styleFeeButtons.fiat, {
-                  "text-muted": feeConfig.feeType !== "low",
+                  'text-muted': feeConfig.feeType !== 'low'
                 })}
               >
                 {lowFeePrice.toString()}
@@ -196,7 +199,7 @@ export const FeeButtonsInner: FunctionComponent<
             ) : null}
             <div
               className={classnames(styleFeeButtons.coin, {
-                "text-muted": feeConfig.feeType !== "low",
+                'text-muted': feeConfig.feeType !== 'low'
               })}
             >
               {lowFee.trim(true).toString()}
@@ -205,9 +208,9 @@ export const FeeButtonsInner: FunctionComponent<
           <Button
             type="button"
             className={styleFeeButtons.button}
-            color={feeConfig.feeType === "average" ? "primary" : undefined}
+            color={feeConfig.feeType === 'average' ? 'primary' : undefined}
             onClick={(e: MouseEvent) => {
-              feeConfig.setFeeType("average");
+              feeConfig.setFeeType('average');
               e.preventDefault();
             }}
           >
@@ -217,7 +220,7 @@ export const FeeButtonsInner: FunctionComponent<
             {averageFeePrice ? (
               <div
                 className={classnames(styleFeeButtons.fiat, {
-                  "text-muted": feeConfig.feeType !== "average",
+                  'text-muted': feeConfig.feeType !== 'average'
                 })}
               >
                 {averageFeePrice.toString()}
@@ -225,18 +228,18 @@ export const FeeButtonsInner: FunctionComponent<
             ) : null}
             <div
               className={classnames(styleFeeButtons.coin, {
-                "text-muted": feeConfig.feeType !== "average",
+                'text-muted': feeConfig.feeType !== 'average'
               })}
             >
-              {feeConfig.getFeeTypePretty("average").trim(true).toString()}
+              {feeConfig.getFeeTypePretty('average').trim(true).toString()}
             </div>
           </Button>
           <Button
             type="button"
             className={styleFeeButtons.button}
-            color={feeConfig.feeType === "high" ? "primary" : undefined}
+            color={feeConfig.feeType === 'high' ? 'primary' : undefined}
             onClick={(e: MouseEvent) => {
-              feeConfig.setFeeType("high");
+              feeConfig.setFeeType('high');
               e.preventDefault();
             }}
           >
@@ -244,7 +247,7 @@ export const FeeButtonsInner: FunctionComponent<
             {highFeePrice ? (
               <div
                 className={classnames(styleFeeButtons.fiat, {
-                  "text-muted": feeConfig.feeType !== "high",
+                  'text-muted': feeConfig.feeType !== 'high'
                 })}
               >
                 {highFeePrice.toString()}
@@ -252,10 +255,10 @@ export const FeeButtonsInner: FunctionComponent<
             ) : null}
             <div
               className={classnames(styleFeeButtons.coin, {
-                "text-muted": feeConfig.feeType !== "high",
+                'text-muted': feeConfig.feeType !== 'high'
               })}
             >
-              {feeConfig.getFeeTypePretty("high").trim(true).toString()}
+              {feeConfig.getFeeTypePretty('high').trim(true).toString()}
             </div>
           </Button>
         </ButtonGroup>
@@ -265,9 +268,9 @@ export const FeeButtonsInner: FunctionComponent<
           </FormText>
         ) : null}
         {errorText != null ? (
-          <FormFeedback style={{ display: "block" }}>{errorText}</FormFeedback>
+          <FormFeedback style={{ display: 'block' }}>{errorText}</FormFeedback>
         ) : null}
-        <div style={{ position: "absolute", right: 0 }}>
+        <div style={{ position: 'absolute', right: 0 }}>
           <Button
             size="sm"
             color="link"
@@ -278,10 +281,10 @@ export const FeeButtonsInner: FunctionComponent<
           >
             {!feeButtonState.isGasInputOpen
               ? intl.formatMessage({
-                  id: "input.fee.toggle.set-gas",
+                  id: 'input.fee.toggle.set-gas'
                 })
               : intl.formatMessage({
-                  id: "input.fee.toggle.set-gas.close",
+                  id: 'input.fee.toggle.set-gas.close'
                 })}
           </Button>
         </div>

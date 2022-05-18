@@ -1,5 +1,5 @@
-import { Buffer } from "buffer/";
-import { Hash } from "@keplr-wallet/crypto";
+import { Buffer } from 'buffer/';
+import { Hash } from '@owallet-wallet/crypto';
 
 export class DenomHelper {
   static ibcDenom(
@@ -14,13 +14,13 @@ export class DenomHelper {
       prefixes.push(`${path.portId}/${path.channelId}`);
     }
 
-    const prefix = prefixes.join("/");
+    const prefix = prefixes.join('/');
     const denom = `${prefix}/${coinMinimalDenom}`;
 
     return (
-      "ibc/" +
+      'ibc/' +
       Buffer.from(Hash.sha256(Buffer.from(denom)))
-        .toString("hex")
+        .toString('hex')
         .toUpperCase()
     );
   }
@@ -35,8 +35,8 @@ export class DenomHelper {
       throw new Error(`Invalid denom: ${this.denom}`);
     }
 
-    this._type = split.length === 3 ? split[0] : "";
-    this._contractAddress = split.length === 3 ? split[1] : "";
+    this._type = split.length === 3 ? split[0] : '';
+    this._contractAddress = split.length === 3 ? split[1] : '';
   }
 
   get denom(): string {
@@ -44,7 +44,7 @@ export class DenomHelper {
   }
 
   get type(): string {
-    return this._type || "native";
+    return this._type || 'native';
   }
 
   get contractAddress(): string {

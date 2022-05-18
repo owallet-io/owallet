@@ -1,11 +1,10 @@
-import { AmountConfig } from "../tx/amount";
-import { ChainGetter } from "@keplr-wallet/stores";
-import { ObservableQueryBalances } from "@keplr-wallet/stores/build/query/balances";
-import { AppCurrency } from "@keplr-wallet/types";
-import { computed, makeObservable } from "mobx";
-import { DenomHelper } from "@keplr-wallet/common";
-import { useState } from "react";
-import { IFeeConfig } from "../tx";
+import { AmountConfig, IFeeConfig } from '../tx';
+import { ChainGetter } from '@owallet-wallet/stores';
+import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
+import { AppCurrency } from '@owallet-wallet/types';
+import { computed, makeObservable } from 'mobx';
+import { DenomHelper } from '@owallet-wallet/common';
+import { useState } from 'react';
 
 export class IBCAmountConfig extends AmountConfig {
   constructor(
@@ -24,7 +23,7 @@ export class IBCAmountConfig extends AmountConfig {
   get sendableCurrencies(): AppCurrency[] {
     // Only native currencies can be sent by IBC transfer.
     return super.sendableCurrencies.filter(
-      (cur) => new DenomHelper(cur.coinMinimalDenom).type === "native"
+      (cur) => new DenomHelper(cur.coinMinimalDenom).type === 'native'
     );
   }
 }

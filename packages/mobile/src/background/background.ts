@@ -1,21 +1,21 @@
-import { init, ScryptParams } from "@keplr-wallet/background";
+import { init, ScryptParams } from '@owallet-wallet/background';
 import {
   RNEnv,
   RNMessageRequesterInternalToUI,
-  RNRouterBackground,
-} from "../router";
-import { AsyncKVStore } from "../common";
-import scrypt from "react-native-scrypt";
-import { Buffer } from "buffer/";
-import TransportBLE from "@ledgerhq/react-native-hw-transport-ble";
-import { getRandomBytesAsync } from "../common";
-import { BACKGROUND_PORT } from "@keplr-wallet/router";
+  RNRouterBackground
+} from '../router';
+import { AsyncKVStore } from '../common';
+import scrypt from 'react-native-scrypt';
+import { Buffer } from 'buffer/';
+import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
+import { getRandomBytesAsync } from '../common';
+import { BACKGROUND_PORT } from '@owallet-wallet/router';
 
-import { EmbedChainInfos } from "../config";
+import { EmbedChainInfos } from '../config';
 import {
   getLastUsedLedgerDeviceId,
-  setLastUsedLedgerDeviceId,
-} from "../utils/ledger";
+  setLastUsedLedgerDeviceId
+} from '../utils/ledger';
 
 const router = new RNRouterBackground(RNEnv.produceEnv);
 
@@ -24,24 +24,24 @@ init(
   (prefix: string) => new AsyncKVStore(prefix),
   new RNMessageRequesterInternalToUI(),
   EmbedChainInfos,
-  [],
+  ['https://app.osmosis.zone'],
   getRandomBytesAsync,
   {
     scrypt: async (text: string, params: ScryptParams) => {
       return Buffer.from(
         await scrypt(
-          Buffer.from(text).toString("hex"),
+          Buffer.from(text).toString('hex'),
           // Salt is expected to be encoded as Hex
           params.salt,
           params.n,
           params.r,
           params.p,
           params.dklen,
-          "hex"
+          'hex'
         ),
-        "hex"
+        'hex'
       );
-    },
+    }
   },
   {
     create: (params: {
@@ -50,16 +50,16 @@ init(
       message: string;
     }) => {
       console.log(`Notification: ${params.title}, ${params.message}`);
-    },
+    }
   },
   {
-    defaultMode: "ble",
+    defaultMode: 'ble',
     transportIniters: {
       ble: async (deviceId?: string) => {
         const lastDeviceId = await getLastUsedLedgerDeviceId();
 
         if (!deviceId && !lastDeviceId) {
-          throw new Error("Device id is empty");
+          throw new Error('Device id is empty');
         }
 
         if (!deviceId) {
@@ -71,8 +71,8 @@ init(
         }
 
         return await TransportBLE.open(deviceId);
-      },
-    },
+      }
+    }
   }
 );
 

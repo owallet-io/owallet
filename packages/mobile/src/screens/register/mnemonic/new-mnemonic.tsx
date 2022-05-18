@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { View, Text } from "react-native";
-import { observer } from "mobx-react-lite";
-import { RouteProp, useIsFocused, useRoute } from "@react-navigation/native";
-import { RegisterConfig } from "@keplr-wallet/hooks";
-import { useNewMnemonicConfig } from "./hook";
-import { PageWithScrollView } from "../../../components/page";
-import { CheckIcon } from "../../../components/icon";
-import { useStyle } from "../../../styles";
-import { WordChip } from "../../../components/mnemonic";
-import { Button } from "../../../components/button";
-import Clipboard from "expo-clipboard";
-import { TextInput } from "../../../components/input";
-import { Controller, useForm } from "react-hook-form";
-import { useSmartNavigation } from "../../../navigation";
-import { useSimpleTimer } from "../../../hooks";
-import { BIP44AdvancedButton, useBIP44Option } from "../bip44";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+import { observer } from 'mobx-react-lite';
+import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { RegisterConfig } from '@owallet-wallet/hooks';
+import { useNewMnemonicConfig } from './hook';
+import { PageWithScrollView } from '../../../components/page';
+import { CheckIcon } from '../../../components/icon';
+import { useStyle } from '../../../styles';
+import { WordChip } from '../../../components/mnemonic';
+import { Button } from '../../../components/button';
+import Clipboard from 'expo-clipboard';
+import { TextInput } from '../../../components/input';
+import { Controller, useForm } from 'react-hook-form';
+import { useSmartNavigation } from '../../../navigation';
+import { useSimpleTimer } from '../../../hooks';
+import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 
 interface FormData {
   name: string;
@@ -45,39 +45,39 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
   const [mode] = useState(registerConfig.mode);
 
-  const words = newMnemonicConfig.mnemonic.split(" ");
+  const words = newMnemonicConfig.mnemonic.split(' ');
 
   const {
     control,
     handleSubmit,
     setFocus,
     getValues,
-    formState: { errors },
+    formState: { errors }
   } = useForm<FormData>();
 
   const submit = handleSubmit(() => {
-    newMnemonicConfig.setName(getValues("name"));
-    newMnemonicConfig.setPassword(getValues("password"));
-    smartNavigation.navigateSmart("Register.VerifyMnemonic", {
+    newMnemonicConfig.setName(getValues('name'));
+    newMnemonicConfig.setPassword(getValues('password'));
+    smartNavigation.navigateSmart('Register.VerifyMnemonic', {
       registerConfig,
       newMnemonicConfig,
-      bip44HDPath: bip44Option.bip44HDPath,
+      bip44HDPath: bip44Option.bip44HDPath
     });
   });
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
+      contentContainerStyle={style.get('flex-grow-1')}
+      style={style.flatten(['padding-x-page'])}
     >
       {/* Mock for flexible margin top */}
-      <View style={style.flatten(["max-height-32", "flex-1"])} />
+      <View style={style.flatten(['max-height-32', 'flex-1'])} />
       <Text
         style={style.flatten([
-          "h5",
-          "color-text-black-medium",
-          "margin-bottom-4",
-          "text-center",
+          'h5',
+          'color-text-black-medium',
+          'margin-bottom-4',
+          'text-center'
         ])}
       >
         Backup your mnemonic securely
@@ -86,20 +86,20 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       <Controller
         control={control}
         rules={{
-          required: "Name is required",
+          required: 'Name is required'
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
               label="Wallet nickname"
-              containerStyle={style.flatten(["padding-bottom-6"])}
-              returnKeyType={mode === "add" ? "done" : "next"}
+              containerStyle={style.flatten(['padding-bottom-6'])}
+              returnKeyType={mode === 'add' ? 'done' : 'next'}
               onSubmitEditing={() => {
-                if (mode === "add") {
+                if (mode === 'add') {
                   submit();
                 }
-                if (mode === "create") {
-                  setFocus("password");
+                if (mode === 'create') {
+                  setFocus('password');
                 }
               }}
               error={errors.name?.message}
@@ -114,17 +114,17 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
         defaultValue=""
       />
       <BIP44AdvancedButton bip44Option={bip44Option} />
-      {mode === "create" ? (
+      {mode === 'create' ? (
         <React.Fragment>
           <Controller
             control={control}
             rules={{
-              required: "Password is required",
+              required: 'Password is required',
               validate: (value: string) => {
                 if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
+                  return 'Password must be longer than 8 characters';
                 }
-              },
+              }
             }}
             render={({ field: { onChange, onBlur, value, ref } }) => {
               return (
@@ -133,7 +133,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
                   returnKeyType="next"
                   secureTextEntry={true}
                   onSubmitEditing={() => {
-                    setFocus("confirmPassword");
+                    setFocus('confirmPassword');
                   }}
                   error={errors.password?.message}
                   onBlur={onBlur}
@@ -149,16 +149,16 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           <Controller
             control={control}
             rules={{
-              required: "Confirm password is required",
+              required: 'Confirm password is required',
               validate: (value: string) => {
                 if (value.length < 8) {
-                  return "Password must be longer than 8 characters";
+                  return 'Password must be longer than 8 characters';
                 }
 
-                if (getValues("password") !== value) {
+                if (getValues('password') !== value) {
                   return "Password doesn't match";
                 }
-              },
+              }
             }}
             render={({ field: { onChange, onBlur, value, ref } }) => {
               return (
@@ -182,10 +182,10 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           />
         </React.Fragment>
       ) : null}
-      <View style={style.flatten(["flex-1"])} />
+      <View style={style.flatten(['flex-1'])} />
       <Button text="Next" size="large" onPress={submit} />
       {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );
 });
@@ -218,15 +218,15 @@ const WordsCard: FunctionComponent<{
   return (
     <View
       style={style.flatten([
-        "margin-top-14",
-        "margin-bottom-16",
-        "padding-24",
-        "padding-x-28",
-        "padding-bottom-12",
-        "background-color-white",
-        "border-radius-8",
-        "flex-row",
-        "flex-wrap",
+        'margin-top-14',
+        'margin-bottom-16',
+        'padding-24',
+        'padding-x-28',
+        'padding-bottom-12',
+        'background-color-white',
+        'border-radius-8',
+        'flex-row',
+        'flex-wrap'
       ])}
     >
       {words.map((word, i) => {
@@ -239,23 +239,23 @@ const WordsCard: FunctionComponent<{
           />
         );
       })}
-      <View style={style.flatten(["width-full"])}>
+      <View style={style.flatten(['width-full'])}>
         <Button
           textStyle={style.flatten([
-            "text-button1",
-            isTimedOut ? "color-success" : "color-primary",
+            'text-button1',
+            isTimedOut ? 'color-success' : 'color-primary'
           ])}
           mode="text"
           {...(isTimedOut && {
             rightIcon: (
-              <View style={style.flatten(["margin-left-8"])}>
+              <View style={style.flatten(['margin-left-8'])}>
                 <CheckIcon />
               </View>
-            ),
+            )
           })}
           text="Copy to clipboard"
           onPress={() => {
-            Clipboard.setString(words.join(" "));
+            Clipboard.setString(words.join(' '));
             setTimer(3000);
           }}
         />

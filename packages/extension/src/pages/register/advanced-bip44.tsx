@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
-import { Button, FormGroup, Input, Label } from "reactstrap";
-import { useConfirm } from "../../components/confirm";
-import { FormattedMessage, useIntl } from "react-intl";
-import { action, computed, makeObservable, observable } from "mobx";
-import { observer } from "mobx-react-lite";
-import { BIP44HDPath } from "@keplr-wallet/background";
+import React, { FunctionComponent, useState } from 'react';
+import { Button, FormGroup, Input, Label } from 'reactstrap';
+import { useConfirm } from '../../components/confirm';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { action, computed, makeObservable, observable } from 'mobx';
+import { observer } from 'mobx-react-lite';
+import { BIP44HDPath } from '@owallet-wallet/background';
 
 export class BIP44Option {
   @observable
@@ -46,7 +46,7 @@ export class BIP44Option {
     return {
       account: this.account,
       change: this.change,
-      addressIndex: this.index,
+      addressIndex: this.index
     };
   }
 
@@ -95,8 +95,8 @@ export const AdvancedBIP44Option: FunctionComponent<{
       if (
         await confirm.confirm({
           paragraph: intl.formatMessage({
-            id: "register.bip44.confirm.clear",
-          }),
+            id: 'register.bip44.confirm.clear'
+          })
         })
       ) {
         setIsOpen(false);
@@ -129,28 +129,28 @@ export const AdvancedBIP44Option: FunctionComponent<{
           <div
             id="bip44-path"
             style={{
-              display: "flex",
-              alignItems: "baseline",
+              display: 'flex',
+              alignItems: 'baseline'
             }}
           >
             <div>{`m/44'/${
-              bip44Option.coinType != null ? bip44Option.coinType : "···"
+              bip44Option.coinType != null ? bip44Option.coinType : '···'
             }'/`}</div>
             <Input
               type="number"
               className="form-control-alternative"
-              style={{ width: "100px", textAlign: "right" }}
+              style={{ width: '100px', textAlign: 'right' }}
               value={bip44Option.account.toString()}
               onChange={(e) => {
                 e.preventDefault();
 
                 let value = e.target.value;
                 if (value) {
-                  if (value !== "0") {
+                  if (value !== '0') {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
-                      if (value[i] === "0") {
-                        value = value.replace("0", "");
+                      if (value[i] === '0') {
+                        value = value.replace('0', '');
                       } else {
                         break;
                       }
@@ -170,18 +170,18 @@ export const AdvancedBIP44Option: FunctionComponent<{
             <Input
               type="number"
               className="form-control-alternative"
-              style={{ width: "100px", textAlign: "right" }}
+              style={{ width: '100px', textAlign: 'right' }}
               value={bip44Option.change.toString()}
               onChange={(e) => {
                 e.preventDefault();
 
                 let value = e.target.value;
                 if (value) {
-                  if (value !== "0") {
+                  if (value !== '0') {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
-                      if (value[i] === "0") {
-                        value = value.replace("0", "");
+                      if (value[i] === '0') {
+                        value = value.replace('0', '');
                       } else {
                         break;
                       }
@@ -204,18 +204,18 @@ export const AdvancedBIP44Option: FunctionComponent<{
             <Input
               type="number"
               className="form-control-alternative"
-              style={{ width: "100px", textAlign: "right" }}
+              style={{ width: '100px', textAlign: 'right' }}
               value={bip44Option.index.toString()}
               onChange={(e) => {
                 e.preventDefault();
 
                 let value = e.target.value;
                 if (value) {
-                  if (value !== "0") {
+                  if (value !== '0') {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
-                      if (value[i] === "0") {
-                        value = value.replace("0", "");
+                      if (value[i] === '0') {
+                        value = value.replace('0', '');
                       } else {
                         break;
                       }

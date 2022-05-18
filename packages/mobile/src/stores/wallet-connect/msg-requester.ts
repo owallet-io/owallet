@@ -1,6 +1,6 @@
-import { Message, MessageRequester, Result } from "@keplr-wallet/router";
-import { JSONUint8Array } from "@keplr-wallet/router/build/json-uint8-array";
-import EventEmitter from "eventemitter3";
+import { Message, MessageRequester, Result } from '@owallet-wallet/router';
+import { JSONUint8Array } from '@owallet-wallet/router/build/json-uint8-array';
+import EventEmitter from 'eventemitter3';
 
 export class WCMessageRequester implements MessageRequester {
   constructor(
@@ -9,19 +9,19 @@ export class WCMessageRequester implements MessageRequester {
   ) {}
 
   static getVirtualSessionURL = (sessionId: string): string => {
-    return `https://keplr_wc_virtual.${sessionId}`;
+    return `https://owallet_wc_virtual.${sessionId}`;
   };
 
   static isVirtualSessionURL = (url: string): boolean => {
-    return url.startsWith("https://keplr_wc_virtual.");
+    return url.startsWith('https://owallet_wc_virtual.');
   };
 
   static getSessionIdFromVirtualURL = (url: string): string => {
     if (!WCMessageRequester.isVirtualSessionURL(url)) {
-      throw new Error("URL is not for wallet connect");
+      throw new Error('URL is not for wallet connect');
     }
 
-    return url.replace("https://keplr_wc_virtual.", "").replace("/", "");
+    return url.replace('https://owallet_wc_virtual.', '').replace('/', '');
   };
 
   async sendMessage<M extends Message<unknown>>(
@@ -37,31 +37,31 @@ export class WCMessageRequester implements MessageRequester {
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    msg["origin"] = url;
+    msg['origin'] = url;
 
-    if (this.eventEmitter.listenerCount("message") === 0) {
-      throw new Error("There is no router to send");
+    if (this.eventEmitter.listenerCount('message') === 0) {
+      throw new Error('There is no router to send');
     }
 
     const result: Result = JSONUint8Array.unwrap(
       await new Promise((resolve) => {
-        this.eventEmitter.emit("message", {
+        this.eventEmitter.emit('message', {
           message: {
             port,
             type: msg.type(),
-            msg: JSONUint8Array.wrap(msg),
+            msg: JSONUint8Array.wrap(msg)
           },
           sender: {
-            id: "react-native",
+            id: 'react-native',
             url,
-            resolver: resolve,
-          },
+            resolver: resolve
+          }
         });
       })
     );
 
     if (!result) {
-      throw new Error("Null result");
+      throw new Error('Null result');
     }
 
     if (result.error) {

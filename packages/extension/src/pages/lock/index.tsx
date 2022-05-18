@@ -14,7 +14,7 @@ import { EmptyLayout } from '../../layouts/empty-layout';
 import style from './style.module.scss';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useInteractionInfo } from '@keplr-wallet/hooks';
+import { useInteractionInfo } from '@owallet-wallet/hooks';
 import { useHistory } from 'react-router';
 import delay from 'delay';
 

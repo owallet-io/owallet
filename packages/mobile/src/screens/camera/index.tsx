@@ -1,28 +1,28 @@
-import React, { FunctionComponent, useCallback, useState } from "react";
-import { RNCamera } from "react-native-camera";
-import { useStyle } from "../../styles";
-import { PageWithView } from "../../components/page";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useSmartNavigation } from "../../navigation";
-import { Button } from "../../components/button";
-import { Share, StyleSheet, View } from "react-native";
-import { ChainSelectorModal } from "../../components/chain-selector";
-import { registerModal } from "../../modals/base";
-import { CardModal } from "../../modals/card";
-import { AddressCopyable } from "../../components/address-copyable";
-import QRCode from "react-native-qrcode-svg";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { FullScreenCameraView } from "../../components/camera";
+import React, { FunctionComponent, useCallback, useState } from 'react';
+import { RNCamera } from 'react-native-camera';
+import { useStyle } from '../../styles';
+import { PageWithView } from '../../components/page';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { useSmartNavigation } from '../../navigation';
+import { Button } from '../../components/button';
+import { Share, StyleSheet, View } from 'react-native';
+import { ChainSelectorModal } from '../../components/chain-selector';
+import { registerModal } from '../../modals/base';
+import { CardModal } from '../../modals/card';
+import { AddressCopyable } from '../../components/address-copyable';
+import QRCode from 'react-native-qrcode-svg';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { FullScreenCameraView } from '../../components/camera';
 import {
   importFromMobile,
   parseQRCodeDataForImportFromMobile,
   registerExportedAddressBooks,
-  registerExportedKeyRingDatas,
-} from "../../utils/import-from-mobile";
-import { AddressBookConfigMap, useRegisterConfig } from "@keplr-wallet/hooks";
-import { AsyncKVStore } from "../../common";
-import { useFocusEffect } from "@react-navigation/native";
+  registerExportedKeyRingDatas
+} from '../../utils/import-from-mobile';
+import { AddressBookConfigMap, useRegisterConfig } from '@owallet-wallet/hooks';
+import { AsyncKVStore } from '../../common';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const CameraScreen: FunctionComponent = observer(() => {
   const { chainStore, walletConnectStore, keyRingStore } = useStore();
@@ -51,13 +51,13 @@ export const CameraScreen: FunctionComponent = observer(() => {
   );
   const [
     showingAddressQRCodeChainId,
-    setShowingAddressQRCodeChainId,
+    setShowingAddressQRCodeChainId
   ] = useState(chainStore.current.chainId);
 
   const registerConfig = useRegisterConfig(keyRingStore, []);
 
   const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new AsyncKVStore("address_book"), chainStore)
+    () => new AddressBookConfigMap(new AsyncKVStore('address_book'), chainStore)
   );
 
   return (
@@ -72,10 +72,10 @@ export const CameraScreen: FunctionComponent = observer(() => {
             setIsLoading(true);
 
             try {
-              if (data.startsWith("wc:")) {
+              if (data.startsWith('wc:')) {
                 await walletConnectStore.initClient(data);
 
-                smartNavigation.navigateSmart("Home", {});
+                smartNavigation.navigateSmart('Home', {});
               } else {
                 const isBech32Address = (() => {
                   try {
@@ -89,18 +89,18 @@ export const CameraScreen: FunctionComponent = observer(() => {
                 })();
 
                 if (isBech32Address) {
-                  const prefix = data.slice(0, data.indexOf("1"));
+                  const prefix = data.slice(0, data.indexOf('1'));
                   const chainInfo = chainStore.chainInfosInUI.find(
                     (chainInfo) =>
                       chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                   );
                   if (chainInfo) {
-                    smartNavigation.pushSmart("Send", {
+                    smartNavigation.pushSmart('Send', {
                       chainId: chainInfo.chainId,
-                      recipient: data,
+                      recipient: data
                     });
                   } else {
-                    smartNavigation.navigateSmart("Home", {});
+                    smartNavigation.navigateSmart('Home', {});
                   }
                 } else {
                   const sharedData = parseQRCodeDataForImportFromMobile(data);
@@ -118,7 +118,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     keyRingStore,
                     registerConfig,
                     improted.KeyRingDatas,
-                    ""
+                    ''
                   );
 
                   await registerExportedAddressBooks(
@@ -130,12 +130,12 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     index: 0,
                     routes: [
                       {
-                        name: "Register",
+                        name: 'Register',
                         params: {
-                          screen: "Register.End",
-                        },
-                      },
-                    ],
+                          screen: 'Register.End'
+                        }
+                      }
+                    ]
                   });
                 }
               }
@@ -154,11 +154,11 @@ export const CameraScreen: FunctionComponent = observer(() => {
             mode="light"
             size="large"
             containerStyle={style.flatten([
-              "margin-top-64",
-              "border-radius-64",
-              "opacity-90",
+              'margin-top-64',
+              'border-radius-64',
+              'opacity-90'
             ])}
-            style={style.flatten(["padding-x-52"])}
+            style={style.flatten(['padding-x-52'])}
             onPress={() => {
               setIsSelectChainModalOpen(true);
             }}
@@ -200,9 +200,9 @@ export const AddressQRCodeModal: FunctionComponent<{
 
     return (
       <CardModal title="Scan QR code">
-        <View style={style.flatten(["items-center"])}>
+        <View style={style.flatten(['items-center'])}>
           <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-          <View style={style.flatten(["margin-y-32"])}>
+          <View style={style.flatten(['margin-y-32'])}>
             {account.bech32Address ? (
               <QRCode size={200} value={account.bech32Address} />
             ) : (
@@ -210,23 +210,23 @@ export const AddressQRCodeModal: FunctionComponent<{
                 style={StyleSheet.flatten([
                   {
                     width: 200,
-                    height: 200,
+                    height: 200
                   },
-                  style.flatten(["background-color-disabled"]),
+                  style.flatten(['background-color-disabled'])
                 ])}
               />
             )}
           </View>
-          <View style={style.flatten(["flex-row"])}>
+          <View style={style.flatten(['flex-row'])}>
             <Button
-              containerStyle={style.flatten(["flex-1"])}
+              containerStyle={style.flatten(['flex-1'])}
               text="Share Address"
               mode="light"
               size="large"
-              loading={account.bech32Address === ""}
+              loading={account.bech32Address === ''}
               onPress={() => {
                 Share.share({
-                  message: account.bech32Address,
+                  message: account.bech32Address
                 }).catch((e) => {
                   console.log(e);
                 });
@@ -238,6 +238,6 @@ export const AddressQRCodeModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: true
   }
 );

@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from "react";
-import Svg, { Path, Defs, Rect, Stop, LinearGradient } from "react-native-svg";
+import React, { FunctionComponent } from 'react';
+import Svg, { Path, Defs, Rect, Stop, LinearGradient } from 'react-native-svg';
 
-export const KeplrLogo: FunctionComponent<{
+export const OWalletLogo: FunctionComponent<{
   width?: number | string;
   height?: number | string;
 }> = ({ width = 284, height = 96 }) => {
@@ -9,7 +9,7 @@ export const KeplrLogo: FunctionComponent<{
     <Svg
       style={{
         width,
-        height,
+        height
       }}
       viewBox="0 0 284 96"
     >

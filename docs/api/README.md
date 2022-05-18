@@ -3,39 +3,35 @@ title: Basic API
 order: 1
 ---
 
-## How to detect Keplr
+## How to detect OWallet
 
-You can know if Keplr is installed on the user device by checking `window.keplr`. If `window.keplr` returns `undefined`, Keplr is not installed (note: sometimes `window.keplr` may return `undefined` even when Keplr is installed if browser is parsing the DOM or the way it runs scripts).
-
-However, `window.keplr` will definitely return `Keplr` if the document's `readyState` is complete or upon document's `load` event if Keplr is installed.
-
-There are many ways to use Keplr upon the load event. Refer to the examples below:
+You can determine whether OWallet is installed on the user device by checking `window.owallet`. If `window.owallet` returns `undefined` after document.load, OWallet is not installed. There are several ways to wait for the load event to check the status. Refer to the examples below:
 
 You can register the function to `window.onload`:
 
 ```javascript
 window.onload = async () => {
-    if (!window.keplr) {
-        alert("Please install keplr extension");
+    if (!window.owallet) {
+        alert("Please install owallet extension");
     } else {
         const chainId = "cosmoshub-4";
 
-        // Enabling before using the Keplr is recommended.
-        // This method will ask the user whether or not to allow access if they haven't visited this website.
-        // Also, it will request user to unlock the wallet if the wallet is locked.
-        await window.keplr.enable(chainId);
+        // Enabling before using the OWallet is recommended.
+        // This method will ask the user whether to allow access if they haven't visited this website.
+        // Also, it will request that the user unlock the wallet if the wallet is locked.
+        await window.owallet.enable(chainId);
     
-        const offlineSigner = window.getOfflineSigner(chainId);
+        const offlineSigner = window.owallet.getOfflineSigner(chainId);
     
         // You can get the address/public keys by `getAccounts` method.
         // It can return the array of address/public key.
-        // But, currently, Keplr extension manages only one address/public key pair.
+        // But, currently, OWallet extension manages only one address/public key pair.
         // XXX: This line is needed to set the sender address for SigningCosmosClient.
         const accounts = await offlineSigner.getAccounts();
     
-        // Initialize the gaia api with the offline signer that is injected by Keplr extension.
+        // Initialize the gaia api with the offline signer that is injected by OWallet extension.
         const cosmJS = new SigningCosmosClient(
-            "https://lcd-cosmoshub.keplr.app",
+            "https://lcd-cosmoshub.owallet.app",
             accounts[0].address,
             offlineSigner,
         );
@@ -46,13 +42,13 @@ window.onload = async () => {
 or track the document's ready state through the document event listener:
 
 ```javascript
-async getKeplr(): Promise<Keplr | undefined> {
-    if (window.keplr) {
-        return window.keplr;
+async getOWallet(): Promise<OWallet | undefined> {
+    if (window.owallet) {
+        return window.owallet;
     }
     
     if (document.readyState === "complete") {
-        return window.keplr;
+        return window.owallet;
     }
     
     return new Promise((resolve) => {
@@ -61,7 +57,7 @@ async getKeplr(): Promise<Keplr | undefined> {
                 event.target &&
                 (event.target as Document).readyState === "complete"
             ) {
-                resolve(window.keplr);
+                resolve(window.owallet);
                 document.removeEventListener("readystatechange", documentStateChange);
             }
         };
@@ -73,26 +69,26 @@ async getKeplr(): Promise<Keplr | undefined> {
 
 There may be multiple ways to achieve the same result, and not one method is preferred over the other.
 
-## Keplr-specific features
+## OWallet-specific features
 
-If you were able to connect Keplr with CosmJS, you may skip to the [Use Keplr with CosmJS](./cosmjs.md) section.
+If you were able to connect OWallet with CosmJS, you may skip to the [Use OWallet with CosmJS](./cosmjs.md) section.
 
-While Keplr supports an easy way to connect to CosmJS, there are additional functions specific to Keplr which provides additional features.
+While OWallet supports an easy way to connect to CosmJS, there are additional functions specific to OWallet which provides additional features.
 
 ### Using with Typescript
 **`window.d.ts`**
 ```javascript
-import { Window as KeplrWindow } from "@keplr-wallet/types";
+import { Window as OWalletWindow } from "@owallet-wallet/types";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface Window extends KeplrWindow {}
+  interface Window extends OWalletWindow {}
 }
 ```
 
-The `@keplr-wallet/types` package has the type definition related to Keplr.  
-If you're using TypeScript, run `npm install --save-dev @keplr-wallet/types` or `yarn add -D @keplr-wallet/types` to install `@keplr-wallet/types`.  
-Then, you can add the `@keplr-wallet/types` window to a global window object and register the Keplr related types.
+The `@owallet-wallet/types` package has the type definition related to OWallet.  
+If you're using TypeScript, run `npm install --save-dev @owallet-wallet/types` or `yarn add -D @owallet-wallet/types` to install `@owallet-wallet/types`.  
+Then, you can add the `@owallet-wallet/types` window to a global window object and register the OWallet related types.
 
 ### Enable Connection
 
@@ -100,7 +96,7 @@ Then, you can add the `@keplr-wallet/types` window to a global window object and
 enable(chainIds: string | string[]): Promise<void>
 ```
 
-The `window.keplr.enable(chainIds)` method requests the extension to be unlocked if it's currently locked. If the user hasn't given permission to the webpage, it will ask the user to give permission for the webpage to access Keplr.
+The `window.owallet.enable(chainIds)` method requests the extension to be unlocked if it's currently locked. If the user hasn't given permission to the webpage, it will ask the user to give permission for the webpage to access OWallet.
 
 `enable` method can receive one or more chain-id as an array. When the array of chain-id is passed, you can request permissions for all chains that have not yet been authorized at once.
 
@@ -119,7 +115,7 @@ getKey(chainId: string): Promise<{
 }>
 ```
 
-If the webpage has permission and Keplr is unlocked, this function will return the address and public key in the following format:
+If the webpage has permission and OWallet is unlocked, this function will return the address and public key in the following format:
 
 ```javascript
 {
@@ -142,7 +138,7 @@ It also returns the nickname for the key store currently selected, which should 
 signAmino(chainId: string, signer: string, signDoc: StdSignDoc): Promise<AminoSignResponse>
 ```
 
-Similar to CosmJS `OfflineSigner`'s `signAmino`, but Keplr's `signAmino` takes the chain-id as a required parameter. Signs Amino-encoded `StdSignDoc`.
+Similar to CosmJS `OfflineSigner`'s `signAmino`, but OWallet's `signAmino` takes the chain-id as a required parameter. Signs Amino-encoded `StdSignDoc`.
 
 ### Sign Direct / Protobuf
 
@@ -162,7 +158,7 @@ signDirect(chainId:string, signer:string, signDoc: {
   }): Promise<DirectSignResponse>
 ```
 
-Similar to CosmJS `DirectOfflineSigner`'s `signDirect`, but Keplr's `signDirect` takes the chain-id as a required parameter. Signs Proto-encoded `StdSignDoc`.
+Similar to CosmJS `OfflineDirectSigner`'s `signDirect`, but OWallet's `signDirect` takes the chain-id as a required parameter. Signs Proto-encoded `StdSignDoc`.
 
 ### Request Transaction Broadcasting
 
@@ -174,31 +170,31 @@ sendTx(
 ): Promise<Uint8Array>;
 ```
 
-This function requests Keplr to delegates the broadcasting of the transaction to Keplr's LCD endpoints (rather than the webpage broadcasting the transaction).
+This function requests OWallet to delegates the broadcasting of the transaction to OWallet's LCD endpoints (rather than the webpage broadcasting the transaction).
 This method returns the transaction hash if it succeeds to broadcast, if else the method will throw an error.
-When Keplr broadcasts the transaction, Keplr will send the notification on the transaction's progress.
+When OWallet broadcasts the transaction, OWallet will send the notification on the transaction's progress.
 
 ### Interaction Options
 
 ```javascript
-export interface KeplrIntereactionOptions {
-  readonly sign?: KeplrSignOptions;
+export interface OWalletIntereactionOptions {
+  readonly sign?: OWalletSignOptions;
 }
 
-export interface KeplrSignOptions {
+export interface OWalletSignOptions {
   readonly preferNoSetFee?: boolean;
   readonly preferNoSetMemo?: boolean;
 }
 ```
-Keplr v0.8.11+ offers additional options to customize interactions between the frontend website and Keplr extension.
+OWallet v0.8.11+ offers additional options to customize interactions between the frontend website and OWallet extension.
 
-If `preferNoSetFee` is set to true, Keplr will prioritize the frontend-suggested fee rather than overriding the tx fee setting of the signing page.
+If `preferNoSetFee` is set to true, OWallet will prioritize the frontend-suggested fee rather than overriding the tx fee setting of the signing page.
 
-If `preferNoSetMemo` is set to true, Keplr will not override the memo and set fix memo as the front-end set memo.
+If `preferNoSetMemo` is set to true, OWallet will not override the memo and set fix memo as the front-end set memo.
 
 You can set the values as follows:
 ```javascript
-window.keplr.defaultOptions = {
+window.owallet.defaultOptions = {
     sign: {
         preferNoSetFee: true,
         preferNoSetMemo: true,
@@ -211,15 +207,15 @@ window.keplr.defaultOptions = {
 ### Change Key Store Event
 
 ```javascript
-keplr_keystorechange
+owallet_keystorechange
 ```
 
-When the user switches their key store/account after the webpage has received the information on the key store/account the key that the webpage is aware of may not match the selected key in Keplr which may cause issues in the interactions.
+When the user switches their key store/account after the webpage has received the information on the key store/account the key that the webpage is aware of may not match the selected key in OWallet which may cause issues in the interactions.
 
-To prevent this from happening, when the key store/account is changed, Keplr emits a `keplr_keystorechange` event to the webpage's window. You can request the new key/account based on this event listener.
+To prevent this from happening, when the key store/account is changed, OWallet emits a `owallet_keystorechange` event to the webpage's window. You can request the new key/account based on this event listener.
 
 ```javascript
-window.addEventListener("keplr_keystorechange", () => {
-    console.log("Key store in Keplr is changed. You may need to refetch the account info.")
+window.addEventListener("owallet_keystorechange", () => {
+    console.log("Key store in OWallet is changed. You may need to refetch the account info.")
 })
 ```

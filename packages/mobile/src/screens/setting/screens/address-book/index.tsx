@@ -1,30 +1,29 @@
-import React, { FunctionComponent, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { PageWithScrollView } from "../../../../components/page";
-import { useStyle } from "../../../../styles";
-import { Text, View } from "react-native";
-import { useSmartNavigation } from "../../../../navigation";
+import React, { FunctionComponent, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { PageWithScrollView } from '../../../../components/page';
+import { useStyle } from '../../../../styles';
+import { Text, View } from 'react-native';
+import { useSmartNavigation } from '../../../../navigation';
 import {
   IMemoConfig,
   IRecipientConfig,
-  useAddressBookConfig,
-} from "@keplr-wallet/hooks";
-import { AsyncKVStore } from "../../../../common";
-import { useStore } from "../../../../stores";
-import { TrashCanIcon } from "../../../../components/icon";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { RectButton } from "../../../../components/rect-button";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { HeaderRightButton } from "../../../../components/header";
-import { HeaderAddIcon } from "../../../../components/header/icon";
-import { useLogScreenView } from "../../../../hooks";
-import { AddressBookIcon } from "../../../../components/icon";
-import { useConfirmModal } from "../../../../providers/confirm-modal";
+  useAddressBookConfig
+} from '@owallet-wallet/hooks';
+import { AsyncKVStore } from '../../../../common';
+import { useStore } from '../../../../stores';
+import { TrashCanIcon } from '../../../../components/icon';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RectButton } from '../../../../components/rect-button';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { HeaderRightButton } from '../../../../components/header';
+import { HeaderAddIcon } from '../../../../components/header/icon';
+import { AddressBookIcon } from '../../../../components/icon';
+import { useConfirmModal } from '../../../../providers/confirm-modal';
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
-  inSetting: View,
+  inSetting: View
 };
 
 export const AddressBookScreen: FunctionComponent = observer(() => {
@@ -57,7 +56,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
     : chainStore.current.chainId;
 
   const addressBookConfig = useAddressBookConfig(
-    new AsyncKVStore("address_book"),
+    new AsyncKVStore('address_book'),
     chainStore,
     chainId,
     {
@@ -70,7 +69,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
         if (memoConfig) {
           memoConfig.setMemo(memo);
         }
-      },
+      }
     }
   );
 
@@ -80,19 +79,15 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       headerRight: () => (
         <HeaderRightButton
           onPress={() => {
-            analyticsStore.logEvent("Add address started", {
-              chainId: chainStore.current.chainId,
-              chainName: chainStore.current.chainName,
-            });
-            smartNavigation.navigateSmart("AddAddressBook", {
+            smartNavigation.navigateSmart('AddAddressBook', {
               chainId,
-              addressBookConfig,
+              addressBookConfig
             });
           }}
         >
           <HeaderAddIcon />
         </HeaderRightButton>
-      ),
+      )
     });
   }, [
     addressBookConfig,
@@ -105,7 +100,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   const isInTransaction = recipientConfig != null || memoConfig != null;
   const AddressBookItem =
-    addressBookItemComponent[isInTransaction ? "inTransaction" : "inSetting"];
+    addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
   useLogScreenView("Address book", {
     chainId: chainStore.current.chainId,
@@ -115,15 +110,15 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   return addressBookConfig.addressBookDatas.length > 0 ? (
     <PageWithScrollView>
-      <View style={style.flatten(["height-card-gap"])} />
+      <View style={style.flatten(['height-card-gap'])} />
       {addressBookConfig.addressBookDatas.map((data, i) => {
         return (
           <React.Fragment key={i.toString()}>
             <AddressBookItem
               style={style.flatten([
-                "background-color-white",
-                "padding-x-18",
-                "padding-y-14",
+                'background-color-white',
+                'padding-x-18',
+                'padding-y-14'
               ])}
               enabled={isInTransaction}
               onPress={() => {
@@ -135,17 +130,17 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
             >
               <View
                 style={style.flatten([
-                  "flex-row",
-                  "justify-between",
-                  "items-center",
+                  'flex-row',
+                  'justify-between',
+                  'items-center'
                 ])}
               >
                 <View>
                   <Text
                     style={style.flatten([
-                      "subtitle2",
-                      "color-text-black-medium",
-                      "margin-bottom-4",
+                      'subtitle2',
+                      'color-text-black-medium',
+                      'margin-bottom-4'
                     ])}
                   >
                     {data.name}
@@ -153,9 +148,9 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   {data.memo ? (
                     <Text
                       style={style.flatten([
-                        "body3",
-                        "color-text-black-low",
-                        "margin-bottom-4",
+                        'body3',
+                        'color-text-black-low',
+                        'margin-bottom-4'
                       ])}
                     >
                       {data.memo}
@@ -163,24 +158,24 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   ) : null}
                   <Text
                     style={style.flatten([
-                      "text-caption1",
-                      "font-medium",
-                      "color-primary",
+                      'text-caption1',
+                      'font-medium',
+                      'color-primary'
                     ])}
                   >
                     {Bech32Address.shortenAddress(data.address, 30)}
                   </Text>
                 </View>
                 <TouchableOpacity
-                  style={style.flatten(["padding-left-8", "padding-y-12"])}
+                  style={style.flatten(['padding-left-8', 'padding-y-12'])}
                   onPress={async () => {
                     if (
                       await confirmModal.confirm({
-                        title: "Remove Address",
+                        title: 'Remove Address',
                         paragraph:
-                          "Are you sure you want to remove this address?",
-                        yesButtonText: "Remove",
-                        noButtonText: "Cancel",
+                          'Are you sure you want to remove this address?',
+                        yesButtonText: 'Remove',
+                        noButtonText: 'Cancel'
                       })
                     ) {
                       await addressBookConfig.removeAddressBook(i);
@@ -188,7 +183,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   }}
                 >
                   <TrashCanIcon
-                    color={style.get("color-text-black-very-very-low").color}
+                    color={style.get('color-text-black-very-very-low').color}
                     size={24}
                   />
                 </TouchableOpacity>
@@ -197,8 +192,8 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
             {addressBookConfig.addressBookDatas.length - 1 !== i ? (
               <View
                 style={style.flatten([
-                  "height-1",
-                  "background-color-border-white",
+                  'height-1',
+                  'background-color-border-white'
                 ])}
               />
             ) : null}
@@ -208,26 +203,26 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
     </PageWithScrollView>
   ) : (
     <PageWithScrollView
-      contentContainerStyle={style.flatten(["flex-grow-1"])}
+      contentContainerStyle={style.flatten(['flex-grow-1'])}
       scrollEnabled={false}
     >
-      <View style={style.flatten(["flex-1"])} />
-      <View style={style.flatten(["justify-center", "items-center"])}>
-        <View style={style.flatten(["margin-bottom-21"])}>
+      <View style={style.flatten(['flex-1'])} />
+      <View style={style.flatten(['justify-center', 'items-center'])}>
+        <View style={style.flatten(['margin-bottom-21'])}>
           <AddressBookIcon
-            color={style.get("color-text-black-very-very-low").color}
+            color={style.get('color-text-black-very-very-low').color}
             height={56}
           />
         </View>
         <Text
-          style={style.flatten(["subtitle2", "color-text-black-very-very-low"])}
+          style={style.flatten(['subtitle2', 'color-text-black-very-very-low'])}
         >
           Address book is empty
         </Text>
       </View>
-      <View style={style.flatten(["margin-top-68", "flex-1"])} />
+      <View style={style.flatten(['margin-top-68', 'flex-1'])} />
     </PageWithScrollView>
   );
 });
 
-export * from "./add";
+export * from './add';

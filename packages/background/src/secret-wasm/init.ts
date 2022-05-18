@@ -1,13 +1,13 @@
-import { Router } from "@keplr-wallet/router";
+import { Router } from '@owallet-wallet/router';
 import {
   GetPubkeyMsg,
   GetTxEncryptionKeyMsg,
   ReqeustEncryptMsg,
-  RequestDecryptMsg,
-} from "./messages";
-import { SecretWasmService } from "./service";
-import { ROUTE } from "./constants";
-import { getHandler } from "./handler";
+  RequestDecryptMsg
+} from './messages';
+import { SecretWasmService } from './service';
+import { ROUTE } from './constants';
+import { getHandler } from './handler';
 
 export function init(router: Router, service: SecretWasmService): void {
   router.registerMessage(GetPubkeyMsg);

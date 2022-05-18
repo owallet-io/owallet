@@ -1,4 +1,4 @@
-import { BACKGROUND_PORT, MessageRequester } from "@keplr-wallet/router";
+import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
 import {
   AddLedgerKeyMsg,
   AddMnemonicKeyMsg,
@@ -22,16 +22,16 @@ import {
   KeyRing,
   CheckPasswordMsg,
   ExportKeyRingData,
-  ExportKeyRingDatasMsg,
-} from "@keplr-wallet/background";
+  ExportKeyRingDatasMsg
+} from '@owallet-wallet/background';
 
-import { computed, flow, makeObservable, observable, runInAction } from "mobx";
+import { computed, flow, makeObservable, observable, runInAction } from 'mobx';
 
-import { InteractionStore } from "./interaction";
-import { ChainGetter } from "../common";
-import { BIP44 } from "@keplr-wallet/types";
-import { DeepReadonly } from "utility-types";
-import { toGenerator } from "@keplr-wallet/common";
+import { InteractionStore } from './interaction';
+import { ChainGetter } from '../common';
+import { BIP44 } from '@owallet-wallet/types';
+import { DeepReadonly } from 'utility-types';
+import { toGenerator } from '@owallet-wallet/common';
 
 export class KeyRingSelectablesStore {
   @observable
@@ -81,7 +81,7 @@ export class KeyRingSelectablesStore {
   @flow
   *refresh() {
     // No need to set the coin type if the key store type is not mnemonic.
-    if (this.keyRingStore.keyRingType !== "mnemonic") {
+    if (this.keyRingStore.keyRingType !== 'mnemonic') {
       this.isInitializing = false;
       this._isKeyStoreCoinTypeSet = true;
       this._selectables = [];
@@ -95,7 +95,7 @@ export class KeyRingSelectablesStore {
 
     const msg = new GetIsKeyStoreCoinTypeSetMsg(this.chainId, [
       chainInfo.bip44,
-      ...(chainInfo.alternativeBIP44s ?? []),
+      ...(chainInfo.alternativeBIP44s ?? [])
     ]);
     const seletables = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
@@ -136,7 +136,7 @@ export class KeyRingStore {
     protected readonly eventDispatcher: {
       dispatchEvent: (type: string) => void;
     },
-    public readonly defaultKdf: "scrypt" | "sha256",
+    public readonly defaultKdf: 'scrypt' | 'sha256' | 'pbkdf2',
     protected readonly chainGetter: ChainGetter,
     protected readonly requester: MessageRequester,
     protected readonly interactionStore: InteractionStore
@@ -153,7 +153,7 @@ export class KeyRingStore {
     );
 
     if (!keyStore) {
-      return "none";
+      return 'none';
     } else {
       return KeyRing.getTypeOfKeyStore(keyStore);
     }
@@ -165,7 +165,7 @@ export class KeyRingStore {
     password: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath,
-    kdf: "scrypt" | "sha256" = this.defaultKdf
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new CreateMnemonicKeyMsg(
       kdf,
@@ -186,7 +186,7 @@ export class KeyRingStore {
     privateKey: Uint8Array,
     password: string,
     meta: Record<string, string>,
-    kdf: "scrypt" | "sha256" = this.defaultKdf
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new CreatePrivateKeyMsg(kdf, privateKey, password, meta);
     const result = yield* toGenerator(
@@ -201,7 +201,7 @@ export class KeyRingStore {
     password: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath,
-    kdf: "scrypt" | "sha256" = this.defaultKdf
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new CreateLedgerKeyMsg(kdf, password, meta, bip44HDPath);
     const result = yield* toGenerator(
@@ -216,7 +216,7 @@ export class KeyRingStore {
     mnemonic: string,
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath,
-    kdf: "scrypt" | "sha256" = this.defaultKdf
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new AddMnemonicKeyMsg(kdf, mnemonic, meta, bip44HDPath);
     this.multiKeyStoreInfo = (yield* toGenerator(
@@ -228,7 +228,7 @@ export class KeyRingStore {
   *addPrivateKey(
     privateKey: Uint8Array,
     meta: Record<string, string>,
-    kdf: "scrypt" | "sha256" = this.defaultKdf
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new AddPrivateKeyMsg(kdf, privateKey, meta);
     this.multiKeyStoreInfo = (yield* toGenerator(
@@ -240,7 +240,7 @@ export class KeyRingStore {
   *addLedgerKey(
     meta: Record<string, string>,
     bip44HDPath: BIP44HDPath,
-    kdf: "scrypt" | "sha256" = this.defaultKdf
+    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new AddLedgerKeyMsg(kdf, meta, bip44HDPath);
     this.multiKeyStoreInfo = (yield* toGenerator(
@@ -278,8 +278,8 @@ export class KeyRingStore {
     this.status = result.status;
 
     // Approve all waiting interaction for the enabling key ring.
-    for (const interaction of this.interactionStore.getDatas("unlock")) {
-      yield this.interactionStore.approve("unlock", interaction.id, {});
+    for (const interaction of this.interactionStore.getDatas('unlock')) {
+      yield this.interactionStore.approve('unlock', interaction.id, {});
     }
 
     this.eventDispatcher.dispatchEvent("keplr_keystoreunlock");
@@ -288,7 +288,7 @@ export class KeyRingStore {
 
   @flow
   *rejectAll() {
-    yield this.interactionStore.rejectAll("unlock");
+    yield this.interactionStore.rejectAll('unlock');
   }
 
   @flow
@@ -394,5 +394,24 @@ export class KeyRingStore {
       BACKGROUND_PORT,
       new ExportKeyRingDatasMsg(password)
     );
+  }
+
+  protected dispatchKeyStoreChangeEvent() {
+    this.eventDispatcher.dispatchEvent('owallet_keystorechange');
+
+    for (const listener of this.keyStoreChangedListeners) {
+      listener();
+    }
+  }
+
+  addKeyStoreChangedListener(listener: () => void) {
+    this.keyStoreChangedListeners.push(listener);
+  }
+
+  removeKeyStoreChangedListener(listener: () => void) {
+    const i = this.keyStoreChangedListeners.indexOf(listener);
+    if (i >= 0) {
+      this.keyStoreChangedListeners.splice(i, 1);
+    }
   }
 }

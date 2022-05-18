@@ -1,28 +1,28 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { registerModal } from "../base";
-import { CardModal } from "../card";
-import { ScrollView, Text, View } from "react-native";
-import { useStyle } from "../../styles";
-import { useStore } from "../../stores";
-import { MemoInput } from "../../components/input";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { registerModal } from '../base';
+import { CardModal } from '../card';
+import { ScrollView, Text, View } from 'react-native';
+import { useStyle } from '../../styles';
+import { useStore } from '../../stores';
+import { MemoInput } from '../../components/input';
 import {
   useFeeConfig,
   useGasConfig,
   useMemoConfig,
   useSignDocAmountConfig,
-  useSignDocHelper,
-} from "@keplr-wallet/hooks";
-import { Button } from "../../components/button";
-import { Msg as AminoMsg } from "@cosmjs/launchpad";
-import { Msg } from "./msg";
-import { observer } from "mobx-react-lite";
-import { useUnmount } from "../../hooks";
-import { FeeInSign } from "./fee";
-import { WCMessageRequester } from "../../stores/wallet-connect/msg-requester";
-import { WCAppLogoAndName } from "../../components/wallet-connect";
-import WalletConnect from "@walletconnect/client";
-import { renderAminoMessage } from "./amino";
-import { renderDirectMessage } from "./direct";
+  useSignDocHelper
+} from '@owallet-wallet/hooks';
+import { Button } from '../../components/button';
+import { Msg as AminoMsg } from '@cosmjs/launchpad';
+import { Msg } from './msg';
+import { observer } from 'mobx-react-lite';
+import { useUnmount } from '../../hooks';
+import { FeeInSign } from './fee';
+import { WCMessageRequester } from '../../stores/wallet-connect/msg-requester';
+import { WCAppLogoAndName } from '../../components/wallet-connect';
+import WalletConnect from '@walletconnect/client';
+import { renderAminoMessage } from './amino';
+import { renderDirectMessage } from './direct';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -34,7 +34,7 @@ export const SignModal: FunctionComponent<{
       accountStore,
       queriesStore,
       walletConnectStore,
-      signInteractionStore,
+      signInteractionStore
     } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
@@ -43,12 +43,12 @@ export const SignModal: FunctionComponent<{
     // Check that the request is from the wallet connect.
     // If this is undefiend, the request is not from the wallet connect.
     const [wcSession, setWCSession] = useState<
-      WalletConnect["session"] | undefined
+      WalletConnect['session'] | undefined
     >();
 
     const style = useStyle();
 
-    const [signer, setSigner] = useState("");
+    const [signer, setSigner] = useState('');
 
     const [chainId, setChainId] = useState(chainStore.current.chainId);
 
@@ -89,7 +89,7 @@ export const SignModal: FunctionComponent<{
         ) {
           feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
         } else {
-          feeConfig.setFeeType("average");
+          feeConfig.setFeeType('average');
         }
         setSigner(data.data.signer);
 
@@ -111,20 +111,20 @@ export const SignModal: FunctionComponent<{
       memoConfig,
       signDocHelper,
       signInteractionStore.waitingData,
-      walletConnectStore,
+      walletConnectStore
     ]);
 
     const mode = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode
-      : "none";
+      : 'none';
     const msgs = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode === "amino"
+      ? signDocHelper.signDocWrapper.mode === 'amino'
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
 
     const renderedMsgs = (() => {
-      if (mode === "amino") {
+      if (mode === 'amino') {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const account = accountStore.getAccount(chainId);
           const chainInfo = chainStore.getChain(chainId);
@@ -140,14 +140,14 @@ export const SignModal: FunctionComponent<{
                 {scrollViewHorizontal ? (
                   <ScrollView horizontal={true}>
                     <Text
-                      style={style.flatten(["body3", "color-text-black-low"])}
+                      style={style.flatten(['body3', 'color-text-black-low'])}
                     >
                       {content}
                     </Text>
                   </ScrollView>
                 ) : (
                   <Text
-                    style={style.flatten(["body3", "color-text-black-low"])}
+                    style={style.flatten(['body3', 'color-text-black-low'])}
                   >
                     {content}
                   </Text>
@@ -156,16 +156,16 @@ export const SignModal: FunctionComponent<{
               {msgs.length - 1 !== i ? (
                 <View
                   style={style.flatten([
-                    "height-1",
-                    "background-color-border-white",
-                    "margin-x-16",
+                    'height-1',
+                    'background-color-border-white',
+                    'margin-x-16'
                   ])}
                 />
               ) : null}
             </View>
           );
         });
-      } else if (mode === "direct") {
+      } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
           const chainInfo = chainStore.getChain(chainId);
           const { title, content } = renderDirectMessage(
@@ -176,16 +176,16 @@ export const SignModal: FunctionComponent<{
           return (
             <View key={i.toString()}>
               <Msg title={title}>
-                <Text style={style.flatten(["body3", "color-text-black-low"])}>
+                <Text style={style.flatten(['body3', 'color-text-black-low'])}>
                   {content}
                 </Text>
               </Msg>
               {msgs.length - 1 !== i ? (
                 <View
                   style={style.flatten([
-                    "height-1",
-                    "background-color-border-white",
-                    "margin-x-16",
+                    'height-1',
+                    'background-color-border-white',
+                    'margin-x-16'
                   ])}
                 />
               ) : null}
@@ -201,31 +201,31 @@ export const SignModal: FunctionComponent<{
       <CardModal title="Confirm Transaction">
         {wcSession ? (
           <WCAppLogoAndName
-            containerStyle={style.flatten(["margin-y-14"])}
+            containerStyle={style.flatten(['margin-y-14'])}
             peerMeta={wcSession.peerMeta}
           />
         ) : null}
-        <View style={style.flatten(["margin-bottom-16"])}>
-          <Text style={style.flatten(["margin-bottom-3"])}>
-            <Text style={style.flatten(["subtitle3", "color-primary"])}>
+        <View style={style.flatten(['margin-bottom-16'])}>
+          <Text style={style.flatten(['margin-bottom-3'])}>
+            <Text style={style.flatten(['subtitle3', 'color-primary'])}>
               {`${msgs.length.toString()} `}
             </Text>
             <Text
-              style={style.flatten(["subtitle3", "color-text-black-medium"])}
+              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
             >
               Messages
             </Text>
           </Text>
           <View
             style={style.flatten([
-              "border-radius-8",
-              "border-width-1",
-              "border-color-border-white",
-              "overflow-hidden",
+              'border-radius-8',
+              'border-width-1',
+              'border-color-border-white',
+              'overflow-hidden'
             ])}
           >
             <ScrollView
-              style={style.flatten(["max-height-214"])}
+              style={style.flatten(['max-height-214'])}
               persistentScrollbar={true}
             >
               {renderedMsgs}
@@ -266,6 +266,6 @@ export const SignModal: FunctionComponent<{
   }),
   {
     disableSafeArea: true,
-    blurBackdropOnIOS: true,
+    blurBackdropOnIOS: true
   }
 );

@@ -1,8 +1,8 @@
-import { IGasConfig } from "./types";
-import { TxChainSetter } from "./chain";
-import { ChainGetter } from "@keplr-wallet/stores";
-import { action, makeObservable, observable } from "mobx";
-import { useState } from "react";
+import { IGasConfig } from './types';
+import { TxChainSetter } from './chain';
+import { ChainGetter } from '@owallet-wallet/stores';
+import { action, makeObservable, observable } from 'mobx';
+import { useState } from 'react';
 
 export class GasConfig extends TxChainSetter implements IGasConfig {
   @observable
@@ -25,13 +25,41 @@ export class GasConfig extends TxChainSetter implements IGasConfig {
   }
 
   @action
-  setGas(gas: number) {
-    this._gas = Math.floor(gas);
+  setGas(gas: number | string) {
+    if (typeof gas === 'number') {
+      this._gasRaw = Math.floor(gas).toString();
+      return;
+    }
+
+    if (gas === '') {
+      this._gasRaw = gas;
+      return;
+    }
+
+    // Gas must not be floated.
+    if (!gas.includes('.')) {
+      if (!Number.isNaN(Number.parseInt(gas))) {
+        this._gasRaw = gas;
+        return;
+      }
+    }
   }
 
   getError(): Error | undefined {
+    if (this._gasRaw === '') {
+      return new Error('Gas not set');
+    }
+
+    if (this._gasRaw && Number.isNaN(this._gasRaw)) {
+      return new Error('Gas is not valid number');
+    }
+
+    if (!Number.isInteger(this.gas)) {
+      return new Error('Gas is not integer');
+    }
+
     if (this.gas <= 0) {
-      return new Error("Gas should be greater than 0");
+      return new Error('Gas should be greater than 0');
     }
     return;
   }

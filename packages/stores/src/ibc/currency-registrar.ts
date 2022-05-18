@@ -1,8 +1,8 @@
-import { flow, makeObservable, observable, runInAction } from "mobx";
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
-import { ChainInfoInner, ChainStore } from "../chain";
-import { HasCosmosQueries, QueriesSetBase } from "../query";
-import { DenomHelper, KVStore, toGenerator } from "@keplr-wallet/common";
+import { flow, makeObservable, observable, runInAction } from 'mobx';
+import { AppCurrency, ChainInfo } from '@owallet-wallet/types';
+import { ChainInfoInner, ChainStore } from '../chain';
+import { HasCosmosQueries, HasCosmwasmQueries, QueriesSetBase } from '../query';
+import { DenomHelper, KVStore, toGenerator } from '@owallet-wallet/common';
 
 type CacheIBCDenomData = {
   denomTrace: {
@@ -106,7 +106,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
   ) {
     this.cacheDenomTracePaths.set(denomTraceHash, {
       ...data,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     });
 
     const obj: Record<string, CacheIBCDenomData> = {};
@@ -124,8 +124,8 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
   ): [AppCurrency | undefined, boolean] | undefined {
     const denomHelper = new DenomHelper(coinMinimalDenom);
     if (
-      denomHelper.type !== "native" ||
-      !denomHelper.denom.startsWith("ibc/")
+      denomHelper.type !== 'native' ||
+      !denomHelper.denom.startsWith('ibc/')
     ) {
       // IBC Currency's denom should start with "ibc/"
       return;
@@ -142,7 +142,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
 
     const queries = this.queriesStore.get(this.chainInfoInner.chainId);
 
-    const hash = denomHelper.denom.replace("ibc/", "");
+    const hash = denomHelper.denom.replace('ibc/', '');
 
     const cached = this.getCacheIBCDenomData(hash);
 
@@ -215,32 +215,80 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
           this.setCacheIBCDenomData(hash, {
             counterpartyChainId: counterpartyChainInfo?.chainId,
             denomTrace,
-            originChainId: originChainInfo.chainId,
+            originChainId: originChainInfo.chainId
           });
         }
       }
     }
 
     if (originChainInfo && denomTrace) {
-      const currency = originChainInfo.forceFindCurrency(denomTrace.denom);
+      if (denomTrace.denom.split(/^(cw20):(\w+)$/).length === 4) {
+        // If the origin currency is ics20-cw20.
+        let cw20Currency = originChainInfo.currencies.find(
+          (cur) =>
+            denomTrace && cur.coinMinimalDenom.startsWith(denomTrace.denom)
+        );
+        if (!cw20Currency && this.cosmwasmQueriesStore) {
+          const cosmwasmQuries = this.cosmwasmQueriesStore.get(
+            originChainInfo.chainId
+          );
+          const contractAddress = denomTrace.denom.replace('cw20:', '');
+          const contractInfo = cosmwasmQuries.cosmwasm.querycw20ContractInfo.getQueryContract(
+            contractAddress
+          );
+          if (contractInfo.response) {
+            cw20Currency = {
+              coinDecimals: contractInfo.response.data.decimals,
+              coinDenom: contractInfo.response.data.symbol,
+              coinMinimalDenom: `cw20:${contractAddress}:${contractInfo.response.data.name}`
+            };
+            originChainInfo.addCurrencies(cw20Currency);
+          }
+        }
 
-      if (!("type" in currency)) {
-        return [
-          {
-            ...currency,
-            coinMinimalDenom: denomHelper.denom,
-            coinDenom: this.coinDenomGenerator(
-              denomTrace,
-              originChainInfo,
-              counterpartyChainInfo,
-              currency
-            ),
-            paths: denomTrace.paths,
-            originChainId: originChainInfo.chainId,
-            originCurrency: currency,
-          },
-          true,
-        ];
+        if (cw20Currency) {
+          return [
+            {
+              coinDecimals: cw20Currency.coinDecimals,
+              coinGeckoId: cw20Currency.coinGeckoId,
+              coinImageUrl: cw20Currency.coinImageUrl,
+              coinMinimalDenom: denomHelper.denom,
+              coinDenom: this.coinDenomGenerator(
+                denomTrace,
+                originChainInfo,
+                counterpartyChainInfo,
+                cw20Currency
+              ),
+              paths: denomTrace.paths,
+              originChainId: originChainInfo.chainId,
+              originCurrency: cw20Currency
+            },
+            true
+          ];
+        }
+      } else {
+        const currency = originChainInfo.forceFindCurrency(denomTrace.denom);
+
+        if (!('paths' in currency)) {
+          return [
+            {
+              coinDecimals: currency.coinDecimals,
+              coinGeckoId: currency.coinGeckoId,
+              coinImageUrl: currency.coinImageUrl,
+              coinMinimalDenom: denomHelper.denom,
+              coinDenom: this.coinDenomGenerator(
+                denomTrace,
+                originChainInfo,
+                counterpartyChainInfo,
+                currency
+              ),
+              paths: denomTrace.paths,
+              originChainId: originChainInfo.chainId,
+              originCurrency: currency
+            },
+            true
+          ];
+        }
       }
 
       // In this case, just show the raw currency.
@@ -258,9 +306,9 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
           ),
           paths: denomTrace.paths,
           originChainId: undefined,
-          originCurrency: undefined,
+          originCurrency: undefined
         },
-        false,
+        false
       ];
     }
 
@@ -295,11 +343,11 @@ export class IBCCurrencyRegsitrar<C extends ChainInfo = ChainInfo> {
   ): string {
     if (originCurrency) {
       return `${originCurrency.coinDenom} (${
-        counterpartyChainInfo ? counterpartyChainInfo.chainName : "Unknown"
+        counterpartyChainInfo ? counterpartyChainInfo.chainName : 'Unknown'
       }/${denomTrace.paths[0].channelId})`;
     } else {
       return `${denomTrace.denom} (${
-        counterpartyChainInfo ? counterpartyChainInfo.chainName : "Unknown"
+        counterpartyChainInfo ? counterpartyChainInfo.chainName : 'Unknown'
       }/${denomTrace.paths[0].channelId})`;
     }
   }

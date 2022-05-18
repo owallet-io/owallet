@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
 import {
   EmptyAddressError,
   ENSFailedToFetchError,
@@ -7,16 +7,16 @@ import {
   ENSNotSupportedError,
   IMemoConfig,
   InvalidBech32Error,
-  IRecipientConfig,
-} from "@keplr-wallet/hooks";
-import { TextStyle, View, ViewStyle } from "react-native";
-import { TextInput } from "./input";
-import { ObservableEnsFetcher } from "@keplr-wallet/ens";
-import { LoadingSpinner } from "../spinner";
-import { useStyle } from "../../styles";
-import { AddressBookIcon } from "../icon";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { useSmartNavigation } from "../../navigation";
+  IRecipientConfig
+} from '@owallet-wallet/hooks';
+import { TextStyle, View, ViewStyle } from 'react-native';
+import { TextInput } from './input';
+import { ObservableEnsFetcher } from '@owallet-wallet/ens';
+import { LoadingSpinner } from '../spinner';
+import { useStyle } from '../../styles';
+import { AddressBookIcon } from '../icon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useSmartNavigation } from '../../navigation';
 
 export const AddressInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -39,7 +39,7 @@ export const AddressInput: FunctionComponent<{
     label,
     recipientConfig,
     memoConfig,
-    disableAddressBook,
+    disableAddressBook
   }) => {
     const smartNavigation = useSmartNavigation();
 
@@ -57,15 +57,15 @@ export const AddressInput: FunctionComponent<{
             // No need to show the error to user.
             return;
           case InvalidBech32Error:
-            return "Invalid address";
+            return 'Invalid address';
           case ENSNotSupportedError:
-            return "ENS not supported";
+            return 'ENS not supported';
           case ENSFailedToFetchError:
-            return "Failed to fetch the address from ENS";
+            return 'Failed to fetch the address from ENS';
           case ENSIsFetchingError:
             return;
           default:
-            return "Unknown error";
+            return 'Unknown error';
         }
       }
     }, [error]);
@@ -90,16 +90,16 @@ export const AddressInput: FunctionComponent<{
               <View>
                 <View
                   style={style.flatten([
-                    "absolute",
-                    "height-16",
-                    "justify-center",
-                    "margin-top-2",
-                    "margin-left-4",
+                    'absolute',
+                    'height-16',
+                    'justify-center',
+                    'margin-top-2',
+                    'margin-left-4'
                   ])}
                 >
                   <LoadingSpinner
                     size={14}
-                    color={style.get("color-loading-spinner").color}
+                    color={style.get('color-loading-spinner').color}
                   />
                 </View>
               </View>
@@ -112,22 +112,22 @@ export const AddressInput: FunctionComponent<{
           disableAddressBook ? null : (
             <View
               style={style.flatten([
-                "height-1",
-                "overflow-visible",
-                "justify-center",
+                'height-1',
+                'overflow-visible',
+                'justify-center'
               ])}
             >
               <TouchableOpacity
-                style={style.flatten(["padding-4"])}
+                style={style.flatten(['padding-4'])}
                 onPress={() => {
-                  smartNavigation.navigateSmart("AddressBook", {
+                  smartNavigation.navigateSmart('AddressBook', {
                     recipientConfig,
-                    memoConfig,
+                    memoConfig
                   });
                 }}
               >
                 <AddressBookIcon
-                  color={style.get("color-primary").color}
+                  color={style.get('color-primary').color}
                   height={18}
                 />
               </TouchableOpacity>

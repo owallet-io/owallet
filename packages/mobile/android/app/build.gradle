@@ -133,7 +133,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.chainapsis.keplr"
+        applicationId "com.chainapsis.owallet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 6

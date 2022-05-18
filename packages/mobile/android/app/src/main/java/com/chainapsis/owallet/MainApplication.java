@@ -1,6 +1,6 @@
-package com.chainapsis.keplr;
+package com.chainapsis.owallet;
 
-import com.chainapsis.keplr.generated.BasePackageList;
+import com.chainapsis.owallet.generated.BasePackageList;
 
 import android.app.Application;
 import android.content.Context;
@@ -83,7 +83,7 @@ public class MainApplication extends Application implements ReactApplication {
          We use reflection here to pick up the class that initializes Flipper,
         since Flipper library is not available in release mode
         */
-        Class<?> aClass = Class.forName("com.chainapsis.keplr.ReactNativeFlipper");
+        Class<?> aClass = Class.forName("com.chainapsis.owallet.ReactNativeFlipper");
         aClass
             .getMethod("initializeFlipper", Context.class, ReactInstanceManager.class)
             .invoke(null, context, reactInstanceManager);

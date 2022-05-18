@@ -1,19 +1,19 @@
 /* eslint-disable react/display-name */
 
-import React, { FunctionComponent, useMemo } from "react";
-import { CoinUtils, Coin } from "@keplr-wallet/unit";
-import { AppCurrency } from "@keplr-wallet/types";
-import yaml from "js-yaml";
-import { CoinPrimitive } from "@keplr-wallet/stores";
-import { Text } from "react-native";
-import { useStyle } from "../../styles";
-import { Bech32Address } from "@keplr-wallet/cosmos";
+import React, { FunctionComponent, useMemo } from 'react';
+import { CoinUtils, Coin } from '@owallet-wallet/unit';
+import { AppCurrency } from '@owallet-wallet/types';
+import yaml from 'js-yaml';
+import { CoinPrimitive } from '@owallet-wallet/stores';
+import { Text } from 'react-native';
+import { useStyle } from '../../styles';
+import { Bech32Address } from '@owallet-wallet/cosmos';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import Hypher from "hypher";
+import Hypher from 'hypher';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import english from "hyphenation.en-us";
+import english from 'hyphenation.en-us';
 
 const h = new Hypher(english);
 
@@ -161,9 +161,9 @@ export interface MsgLink {
 export function renderUnknownMessage(msg: object) {
   return {
     icon: undefined,
-    title: "Custom",
+    title: 'Custom',
     content: <UnknownMsgView msg={msg} />,
-    scrollViewHorizontal: true,
+    scrollViewHorizontal: true
   };
 }
 
@@ -179,29 +179,29 @@ export function renderMsgSend(
 
     receives.push({
       amount: clearDecimals(parsed.amount),
-      denom: parsed.denom,
+      denom: parsed.denom
     });
   }
 
   return {
-    title: "Send",
+    title: 'Send',
     content: (
       <Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(toAddress, 20))}
         </Text>
-        <Text>{" will receive "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{' will receive '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(
             receives
               .map((coin) => {
                 return `${coin.amount} ${coin.denom}`;
               })
-              .join(",")
+              .join(',')
           )}
         </Text>
       </Text>
-    ),
+    )
   };
 }
 
@@ -216,29 +216,29 @@ export function renderMsgTransfer(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
+    denom: parsed.denom
   };
 
   return {
-    title: "IBC Transfer",
+    title: 'IBC Transfer',
     content: (
       <Text>
-        <Text>{"Send "}</Text>
+        <Text>{'Send '}</Text>
         <Text
           style={{
-            fontWeight: "bold",
+            fontWeight: 'bold'
           }}
         >
           {hyphen(`${amount.amount} ${amount.denom}`)}
         </Text>
-        <Text>{" to "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{' to '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(receiver, 20))}
         </Text>
-        <Text>{" on "}</Text>
-        <Text style={{ fontWeight: "bold" }}>{channelId}</Text>
+        <Text>{' on '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>{channelId}</Text>
       </Text>
-    ),
+    )
   };
 }
 
@@ -255,27 +255,27 @@ export function renderMsgBeginRedelegate(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
+    denom: parsed.denom
   };
 
   return {
-    title: "Switch Validator",
+    title: 'Switch Validator',
     content: (
       <Text>
-        <Text>{"Switch validator "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{'Switch validator '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(`${amount.amount} ${amount.denom}`)}
         </Text>
-        <Text>{" from "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{' from '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorSrcAddress, 24))}
         </Text>
-        <Text>{" to "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{' to '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorDstAddress, 24))}
         </Text>
       </Text>
-    ),
+    )
   };
 }
 
@@ -291,26 +291,26 @@ export function renderMsgUndelegate(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
+    denom: parsed.denom
   };
 
   return {
-    title: "Unstake",
+    title: 'Unstake',
     content: (
       <Text>
-        <Text>{"Unstake "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{'Unstake '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(`${amount.amount} ${amount.denom}`)}
         </Text>
-        <Text>{" from "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{' from '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
         </Text>
         <Text>{`\n${hyphen(
-          "Asset will be liquid after unbonding period"
+          'Asset will be liquid after unbonding period'
         )}`}</Text>
       </Text>
-    ),
+    )
   };
 }
 
@@ -326,76 +326,76 @@ export function renderMsgDelegate(
 
   amount = {
     amount: clearDecimals(parsed.amount),
-    denom: parsed.denom,
+    denom: parsed.denom
   };
 
   // Delegate <b>{amount}</b> to <b>{validator}</b>
 
   return {
-    title: "Stake",
+    title: 'Stake',
     content: (
       <Text>
-        <Text>{"Stake "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{'Stake '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(`${amount.amount} ${amount.denom}`)}
         </Text>
-        <Text>{" to "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{' to '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
         </Text>
       </Text>
-    ),
+    )
   };
 }
 
 export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
   return {
-    title: "Claim Staking Reward",
+    title: 'Claim Staking Reward',
     content: (
       <Text>
-        <Text>{"Claim pending staking reward from "}</Text>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text>{'Claim pending staking reward from '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorAddress, 34))}
         </Text>
       </Text>
-    ),
+    )
   };
 }
 
 export function renderMsgVote(proposalId: string, option: string | number) {
   const textualOption = (() => {
-    if (typeof option === "string") {
+    if (typeof option === 'string') {
       return option;
     }
 
     switch (option) {
       case 0:
-        return "Empty";
+        return 'Empty';
       case 1:
-        return "Yes";
+        return 'Yes';
       case 2:
-        return "Abstain";
+        return 'Abstain';
       case 3:
-        return "No";
+        return 'No';
       case 4:
-        return "No with veto";
+        return 'No with veto';
       default:
-        return "Unspecified";
+        return 'Unspecified';
     }
   })();
 
   // Vote <b>{option}</b> on <b>Proposal {id}</b>
 
   return {
-    title: "Vote",
+    title: 'Vote',
     content: (
       <Text>
-        <Text>{"Vote "}</Text>
-        <Text style={{ fontWeight: "bold" }}>{textualOption}</Text>
-        <Text>{" on "}</Text>
-        <Text style={{ fontWeight: "bold" }}>{`Proposal ${proposalId}`}</Text>
+        <Text>{'Vote '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>{textualOption}</Text>
+        <Text>{' on '}</Text>
+        <Text style={{ fontWeight: 'bold' }}>{`Proposal ${proposalId}`}</Text>
       </Text>
-    ),
+    )
   };
 }
 
@@ -536,7 +536,7 @@ export const WasmExecutionMsgView: FunctionComponent<{
   useEffect(() => {
     // If msg is string, it will be the message for secret-wasm.
     // So, try to decrypt.
-    // But, if this msg is not encrypted via Keplr, Keplr cannot decrypt it.
+    // But, if this msg is not encrypted via OWallet, OWallet cannot decrypt it.
     // TODO: Handle the error case. If an error occurs, rather than rejecting the signing, it informs the user that Kepler cannot decrypt it and allows the user to choose.
     if (typeof msg === "string") {
       (async () => {
@@ -546,14 +546,14 @@ export const WasmExecutionMsgView: FunctionComponent<{
           const nonce = cipherText.slice(0, 32);
           cipherText = cipherText.slice(64);
 
-          const keplr = await accountStore
+          const owallet = await accountStore
             .getAccount(chainStore.current.chainId)
-            .getKeplr();
-          if (!keplr) {
-            throw new Error("Can't get the keplr API");
+            .getOWallet();
+          if (!owallet) {
+            throw new Error("Can't get the owallet API");
           }
 
-          const enigmaUtils = keplr.getEnigmaUtils(chainStore.current.chainId);
+          const enigmaUtils = owallet.getEnigmaUtils(chainStore.current.chainId);
           let plainText = Buffer.from(
             await enigmaUtils.decrypt(cipherText, nonce)
           );
@@ -616,30 +616,30 @@ export const UnknownMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {
       return yaml.dump(msg);
     } catch (e) {
       console.log(e);
-      return "Failed to decode the msg";
+      return 'Failed to decode the msg';
     }
   }, [msg]);
 
   return (
-    <Text style={style.flatten(["body3", "color-text-black-low"])}>
+    <Text style={style.flatten(['body3', 'color-text-black-low'])}>
       {prettyMsg}
     </Text>
   );
 };
 
 export function clearDecimals(dec: string): string {
-  if (!dec.includes(".")) {
+  if (!dec.includes('.')) {
     return dec;
   }
 
   for (let i = dec.length - 1; i >= 0; i--) {
-    if (dec[i] === "0") {
+    if (dec[i] === '0') {
       dec = dec.slice(0, dec.length - 1);
     } else {
       break;
     }
   }
-  if (dec.length > 0 && dec[dec.length - 1] === ".") {
+  if (dec.length > 0 && dec[dec.length - 1] === '.') {
     dec = dec.slice(0, dec.length - 1);
   }
 

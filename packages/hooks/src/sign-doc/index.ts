@@ -1,10 +1,10 @@
-import { action, computed, makeObservable, observable } from "mobx";
-import { useState } from "react";
-import { IFeeConfig, IMemoConfig } from "../tx";
-import { cosmos, SignDocWrapper } from "@keplr-wallet/cosmos";
-import Long from "long";
+import { action, computed, makeObservable, observable } from 'mobx';
+import { useState } from 'react';
+import { IFeeConfig, IMemoConfig } from '../tx';
+import { cosmos, SignDocWrapper } from '@owallet-wallet/cosmos';
+import Long from 'long';
 
-export * from "./amount";
+export * from './amount';
 
 export class SignDocHelper {
   @observable.ref
@@ -25,11 +25,11 @@ export class SignDocHelper {
 
     const stdFee = this.feeConfig.toStdFee();
 
-    if (this._signDocWrapper.mode === "amino") {
+    if (this._signDocWrapper.mode === 'amino') {
       const signDoc = {
         ...this._signDocWrapper.aminoSignDoc,
         fee: stdFee,
-        memo: this.memoConfig.memo,
+        memo: this.memoConfig.memo
       };
 
       return SignDocWrapper.fromAminoSignDoc(signDoc);
@@ -41,7 +41,7 @@ export class SignDocHelper {
       amount: stdFee.amount.map((fee) => {
         return {
           amount: fee.amount,
-          denom: fee.denom,
+          denom: fee.denom
         };
       }),
       granter: protoSignDoc.authInfo.fee?.granter
@@ -49,7 +49,7 @@ export class SignDocHelper {
         : null,
       payer: protoSignDoc.authInfo.fee?.payer
         ? protoSignDoc.authInfo.fee?.granter
-        : null,
+        : null
     });
 
     const newSignDoc = cosmos.tx.v1beta1.SignDoc.create({
@@ -58,16 +58,16 @@ export class SignDocHelper {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
           ...protoSignDoc.txBody,
           ...{
-            memo: this.memoConfig.memo,
-          },
+            memo: this.memoConfig.memo
+          }
         }).finish(),
         authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
           ...protoSignDoc.authInfo,
           ...{
-            fee,
-          },
-        }).finish(),
-      },
+            fee
+          }
+        }).finish()
+      }
     });
 
     return SignDocWrapper.fromDirectSignDoc(newSignDoc);
@@ -79,7 +79,7 @@ export class SignDocHelper {
       return undefined;
     }
 
-    if (this.signDocWrapper.mode === "amino") {
+    if (this.signDocWrapper.mode === 'amino') {
       return this.signDocWrapper.aminoSignDoc;
     } else {
       return this.signDocWrapper.protoSignDoc.toJSON();

@@ -1,11 +1,11 @@
-import { SupplyTotal, SupplyTotalStargate } from "./types";
-import { KVStore } from "@keplr-wallet/common";
+import { SupplyTotal, SupplyTotalStargate } from './types';
+import { KVStore } from '@owallet-wallet/common';
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap,
-} from "../../chain-query";
-import { ChainGetter } from "../../../common";
-import { autorun } from "mobx";
+  ObservableChainQueryMap
+} from '../../chain-query';
+import { ChainGetter } from '../../../common';
+import { autorun } from 'mobx';
 
 export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<
   SupplyTotal | SupplyTotalStargate
@@ -20,7 +20,7 @@ export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.features && chainInfo.features.includes("stargate")) {
+      if (chainInfo.features && chainInfo.features.includes('stargate')) {
         const url = `/bank/total/${denom}`;
 
         this.setUrl(url);

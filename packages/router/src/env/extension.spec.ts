@@ -1,17 +1,17 @@
-import assert from "assert";
+import assert from 'assert';
 
-import { ExtensionEnv } from "./extension";
-import { MessageSender } from "../types";
+import { ExtensionEnv } from './extension';
+import { MessageSender } from '@owallet-wallet/router';
 
-describe("Test extension env producer", () => {
-  const extensionId = "id";
-  const extensionUrl = "https://wallet.keplr.app";
+describe('Test extension env producer', () => {
+  const extensionId = 'id';
+  const extensionUrl = 'https://wallet.owallet.app';
   const validSender: MessageSender = {
     id: extensionId,
-    url: extensionUrl,
+    url: extensionUrl
   };
 
-  it("should return true if the sender is internal else return false", () => {
+  it('should return true if the sender is internal else return false', () => {
     assert.strictEqual(
       ExtensionEnv.checkIsInternalMessage(
         validSender,
@@ -25,7 +25,7 @@ describe("Test extension env producer", () => {
       ExtensionEnv.checkIsInternalMessage(
         {
           ...validSender,
-          url: "https://other.com",
+          url: 'https://other.com'
         },
         extensionId,
         extensionUrl
@@ -37,7 +37,7 @@ describe("Test extension env producer", () => {
       ExtensionEnv.checkIsInternalMessage(
         {
           ...validSender,
-          id: "other_id",
+          id: 'other_id'
         },
         extensionId,
         extensionUrl
@@ -48,8 +48,8 @@ describe("Test extension env producer", () => {
     assert.strictEqual(
       ExtensionEnv.checkIsInternalMessage(
         {
-          id: "other_id",
-          url: "https://other.com",
+          id: 'other_id',
+          url: 'https://other.com'
         },
         extensionId,
         extensionUrl
@@ -58,19 +58,23 @@ describe("Test extension env producer", () => {
     );
   });
 
-  it("should throw an error if the sender is invalid", () => {
+  it('should throw an error if the sender is invalid', () => {
     assert.throws(() => {
-      ExtensionEnv.checkIsInternalMessage({}, "id", "https://wallet.keplr.app");
+      ExtensionEnv.checkIsInternalMessage(
+        {},
+        'id',
+        'https://wallet.owallet.app'
+      );
     });
 
     assert.throws(() => {
       ExtensionEnv.checkIsInternalMessage(
         {
           ...validSender,
-          url: "invalid://test.com",
+          url: 'invalid://test.com'
         },
-        "id",
-        "https://wallet.keplr.app"
+        'id',
+        'https://wallet.owallet.app'
       );
     });
   });

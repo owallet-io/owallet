@@ -1,17 +1,17 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
-import { PageWithScrollView } from "../../../components/page";
-import { Text, View } from "react-native";
-import { useStyle } from "../../../styles";
-import { WordChip } from "../../../components/mnemonic";
-import { Button } from "../../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../../navigation";
-import { NewMnemonicConfig } from "./hook";
-import { RegisterConfig } from "@keplr-wallet/hooks";
-import { observer } from "mobx-react-lite";
-import { RectButton } from "../../../components/rect-button";
-import { useStore } from "../../../stores";
-import { BIP44HDPath } from "@keplr-wallet/background";
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { PageWithScrollView } from '../../../components/page';
+import { Text, View } from 'react-native';
+import { useStyle } from '../../../styles';
+import { WordChip } from '../../../components/mnemonic';
+import { Button } from '../../../components/button';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useSmartNavigation } from '../../../navigation';
+import { NewMnemonicConfig } from './hook';
+import { RegisterConfig } from '@owallet-wallet/hooks';
+import { observer } from 'mobx-react-lite';
+import { RectButton } from '../../../components/rect-button';
+import { BIP44HDPath } from '@owallet-wallet/background';
+import { useStore } from '../../../stores';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -46,7 +46,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const [wordSet, setWordSet] = useState<(string | undefined)[]>([]);
 
   useEffect(() => {
-    const words = newMnemonicConfig.mnemonic.split(" ");
+    const words = newMnemonicConfig.mnemonic.split(' ');
     const randomSortedWords = words.slice().sort(() => {
       return Math.random() > 0.5 ? 1 : -1;
     });
@@ -56,13 +56,13 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       candidateWords.map((word) => {
         return {
           word,
-          usedIndex: -1,
+          usedIndex: -1
         };
       })
     );
 
     setWordSet(
-      newMnemonicConfig.mnemonic.split(" ").map((word) => {
+      newMnemonicConfig.mnemonic.split(' ').map((word) => {
         return candidateWords.includes(word) ? undefined : word;
       })
     );
@@ -76,16 +76,16 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
+      contentContainerStyle={style.get('flex-grow-1')}
+      style={style.flatten(['padding-x-page'])}
     >
       <Text
         style={style.flatten([
-          "h5",
-          "color-text-black-medium",
-          "margin-top-32",
-          "margin-bottom-4",
-          "text-center",
+          'h5',
+          'color-text-black-medium',
+          'margin-top-32',
+          'margin-bottom-4',
+          'text-center'
         ])}
       >
         Backup your mnemonic seed securely.
@@ -93,13 +93,13 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       <WordsCard
         wordSet={wordSet.map((word, i) => {
           return {
-            word: word ?? "",
+            word: word ?? '',
             empty: word === undefined,
-            dashed: i === firstEmptyWordSetIndex,
+            dashed: i === firstEmptyWordSetIndex
           };
         })}
       />
-      <View style={style.flatten(["flex-row", "flex-wrap"])}>
+      <View style={style.flatten(['flex-row', 'flex-wrap'])}>
         {candidateWords.map(({ word, usedIndex }, i) => {
           return (
             <WordButton
@@ -131,12 +131,12 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           );
         })}
       </View>
-      <View style={style.flatten(["flex-1"])} />
+      <View style={style.flatten(['flex-1'])} />
       <Button
         text="Next"
         size="large"
         loading={isCreating}
-        disabled={wordSet.join(" ") !== newMnemonicConfig.mnemonic}
+        disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
         onPress={async () => {
           setIsCreating(true);
           await registerConfig.createMnemonic(
@@ -147,27 +147,25 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           );
           analyticsStore.setUserId();
           analyticsStore.setUserProperties({
-            registerType: "seed",
-          });
-          analyticsStore.logEvent("Create account finished", {
-            accountType: "mnemonic",
+            registerType: 'seed',
+            accountType: 'mnemonic'
           });
 
           smartNavigation.reset({
             index: 0,
             routes: [
               {
-                name: "Register.End",
+                name: 'Register.End',
                 params: {
-                  password: newMnemonicConfig.password,
-                },
-              },
-            ],
+                  password: newMnemonicConfig.password
+                }
+              }
+            ]
           });
         }}
       />
       {/* Mock element for bottom padding */}
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );
 });
@@ -183,18 +181,18 @@ const WordButton: FunctionComponent<{
     <RectButton
       style={style.flatten(
         [
-          "background-color-primary",
-          "padding-x-12",
-          "padding-y-4",
-          "margin-right-12",
-          "margin-bottom-12",
-          "border-radius-8",
+          'background-color-primary',
+          'padding-x-12',
+          'padding-y-4',
+          'margin-right-12',
+          'margin-bottom-12',
+          'border-radius-8'
         ],
-        [used && "background-color-primary-100"]
+        [used && 'background-color-primary-100']
       )}
       onPress={onPress}
     >
-      <Text style={style.flatten(["subtitle2", "color-white"])}>{word}</Text>
+      <Text style={style.flatten(['subtitle2', 'color-white'])}>{word}</Text>
     </RectButton>
   );
 };
@@ -211,14 +209,14 @@ const WordsCard: FunctionComponent<{
   return (
     <View
       style={style.flatten([
-        "margin-top-14",
-        "margin-bottom-20",
-        "padding-y-24",
-        "padding-x-28",
-        "background-color-white",
-        "border-radius-8",
-        "flex-row",
-        "flex-wrap",
+        'margin-top-14',
+        'margin-bottom-20',
+        'padding-y-24',
+        'padding-x-28',
+        'background-color-white',
+        'border-radius-8',
+        'flex-row',
+        'flex-wrap'
       ])}
     >
       {wordSet.map((word, i) => {

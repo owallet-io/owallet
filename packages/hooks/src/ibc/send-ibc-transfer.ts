@@ -1,10 +1,10 @@
-import { ChainGetter, CosmosMsgOpts } from "@keplr-wallet/stores";
-import { ObservableQueryBalances } from "@keplr-wallet/stores/build/query/balances";
-import { useFeeConfig, useMemoConfig } from "../tx";
-import { useIBCAmountConfig } from "./amount";
-import { useIBCTransferGasConfig } from "./gas";
-import { useIBCChannelConfig } from "./channel";
-import { useIBCRecipientConfig } from "./reciepient";
+import { ChainGetter, CosmosMsgOpts } from '@owallet-wallet/stores';
+import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
+import { useFeeConfig, useMemoConfig } from '../tx';
+import { useIBCAmountConfig } from './amount';
+import { useIBCTransferGasConfig } from './gas';
+import { useIBCChannelConfig } from './channel';
+import { useIBCRecipientConfig } from './reciepient';
 
 /**
  * useIBCTransferConfig returns the configs for IBC transfer.
@@ -21,7 +21,7 @@ import { useIBCRecipientConfig } from "./reciepient";
 export const useIBCTransferConfig = (
   chainGetter: ChainGetter,
   chainId: string,
-  msgOpts: CosmosMsgOpts["ibcTransfer"],
+  msgOpts: CosmosMsgOpts['ibcTransfer'],
   sender: string,
   queryBalances: ObservableQueryBalances,
   ensEndpoint?: string
@@ -62,6 +62,6 @@ export const useIBCTransferConfig = (
     gasConfig,
     feeConfig,
     recipientConfig,
-    channelConfig,
+    channelConfig
   };
 };

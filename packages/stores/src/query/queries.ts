@@ -1,9 +1,9 @@
-import { makeObservable, observable, runInAction } from "mobx";
-import { KVStore } from "@keplr-wallet/common";
-import { DeepReadonly } from "utility-types";
-import { ObservableQueryBalances } from "./balances";
-import { ChainGetter } from "../common";
-import { Keplr } from "@keplr-wallet/types";
+import { makeObservable, observable, runInAction } from 'mobx';
+import { KVStore } from '@owallet-wallet/common';
+import { DeepReadonly } from 'utility-types';
+import { ObservableQueryBalances } from './balances';
+import { ChainGetter } from '../common';
+import { OWallet } from '@owallet-wallet/types';
 
 export class QueriesSetBase {
   public readonly queryBalances: DeepReadonly<ObservableQueryBalances>;
@@ -24,12 +24,12 @@ export class QueriesStore<QueriesSet extends QueriesSetBase> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainGetter: ChainGetter,
-    protected readonly apiGetter: () => Promise<Keplr | undefined>,
+    protected readonly apiGetter: () => Promise<OWallet | undefined>,
     protected readonly queriesCreator: new (
       kvStore: KVStore,
       chainId: string,
       chainGetter: ChainGetter,
-      apiGetter: () => Promise<Keplr | undefined>
+      apiGetter: () => Promise<OWallet | undefined>
     ) => QueriesSet
   ) {
     makeObservable(this);

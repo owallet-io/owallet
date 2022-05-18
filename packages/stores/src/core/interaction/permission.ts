@@ -1,4 +1,4 @@
-import { InteractionStore } from "./interaction";
+import { InteractionStore } from './interaction';
 import {
   getBasicAccessPermissionType,
   GetPermissionOriginsMsg,
@@ -10,12 +10,12 @@ import {
   splitSecret20ViewingKeyPermissionType,
   getSecret20ViewingKeyPermissionType,
   AddPermissionOrigin,
-  GetOriginPermittedChainsMsg,
-} from "@keplr-wallet/background";
-import { computed, flow, makeObservable, observable } from "mobx";
-import { HasMapStore } from "../../common";
-import { BACKGROUND_PORT, MessageRequester } from "@keplr-wallet/router";
-import { toGenerator } from "@keplr-wallet/common";
+  GetOriginPermittedChainsMsg
+} from '@owallet-wallet/background';
+import { computed, flow, makeObservable, observable } from 'mobx';
+import { HasMapStore } from '../../common';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
+import { toGenerator } from '@owallet-wallet/common';
 
 export class Secret20ViewingKeyPermissionInnerStore {
   @observable.ref
@@ -120,7 +120,7 @@ export class BasicAccessPermissionInnerStore {
 }
 
 interface MapKeyData {
-  type: "basicAccess" | "viewingKey";
+  type: 'basicAccess' | 'viewingKey';
   chainId: string;
   contractAddress: string;
 }
@@ -137,7 +137,7 @@ export class PermissionStore extends HasMapStore<
   ) {
     super((key: string) => {
       const data = JSON.parse(key) as MapKeyData;
-      if (data.type === "basicAccess") {
+      if (data.type === 'basicAccess') {
         return new BasicAccessPermissionInnerStore(
           data.chainId,
           this.requester
@@ -155,9 +155,9 @@ export class PermissionStore extends HasMapStore<
 
   getBasicAccessInfo(chainId: string): BasicAccessPermissionInnerStore {
     const key = JSON.stringify({
-      type: "basicAccess",
+      type: 'basicAccess',
       chainId,
-      contractAddress: "",
+      contractAddress: ''
     });
     return this.get(key) as BasicAccessPermissionInnerStore;
   }
@@ -177,9 +177,9 @@ export class PermissionStore extends HasMapStore<
     contractAddress: string
   ): Secret20ViewingKeyPermissionInnerStore {
     const key = JSON.stringify({
-      type: "viewingKey",
+      type: 'viewingKey',
       chainId,
-      contractAddress,
+      contractAddress
     });
     return this.get(key) as Secret20ViewingKeyPermissionInnerStore;
   }
@@ -201,8 +201,8 @@ export class PermissionStore extends HasMapStore<
           id: data.id,
           data: {
             chainIds: data.data.chainIds,
-            origins: data.data.origins,
-          },
+            origins: data.data.origins
+          }
         });
       }
     }
@@ -231,8 +231,8 @@ export class PermissionStore extends HasMapStore<
             contractAddress: splitSecret20ViewingKeyPermissionType(
               data.data.type
             ),
-            origins: data.data.origins,
-          },
+            origins: data.data.origins
+          }
         });
       }
     }

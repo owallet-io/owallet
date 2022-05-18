@@ -2,10 +2,10 @@ import {
   EnvProducer,
   MessageSender,
   Result,
-  Router,
-} from "@keplr-wallet/router";
+  Router
+} from '@owallet-wallet/router';
 
-import EventEmitter from "eventemitter3";
+import EventEmitter from 'eventemitter3';
 
 export class RNRouterBase extends Router {
   constructor(
@@ -17,16 +17,16 @@ export class RNRouterBase extends Router {
 
   listen(port: string): void {
     if (!port) {
-      throw new Error("Empty port");
+      throw new Error('Empty port');
     }
 
     this.port = port;
-    this.eventEmitter.addListener("message", this.onMessage);
+    this.eventEmitter.addListener('message', this.onMessage);
   }
 
   unlisten(): void {
-    this.port = "";
-    this.eventEmitter.removeListener("message", this.onMessage);
+    this.port = '';
+    this.eventEmitter.removeListener('message', this.onMessage);
   }
 
   protected onMessage = async (params: {
@@ -43,7 +43,7 @@ export class RNRouterBase extends Router {
     try {
       const result = await this.handleMessage(message, sender);
       sender.resolver({
-        return: result,
+        return: result
       });
       return;
     } catch (e) {
@@ -52,11 +52,11 @@ export class RNRouterBase extends Router {
       );
       if (e) {
         sender.resolver({
-          error: e.message || e.toString(),
+          error: e.message || e.toString()
         });
       } else {
         sender.resolver({
-          error: "Unknown error, and error is null",
+          error: 'Unknown error, and error is null'
         });
       }
     }

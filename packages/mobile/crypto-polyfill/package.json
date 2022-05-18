@@ -1,5 +1,5 @@
 {
-  "name": "keplr-standard-web-crypto",
+  "name": "owallet-standard-web-crypto",
   "version": "0.0.1",
   "description": "A partial implementation of the W3C Crypto API for Expo",
   "main": "index.js",

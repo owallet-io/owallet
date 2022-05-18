@@ -1,18 +1,18 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState } from 'react';
 
-import { HeaderLayout } from "../../../layouts";
+import { HeaderLayout } from '../../../layouts';
 
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
 
-import { useHistory } from "react-router";
-import { Button, Popover, PopoverBody } from "reactstrap";
+import { useHistory } from 'react-router';
+import { Button, Popover, PopoverBody } from 'reactstrap';
 
-import style from "./style.module.scss";
-import { useLoadingIndicator } from "../../../components/loading-indicator";
-import { PageButton } from "../page-button";
-import { MultiKeyStoreInfoWithSelectedElem } from "@keplr-wallet/background";
-import { FormattedMessage, useIntl } from "react-intl";
+import style from './style.module.scss';
+import { useLoadingIndicator } from '../../../components/loading-indicator';
+import { PageButton } from '../page-button';
+import { MultiKeyStoreInfoWithSelectedElem } from '@owallet-wallet/background';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 export const SetKeyRingPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -26,7 +26,7 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
     <HeaderLayout
       showChainName={false}
       canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({ id: "setting.keyring" })}
+      alternativeTitle={intl.formatMessage({ id: 'setting.keyring' })}
       onBackButton={() => {
         history.goBack();
       }}
@@ -36,9 +36,9 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center'
             }}
           >
             <Button
@@ -46,15 +46,16 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
               size="sm"
               onClick={(e) => {
                 e.preventDefault();
+                analyticsStore.logEvent('Add additional account started');
 
                 browser.tabs.create({
-                  url: "/popup.html#/register",
+                  url: '/popup.html#/register'
                 });
               }}
             >
               <i
                 className="fas fa-plus"
-                style={{ marginRight: "4px", fontSize: "8px" }}
+                style={{ marginRight: '4px', fontSize: '8px' }}
               />
               <FormattedMessage id="setting.keyring.button.add" />
             </Button>
@@ -66,7 +67,7 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
             : {
                 account: 0,
                 change: 0,
-                addressIndex: 0,
+                addressIndex: 0
               };
 
           return (
@@ -76,21 +77,21 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
                 keyStore.meta?.name
                   ? keyStore.meta.name
                   : intl.formatMessage({
-                      id: "setting.keyring.unnamed-account",
+                      id: 'setting.keyring.unnamed-account'
                     })
               } ${
                 keyStore.selected
                   ? intl.formatMessage({
-                      id: "setting.keyring.selected-account",
+                      id: 'setting.keyring.selected-account'
                     })
-                  : ""
+                  : ''
               }`}
               paragraph={
-                keyStore.type === "ledger"
+                keyStore.type === 'ledger'
                   ? `Ledger - m/44'/118'/${bip44HDPath.account}'${
                       bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
                         ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-                        : ""
+                        : ''
                     }`
                   : keyStore.meta?.email
                   ? keyStore.meta.email
@@ -101,21 +102,21 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
                   ? undefined
                   : async (e) => {
                       e.preventDefault();
-
-                      loadingIndicator.setIsLoading("keyring", true);
+                      loadingIndicator.setIsLoading('keyring', true);
                       try {
                         await keyRingStore.changeKeyRing(i);
-                        loadingIndicator.setIsLoading("keyring", false);
-                        history.push("/");
+                        analyticsStore.logEvent('Account changed');
+                        loadingIndicator.setIsLoading('keyring', false);
+                        history.push('/');
                       } catch (e) {
                         console.log(`Failed to change keyring: ${e.message}`);
-                        loadingIndicator.setIsLoading("keyring", false);
+                        loadingIndicator.setIsLoading('keyring', false);
                       }
                     }
               }
-              style={keyStore.selected ? { cursor: "default" } : undefined}
+              style={keyStore.selected ? { cursor: 'default' } : undefined}
               icons={[
-                <KeyRingToolsIcon key="tools" index={i} keyStore={keyStore} />,
+                <KeyRingToolsIcon key="tools" index={i} keyStore={keyStore} />
               ]}
             />
           );
@@ -137,7 +138,7 @@ const KeyRingToolsIcon: FunctionComponent<{
   const [tooltipId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
-    return `tools-${Buffer.from(bytes).toString("hex")}`;
+    return `tools-${Buffer.from(bytes).toString('hex')}`;
   });
 
   return (
@@ -153,12 +154,12 @@ const KeyRingToolsIcon: FunctionComponent<{
             e.preventDefault();
             e.stopPropagation();
 
-            history.push("");
+            history.push('');
           }}
         >
-          {keyStore.type === "mnemonic" || keyStore.type === "privateKey" ? (
+          {keyStore.type === 'mnemonic' || keyStore.type === 'privateKey' ? (
             <div
-              style={{ cursor: "pointer" }}
+              style={{ cursor: 'pointer' }}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -168,15 +169,15 @@ const KeyRingToolsIcon: FunctionComponent<{
             >
               <FormattedMessage
                 id={
-                  keyStore.type === "mnemonic"
-                    ? "setting.export"
-                    : "setting.export.private-key"
+                  keyStore.type === 'mnemonic'
+                    ? 'setting.export'
+                    : 'setting.export.private-key'
                 }
               />
             </div>
           ) : null}
           <div
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -187,7 +188,7 @@ const KeyRingToolsIcon: FunctionComponent<{
             <FormattedMessage id="setting.keyring.change.name" />
           </div>
           <div
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -201,11 +202,11 @@ const KeyRingToolsIcon: FunctionComponent<{
       </Popover>
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          height: "100%",
-          padding: "0 8px",
-          cursor: "pointer",
+          display: 'flex',
+          alignItems: 'center',
+          height: '100%',
+          padding: '0 8px',
+          cursor: 'pointer'
         }}
         onClick={(e) => {
           e.preventDefault();

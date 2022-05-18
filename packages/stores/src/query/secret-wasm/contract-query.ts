@@ -1,19 +1,19 @@
-import { ObservableChainQuery } from "../chain-query";
-import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { ChainGetter } from "../../common";
-import { ObservableQuerySecretContractCodeHash } from "./contract-hash";
-import { autorun, computed, flow, makeObservable, observable } from "mobx";
-import { Keplr } from "@keplr-wallet/types";
-import Axios, { CancelToken } from "axios";
-import { QueryResponse } from "../../common";
+import { ObservableChainQuery } from '../chain-query';
+import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { ChainGetter } from '../../common';
+import { ObservableQuerySecretContractCodeHash } from './contract-hash';
+import { autorun, computed, flow, makeObservable, observable } from 'mobx';
+import { OWallet } from '@owallet-wallet/types';
+import Axios, { CancelToken } from 'axios';
+import { QueryResponse } from '../../common';
 
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer/';
 
 export class ObservableSecretContractChainQuery<
   T
 > extends ObservableChainQuery<T> {
   @observable.ref
-  protected keplr?: Keplr = undefined;
+  protected owallet?: OWallet = undefined;
 
   protected nonce?: Uint8Array;
 
@@ -24,7 +24,7 @@ export class ObservableSecretContractChainQuery<
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    protected readonly apiGetter: () => Promise<Keplr | undefined>,
+    protected readonly apiGetter: () => Promise<OWallet | undefined>,
     protected readonly contractAddress: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     protected obj: object,
@@ -34,12 +34,12 @@ export class ObservableSecretContractChainQuery<
     super(kvStore, chainId, chainGetter, ``);
     makeObservable(this);
 
-    // Try to get the keplr API.
-    this.initKeplr();
+    // Try to get the owallet API.
+    this.initOWallet();
 
     const disposer = autorun(() => {
-      // If the keplr API is ready and the contract code hash is fetched, try to init.
-      if (this.keplr && this.contractCodeHash) {
+      // If the owallet API is ready and the contract code hash is fetched, try to init.
+      if (this.owallet && this.contractCodeHash) {
         this.init();
         disposer();
       }
@@ -56,7 +56,7 @@ export class ObservableSecretContractChainQuery<
     return (
       this.querySecretContractCodeHash.getQueryContract(this.contractAddress)
         .isFetching ||
-      this.keplr == null ||
+      this.owallet == null ||
       this._isIniting ||
       super.isFetching
     );
@@ -74,24 +74,24 @@ export class ObservableSecretContractChainQuery<
   }
 
   @flow
-  protected *initKeplr() {
-    this.keplr = yield* toGenerator(this.apiGetter());
+  protected *initOWallet() {
+    this.owallet = yield* toGenerator(this.apiGetter());
   }
 
   @flow
   protected *init() {
     this._isIniting = true;
 
-    if (this.keplr && this.contractCodeHash) {
-      const enigmaUtils = this.keplr.getEnigmaUtils(this.chainId);
+    if (this.owallet && this.contractCodeHash) {
+      const enigmaUtils = this.owallet.getEnigmaUtils(this.chainId);
       const encrypted = yield* toGenerator(
         enigmaUtils.encrypt(this.contractCodeHash, this.obj)
       );
       this.nonce = encrypted.slice(0, 32);
 
       const encoded = Buffer.from(
-        Buffer.from(encrypted).toString("base64")
-      ).toString("hex");
+        Buffer.from(encrypted).toString('base64')
+      ).toString('hex');
 
       this.setUrl(
         `/wasm/contract/${this.contractAddress}/query/${encoded}?encoding=hex`
@@ -114,12 +114,12 @@ export class ObservableSecretContractChainQuery<
         const errorMessageRgx = /query contract failed: encrypted: (.+)/g;
 
         const rgxMatches = errorMessageRgx.exec(encryptedError);
-        if (rgxMatches != null && rgxMatches.length === 2) {
-          const errorCipherB64 = rgxMatches[1];
-          const errorCipherBz = Buffer.from(errorCipherB64, "base64");
+        if (rgxMatches != null && rgxMatches.length === 4) {
+          const errorCipherB64 = rgxMatches[2];
+          const errorCipherBz = Buffer.from(errorCipherB64, 'base64');
 
-          if (this.keplr && this.nonce) {
-            const decrypted = await this.keplr
+          if (this.owallet && this.nonce) {
+            const decrypted = await this.owallet
               .getEnigmaUtils(this.chainId)
               .decrypt(errorCipherBz, this.nonce);
 
@@ -142,25 +142,25 @@ export class ObservableSecretContractChainQuery<
         }
       | undefined;
 
-    if (!this.keplr) {
-      throw new Error("Keplr API not initialized");
+    if (!this.owallet) {
+      throw new Error('OWallet API not initialized');
     }
 
     if (!this.nonce) {
-      throw new Error("Nonce is unknown");
+      throw new Error('Nonce is unknown');
     }
 
     if (!encResult) {
-      throw new Error("Failed to get the response from the contract");
+      throw new Error('Failed to get the response from the contract');
     }
 
-    const decrypted = await this.keplr
+    const decrypted = await this.owallet
       .getEnigmaUtils(this.chainId)
-      .decrypt(Buffer.from(encResult.result.smart, "base64"), this.nonce);
+      .decrypt(Buffer.from(encResult.result.smart, 'base64'), this.nonce);
 
     const message = Buffer.from(
       Buffer.from(decrypted).toString(),
-      "base64"
+      'base64'
     ).toString();
 
     const obj = JSON.parse(message);
@@ -168,7 +168,7 @@ export class ObservableSecretContractChainQuery<
       data: obj as T,
       status: response.status,
       staled: false,
-      timestamp: Date.now(),
+      timestamp: Date.now()
     };
   }
 
@@ -180,7 +180,7 @@ export class ObservableSecretContractChainQuery<
     }${this.instance.getUri({
       url: `/wasm/contract/${this.contractAddress}/query/${JSON.stringify(
         this.obj
-      )}?encoding=json`,
+      )}?encoding=json`
     })}`;
   }
 

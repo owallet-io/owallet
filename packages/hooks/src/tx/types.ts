@@ -1,7 +1,7 @@
-import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { StdFee } from "@cosmjs/launchpad";
-import { CoinPretty } from "@keplr-wallet/unit";
-import { CoinPrimitive } from "@keplr-wallet/stores";
+import { AppCurrency, Currency } from '@owallet-wallet/types';
+import { StdFee } from '@cosmjs/launchpad';
+import { CoinPretty } from '@owallet-wallet/unit';
+import { CoinPrimitive } from '@owallet-wallet/stores';
 
 export interface ITxChainSetter {
   chainId: string;
@@ -66,7 +66,7 @@ export const DefaultGasPriceStep: {
 } = {
   low: 0.01,
   average: 0.025,
-  high: 0.04,
+  high: 0.04
 };
 
-export type FeeType = "high" | "average" | "low";
+export type FeeType = 'high' | 'average' | 'low';

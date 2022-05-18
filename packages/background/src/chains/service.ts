@@ -1,14 +1,14 @@
-import { delay, inject, singleton } from "tsyringe";
-import { TYPES } from "../types";
+import { delay, inject, singleton } from 'tsyringe';
+import { TYPES } from '../types';
 
-import { ChainInfoSchema, ChainInfoWithEmbed } from "./types";
-import { ChainInfo } from "@keplr-wallet/types";
-import { KVStore, Debouncer } from "@keplr-wallet/common";
-import { ChainUpdaterService } from "../updater";
-import { InteractionService } from "../interaction";
-import { Env } from "@keplr-wallet/router";
-import { SuggestChainInfoMsg } from "./messages";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { ChainInfoSchema, ChainInfoWithEmbed } from './types';
+import { ChainInfo } from '@owallet-wallet/types';
+import { KVStore, Debouncer } from '@owallet-wallet/common';
+import { ChainUpdaterService } from '../updater';
+import { InteractionService } from '../interaction';
+import { Env } from '@owallet-wallet/router';
+import { SuggestChainInfoMsg } from './messages';
+import { ChainIdHelper } from '@owallet-wallet/cosmos';
 
 type ChainRemovedHandler = (chainId: string, identifier: string) => void;
 
@@ -39,7 +39,7 @@ export class ChainsService {
     const chainInfos = this.embedChainInfos.map((chainInfo) => {
       return {
         ...chainInfo,
-        embeded: true,
+        embeded: true
       };
     });
     const embedChainInfoIdentifierMap: Map<
@@ -54,7 +54,7 @@ export class ChainsService {
     }
 
     const savedChainInfos: ChainInfoWithEmbed[] = (
-      (await this.kvStore.get<ChainInfo[]>("chain-infos")) ?? []
+      (await this.kvStore.get<ChainInfo[]>('chain-infos')) ?? []
     )
       .filter((chainInfo) => {
         // Filter the overlaped chain info with the embeded chain infos.
@@ -65,7 +65,7 @@ export class ChainsService {
       .map((chainInfo: ChainInfo) => {
         return {
           ...chainInfo,
-          embeded: false,
+          embeded: false
         };
       });
 
@@ -80,7 +80,7 @@ export class ChainsService {
 
         return {
           ...updated,
-          embeded: chainInfo.embeded,
+          embeded: chainInfo.embeded
         };
       })
     );
@@ -135,16 +135,16 @@ export class ChainsService {
     origin: string
   ): Promise<void> {
     chainInfo = await ChainInfoSchema.validateAsync(chainInfo, {
-      stripUnknown: true,
+      stripUnknown: true
     });
 
     await this.interactionKeeper.waitApprove(
       env,
-      "/suggest-chain",
+      '/suggest-chain',
       SuggestChainInfoMsg.type(),
       {
         ...chainInfo,
-        origin,
+        origin
       }
     );
 
@@ -153,22 +153,22 @@ export class ChainsService {
 
   async addChainInfo(chainInfo: ChainInfo): Promise<void> {
     if (await this.hasChainInfo(chainInfo.chainId)) {
-      throw new Error("Same chain is already registered");
+      throw new Error('Same chain is already registered');
     }
 
     const savedChainInfos =
-      (await this.kvStore.get<ChainInfo[]>("chain-infos")) ?? [];
+      (await this.kvStore.get<ChainInfo[]>('chain-infos')) ?? [];
 
     savedChainInfos.push(chainInfo);
 
-    await this.kvStore.set<ChainInfo[]>("chain-infos", savedChainInfos);
+    await this.kvStore.set<ChainInfo[]>('chain-infos', savedChainInfos);
 
     this.clearCachedChainInfos();
   }
 
   async removeChainInfo(chainId: string): Promise<void> {
     if (!(await this.hasChainInfo(chainId))) {
-      throw new Error("Chain is not registered");
+      throw new Error('Chain is not registered');
     }
 
     if ((await this.getChainInfo(chainId)).embeded) {
@@ -176,7 +176,7 @@ export class ChainsService {
     }
 
     const savedChainInfos =
-      (await this.kvStore.get<ChainInfo[]>("chain-infos")) ?? [];
+      (await this.kvStore.get<ChainInfo[]>('chain-infos')) ?? [];
 
     const resultChainInfo = savedChainInfos.filter((chainInfo) => {
       return (
@@ -185,7 +185,7 @@ export class ChainsService {
       );
     });
 
-    await this.kvStore.set<ChainInfo[]>("chain-infos", resultChainInfo);
+    await this.kvStore.set<ChainInfo[]>('chain-infos', resultChainInfo);
 
     // Clear the updated chain info.
     await this.chainUpdaterKeeper.clearUpdatedProperty(chainId);

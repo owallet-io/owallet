@@ -1,4 +1,4 @@
-import { Int } from '@keplr-wallet/unit';
+import { Int } from '@owallet-wallet/unit';
 import { AxiosInstance } from 'axios';
 
 export interface Account {

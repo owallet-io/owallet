@@ -1,12 +1,12 @@
-import { Router } from "@keplr-wallet/router";
+import { Router } from '@owallet-wallet/router';
 import {
   GetChainInfosMsg,
   SuggestChainInfoMsg,
-  RemoveSuggestedChainInfoMsg,
-} from "./messages";
-import { ROUTE } from "./constants";
-import { getHandler } from "./handler";
-import { ChainsService } from "./service";
+  RemoveSuggestedChainInfoMsg
+} from './messages';
+import { ROUTE } from './constants';
+import { getHandler } from './handler';
+import { ChainsService } from './service';
 
 export function init(router: Router, service: ChainsService): void {
   router.registerMessage(GetChainInfosMsg);

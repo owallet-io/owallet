@@ -1,5 +1,5 @@
-import { Bech32Address } from '@keplr-wallet/cosmos';
-import { ChainInfo } from '@keplr-wallet/types';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { ChainInfo } from '@owallet-wallet/types';
 
 export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
 
@@ -63,8 +63,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png'
   },
   {
-    rpc: 'https://rpc-cosmoshub.keplr.app',
-    rest: 'https://lcd-cosmoshub.keplr.app',
+    rpc: 'https://rpc-cosmoshub.owallet.app',
+    rest: 'https://lcd-cosmoshub.owallet.app',
     chainId: 'cosmoshub-4',
     chainName: 'Cosmos Hub',
     stakeCurrency: {
@@ -105,8 +105,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://rpc-osmosis.keplr.app',
-    rest: 'https://lcd-osmosis.keplr.app',
+    rpc: 'https://rpc-osmosis.owallet.app',
+    rest: 'https://lcd-osmosis.owallet.app',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     stakeCurrency: {
@@ -160,8 +160,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://rpc-secret.keplr.app',
-    rest: 'https://lcd-secret.keplr.app',
+    rpc: 'https://rpc-secret.owallet.app',
+    rest: 'https://lcd-secret.owallet.app',
     chainId: 'secret-3',
     chainName: 'Secret Network',
     stakeCurrency: {
@@ -210,8 +210,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-akash.keplr.app',
-    rest: 'https://lcd-akash.keplr.app',
+    rpc: 'https://rpc-akash.owallet.app',
+    rest: 'https://lcd-akash.owallet.app',
     chainId: 'akashnet-2',
     chainName: 'Akash',
     stakeCurrency: {
@@ -248,8 +248,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-crypto-org.keplr.app',
-    rest: 'https://lcd-crypto-org.keplr.app',
+    rpc: 'https://rpc-crypto-org.owallet.app',
+    rest: 'https://lcd-crypto-org.owallet.app',
     chainId: 'crypto-org-chain-mainnet-1',
     chainName: 'Crypto.org',
     stakeCurrency: {
@@ -294,8 +294,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-iov.keplr.app',
-    rest: 'https://lcd-iov.keplr.app',
+    rpc: 'https://rpc-iov.owallet.app',
+    rest: 'https://lcd-iov.owallet.app',
     chainId: 'iov-mainnet-ibc',
     chainName: 'Starname',
     stakeCurrency: {
@@ -338,8 +338,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-sifchain.keplr.app',
-    rest: 'https://lcd-sifchain.keplr.app/',
+    rpc: 'https://rpc-sifchain.owallet.app',
+    rest: 'https://lcd-sifchain.owallet.app/',
     chainId: 'sifchain-1',
     chainName: 'Sifchain',
     stakeCurrency: {
@@ -657,8 +657,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-certik.keplr.app',
-    rest: 'https://lcd-certik.keplr.app',
+    rpc: 'https://rpc-certik.owallet.app',
+    rest: 'https://lcd-certik.owallet.app',
     chainId: 'shentu-2.2',
     chainName: 'Certik',
     stakeCurrency: {
@@ -691,8 +691,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-iris.keplr.app',
-    rest: 'https://lcd-iris.keplr.app',
+    rpc: 'https://rpc-iris.owallet.app',
+    rest: 'https://lcd-iris.owallet.app',
     chainId: 'irishub-1',
     chainName: 'IRISnet',
     stakeCurrency: {
@@ -739,8 +739,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-regen.keplr.app',
-    rest: 'https://lcd-regen.keplr.app',
+    rpc: 'https://rpc-regen.owallet.app',
+    rest: 'https://lcd-regen.owallet.app',
     chainId: 'regen-1',
     chainName: 'Regen',
     stakeCurrency: {
@@ -776,8 +776,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go']
   },
   {
-    rpc: 'https://rpc-juno.keplr.app',
-    rest: 'https://lcd-juno.keplr.app',
+    rpc: 'https://rpc-juno.owallet.app',
+    rest: 'https://lcd-juno.owallet.app',
     chainId: 'juno-1',
     chainName: 'Juno',
     stakeCurrency: {
@@ -828,8 +828,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://rpc-stargaze.keplr.app',
-    rest: 'https://lcd-stargaze.keplr.app',
+    rpc: 'https://rpc-stargaze.owallet.app',
+    rest: 'https://lcd-stargaze.owallet.app',
     chainId: 'stargaze-1',
     chainName: 'Stargaze',
     stakeCurrency: {
@@ -870,8 +870,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://rpc-persistence.keplr.app',
-    rest: 'https://lcd-persistence.keplr.app',
+    rpc: 'https://rpc-persistence.owallet.app',
+    rest: 'https://lcd-persistence.owallet.app',
     chainId: 'core-1',
     chainName: 'Persistence',
     stakeCurrency: {
@@ -915,8 +915,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['stargate', 'ibc-transfer']
   },
   {
-    rpc: 'https://rpc-axelar.keplr.app',
-    rest: 'https://lcd-axelar.keplr.app',
+    rpc: 'https://rpc-axelar.owallet.app',
+    rest: 'https://lcd-axelar.owallet.app',
     chainId: 'axelar-dojo-1',
     chainName: 'Axelar',
     stakeCurrency: {
@@ -954,8 +954,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/axelar.png'
   },
   {
-    rpc: 'https://rpc-sommelier.keplr.app',
-    rest: 'https://lcd-sommelier.keplr.app',
+    rpc: 'https://rpc-sommelier.owallet.app',
+    rest: 'https://lcd-sommelier.owallet.app',
     chainId: 'sommelier-3',
     chainName: 'Sommelier',
     stakeCurrency: {
@@ -991,8 +991,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/somm.png'
   },
   {
-    rpc: 'https://rpc-umee.keplr.app',
-    rest: 'https://lcd-umee.keplr.app',
+    rpc: 'https://rpc-umee.owallet.app',
+    rest: 'https://lcd-umee.owallet.app',
     chainId: 'umee-1',
     chainName: 'Umee',
     stakeCurrency: {
@@ -1030,8 +1030,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/umee.png'
   },
   {
-    rpc: 'https://rpc-sentinel.keplr.app',
-    rest: 'https://lcd-sentinel.keplr.app',
+    rpc: 'https://rpc-sentinel.owallet.app',
+    rest: 'https://lcd-sentinel.owallet.app',
     chainId: 'sentinelhub-2',
     chainName: 'Sentinel',
     stakeCurrency: {
@@ -1043,11 +1043,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sentinel/stake'
+        ? 'https://wallet.owallet.app/#/sentinel/stake'
         : 'http://localhost:8081/#/sentinel/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sentinel/stake'
+        ? 'https://wallet.owallet.app/#/sentinel/stake'
         : 'http://localhost:8081/#/sentinel/stake',
     bip44: {
       coinType: 118
@@ -1082,8 +1082,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-impacthub.keplr.app',
-    rest: 'https://lcd-impacthub.keplr.app',
+    rpc: 'https://rpc-impacthub.owallet.app',
+    rest: 'https://lcd-impacthub.owallet.app',
     chainId: 'impacthub-3',
     chainName: 'ixo',
     stakeCurrency: {
@@ -1094,11 +1094,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/ixo/stake'
+        ? 'https://wallet.owallet.app/#/ixo/stake'
         : 'http://localhost:8081/#/ixo/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/ixo/stake'
+        ? 'https://wallet.owallet.app/#/ixo/stake'
         : 'http://localhost:8081/#/ixo/stake',
     bip44: {
       coinType: 118
@@ -1125,8 +1125,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-emoney.keplr.app',
-    rest: 'https://lcd-emoney.keplr.app',
+    rpc: 'https://rpc-emoney.owallet.app',
+    rest: 'https://lcd-emoney.owallet.app',
     chainId: 'emoney-3',
     chainName: 'e-Money',
     stakeCurrency: {
@@ -1138,11 +1138,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/emoney/stake'
+        ? 'https://wallet.owallet.app/#/emoney/stake'
         : 'http://localhost:8080/#/emoney/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/emoney/stake'
+        ? 'https://wallet.owallet.app/#/emoney/stake'
         : 'http://localhost:8080/#/emoney/stake',
     bip44: {
       coinType: 118
@@ -1182,8 +1182,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-microtick.keplr.app',
-    rest: 'https://lcd-microtick.keplr.app',
+    rpc: 'https://rpc-microtick.owallet.app',
+    rest: 'https://lcd-microtick.owallet.app',
     chainId: 'microtick-1',
     chainName: 'Microtick',
     stakeCurrency: {
@@ -1213,8 +1213,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-columbus.keplr.app',
-    rest: 'https://lcd-columbus.keplr.app',
+    rpc: 'https://rpc-columbus.owallet.app',
+    rest: 'https://lcd-columbus.owallet.app',
     chainId: 'columbus-5',
     chainName: 'Terra',
     stakeCurrency: {
@@ -1304,8 +1304,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true
   },
   {
-    rpc: 'https://rpc-impacthub.keplr.app',
-    rest: 'https://lcd-impacthub.keplr.app',
+    rpc: 'https://rpc-impacthub.owallet.app',
+    rest: 'https://lcd-impacthub.owallet.app',
     chainId: 'impacthub-3',
     chainName: 'IXO',
     stakeCurrency: {

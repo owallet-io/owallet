@@ -1,14 +1,14 @@
-import { ChainGetter } from "@keplr-wallet/stores";
-import { ObservableQueryBalances } from "@keplr-wallet/stores/build/query/balances";
+import { ChainGetter } from '@owallet-wallet/stores';
+import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
 import {
   AmountConfig,
   useFeeConfig,
   useGasConfig,
   useMemoConfig,
-  useRecipientConfig,
-} from "./index";
-import { AppCurrency } from "@keplr-wallet/types";
-import { useState } from "react";
+  useRecipientConfig
+} from './index';
+import { AppCurrency } from '@owallet-wallet/types';
+import { useState } from 'react';
 
 export class DelegateAmountConfig extends AmountConfig {
   get sendableCurrencies(): AppCurrency[] {
@@ -79,6 +79,6 @@ export const useDelegateTxConfig = (
     memoConfig,
     gasConfig,
     feeConfig,
-    recipientConfig,
+    recipientConfig
   };
 };

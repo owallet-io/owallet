@@ -16,9 +16,9 @@ import delay from 'delay';
 import { useStore } from '../../stores';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { StackActions, useNavigation } from '@react-navigation/native';
-import { KeyRingStatus } from '@keplr-wallet/background';
+import { KeyRingStatus } from '@owallet-wallet/background';
 import { KeychainStore } from '../../stores/keychain';
-import { AccountStore } from '@keplr-wallet/stores';
+import { AccountStore } from '@owallet-wallet/stores';
 import { autorun } from 'mobx';
 
 let splashScreenHided = false;

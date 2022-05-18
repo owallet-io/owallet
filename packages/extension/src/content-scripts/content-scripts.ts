@@ -1,17 +1,17 @@
+import { WEBPAGE_PORT } from '@owallet-wallet/router';
 import {
   ContentScriptEnv,
   ContentScriptGuards,
   ExtensionRouter,
-  InExtensionMessageRequester,
-  WEBPAGE_PORT,
-} from "@keplr-wallet/router";
-import { Keplr, InjectedKeplr } from "@keplr-wallet/provider";
-import { initEvents } from "./events";
+  InExtensionMessageRequester
+} from '@owallet-wallet/router-extension';
+import { OWallet, InjectedOWallet } from '@owallet-wallet/provider';
+import { initEvents } from './events';
 
-import manifest from "../manifest.json";
+import manifest from '../manifest.json';
 
-InjectedKeplr.startProxy(
-  new Keplr(manifest.version, new InExtensionMessageRequester())
+InjectedOWallet.startProxy(
+  new OWallet(manifest.version, 'core', new InExtensionMessageRequester())
 );
 
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
@@ -20,9 +20,9 @@ initEvents(router);
 router.listen(WEBPAGE_PORT);
 
 const container = document.head || document.documentElement;
-const scriptElement = document.createElement("script");
+const scriptElement = document.createElement('script');
 
-scriptElement.src = browser.runtime.getURL("injectedScript.bundle.js");
-scriptElement.type = "text/javascript";
+scriptElement.src = browser.runtime.getURL('injectedScript.bundle.js');
+scriptElement.type = 'text/javascript';
 container.insertBefore(scriptElement, container.children[0]);
 scriptElement.remove();

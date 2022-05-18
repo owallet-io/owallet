@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import {
   FormGroup,
   Label,
@@ -8,12 +8,12 @@ import {
   Modal,
   InputGroup,
   Button,
-  FormText,
-} from "reactstrap";
-import { AddressBookPage } from "../../pages/setting/address-book";
+  FormText
+} from 'reactstrap';
+import { AddressBookPage } from '../../pages/setting/address-book';
 
-import styleAddressInput from "./address-input.module.scss";
-import classnames from "classnames";
+import styleAddressInput from './address-input.module.scss';
+import classnames from 'classnames';
 import {
   InvalidBech32Error,
   EmptyAddressError,
@@ -22,11 +22,11 @@ import {
   ENSNotSupportedError,
   ENSFailedToFetchError,
   ENSIsFetchingError,
-  IIBCChannelConfig,
-} from "@keplr-wallet/hooks";
-import { observer } from "mobx-react-lite";
-import { useIntl } from "react-intl";
-import { ObservableEnsFetcher } from "@keplr-wallet/ens";
+  IIBCChannelConfig
+} from '@owallet-wallet/hooks';
+import { observer } from 'mobx-react-lite';
+import { useIntl } from 'react-intl';
+import { ObservableEnsFetcher } from '@owallet-wallet/ens';
 
 export interface AddressInputProps {
   recipientConfig: IRecipientConfig;
@@ -49,7 +49,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
     className,
     label,
     disableAddressBook,
-    disabled = false,
+    disabled = false
   }) => {
     const intl = useIntl();
 
@@ -58,7 +58,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
-      return `input-${Buffer.from(bytes).toString("hex")}`;
+      return `input-${Buffer.from(bytes).toString('hex')}`;
     });
 
     const isENSAddress = ObservableEnsFetcher.isValidENS(
@@ -74,20 +74,20 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             return;
           case InvalidBech32Error:
             return intl.formatMessage({
-              id: "input.recipient.error.invalid-bech32",
+              id: 'input.recipient.error.invalid-bech32'
             });
           case ENSNotSupportedError:
             return intl.formatMessage({
-              id: "input.recipient.error.ens-not-supported",
+              id: 'input.recipient.error.ens-not-supported'
             });
           case ENSFailedToFetchError:
             return intl.formatMessage({
-              id: "input.recipient.error.ens-failed-to-fetch",
+              id: 'input.recipient.error.ens-failed-to-fetch'
             });
           case ENSIsFetchingError:
             return;
           default:
-            return intl.formatMessage({ id: "input.recipient.error.unknown" });
+            return intl.formatMessage({ id: 'input.recipient.error.unknown' });
         }
       }
     }, [intl, error]);
@@ -102,7 +102,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
         if (memoConfig) {
           memoConfig.setMemo(memo);
         }
-      },
+      }
     };
 
     return (
@@ -133,7 +133,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             <Input
               id={inputId}
               className={classnames(
-                "form-control-alternative",
+                'form-control-alternative',
                 styleAddressInput.input
               )}
               value={recipientConfig.rawRecipient}
@@ -166,7 +166,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             <FormText>{recipientConfig.recipient}</FormText>
           ) : null}
           {errorText != null ? (
-            <FormFeedback style={{ display: "block" }}>
+            <FormFeedback style={{ display: 'block' }}>
               {errorText}
             </FormFeedback>
           ) : null}

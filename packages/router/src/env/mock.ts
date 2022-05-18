@@ -1,5 +1,5 @@
-import { Env, MessageSender } from "../types";
-import { ExtensionEnv } from "./extension";
+import { Env, MessageSender } from '@owallet-wallet/router';
+import { ExtensionEnv } from '@owallet-wallet/router-extension';
 
 export class MockEnv {
   constructor(protected readonly id: string, protected readonly url: string) {}
@@ -15,8 +15,8 @@ export class MockEnv {
       return {
         isInternalMsg,
         requestInteraction: () => {
-          throw new Error("TODO: Implement me");
-        },
+          throw new Error('TODO: Implement me');
+        }
       };
     };
   }

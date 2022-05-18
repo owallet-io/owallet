@@ -1,1 +1,1 @@
-export * from "./keplr";
+export * from './owallet';

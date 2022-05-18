@@ -1,27 +1,27 @@
-import { IRecipientConfig } from "./types";
-import { TxChainSetter } from "./chain";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { IRecipientConfig } from './types';
+import { TxChainSetter } from './chain';
+import { ChainGetter } from '@owallet-wallet/stores';
 import {
   action,
   computed,
   makeObservable,
   observable,
-  runInAction,
-} from "mobx";
+  runInAction
+} from 'mobx';
 import {
   EmptyAddressError,
   ENSFailedToFetchError,
   ENSIsFetchingError,
   ENSNotSupportedError,
-  InvalidBech32Error,
-} from "./errors";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useState } from "react";
-import { ObservableEnsFetcher } from "@keplr-wallet/ens";
+  InvalidBech32Error
+} from './errors';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { useState } from 'react';
+import { ObservableEnsFetcher } from '@owallet-wallet/ens';
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
-  protected _rawRecipient: string = "";
+  protected _rawRecipient: string = '';
 
   @observable
   protected _ensEndpoint: string | undefined = undefined;
@@ -57,7 +57,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
       const ensFetcher = this.getENSFetcher(this.rawRecipient);
       if (ensFetcher) {
         if (ensFetcher.isFetching) {
-          return "";
+          return '';
         }
 
         if (
@@ -65,7 +65,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
           ensFetcher.error != null ||
           ensFetcher.address.length !== 20
         ) {
-          return "";
+          return '';
         }
 
         return new Bech32Address(ensFetcher.address).toBech32(
@@ -73,7 +73,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
         );
       } else {
         // Can't try to fetch the ENS.
-        return "";
+        return '';
       }
     }
 
@@ -109,17 +109,17 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
 
   getError(): Error | undefined {
     if (!this.rawRecipient) {
-      return new EmptyAddressError("Address is empty");
+      return new EmptyAddressError('Address is empty');
     }
 
     if (ObservableEnsFetcher.isValidENS(this.rawRecipient)) {
       const ensFetcher = this.getENSFetcher(this.rawRecipient);
       if (!ensFetcher) {
-        return new ENSNotSupportedError("ENS not supported for this chain");
+        return new ENSNotSupportedError('ENS not supported for this chain');
       }
 
       if (ensFetcher.isFetching) {
-        return new ENSIsFetchingError("ENS is fetching");
+        return new ENSIsFetchingError('ENS is fetching');
       }
 
       if (
@@ -128,7 +128,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
         ensFetcher.address.length !== 20
       ) {
         return new ENSFailedToFetchError(
-          "Failed to fetch the address from ENS"
+          'Failed to fetch the address from ENS'
         );
       }
 

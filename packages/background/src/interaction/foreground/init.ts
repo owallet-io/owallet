@@ -1,8 +1,8 @@
-import { Router } from "@keplr-wallet/router";
-import { PushInteractionDataMsg, PushEventDataMsg } from "./messages";
-import { ROUTE } from "./constants";
-import { getHandler } from "./handler";
-import { InteractionForegroundService } from "./service";
+import { Router } from '@owallet-wallet/router';
+import { PushInteractionDataMsg, PushEventDataMsg } from './messages';
+import { ROUTE } from './constants';
+import { getHandler } from './handler';
+import { InteractionForegroundService } from './service';
 
 export function interactionForegroundInit(
   router: Router,

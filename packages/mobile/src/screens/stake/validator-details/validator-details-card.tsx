@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
-import { Card, CardBody } from "../../../components/card";
-import { useStore } from "../../../stores";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
-import { Text, View, ViewStyle } from "react-native";
-import { useStyle } from "../../../styles";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
-import { Button } from "../../../components/button";
-import { useSmartNavigation } from "../../../navigation";
-import { ValidatorThumbnail } from "../../../components/thumbnail";
+import React, { FunctionComponent, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import { Card, CardBody } from '../../../components/card';
+import { useStore } from '../../../stores';
+import { BondStatus } from '@owallet-wallet/stores/build/query/cosmos/staking/types';
+import { Text, View, ViewStyle } from 'react-native';
+import { useStyle } from '../../../styles';
+import { CoinPretty, Dec, IntPretty } from '@owallet-wallet/unit';
+import { Button } from '../../../components/button';
+import { useSmartNavigation } from '../../../navigation';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
 
 export const ValidatorDetailsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -37,7 +37,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     bondedValidators.validators,
     unbondingValidators.validators,
     unbondedValidators.validators,
-    validatorAddress,
+    validatorAddress
   ]);
 
   const smartNavigation = useSmartNavigation();
@@ -55,52 +55,52 @@ export const ValidatorDetailsCard: FunctionComponent<{
         <CardBody>
           <View
             style={style.flatten([
-              "flex-row",
-              "items-center",
-              "margin-bottom-16",
+              'flex-row',
+              'items-center',
+              'margin-bottom-16'
             ])}
           >
             <ValidatorThumbnail
-              style={style.flatten(["margin-right-12"])}
+              style={style.flatten(['margin-right-12'])}
               size={44}
               url={thumbnail}
             />
-            <Text style={style.flatten(["h4", "color-text-black-medium"])}>
+            <Text style={style.flatten(['h4', 'color-text-black-medium'])}>
               {validator.description.moniker}
             </Text>
           </View>
-          <View style={style.flatten(["flex-row", "margin-bottom-12"])}>
-            <View style={style.flatten(["flex-1"])}>
+          <View style={style.flatten(['flex-row', 'margin-bottom-12'])}>
+            <View style={style.flatten(['flex-1'])}>
               <Text
                 style={style.flatten([
-                  "h6",
-                  "color-text-black-medium",
-                  "margin-bottom-4",
+                  'h6',
+                  'color-text-black-medium',
+                  'margin-bottom-4'
                 ])}
               >
                 Commission
               </Text>
-              <Text style={style.flatten(["body3", "color-text-black-medium"])}>
+              <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
                 {new IntPretty(
                   new Dec(validator.commission.commission_rates.rate)
                 )
                   .decreasePrecision(2)
                   .maxDecimals(2)
                   .trim(true)
-                  .toString() + "%"}
+                  .toString() + '%'}
               </Text>
             </View>
-            <View style={style.flatten(["flex-1"])}>
+            <View style={style.flatten(['flex-1'])}>
               <Text
                 style={style.flatten([
-                  "h6",
-                  "color-text-black-medium",
-                  "margin-bottom-4",
+                  'h6',
+                  'color-text-black-medium',
+                  'margin-bottom-4'
                 ])}
               >
                 Voting Power
               </Text>
-              <Text style={style.flatten(["body3", "color-text-black-medium"])}>
+              <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
                 {new CoinPretty(
                   chainStore.current.stakeCurrency,
                   new Dec(validator.tokens)
@@ -110,18 +110,18 @@ export const ValidatorDetailsCard: FunctionComponent<{
               </Text>
             </View>
           </View>
-          <View style={style.flatten(["margin-bottom-14"])}>
+          <View style={style.flatten(['margin-bottom-14'])}>
             <Text
               style={style.flatten([
-                "h6",
-                "color-text-black-medium",
-                "margin-bottom-4",
+                'h6',
+                'color-text-black-medium',
+                'margin-bottom-4'
               ])}
             >
               Description
             </Text>
             <Text
-              style={style.flatten(["body3", "color-text-black-medium"])}
+              style={style.flatten(['body3', 'color-text-black-medium'])}
               selectable={true}
             >
               {validator.description.details}
@@ -130,13 +130,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
           <Button
             text="Stake"
             onPress={() => {
-              analyticsStore.logEvent("Delegate started", {
-                chainId: chainStore.current.chainId,
-                chainName: chainStore.current.chainName,
-                validatorName: validator.description.moniker,
-              });
-              smartNavigation.navigateSmart("Delegate", {
-                validatorAddress,
+              smartNavigation.navigateSmart('Delegate', {
+                validatorAddress
               });
             }}
           />

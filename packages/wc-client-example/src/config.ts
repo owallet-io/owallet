@@ -1,96 +1,96 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Bech32Address } from '@owallet-wallet/cosmos';
 
 export const EmbedChainInfos = [
   {
-    rpc: "https://rpc-cosmoshub.keplr.app",
-    rest: "https://lcd-cosmoshub.keplr.app",
-    chainId: "cosmoshub-4",
-    chainName: "Cosmos",
+    rpc: 'https://rpc-cosmoshub.owallet.app',
+    rest: 'https://lcd-cosmoshub.owallet.app',
+    chainId: 'cosmoshub-4',
+    chainName: 'Cosmos',
     stakeCurrency: {
-      coinDenom: "ATOM",
-      coinMinimalDenom: "uatom",
+      coinDenom: 'ATOM',
+      coinMinimalDenom: 'uatom',
       coinDecimals: 6,
-      coinGeckoId: "cosmos",
+      coinGeckoId: 'cosmos'
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/cosmoshub/stake"
-        : "http://localhost:8081/#/cosmoshub/stake",
+      process.env.NODE_ENV === 'production'
+        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
+        : 'http://localhost:8081/#/cosmoshub/stake',
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/cosmoshub/stake"
-        : "http://localhost:8081/#/cosmoshub/stake",
+      process.env.NODE_ENV === 'production'
+        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
+        : 'http://localhost:8081/#/cosmoshub/stake',
     bip44: {
-      coinType: 118,
+      coinType: 118
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: Bech32Address.defaultBech32Config('cosmos'),
     currencies: [
       {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
+        coinDenom: 'ATOM',
+        coinMinimalDenom: 'uatom',
         coinDecimals: 6,
-        coinGeckoId: "cosmos",
-      },
+        coinGeckoId: 'cosmos'
+      }
     ],
     feeCurrencies: [
       {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
+        coinDenom: 'ATOM',
+        coinMinimalDenom: 'uatom',
         coinDecimals: 6,
-        coinGeckoId: "cosmos",
-      },
+        coinGeckoId: 'cosmos'
+      }
     ],
     coinType: 118,
-    features: ["stargate", "ibc-transfer"],
+    features: ['stargate', 'ibc-transfer']
   },
   {
-    rpc: "https://rpc-osmosis.keplr.app",
-    rest: "https://lcd-osmosis.keplr.app",
-    chainId: "osmosis-1",
-    chainName: "Osmosis",
+    rpc: 'https://rpc-osmosis.owallet.app',
+    rest: 'https://lcd-osmosis.owallet.app',
+    chainId: 'osmosis-1',
+    chainName: 'Osmosis',
     stakeCurrency: {
-      coinDenom: "OSMO",
-      coinMinimalDenom: "uosmo",
+      coinDenom: 'OSMO',
+      coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
-      coinGeckoId: "osmosis",
+      coinGeckoId: 'osmosis'
     },
     walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://app.osmosis.zone"
-        : "https://app.osmosis.zone",
+      process.env.NODE_ENV === 'production'
+        ? 'https://app.osmosis.zone'
+        : 'https://app.osmosis.zone',
     walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/osmosis/stake"
-        : "http://localhost:8081/#/osmosis/stake",
+      process.env.NODE_ENV === 'production'
+        ? 'https://wallet.owallet.app/#/osmosis/stake'
+        : 'http://localhost:8081/#/osmosis/stake',
     bip44: { coinType: 118 },
-    bech32Config: Bech32Address.defaultBech32Config("osmo"),
+    bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [
       {
-        coinDenom: "OSMO",
-        coinMinimalDenom: "uosmo",
+        coinDenom: 'OSMO',
+        coinMinimalDenom: 'uosmo',
         coinDecimals: 6,
-        coinGeckoId: "osmosis",
+        coinGeckoId: 'osmosis'
       },
       {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
+        coinDenom: 'ION',
+        coinMinimalDenom: 'uion',
         coinDecimals: 6,
-        coinGeckoId: "ion",
-      },
+        coinGeckoId: 'ion'
+      }
     ],
     feeCurrencies: [
       {
-        coinDenom: "OSMO",
-        coinMinimalDenom: "uosmo",
+        coinDenom: 'OSMO',
+        coinMinimalDenom: 'uosmo',
         coinDecimals: 6,
-        coinGeckoId: "osmosis",
-      },
+        coinGeckoId: 'osmosis'
+      }
     ],
     gasPriceStep: {
       low: 0,
       average: 0.025,
-      high: 0.035,
+      high: 0.035
     },
-    features: ["stargate", "ibc-transfer"],
-  },
+    features: ['stargate', 'ibc-transfer']
+  }
 ];

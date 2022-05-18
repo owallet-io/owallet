@@ -1,5 +1,5 @@
-import { Bech32Address } from '@keplr-wallet/cosmos';
-import { ChainInfo } from '@keplr-wallet/types';
+import { Bech32Address } from '@owallet-wallet/cosmos';
+import { ChainInfo } from '@owallet-wallet/types';
 
 import {
   PRIVILEGED_ORIGINS,
@@ -154,11 +154,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/cosmoshub/stake'
+        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
         : 'http://localhost:8080/#/cosmoshub/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/cosmoshub/stake'
+        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
         : 'http://localhost:8080/#/cosmoshub/stake',
     bip44: {
       coinType: 118
@@ -202,7 +202,7 @@ export const EmbedChainInfos: ChainInfo[] = [
         : 'https://app.osmosis.zone',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/osmosis/stake'
+        ? 'https://wallet.owallet.app/#/osmosis/stake'
         : 'http://localhost:8080/#/osmosis/stake',
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
@@ -250,11 +250,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/secret/stake'
+        ? 'https://wallet.owallet.app/#/secret/stake'
         : 'http://localhost:8080/#/secret/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/secret/stake'
+        ? 'https://wallet.owallet.app/#/secret/stake'
         : 'http://localhost:8080/#/secret/stake',
     bip44: {
       coinType: 529
@@ -304,11 +304,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/akashnet/stake'
+        ? 'https://wallet.owallet.app/#/akashnet/stake'
         : 'http://localhost:8080/#/akashnet/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/akashnet/stake'
+        ? 'https://wallet.owallet.app/#/akashnet/stake'
         : 'http://localhost:8080/#/akashnet/stake',
     bip44: {
       coinType: 118
@@ -347,11 +347,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/crypto-org/stake'
+        ? 'https://wallet.owallet.app/#/crypto-org/stake'
         : 'http://localhost:8080/#/crypto-org/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/crypto-org/stake'
+        ? 'https://wallet.owallet.app/#/crypto-org/stake'
         : 'http://localhost:8080/#/crypto-org/stake',
     bip44: {
       coinType: 394
@@ -395,11 +395,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/iov-mainnet/stake'
+        ? 'https://wallet.owallet.app/#/iov-mainnet/stake'
         : 'http://localhost:8080/#/iov-mainnet/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/iov-mainnet/stake'
+        ? 'https://wallet.owallet.app/#/iov-mainnet/stake'
         : 'http://localhost:8080/#/iov-mainnet/stake',
     bip44: {
       coinType: 234
@@ -443,11 +443,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sifchain/stake'
+        ? 'https://wallet.owallet.app/#/sifchain/stake'
         : 'http://localhost:8080/#/sifchain/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sifchain/stake'
+        ? 'https://wallet.owallet.app/#/sifchain/stake'
         : 'http://localhost:8080/#/sifchain/stake',
     bip44: {
       coinType: 118
@@ -911,11 +911,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/shentu/stake'
+        ? 'https://wallet.owallet.app/#/shentu/stake'
         : 'http://localhost:8080/#/shentu/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/shentu/stake'
+        ? 'https://wallet.owallet.app/#/shentu/stake'
         : 'http://localhost:8080/#/shentu/stake',
     bip44: {
       coinType: 118
@@ -954,11 +954,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/irishub/stake'
+        ? 'https://wallet.owallet.app/#/irishub/stake'
         : 'http://localhost:8080/#/irishub/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/irishub/stake'
+        ? 'https://wallet.owallet.app/#/irishub/stake'
         : 'http://localhost:8080/#/irishub/stake',
     bip44: {
       coinType: 118
@@ -1007,11 +1007,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/regen/stake'
+        ? 'https://wallet.owallet.app/#/regen/stake'
         : 'http://localhost:8080/#/regen/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/regen/stake'
+        ? 'https://wallet.owallet.app/#/regen/stake'
         : 'http://localhost:8080/#/regen/stake',
     bip44: {
       coinType: 118
@@ -1050,11 +1050,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/core/stake'
+        ? 'https://wallet.owallet.app/#/core/stake'
         : 'http://localhost:8080/#/core/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/core/stake'
+        ? 'https://wallet.owallet.app/#/core/stake'
         : 'http://localhost:8080/#/core/stake',
     bip44: {
       coinType: 750
@@ -1098,11 +1098,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sentinel/stake'
+        ? 'https://wallet.owallet.app/#/sentinel/stake'
         : 'http://localhost:8080/#/sentinel/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sentinel/stake'
+        ? 'https://wallet.owallet.app/#/sentinel/stake'
         : 'http://localhost:8080/#/sentinel/stake',
     bip44: {
       coinType: 118
@@ -1146,11 +1146,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/kava/stake'
+        ? 'https://wallet.owallet.app/#/kava/stake'
         : 'http://localhost:8080/#/kava/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/kava/stake'
+        ? 'https://wallet.owallet.app/#/kava/stake'
         : 'http://localhost:8080/#/kava/stake',
     bip44: { coinType: 459 },
     alternativeBIP44s: [{ coinType: 118 }],
@@ -1230,11 +1230,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/impacthub/stake'
+        ? 'https://wallet.owallet.app/#/impacthub/stake'
         : 'http://localhost:8080/#/impacthub/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/impacthub/stake'
+        ? 'https://wallet.owallet.app/#/impacthub/stake'
         : 'http://localhost:8080/#/impacthub/stake',
     bip44: {
       coinType: 118
@@ -1271,11 +1271,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/emoney/stake'
+        ? 'https://wallet.owallet.app/#/emoney/stake'
         : 'http://localhost:8080/#/emoney/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/emoney/stake'
+        ? 'https://wallet.owallet.app/#/emoney/stake'
         : 'http://localhost:8080/#/emoney/stake',
     bip44: {
       coinType: 118
@@ -1344,11 +1344,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/agoric/stake'
+        ? 'https://wallet.owallet.app/#/agoric/stake'
         : 'http://localhost:8080/#/agoric/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/agoric/stake'
+        ? 'https://wallet.owallet.app/#/agoric/stake'
         : 'http://localhost:8080/#/agoric/stake',
     bip44: {
       coinType: 564
@@ -1395,11 +1395,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/bostrom/stake'
+        ? 'https://wallet.owallet.app/#/bostrom/stake'
         : 'http://localhost:8080/#/bostrom/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/bostrom/stake'
+        ? 'https://wallet.owallet.app/#/bostrom/stake'
         : 'http://localhost:8080/#/bostrom/stake',
     bip44: {
       coinType: 118
@@ -1467,11 +1467,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/juno/stake'
+        ? 'https://wallet.owallet.app/#/juno/stake'
         : 'http://localhost:8080/#/juno/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/juno/stake'
+        ? 'https://wallet.owallet.app/#/juno/stake'
         : 'http://localhost:8080/#/juno/stake',
     bip44: {
       coinType: 118
@@ -1521,11 +1521,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/stargaze/stake'
+        ? 'https://wallet.owallet.app/#/stargaze/stake'
         : 'http://localhost:8080/#/stargaze/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/stargaze/stake'
+        ? 'https://wallet.owallet.app/#/stargaze/stake'
         : 'http://localhost:8080/#/stargaze/stake',
     bip44: {
       coinType: 118
@@ -1563,11 +1563,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/axelar/stake'
+        ? 'https://wallet.owallet.app/#/axelar/stake'
         : 'http://localhost:8080/#/axelar/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/axelar/stake'
+        ? 'https://wallet.owallet.app/#/axelar/stake'
         : 'http://localhost:8080/#/axelar/stake',
     bip44: {
       coinType: 118
@@ -1609,11 +1609,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sommelier/stake'
+        ? 'https://wallet.owallet.app/#/sommelier/stake'
         : 'http://localhost:8080/#/sommelier/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/sommelier/stake'
+        ? 'https://wallet.owallet.app/#/sommelier/stake'
         : 'http://localhost:8080/#/sommelier/stake',
     bip44: {
       coinType: 118
@@ -1651,11 +1651,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/umee/stake'
+        ? 'https://wallet.owallet.app/#/umee/stake'
         : 'http://localhost:8080/#/umee/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/umee/stake'
+        ? 'https://wallet.owallet.app/#/umee/stake'
         : 'http://localhost:8080/#/umee/stake',
     bip44: {
       coinType: 118
@@ -1696,11 +1696,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/evmos/stake'
+        ? 'https://wallet.owallet.app/#/evmos/stake'
         : 'http://localhost:8080/#/evmos/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/evmos/stake'
+        ? 'https://wallet.owallet.app/#/evmos/stake'
         : 'http://localhost:8080/#/evmos/stake',
     bip44: {
       coinType: 60
@@ -1742,11 +1742,11 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     walletUrl:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/straightedge/stake'
+        ? 'https://wallet.owallet.app/#/straightedge/stake'
         : 'http://localhost:8080/#/straightedge/stake',
     walletUrlForStaking:
       process.env.NODE_ENV === 'production'
-        ? 'https://wallet.keplr.app/#/straightedge/stake'
+        ? 'https://wallet.owallet.app/#/straightedge/stake'
         : 'http://localhost:8080/#/straightedge/stake',
     bip44: {
       coinType: 118
@@ -1768,7 +1768,7 @@ export const EmbedChainInfos: ChainInfo[] = [
     ],
     coinType: 551,
     // STR's decimal is high. Thus, if gas price is set as 0.025, it produces very low and long fee.
-    // And, currently, this long fee is not visible well in Keplr.
+    // And, currently, this long fee is not visible well in OWallet.
     // Just, increase the gas price step temporarily.
     gasPriceStep: {
       low: 0.01 * Math.pow(10, 12),
@@ -1777,7 +1777,9 @@ export const EmbedChainInfos: ChainInfo[] = [
     },
     beta: true
   }
-];
+]
+  // filter those have rpc and rest
+  .filter((chain) => chain.rpc && chain.rest);
 
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = PRIVILEGED_ORIGINS;

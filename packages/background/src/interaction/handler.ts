@@ -1,6 +1,6 @@
-import { Env, Handler, InternalHandler, Message } from "@keplr-wallet/router";
-import { ApproveInteractionMsg, RejectInteractionMsg } from "./messages";
-import { InteractionService } from "./service";
+import { Env, Handler, InternalHandler, Message } from '@owallet-wallet/router';
+import { ApproveInteractionMsg, RejectInteractionMsg } from './messages';
+import { InteractionService } from './service';
 
 export const getHandler: (service: InteractionService) => Handler = (
   service: InteractionService
@@ -18,7 +18,7 @@ export const getHandler: (service: InteractionService) => Handler = (
           msg as RejectInteractionMsg
         );
       default:
-        throw new Error("Unknown msg type");
+        throw new Error('Unknown msg type');
     }
   };
 };

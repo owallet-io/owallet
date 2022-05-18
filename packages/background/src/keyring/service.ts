@@ -13,15 +13,15 @@ import {
   checkAndValidateADR36AminoSignDoc,
   makeADR36AminoSignDoc,
   verifyADR36AminoSignDoc
-} from '@keplr-wallet/cosmos';
+} from '@owallet-wallet/cosmos';
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 
-import { KVStore } from '@keplr-wallet/common';
+import { KVStore } from '@owallet-wallet/common';
 
 import { ChainsService } from '../chains';
 import { LedgerService } from '../ledger';
-import { BIP44, ChainInfo, KeplrSignOptions } from '@keplr-wallet/types';
-import { APP_PORT, Env, WEBPAGE_PORT } from '@keplr-wallet/router';
+import { BIP44, ChainInfo, OWalletSignOptions } from '@owallet-wallet/types';
+import { APP_PORT, Env, WEBPAGE_PORT } from '@owallet-wallet/router';
 import { InteractionService } from '../interaction';
 import { PermissionService } from '../permission';
 
@@ -34,8 +34,8 @@ import {
 } from '@cosmjs/launchpad';
 import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
 
-import { RNG } from '@keplr-wallet/crypto';
-import { cosmos } from '@keplr-wallet/cosmos';
+import { RNG } from '@owallet-wallet/crypto';
+import { cosmos } from '@owallet-wallet/cosmos';
 import { Buffer } from 'buffer/';
 
 @singleton()
@@ -227,7 +227,10 @@ export class KeyRingService {
     chainId: string,
     signer: string,
     signDoc: StdSignDoc,
-    signOptions: KeplrSignOptions
+    signOptions: OWalletSignOptions & {
+      // Hack option field to detect the sign arbitrary for string
+      isADR36WithString?: boolean;
+    }
   ): Promise<AminoSignResponse> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
@@ -308,7 +311,7 @@ export class KeyRingService {
     chainId: string,
     signer: string,
     signDoc: cosmos.tx.v1beta1.SignDoc,
-    signOptions: KeplrSignOptions
+    signOptions: OWalletSignOptions
   ): Promise<DirectSignResponse> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 

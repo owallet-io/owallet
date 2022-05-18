@@ -1,11 +1,11 @@
-import React, { FunctionComponent, MouseEvent, useCallback } from "react";
+import React, { FunctionComponent, MouseEvent, useCallback } from 'react';
 
-import styleWarningView from "./warning-view.module.scss";
-import { Alert, Button } from "reactstrap";
-import { useHistory } from "react-router";
-import { FormattedMessage } from "react-intl";
+import styleWarningView from './warning-view.module.scss';
+import { Alert, Button } from 'reactstrap';
+import { useHistory } from 'react-router';
+import { FormattedMessage } from 'react-intl';
 
-import { MultiKeyStoreInfoWithSelectedElem } from "@keplr-wallet/background";
+import { MultiKeyStoreInfoWithSelectedElem } from '@owallet-wallet/background';
 
 export const WarningView: FunctionComponent<{
   index: number;
@@ -24,14 +24,14 @@ export const WarningView: FunctionComponent<{
 
   return (
     <div className={styleWarningView.innerContainer}>
-      {keyStore.type === "mnemonic" ? (
+      {keyStore.type === 'mnemonic' ? (
         <Alert color="warning" fade={false}>
           <div>
             <FormattedMessage id="setting.clear.alert" />
           </div>
           <Button
             size="sm"
-            style={{ float: "right", marginTop: "10px" }}
+            style={{ float: 'right', marginTop: '10px' }}
             color="white"
             outline
             onClick={onBackUpMnemonicButtonClick}
@@ -42,7 +42,7 @@ export const WarningView: FunctionComponent<{
       ) : null}
       <div className={styleWarningView.trashContainer}>
         <img
-          src={require("../../../public/assets/img/icons8-trash-can.svg")}
+          src={require('../../../public/assets/img/icons8-trash-can.svg')}
           alt="trash-can"
         />
         <div>

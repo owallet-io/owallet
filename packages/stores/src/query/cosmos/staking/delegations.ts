@@ -1,13 +1,13 @@
 import {
   ObservableChainQuery,
-  ObservableChainQueryMap,
-} from "../../chain-query";
-import { Delegation, Delegations, DelegationsStargate } from "./types";
-import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "../../../common";
-import { CoinPretty, Int } from "@keplr-wallet/unit";
-import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
+  ObservableChainQueryMap
+} from '../../chain-query';
+import { Delegation, Delegations, DelegationsStargate } from './types';
+import { KVStore } from '@owallet-wallet/common';
+import { ChainGetter } from '../../../common';
+import { CoinPretty, Int } from '@owallet-wallet/unit';
+import { computed, makeObservable } from 'mobx';
+import { computedFn } from 'mobx-utils';
 
 export class ObservableQueryDelegationsInner extends ObservableChainQuery<
   Delegations | DelegationsStargate
@@ -46,7 +46,7 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
 
     let totalBalance = new Int(0);
     for (const delegation of this.response.data.result) {
-      if (typeof delegation.balance === "string") {
+      if (typeof delegation.balance === 'string') {
         totalBalance = totalBalance.add(new Int(delegation.balance));
       } else {
         totalBalance = totalBalance.add(new Int(delegation.balance.amount));
@@ -71,16 +71,16 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
 
     for (const delegation of this.response.data.result) {
       const balance =
-        typeof delegation.balance === "string"
+        typeof delegation.balance === 'string'
           ? delegation.balance
           : delegation.balance.amount;
 
       result.push({
         validatorAddress:
-          "validator_address" in delegation
+          'validator_address' in delegation
             ? delegation.validator_address
             : delegation.delegation.validator_address,
-        balance: new CoinPretty(stakeCurrency, new Int(balance)),
+        balance: new CoinPretty(stakeCurrency, new Int(balance))
       });
     }
 
@@ -94,7 +94,7 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
     }
 
     const result = this.response.data.result;
-    if (result.length > 0 && "delegation" in result[0]) {
+    if (result.length > 0 && 'delegation' in result[0]) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       return result.map((r) => {
@@ -102,7 +102,7 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
           balance: r.balance,
           delegator_address: r.delegation.delegator_address,
           validator_address: r.delegation.validator_address,
-          shares: r.delegation.shares,
+          shares: r.delegation.shares
         };
       });
     }
@@ -128,7 +128,7 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
           return new CoinPretty(
             stakeCurrency,
             new Int(
-              typeof delegation.balance === "string"
+              typeof delegation.balance === 'string'
                 ? delegation.balance
                 : delegation.balance.amount
             )

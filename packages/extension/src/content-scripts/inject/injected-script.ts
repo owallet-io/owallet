@@ -1,14 +1,14 @@
-import { InjectedKeplr } from "@keplr-wallet/provider";
-import { init } from "./init";
+import { InjectedOWallet } from '@owallet-wallet/provider';
+import { init } from './init';
 
-import manifest from "../../manifest.json";
+import manifest from '../../manifest.json';
 
-const keplr = new InjectedKeplr(manifest.version);
+const owallet = new InjectedOWallet(manifest.version, 'extension');
 
 init(
-  keplr,
-  (chainId: string) => keplr.getOfflineSigner(chainId),
-  (chainId: string) => keplr.getOfflineSignerOnlyAmino(chainId),
-  (chainId: string) => keplr.getOfflineSignerAuto(chainId),
-  (chainId: string) => keplr.getEnigmaUtils(chainId)
+  owallet,
+  (chainId: string) => owallet.getOfflineSigner(chainId),
+  (chainId: string) => owallet.getOfflineSignerOnlyAmino(chainId),
+  (chainId: string) => owallet.getOfflineSignerAuto(chainId),
+  (chainId: string) => owallet.getEnigmaUtils(chainId)
 );

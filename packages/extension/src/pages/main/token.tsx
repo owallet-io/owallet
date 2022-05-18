@@ -4,15 +4,15 @@ import styleToken from './token.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useHistory } from 'react-router';
-import { Hash } from '@keplr-wallet/crypto';
-import { ObservableQueryBalanceInner } from '@keplr-wallet/stores/build/query/balances';
+import { Hash } from '@owallet-wallet/crypto';
+import { ObservableQueryBalanceInner } from '@owallet-wallet/stores/build/query/balances';
 import classmames from 'classnames';
 import { UncontrolledTooltip } from 'reactstrap';
-import { WrongViewingKeyError } from '@keplr-wallet/stores';
+import { WrongViewingKeyError } from '@owallet-wallet/stores';
 import { useNotification } from '../../components/notification';
 import { useLoadingIndicator } from '../../components/loading-indicator';
-import { DenomHelper } from '@keplr-wallet/common';
-import { Dec } from '@keplr-wallet/unit';
+import { DenomHelper } from '@owallet-wallet/common';
+import { Dec } from '@owallet-wallet/unit';
 import { useLanguage } from '../../languages';
 
 const TokenView: FunctionComponent<{
@@ -21,25 +21,25 @@ const TokenView: FunctionComponent<{
 }> = observer(({ onClick, balance }) => {
   const { chainStore, accountStore, tokensStore, priceStore } = useStore();
   const language = useLanguage();
-  const [backgroundColors] = useState([
-    '#5e72e4',
-    '#11cdef',
-    '#2dce89',
-    '#fb6340'
+  const [colors] = useState([
+    ['#5e72e4', '#ffffff'],
+    ['#11cdef', '#ffffff'],
+    ['#2dce89', '#ffffff'],
+    ['#F6F7FB', '#0e0314']
   ]);
 
   const name = balance.currency.coinDenom.toUpperCase();
   const minimalDenom = balance.currency.coinMinimalDenom;
   let amount = balance.balance.trim(true).shrink(true);
 
-  const backgroundColor = useMemo(() => {
+  const [backgroundColor, color] = useMemo(() => {
     const hash = Hash.sha256(Buffer.from(minimalDenom));
     if (hash.length > 0) {
-      return backgroundColors[hash[0] % backgroundColors.length];
+      return colors[hash[0] % colors.length];
     } else {
-      return backgroundColors[0];
+      return colors[0];
     }
-  }, [backgroundColors, minimalDenom]);
+  }, [colors, minimalDenom]);
 
   const error = balance.error;
 
@@ -106,12 +106,13 @@ const TokenView: FunctionComponent<{
             height: '100%',
             borderRadius: '100000px',
             backgroundColor,
-
+            borderWidth: 1,
+            borderStyle: 'solid',
+            borderColor: backgroundColor,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-
-            color: '#FFFFFF',
+            color,
             fontSize: '16px'
           }}
         >

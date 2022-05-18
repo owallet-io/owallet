@@ -1,19 +1,19 @@
-import { observable, action, computed, makeObservable, flow } from "mobx";
+import { observable, action, computed, makeObservable, flow } from 'mobx';
 
-import { ChainStore as BaseChainStore } from "@keplr-wallet/stores";
+import { ChainStore as BaseChainStore } from '@owallet-wallet/stores';
 
-import { ChainInfo } from "@keplr-wallet/types";
+import { ChainInfo } from '@owallet-wallet/types';
 import {
   ChainInfoWithEmbed,
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
-  TryUpdateChainMsg,
-} from "@keplr-wallet/background";
-import { BACKGROUND_PORT } from "@keplr-wallet/router";
+  TryUpdateChainMsg
+} from '@owallet-wallet/background';
+import { BACKGROUND_PORT } from '@owallet-wallet/router';
 
-import { MessageRequester } from "@keplr-wallet/router";
-import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { AppChainInfo } from "../../config";
+import { MessageRequester } from '@owallet-wallet/router';
+import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { AppChainInfo } from '../../config';
 
 export class ChainStore extends BaseChainStore<
   ChainInfoWithEmbed & AppChainInfo
@@ -23,7 +23,7 @@ export class ChainStore extends BaseChainStore<
 
   @observable
   protected _isInitializing: boolean = false;
-  protected deferChainIdSelect: string = "";
+  protected deferChainIdSelect: string = '';
 
   constructor(
     embedChainInfos: ChainInfo[],
@@ -35,8 +35,8 @@ export class ChainStore extends BaseChainStore<
         return {
           ...chainInfo,
           ...{
-            embeded: true,
-          },
+            embeded: true
+          }
         };
       })
     );
@@ -77,7 +77,7 @@ export class ChainStore extends BaseChainStore<
 
   async saveLastViewChainId() {
     // Save last view chain id to kv store
-    await this.kvStore.set<string>("last_view_chain_id", this.selectedChainId);
+    await this.kvStore.set<string>('last_view_chain_id', this.selectedChainId);
   }
 
   @flow
@@ -87,7 +87,7 @@ export class ChainStore extends BaseChainStore<
 
     // Get last view chain id from kv store
     const lastViewChainId = yield* toGenerator(
-      this.kvStore.get<string>("last_view_chain_id")
+      this.kvStore.get<string>('last_view_chain_id')
     );
 
     if (!this.deferChainIdSelect) {
@@ -99,7 +99,7 @@ export class ChainStore extends BaseChainStore<
 
     if (this.deferChainIdSelect) {
       this.selectChain(this.deferChainIdSelect);
-      this.deferChainIdSelect = "";
+      this.deferChainIdSelect = '';
     }
   }
 

@@ -1,29 +1,29 @@
-import { delay, inject, singleton } from "tsyringe";
-import { TYPES } from "../types";
+import { delay, inject, singleton } from 'tsyringe';
+import { TYPES } from '../types';
 
-import { Env } from "@keplr-wallet/router";
+import { Env } from '@owallet-wallet/router';
 import {
   ChainInfo,
   AppCurrency,
   CW20Currency,
-  Secret20Currency,
-} from "@keplr-wallet/types";
+  Secret20Currency
+} from '@owallet-wallet/types';
 import {
   CurrencySchema,
-  CW20CurrencyShema,
-  Secret20CurrencyShema,
-} from "../chains";
-import { Bech32Address, ChainIdHelper } from "@keplr-wallet/cosmos";
-import { ChainsService } from "../chains";
-import { KeyRingService } from "../keyring";
-import { KVStore } from "@keplr-wallet/common";
-import { KeyRingStatus } from "../keyring";
-import { InteractionService } from "../interaction";
-import { PermissionService } from "../permission";
+  CW20CurrencySchema,
+  Secret20CurrencySchema
+} from '../chains';
+import { Bech32Address, ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainsService } from '../chains';
+import { KeyRingService } from '../keyring';
+import { KVStore } from '@owallet-wallet/common';
+import { KeyRingStatus } from '../keyring';
+import { InteractionService } from '../interaction';
+import { PermissionService } from '../permission';
 
-import { Buffer } from "buffer/";
-import { SuggestTokenMsg } from "./messages";
-import { getSecret20ViewingKeyPermissionType } from "./types";
+import { Buffer } from 'buffer/';
+import { SuggestTokenMsg } from './messages';
+import { getSecret20ViewingKeyPermissionType } from './types';
 
 @singleton()
 export class TokensService {
@@ -56,11 +56,22 @@ export class TokensService {
 
     const find = (await this.getTokens(chainId)).find(
       (currency) =>
-        "contractAddress" in currency &&
+        'contractAddress' in currency &&
         currency.contractAddress === contractAddress
     );
     // If the same currency is already registered, do nothing.
     if (find) {
+      // If the secret20 token,
+      // just try to change the viewing key.
+      if (viewingKey) {
+        if ('type' in find && find.type === 'secret20') {
+          await this.addToken(chainId, {
+            ...find,
+            viewingKey
+          });
+        }
+        return;
+      }
       return;
     }
 
@@ -73,12 +84,12 @@ export class TokensService {
     const params = {
       chainId,
       contractAddress,
-      viewingKey,
+      viewingKey
     };
 
     const appCurrency = await this.interactionService.waitApprove(
       env,
-      "/setting/token/add",
+      '/setting/token/add',
       SuggestTokenMsg.type(),
       params
     );
@@ -94,7 +105,7 @@ export class TokensService {
     const chainCurrencies = await this.getTokens(chainId);
 
     const isTokenForAccount =
-      "type" in currency && currency.type === "secret20";
+      'type' in currency && currency.type === 'secret20';
     let isCurrencyUpdated = false;
 
     for (const chainCurrency of chainCurrencies) {
@@ -137,7 +148,7 @@ export class TokensService {
     const chainCurrencies = await this.getTokens(chainId);
 
     const isTokenForAccount =
-      "type" in currency && currency.type === "secret20";
+      'type' in currency && currency.type === 'secret20';
     let isFoundCurrency = false;
 
     for (const chainCurrency of chainCurrencies) {
@@ -178,7 +189,7 @@ export class TokensService {
         (await this.kvStore.get<AppCurrency[]>(
           `${chainIdHelper.identifier}-${Buffer.from(
             currentKey.address
-          ).toString("hex")}`
+          ).toString('hex')}`
         )) ?? [];
     }
 
@@ -220,7 +231,7 @@ export class TokensService {
     return (
       (await this.kvStore.get<Promise<AppCurrency[]>>(
         `${chainIdHelper.identifier}-${Buffer.from(currentKey.address).toString(
-          "hex"
+          'hex'
         )}`
       )) ?? []
     );
@@ -233,7 +244,7 @@ export class TokensService {
     const chainIdHelper = ChainIdHelper.parse(chainId);
 
     const currentKey = await this.keyRingService.getKey(chainId);
-    const hexAddress = Buffer.from(currentKey.address).toString("hex");
+    const hexAddress = Buffer.from(currentKey.address).toString('hex');
     await this.kvStore.set(
       `${chainIdHelper.identifier}-${hexAddress}`,
       currencies
@@ -274,14 +285,14 @@ export class TokensService {
     const tokens = await this.getTokens(chainId);
 
     for (const currency of tokens) {
-      if ("type" in currency && currency.type === "secret20") {
+      if ('type' in currency && currency.type === 'secret20') {
         if (currency.contractAddress === contractAddress) {
           return currency.viewingKey;
         }
       }
     }
 
-    throw new Error("There is no matched secret20");
+    throw new Error('There is no matched secret20');
   }
 
   async checkOrGrantSecret20ViewingKeyPermission(
@@ -298,7 +309,7 @@ export class TokensService {
     if (!this.permissionService.hasPermisson(chainId, type, origin)) {
       await this.permissionService.grantPermission(
         env,
-        "/access/viewing-key",
+        '/access/viewing-key',
         [chainId],
         type,
         [origin]
@@ -313,22 +324,22 @@ export class TokensService {
     currency: AppCurrency
   ): Promise<AppCurrency> {
     // Validate the schema.
-    if ("type" in currency) {
+    if ('type' in currency) {
       switch (currency.type) {
-        case "cw20":
+        case 'cw20':
           currency = await TokensService.validateCW20Currency(
             chainInfo,
             currency
           );
           break;
-        case "secret20":
+        case 'secret20':
           currency = await TokensService.validateSecret20Currency(
             chainInfo,
             currency
           );
           break;
         default:
-          throw new Error("Unknown type of currency");
+          throw new Error('Unknown type of currency');
       }
     } else {
       currency = await CurrencySchema.validateAsync(currency);

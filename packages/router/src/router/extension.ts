@@ -1,11 +1,15 @@
-import { Router } from "./types";
-import { MessageSender } from "../types";
-import { Result } from "../interfaces";
+import {
+  Router,
+  MessageSender,
+  Result,
+  EnvProducer
+} from '@owallet-wallet/router';
+import { getOWalletExtensionRouterId } from '../utils';
 
 export class ExtensionRouter extends Router {
   listen(port: string): void {
     if (!port) {
-      throw new Error("Empty port");
+      throw new Error('Empty port');
     }
 
     this.port = port;
@@ -20,7 +24,7 @@ export class ExtensionRouter extends Router {
   }
 
   unlisten(): void {
-    this.port = "";
+    this.port = '';
     browser.runtime.onMessage.removeListener(this.onMessage);
     // Although security considerations cross-extension communication are in place,
     // we have put in additional security measures by disbling extension-to-extension communication until a formal security audit has taken place.
@@ -42,6 +46,15 @@ export class ExtensionRouter extends Router {
       return;
     }
 
+    // The receiverRouterId will be set when requesting an interaction from the background to the frontend.
+    // If this value exists, it compares this value with the current router id and processes them only if they are the same.
+    if (
+      message.msg?.routerMeta?.receiverRouterId &&
+      message.msg.routerMeta.receiverRouterId !== getOWalletExtensionRouterId()
+    ) {
+      return;
+    }
+
     return this.onMessageHandler(message, sender);
   };
 
@@ -52,7 +65,7 @@ export class ExtensionRouter extends Router {
     try {
       const result = await this.handleMessage(message, sender);
       return {
-        return: result,
+        return: result
       };
     } catch (e) {
       console.log(
@@ -60,11 +73,11 @@ export class ExtensionRouter extends Router {
       );
       if (e) {
         return Promise.resolve({
-          error: e.message || e.toString(),
+          error: e.message || e.toString()
         });
       } else {
         return Promise.resolve({
-          error: "Unknown error, and error is null",
+          error: 'Unknown error, and error is null'
         });
       }
     }

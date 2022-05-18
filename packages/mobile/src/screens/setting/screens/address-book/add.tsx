@@ -1,23 +1,23 @@
-import React, { FunctionComponent, useState } from "react";
-import { PageWithScrollView } from "../../../../components/page";
-import { useStyle } from "../../../../styles";
-import { RouteProp, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent, useState } from 'react';
+import { PageWithScrollView } from '../../../../components/page';
+import { useStyle } from '../../../../styles';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   AddressBookConfig,
   useMemoConfig,
-  useRecipientConfig,
-} from "@keplr-wallet/hooks";
-import { observer } from "mobx-react-lite";
-import { View } from "react-native";
-import { useStore } from "../../../../stores";
-import { EthereumEndpoint } from "../../../../config";
+  useRecipientConfig
+} from '@owallet-wallet/hooks';
+import { observer } from 'mobx-react-lite';
+import { View } from 'react-native';
+import { useStore } from '../../../../stores';
+import { EthereumEndpoint } from '../../../../config';
 import {
   AddressInput,
   MemoInput,
-  TextInput,
-} from "../../../../components/input";
-import { Button } from "../../../../components/button";
-import { useSmartNavigation } from "../../../../navigation";
+  TextInput
+} from '../../../../components/input';
+import { Button } from '../../../../components/button';
+import { useSmartNavigation } from '../../../../navigation';
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -40,7 +40,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const recipientConfig = useRecipientConfig(
     chainStore,
     route.params.chainId,
@@ -50,10 +50,10 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
+      contentContainerStyle={style.get('flex-grow-1')}
+      style={style.flatten(['padding-x-page'])}
     >
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
       <TextInput
         label="Nickname"
         value={name}
@@ -66,7 +66,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         disableAddressBook={true}
       />
       <MemoInput label="Default memo (optional)" memoConfig={memoConfig} />
-      <View style={style.flatten(["flex-1"])} />
+      <View style={style.flatten(['flex-1'])} />
       <Button
         text="Save"
         size="large"
@@ -84,7 +84,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             await addressBookConfig.addAddressBook({
               name,
               address: recipientConfig.rawRecipient,
-              memo: memoConfig.memo,
+              memo: memoConfig.memo
             });
             analyticsStore.logEvent("Add address finished", {
               chainId: chainStore.current.chainId,
@@ -95,7 +95,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           }
         }}
       />
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );
 });

@@ -1,4 +1,4 @@
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import { AppCurrency, ChainInfo } from '@owallet-wallet/types';
 
 export interface ChainGetter {
   // Return the chain info matched with chain id.

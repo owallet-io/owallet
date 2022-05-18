@@ -75,7 +75,7 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
                   <path
                     fill="transparent"
                     strokeWidth="2"
-                    stroke="hsl(0, 0%, 18%)"
+                    stroke="white"
                     strokeLinecap="round"
                     d="M 6.5 10 L 13.5 3.5 M 6.5 10 L 13.5 16.5"
                   />

@@ -1,10 +1,10 @@
-import { AccountSetBase, WalletStatus } from "./base";
-import { ChainStore } from "../chain";
-import { ChainInfo } from "@keplr-wallet/types";
-import { MockKeplr } from "@keplr-wallet/provider";
+import { AccountSetBase, WalletStatus } from './base';
+import { ChainStore } from '../chain';
+import { ChainInfo } from '@owallet-wallet/types';
+import { MockOWallet } from '@owallet-wallet/provider-mock';
 
-describe("Test Account set base", () => {
-  test("Account set base should be inited automatically if `autoInit` is true", async () => {
+describe('Test Account set base', () => {
+  test('Account set base should be inited automatically if `autoInit` is true', async () => {
     const chainInfos: {
       readonly chainId: string;
       readonly bech32Config: {
@@ -12,11 +12,11 @@ describe("Test Account set base", () => {
       };
     }[] = [
       {
-        chainId: "test",
+        chainId: 'test',
         bech32Config: {
-          bech32PrefixAccAddr: "cosmos",
-        },
-      },
+          bech32PrefixAccAddr: 'cosmos'
+        }
+      }
     ];
     const chainStore = new ChainStore(chainInfos as ChainInfo[]);
 
@@ -24,31 +24,31 @@ describe("Test Account set base", () => {
       {
         // No need
         addEventListener: () => {},
-        removeEventListener: () => {},
+        removeEventListener: () => {}
       },
       chainStore,
-      "test",
+      'test',
       undefined as any,
       {
         prefetching: true,
         suggestChain: false,
         autoInit: true,
-        getKeplr: async () => {
-          return new MockKeplr(
+        getOWallet: async () => {
+          return new MockOWallet(
             async () => {
               return new Uint8Array(0);
             },
             chainInfos,
-            "curious kitchen brief change imitate open close knock cause romance trim offer"
+            'curious kitchen brief change imitate open close knock cause romance trim offer'
           );
         },
-        msgOpts: {},
+        msgOpts: {}
       }
     );
 
     expect(accountSetBase.walletStatus).toBe(WalletStatus.Loading);
 
-    // Need wait some time to get the Keplr.
+    // Need wait some time to get the OWallet.
     await (() => {
       return new Promise<void>((resolve) => {
         setTimeout(resolve, 1000);
@@ -57,12 +57,12 @@ describe("Test Account set base", () => {
 
     expect(accountSetBase.walletStatus).toBe(WalletStatus.Loaded);
     expect(accountSetBase.bech32Address).toBe(
-      "cosmos1unx0p9jv79xz278xuk7uuuwj2l99k2sp4vm8wp"
+      'cosmos1unx0p9jv79xz278xuk7uuuwj2l99k2sp4vm8wp'
     );
     expect(accountSetBase.isReadyToSendMsgs).toBe(true);
   });
 
-  test("Account set base should not be inited automatically if `autoInit` is false", async () => {
+  test('Account set base should not be inited automatically if `autoInit` is false', async () => {
     const chainInfos: {
       readonly chainId: string;
       readonly bech32Config: {
@@ -70,11 +70,11 @@ describe("Test Account set base", () => {
       };
     }[] = [
       {
-        chainId: "test",
+        chainId: 'test',
         bech32Config: {
-          bech32PrefixAccAddr: "cosmos",
-        },
-      },
+          bech32PrefixAccAddr: 'cosmos'
+        }
+      }
     ];
     const chainStore = new ChainStore(chainInfos as ChainInfo[]);
 
@@ -82,31 +82,31 @@ describe("Test Account set base", () => {
       {
         // No need
         addEventListener: () => {},
-        removeEventListener: () => {},
+        removeEventListener: () => {}
       },
       chainStore,
-      "test",
+      'test',
       undefined as any,
       {
         prefetching: true,
         suggestChain: false,
         autoInit: false,
-        getKeplr: async () => {
-          return new MockKeplr(
+        getOWallet: async () => {
+          return new MockOWallet(
             async () => {
               return new Uint8Array(0);
             },
             chainInfos,
-            "curious kitchen brief change imitate open close knock cause romance trim offer"
+            'curious kitchen brief change imitate open close knock cause romance trim offer'
           );
         },
-        msgOpts: {},
+        msgOpts: {}
       }
     );
 
     expect(accountSetBase.walletStatus).toBe(WalletStatus.NotInit);
 
-    // Need wait some time to get the Keplr.
+    // Need wait some time to get the OWallet.
     await (() => {
       return new Promise<void>((resolve) => {
         setTimeout(resolve, 1000);

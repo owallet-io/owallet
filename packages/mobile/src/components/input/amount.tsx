@@ -1,17 +1,17 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { observer } from "mobx-react-lite";
-import { TextInput } from "./input";
-import { TextStyle, View, ViewStyle } from "react-native";
+import React, { FunctionComponent, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import { TextInput } from './input';
+import { TextStyle, View, ViewStyle } from 'react-native';
 import {
   EmptyAmountError,
   IAmountConfig,
   InsufficientAmountError,
   InvalidNumberAmountError,
-  NagativeAmountError,
-  ZeroAmountError,
-} from "@keplr-wallet/hooks";
-import { Button } from "../button";
-import { useStyle } from "../../styles";
+  NegativeAmountError,
+  ZeroAmountError
+} from '@owallet-wallet/hooks';
+import { Button } from '../button';
+import { useStyle } from '../../styles';
 
 export const AmountInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -29,7 +29,7 @@ export const AmountInput: FunctionComponent<{
     inputContainerStyle,
     errorLabelStyle,
     label,
-    amountConfig,
+    amountConfig
   }) => {
     const style = useStyle();
 
@@ -41,15 +41,15 @@ export const AmountInput: FunctionComponent<{
             // No need to show the error to user.
             return;
           case InvalidNumberAmountError:
-            return "Invalid number";
+            return 'Invalid number';
           case ZeroAmountError:
-            return "Amount is zero";
-          case NagativeAmountError:
-            return "Amount is negative";
+            return 'Amount is zero';
+          case NegativeAmountError:
+            return 'Amount is negative';
           case InsufficientAmountError:
-            return "Insufficient fund";
+            return 'Insufficient fund';
           default:
-            return "Unknown error";
+            return 'Unknown error';
         }
       }
     }, [error]);
@@ -68,18 +68,18 @@ export const AmountInput: FunctionComponent<{
         inputRight={
           <View
             style={style.flatten([
-              "height-1",
-              "overflow-visible",
-              "justify-center",
+              'height-1',
+              'overflow-visible',
+              'justify-center'
             ])}
           >
             <Button
               text="MAX"
-              mode={amountConfig.isMax ? "light" : "fill"}
+              mode={amountConfig.isMax ? 'light' : 'fill'}
               size="small"
-              style={style.flatten(["padding-x-5", "padding-y-3"])}
-              containerStyle={style.flatten(["height-24", "border-radius-4"])}
-              textStyle={style.flatten(["normal-case", "text-caption2"])}
+              style={style.flatten(['padding-x-5', 'padding-y-3'])}
+              containerStyle={style.flatten(['height-24', 'border-radius-4'])}
+              textStyle={style.flatten(['normal-case', 'text-caption2'])}
               onPress={() => {
                 amountConfig.setIsMax(!amountConfig.isMax);
               }}

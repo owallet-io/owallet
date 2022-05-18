@@ -1,6 +1,6 @@
-import { ChainStore } from "./chain";
-import { EmbedChainInfos } from "../config";
-import { FiatCurrencies } from "../config.ui";
+import { ChainStore } from './chain';
+import { EmbedChainInfos } from '../config';
+import { FiatCurrencies, AmplitudeApiKey } from '../config.ui';
 import {
   KeyRingStore,
   InteractionStore,
@@ -14,20 +14,25 @@ import {
   ChainSuggestStore,
   IBCChannelStore,
   IBCCurrencyRegsitrar,
-  QueriesWithCosmosAndSecret,
-  AccountWithCosmosAndSecret,
-  getKeplrFromWindow,
-} from "@keplr-wallet/stores";
-import { ExtensionKVStore } from "@keplr-wallet/common";
+  QueriesWithCosmosAndSecretAndCosmwasm,
+  AccountWithAll,
+  getOWalletFromWindow
+} from '@owallet-wallet/stores';
+import { ExtensionKVStore } from '@owallet-wallet/common';
 import {
   ExtensionRouter,
   ContentScriptEnv,
   ContentScriptGuards,
-  InExtensionMessageRequester,
-  APP_PORT,
-} from "@keplr-wallet/router";
-import { ChainInfoWithEmbed } from "@keplr-wallet/background";
-import { FiatCurrency } from "@keplr-wallet/types";
+  InExtensionMessageRequester
+} from '@owallet-wallet/router-extension';
+import { APP_PORT } from '@owallet-wallet/router';
+import { ChainInfoWithEmbed } from '@owallet-wallet/background';
+import { FiatCurrency } from '@owallet-wallet/types';
+import { UIConfigStore } from './ui-config';
+import { FeeType } from '@owallet-wallet/hooks';
+import { AnalyticsStore, NoopAnalyticsClient } from '@owallet-wallet/analytics';
+import Amplitude from 'amplitude-js';
+import { ChainIdHelper } from '@owallet-wallet/cosmos';
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -47,7 +52,31 @@ export class RootStore {
 
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithEmbed>;
 
+  public readonly analyticsStore: AnalyticsStore<
+    {
+      chainId?: string;
+      chainName?: string;
+      toChainId?: string;
+      toChainName?: string;
+      registerType?: 'seed' | 'google' | 'ledger' | 'qr';
+      feeType?: FeeType | undefined;
+      isIbc?: boolean;
+      rpc?: string;
+      rest?: string;
+    },
+    {
+      registerType?: 'seed' | 'google' | 'ledger' | 'qr';
+      accountType?: 'mnemonic' | 'privateKey' | 'ledger';
+      currency?: string;
+      language?: string;
+    }
+  >;
+
   constructor() {
+    this.uiConfigStore = new UIConfigStore(
+      new ExtensionKVStore('store_ui_config')
+    );
+
     const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
     router.addGuard(ContentScriptGuards.checkMessageIsInternal);
 
@@ -66,16 +95,16 @@ export class RootStore {
       {
         dispatchEvent: (type: string) => {
           window.dispatchEvent(new Event(type));
-        },
+        }
       },
-      "scrypt",
+      'scrypt',
       this.chainStore,
       new InExtensionMessageRequester(),
       this.interactionStore
     );
 
     this.ibcChannelStore = new IBCChannelStore(
-      new ExtensionKVStore("store_ibc_channel")
+      new ExtensionKVStore('store_ibc_channel')
     );
 
     this.permissionStore = new PermissionStore(
@@ -90,10 +119,113 @@ export class RootStore {
     this.chainSuggestStore = new ChainSuggestStore(this.interactionStore);
 
     this.queriesStore = new QueriesStore(
-      new ExtensionKVStore("store_queries"),
+      new ExtensionKVStore('store_queries'),
       this.chainStore,
-      getKeplrFromWindow,
-      QueriesWithCosmosAndSecret
+      getOWalletFromWindow,
+      QueriesWithCosmosAndSecretAndCosmwasm
+    );
+
+    const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
+      // In certik, change the msg type of the MsgSend to "bank/MsgSend"
+      if (chainInfo.chainId.startsWith('shentu-')) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                type: 'bank/MsgSend'
+              }
+            }
+          }
+        };
+      }
+
+      // In akash or sifchain, increase the default gas for sending
+      if (
+        chainInfo.chainId.startsWith('akashnet-') ||
+        chainInfo.chainId.startsWith('sifchain')
+      ) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 120000
+              }
+            }
+          }
+        };
+      }
+
+      if (chainInfo.chainId.startsWith('secret-')) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 20000
+              },
+              secret20: {
+                gas: 50000
+              }
+            },
+            withdrawRewards: {
+              gas: 25000
+            },
+            createSecret20ViewingKey: {
+              gas: 50000
+            }
+          }
+        };
+      }
+
+      if (chainInfo.chainId.startsWith('evmos_')) {
+        return {
+          chainId: chainInfo.chainId,
+          msgOpts: {
+            send: {
+              native: {
+                gas: 140000
+              }
+            },
+            withdrawRewards: {
+              gas: 200000
+            }
+          }
+        };
+      }
+
+      return { chainId: chainInfo.chainId };
+    });
+
+    // What a silly...
+    chainOpts.push(
+      {
+        chainId: 'bombay-12',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        prefetching: false,
+        msgOpts: {
+          send: {
+            native: {
+              type: 'bank/MsgSend'
+            }
+          }
+        }
+      },
+      {
+        chainId: 'columbus-5',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        prefetching: false,
+        msgOpts: {
+          send: {
+            native: {
+              type: 'bank/MsgSend'
+            }
+          }
+        }
+      }
     );
 
     this.accountStore = new AccountStore(
@@ -110,57 +242,24 @@ export class RootStore {
           // because prefetching will request the unlock from the internal.
           // To prevent this problem, just check the first uri is "#/unlcok" and
           // if it is "#/unlock", don't use the prefetching option.
-          prefetching: !window.location.href.includes("#/unlock"),
+          prefetching: !window.location.href.includes('#/unlock'),
           suggestChain: false,
           autoInit: true,
-          getKeplr: getKeplrFromWindow,
+          getOWallet: getOWalletFromWindow
         },
-        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
-          // In certik, change the msg type of the MsgSend to "bank/MsgSend"
-          if (chainInfo.chainId.startsWith("shentu-")) {
-            return {
-              chainId: chainInfo.chainId,
-              msgOpts: {
-                send: {
-                  native: {
-                    type: "bank/MsgSend",
-                  },
-                },
-              },
-            };
-          }
-
-          // In akash or sifchain, increase the default gas for sending
-          if (
-            chainInfo.chainId.startsWith("akashnet-") ||
-            chainInfo.chainId.startsWith("sifchain")
-          ) {
-            return {
-              chainId: chainInfo.chainId,
-              msgOpts: {
-                send: {
-                  native: {
-                    gas: 120000,
-                  },
-                },
-              },
-            };
-          }
-
-          return { chainId: chainInfo.chainId };
-        }),
+        chainOpts
       }
     );
 
     this.priceStore = new CoinGeckoPriceStore(
-      new ExtensionKVStore("store_prices"),
+      new ExtensionKVStore('store_prices'),
       FiatCurrencies.reduce<{
         [vsCurrency: string]: FiatCurrency;
       }>((obj, fiat) => {
         obj[fiat.currency] = fiat;
         return obj;
       }, {}),
-      "usd"
+      'usd'
     );
 
     this.tokensStore = new TokensStore(
@@ -171,11 +270,53 @@ export class RootStore {
     );
 
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
-      new ExtensionKVStore("store_ibc_curreny_registrar"),
+      new ExtensionKVStore('store_ibc_curreny_registrar'),
       24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
       this.queriesStore
+    );
+
+    this.analyticsStore = new AnalyticsStore(
+      (() => {
+        if (!AmplitudeApiKey) {
+          return new NoopAnalyticsClient();
+        } else {
+          const amplitudeClient = Amplitude.getInstance();
+          amplitudeClient.init(AmplitudeApiKey, undefined, {
+            saveEvents: true,
+            platform: 'Extension'
+          });
+
+          return amplitudeClient;
+        }
+      })(),
+      {
+        logEvent: (eventName, eventProperties) => {
+          if (eventProperties?.chainId || eventProperties?.toChainId) {
+            eventProperties = {
+              ...eventProperties
+            };
+
+            if (eventProperties.chainId) {
+              eventProperties.chainId = ChainIdHelper.parse(
+                eventProperties.chainId
+              ).identifier;
+            }
+
+            if (eventProperties.toChainId) {
+              eventProperties.toChainId = ChainIdHelper.parse(
+                eventProperties.toChainId
+              ).identifier;
+            }
+          }
+
+          return {
+            eventName,
+            eventProperties
+          };
+        }
+      }
     );
 
     router.listen(APP_PORT);

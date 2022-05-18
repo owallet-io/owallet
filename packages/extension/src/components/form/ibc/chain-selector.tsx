@@ -1,19 +1,19 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useState } from 'react';
 import {
   ButtonDropdown,
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
   FormGroup,
-  Label,
-} from "reactstrap";
+  Label
+} from 'reactstrap';
 
-import style from "./style.module.scss";
-import { IBCChannelRegistrarModal } from "./channel-registrar";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import { IIBCChannelConfig } from "@keplr-wallet/hooks";
-import { FormattedMessage } from "react-intl";
+import style from './style.module.scss';
+import { IBCChannelRegistrarModal } from './channel-registrar';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { IIBCChannelConfig } from '@owallet-wallet/hooks';
+import { FormattedMessage } from 'react-intl';
 
 export const DestinationChainSelector: FunctionComponent<{
   ibcChannelConfig: IIBCChannelConfig;
@@ -28,7 +28,7 @@ export const DestinationChainSelector: FunctionComponent<{
   const [selectorId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
-    return `destination-${Buffer.from(bytes).toString("hex")}`;
+    return `destination-${Buffer.from(bytes).toString('hex')}`;
   });
 
   return (
@@ -89,7 +89,7 @@ export const DestinationChainSelector: FunctionComponent<{
                 setIsIBCregisterModalOpen(true);
               }}
             >
-              <i className="fas fa-plus-circle my-1 mr-1" />{" "}
+              <i className="fas fa-plus-circle my-1 mr-1" />{' '}
               <FormattedMessage id="component.ibc.channel-registrar.chain-selector.button.add" />
             </DropdownItem>
           </DropdownMenu>

@@ -1,8 +1,8 @@
-import { Coin } from "./coin";
-import { Int } from "./int";
-import { Dec } from "./decimal";
-import { DecUtils } from "./dec-utils";
-import { Currency } from "@keplr-wallet/types";
+import { Coin } from './coin';
+import { Int } from './int';
+import { Dec } from './decimal';
+import { DecUtils } from './dec-utils';
+import { Currency } from '@owallet-wallet/types';
 
 export class CoinUtils {
   static createCoinsFromPrimitives(
@@ -67,7 +67,7 @@ export class CoinUtils {
       return currency.coinDenom === denom;
     });
     if (!currency) {
-      throw new Error("Invalid currency");
+      throw new Error('Invalid currency');
     }
 
     let precision = new Dec(1);
@@ -97,7 +97,7 @@ export class CoinUtils {
       currency = {
         coinDecimals: 0,
         coinDenom: coin.denom,
-        coinMinimalDenom: coin.denom,
+        coinMinimalDenom: coin.denom
       };
     }
 
@@ -109,7 +109,7 @@ export class CoinUtils {
     const decAmount = new Dec(coin.amount).quoTruncate(precision);
     return {
       amount: decAmount.toString(currency.coinDecimals),
-      denom: currency.coinDenom,
+      denom: currency.coinDenom
     };
   }
 
@@ -120,7 +120,7 @@ export class CoinUtils {
     locale: boolean = false
   ): string {
     if (dec.equals(new Dec(0))) {
-      return "0";
+      return '0';
     }
 
     const integer = dec.truncate();
@@ -131,13 +131,19 @@ export class CoinUtils {
       minDecimals
     );
 
-    const fractionStr = fraction.toString(decimals).replace("0.", "");
+    const fractionStr =
+      decimals === 0 ? '' : fraction.toString(decimals).replace('0.', '');
 
     const integerStr = locale
       ? CoinUtils.integerStringToUSLocaleString(integer.toString())
       : integer.toString();
 
-    return integerStr + (fractionStr.length > 0 ? "." : "") + fractionStr;
+    return (
+      (isNeg ? '-' : '') +
+      integerStr +
+      (fractionStr.length > 0 ? '.' : '') +
+      fractionStr
+    );
   }
 
   /**
@@ -147,12 +153,12 @@ export class CoinUtils {
    * @param numberStr
    */
   static integerStringToUSLocaleString(numberStr: string): string {
-    if (numberStr.indexOf(".") >= 0) {
+    if (numberStr.indexOf('.') >= 0) {
       throw new Error(`${numberStr} is not integer`);
     }
 
-    if (typeof BigInt !== "undefined") {
-      return BigInt(numberStr).toLocaleString("en-US");
+    if (typeof BigInt !== 'undefined') {
+      return BigInt(numberStr).toLocaleString('en-US');
     }
 
     const integer = numberStr;
@@ -162,13 +168,13 @@ export class CoinUtils {
       chunks.push(integer.slice(Math.max(0, i - 3), i));
     }
 
-    return chunks.reverse().join(",");
+    return chunks.reverse().join(',');
   }
 
   static coinToTrimmedString(
     coin: Coin,
     currency: Currency,
-    separator: string = " "
+    separator: string = ' '
   ): string {
     const dec = new Dec(coin.amount).quoTruncate(
       DecUtils.getPrecisionDec(currency.coinDecimals)

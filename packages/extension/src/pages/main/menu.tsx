@@ -1,11 +1,11 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import styleMenu from "./menu.module.scss";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
+import styleMenu from './menu.module.scss';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router";
+import { FormattedMessage } from 'react-intl';
+import { useHistory } from 'react-router';
 
 export const Menu: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore } = useStore();
@@ -18,7 +18,7 @@ export const Menu: FunctionComponent = observer(() => {
         className={styleMenu.item}
         onClick={() => {
           history.push({
-            pathname: "/setting/address-book",
+            pathname: '/setting/address-book'
           });
         }}
       >
@@ -28,20 +28,20 @@ export const Menu: FunctionComponent = observer(() => {
         className={styleMenu.item}
         onClick={() => {
           history.push({
-            pathname: "/setting",
+            pathname: '/setting'
           });
         }}
       >
         <FormattedMessage id="main.menu.settings" />
       </div>
       {(chainStore.current.features ?? []).find(
-        (feature) => feature === "cosmwasm" || feature === "secretwasm"
+        (feature) => feature === 'cosmwasm' || feature === 'secretwasm'
       ) ? (
         <div
           className={styleMenu.item}
           onClick={() => {
             history.push({
-              pathname: "/setting/token/add",
+              pathname: '/setting/token/add'
             });
           }}
         >
@@ -49,13 +49,13 @@ export const Menu: FunctionComponent = observer(() => {
         </div>
       ) : null}
       {(chainStore.current.features ?? []).find(
-        (feature) => feature === "secretwasm"
+        (feature) => feature === 'cosmwasm' || feature === 'secretwasm'
       ) ? (
         <div
           className={styleMenu.item}
           onClick={() => {
             history.push({
-              pathname: "/setting/token/manage",
+              pathname: '/setting/token/manage'
             });
           }}
         >
@@ -78,7 +78,7 @@ export const Menu: FunctionComponent = observer(() => {
       <div className={styleMenu.footer}>
         <a
           className={styleMenu.inner}
-          href="https://github.com/everett-protocol/keplr-extension"
+          href="https://github.com/everett-protocol/owallet-extension"
           target="_blank"
           rel="noopener noreferrer"
         >

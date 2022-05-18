@@ -1,5 +1,5 @@
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
-import { RegisterOption } from '@keplr-wallet/hooks';
+import { RegisterOption } from '@owallet-wallet/hooks';
 import {
   ETHEREUM_ENDPOINT,
   ADDITIONAL_INTL_MESSAGES,
@@ -10,7 +10,7 @@ import {
   IntlMessages,
   LanguageToFiatCurrency as TypeLanguageToFiatCurrency
 } from './languages';
-import { FiatCurrency } from '@keplr-wallet/types';
+import { FiatCurrency } from '@owallet-wallet/types';
 
 export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
 export const CoinGeckoGetPrice = '/simple/price';

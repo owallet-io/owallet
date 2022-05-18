@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
-import { IMemoConfig } from "@keplr-wallet/hooks";
-import { TextStyle, ViewStyle } from "react-native";
-import { TextInput } from "./input";
+import React, { FunctionComponent } from 'react';
+import { observer } from 'mobx-react-lite';
+import { IMemoConfig } from '@owallet-wallet/hooks';
+import { TextStyle, ViewStyle } from 'react-native';
+import { TextInput } from './input';
 
 export const MemoInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -20,7 +20,7 @@ export const MemoInput: FunctionComponent<{
     inputContainerStyle,
     errorLabelStyle,
     label,
-    memoConfig,
+    memoConfig
   }) => {
     return (
       <TextInput

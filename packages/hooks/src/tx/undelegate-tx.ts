@@ -1,12 +1,15 @@
-import { ChainGetter, ObservableQueryDelegations } from "@keplr-wallet/stores";
-import { ObservableQueryBalances } from "@keplr-wallet/stores/build/query/balances";
+import {
+  ChainGetter,
+  ObservableQueryDelegations
+} from '@owallet-wallet/stores';
+import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
 import {
   useFeeConfig,
   useGasConfig,
   useMemoConfig,
-  useRecipientConfig,
-} from "./index";
-import { useStakedAmountConfig } from "./staked-amount";
+  useRecipientConfig
+} from './index';
+import { useStakedAmountConfig } from './staked-amount';
 
 export const useUndelegateTxConfig = (
   chainGetter: ChainGetter,
@@ -48,6 +51,6 @@ export const useUndelegateTxConfig = (
     memoConfig,
     gasConfig,
     feeConfig,
-    recipientConfig,
+    recipientConfig
   };
 };

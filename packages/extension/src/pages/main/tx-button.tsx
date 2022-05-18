@@ -1,32 +1,23 @@
-import React, {
-  FunctionComponent,
-  MouseEvent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
-import styleTxButton from "./tx-button.module.scss";
+import styleTxButton from './tx-button.module.scss';
 
-import { Button, Tooltip } from "reactstrap";
-import { Address } from "../../components/address";
+import { Button, Tooltip } from 'reactstrap';
 
-import { observer } from "mobx-react-lite";
+import { observer } from 'mobx-react-lite';
 
-import { useStore } from "../../stores";
+import { useStore } from '../../stores';
 
-import Modal from "react-modal";
-import { useNotification } from "../../components/notification";
+import Modal from 'react-modal';
 
-import { FormattedMessage } from "react-intl";
-import { useHistory } from "react-router";
+import { FormattedMessage } from 'react-intl';
+import { useHistory } from 'react-router';
 
-import classnames from "classnames";
-import { Dec } from "@keplr-wallet/unit";
+import classnames from 'classnames';
+import { Dec } from '@owallet-wallet/unit';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const QrCode = require("qrcode");
+const QrCode = require('qrcode');
 
 const DepositModal: FunctionComponent<{
   bech32Address: string;
@@ -110,7 +101,14 @@ export const TxButtonView: FunctionComponent = observer(() => {
   return (
     <div className={styleTxButton.containerTxButton}>
       <Modal
-        style={{ content: { width: "330px", minWidth: "330px" } }}
+        style={{
+          content: {
+            width: '330px',
+            minWidth: '330px',
+            minHeight: 'unset',
+            maxHeight: 'unset'
+          }
+        }}
         isOpen={isDepositOpen}
         onRequestClose={() => {
           setIsDepositOpen(false);
@@ -138,16 +136,16 @@ export const TxButtonView: FunctionComponent = observer(() => {
       <Button
         innerRef={sendBtnRef}
         className={classnames(styleTxButton.button, {
-          disabled: !hasAssets,
+          disabled: !hasAssets
         })}
         color="primary"
         outline
-        data-loading={accountInfo.isSendingMsg === "send"}
+        data-loading={accountInfo.isSendingMsg === 'send'}
         onClick={(e) => {
           e.preventDefault();
 
           if (hasAssets) {
-            history.push("/send");
+            history.push('/send');
           }
         }}
       >

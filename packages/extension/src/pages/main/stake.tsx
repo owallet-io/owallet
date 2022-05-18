@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import React, { FunctionComponent, useMemo, useRef, useState } from 'react';
 
-import { Button, Tooltip } from "reactstrap";
+import { Button, Tooltip } from 'reactstrap';
 
-import { useStore } from "../../stores";
+import { useStore } from '../../stores';
 
-import { observer } from "mobx-react-lite";
+import { observer } from 'mobx-react-lite';
 
-import styleStake from "./stake.module.scss";
-import classnames from "classnames";
-import { Dec } from "@keplr-wallet/unit";
+import styleStake from './stake.module.scss';
+import classnames from 'classnames';
+import { Dec } from '@owallet-wallet/unit';
 
-import { useNotification } from "../../components/notification";
+import { useNotification } from '../../components/notification';
 
-import { useHistory } from "react-router";
+import { useHistory } from 'react-router';
 
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage } from 'react-intl';
 
 export const StakeView: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -47,21 +47,31 @@ export const StakeView: FunctionComponent = observer(() => {
         // So, to prevent this problem, just send the msgs up to 8.
         await accountInfo.cosmos.sendWithdrawDelegationRewardMsgs(
           rewards.getDescendingPendingRewardValidatorAddresses(8),
-          ""
+          '',
+          undefined,
+          undefined,
+          {
+            onBroadcasted: () => {
+              analyticsStore.logEvent('Claim reward tx broadcasted', {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName
+              });
+            }
+          }
         );
 
-        history.replace("/");
+        history.replace('/');
       } catch (e) {
-        history.replace("/");
+        history.replace('/');
         notification.push({
-          type: "warning",
-          placement: "top-center",
+          type: 'warning',
+          placement: 'top-center',
           duration: 5,
           content: `Fail to withdraw rewards: ${e.message}`,
           canDelete: true,
           transition: {
-            duration: 0.25,
-          },
+            duration: 0.25
+          }
         });
       }
     }
@@ -82,9 +92,9 @@ export const StakeView: FunctionComponent = observer(() => {
             <div className={styleStake.vertical}>
               <p
                 className={classnames(
-                  "h4",
-                  "my-0",
-                  "font-weight-normal",
+                  'h4',
+                  'my-0',
+                  'font-weight-normal',
                   styleStake.paragraphSub
                 )}
               >
@@ -92,9 +102,9 @@ export const StakeView: FunctionComponent = observer(() => {
               </p>
               <p
                 className={classnames(
-                  "h2",
-                  "my-0",
-                  "font-weight-normal",
+                  'h2',
+                  'my-0',
+                  'font-weight-normal',
                   styleStake.paragraphMain
                 )}
               >
@@ -114,7 +124,7 @@ export const StakeView: FunctionComponent = observer(() => {
                 size="sm"
                 disabled={!accountInfo.isReadyToSendMsgs}
                 onClick={withdrawAllRewards}
-                data-loading={accountInfo.isSendingMsg === "withdrawRewards"}
+                data-loading={accountInfo.isSendingMsg === 'withdrawRewards'}
               >
                 <FormattedMessage id="main.stake.button.claim-rewards" />
               </Button>
@@ -128,38 +138,40 @@ export const StakeView: FunctionComponent = observer(() => {
         <div className={styleStake.vertical}>
           <p
             className={classnames(
-              "h2",
-              "my-0",
-              "font-weight-normal",
+              'h2',
+              'my-0',
+              'font-weight-normal',
               styleStake.paragraphMain
             )}
           >
             <FormattedMessage id="main.stake.message.stake" />
           </p>
-          <p
-            className={classnames(
-              "h4",
-              "my-0",
-              "font-weight-normal",
-              styleStake.paragraphSub
-            )}
-          >
-            <FormattedMessage
-              id="main.stake.message.earning"
-              values={{
-                apr: (
-                  <React.Fragment>
-                    {inflation.inflation.trim(true).maxDecimals(2).toString()}
-                    {inflation.isFetching ? (
-                      <span>
-                        <i className="fas fa-spinner fa-spin" />
-                      </span>
-                    ) : null}
-                  </React.Fragment>
-                ),
-              }}
-            />
-          </p>
+          {inflation.inflation.toDec().equals(new Dec(0)) ? null : (
+            <p
+              className={classnames(
+                'h4',
+                'my-0',
+                'font-weight-normal',
+                styleStake.paragraphSub
+              )}
+            >
+              <FormattedMessage
+                id="main.stake.message.earning"
+                values={{
+                  apr: (
+                    <React.Fragment>
+                      {inflation.inflation.trim(true).maxDecimals(2).toString()}
+                      {inflation.isFetching ? (
+                        <span>
+                          <i className="fas fa-spinner fa-spin" />
+                        </span>
+                      ) : null}
+                    </React.Fragment>
+                  )
+                }}
+              />
+            </p>
+          )}
         </div>
         <div style={{ flex: 1 }} />
         <a
@@ -169,6 +181,11 @@ export const StakeView: FunctionComponent = observer(() => {
           onClick={(e) => {
             if (!isStakableExist) {
               e.preventDefault();
+            } else {
+              analyticsStore.logEvent('Stake button clicked', {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName
+              });
             }
           }}
         >
@@ -180,7 +197,7 @@ export const StakeView: FunctionComponent = observer(() => {
           <Button
             innerRef={stakeBtnRef}
             className={classnames(styleStake.button, {
-              disabled: !isStakableExist,
+              disabled: !isStakableExist
             })}
             color="primary"
             size="sm"

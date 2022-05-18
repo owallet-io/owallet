@@ -1,23 +1,23 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
-import styleDetailsTab from "./details-tab.module.scss";
+import styleDetailsTab from './details-tab.module.scss';
 
-import { renderAminoMessage } from "./amino";
-import { Msg } from "@cosmjs/launchpad";
-import { FormattedMessage, useIntl } from "react-intl";
-import { FeeButtons, MemoInput } from "../../components/form";
+import { renderAminoMessage } from './amino';
+import { Msg } from '@cosmjs/launchpad';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { FeeButtons, MemoInput } from '../../components/form';
 import {
   IFeeConfig,
   IGasConfig,
   IMemoConfig,
-  SignDocHelper,
-} from "@keplr-wallet/hooks";
-import { useLanguage } from "../../languages";
-import { Badge, Button, Label } from "reactstrap";
-import { renderDirectMessage } from "./direct";
+  SignDocHelper
+} from '@owallet-wallet/hooks';
+import { useLanguage } from '../../languages';
+import { Badge, Button, Label } from 'reactstrap';
+import { renderDirectMessage } from './direct';
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -37,7 +37,7 @@ export const DetailsTab: FunctionComponent<{
     gasConfig,
     isInternal,
     preferNoSetFee,
-    preferNoSetMemo,
+    preferNoSetMemo
   }) => {
     const { chainStore, priceStore, accountStore } = useStore();
     const intl = useIntl();
@@ -45,15 +45,15 @@ export const DetailsTab: FunctionComponent<{
 
     const mode = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode
-      : "none";
+      : 'none';
     const msgs = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode === "amino"
+      ? signDocHelper.signDocWrapper.mode === 'amino'
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
         : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
       : [];
 
     const renderedMsgs = (() => {
-      if (mode === "amino") {
+      if (mode === 'amino') {
         return (msgs as readonly Msg[]).map((msg, i) => {
           const msgContent = renderAminoMessage(
             accountStore.getAccount(chainStore.current.chainId).msgOpts,
@@ -70,7 +70,7 @@ export const DetailsTab: FunctionComponent<{
             </React.Fragment>
           );
         });
-      } else if (mode === "direct") {
+      } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
           const msgContent = renderDirectMessage(
             msg,
@@ -96,7 +96,7 @@ export const DetailsTab: FunctionComponent<{
         <Label
           for="signing-messages"
           className="form-control-label"
-          style={{ display: "flex" }}
+          style={{ display: 'flex' }}
         >
           <FormattedMessage id="sign.list.messages.label" />
           <Badge className="ml-2" color="primary">
@@ -109,7 +109,7 @@ export const DetailsTab: FunctionComponent<{
         {!preferNoSetMemo ? (
           <MemoInput
             memoConfig={memoConfig}
-            label={intl.formatMessage({ id: "sign.info.memo" })}
+            label={intl.formatMessage({ id: 'sign.info.memo' })}
             rows={1}
           />
         ) : (
@@ -117,11 +117,11 @@ export const DetailsTab: FunctionComponent<{
             <Label for="memo" className="form-control-label">
               <FormattedMessage id="sign.info.memo" />
             </Label>
-            <div id="memo" style={{ marginBottom: "8px" }}>
-              <div style={{ color: memoConfig.memo ? undefined : "#AAAAAA" }}>
+            <div id="memo" style={{ marginBottom: '8px' }}>
+              <div style={{ color: memoConfig.memo ? undefined : '#AAAAAA' }}>
                 {memoConfig.memo
                   ? memoConfig.memo
-                  : intl.formatMessage({ id: "sign.info.warning.empty-memo" })}
+                  : intl.formatMessage({ id: 'sign.info.warning.empty-memo' })}
               </div>
             </div>
           </React.Fragment>
@@ -131,8 +131,8 @@ export const DetailsTab: FunctionComponent<{
             feeConfig={feeConfig}
             gasConfig={gasConfig}
             priceStore={priceStore}
-            label={intl.formatMessage({ id: "sign.info.fee" })}
-            gasLabel={intl.formatMessage({ id: "sign.info.gas" })}
+            label={intl.formatMessage({ id: 'sign.info.fee' })}
+            gasLabel={intl.formatMessage({ id: 'sign.info.gas' })}
           />
         ) : feeConfig.fee ? (
           <React.Fragment>
@@ -148,7 +148,7 @@ export const DetailsTab: FunctionComponent<{
                 ) ? (
                   <div
                     className="ml-2"
-                    style={{ display: "inline-block", fontSize: "12px" }}
+                    style={{ display: 'inline-block', fontSize: '12px' }}
                   >
                     {priceStore
                       .calculatePrice(feeConfig.fee, language.fiatCurrency)
@@ -160,20 +160,20 @@ export const DetailsTab: FunctionComponent<{
             {
               /*
                 Even if the "preferNoSetFee" option is turned on, it provides the way to edit the fee to users.
-                However, if the interaction is internal, you can be sure that the fee is set well inside Keplr.
+                However, if the interaction is internal, you can be sure that the fee is set well inside OWallet.
                 Therefore, the button is not shown in this case.
               */
               !isInternal ? (
-                <div style={{ fontSize: "12px" }}>
+                <div style={{ fontSize: '12px' }}>
                   <Button
                     color="link"
                     size="sm"
                     style={{
-                      padding: 0,
+                      padding: 0
                     }}
                     onClick={(e) => {
                       e.preventDefault();
-                      feeConfig.setFeeType("average");
+                      feeConfig.setFeeType('average');
                     }}
                   >
                     <FormattedMessage id="sign.info.fee.override" />
@@ -191,11 +191,11 @@ export const DetailsTab: FunctionComponent<{
 const Msg: FunctionComponent<{
   icon?: string;
   title: string;
-}> = ({ icon = "fas fa-question", title, children }) => {
+}> = ({ icon = 'fas fa-question', title, children }) => {
   return (
     <div className={styleDetailsTab.msg}>
       <div className={styleDetailsTab.icon}>
-        <div style={{ height: "2px" }} />
+        <div style={{ height: '2px' }} />
         <i className={icon} />
         <div style={{ flex: 1 }} />
       </div>

@@ -1,18 +1,20 @@
 import {
   ChainInfo,
-  Keplr as IKeplr,
-  KeplrIntereactionOptions,
-  KeplrSignOptions,
-  Key,
-} from "@keplr-wallet/types";
-import { BACKGROUND_PORT, MessageRequester } from "@keplr-wallet/router";
+  OWallet as IOWallet,
+  OWalletIntereactionOptions,
+  OWalletMode,
+  OWalletSignOptions,
+  Key
+} from '@owallet-wallet/types';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
 import {
   BroadcastMode,
   AminoSignResponse,
   StdSignDoc,
   StdTx,
   OfflineSigner,
-} from "@cosmjs/launchpad";
+  StdSignature
+} from '@cosmjs/launchpad';
 import {
   EnableAccessMsg,
   SuggestChainInfoMsg,
@@ -26,28 +28,31 @@ import {
   ReqeustEncryptMsg,
   RequestDecryptMsg,
   GetTxEncryptionKeyMsg,
-} from "@keplr-wallet/background";
-import { cosmos } from "@keplr-wallet/cosmos";
-import { SecretUtils } from "secretjs/types/enigmautils";
+  RequestVerifyADR36AminoSignDoc
+} from './types';
+import { SecretUtils } from 'secretjs/types/enigmautils';
 
-import { KeplrEnigmaUtils } from "./enigma";
-import { DirectSignResponse, OfflineDirectSigner } from "@cosmjs/proto-signing";
+import { OWalletEnigmaUtils } from './enigma';
+import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 
-import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from "./cosmjs";
-import deepmerge from "deepmerge";
+import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
+import deepmerge from 'deepmerge';
+import Long from 'long';
+import { Buffer } from 'buffer/';
 
-export class Keplr implements IKeplr {
+export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
-  public defaultOptions: KeplrIntereactionOptions = {};
+  public defaultOptions: OWalletIntereactionOptions = {};
 
   constructor(
     public readonly version: string,
+    public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
   ) {}
 
   async enable(chainIds: string | string[]): Promise<void> {
-    if (typeof chainIds === "string") {
+    if (typeof chainIds === 'string') {
       chainIds = [chainIds];
     }
 
@@ -80,7 +85,7 @@ export class Keplr implements IKeplr {
     chainId: string,
     signer: string,
     signDoc: StdSignDoc,
-    signOptions: KeplrSignOptions = {}
+    signOptions: OWalletSignOptions = {}
   ): Promise<AminoSignResponse> {
     const msg = new RequestSignAminoMsg(
       chainId,
@@ -94,21 +99,93 @@ export class Keplr implements IKeplr {
   async signDirect(
     chainId: string,
     signer: string,
-    signDoc: cosmos.tx.v1beta1.ISignDoc,
-    signOptions: KeplrSignOptions = {}
+    signDoc: {
+      bodyBytes?: Uint8Array | null;
+      authInfoBytes?: Uint8Array | null;
+      chainId?: string | null;
+      accountNumber?: Long | null;
+    },
+    signOptions: OWalletSignOptions = {}
   ): Promise<DirectSignResponse> {
     const msg = new RequestSignDirectMsg(
       chainId,
       signer,
-      cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
+      {
+        bodyBytes: signDoc.bodyBytes,
+        authInfoBytes: signDoc.authInfoBytes,
+        chainId: signDoc.chainId,
+        accountNumber: signDoc.accountNumber
+          ? signDoc.accountNumber.toString()
+          : null
+      },
       deepmerge(this.defaultOptions.sign ?? {}, signOptions)
     );
     const response = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
     return {
-      signed: cosmos.tx.v1beta1.SignDoc.decode(response.signedBytes),
-      signature: response.signature,
+      signed: {
+        bodyBytes: response.signed.bodyBytes,
+        authInfoBytes: response.signed.authInfoBytes,
+        chainId: response.signed.chainId,
+        accountNumber: Long.fromString(response.signed.accountNumber)
+      },
+      signature: response.signature
     };
+  }
+
+  async signArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array
+  ): Promise<StdSignature> {
+    let isADR36WithString = false;
+    if (typeof data === 'string') {
+      data = Buffer.from(data).toString('base64');
+      isADR36WithString = true;
+    } else {
+      data = Buffer.from(data).toString('base64');
+    }
+
+    const signDoc = {
+      chain_id: '',
+      account_number: '0',
+      sequence: '0',
+      fee: {
+        gas: '0',
+        amount: []
+      },
+      msgs: [
+        {
+          type: 'sign/MsgSignData',
+          value: {
+            signer,
+            data
+          }
+        }
+      ],
+      memo: ''
+    };
+
+    const msg = new RequestSignAminoMsg(chainId, signer, signDoc, {
+      isADR36WithString
+    });
+    return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).signature;
+  }
+
+  async verifyArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    signature: StdSignature
+  ): Promise<boolean> {
+    if (typeof data === 'string') {
+      data = Buffer.from(data);
+    }
+
+    return await this.requester.sendMessage(
+      BACKGROUND_PORT,
+      new RequestVerifyADR36AminoSignDoc(chainId, signer, data, signature)
+    );
   }
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner {
@@ -196,7 +273,7 @@ export class Keplr implements IKeplr {
       return this.enigmaUtils.get(chainId)!;
     }
 
-    const enigmaUtils = new KeplrEnigmaUtils(chainId, this);
+    const enigmaUtils = new OWalletEnigmaUtils(chainId, this);
     this.enigmaUtils.set(chainId, enigmaUtils);
     return enigmaUtils;
   }

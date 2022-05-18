@@ -1,4 +1,4 @@
-package com.chainapsis.keplr;
+package com.chainapsis.owallet;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

@@ -1,24 +1,24 @@
 import {
   Router,
   MessageRequester,
-  BACKGROUND_PORT,
-} from "@keplr-wallet/router";
+  BACKGROUND_PORT
+} from '@owallet-wallet/router';
 import {
   InteractionForegroundHandler,
   interactionForegroundInit,
   InteractionForegroundService,
   InteractionWaitingData,
   ApproveInteractionMsg,
-  RejectInteractionMsg,
-} from "@keplr-wallet/background";
+  RejectInteractionMsg
+} from '@owallet-wallet/background';
 import {
   action,
   observable,
   IObservableArray,
   makeObservable,
   flow,
-  toJS,
-} from "mobx";
+  toJS
+} from 'mobx';
 
 export class InteractionStore implements InteractionForegroundHandler {
   @observable.shallow
@@ -27,7 +27,7 @@ export class InteractionStore implements InteractionForegroundHandler {
   @observable.shallow
   protected events: Map<
     string,
-    Omit<InteractionWaitingData, "id" | "isInternal">[]
+    Omit<InteractionWaitingData, 'id' | 'isInternal'>[]
   > = new Map();
 
   constructor(
@@ -46,12 +46,12 @@ export class InteractionStore implements InteractionForegroundHandler {
 
   getEvents<T = unknown>(
     type: string
-  ): Omit<InteractionWaitingData<T>, "id" | "isInternal">[] {
+  ): Omit<InteractionWaitingData<T>, 'id' | 'isInternal'>[] {
     return (
       toJS(
         this.events.get(type) as Omit<
           InteractionWaitingData<T>,
-          "id" | "isInternal"
+          'id' | 'isInternal'
         >[]
       ) ?? []
     );
@@ -63,7 +63,7 @@ export class InteractionStore implements InteractionForegroundHandler {
       this.datas.set(
         data.type,
         observable.array([], {
-          deep: false,
+          deep: false
         })
       );
     }
@@ -73,12 +73,12 @@ export class InteractionStore implements InteractionForegroundHandler {
   }
 
   @action
-  onEventDataReceived(data: Omit<InteractionWaitingData, "id" | "isInternal">) {
+  onEventDataReceived(data: Omit<InteractionWaitingData, 'id' | 'isInternal'>) {
     if (!this.events.has(data.type)) {
       this.events.set(
         data.type,
         observable.array([], {
-          deep: false,
+          deep: false
         })
       );
     }
@@ -150,7 +150,7 @@ export class InteractionStore implements InteractionForegroundHandler {
       this.events.set(
         type,
         observable.array([], {
-          deep: false,
+          deep: false
         })
       );
     }

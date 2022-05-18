@@ -1,17 +1,17 @@
-import { computed, makeObservable } from "mobx";
-import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
-import { ObservableQuerySupplyTotal } from "./supply";
-import { MintingInflation } from "./types";
-import { StakingPool } from "../staking/types";
-import { ObservableChainQuery } from "../../chain-query";
-import { ChainGetter } from "../../../common";
-import { ObservableQueryIrisMintingInfation } from "./iris-minting";
-import { ObservableQuerySifchainLiquidityAPY } from "./sifchain";
+import { computed, makeObservable } from 'mobx';
+import { Dec, DecUtils, Int, IntPretty } from '@owallet-wallet/unit';
+import { ObservableQuerySupplyTotal } from './supply';
+import { MintingInflation } from './types';
+import { StakingPool } from '../staking/types';
+import { ObservableChainQuery } from '../../chain-query';
+import { ChainGetter } from '../../../common';
+import { ObservableQueryIrisMintingInfation } from './iris-minting';
+import { ObservableQuerySifchainLiquidityAPY } from './sifchain';
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
-  ObservableQueryOsmosisMintParmas,
-} from "./osmosis";
+  ObservableQueryOsmosisMintParmas
+} from './osmosis';
 
 export class ObservableQueryInflation {
   constructor(
@@ -55,15 +55,15 @@ export class ObservableQueryInflation {
       // XXX: Hard coded part for the iris hub and sifchain.
       // TODO: Remove this part.
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.chainId.startsWith("irishub")) {
+      if (chainInfo.chainId.startsWith('irishub')) {
         dec = new Dec(
-          this._queryIrisMint.response?.data.result.inflation ?? "0"
+          this._queryIrisMint.response?.data.result.inflation ?? '0'
         ).mul(DecUtils.getPrecisionDec(2));
-      } else if (chainInfo.chainId.startsWith("sifchain")) {
+      } else if (chainInfo.chainId.startsWith('sifchain')) {
         return new IntPretty(
           new Dec(this._querySifchainAPY.liquidityAPY.toString())
         );
-      } else if (chainInfo.chainId.startsWith("osmosis")) {
+      } else if (chainInfo.chainId.startsWith('osmosis')) {
         /*
           XXX: Temporary and unfinished implementation for the osmosis staking APY.
                Osmosis has different minting method.
@@ -103,7 +103,7 @@ export class ObservableQueryInflation {
           }
         }
       } else {
-        dec = new Dec(this._queryMint.response?.data.result ?? "0").mul(
+        dec = new Dec(this._queryMint.response?.data.result ?? '0').mul(
           DecUtils.getPrecisionDec(2)
         );
       }
@@ -120,7 +120,7 @@ export class ObservableQueryInflation {
           this._queryPool.response.data.result.bonded_tokens
         );
         const totalStr = (() => {
-          if (chainInfo.chainId.startsWith("osmosis")) {
+          if (chainInfo.chainId.startsWith('osmosis')) {
             // For osmosis, for now, just assume that the curreny supply is 100,000,000 with 6 decimals.
             return DecUtils.getPrecisionDec(8 + 6).toString();
           }
@@ -129,7 +129,7 @@ export class ObservableQueryInflation {
           const response = this._querySupplyTotal.getQueryStakeDenom().response!
             .data.result;
 
-          if (typeof response === "string") {
+          if (typeof response === 'string') {
             return response;
           } else {
             return response.amount;
