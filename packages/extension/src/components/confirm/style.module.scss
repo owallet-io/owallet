@@ -1,6 +1,7 @@
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import '../../styles/var';
 
 .modal {
   padding: 12px;
@@ -29,7 +30,7 @@
     h1 {
       text-align: center;
       font-size: 1.15rem;
-      color: black;
+      color: $color;
       font-weight: bold;
       margin: 0;
     }
@@ -38,7 +39,7 @@
       margin-bottom: 0;
       text-align: center;
       font-size: 0.85rem;
-      color: $gray-700;
+      color: $gray-300;
       font-weight: normal;
       line-height: 1.4;
     }

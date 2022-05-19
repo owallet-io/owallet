@@ -83,13 +83,17 @@ textarea.form-control{
 
 .input-group{
   background-color: $background-color-lighter;
+  overflow: hidden;
+  .btn{
+    border-radius: 0;
+  }
   .btn-outline-primary.disabled, .btn-outline-primary:disabled{
     background-color: $primary-color;
     color:$color;
   }
 }
 .modal-content{
-  background-color: $background-color;
+  background-color: $background-color-lighter;
 }
 
 .btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active, .show > .btn-secondary.dropdown-toggle{
@@ -136,6 +140,8 @@ button[data-loading="true"] {
 
 .btn{
   border-radius: 18px;  
+  white-space: break-spaces;
+  word-break: break-word;
 }
 
 .btn-primary{
@@ -157,8 +163,13 @@ button[data-loading="true"] {
   
   background-color: $background-color-lighter;
 
+  max-height: 500px;
+  overflow-y: auto;  
+
   .dropdown-item{
     color:$color;
+    white-space: break-spaces;
+    word-break: break-word;
     &:hover, &:focus{
       color:$background-color;
     }

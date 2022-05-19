@@ -17,7 +17,7 @@
 
 .token-selector {
   width: 100%;
-  height: 46px;
+  min-height: 46px;
   border-radius: .375rem;
   background-color: $background-color-lighter;
   button {
@@ -66,6 +66,8 @@
   float: right;
   font-weight: normal;
   color: $color;
+  width:100%;
+  word-break: break-word;
 
   &.clickable {
     cursor: pointer;
