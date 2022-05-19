@@ -8,11 +8,11 @@ import {
   IMemoConfig,
   IRecipientConfig,
   useAddressBookConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { AsyncKVStore } from '../../../../common';
 import { useStore } from '../../../../stores';
 import { TrashCanIcon } from '../../../../components/icon';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RectButton } from '../../../../components/rect-button';
 import { TouchableOpacity } from 'react-native-gesture-handler';

@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, Text, ViewStyle, View } from 'react-native';
 import { useStyle } from '../../styles';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import Clipboard from 'expo-clipboard';
 import { RectButton } from '../rect-button';
 import { CopyIcon } from '../icon';

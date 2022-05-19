@@ -8,7 +8,7 @@ import React, {
 import { BackHandler, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { useStyle } from '../../../../styles';
-import { OWallet } from '@owallet-wallet/provider';
+import { OWallet } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import { RNInjectedOWallet } from '../../../../injected/injected-provider';
 import RNFS from 'react-native-fs';
@@ -26,9 +26,9 @@ export const useInjectedSourceCode = () => {
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
-      RNFS.readFile(
-        `${RNFS.MainBundlePath}/injected-provider.bundle.js`
-      ).then((r) => setCode(r));
+      RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(
+        (r) => setCode(r)
+      );
     } else {
       RNFS.readFileAssets('injected-provider.bundle.js').then((r) =>
         setCode(r)

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { AppCurrency, Currency } from '@owallet-wallet/types';
+import { AppCurrency, Currency } from '@owallet/types';
 import { useStyle } from '../../styles';
 import {
   Circle,
@@ -11,7 +11,7 @@ import {
   Svg
 } from 'react-native-svg';
 import FastImage from 'react-native-fast-image';
-import { Hash } from '@owallet-wallet/crypto';
+import { Hash } from '@owallet/crypto';
 import { Buffer } from 'buffer/';
 import { VectorCharacter } from '../vector-character';
 

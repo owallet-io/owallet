@@ -12,21 +12,21 @@ import {
   LedgerInitStore,
   IBCCurrencyRegsitrar,
   PermissionStore
-} from '@owallet-wallet/stores';
+} from '@owallet/stores';
 import { AsyncKVStore } from '../common';
-import { APP_PORT } from '@owallet-wallet/router';
-import { ChainInfoWithEmbed } from '@owallet-wallet/background';
+import { APP_PORT } from '@owallet/router';
+import { ChainInfoWithEmbed } from '@owallet/background';
 import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
 import { ChainStore } from './chain';
 import EventEmitter from 'eventemitter3';
-import { OWallet } from '@owallet-wallet/provider';
+import { OWallet } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { WalletConnectStore } from './wallet-connect';
-import { FeeType } from '@owallet-wallet/hooks';
+import { FeeType } from '@owallet/hooks';
 import { AmplitudeApiKey } from '../config';
-import { AnalyticsStore, NoopAnalyticsClient } from '@owallet-wallet/analytics';
+import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import { Amplitude } from '@amplitude/react-native';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 export class RootStore {
   public readonly chainStore: ChainStore;

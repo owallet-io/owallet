@@ -7,7 +7,7 @@ import { useStyle } from '../../styles';
 import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation';
-import { useRegisterConfig } from '@owallet-wallet/hooks';
+import { useRegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

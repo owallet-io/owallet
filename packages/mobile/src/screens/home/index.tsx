@@ -22,7 +22,7 @@ import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
 import { useFocusEffect } from '@react-navigation/native';
-import { ChainUpdaterService } from '@owallet-wallet/background';
+import { ChainUpdaterService } from '@owallet/background';
 
 export const HomeScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);

@@ -1,5 +1,5 @@
 import WalletConnect from '@walletconnect/client';
-import { KeyRingStore, PermissionStore } from '@owallet-wallet/stores';
+import { KeyRingStore, PermissionStore } from '@owallet/stores';
 import {
   autorun,
   computed,
@@ -8,17 +8,17 @@ import {
   runInAction
 } from 'mobx';
 import { ChainStore } from '../chain';
-import { OWallet } from '@owallet-wallet/provider';
+import { OWallet } from '@owallet/provider';
 import { Buffer } from 'buffer/';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { WCMessageRequester } from './msg-requester';
 import { RNRouterBackground } from '../../router';
 import {
   getBasicAccessPermissionType,
   KeyRingStatus
-} from '@owallet-wallet/background';
+} from '@owallet/background';
 import { computedFn } from 'mobx-utils';
-import { Key } from '@owallet-wallet/types';
+import { Key } from '@owallet/types';
 import { AppState, Linking } from 'react-native';
 
 export interface WalletConnectV1SessionRequest {
@@ -502,10 +502,11 @@ export class WalletConnectStore extends WalletConnectManager {
 
       const owallet = this.createOWalletAPI(client.session.key);
 
-      const permittedChains = await this.permissionStore.getOriginPermittedChains(
-        WCMessageRequester.getVirtualSessionURL(client.session.key),
-        getBasicAccessPermissionType()
-      );
+      const permittedChains =
+        await this.permissionStore.getOriginPermittedChains(
+          WCMessageRequester.getVirtualSessionURL(client.session.key),
+          getBasicAccessPermissionType()
+        );
 
       for (const chain of permittedChains) {
         const key = keyForChainCache[chain] ?? (await owallet.getKey(chain));

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useStyle } from '../../styles';
-import { Governance, ObservableQueryProposal } from '@owallet-wallet/stores';
+import { Governance, ObservableQueryProposal } from '@owallet/stores';
 import { Chip } from '../../components/chip';
 import { CardBody } from '../../components/card';
 import { Text, View } from 'react-native';

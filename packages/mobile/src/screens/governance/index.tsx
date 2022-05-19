@@ -3,7 +3,7 @@ import { GovernanceCardBody } from './card';
 import { observer } from 'mobx-react-lite';
 import { PageWithSectionList } from '../../components/page';
 import { useStore } from '../../stores';
-import { ObservableQueryProposal } from '@owallet-wallet/stores';
+import { ObservableQueryProposal } from '@owallet/stores';
 import { Card, CardDivider } from '../../components/card';
 import { useStyle } from '../../styles';
 

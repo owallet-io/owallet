@@ -1,16 +1,12 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-  IFeeConfig,
-  IGasConfig,
-  NotLoadedFeeError
-} from '@owallet-wallet/hooks';
+import { IFeeConfig, IGasConfig, NotLoadedFeeError } from '@owallet/hooks';
 import { Text, View } from 'react-native';
 import { useStore } from '../../stores';
 import { useStyle } from '../../styles';
-import { CoinPretty, Dec } from '@owallet-wallet/unit';
+import { CoinPretty, Dec } from '@owallet/unit';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { OWalletSignOptions } from '@owallet-wallet/types';
+import { OWalletSignOptions } from '@owallet/types';
 import { RightArrowIcon } from '../../components/icon';
 import { registerModal } from '../base';
 import { CardModal } from '../card';

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { PageWithView } from '../../../components/page';
 import { Text, View } from 'react-native';
 import { useStyle } from '../../../styles';

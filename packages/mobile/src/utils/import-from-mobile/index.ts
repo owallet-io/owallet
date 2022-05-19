@@ -2,13 +2,13 @@ import {
   AddressBookData,
   AddressBookConfigMap,
   RegisterConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import WalletConnect from '@walletconnect/client';
 import AES, { Counter } from 'aes-js';
 import { Buffer } from 'buffer/';
-import { ExportKeyRingData } from '@owallet-wallet/background';
-import { KeyRingStore } from '@owallet-wallet/stores';
-import { Hash } from '@owallet-wallet/crypto';
+import { ExportKeyRingData } from '@owallet/background';
+import { KeyRingStore } from '@owallet/stores';
+import { Hash } from '@owallet/crypto';
 
 export interface QRCodeSharedData {
   // The uri for the wallet connect
@@ -127,9 +127,8 @@ export async function registerExportedAddressBooks(
   for (const chainId of Object.keys(addressBooks)) {
     const addressBook = addressBooks[chainId]!;
 
-    const addressBookConfig = addressBookConfigMap.getAddressBookConfig(
-      chainId
-    );
+    const addressBookConfig =
+      addressBookConfigMap.getAddressBookConfig(chainId);
 
     await addressBookConfig.waitLoaded();
 

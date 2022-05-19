@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { useStyle } from '../../../styles';
 import { useSmartNavigation } from '../../../navigation';
 import { Controller, useForm } from 'react-hook-form';

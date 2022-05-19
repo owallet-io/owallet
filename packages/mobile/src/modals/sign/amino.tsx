@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  AccountSetOpts,
-  CosmosMsgOpts,
-  SecretMsgOpts
-} from '@owallet-wallet/stores';
+import { AccountSetOpts, CosmosMsgOpts, SecretMsgOpts } from '@owallet/stores';
 import {
   MessageObj,
   MsgBeginRedelegate,
@@ -22,7 +18,7 @@ import {
   renderMsgWithdrawDelegatorReward,
   renderMsgVote
 } from './messages';
-import { AppCurrency } from '@owallet-wallet/types';
+import { AppCurrency } from '@owallet/types';
 
 export function renderAminoMessage(
   msgOpts: AccountSetOpts<CosmosMsgOpts & SecretMsgOpts>['msgOpts'],

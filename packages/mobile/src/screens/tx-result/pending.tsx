@@ -8,7 +8,7 @@ import { Button } from '../../components/button';
 import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation';
 import { RightArrowIcon } from '../../components/icon';
-import { TendermintTxTracer } from '@owallet-wallet/cosmos';
+import { TendermintTxTracer } from '@owallet/cosmos';
 import { Buffer } from 'buffer/';
 import LottieView from 'lottie-react-native';
 

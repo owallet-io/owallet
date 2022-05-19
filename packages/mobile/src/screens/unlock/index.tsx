@@ -3,23 +3,23 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState,
-} from "react";
-import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
-import Animated, { Easing } from "react-native-reanimated";
-import { observer } from "mobx-react-lite";
-import { useStyle } from "../../styles";
-import * as SplashScreen from "expo-splash-screen";
-import { TextInput } from "../../components/input";
-import { Button } from "../../components/button";
-import delay from "delay";
-import { useStore } from "../../stores";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { StackActions, useNavigation } from "@react-navigation/native";
-import { KeyRingStatus } from "@keplr-wallet/background";
-import { KeychainStore } from "../../stores/keychain";
-import { AccountStore } from "@keplr-wallet/stores";
-import { autorun } from "mobx";
+  useState
+} from 'react';
+import { Dimensions, Image, StatusBar, StyleSheet, View } from 'react-native';
+import Animated, { Easing } from 'react-native-reanimated';
+import { observer } from 'mobx-react-lite';
+import { useStyle } from '../../styles';
+import * as SplashScreen from 'expo-splash-screen';
+import { TextInput } from '../../components/input';
+import { Button } from '../../components/button';
+import delay from 'delay';
+import { useStore } from '../../stores';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import { KeyRingStatus } from '@owallet/background';
+import { KeychainStore } from '../../stores/keychain';
+import { AccountStore } from '@owallet/stores';
+import { autorun } from 'mobx';
 
 let splashScreenHided = false;
 async function hideSplashScreen() {

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { IAmountConfig } from '@owallet-wallet/hooks';
+import { IAmountConfig } from '@owallet/hooks';
 import { TextStyle, ViewStyle } from 'react-native';
 import { Selector } from './selector';
 

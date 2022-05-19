@@ -5,7 +5,7 @@ import { Card, CardBody } from '../../../components/card';
 import { Text, View, ViewStyle } from 'react-native';
 import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
-import { Dec } from '@owallet-wallet/unit';
+import { Dec } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation';
 
 export const MyRewardCard: FunctionComponent<{
@@ -20,9 +20,10 @@ export const MyRewardCard: FunctionComponent<{
     account.bech32Address
   );
 
-  const pendingStakableReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  ).stakableReward;
+  const pendingStakableReward =
+    queries.cosmos.queryRewards.getQueryBech32Address(
+      account.bech32Address
+    ).stakableReward;
 
   const apy = queries.cosmos.queryInflation.inflation;
 

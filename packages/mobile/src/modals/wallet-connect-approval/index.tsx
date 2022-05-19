@@ -5,7 +5,7 @@ import { Text, View } from 'react-native';
 import { useStyle } from '../../styles';
 import { Button } from '../../components/button';
 import { useStore } from '../../stores';
-import { PermissionData } from '@owallet-wallet/background';
+import { PermissionData } from '@owallet/background';
 import { WCMessageRequester } from '../../stores/wallet-connect/msg-requester';
 import { WCAppLogoAndName } from '../../components/wallet-connect';
 

@@ -8,9 +8,9 @@ import { Button } from '../../components/button';
 import { useStore } from '../../stores';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { LoadingSpinner } from '../../components/spinner';
-import { Governance } from '@owallet-wallet/stores';
+import { Governance } from '@owallet/stores';
 import { GovernanceProposalStatusChip } from './card';
-import { IntPretty } from '@owallet-wallet/unit';
+import { IntPretty } from '@owallet/unit';
 import { useIntl } from 'react-intl';
 import { dateToLocalString } from './utils';
 import { registerModal } from '../../modals/base';
@@ -264,12 +264,8 @@ export const GovernanceVoteModal: FunctionComponent<{
   smartNavigation: ReturnType<typeof useSmartNavigation>;
 }> = registerModal(
   observer(({ proposalId, close, smartNavigation }) => {
-    const {
-      chainStore,
-      accountStore,
-      queriesStore,
-      analyticsStore
-    } = useStore();
+    const { chainStore, accountStore, queriesStore, analyticsStore } =
+      useStore();
 
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);

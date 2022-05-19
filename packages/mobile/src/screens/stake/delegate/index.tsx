@@ -5,12 +5,12 @@ import { useStyle } from '../../../styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { View } from 'react-native';
 import { useStore } from '../../../stores';
-import { useDelegateTxConfig } from '@owallet-wallet/hooks';
+import { useDelegateTxConfig } from '@owallet/hooks';
 import { EthereumEndpoint } from '../../../config';
 import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation';
-import { BondStatus } from '@owallet-wallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<

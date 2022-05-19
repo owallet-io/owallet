@@ -1,7 +1,7 @@
 import { flow, makeObservable, observable } from 'mobx';
 import * as Keychain from 'react-native-keychain';
-import { KVStore, toGenerator } from '@owallet-wallet/common';
-import { KeyRingStore } from '@owallet-wallet/stores';
+import { KVStore, toGenerator } from '@owallet/common';
+import { KeyRingStore } from '@owallet/stores';
 
 export class KeychainStore {
   @observable

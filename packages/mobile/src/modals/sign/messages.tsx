@@ -1,13 +1,13 @@
 /* eslint-disable react/display-name */
 
 import React, { FunctionComponent, useMemo } from 'react';
-import { CoinUtils, Coin } from '@owallet-wallet/unit';
-import { AppCurrency } from '@owallet-wallet/types';
+import { CoinUtils, Coin } from '@owallet/unit';
+import { AppCurrency } from '@owallet/types';
 import yaml from 'js-yaml';
-import { CoinPrimitive } from '@owallet-wallet/stores';
+import { CoinPrimitive } from '@owallet/stores';
 import { Text } from 'react-native';
 import { useStyle } from '../../styles';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Hypher from 'hypher';

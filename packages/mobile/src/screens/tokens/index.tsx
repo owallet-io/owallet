@@ -3,13 +3,13 @@ import { PageWithScrollView } from '../../components/page';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { CoinPretty } from '@owallet-wallet/unit';
+import { CoinPretty } from '@owallet/unit';
 import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation';
 import { RightArrowIcon } from '../../components/icon';
 import { Card } from '../../components/card';
 import { RectButton } from '../../components/rect-button';
-import { Currency } from '@owallet-wallet/types';
+import { Currency } from '@owallet/types';
 import { TokenSymbol } from '../../components/token-symbol';
 
 export const TokensScreen: FunctionComponent = observer(() => {

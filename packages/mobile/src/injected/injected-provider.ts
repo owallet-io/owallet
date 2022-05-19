@@ -1,5 +1,5 @@
-import { InjectedOWallet } from '@owallet-wallet/provider';
-import { OWalletMode } from '@owallet-wallet/types';
+import { InjectedOWallet } from '@owallet/provider';
+import { OWalletMode } from '@owallet/types';
 
 export class RNInjectedOWallet extends InjectedOWallet {
   static parseWebviewMessage(message: any): any {

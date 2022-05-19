@@ -9,7 +9,7 @@ import {
   AddressBookConfigMap,
   AddressBookData,
   RegisterConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import {
   parseQRCodeDataForImportFromMobile,
   importFromMobile,

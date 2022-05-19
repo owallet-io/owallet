@@ -8,10 +8,10 @@ import {
   IMemoConfig,
   InvalidBech32Error,
   IRecipientConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { TextStyle, View, ViewStyle } from 'react-native';
 import { TextInput } from './input';
-import { ObservableEnsFetcher } from '@owallet-wallet/ens';
+import { ObservableEnsFetcher } from '@owallet/ens';
 import { LoadingSpinner } from '../spinner';
 import { useStyle } from '../../styles';
 import { AddressBookIcon } from '../icon';

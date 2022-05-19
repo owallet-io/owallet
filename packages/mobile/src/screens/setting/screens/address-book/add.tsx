@@ -6,7 +6,7 @@ import {
   AddressBookConfig,
   useMemoConfig,
   useRecipientConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { View } from 'react-native';
 import { useStore } from '../../../../stores';

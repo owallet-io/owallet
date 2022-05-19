@@ -7,7 +7,7 @@ import { useStyle } from '../../../styles';
 import { useIntl } from 'react-intl';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { ProgressBar } from '../../../components/progress-bar';
-import { BondStatus } from '@owallet-wallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -17,9 +17,10 @@ export const UndelegationsCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const unbondings = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-    account.bech32Address
-  ).unbondingBalances;
+  const unbondings =
+    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+      account.bech32Address
+    ).unbondingBalances;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded

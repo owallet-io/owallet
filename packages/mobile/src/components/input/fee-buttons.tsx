@@ -8,10 +8,10 @@ import {
   IGasConfig,
   InsufficientFeeError,
   NotLoadedFeeError
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { GasInput } from './gas';
 import { useStore } from '../../stores';
-import { CoinPretty, PricePretty } from '@owallet-wallet/unit';
+import { CoinPretty, PricePretty } from '@owallet/unit';
 import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
 

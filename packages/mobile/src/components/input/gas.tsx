@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { TextStyle, ViewStyle } from 'react-native';
-import { IGasConfig } from '@owallet-wallet/hooks';
+import { IGasConfig } from '@owallet/hooks';
 import { TextInput } from './input';
 
 export const GasInput: FunctionComponent<{

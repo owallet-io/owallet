@@ -1,4 +1,4 @@
-import { APP_PORT, Env, MessageSender } from '@owallet-wallet/router';
+import { APP_PORT, Env, MessageSender } from '@owallet/router';
 import { RNMessageRequesterInternalToUI } from './requester';
 
 export class RNEnv {

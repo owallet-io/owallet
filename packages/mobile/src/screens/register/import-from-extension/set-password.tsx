@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation';
-import { ExportKeyRingData } from '@owallet-wallet/background';
+import { ExportKeyRingData } from '@owallet/background';
 import { Controller, useForm } from 'react-hook-form';
 import {
   registerExportedAddressBooks,
@@ -15,7 +15,7 @@ import {
   AddressBookConfigMap,
   AddressBookData,
   RegisterConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { TextInput } from '../../../components/input';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';

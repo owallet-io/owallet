@@ -1,4 +1,4 @@
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class AsyncKVStore implements KVStore {

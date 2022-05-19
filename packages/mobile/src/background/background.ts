@@ -1,4 +1,4 @@
-import { init, ScryptParams } from '@owallet-wallet/background';
+import { init, ScryptParams } from '@owallet/background';
 import {
   RNEnv,
   RNMessageRequesterInternalToUI,
@@ -9,9 +9,9 @@ import scrypt from 'react-native-scrypt';
 import { Buffer } from 'buffer/';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { getRandomBytesAsync } from '../common';
-import { BACKGROUND_PORT } from '@owallet-wallet/router';
+import { BACKGROUND_PORT } from '@owallet/router';
 
-import { EmbedChainInfos } from '../config';
+import { EmbedChainInfos } from '@owallet/common';
 import {
   getLastUsedLedgerDeviceId,
   setLastUsedLedgerDeviceId

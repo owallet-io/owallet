@@ -12,7 +12,7 @@ import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
 import { AddressCopyable } from '../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import { FullScreenCameraView } from '../../components/camera';
 import {
   importFromMobile,
@@ -20,7 +20,7 @@ import {
   registerExportedAddressBooks,
   registerExportedKeyRingDatas
 } from '../../utils/import-from-mobile';
-import { AddressBookConfigMap, useRegisterConfig } from '@owallet-wallet/hooks';
+import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
 import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -46,13 +46,10 @@ export const CameraScreen: FunctionComponent = observer(() => {
   );
 
   const [isSelectChainModalOpen, setIsSelectChainModalOpen] = useState(false);
-  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] = useState(
-    false
-  );
-  const [
-    showingAddressQRCodeChainId,
-    setShowingAddressQRCodeChainId
-  ] = useState(chainStore.current.chainId);
+  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] =
+    useState(false);
+  const [showingAddressQRCodeChainId, setShowingAddressQRCodeChainId] =
+    useState(chainStore.current.chainId);
 
   const registerConfig = useRegisterConfig(keyRingStore, []);
 

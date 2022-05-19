@@ -11,7 +11,7 @@ import {
   useMemoConfig,
   useSignDocAmountConfig,
   useSignDocHelper
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { Button } from '../../components/button';
 import { Msg as AminoMsg } from '@cosmjs/launchpad';
 import { Msg } from './msg';

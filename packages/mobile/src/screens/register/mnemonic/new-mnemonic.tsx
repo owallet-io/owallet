@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { useNewMnemonicConfig } from './hook';
 import { PageWithScrollView } from '../../../components/page';
 import { CheckIcon } from '../../../components/icon';

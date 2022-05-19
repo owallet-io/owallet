@@ -9,7 +9,7 @@ import {
   InvalidNumberAmountError,
   NegativeAmountError,
   ZeroAmountError
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { Button } from '../button';
 import { useStyle } from '../../styles';
 

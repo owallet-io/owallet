@@ -9,7 +9,7 @@ import { useLoadingScreen } from '../../../../providers/loading-screen';
 import {
   MultiKeyStoreInfoElem,
   MultiKeyStoreInfoWithSelectedElem
-} from '@owallet-wallet/background';
+} from '@owallet/background';
 import { View } from 'react-native';
 import { useSmartNavigation } from '../../../../navigation';
 

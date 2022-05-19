@@ -6,7 +6,7 @@ import { useStyle } from '../../../styles';
 import { DelegatedCard } from './delegated-card';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
-import { Dec } from '@owallet-wallet/unit';
+import { Dec } from '@owallet/unit';
 import { UnbondingCard } from './unbonding-card';
 
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {

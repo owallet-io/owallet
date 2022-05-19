@@ -1,16 +1,16 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { KeyRingStatus } from '@owallet-wallet/background';
+import { KeyRingStatus } from '@owallet/background';
 import { LoadingScreenModal } from '../../providers/loading-screen/modal';
-import { Dec } from '@owallet-wallet/unit';
+import { Dec } from '@owallet/unit';
 import { Text, View } from 'react-native';
 import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
 import { useStyle } from '../../styles';
 import { RectButton } from '../../components/rect-button';
 import { Button } from '../../components/button';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import { WalletIcon } from '../setting/components';
 
 export const BIP44Selectable: FunctionComponent = observer(() => {

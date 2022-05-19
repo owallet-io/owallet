@@ -1,5 +1,5 @@
-import { AppCurrency } from '@owallet-wallet/types';
-import { cosmos, UnknownMessage } from '@owallet-wallet/cosmos';
+import { AppCurrency } from '@owallet/types';
+import { cosmos, UnknownMessage } from '@owallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
@@ -7,7 +7,7 @@ import {
   renderMsgUndelegate,
   renderUnknownMessage
 } from './messages';
-import { CoinPrimitive } from '@owallet-wallet/stores';
+import { CoinPrimitive } from '@owallet/stores';
 
 import { Buffer } from 'buffer/';
 

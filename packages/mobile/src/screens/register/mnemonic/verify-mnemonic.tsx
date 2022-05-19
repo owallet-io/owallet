@@ -7,10 +7,10 @@ import { Button } from '../../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../../navigation';
 import { NewMnemonicConfig } from './hook';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { RectButton } from '../../../components/rect-button';
-import { BIP44HDPath } from '@owallet-wallet/background';
+import { BIP44HDPath } from '@owallet/background';
 import { useStore } from '../../../stores';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {

@@ -1,9 +1,4 @@
-import {
-  EnvProducer,
-  MessageSender,
-  Result,
-  Router
-} from '@owallet-wallet/router';
+import { EnvProducer, MessageSender, Result, Router } from '@owallet/router';
 
 import EventEmitter from 'eventemitter3';
 
