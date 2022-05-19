@@ -176,10 +176,12 @@ export const StakeView: FunctionComponent = observer(() => {
         <div style={{ flex: 1 }} />
         <div
           onClick={(e) => {
-            alert(`Not implement for ${chainStore.current.chainId}`);
             if (!isStakableExist) {
               e.preventDefault();
             } else {
+              history.push(
+                `/stake/validator-list/${chainStore.current.chainId}`
+              );
               analyticsStore.logEvent('Stake button clicked', {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName
