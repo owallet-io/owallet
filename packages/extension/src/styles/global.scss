@@ -19,6 +19,7 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 html {
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -26,7 +27,7 @@ body {
   background-color: $background-color;
   width: $popup-size-width;
   height: $popup-size-height;  
-  overflow-y: auto;
+  overflow: hidden;
   &[data-lang="ko"] {
     word-break: keep-all;
     word-wrap: break-word;

@@ -10,8 +10,7 @@
     border-bottom-style: solid;
     border-width: 1px;
     border-bottom-color: $background-color-lighter;
-    z-index: 9999;
-    margin-bottom: 10px;
+    z-index: 9999;    
     &.fixed {
       position: fixed;
     }
