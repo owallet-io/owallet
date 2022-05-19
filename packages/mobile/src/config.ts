@@ -29,7 +29,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
     },
-    walletUrl: "https://api.wallet.orai.io",
     bip44: {
       coinType: 118,
     },
@@ -1040,14 +1039,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: "sentinel",
       coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/sentinel.png",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/sentinel/stake"
-        : "http://localhost:8081/#/sentinel/stake",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/sentinel/stake"
-        : "http://localhost:8081/#/sentinel/stake",
     bip44: {
       coinType: 118,
     },
@@ -1091,14 +1082,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/ixo/stake"
-        : "http://localhost:8081/#/ixo/stake",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/ixo/stake"
-        : "http://localhost:8081/#/ixo/stake",
     bip44: {
       coinType: 118,
     },
@@ -1135,14 +1118,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: "e-money",
       coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ngm.png",
     },
-    walletUrl:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/emoney/stake"
-        : "http://localhost:8080/#/emoney/stake",
-    walletUrlForStaking:
-      process.env.NODE_ENV === "production"
-        ? "https://wallet.keplr.app/#/emoney/stake"
-        : "http://localhost:8080/#/emoney/stake",
+
     bip44: {
       coinType: 118,
     },
