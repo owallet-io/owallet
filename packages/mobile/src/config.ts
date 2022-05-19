@@ -25,42 +25,39 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: "ORAI",
       coinMinimalDenom: "orai",
       coinDecimals: 6,
-      coinGeckoId: "oraichain-token",
+      coinGeckoId: 'oraichain-token',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
     },
     walletUrl: "https://api.wallet.orai.io",
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("orai"),
-    currencies: [
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "orai",
-        coinDecimals: 6,
-        coinGeckoId: "oraichain-token",
-      },
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "orai",
-        coinDecimals: 6,
-        coinGeckoId: "oraichain-token",
-      },
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: "ORAI",
-        coinMinimalDenom: "orai",
-        coinDecimals: 6,
-        coinGeckoId: "oraichain-token",
-      },
-    ],
+    bech32Config: Bech32Address.defaultBech32Config('orai'),
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'AIRI',
+          coinMinimalDenom:
+            'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
+          coinDecimals: 6,
+          coinGeckoId: 'airight',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+        }
+      ];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
     gasPriceStep: {
       low: 0,
       average: 0.000025,
       high: 0.00004,
     },
-    features: ["stargate", "ibc-transfer", "cosmwasm"],
-    chainSymbolImageUrl: "https://orai.io/images/logos/logomark-dark.png",
+    features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
+    chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png'
   },
   {
     rpc: "https://rpc-cosmoshub.keplr.app",
