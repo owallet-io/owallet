@@ -8,7 +8,6 @@ import {
 import { CoinPretty, Dec } from '@owallet-wallet/unit';
 import { useStore } from '../../stores';
 import style from './validator-list.module.scss';
-import { useRouteMatch } from 'react-router';
 import { ValidatorThumbnails } from '../../config';
 import { HeaderLayout } from '../../layouts';
 
@@ -18,11 +17,8 @@ export const ValidatorListPage: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
   onClick: () => void;
 }> = observer(() => {
-  const match = useRouteMatch<{ chainId: string }>();
-  const { queriesStore } = useStore();
-
-  const queries = queriesStore.get(match.params.chainId);
-  console.log(match.params.chainId);
+  const { chainStore, queriesStore } = useStore();
+  const queries = queriesStore.get(chainStore.current.chainId);
 
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<Sort>('Voting Power');

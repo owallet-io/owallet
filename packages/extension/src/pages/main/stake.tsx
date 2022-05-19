@@ -179,9 +179,7 @@ export const StakeView: FunctionComponent = observer(() => {
             if (!isStakableExist) {
               e.preventDefault();
             } else {
-              history.push(
-                `/stake/validator-list/${chainStore.current.chainId}`
-              );
+              history.push('/stake/validator-list');
               analyticsStore.logEvent('Stake button clicked', {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName

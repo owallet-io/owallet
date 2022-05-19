@@ -227,7 +227,7 @@ ReactDOM.render(
                   />
                   <Route
                     exact
-                    path="/stake/validator-list/:chainId"
+                    path="/stake/validator-list"
                     component={ValidatorListPage}
                   />
                   <Route path="/sign" component={SignPage} />
