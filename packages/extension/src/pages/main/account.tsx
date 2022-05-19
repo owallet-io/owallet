@@ -62,7 +62,7 @@ export const AccountView: FunctionComponent = observer(() => {
               )}
               title={intl.formatMessage({ id: 'setting.explorer' })}
             >
-              <i className="fas fa-ellipsis-v" />
+              <i className="fas fa-external-link-alt"></i>
             </a>
           )}
         </div>
