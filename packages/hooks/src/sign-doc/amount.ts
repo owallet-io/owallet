@@ -68,7 +68,7 @@ export class SignDocAmountConfig
   }
 
   get sender(): string {
-    return "";
+    return this._sender;
   }
 
   getAmountPrimitive = computedFn((): CoinPrimitive => {
