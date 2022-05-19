@@ -77,7 +77,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
   return (
     <EmptyLayout
       className={style.container}
-      style={{ height: '100%', backgroundColor: '#302737', padding: 0 }}
+      style={{ height: '100%', padding: 0 }}
     >
       <div className={style.logoContainer}>
         <img

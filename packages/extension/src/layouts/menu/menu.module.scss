@@ -10,7 +10,7 @@
   height: 100%;
   z-index: 900;
 
-  background-color: #302737;
+  background-color: $background-color-lighter;
   overflow-y: auto;
 }
 
@@ -23,5 +23,5 @@
   height: 100%;
   z-index: 899;
 
-  background-color: black;
+  background-color: $background-color;
 }

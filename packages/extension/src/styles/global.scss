@@ -10,8 +10,6 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
 @import url("https://fonts.googleapis.com/css?family=Nunito+Sans:300,400,700,800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=option");
 
-$font-family-base: "Nunito Sans", sans-serif;
-$body-color: black;
 @import "../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard-react";
 
 @import url("https://fonts.googleapis.com/css?family=Courier+Prime&display=swap");
@@ -28,7 +26,7 @@ body {
   background-color: $background-color;
   width: $popup-size-width;
   height: $popup-size-height;  
-
+  overflow-y: auto;
   &[data-lang="ko"] {
     word-break: keep-all;
     word-wrap: break-word;
@@ -38,6 +36,14 @@ body {
 }
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6{
  color:#7664E4; 
+}
+
+pre {
+  color : $color;
+}
+
+hr{
+  border-top: 1px solid $background-color-lighter;
 }
 
 #app {
@@ -68,6 +74,10 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6{
     background-color: $background-color-lighter;
     color: $color-darker;
   }
+}
+
+textarea.form-control{
+  min-height: 60px;
 }
 
 .input-group{
@@ -123,11 +133,14 @@ button[data-loading="true"] {
   color:$color;
 }
 
+.btn{
+  border-radius: 18px;  
+}
+
 .btn-primary{
   color:$color;
   background: $primary-color;
-  border: 1px solid $primary-color;
-  border-radius: 18px;  
+  border: 1px solid $primary-color;  
 }
 
 .btn-secondary{
@@ -157,6 +170,7 @@ button[data-loading="true"] {
 
 ::-webkit-scrollbar {
   width: 8px;  
+  height: 8px;  
 }
  
 ::-webkit-scrollbar-track {

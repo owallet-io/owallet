@@ -3,8 +3,7 @@
 $container-width: 420px;
 
 :global(body)[data-centered="true"] {
-  margin: auto;  
-  overflow: auto;
+  margin: auto;    
   background-color: $background-color;
   height: 100%;
   overflow: visible !important;

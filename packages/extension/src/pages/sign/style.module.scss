@@ -43,7 +43,7 @@
 }
 
 .tab-container {
-  height: 400px;
+  min-height: 400px;
 
   &.data-tab {
     overflow: auto;
@@ -51,7 +51,7 @@
 }
 
 .message {
-  height: 400px;
+  height: 360px;
   font-size: 12px;
   overflow: visible;
   background: transparent;
