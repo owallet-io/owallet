@@ -1,5 +1,5 @@
 import { RecipientConfig } from '../tx';
-import { ChainGetter } from '@owallet-wallet/stores';
+import { ChainGetter } from '@owallet/stores';
 import { IIBCChannelConfig } from './types';
 import { useState } from 'react';
 

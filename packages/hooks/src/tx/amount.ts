@@ -1,9 +1,9 @@
 import { IAmountConfig, IFeeConfig } from './types';
 import { TxChainSetter } from './chain';
-import { ChainGetter, CoinPrimitive } from '@owallet-wallet/stores';
+import { ChainGetter, CoinPrimitive } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
-import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
-import { AppCurrency } from '@owallet-wallet/types';
+import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
+import { AppCurrency } from '@owallet/types';
 import {
   EmptyAmountError,
   InsufficientAmountError,
@@ -11,7 +11,7 @@ import {
   NegativeAmountError,
   ZeroAmountError
 } from './errors';
-import { Dec, DecUtils } from '@owallet-wallet/unit';
+import { Dec, DecUtils } from '@owallet/unit';
 import { useState } from 'react';
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {

@@ -1,8 +1,4 @@
-import {
-  Router,
-  MessageRequester,
-  BACKGROUND_PORT
-} from '@owallet-wallet/router';
+import { Router, MessageRequester, BACKGROUND_PORT } from '@owallet/router';
 import {
   InteractionForegroundHandler,
   interactionForegroundInit,
@@ -10,7 +6,7 @@ import {
   InteractionWaitingData,
   ApproveInteractionMsg,
   RejectInteractionMsg
-} from '@owallet-wallet/background';
+} from '@owallet/background';
 import {
   action,
   observable,
@@ -136,9 +132,9 @@ export class InteractionStore implements InteractionForegroundHandler {
         return data.id === id;
       });
       if (find) {
-        (this.datas.get(
-          type
-        ) as IObservableArray<InteractionWaitingData>).remove(find);
+        (
+          this.datas.get(type) as IObservableArray<InteractionWaitingData>
+        ).remove(find);
       }
     }
   }

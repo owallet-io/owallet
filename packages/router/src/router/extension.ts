@@ -1,9 +1,4 @@
-import {
-  Router,
-  MessageSender,
-  Result,
-  EnvProducer
-} from '@owallet-wallet/router';
+import { Router, MessageSender, Result, EnvProducer } from '@owallet/router';
 import { getOWalletExtensionRouterId } from '../utils';
 
 export class ExtensionRouter extends Router {

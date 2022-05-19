@@ -1,8 +1,4 @@
-import {
-  MessageRequester,
-  Message,
-  JSONUint8Array
-} from '@owallet-wallet/router';
+import { MessageRequester, Message, JSONUint8Array } from '@owallet/router';
 import { getOWalletExtensionRouterId } from '../utils';
 
 export class InExtensionMessageRequester implements MessageRequester {

@@ -2,13 +2,13 @@ import { delay, inject, singleton } from 'tsyringe';
 import { TYPES } from '../types';
 
 import { ChainInfoSchema, ChainInfoWithEmbed } from './types';
-import { ChainInfo } from '@owallet-wallet/types';
-import { KVStore, Debouncer } from '@owallet-wallet/common';
+import { ChainInfo } from '@owallet/types';
+import { KVStore, Debouncer } from '@owallet/common';
 import { ChainUpdaterService } from '../updater';
 import { InteractionService } from '../interaction';
-import { Env } from '@owallet-wallet/router';
+import { Env } from '@owallet/router';
 import { SuggestChainInfoMsg } from './messages';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 type ChainRemovedHandler = (chainId: string, identifier: string) => void;
 
@@ -29,66 +29,64 @@ export class ChainsService {
     protected readonly interactionKeeper: InteractionService
   ) {}
 
-  readonly getChainInfos: () => Promise<
-    ChainInfoWithEmbed[]
-  > = Debouncer.promise(async () => {
-    if (this.cachedChainInfos) {
-      return this.cachedChainInfos;
-    }
+  readonly getChainInfos: () => Promise<ChainInfoWithEmbed[]> =
+    Debouncer.promise(async () => {
+      if (this.cachedChainInfos) {
+        return this.cachedChainInfos;
+      }
 
-    const chainInfos = this.embedChainInfos.map((chainInfo) => {
-      return {
-        ...chainInfo,
-        embeded: true
-      };
-    });
-    const embedChainInfoIdentifierMap: Map<
-      string,
-      true | undefined
-    > = new Map();
-    for (const embedChainInfo of chainInfos) {
-      embedChainInfoIdentifierMap.set(
-        ChainIdHelper.parse(embedChainInfo.chainId).identifier,
-        true
-      );
-    }
-
-    const savedChainInfos: ChainInfoWithEmbed[] = (
-      (await this.kvStore.get<ChainInfo[]>('chain-infos')) ?? []
-    )
-      .filter((chainInfo) => {
-        // Filter the overlaped chain info with the embeded chain infos.
-        return !embedChainInfoIdentifierMap.get(
-          ChainIdHelper.parse(chainInfo.chainId).identifier
-        );
-      })
-      .map((chainInfo: ChainInfo) => {
+      const chainInfos = this.embedChainInfos.map((chainInfo) => {
         return {
           ...chainInfo,
-          embeded: false
+          embeded: true
         };
       });
-
-    let result: ChainInfoWithEmbed[] = chainInfos.concat(savedChainInfos);
-
-    // Set the updated property of the chain.
-    result = await Promise.all(
-      result.map(async (chainInfo) => {
-        const updated: ChainInfo = await this.chainUpdaterKeeper.putUpdatedPropertyToChainInfo(
-          chainInfo
+      const embedChainInfoIdentifierMap: Map<string, true | undefined> =
+        new Map();
+      for (const embedChainInfo of chainInfos) {
+        embedChainInfoIdentifierMap.set(
+          ChainIdHelper.parse(embedChainInfo.chainId).identifier,
+          true
         );
+      }
 
-        return {
-          ...updated,
-          embeded: chainInfo.embeded
-        };
-      })
-    );
+      const savedChainInfos: ChainInfoWithEmbed[] = (
+        (await this.kvStore.get<ChainInfo[]>('chain-infos')) ?? []
+      )
+        .filter((chainInfo) => {
+          // Filter the overlaped chain info with the embeded chain infos.
+          return !embedChainInfoIdentifierMap.get(
+            ChainIdHelper.parse(chainInfo.chainId).identifier
+          );
+        })
+        .map((chainInfo: ChainInfo) => {
+          return {
+            ...chainInfo,
+            embeded: false
+          };
+        });
 
-    this.cachedChainInfos = result;
+      let result: ChainInfoWithEmbed[] = chainInfos.concat(savedChainInfos);
 
-    return result;
-  });
+      // Set the updated property of the chain.
+      result = await Promise.all(
+        result.map(async (chainInfo) => {
+          const updated: ChainInfo =
+            await this.chainUpdaterKeeper.putUpdatedPropertyToChainInfo(
+              chainInfo
+            );
+
+          return {
+            ...updated,
+            embeded: chainInfo.embeded
+          };
+        })
+      );
+
+      this.cachedChainInfos = result;
+
+      return result;
+    });
 
   clearCachedChainInfos() {
     this.cachedChainInfos = undefined;

@@ -1,11 +1,11 @@
-import { WEBPAGE_PORT } from '@owallet-wallet/router';
+import { WEBPAGE_PORT } from '@owallet/router';
 import {
   ContentScriptEnv,
   ContentScriptGuards,
   ExtensionRouter,
   InExtensionMessageRequester
-} from '@owallet-wallet/router-extension';
-import { OWallet, InjectedOWallet } from '@owallet-wallet/provider';
+} from '@owallet/router-extension';
+import { OWallet, InjectedOWallet } from '@owallet/provider';
 import { initEvents } from './events';
 
 import manifest from '../manifest.json';

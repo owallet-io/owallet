@@ -1,11 +1,11 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet-wallet/router';
+import { Env, Handler, InternalHandler, Message } from '@owallet/router';
 import { ChainsService } from './service';
 import {
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   SuggestChainInfoMsg
 } from './messages';
-import { ChainInfo } from '@owallet-wallet/types';
+import { ChainInfo } from '@owallet/types';
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 

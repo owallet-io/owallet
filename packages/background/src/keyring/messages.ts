@@ -1,4 +1,4 @@
-import { Message } from '@owallet-wallet/router';
+import { Message } from '@owallet/router';
 import { ROUTE } from './constants';
 import {
   KeyRing,
@@ -10,14 +10,14 @@ import { BIP44HDPath, ExportKeyRingData } from './types';
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc
-} from '@owallet-wallet/cosmos';
-import { BIP44, OWalletSignOptions, Key } from '@owallet-wallet/types';
+} from '@owallet/cosmos';
+import { BIP44, OWalletSignOptions, Key } from '@owallet/types';
 
 import { StdSignDoc, AminoSignResponse, StdSignature } from '@cosmjs/launchpad';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
-import { cosmos } from '@owallet-wallet/cosmos';
+import { cosmos } from '@owallet/cosmos';
 import Long from 'long';
 
 export class RestoreKeyRingMsg extends Message<{

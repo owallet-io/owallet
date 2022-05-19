@@ -1,24 +1,21 @@
 import { IAmountConfig, TxChainSetter } from '../tx';
-import {
-  ChainGetter,
-  CoinPrimitive,
-  CosmosMsgOpts
-} from '@owallet-wallet/stores';
-import { AppCurrency } from '@owallet-wallet/types';
+import { ChainGetter, CoinPrimitive, CosmosMsgOpts } from '@owallet/stores';
+import { AppCurrency } from '@owallet/types';
 import { action, computed, makeObservable, observable } from 'mobx';
-import { Coin, CoinPretty, Int } from '@owallet-wallet/unit';
+import { Coin, CoinPretty, Int } from '@owallet/unit';
 import { SignDocHelper } from './index';
 import { useState } from 'react';
 import { computedFn } from 'mobx-utils';
 import { Msg } from '@cosmjs/launchpad';
-import { cosmos } from '@owallet-wallet/cosmos';
+import { cosmos } from '@owallet/cosmos';
 
 // This config helps the fee config to calculate that the fee is enough to send with considering
 // the amount in the sign doc.
 // This sets the amount as the sum of the messages in the sign doc if the message is known and can be parsed.
 export class SignDocAmountConfig
   extends TxChainSetter
-  implements IAmountConfig {
+  implements IAmountConfig
+{
   @observable.ref
   protected msgOpts: CosmosMsgOpts;
 
@@ -74,29 +71,28 @@ export class SignDocAmountConfig
     return "";
   }
 
-  getAmountPrimitive = computedFn(
-    (): CoinPrimitive => {
-      if (
-        !this.signDocHelper?.signDocWrapper ||
-        this.chainInfo.feeCurrencies.length === 0
-      ) {
-        return {
-          amount: '0',
-          denom: this.sendCurrency.coinMinimalDenom
-        };
-      }
-
-      if (this.signDocHelper.signDocWrapper.mode === 'amino') {
-        return this.computeAmountInAminoMsgs(
-          this.signDocHelper.signDocWrapper.aminoSignDoc.msgs
-        );
-      } else {
-        return this.computeAmountInProtoMsgs(
-          this.signDocHelper.signDocWrapper.protoSignDoc.txMsgs
-        );
-      }
+  getAmountPrimitive = computedFn((): CoinPrimitive => {
+    if (
+      this.disableBalanceCheck ||
+      !this.signDocHelper?.signDocWrapper ||
+      this.chainInfo.feeCurrencies.length === 0
+    ) {
+      return {
+        amount: '0',
+        denom: this.sendCurrency.coinMinimalDenom
+      };
     }
-  );
+
+    if (this.signDocHelper.signDocWrapper.mode === 'amino') {
+      return this.computeAmountInAminoMsgs(
+        this.signDocHelper.signDocWrapper.aminoSignDoc.msgs
+      );
+    } else {
+      return this.computeAmountInProtoMsgs(
+        this.signDocHelper.signDocWrapper.protoSignDoc.txMsgs
+      );
+    }
+  });
 
   protected computeAmountInAminoMsgs(msgs: readonly Msg[]) {
     const amount = new Coin(this.sendCurrency.coinMinimalDenom, new Int(0));

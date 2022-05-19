@@ -21,8 +21,8 @@ import {
   NagativeAmountError,
   InsufficientAmountError,
   IAmountConfig
-} from '@owallet-wallet/hooks';
-import { CoinPretty, Dec, DecUtils, Int } from '@owallet-wallet/unit';
+} from '@owallet/hooks';
+import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStore } from '../../stores';
 

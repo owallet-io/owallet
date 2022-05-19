@@ -1,5 +1,5 @@
 import { QueriesSetBase } from '../queries';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { ObservableQueryBlock } from './block';
 import { ObservableQueryAccount } from './account';
@@ -41,7 +41,8 @@ export interface HasCosmosQueries {
 
 export class QueriesWithCosmos
   extends QueriesSetBase
-  implements HasCosmosQueries {
+  implements HasCosmosQueries
+{
   public cosmos: CosmosQueries;
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

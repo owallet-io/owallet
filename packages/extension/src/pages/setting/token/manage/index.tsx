@@ -6,10 +6,10 @@ import { PageButton } from '../../page-button';
 import style from './style.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import { useNotification } from '../../../../components/notification';
 import { useConfirm } from '../../../../components/confirm';
-import { CW20Currency, Secret20Currency } from '@owallet-wallet/types';
+import { CW20Currency, Secret20Currency } from '@owallet/types';
 import { useIntl } from 'react-intl';
 
 export const ManageTokenPage: FunctionComponent = observer(() => {

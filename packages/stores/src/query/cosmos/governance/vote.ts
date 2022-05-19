@@ -3,7 +3,7 @@ import {
   ObservableChainQueryMap
 } from '../../chain-query';
 import { ProposalVoter, ProposalVoterStargate } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 
 export class ObservableQueryProposalVoteInner extends ObservableChainQuery<

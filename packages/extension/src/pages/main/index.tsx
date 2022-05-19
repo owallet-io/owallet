@@ -19,10 +19,10 @@ import { TokensView } from './token';
 import { BIP44SelectModal } from './bip44-select-modal';
 import { useIntl } from 'react-intl';
 import { useConfirm } from '../../components/confirm';
-import { ChainUpdaterService } from '@owallet-wallet/background';
+import { ChainUpdaterService } from '@owallet/background';
 import { IBCTransferView } from './ibc-transfer';
-import { DenomHelper } from '@owallet-wallet/common';
-import { Dec } from '@owallet-wallet/unit';
+import { DenomHelper } from '@owallet/common';
+import { Dec } from '@owallet/unit';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();

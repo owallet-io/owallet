@@ -1,11 +1,11 @@
 import { InteractionStore } from './interaction';
 import { computed, flow, makeObservable, observable } from 'mobx';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
   LedgerGetWebHIDFlagMsg,
   LedgerSetWebHIDFlagMsg
-} from '@owallet-wallet/background';
-import { toGenerator } from '@owallet-wallet/common';
+} from '@owallet/background';
+import { toGenerator } from '@owallet/common';
 
 export type LedgerInitDataType =
   | {
@@ -65,9 +65,8 @@ export class LedgerInitStore {
 
   @computed
   get isGetPubKeySucceeded(): boolean {
-    const datas = this.interactionStore.getEvents<LedgerInitDataType>(
-      'ledger-init'
-    );
+    const datas =
+      this.interactionStore.getEvents<LedgerInitDataType>('ledger-init');
 
     for (const data of datas) {
       if (data.data.event === 'get-pubkey' && data.data.success) {
@@ -85,9 +84,8 @@ export class LedgerInitStore {
 
   @computed
   get isSignSucceeded(): boolean {
-    const datas = this.interactionStore.getEvents<LedgerInitDataType>(
-      'ledger-init'
-    );
+    const datas =
+      this.interactionStore.getEvents<LedgerInitDataType>('ledger-init');
 
     for (const data of datas) {
       if (data.data.event === 'sign' && data.data.success) {
@@ -100,9 +98,8 @@ export class LedgerInitStore {
 
   @computed
   get isSignRejected(): boolean {
-    const datas = this.interactionStore.getEvents<LedgerInitDataType>(
-      'ledger-init'
-    );
+    const datas =
+      this.interactionStore.getEvents<LedgerInitDataType>('ledger-init');
 
     for (const data of datas) {
       if (data.data.event === 'sign' && !data.data.success) {
@@ -115,9 +112,8 @@ export class LedgerInitStore {
 
   @computed
   get isInitAborted(): boolean {
-    const datas = this.interactionStore.getEvents<LedgerInitDataType>(
-      'ledger-init'
-    );
+    const datas =
+      this.interactionStore.getEvents<LedgerInitDataType>('ledger-init');
 
     for (const data of datas) {
       if (data.data.event === 'init-aborted') {
@@ -130,9 +126,8 @@ export class LedgerInitStore {
 
   @computed
   get isInitNeeded(): boolean {
-    const datas = this.interactionStore.getDatas<LedgerInitDataType>(
-      'ledger-init'
-    );
+    const datas =
+      this.interactionStore.getDatas<LedgerInitDataType>('ledger-init');
 
     for (const data of datas) {
       if (data.data.event === 'init-failed') {
@@ -148,9 +143,8 @@ export class LedgerInitStore {
     this._isLoading = true;
 
     try {
-      const datas = this.interactionStore.getDatas<LedgerInitDataType>(
-        'ledger-init'
-      );
+      const datas =
+        this.interactionStore.getDatas<LedgerInitDataType>('ledger-init');
 
       for (const data of datas) {
         if (data.data.event === 'init-failed') {
@@ -171,9 +165,8 @@ export class LedgerInitStore {
     this._isLoading = true;
 
     try {
-      const datas = this.interactionStore.getDatas<LedgerInitDataType>(
-        'ledger-init'
-      );
+      const datas =
+        this.interactionStore.getDatas<LedgerInitDataType>('ledger-init');
 
       for (const data of datas) {
         if (data.data.event === 'init-failed') {
@@ -193,9 +186,8 @@ export class LedgerInitStore {
     this._isLoading = true;
 
     try {
-      const datas = this.interactionStore.getDatas<LedgerInitDataType>(
-        'ledger-init'
-      );
+      const datas =
+        this.interactionStore.getDatas<LedgerInitDataType>('ledger-init');
 
       for (const data of datas) {
         if (data.data.event === 'init-failed') {
@@ -216,9 +208,8 @@ export class LedgerInitStore {
     this._isLoading = true;
 
     try {
-      const datas = this.interactionStore.getDatas<LedgerInitDataType>(
-        'ledger-init'
-      );
+      const datas =
+        this.interactionStore.getDatas<LedgerInitDataType>('ledger-init');
 
       for (const data of datas) {
         if (data.data.event === 'init-failed') {

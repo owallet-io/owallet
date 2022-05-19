@@ -14,7 +14,7 @@ import {
   IGasConfig,
   IMemoConfig,
   SignDocHelper
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { useLanguage } from '../../languages';
 import { Badge, Button, Label } from 'reactstrap';
 import { renderDirectMessage } from './direct';

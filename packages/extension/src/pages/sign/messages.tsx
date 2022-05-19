@@ -1,17 +1,17 @@
 /* eslint-disable react/display-name */
 
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { Bech32Address } from '@owallet-wallet/cosmos';
-import { CoinUtils, Coin } from '@owallet-wallet/unit';
+import { Bech32Address } from '@owallet/cosmos';
+import { CoinUtils, Coin } from '@owallet/unit';
 import { IntlShape, FormattedMessage, useIntl } from 'react-intl';
-import { Currency } from '@owallet-wallet/types';
+import { Currency } from '@owallet/types';
 import { Button, Badge } from 'reactstrap';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import yaml from 'js-yaml';
 
 import { Buffer } from 'buffer/';
-import { CoinPrimitive } from '@owallet-wallet/stores';
+import { CoinPrimitive } from '@owallet/stores';
 
 export interface MessageObj {
   readonly type: string;
@@ -558,8 +558,7 @@ export const WasmExecutionMsgView: FunctionComponent<{
         } catch {
           setWarningMsg(
             intl.formatMessage({
-              id:
-                'sign.list.message.wasm/MsgExecuteContract.content.warning.secret-wasm.failed-decryption'
+              id: 'sign.list.message.wasm/MsgExecuteContract.content.warning.secret-wasm.failed-decryption'
             })
           );
         }

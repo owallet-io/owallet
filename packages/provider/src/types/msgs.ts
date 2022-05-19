@@ -1,5 +1,5 @@
-import { Message } from '@owallet-wallet/router';
-import { ChainInfo, OWalletSignOptions, Key } from '@owallet-wallet/types';
+import { Message } from '@owallet/router';
+import { ChainInfo, OWalletSignOptions, Key } from '@owallet/types';
 import { AminoSignResponse, StdSignature, StdSignDoc } from '@cosmjs/launchpad';
 
 export class EnableAccessMsg extends Message<void> {

@@ -3,10 +3,10 @@ import {
   ObservableChainQueryMap
 } from '../../chain-query';
 import { Block } from '@cosmjs/tendermint-rpc';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 import { computed, makeObservable } from 'mobx';
-import { Int } from '@owallet-wallet/unit';
+import { Int } from '@owallet/unit';
 
 export class ObservableQueryBlockInner extends ObservableChainQuery<{
   block: Block;

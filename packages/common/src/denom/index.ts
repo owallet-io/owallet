@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer/';
-import { Hash } from '@owallet-wallet/crypto';
+import { Hash } from '@owallet/crypto';
 
 export class DenomHelper {
   static ibcDenom(

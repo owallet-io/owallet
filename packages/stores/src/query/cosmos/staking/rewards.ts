@@ -1,13 +1,13 @@
 import { Rewards } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import {
   ObservableChainQuery,
   ObservableChainQueryMap
 } from '../../chain-query';
 import { ChainGetter } from '../../../common';
 import { computed, makeObservable } from 'mobx';
-import { CoinPretty, Dec, Int } from '@owallet-wallet/unit';
-import { Currency } from '@owallet-wallet/types';
+import { CoinPretty, Dec, Int } from '@owallet/unit';
+import { Currency } from '@owallet/types';
 import { StoreUtils } from '../../../common';
 import { computedFn } from 'mobx-utils';
 

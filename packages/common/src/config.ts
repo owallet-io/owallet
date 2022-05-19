@@ -1,5 +1,5 @@
-import { Bech32Address } from '@owallet-wallet/cosmos';
-import { AppChainInfo } from '@owallet-wallet/types';
+import { Bech32Address } from '@owallet/cosmos';
+import { AppChainInfo } from '@owallet/types';
 
 // coingecko api for both evm and cosmos based networks
 export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
@@ -55,7 +55,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
     txExplorer: {
       name: 'Oraiscan',
-      txUrl: 'https://scan.orai.io/txs/{txHash}'
+      txUrl: 'https://scan.orai.io/txs/{txHash}',
+      accountUrl: 'https://scan.orai.io/account/{address}'
     }
   },
   {
@@ -1271,37 +1272,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'nanolike',
         coinDecimals: 9,
         coinGeckoId: 'likecoin'
-      }
-    ],
-    features: ['stargate', 'ibc-transfer'],
-    hideInUI: true
-  },
-  {
-    rpc: 'https://rpc-impacthub.owallet.app',
-    rest: 'https://lcd-impacthub.owallet.app',
-    chainId: 'impacthub-3',
-    chainName: 'IXO',
-    stakeCurrency: {
-      coinDenom: 'IXO',
-      coinMinimalDenom: 'uixo',
-      coinDecimals: 6
-    },
-    bip44: {
-      coinType: 118
-    },
-    bech32Config: Bech32Address.defaultBech32Config('ixo'),
-    currencies: [
-      {
-        coinDenom: 'IXO',
-        coinMinimalDenom: 'uixo',
-        coinDecimals: 6
-      }
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: 'IXO',
-        coinMinimalDenom: 'uixo',
-        coinDecimals: 6
       }
     ],
     features: ['stargate', 'ibc-transfer'],

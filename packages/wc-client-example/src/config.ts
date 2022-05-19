@@ -1,4 +1,4 @@
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 
 export const EmbedChainInfos = [
   {
@@ -12,14 +12,6 @@ export const EmbedChainInfos = [
       coinDecimals: 6,
       coinGeckoId: 'cosmos'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
-        : 'http://localhost:8081/#/cosmoshub/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
-        : 'http://localhost:8081/#/cosmoshub/stake',
     bip44: {
       coinType: 118
     },
@@ -54,14 +46,6 @@ export const EmbedChainInfos = [
       coinDecimals: 6,
       coinGeckoId: 'osmosis'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://app.osmosis.zone'
-        : 'https://app.osmosis.zone',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/osmosis/stake'
-        : 'http://localhost:8081/#/osmosis/stake',
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [

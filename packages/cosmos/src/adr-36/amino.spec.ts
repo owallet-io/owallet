@@ -5,7 +5,7 @@ import {
   verifyADR36AminoSignDoc
 } from './amino';
 import { serializeSignDoc } from '@cosmjs/launchpad';
-import { PrivKeySecp256k1 } from '@owallet-wallet/crypto';
+import { PrivKeySecp256k1 } from '@owallet/crypto';
 import { Bech32Address } from '../bech32';
 
 describe('Test ADR-36 Amino Sign Doc', () => {

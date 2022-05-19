@@ -6,11 +6,11 @@ import {
   ObservableQueryGovParamTally,
   ObservableQueryGovParamVoting
 } from './params';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 import { StakingPool } from '../staking/types';
 import { DeepReadonly } from 'utility-types';
-import { Dec, DecUtils, Int, IntPretty } from '@owallet-wallet/unit';
+import { Dec, DecUtils, Int, IntPretty } from '@owallet/unit';
 import { computedFn } from 'mobx-utils';
 import { ObservableQueryProposal } from './proposal';
 
@@ -126,9 +126,9 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     return result.reverse();
   }
 
-  readonly getProposal = computedFn((id: string):
-    | DeepReadonly<ObservableQueryProposal>
-    | undefined => {
-    return this.proposals.find((proposal) => proposal.id === id);
-  });
+  readonly getProposal = computedFn(
+    (id: string): DeepReadonly<ObservableQueryProposal> | undefined => {
+      return this.proposals.find((proposal) => proposal.id === id);
+    }
+  );
 }

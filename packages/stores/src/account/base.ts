@@ -6,15 +6,11 @@ import {
   observable,
   runInAction
 } from 'mobx';
-import {
-  AppCurrency,
-  OWallet,
-  OWalletSignOptions
-} from '@owallet-wallet/types';
+import { AppCurrency, OWallet, OWalletSignOptions } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator } from '@owallet-wallet/common';
+import { DenomHelper, toGenerator } from '@owallet/common';
 import {
   BroadcastMode,
   makeSignDoc,
@@ -27,7 +23,7 @@ import {
   cosmos,
   google,
   TendermintTxTracer
-} from '@owallet-wallet/cosmos';
+} from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer/';
 import Long from 'long';

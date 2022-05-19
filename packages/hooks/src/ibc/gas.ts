@@ -1,5 +1,5 @@
 import { GasConfig } from '../tx';
-import { ChainGetter, CosmosMsgOpts } from '@owallet-wallet/stores';
+import { ChainGetter, CosmosMsgOpts } from '@owallet/stores';
 import { action, makeObservable, observable } from 'mobx';
 import { useState } from 'react';
 

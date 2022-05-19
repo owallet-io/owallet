@@ -5,7 +5,7 @@ import {
   GetPermissionOriginsMsg,
   RemovePermissionOrigin
 } from './messages';
-import { Env, Handler, InternalHandler, Message } from '@owallet-wallet/router';
+import { Env, Handler, InternalHandler, Message } from '@owallet/router';
 import { PermissionService } from './service';
 
 export const getHandler: (service: PermissionService) => Handler = (

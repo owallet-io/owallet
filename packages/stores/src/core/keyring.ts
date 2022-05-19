@@ -1,4 +1,4 @@
-import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
   AddLedgerKeyMsg,
   AddMnemonicKeyMsg,
@@ -23,15 +23,15 @@ import {
   CheckPasswordMsg,
   ExportKeyRingData,
   ExportKeyRingDatasMsg
-} from '@owallet-wallet/background';
+} from '@owallet/background';
 
 import { computed, flow, makeObservable, observable, runInAction } from 'mobx';
 
 import { InteractionStore } from './interaction';
 import { ChainGetter } from '../common';
-import { BIP44 } from '@owallet-wallet/types';
+import { BIP44 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
-import { toGenerator } from '@owallet-wallet/common';
+import { toGenerator } from '@owallet/common';
 
 export class KeyRingSelectablesStore {
   @observable

@@ -1,5 +1,5 @@
 {
-  "name": "@owallet-wallet/popup",
+  "name": "@owallet/popup",
   "version": "0.9.6",
   "main": "build/index.js",
   "author": "chainapsis",

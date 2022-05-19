@@ -7,12 +7,13 @@ import styleAccount from './account.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
-import { useIntl } from 'react-intl';
-import { WalletStatus } from '@owallet-wallet/stores';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { WalletStatus } from '@owallet/stores';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const chainInfo = chainStore.getChain(chainStore.current.chainId);
 
   const intl = useIntl();
 
@@ -51,7 +52,20 @@ export const AccountView: FunctionComponent = observer(() => {
               })
             : 'Loading...'}
         </div>
-        <div style={{ flex: 1 }} />
+        <div style={{ flex: 1, textAlign: 'right' }}>
+          {chainInfo.raw.txExplorer?.accountUrl && (
+            <a
+              target="_blank"
+              href={chainInfo.raw.txExplorer.accountUrl.replace(
+                '{address}',
+                accountInfo.bech32Address
+              )}
+              title={intl.formatMessage({ id: 'setting.explorer' })}
+            >
+              <i className="fas fa-ellipsis-v" />
+            </a>
+          )}
+        </div>
       </div>
       <div className={styleAccount.containerAccount}>
         <div style={{ flex: 1 }} />

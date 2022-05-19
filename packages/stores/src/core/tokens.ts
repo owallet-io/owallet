@@ -1,18 +1,18 @@
 import { HasMapStore } from '../common';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
   AddTokenMsg,
   GetTokensMsg,
   RemoveTokenMsg,
   SuggestTokenMsg
-} from '@owallet-wallet/background';
+} from '@owallet/background';
 import { autorun, flow, makeObservable, observable } from 'mobx';
-import { AppCurrency, ChainInfo } from '@owallet-wallet/types';
+import { AppCurrency, ChainInfo } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import { ChainStore } from '../chain';
 import { InteractionStore } from './interaction';
-import { toGenerator } from '@owallet-wallet/common';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { toGenerator } from '@owallet/common';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 export class TokensStoreInner {
   @observable.ref

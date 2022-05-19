@@ -5,7 +5,7 @@ import {
   ScryptParams,
   CommonCrypto
 } from './types';
-import { Hash, RNG } from '@owallet-wallet/crypto';
+import { Hash, RNG } from '@owallet/crypto';
 import pbkdf2 from 'pbkdf2';
 
 import { Buffer } from 'buffer/';

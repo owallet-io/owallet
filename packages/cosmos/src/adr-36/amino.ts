@@ -1,7 +1,7 @@
 import { serializeSignDoc, StdSignDoc } from '@cosmjs/launchpad';
 import { Bech32Address } from '../bech32';
 import { Buffer } from 'buffer/';
-import { PubKeySecp256k1 } from '@owallet-wallet/crypto';
+import { PubKeySecp256k1 } from '@owallet/crypto';
 
 /**
  * Check the sign doc is for ADR-36.

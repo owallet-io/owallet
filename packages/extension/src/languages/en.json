@@ -76,6 +76,8 @@
 
   "setting.keyring.change.password": "Reset Password",
 
+  "setting.explorer": "View Account in Explorer",
+
   "setting.keyring.change.name": "Change Account Name",
   "setting.keyring.change.previous-name": "Previous account name",
   "setting.keyring.change.input.name": "New account name",

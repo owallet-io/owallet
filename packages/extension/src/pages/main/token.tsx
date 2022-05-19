@@ -4,15 +4,15 @@ import styleToken from './token.module.scss';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useHistory } from 'react-router';
-import { Hash } from '@owallet-wallet/crypto';
-import { ObservableQueryBalanceInner } from '@owallet-wallet/stores/build/query/balances';
+import { Hash } from '@owallet/crypto';
+import { ObservableQueryBalanceInner } from '@owallet/stores/build/query/balances';
 import classmames from 'classnames';
 import { UncontrolledTooltip } from 'reactstrap';
-import { WrongViewingKeyError } from '@owallet-wallet/stores';
+import { WrongViewingKeyError } from '@owallet/stores';
 import { useNotification } from '../../components/notification';
 import { useLoadingIndicator } from '../../components/loading-indicator';
-// import { DenomHelper } from '@owallet-wallet/common';
-// import { Dec } from '@owallet-wallet/unit';
+// import { DenomHelper } from '@owallet/common';
+// import { Dec } from '@owallet/unit';
 import { useLanguage } from '../../languages';
 
 const TokenView: FunctionComponent<{
@@ -215,7 +215,7 @@ export const TokensView: FunctionComponent = observer(() => {
   const tokens = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(accountInfo.bech32Address)
-    .unstakables// .filter((bal) => {
+    .unstakables // .filter((bal) => {
     //   const denomHelper = new DenomHelper(bal.currency.coinMinimalDenom);
     //   // Temporary implementation for trimming the 0 balanced native tokens.
     //   // TODO: Remove this part.

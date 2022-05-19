@@ -6,8 +6,8 @@ import {
   OWalletMode,
   OWalletSignOptions,
   Key
-} from '@owallet-wallet/types';
-import { Result, JSONUint8Array } from '@owallet-wallet/router';
+} from '@owallet/types';
+import { Result, JSONUint8Array } from '@owallet/router';
 import {
   BroadcastMode,
   AminoSignResponse,

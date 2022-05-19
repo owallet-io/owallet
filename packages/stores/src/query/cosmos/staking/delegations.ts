@@ -3,9 +3,9 @@ import {
   ObservableChainQueryMap
 } from '../../chain-query';
 import { Delegation, Delegations, DelegationsStargate } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
-import { CoinPretty, Int } from '@owallet-wallet/unit';
+import { CoinPretty, Int } from '@owallet/unit';
 import { computed, makeObservable } from 'mobx';
 import { computedFn } from 'mobx-utils';
 
@@ -116,8 +116,9 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
     (validatorAddress: string): CoinPretty => {
       const delegations = this.delegations;
 
-      const stakeCurrency = this.chainGetter.getChain(this.chainId)
-        .stakeCurrency;
+      const stakeCurrency = this.chainGetter.getChain(
+        this.chainId
+      ).stakeCurrency;
 
       if (!this.response) {
         return new CoinPretty(stakeCurrency, new Int(0)).ready(false);

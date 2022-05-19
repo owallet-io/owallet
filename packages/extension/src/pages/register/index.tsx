@@ -10,7 +10,7 @@ import { Button } from 'reactstrap';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useRegisterConfig } from '@owallet-wallet/hooks';
+import { useRegisterConfig } from '@owallet/hooks';
 import { useStore } from '../../stores';
 import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from './mnemonic';
 import {

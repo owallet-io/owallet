@@ -3,8 +3,8 @@ import {
   FnRequestInteraction,
   MessageSender,
   APP_PORT
-} from '@owallet-wallet/router';
-import { openPopupWindow as openPopupWindowInner } from '@owallet-wallet/popup';
+} from '@owallet/router';
+import { openPopupWindow as openPopupWindowInner } from '@owallet/popup';
 import { InExtensionMessageRequester } from '../requester';
 
 class PromiseQueue {

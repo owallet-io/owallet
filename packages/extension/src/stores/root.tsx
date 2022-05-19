@@ -1,6 +1,10 @@
 import { ChainStore } from './chain';
-import { EmbedChainInfos } from '../config';
-import { FiatCurrencies, AmplitudeApiKey } from '../config.ui';
+import {
+  AmplitudeApiKey,
+  EmbedChainInfos,
+  ExtensionKVStore
+} from '@owallet/common';
+import { FiatCurrencies } from '../config.ui';
 import {
   KeyRingStore,
   InteractionStore,
@@ -17,22 +21,21 @@ import {
   QueriesWithCosmosAndSecretAndCosmwasm,
   AccountWithAll,
   getOWalletFromWindow
-} from '@owallet-wallet/stores';
-import { ExtensionKVStore } from '@owallet-wallet/common';
+} from '@owallet/stores';
 import {
   ExtensionRouter,
   ContentScriptEnv,
   ContentScriptGuards,
   InExtensionMessageRequester
-} from '@owallet-wallet/router-extension';
-import { APP_PORT } from '@owallet-wallet/router';
-import { ChainInfoWithEmbed } from '@owallet-wallet/background';
-import { FiatCurrency } from '@owallet-wallet/types';
+} from '@owallet/router-extension';
+import { APP_PORT } from '@owallet/router';
+import { ChainInfoWithEmbed } from '@owallet/background';
+import { FiatCurrency } from '@owallet/types';
 import { UIConfigStore } from './ui-config';
-import { FeeType } from '@owallet-wallet/hooks';
-import { AnalyticsStore, NoopAnalyticsClient } from '@owallet-wallet/analytics';
+import { FeeType } from '@owallet/hooks';
+import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import Amplitude from 'amplitude-js';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 export class RootStore {
   public readonly chainStore: ChainStore;

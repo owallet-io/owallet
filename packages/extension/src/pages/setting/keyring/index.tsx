@@ -11,7 +11,7 @@ import { Button, Popover, PopoverBody } from 'reactstrap';
 import style from './style.module.scss';
 import { useLoadingIndicator } from '../../../components/loading-indicator';
 import { PageButton } from '../page-button';
-import { MultiKeyStoreInfoWithSelectedElem } from '@owallet-wallet/background';
+import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 export const SetKeyRingPage: FunctionComponent = observer(() => {
@@ -159,11 +159,10 @@ const KeyRingToolsIcon: FunctionComponent<{
         >
           {keyStore.type === 'mnemonic' || keyStore.type === 'privateKey' ? (
             <div
-              style={{ cursor: 'pointer' }}
+              className={style.popoverItem}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-
                 history.push(`/setting/export/${index}?type=${keyStore.type}`);
               }}
             >
@@ -177,7 +176,7 @@ const KeyRingToolsIcon: FunctionComponent<{
             </div>
           ) : null}
           <div
-            style={{ cursor: 'pointer' }}
+            className={style.popoverItem}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -188,7 +187,7 @@ const KeyRingToolsIcon: FunctionComponent<{
             <FormattedMessage id="setting.keyring.change.name" />
           </div>
           <div
-            style={{ cursor: 'pointer' }}
+            className={style.popoverItem}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

@@ -1,5 +1,5 @@
-import { ChainGetter, CosmosMsgOpts } from '@owallet-wallet/stores';
-import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
+import { ChainGetter, CosmosMsgOpts } from '@owallet/stores';
+import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
 import { useFeeConfig, useMemoConfig } from '../tx';
 import { useIBCAmountConfig } from './amount';
 import { useIBCTransferGasConfig } from './gas';

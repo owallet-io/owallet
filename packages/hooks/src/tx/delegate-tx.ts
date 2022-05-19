@@ -1,5 +1,5 @@
-import { ChainGetter } from '@owallet-wallet/stores';
-import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
+import { ChainGetter } from '@owallet/stores';
+import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
 import {
   AmountConfig,
   useFeeConfig,
@@ -7,7 +7,7 @@ import {
   useMemoConfig,
   useRecipientConfig
 } from './index';
-import { AppCurrency } from '@owallet-wallet/types';
+import { AppCurrency } from '@owallet/types';
 import { useState } from 'react';
 
 export class DelegateAmountConfig extends AmountConfig {

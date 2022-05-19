@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { container } from 'tsyringe';
 import { TYPES } from './types';
 
-import { MessageRequester, Router } from '@owallet-wallet/router';
+import { MessageRequester, Router } from '@owallet/router';
 
 import * as PersistentMemory from './persistent-memory/internal';
 import * as Chains from './chains/internal';
@@ -27,9 +27,9 @@ export * from './tokens';
 export * from './interaction';
 export * from './permission';
 
-import { KVStore } from '@owallet-wallet/common';
-import { ChainInfo } from '@owallet-wallet/types';
-import { RNG } from '@owallet-wallet/crypto';
+import { KVStore } from '@owallet/common';
+import { ChainInfo } from '@owallet/types';
+import { RNG } from '@owallet/crypto';
 import { CommonCrypto } from './keyring';
 import { Notification } from './tx';
 import { LedgerOptions } from './ledger/options';

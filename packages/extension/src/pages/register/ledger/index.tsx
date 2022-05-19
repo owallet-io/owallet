@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Form } from 'reactstrap';
 import useForm from 'react-hook-form';
@@ -129,8 +129,7 @@ export const ImportLedgerPage: FunctionComponent<{
                 validate: (confirmPassword: string): string | undefined => {
                   if (confirmPassword !== getValues()['password']) {
                     return intl.formatMessage({
-                      id:
-                        'register.create.input.confirm-password.error.unmatched'
+                      id: 'register.create.input.confirm-password.error.unmatched'
                     });
                   }
                 }

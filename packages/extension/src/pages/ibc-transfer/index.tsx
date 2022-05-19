@@ -20,11 +20,11 @@ import {
   IMemoConfig,
   IRecipientConfig,
   useIBCTransferConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { useStore } from '../../stores';
-import { EthereumEndpoint } from '../../config.ui';
 import { useNotification } from '../../components/notification';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { EthereumEndpoint } from '@owallet/common';
 
 export const IBCTransferPage: FunctionComponent = observer(() => {
   const history = useHistory();

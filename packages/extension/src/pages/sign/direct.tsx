@@ -1,6 +1,6 @@
-import { Currency } from '@owallet-wallet/types';
+import { Currency } from '@owallet/types';
 import { IntlShape } from 'react-intl';
-import { cosmos, cosmwasm, UnknownMessage } from '@owallet-wallet/cosmos';
+import { cosmos, cosmwasm, UnknownMessage } from '@owallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
@@ -8,7 +8,7 @@ import {
   renderMsgUndelegate,
   renderUnknownMessage
 } from './messages';
-import { CoinPrimitive } from '@owallet-wallet/stores';
+import { CoinPrimitive } from '@owallet/stores';
 
 import { Buffer } from 'buffer/';
 import { fromUtf8 } from '@cosmjs/encoding';

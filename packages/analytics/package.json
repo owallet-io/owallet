@@ -1,5 +1,5 @@
 {
-  "name": "@owallet-wallet/analytics",
+  "name": "@owallet/analytics",
   "version": "0.9.14",
   "main": "build/index.js",
   "author": "chainapsis",

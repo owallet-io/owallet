@@ -21,9 +21,9 @@ import {
   useFeeConfig,
   useMemoConfig,
   useSignDocAmountConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { ADR36SignDocDetailsTab } from './adr-36';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 enum Tab {
   Details,

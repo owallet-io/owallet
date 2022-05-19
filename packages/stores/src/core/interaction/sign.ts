@@ -1,9 +1,9 @@
 import { InteractionStore } from './interaction';
 import { autorun, computed, flow, makeObservable, observable } from 'mobx';
 import { StdSignDoc } from '@cosmjs/launchpad';
-import { InteractionWaitingData } from '@owallet-wallet/background';
-import { SignDocWrapper } from '@owallet-wallet/cosmos';
-import { OWalletSignOptions } from '@owallet-wallet/types';
+import { InteractionWaitingData } from '@owallet/background';
+import { SignDocWrapper } from '@owallet/cosmos';
+import { OWalletSignOptions } from '@owallet/types';
 
 export class SignInteractionStore {
   @observable

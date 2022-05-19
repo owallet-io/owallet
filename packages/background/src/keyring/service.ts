@@ -13,15 +13,15 @@ import {
   checkAndValidateADR36AminoSignDoc,
   makeADR36AminoSignDoc,
   verifyADR36AminoSignDoc
-} from '@owallet-wallet/cosmos';
+} from '@owallet/cosmos';
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 
 import { ChainsService } from '../chains';
 import { LedgerService } from '../ledger';
-import { BIP44, ChainInfo, OWalletSignOptions } from '@owallet-wallet/types';
-import { APP_PORT, Env, WEBPAGE_PORT } from '@owallet-wallet/router';
+import { BIP44, ChainInfo, OWalletSignOptions } from '@owallet/types';
+import { APP_PORT, Env, WEBPAGE_PORT } from '@owallet/router';
 import { InteractionService } from '../interaction';
 import { PermissionService } from '../permission';
 
@@ -34,8 +34,8 @@ import {
 } from '@cosmjs/launchpad';
 import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
 
-import { RNG } from '@owallet-wallet/crypto';
-import { cosmos } from '@owallet-wallet/cosmos';
+import { RNG } from '@owallet/crypto';
+import { cosmos } from '@owallet/cosmos';
 import { Buffer } from 'buffer/';
 
 @singleton()
@@ -436,9 +436,7 @@ export class KeyRingService {
     return this.keyRing.addLedgerKey(env, kdf, meta, bip44HDPath);
   }
 
-  public async changeKeyStoreFromMultiKeyStore(
-    index: number
-  ): Promise<{
+  public async changeKeyStoreFromMultiKeyStore(index: number): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     try {

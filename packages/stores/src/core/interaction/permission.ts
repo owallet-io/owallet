@@ -11,11 +11,11 @@ import {
   getSecret20ViewingKeyPermissionType,
   AddPermissionOrigin,
   GetOriginPermittedChainsMsg
-} from '@owallet-wallet/background';
+} from '@owallet/background';
 import { computed, flow, makeObservable, observable } from 'mobx';
 import { HasMapStore } from '../../common';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
-import { toGenerator } from '@owallet-wallet/common';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
+import { toGenerator } from '@owallet/common';
 
 export class Secret20ViewingKeyPermissionInnerStore {
   @observable.ref

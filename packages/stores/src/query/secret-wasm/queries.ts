@@ -1,12 +1,12 @@
 import { QueriesSetBase } from '../queries';
 import { ChainGetter } from '../../common';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ObservableQuerySecretContractCodeHash } from './contract-hash';
 import { ObservableQuerySecret20ContractInfo } from './secret20-contract-info';
 import { DeepReadonly } from 'utility-types';
 import { ObservableQuerySecret20BalanceRegistry } from './secret20-balance';
 import { QueriesWithCosmos } from '../cosmos';
-import { OWallet } from '@owallet-wallet/types';
+import { OWallet } from '@owallet/types';
 
 export interface HasSecretQueries {
   secret: SecretQueries;
@@ -14,7 +14,8 @@ export interface HasSecretQueries {
 
 export class QueriesWithCosmosAndSecret
   extends QueriesWithCosmos
-  implements HasSecretQueries {
+  implements HasSecretQueries
+{
   public secret: SecretQueries;
 
   constructor(
@@ -46,11 +47,8 @@ export class SecretQueries {
     chainGetter: ChainGetter,
     apiGetter: () => Promise<OWallet | undefined>
   ) {
-    this.querySecretContractCodeHash = new ObservableQuerySecretContractCodeHash(
-      kvStore,
-      chainId,
-      chainGetter
-    );
+    this.querySecretContractCodeHash =
+      new ObservableQuerySecretContractCodeHash(kvStore, chainId, chainGetter);
 
     base.queryBalances.addBalanceRegistry(
       new ObservableQuerySecret20BalanceRegistry(

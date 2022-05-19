@@ -13,3 +13,10 @@
 
   min-height: 43px;
 }
+
+.popover-item {
+  cursor: pointer;
+  &:hover{
+    color:black;
+  }
+}

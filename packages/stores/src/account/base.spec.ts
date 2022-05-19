@@ -1,7 +1,7 @@
 import { AccountSetBase, WalletStatus } from './base';
 import { ChainStore } from '../chain';
-import { ChainInfo } from '@owallet-wallet/types';
-import { MockOWallet } from '@owallet-wallet/provider-mock';
+import { ChainInfo } from '@owallet/types';
+import { MockOWallet } from '@owallet/provider-mock';
 
 describe('Test Account set base', () => {
   test('Account set base should be inited automatically if `autoInit` is true', async () => {

@@ -1,5 +1,5 @@
 import { SecretContractCodeHash } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ObservableChainQuery, ObservableChainQueryMap } from '../chain-query';
 import { ChainGetter } from '../../common';
 

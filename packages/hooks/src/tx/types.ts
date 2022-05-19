@@ -1,7 +1,7 @@
-import { AppCurrency, Currency } from '@owallet-wallet/types';
+import { AppCurrency, Currency } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
-import { CoinPretty } from '@owallet-wallet/unit';
-import { CoinPrimitive } from '@owallet-wallet/stores';
+import { CoinPretty } from '@owallet/unit';
+import { CoinPrimitive } from '@owallet/stores';
 
 export interface ITxChainSetter {
   chainId: string;

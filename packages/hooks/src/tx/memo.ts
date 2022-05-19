@@ -1,6 +1,6 @@
 import { IMemoConfig } from './types';
 import { action, makeObservable, observable } from 'mobx';
-import { ChainGetter } from '@owallet-wallet/stores';
+import { ChainGetter } from '@owallet/stores';
 import { TxChainSetter } from './chain';
 import { useState } from 'react';
 

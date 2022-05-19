@@ -6,9 +6,9 @@ import {
   Env,
   FnRequestInteractionOptions,
   MessageRequester
-} from '@owallet-wallet/router';
+} from '@owallet/router';
 import { PushEventDataMsg, PushInteractionDataMsg } from './foreground';
-import { RNG } from '@owallet-wallet/crypto';
+import { RNG } from '@owallet/crypto';
 
 @singleton()
 export class InteractionService {

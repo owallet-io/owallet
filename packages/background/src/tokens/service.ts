@@ -1,22 +1,22 @@
 import { delay, inject, singleton } from 'tsyringe';
 import { TYPES } from '../types';
 
-import { Env } from '@owallet-wallet/router';
+import { Env } from '@owallet/router';
 import {
   ChainInfo,
   AppCurrency,
   CW20Currency,
   Secret20Currency
-} from '@owallet-wallet/types';
+} from '@owallet/types';
 import {
   CurrencySchema,
   CW20CurrencySchema,
   Secret20CurrencySchema
 } from '../chains';
-import { Bech32Address, ChainIdHelper } from '@owallet-wallet/cosmos';
+import { Bech32Address, ChainIdHelper } from '@owallet/cosmos';
 import { ChainsService } from '../chains';
 import { KeyRingService } from '../keyring';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { KeyRingStatus } from '../keyring';
 import { InteractionService } from '../interaction';
 import { PermissionService } from '../permission';

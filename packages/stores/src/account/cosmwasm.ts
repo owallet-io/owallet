@@ -2,11 +2,11 @@ import { AccountSetBase, AccountSetOpts, MsgOpt } from './base';
 import { HasCosmwasmQueries, QueriesSetBase, QueriesStore } from '../query';
 import { ChainGetter, CoinPrimitive } from '../common';
 import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper } from '@owallet-wallet/common';
-import { Dec, DecUtils } from '@owallet-wallet/unit';
-import { AppCurrency, OWalletSignOptions } from '@owallet-wallet/types';
+import { DenomHelper } from '@owallet/common';
+import { Dec, DecUtils } from '@owallet/unit';
+import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { DeepReadonly, Optional } from 'utility-types';
-import { cosmwasm } from '@owallet-wallet/cosmos';
+import { cosmwasm } from '@owallet/cosmos';
 import { Buffer } from 'buffer/';
 
 export interface HasCosmwasmAccount {
@@ -23,7 +23,8 @@ export interface CosmwasmMsgOpts {
 
 export class AccountWithCosmwasm
   extends AccountSetBase<CosmwasmMsgOpts, HasCosmwasmQueries>
-  implements HasCosmwasmAccount {
+  implements HasCosmwasmAccount
+{
   public readonly cosmwasm: DeepReadonly<CosmwasmAccount>;
 
   static readonly defaultMsgOpts: CosmwasmMsgOpts = {

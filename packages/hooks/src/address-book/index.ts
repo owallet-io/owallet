@@ -1,7 +1,7 @@
 import { autorun, flow, makeObservable, observable, toJS } from 'mobx';
-import { KVStore, toGenerator } from '@owallet-wallet/common';
-import { ChainInfo } from '@owallet-wallet/types';
-import { ChainGetter, HasMapStore } from '@owallet-wallet/stores';
+import { KVStore, toGenerator } from '@owallet/common';
+import { ChainInfo } from '@owallet/types';
+import { ChainGetter, HasMapStore } from '@owallet/stores';
 import { DeepReadonly } from 'utility-types';
 import { useState } from 'react';
 

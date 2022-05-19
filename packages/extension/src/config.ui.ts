@@ -1,26 +1,18 @@
 // Seperate shared config from UI config to prevent code mixup between UI and background process code.
-import { RegisterOption } from '@owallet-wallet/hooks';
+import { RegisterOption } from '@owallet/hooks';
 import {
-  ETHEREUM_ENDPOINT,
   ADDITIONAL_INTL_MESSAGES,
-  ADDITIONAL_SIGN_IN_PREPEND,
-  AMPLITUDE_API_KEY
+  ADDITIONAL_SIGN_IN_PREPEND
 } from './config.ui.var';
 import {
   IntlMessages,
   LanguageToFiatCurrency as TypeLanguageToFiatCurrency
 } from './languages';
-import { FiatCurrency } from '@owallet-wallet/types';
+import { FiatCurrency } from '@owallet/types';
 
-export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
-export const CoinGeckoGetPrice = '/simple/price';
 export const AutoFetchingFiatValueInterval = 300 * 1000; // 5min
 
 export const AutoFetchingAssetsInterval = 15 * 1000; // 15sec
-
-// Endpoint for Ethereum node.
-// This is used for ENS.
-export const EthereumEndpoint = ETHEREUM_ENDPOINT;
 
 export const FiatCurrencies: FiatCurrency[] = [
   {
@@ -96,8 +88,7 @@ export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
   ko: 'krw'
 };
 
-export const AdditionalSignInPrepend:
-  | RegisterOption[]
-  | undefined = ADDITIONAL_SIGN_IN_PREPEND;
+export const AdditionalSignInPrepend: RegisterOption[] | undefined =
+  ADDITIONAL_SIGN_IN_PREPEND;
 
 export const AdditonalIntlMessages: IntlMessages = ADDITIONAL_INTL_MESSAGES;

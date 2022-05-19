@@ -15,8 +15,6 @@ export interface ChainInfo {
    * You can get actual currency information from Currencies.
    */
   readonly stakeCurrency: Currency;
-  // readonly walletUrl?: string;
-  // readonly walletUrlForStaking?: string;
   readonly bip44: BIP44;
   readonly alternativeBIP44s?: BIP44[];
   readonly bech32Config: Bech32Config;
@@ -55,4 +53,13 @@ export interface ChainInfo {
    * If the blockchain is in an early stage, please set it as beta.
    */
   readonly beta?: boolean;
+}
+
+export interface AppChainInfo extends ChainInfo {
+  readonly chainSymbolImageUrl?: string;
+  readonly hideInUI?: boolean;
+  readonly txExplorer?: {
+    readonly name: string;
+    readonly txUrl: string;
+  };
 }

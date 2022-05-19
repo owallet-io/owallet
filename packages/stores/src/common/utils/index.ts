@@ -1,6 +1,6 @@
-import { Currency } from '@owallet-wallet/types';
+import { Currency } from '@owallet/types';
 import { CoinPrimitive } from '../types';
-import { CoinPretty, Dec, Int } from '@owallet-wallet/unit';
+import { CoinPretty, Dec, Int } from '@owallet/unit';
 
 export class StoreUtils {
   public static getBalancesFromCurrencies(

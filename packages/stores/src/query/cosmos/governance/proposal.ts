@@ -5,17 +5,11 @@ import {
   ProposalStatus,
   ProposalTally
 } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 import { computed, makeObservable } from 'mobx';
 import { DeepReadonly } from 'utility-types';
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  IntPretty
-} from '@owallet-wallet/unit';
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from '@owallet/unit';
 import { ObservableQueryGovernance } from './proposals';
 
 export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally> {

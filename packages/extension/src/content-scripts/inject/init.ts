@@ -1,4 +1,4 @@
-import { OWallet } from '@owallet-wallet/types';
+import { OWallet } from '@owallet/types';
 import { OfflineSigner } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';

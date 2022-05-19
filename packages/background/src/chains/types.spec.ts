@@ -12,8 +12,8 @@ import {
   Currency,
   CW20Currency,
   Secret20Currency
-} from '@owallet-wallet/types';
-import { Bech32Config } from '@owallet-wallet/types';
+} from '@owallet/types';
+import { Bech32Config } from '@owallet/types';
 import Joi from 'joi';
 
 const AppCurrencyShemaTest = Joi.array().items(

@@ -6,14 +6,14 @@ import {
   IGasConfig
 } from './types';
 import { TxChainSetter } from './chain';
-import { ChainGetter, CoinPrimitive } from '@owallet-wallet/stores';
+import { ChainGetter, CoinPrimitive } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
-import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet-wallet/unit';
-import { Currency } from '@owallet-wallet/types';
+import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
+import { Currency } from '@owallet/types';
 import { computedFn } from 'mobx-utils';
 import { StdFee } from '@cosmjs/launchpad';
 import { useState } from 'react';
-import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
+import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
 import { InsufficientFeeError, NotLoadedFeeError } from './errors';
 
 export class FeeConfig extends TxChainSetter implements IFeeConfig {

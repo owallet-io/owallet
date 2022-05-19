@@ -12,9 +12,9 @@ import {
   BIP44,
   ChainInfo,
   Currency
-} from '@owallet-wallet/types';
+} from '@owallet/types';
 import { ChainGetter } from '../common';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 import { DeepReadonly } from 'utility-types';
 import { AxiosRequestConfig } from 'axios';
 import { keepAlive } from 'mobx-utils';
@@ -24,7 +24,8 @@ type CurrencyRegistrar = (
 ) => AppCurrency | [AppCurrency | undefined, boolean] | undefined;
 
 export class ChainInfoInner<C extends ChainInfo = ChainInfo>
-  implements ChainInfo {
+  implements ChainInfo
+{
   @observable.ref
   protected _chainInfo: C;
 
@@ -255,14 +256,6 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get rpcConfig(): AxiosRequestConfig | undefined {
     return this.raw.rpcConfig;
   }
-
-  get walletUrl(): string | undefined {
-    return this.raw.walletUrl;
-  }
-
-  get walletUrlForStaking(): string | undefined {
-    return this.raw.walletUrlForStaking;
-  }
 }
 
 export type ChainInfoOverrider<C extends ChainInfo = ChainInfo> = (
@@ -270,7 +263,8 @@ export type ChainInfoOverrider<C extends ChainInfo = ChainInfo> = (
 ) => C;
 
 export class ChainStore<C extends ChainInfo = ChainInfo>
-  implements ChainGetter {
+  implements ChainGetter
+{
   @observable.ref
   protected _chainInfos!: ChainInfoInner<C>[];
 

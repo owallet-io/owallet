@@ -1,6 +1,6 @@
-import { Message } from '@owallet-wallet/router';
+import { Message } from '@owallet/router';
 import { ROUTE } from './constants';
-import { AppCurrency } from '@owallet-wallet/types';
+import { AppCurrency } from '@owallet/types';
 
 export class GetTokensMsg extends Message<AppCurrency[]> {
   public static type() {

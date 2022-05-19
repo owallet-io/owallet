@@ -1,6 +1,6 @@
 import { ObservableChainQuery } from '../../chain-query';
 import { StakingParams } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 
 export class ObservableQueryStakingParams extends ObservableChainQuery<StakingParams> {

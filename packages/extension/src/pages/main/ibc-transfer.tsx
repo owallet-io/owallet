@@ -6,7 +6,7 @@ import styleTransfer from './ibc-transfer.module.scss';
 import classnames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { Dec } from '@owallet-wallet/unit';
+import { Dec } from '@owallet/unit';
 import { FormattedMessage } from 'react-intl';
 
 export const IBCTransferView: FunctionComponent = observer(() => {

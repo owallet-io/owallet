@@ -14,10 +14,10 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import useForm from 'react-hook-form';
 import { PasswordInput } from '../../../components/form';
-import { ExportKeyRingData } from '@owallet-wallet/background';
+import { ExportKeyRingData } from '@owallet/background';
 import AES, { Counter } from 'aes-js';
-import { AddressBookConfigMap, AddressBookData } from '@owallet-wallet/hooks';
-import { ExtensionKVStore } from '@owallet-wallet/common';
+import { AddressBookConfigMap, AddressBookData } from '@owallet/hooks';
+import { ExtensionKVStore } from '@owallet/common';
 import { toJS } from 'mobx';
 
 export interface QRCodeSharedData {
@@ -316,9 +316,8 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
                 if (payload.params && payload.params.length > 0) {
                   for (const chainId of payload.params[0].addressBookChainIds ??
                     []) {
-                    const addressBookConfig = addressBookConfigMap.getAddressBookConfig(
-                      chainId
-                    );
+                    const addressBookConfig =
+                      addressBookConfigMap.getAddressBookConfig(chainId);
 
                     await addressBookConfig.waitLoaded();
 

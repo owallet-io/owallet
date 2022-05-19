@@ -1,11 +1,11 @@
 import { Secret20ContractTokenInfo } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ObservableChainQueryMap } from '../chain-query';
 import { ChainGetter, QueryError } from '../../common';
 import { ObservableQuerySecretContractCodeHash } from './contract-hash';
 import { computed, makeObservable } from 'mobx';
 import { ObservableSecretContractChainQuery } from './contract-query';
-import { OWallet } from '@owallet-wallet/types';
+import { OWallet } from '@owallet/types';
 
 export class ObservableQuerySecret20ContactInfoInner extends ObservableSecretContractChainQuery<Secret20ContractTokenInfo> {
   protected nonce?: Uint8Array;

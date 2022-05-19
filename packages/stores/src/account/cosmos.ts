@@ -1,9 +1,9 @@
 import { AccountSetBase, AccountSetOpts, MsgOpt } from './base';
-import { AppCurrency, OWalletSignOptions } from '@owallet-wallet/types';
+import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper } from '@owallet-wallet/common';
-import { Dec, DecUtils, Int } from '@owallet-wallet/unit';
-import { ChainIdHelper, cosmos, ibc } from '@owallet-wallet/cosmos';
+import { DenomHelper } from '@owallet/common';
+import { Dec, DecUtils, Int } from '@owallet/unit';
+import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
 import { HasCosmosQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';
@@ -29,7 +29,8 @@ export interface CosmosMsgOpts {
 
 export class AccountWithCosmos
   extends AccountSetBase<CosmosMsgOpts, HasCosmosQueries>
-  implements HasCosmosAccount {
+  implements HasCosmosAccount
+{
   public readonly cosmos: DeepReadonly<CosmosAccount>;
 
   static readonly defaultMsgOpts: CosmosMsgOpts = {
@@ -571,12 +572,13 @@ export class CosmosAccount {
               return {
                 type_url:
                   '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-                value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(
-                  {
-                    delegatorAddress: msg.value.delegator_address,
-                    validatorAddress: msg.value.validator_address
-                  }
-                ).finish()
+                value:
+                  cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode(
+                    {
+                      delegatorAddress: msg.value.delegator_address,
+                      validatorAddress: msg.value.validator_address
+                    }
+                  ).finish()
               };
             })
           : undefined

@@ -5,12 +5,12 @@ import {
   CosmosMsgOpts,
   CosmwasmMsgOpts,
   SecretMsgOpts
-} from '@owallet-wallet/stores';
-import { Currency } from '@owallet-wallet/types';
+} from '@owallet/stores';
+import { Currency } from '@owallet/types';
 import { FormattedMessage, IntlShape } from 'react-intl';
 import React from 'react';
-import { Bech32Address } from '@owallet-wallet/cosmos';
-import { Hash } from '@owallet-wallet/crypto';
+import { Bech32Address } from '@owallet/cosmos';
+import { Hash } from '@owallet/crypto';
 import {
   MessageObj,
   MsgBeginRedelegate,

@@ -23,8 +23,7 @@ interface ChainInfo {
     * This indicates the type of coin that can be used for stake.
     * You can get actual currency information from Currencies.
     */
-    readonly stakeCurrency: Currency;
-    readonly walletUrlForStaking?: string;
+    readonly stakeCurrency: Currency;    
     readonly bip44: {
         coinType: number;
     };
@@ -68,7 +67,6 @@ experimentalSuggestChain(chainInfo: SuggestingChainInfo): Promise<void>
 | `rest` | http://123.456.789.012:1317 | Address of REST/API endpoint of the chain. Default port is 1317. Must be enabled in `app.toml` |
 | `chainId` | mychain-1 | OWallet has a feature which automatically detects when the chain-id has changed, and automatically update to support new chain. However, it should be noted that this functionality will only work when the chain-id follows the {identifier}-{version}(ex.cosmoshub-4) format. Therefore, it is recommended that the chain follows the chain-id format. |
 | `stakeCurrency` | ```{     coinDenom: "ATOM",     coinMinimalDenom: "uatom",     coinDecimals: 6,     coinGeckoId: "cosmos",   }``` | Information on the staking token of the chain |
-| `walletUrlForStaking` | https://wallet.owallet.app/#/cosmoshub/stake | The URL for the staking interface frontend for the chain. If you don't have a staking interface built, you can use [Lunie Light](https://github.com/luniehq/lunie-light) which supports OWallet. |
 | `bip44.coinType` | 118 | BIP44 coin type for address derivation. We recommend using `118`(Cosmos Hub) as this would provide good Ledger hardware wallet compatibility by utilizing the Cosmos Ledger app. |
 | `bech32Config` | ```{ bech32PrefixAccAddr: "cosmos", bech32PrefixAccPub: "cosmos" + "pub", bech32PrefixValAddr: "cosmos" + "valoper", bech32PrefixValPub: "cosmos" + "valoperpub", bech32PrefixConsAddr: "cosmos" + "valcons", bech32PrefixConsPub: "cosmos" + "valconspub"}``` | Bech32 config using the address prefix of the chain |
 | `currencies` | ```[   {     coinDenom: "ATOM",     coinMinimalDenom: "uatom",     coinDecimals: 6,     coinGeckoId: "cosmos",   }, ]``` | (TBD) |

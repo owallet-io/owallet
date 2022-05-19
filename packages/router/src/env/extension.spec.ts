@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import { ExtensionEnv } from './extension';
-import { MessageSender } from '@owallet-wallet/router';
+import { MessageSender } from '@owallet/router';
 
 describe('Test extension env producer', () => {
   const extensionId = 'id';

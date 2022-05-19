@@ -3,7 +3,7 @@ import {
   Message,
   JSONUint8Array,
   Result
-} from '@owallet-wallet/router';
+} from '@owallet/router';
 import { MockRouter } from '../router';
 
 export class MockMessageRequester implements MessageRequester {

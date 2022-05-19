@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { FormGroup, Input, Label } from 'reactstrap';
-import { IGasConfig } from '@owallet-wallet/hooks';
+import { IGasConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 
 export interface GasInputProps {

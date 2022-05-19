@@ -4,7 +4,7 @@ import {
   AminoSignResponse,
   StdSignDoc
 } from '@cosmjs/launchpad';
-import { OWallet } from '@owallet-wallet/types';
+import { OWallet } from '@owallet/types';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { DirectSignResponse } from '@cosmjs/proto-signing/build/signer';
 import { SignDoc } from '@cosmjs/proto-signing/build/codec/cosmos/tx/v1beta1/tx';
@@ -56,7 +56,8 @@ export class CosmJSOfflineSignerOnlyAmino implements OfflineSigner {
 
 export class CosmJSOfflineSigner
   extends CosmJSOfflineSignerOnlyAmino
-  implements OfflineSigner, OfflineDirectSigner {
+  implements OfflineSigner, OfflineDirectSigner
+{
   constructor(
     protected readonly chainId: string,
     protected readonly owallet: OWallet

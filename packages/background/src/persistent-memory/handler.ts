@@ -1,4 +1,4 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet-wallet/router';
+import { Env, Handler, InternalHandler, Message } from '@owallet/router';
 import { SetPersistentMemoryMsg, GetPersistentMemoryMsg } from './messages';
 import { PersistentMemoryService } from './service';
 
@@ -22,11 +22,10 @@ export const getHandler: (service: PersistentMemoryService) => Handler = (
 
 const handleSetPersistentMemoryMsg: (
   service: PersistentMemoryService
-) => InternalHandler<SetPersistentMemoryMsg> = (
-  service: PersistentMemoryService
-) => (_, msg) => {
-  service.set(msg.data);
-  return {
-    success: true
+) => InternalHandler<SetPersistentMemoryMsg> =
+  (service: PersistentMemoryService) => (_, msg) => {
+    service.set(msg.data);
+    return {
+      success: true
+    };
   };
-};

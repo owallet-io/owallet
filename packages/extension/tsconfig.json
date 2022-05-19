@@ -10,5 +10,7 @@
       "./@types"
     ]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

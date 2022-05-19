@@ -1,6 +1,6 @@
 import { IntPretty, IntPrettyOptions } from './int-pretty';
 import { Dec } from './decimal';
-import { FiatCurrency } from '@owallet-wallet/types';
+import { FiatCurrency } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import { DecUtils } from './dec-utils';
 import bigInteger from 'big-integer';

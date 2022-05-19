@@ -1,8 +1,5 @@
-import {
-  ChainGetter,
-  ObservableQueryDelegations
-} from '@owallet-wallet/stores';
-import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
+import { ChainGetter, ObservableQueryDelegations } from '@owallet/stores';
+import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
 import {
   useFeeConfig,
   useGasConfig,

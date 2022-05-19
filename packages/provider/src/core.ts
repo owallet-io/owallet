@@ -5,8 +5,8 @@ import {
   OWalletMode,
   OWalletSignOptions,
   Key
-} from '@owallet-wallet/types';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet-wallet/router';
+} from '@owallet/types';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
   BroadcastMode,
   AminoSignResponse,

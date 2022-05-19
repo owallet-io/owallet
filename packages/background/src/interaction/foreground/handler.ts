@@ -1,4 +1,4 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet-wallet/router';
+import { Env, Handler, InternalHandler, Message } from '@owallet/router';
 import { PushEventDataMsg, PushInteractionDataMsg } from './messages';
 import { InteractionForegroundService } from './service';
 

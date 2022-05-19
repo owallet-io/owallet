@@ -5,9 +5,9 @@ import { Ledger, LedgerWebHIDIniter, LedgerWebUSBIniter } from './ledger';
 
 import delay from 'delay';
 
-import { APP_PORT, Env } from '@owallet-wallet/router';
+import { APP_PORT, Env } from '@owallet/router';
 import { BIP44HDPath } from '../keyring';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { InteractionService } from '../interaction';
 import { LedgerOptions } from './options';
 import { Buffer } from 'buffer/';

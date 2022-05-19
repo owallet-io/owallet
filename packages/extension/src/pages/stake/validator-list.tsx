@@ -1,14 +1,14 @@
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ObservableQueryBalanceInner } from '@owallet-wallet/stores/build/query/balances';
+import { ObservableQueryBalanceInner } from '@owallet/stores/build/query/balances';
 import {
   BondStatus,
   Validator
-} from '@owallet-wallet/stores/build/query/cosmos/staking/types';
-import { CoinPretty, Dec } from '@owallet-wallet/unit';
+} from '@owallet/stores/build/query/cosmos/staking/types';
+import { CoinPretty, Dec } from '@owallet/unit';
 import { useStore } from '../../stores';
 import style from './validator-list.module.scss';
-import { ValidatorThumbnails } from '../../config';
+import { ValidatorThumbnails } from '@owallet/common/src/config';
 import { HeaderLayout } from '../../layouts';
 
 type Sort = 'APY' | 'Voting Power' | 'Name';

@@ -1,4 +1,4 @@
-import { Env, MessageSender } from '@owallet-wallet/router';
+import { Env, MessageSender } from '@owallet/router';
 
 // ContentScriptEnv only checks the id is same as the extension id.
 // And, doesn't support the request interaction.

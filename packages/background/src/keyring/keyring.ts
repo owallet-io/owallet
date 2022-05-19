@@ -4,15 +4,15 @@ import {
   PrivKeySecp256k1,
   PubKeySecp256k1,
   RNG
-} from '@owallet-wallet/crypto';
-import { KVStore } from '@owallet-wallet/common';
+} from '@owallet/crypto';
+import { KVStore } from '@owallet/common';
 import { LedgerService } from '../ledger';
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
-import { ChainInfo } from '@owallet-wallet/types';
-import { Env } from '@owallet-wallet/router';
+import { ChainInfo } from '@owallet/types';
+import { Env } from '@owallet/router';
 
 import { Buffer } from 'buffer/';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 import { Wallet } from '@ethersproject/wallet';
 import * as BytesUtils from '@ethersproject/bytes';
@@ -859,9 +859,7 @@ export class KeyRing {
     };
   }
 
-  public async changeKeyStoreFromMultiKeyStore(
-    index: number
-  ): Promise<{
+  public async changeKeyStoreFromMultiKeyStore(index: number): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
@@ -1031,9 +1029,7 @@ export class KeyRing {
     );
   }
 
-  private async assignKeyStoreIdMeta(meta: {
-    [key: string]: string;
-  }): Promise<{
+  private async assignKeyStoreIdMeta(meta: { [key: string]: string }): Promise<{
     [key: string]: string;
   }> {
     // `__id__` is used to distinguish the key store.

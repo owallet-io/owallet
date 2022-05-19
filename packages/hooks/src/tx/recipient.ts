@@ -1,6 +1,6 @@
 import { IRecipientConfig } from './types';
 import { TxChainSetter } from './chain';
-import { ChainGetter } from '@owallet-wallet/stores';
+import { ChainGetter } from '@owallet/stores';
 import {
   action,
   computed,
@@ -15,9 +15,9 @@ import {
   ENSNotSupportedError,
   InvalidBech32Error
 } from './errors';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
-import { ObservableEnsFetcher } from '@owallet-wallet/ens';
+import { ObservableEnsFetcher } from '@owallet/ens';
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable

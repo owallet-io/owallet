@@ -1,9 +1,9 @@
 import { AmountConfig, IFeeConfig } from '../tx';
-import { ChainGetter } from '@owallet-wallet/stores';
-import { ObservableQueryBalances } from '@owallet-wallet/stores/build/query/balances';
-import { AppCurrency } from '@owallet-wallet/types';
+import { ChainGetter } from '@owallet/stores';
+import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
+import { AppCurrency } from '@owallet/types';
 import { computed, makeObservable } from 'mobx';
-import { DenomHelper } from '@owallet-wallet/common';
+import { DenomHelper } from '@owallet/common';
 import { useState } from 'react';
 
 export class IBCAmountConfig extends AmountConfig {

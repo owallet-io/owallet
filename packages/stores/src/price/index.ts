@@ -1,10 +1,10 @@
 import { ObservableQuery, QueryResponse } from '../common';
 import { CoinGeckoSimplePrice } from './types';
 import Axios, { CancelToken } from 'axios';
-import { KVStore, toGenerator } from '@owallet-wallet/common';
-import { Dec, CoinPretty, Int } from '@owallet-wallet/unit';
-import { FiatCurrency } from '@owallet-wallet/types';
-import { PricePretty } from '@owallet-wallet/unit/build/price-pretty';
+import { KVStore, toGenerator } from '@owallet/common';
+import { Dec, CoinPretty, Int } from '@owallet/unit';
+import { FiatCurrency } from '@owallet/types';
+import { PricePretty } from '@owallet/unit/build/price-pretty';
 import { DeepReadonly } from 'utility-types';
 import deepmerge from 'deepmerge';
 import { action, flow, makeObservable, observable } from 'mobx';

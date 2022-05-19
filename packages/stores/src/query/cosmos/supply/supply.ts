@@ -1,5 +1,5 @@
 import { SupplyTotal, SupplyTotalStargate } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import {
   ObservableChainQuery,
   ObservableChainQueryMap

@@ -17,8 +17,8 @@ import styleAddressBook from './style.module.scss';
 import { useStore } from '../../../stores';
 import { PageButton } from '../page-button';
 import { AddAddressModal } from './add-address-modal';
-import { ExtensionKVStore } from '@owallet-wallet/common';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { ExtensionKVStore, EthereumEndpoint } from '@owallet/common';
+import { Bech32Address } from '@owallet/cosmos';
 import { useConfirm } from '../../../components/confirm';
 import {
   AddressBookSelectHandler,
@@ -26,8 +26,7 @@ import {
   useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig
-} from '@owallet-wallet/hooks';
-import { EthereumEndpoint } from '../../../config.ui';
+} from '@owallet/hooks';
 
 export const AddressBookPage: FunctionComponent<{
   onBackButton?: () => void;

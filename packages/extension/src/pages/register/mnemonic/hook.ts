@@ -1,7 +1,7 @@
 import { action, flow, makeObservable, observable } from 'mobx';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { useState } from 'react';
-import { toGenerator } from '@owallet-wallet/common';
+import { toGenerator } from '@owallet/common';
 
 export type NewMnemonicMode = 'generate' | 'verify';
 

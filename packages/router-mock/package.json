@@ -1,5 +1,5 @@
 {
-  "name": "@owallet-wallet/router-mock",
+  "name": "@owallet/router-mock",
   "version": "0.9.6",
   "main": "build/index.js",
   "author": "chainapsis",
@@ -17,7 +17,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet-wallet/router": "^0.9.6",
-    "@owallet-wallet/router-extension": "^0.9.6"
+    "@owallet/router": "^0.9.6",
+    "@owallet/router-extension": "^0.9.6"
   }
 }

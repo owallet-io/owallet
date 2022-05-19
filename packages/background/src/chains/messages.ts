@@ -1,6 +1,6 @@
-import { Message } from '@owallet-wallet/router';
+import { Message } from '@owallet/router';
 import { ChainInfoWithEmbed } from './types';
-import { ChainInfo } from '@owallet-wallet/types';
+import { ChainInfo } from '@owallet/types';
 import { ROUTE } from './constants';
 
 export class GetChainInfosMsg extends Message<{

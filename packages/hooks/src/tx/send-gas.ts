@@ -1,11 +1,11 @@
 import { GasConfig } from './gas';
-import { DenomHelper } from '@owallet-wallet/common';
+import { DenomHelper } from '@owallet/common';
 import {
   ChainGetter,
   CosmosMsgOpts,
   SecretMsgOpts,
   CosmwasmMsgOpts
-} from '@owallet-wallet/stores';
+} from '@owallet/stores';
 import { IAmountConfig } from './types';
 import { useState } from 'react';
 import { action, makeObservable, observable } from 'mobx';

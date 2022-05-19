@@ -1,6 +1,6 @@
 import { IGasConfig } from './types';
 import { TxChainSetter } from './chain';
-import { ChainGetter } from '@owallet-wallet/stores';
+import { ChainGetter } from '@owallet/stores';
 import { action, makeObservable, observable } from 'mobx';
 import { useState } from 'react';
 

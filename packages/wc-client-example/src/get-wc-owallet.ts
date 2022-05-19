@@ -1,7 +1,7 @@
-import { OWallet } from '@owallet-wallet/types';
+import { OWallet } from '@owallet/types';
 import WalletConnect from '@walletconnect/client';
-import { OWalletQRCodeModalV1 } from '@owallet-wallet/wc-qrcode-modal';
-import { OWalletWalletConnectV1 } from '@owallet-wallet/wc-client';
+import { OWalletQRCodeModalV1 } from '@owallet/wc-qrcode-modal';
+import { OWalletWalletConnectV1 } from '@owallet/wc-client';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import Axios from 'axios';
 import { EmbedChainInfos } from './config';

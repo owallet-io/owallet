@@ -1,9 +1,9 @@
 import { ChainGetter } from '../../../../common';
 import { ObservableChainQuery } from '../../../chain-query';
 import { EpochProvisions } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { computed, makeObservable } from 'mobx';
-import { CoinPretty, Int } from '@owallet-wallet/unit';
+import { CoinPretty, Int } from '@owallet/unit';
 import { ObservableQueryOsmosisMintParmas } from './params';
 
 export class ObservableQueryOsmosisEpochProvisions extends ObservableChainQuery<EpochProvisions> {

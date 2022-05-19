@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { FormGroup, Input, Label } from 'reactstrap';
-import { IMemoConfig } from '@owallet-wallet/hooks';
+import { IMemoConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 
 export interface MemoInputProps {

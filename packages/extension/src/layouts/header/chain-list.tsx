@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 
 import style from './chain-list.module.scss';
-import { ChainInfoWithEmbed } from '@owallet-wallet/background';
+import { ChainInfoWithEmbed } from '@owallet/background';
 import { useConfirm } from '../../components/confirm';
 import { useIntl } from 'react-intl';
 

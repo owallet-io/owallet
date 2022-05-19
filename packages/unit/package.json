@@ -1,5 +1,5 @@
 {
-  "name": "@owallet-wallet/unit",
+  "name": "@owallet/unit",
   "version": "0.9.12",
   "main": "build/index.js",
   "author": "chainapsis",
@@ -17,7 +17,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@owallet-wallet/types": "^0.9.12",
+    "@owallet/types": "^0.9.12",
     "big-integer": "^1.6.48",
     "utility-types": "^3.10.0"
   }

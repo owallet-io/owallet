@@ -1,4 +1,4 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet-wallet/router';
+import { Env, Handler, InternalHandler, Message } from '@owallet/router';
 import { LedgerGetWebHIDFlagMsg, LedgerSetWebHIDFlagMsg } from './messages';
 import { LedgerService } from './service';
 

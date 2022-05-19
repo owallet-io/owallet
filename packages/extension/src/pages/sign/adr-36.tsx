@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useMemo } from 'react';
-import { SignDocWrapper } from '@owallet-wallet/cosmos';
+import { SignDocWrapper } from '@owallet/cosmos';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { Buffer } from 'buffer/';

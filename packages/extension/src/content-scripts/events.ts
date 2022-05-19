@@ -1,4 +1,4 @@
-import { Message, Router } from '@owallet-wallet/router';
+import { Message, Router } from '@owallet/router';
 
 class PushEventDataMsg extends Message<void> {
   public static type() {

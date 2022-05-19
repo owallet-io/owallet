@@ -23,10 +23,10 @@ import {
   ENSFailedToFetchError,
   ENSIsFetchingError,
   IIBCChannelConfig
-} from '@owallet-wallet/hooks';
+} from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { useIntl } from 'react-intl';
-import { ObservableEnsFetcher } from '@owallet-wallet/ens';
+import { ObservableEnsFetcher } from '@owallet/ens';
 
 export interface AddressInputProps {
   recipientConfig: IRecipientConfig;

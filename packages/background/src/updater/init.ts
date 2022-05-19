@@ -1,4 +1,4 @@
-import { Router } from '@owallet-wallet/router';
+import { Router } from '@owallet/router';
 import { TryUpdateChainMsg } from './messages';
 import { ROUTE } from './constants';
 import { getHandler } from './handler';

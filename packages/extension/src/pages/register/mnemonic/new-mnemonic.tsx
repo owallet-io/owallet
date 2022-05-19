@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { RegisterConfig } from '@owallet-wallet/hooks';
+import { RegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { FormattedMessage, useIntl } from 'react-intl';
 import useForm from 'react-hook-form';

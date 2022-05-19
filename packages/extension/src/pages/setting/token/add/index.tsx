@@ -9,9 +9,9 @@ import { Input } from '../../../../components/form';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import useForm from 'react-hook-form';
-import { Bech32Address } from '@owallet-wallet/cosmos';
-import { CW20Currency, Secret20Currency } from '@owallet-wallet/types';
-import { useInteractionInfo } from '@owallet-wallet/hooks';
+import { Bech32Address } from '@owallet/cosmos';
+import { CW20Currency, Secret20Currency } from '@owallet/types';
+import { useInteractionInfo } from '@owallet/hooks';
 import { useLoadingIndicator } from '../../../../components/loading-indicator';
 import { useNotification } from '../../../../components/notification';
 
@@ -74,9 +74,15 @@ export const AddTokenPage: FunctionComponent = observer(() => {
       (feature) => feature === 'secretwasm'
     ) != null;
 
-  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] = useState(
-    false
-  );
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const query = isSecret20
+    ? queries.secret.querySecret20ContractInfo
+    : queries.cosmwasm.querycw20ContractInfo;
+  const queryContractInfo = query.getQueryContract(contractAddress);
+
+  const tokenInfo = queryContractInfo.tokenInfo;
+  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
+    useState(false);
 
   const notification = useNotification();
   const loadingIndicator = useLoadingIndicator();

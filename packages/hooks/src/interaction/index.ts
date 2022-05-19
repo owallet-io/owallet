@@ -2,7 +2,7 @@ import { useLocation } from 'react-router';
 
 import queryString from 'querystring';
 
-import { disableScroll, fitPopupWindow } from '@owallet-wallet/popup';
+import { disableScroll, fitPopupWindow } from '@owallet/popup';
 import { useEffect, useRef } from 'react';
 
 export const useInteractionInfo = (cleanUp?: () => void) => {

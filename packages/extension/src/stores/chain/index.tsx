@@ -1,11 +1,8 @@
 import { observable, action, computed, makeObservable, flow } from 'mobx';
 
-import {
-  ChainInfoInner,
-  ChainStore as BaseChainStore
-} from '@owallet-wallet/stores';
+import { ChainInfoInner, ChainStore as BaseChainStore } from '@owallet/stores';
 
-import { ChainInfo } from '@owallet-wallet/types';
+import { ChainInfo } from '@owallet/types';
 import {
   ChainInfoWithEmbed,
   SetPersistentMemoryMsg,
@@ -13,11 +10,11 @@ import {
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
   TryUpdateChainMsg
-} from '@owallet-wallet/background';
-import { BACKGROUND_PORT } from '@owallet-wallet/router';
+} from '@owallet/background';
+import { BACKGROUND_PORT } from '@owallet/router';
 
-import { MessageRequester } from '@owallet-wallet/router';
-import { toGenerator } from '@owallet-wallet/common';
+import { MessageRequester } from '@owallet/router';
+import { toGenerator } from '@owallet/common';
 
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable

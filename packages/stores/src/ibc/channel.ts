@@ -1,9 +1,9 @@
-import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { KVStore, toGenerator } from '@owallet/common';
 import { flow, makeObservable, observable, runInAction } from 'mobx';
 import { computedFn } from 'mobx-utils';
 import { Channel } from './types';
 import { HasMapStore } from '../common';
-import { ChainIdHelper } from '@owallet-wallet/cosmos';
+import { ChainIdHelper } from '@owallet/cosmos';
 
 export class IBCChannelStoreInner {
   // channelMap[portId][channelId]

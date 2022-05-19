@@ -1,5 +1,5 @@
 import bech32, { fromWords } from 'bech32';
-import { Bech32Config } from '@owallet-wallet/types';
+import { Bech32Config } from '@owallet/types';
 
 export class Bech32Address {
   static shortenAddress(bech32: string, maxCharacters: number): string {

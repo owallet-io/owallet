@@ -1,7 +1,7 @@
 import { computed, makeObservable, override } from 'mobx';
-import { DenomHelper, KVStore } from '@owallet-wallet/common';
+import { DenomHelper, KVStore } from '@owallet/common';
 import { ChainGetter } from '../../common';
-import { CoinPretty, Int } from '@owallet-wallet/unit';
+import { CoinPretty, Int } from '@owallet/unit';
 import { BalanceRegistry, ObservableQueryBalanceInner } from '../balances';
 import { Cw20ContractBalance } from './types';
 import { ObservableCosmwasmContractChainQuery } from './contract-query';

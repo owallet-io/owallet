@@ -4,11 +4,7 @@ import { AddressInput, Input, MemoInput } from '../../../components/form';
 import { Button } from 'reactstrap';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { observer } from 'mobx-react-lite';
-import {
-  AddressBookConfig,
-  MemoConfig,
-  RecipientConfig
-} from '@owallet-wallet/hooks';
+import { AddressBookConfig, MemoConfig, RecipientConfig } from '@owallet/hooks';
 
 /**
  *

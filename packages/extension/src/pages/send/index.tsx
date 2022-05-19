@@ -20,13 +20,9 @@ import { Button } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 
-import { useSendTxConfig } from '@owallet-wallet/hooks';
-import { EthereumEndpoint } from '../../config.ui';
-import {
-  fitPopupWindow,
-  openPopupWindow,
-  PopupSize
-} from '@owallet-wallet/popup';
+import { useSendTxConfig } from '@owallet/hooks';
+import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
+import { EthereumEndpoint } from '@owallet/common';
 
 export const SendPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -49,13 +45,8 @@ export const SendPage: FunctionComponent = observer(() => {
 
   const notification = useNotification();
 
-  const {
-    chainStore,
-    accountStore,
-    priceStore,
-    queriesStore,
-    analyticsStore
-  } = useStore();
+  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } =
+    useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);

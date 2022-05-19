@@ -5,7 +5,7 @@ import { Button, Alert } from 'reactstrap';
 import style from './style.module.scss';
 import { EmptyLayout } from '../../../layouts/empty-layout';
 import { FormattedMessage } from 'react-intl';
-import { useInteractionInfo } from '@owallet-wallet/hooks';
+import { useInteractionInfo } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 

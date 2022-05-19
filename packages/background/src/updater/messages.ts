@@ -1,4 +1,4 @@
-import { Message } from '@owallet-wallet/router';
+import { Message } from '@owallet/router';
 import { ROUTE } from './constants';
 
 export class TryUpdateChainMsg extends Message<void> {

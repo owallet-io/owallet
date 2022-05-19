@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 
-import { Dec, DecUtils } from '@owallet-wallet/unit';
+import { Dec, DecUtils } from '@owallet/unit';
 
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';

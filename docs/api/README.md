@@ -78,7 +78,7 @@ While OWallet supports an easy way to connect to CosmJS, there are additional fu
 ### Using with Typescript
 **`window.d.ts`**
 ```javascript
-import { Window as OWalletWindow } from "@owallet-wallet/types";
+import { Window as OWalletWindow } from "@owallet/types";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -86,9 +86,9 @@ declare global {
 }
 ```
 
-The `@owallet-wallet/types` package has the type definition related to OWallet.  
-If you're using TypeScript, run `npm install --save-dev @owallet-wallet/types` or `yarn add -D @owallet-wallet/types` to install `@owallet-wallet/types`.  
-Then, you can add the `@owallet-wallet/types` window to a global window object and register the OWallet related types.
+The `@owallet/types` package has the type definition related to OWallet.  
+If you're using TypeScript, run `npm install --save-dev @owallet/types` or `yarn add -D @owallet/types` to install `@owallet/types`.  
+Then, you can add the `@owallet/types` window to a global window object and register the OWallet related types.
 
 ### Enable Connection
 

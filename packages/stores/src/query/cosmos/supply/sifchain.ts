@@ -1,5 +1,5 @@
 import { ObservableQuery } from '../../../common';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import Axios from 'axios';
 import { computed, makeObservable } from 'mobx';
 

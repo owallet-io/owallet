@@ -1,7 +1,7 @@
-import { DenomHelper, KVStore } from '@owallet-wallet/common';
+import { DenomHelper, KVStore } from '@owallet/common';
 import { ChainGetter, QueryResponse } from '../../../common';
 import { computed, makeObservable, override } from 'mobx';
-import { CoinPretty, Int } from '@owallet-wallet/unit';
+import { CoinPretty, Int } from '@owallet/unit';
 import { StoreUtils } from '../../../common';
 import { BalanceRegistry, ObservableQueryBalanceInner } from '../../balances';
 import { ObservableChainQuery } from '../../chain-query';
@@ -114,10 +114,8 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
 }
 
 export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
-  protected nativeBalances: Map<
-    string,
-    ObservableQueryCosmosBalances
-  > = new Map();
+  protected nativeBalances: Map<string, ObservableQueryCosmosBalances> =
+    new Map();
 
   constructor(protected readonly kvStore: KVStore) {}
 

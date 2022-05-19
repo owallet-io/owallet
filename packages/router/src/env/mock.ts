@@ -1,5 +1,5 @@
-import { Env, MessageSender } from '@owallet-wallet/router';
-import { ExtensionEnv } from '@owallet-wallet/router-extension';
+import { Env, MessageSender } from '@owallet/router';
+import { ExtensionEnv } from '@owallet/router-extension';
 
 export class MockEnv {
   constructor(protected readonly id: string, protected readonly url: string) {}

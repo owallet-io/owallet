@@ -1,14 +1,15 @@
 import {
+  AppChainInfo,
   Bech32Config,
   ChainInfo,
   Currency,
   CW20Currency,
   Secret20Currency
-} from '@owallet-wallet/types';
+} from '@owallet/types';
 
 import Joi, { ObjectSchema } from 'joi';
 
-export type ChainInfoWithEmbed = ChainInfo & {
+export type ChainInfoWithEmbed = AppChainInfo & {
   embeded: boolean;
 };
 
@@ -41,7 +42,9 @@ export const CW20CurrencyShema = (CurrencySchema as ObjectSchema<CW20Currency>)
     }
   });
 
-export const Secret20CurrencyShema = (CurrencySchema as ObjectSchema<Secret20Currency>)
+export const Secret20CurrencySchema = (
+  CurrencySchema as ObjectSchema<Secret20Currency>
+)
   .keys({
     type: Joi.string().equal('secret20').required(),
     contractAddress: Joi.string().required(),
@@ -85,8 +88,6 @@ export const ChainInfoSchema = Joi.object<ChainInfo>({
   chainId: Joi.string().required().min(1).max(30),
   chainName: Joi.string().required().min(1).max(30),
   stakeCurrency: CurrencySchema.required(),
-  walletUrl: Joi.string().uri(),
-  walletUrlForStaking: Joi.string().uri(),
   bip44: SuggestingBIP44Schema.required(),
   bech32Config: Bech32ConfigSchema.required(),
   currencies: Joi.array()

@@ -10,7 +10,7 @@ import {
   reaction
 } from 'mobx';
 import Axios, { AxiosInstance, CancelToken, CancelTokenSource } from 'axios';
-import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { KVStore, toGenerator } from '@owallet/common';
 import { DeepReadonly } from 'utility-types';
 import { HasMapStore } from '../map';
 import EventEmitter from 'eventemitter3';

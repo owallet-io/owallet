@@ -1,4 +1,4 @@
-import { Env, Guard, MessageSender, Message } from '@owallet-wallet/router';
+import { Env, Guard, MessageSender, Message } from '@owallet/router';
 
 export class ContentScriptGuards {
   // Router in content script will reject all messages that can be sent from the external.

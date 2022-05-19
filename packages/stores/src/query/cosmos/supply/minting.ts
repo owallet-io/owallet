@@ -1,6 +1,6 @@
 import { ObservableChainQuery } from '../../chain-query';
 import { MintingInflation } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 
 export class ObservableQueryMintingInfation extends ObservableChainQuery<MintingInflation> {

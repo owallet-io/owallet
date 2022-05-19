@@ -4,7 +4,7 @@ import {
   OWalletMode,
   OWalletSignOptions,
   Key
-} from '@owallet-wallet/types';
+} from '@owallet/types';
 import {
   AminoSignResponse,
   BroadcastMode,
@@ -15,9 +15,9 @@ import {
   StdTx
 } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
-import { Bech32Address } from '@owallet-wallet/cosmos';
+import { Bech32Address } from '@owallet/cosmos';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
-import { CosmJSOfflineSigner } from '@owallet-wallet/provider';
+import { CosmJSOfflineSigner } from '@owallet/provider';
 import { DirectSignResponse } from '@cosmjs/proto-signing/build/signer';
 
 export class MockOWallet implements OWallet {

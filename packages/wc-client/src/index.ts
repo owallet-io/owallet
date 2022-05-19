@@ -10,7 +10,7 @@ import {
   OWalletMode,
   OWalletSignOptions,
   Key
-} from '@owallet-wallet/types';
+} from '@owallet/types';
 import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import {
   AminoSignResponse,
@@ -22,20 +22,18 @@ import {
 import {
   CosmJSOfflineSigner,
   CosmJSOfflineSignerOnlyAmino
-} from '@owallet-wallet/provider';
+} from '@owallet/provider';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { payloadId } from '@walletconnect/utils';
 import deepmerge from 'deepmerge';
 import { Buffer } from 'buffer/';
-import { IndexedDBKVStore, KVStore } from '@owallet-wallet/common';
+import { IndexedDBKVStore, KVStore } from '@owallet/common';
 
 // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
 // The chainID should be in the form: `{identifier}-{version}`
 const ChainVersionFormatRegExp = /(.+)-([\d]+)/;
 
-function parseChainId(
-  chainId: string
-): {
+function parseChainId(chainId: string): {
   identifier: string;
   version: number;
 } {

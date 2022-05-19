@@ -1,9 +1,9 @@
 import { ObservableChainQuery } from '../chain-query';
-import { KVStore, toGenerator } from '@owallet-wallet/common';
+import { KVStore, toGenerator } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { ObservableQuerySecretContractCodeHash } from './contract-hash';
 import { autorun, computed, flow, makeObservable, observable } from 'mobx';
-import { OWallet } from '@owallet-wallet/types';
+import { OWallet } from '@owallet/types';
 import Axios, { CancelToken } from 'axios';
 import { QueryResponse } from '../../common';
 
@@ -111,7 +111,8 @@ export class ObservableSecretContractChainQuery<
       if (!Axios.isCancel(e) && e.response?.data?.error) {
         const encryptedError = e.response.data.error;
 
-        const errorMessageRgx = /query contract failed: encrypted: (.+)/g;
+        const errorMessageRgx =
+          /rpc error: code = (.+) = encrypted: (.+): (.+)/g;
 
         const rgxMatches = errorMessageRgx.exec(encryptedError);
         if (rgxMatches != null && rgxMatches.length === 4) {
@@ -133,7 +134,7 @@ export class ObservableSecretContractChainQuery<
       throw e;
     }
 
-    const encResult = (response.data as unknown) as
+    const encResult = response.data as unknown as
       | {
           height: string;
           result: {

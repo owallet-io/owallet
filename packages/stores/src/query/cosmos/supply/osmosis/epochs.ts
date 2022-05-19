@@ -1,4 +1,4 @@
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../../common';
 import { ObservableChainQuery } from '../../../chain-query';
 import { Epochs } from './types';

@@ -1,4 +1,4 @@
-import { Router } from '@owallet-wallet/router';
+import { Router } from '@owallet/router';
 import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,

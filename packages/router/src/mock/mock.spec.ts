@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Message, Router } from '@owallet-wallet/router';
+import { Message, Router } from '@owallet/router';
 import { MockRouter } from '../router';
 import { MockEnv } from '../env';
 import { MockMessageRequester } from '../requester';

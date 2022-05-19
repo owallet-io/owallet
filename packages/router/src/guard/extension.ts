@@ -1,4 +1,4 @@
-import { Env, Guard, MessageSender, Message } from '@owallet-wallet/router';
+import { Env, Guard, MessageSender, Message } from '@owallet/router';
 
 export class ExtensionGuards {
   static readonly checkOriginIsValid: Guard = (

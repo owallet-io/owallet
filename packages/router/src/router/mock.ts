@@ -1,4 +1,4 @@
-import { Router, MessageSender, Result } from '@owallet-wallet/router';
+import { Router, MessageSender, Result } from '@owallet/router';
 import { EventEmitter } from 'events';
 
 export class MockRouter extends Router {

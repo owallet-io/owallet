@@ -1,9 +1,9 @@
 import { ChainGetter } from '../../../../common';
 import { ObservableChainQuery } from '../../../chain-query';
 import { MintParmas } from './types';
-import { KVStore } from '@owallet-wallet/common';
+import { KVStore } from '@owallet/common';
 import { computed, makeObservable } from 'mobx';
-import { Dec } from '@owallet-wallet/unit';
+import { Dec } from '@owallet/unit';
 
 export class ObservableQueryOsmosisMintParmas extends ObservableChainQuery<MintParmas> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

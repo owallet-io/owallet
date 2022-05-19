@@ -4,9 +4,9 @@ import {
   AccountStore,
   QueriesWithCosmos,
   AccountWithCosmos
-} from '@owallet-wallet/stores';
-import { IndexedDBKVStore } from '@owallet-wallet/common';
-import { ChainInfo } from '@owallet-wallet/types';
+} from '@owallet/stores';
+import { IndexedDBKVStore } from '@owallet/common';
+import { ChainInfo } from '@owallet/types';
 import { getWCOWallet } from '../get-wc-owallet';
 import { EmbedChainInfos } from '../config';
 
