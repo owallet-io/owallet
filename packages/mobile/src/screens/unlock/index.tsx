@@ -3,28 +3,28 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState
-} from 'react';
-import { Dimensions, Image, StatusBar, StyleSheet, View } from 'react-native';
-import Animated, { Easing } from 'react-native-reanimated';
-import { observer } from 'mobx-react-lite';
-import { useStyle } from '../../styles';
-import * as SplashScreen from 'expo-splash-screen';
-import { TextInput } from '../../components/input';
-import { Button } from '../../components/button';
-import delay from 'delay';
-import { useStore } from '../../stores';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { StackActions, useNavigation } from '@react-navigation/native';
-import { KeyRingStatus } from '@owallet-wallet/background';
-import { KeychainStore } from '../../stores/keychain';
-import { AccountStore } from '@owallet-wallet/stores';
-import { autorun } from 'mobx';
+  useState,
+} from "react";
+import { Dimensions, Image, StatusBar, StyleSheet, View } from "react-native";
+import Animated, { Easing } from "react-native-reanimated";
+import { observer } from "mobx-react-lite";
+import { useStyle } from "../../styles";
+import * as SplashScreen from "expo-splash-screen";
+import { TextInput } from "../../components/input";
+import { Button } from "../../components/button";
+import delay from "delay";
+import { useStore } from "../../stores";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { StackActions, useNavigation } from "@react-navigation/native";
+import { KeyRingStatus } from "@keplr-wallet/background";
+import { KeychainStore } from "../../stores/keychain";
+import { AccountStore } from "@keplr-wallet/stores";
+import { autorun } from "mobx";
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
   if (!splashScreenHided) {
-    console.log('Hide Splash screen');
+    console.log("Hide Splash screen");
     if (await SplashScreen.hideAsync()) {
       splashScreenHided = true;
     }
@@ -58,7 +58,7 @@ enum AutoBiomtricStatus {
   NO_NEED,
   NEED,
   FAILED,
-  SUCCESS
+  SUCCESS,
 }
 
 const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
@@ -122,7 +122,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!navigateToHomeOnce.current) {
       // Wait the account of selected chain is loaded.
       await waitAccountLoad(accountStore, chainStore.current.chainId);
-      navigation.dispatch(StackActions.replace('MainTabDrawer'));
+      navigation.dispatch(StackActions.replace("MainTabDrawer"));
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
@@ -155,7 +155,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         Animated.timing(animatedContinuityEffectOpacity, {
           toValue: 0,
           duration: 600,
-          easing: Easing.ease
+          easing: Easing.ease,
         }).start();
       }, 700);
     }
@@ -163,10 +163,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     animatedContinuityEffectOpacity,
     autoBiometryStatus,
     isSplashEnd,
-    keyRingStore.status
+    keyRingStore.status,
   ]);
 
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   const [isFailed, setIsFailed] = useState(false);
@@ -225,8 +225,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         await hideSplashScreen();
         routeToRegisterOnce.current = true;
         navigation.dispatch(
-          StackActions.replace('Register', {
-            screen: 'Register.Intro'
+          StackActions.replace("Register", {
+            screen: "Register.Intro",
           })
         );
       })();
@@ -246,39 +246,39 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     <React.Fragment>
       <View
         style={style.flatten([
-          'absolute-fill',
-          'background-color-splash-background'
+          "absolute-fill",
+          "background-color-splash-background",
         ])}
       />
       <View
-        style={style.flatten(['flex-1', 'background-color-splash-background'])}
+        style={style.flatten(["flex-1", "background-color-splash-background"])}
       >
         <KeyboardAwareScrollView
-          contentContainerStyle={style.flatten(['flex-grow-1'])}
+          contentContainerStyle={style.flatten(["flex-grow-1"])}
         >
-          <View style={style.get('flex-5')} />
-          <View style={style.get('flex-3')}>
+          <View style={style.get("flex-5")} />
+          <View style={style.get("flex-3")}>
             <Image
               style={StyleSheet.flatten([
                 style.flatten([
-                  'width-full',
-                  'height-full',
-                  'margin-bottom-102'
-                ])
+                  "width-full",
+                  "height-full",
+                  "margin-bottom-102",
+                ]),
               ])}
               fadeDuration={0}
               resizeMode="contain"
-              source={require('../../assets/logo/splash-image.png')}
+              source={require("../../assets/logo/splash-image.png")}
             />
           </View>
-          <View style={style.flatten(['padding-x-page'])}>
+          <View style={style.flatten(["padding-x-page"])}>
             <TextInput
-              containerStyle={style.flatten(['padding-bottom-40'])}
+              containerStyle={style.flatten(["padding-bottom-40"])}
               label="Password"
               returnKeyType="done"
               secureTextEntry={true}
               value={password}
-              error={isFailed ? 'Invalid password' : undefined}
+              error={isFailed ? "Invalid password" : undefined}
               onChangeText={setPassword}
               onSubmitEditing={tryUnlock}
             />
@@ -290,7 +290,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             />
             {keychainStore.isBiometryOn ? (
               <Button
-                containerStyle={style.flatten(['margin-top-40'])}
+                containerStyle={style.flatten(["margin-top-40"])}
                 text="Use Biometric Authentication"
                 mode="text"
                 loading={isBiometricLoading}
@@ -298,24 +298,24 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               />
             ) : null}
           </View>
-          <View style={style.get('flex-7')} />
+          <View style={style.get("flex-7")} />
         </KeyboardAwareScrollView>
       </View>
-      {/* <Animated.View
+      <Animated.View
         style={StyleSheet.flatten([
-          style.flatten(['absolute-fill']),
+          style.flatten(["absolute-fill"]),
           {
-            opacity: animatedContinuityEffectOpacity
-          }
+            opacity: animatedContinuityEffectOpacity,
+          },
         ])}
-        pointerEvents={isSplashEnd ? 'none' : 'auto'}
+        pointerEvents={isSplashEnd ? "none" : "auto"}
       >
         <SplashContinuityEffectView
           onAnimationEnd={() => {
             setIsSplashEnd(true);
           }}
         />
-      </Animated.View> */}
+      </Animated.View>
     </React.Fragment>
   );
 });
@@ -326,7 +326,7 @@ const useAnimationState = () => {
       finished: new Animated.Value<number>(0),
       position: new Animated.Value<number>(0),
       time: new Animated.Value<number>(0),
-      frameTime: new Animated.Value<number>(0)
+      frameTime: new Animated.Value<number>(0),
     };
   })[0];
 };
@@ -355,7 +355,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
       backgroundClippingClock: new Animated.Clock(),
 
       backgroundDone: new Animated.Value(0),
-      backgroundClippingDone: new Animated.Value(0)
+      backgroundClippingDone: new Animated.Value(0),
     };
   });
 
@@ -382,7 +382,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
   const backgroundAnimationDelay = 300;
 
   const expectedLogoSize = logoSize
-    ? logoSize.height * (Dimensions.get('window').width / logoSize.width)
+    ? logoSize.height * (Dimensions.get("window").width / logoSize.width)
     : 0;
 
   const expectedBorderRadius = expectedLogoSize / 4.45;
@@ -407,7 +407,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 {
                   duration: backgroundClippingAnimationDuration,
                   easing: Easing.out(Easing.cubic),
-                  toValue: 1
+                  toValue: 1,
                 }
               ),
               Animated.timing(
@@ -416,7 +416,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 {
                   duration: backgroundClippingAnimationDuration,
                   easing: Easing.out(Easing.cubic),
-                  toValue: 1
+                  toValue: 1,
                 }
               ),
               Animated.timing(
@@ -425,7 +425,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 {
                   duration: backgroundClippingAnimationDuration,
                   easing: Easing.out(Easing.cubic),
-                  toValue: 1
+                  toValue: 1,
                 }
               ),
               Animated.cond(
@@ -437,15 +437,15 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 [
                   Animated.set(animation.backgroundClippingDone, 1),
                   Animated.debug(
-                    'Background clipping animation is done',
+                    "Background clipping animation is done",
                     Animated.stopClock(animation.backgroundClippingClock)
-                  )
+                  ),
                 ]
-              )
+              ),
             ]
-          )
+          ),
         ]
-      )
+      ),
     ];
   }, [
     animation.backgroundClippingClock,
@@ -453,7 +453,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
     animation.isStarted,
     backgroundClippingHeight,
     backgroundClippingRadius,
-    backgroundClippingWidth
+    backgroundClippingWidth,
   ]);
 
   Animated.useCode(() => {
@@ -474,12 +474,12 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   Animated.timing(animation.backgroundClock, backgroundWidth, {
                     duration: backgroundAnimationDuration,
                     easing: Easing.out(Easing.quad),
-                    toValue: 1
+                    toValue: 1,
                   }),
                   Animated.timing(animation.backgroundClock, backgroundHeight, {
                     duration: backgroundAnimationDuration,
                     easing: Easing.out(Easing.quad),
-                    toValue: 1
+                    toValue: 1,
                   }),
                   Animated.cond(
                     Animated.and(
@@ -489,14 +489,14 @@ export const SplashContinuityEffectView: FunctionComponent<{
                     [
                       Animated.set(animation.backgroundDone, 1),
                       Animated.debug(
-                        'Background animation is done',
+                        "Background animation is done",
                         Animated.stopClock(animation.backgroundClock)
                       ),
                       Animated.call([], () => {
                         onAnimationEndRef.current();
-                      })
+                      }),
                     ]
-                  )
+                  ),
                 ],
                 [
                   // `backgroundDelay` is actually not used for animation,
@@ -504,20 +504,20 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   Animated.timing(animation.backgroundClock, backgroundDelay, {
                     duration: backgroundAnimationDelay,
                     easing: Easing.ease,
-                    toValue: 1
+                    toValue: 1,
                   }),
                   Animated.cond(backgroundDelay.finished, [
                     Animated.debug(
-                      'Delay for background animation is reached',
+                      "Delay for background animation is reached",
                       backgroundDelay.finished
-                    )
-                  ])
+                    ),
+                  ]),
                 ]
-              )
+              ),
             ]
-          )
+          ),
         ]
-      )
+      ),
     ];
   }, [
     animation.isStarted,
@@ -525,75 +525,75 @@ export const SplashContinuityEffectView: FunctionComponent<{
     animation.backgroundClock,
     backgroundDelay,
     backgroundWidth,
-    backgroundHeight
+    backgroundHeight,
   ]);
 
   return (
     <React.Fragment>
       <View
         style={style.flatten([
-          'absolute-fill',
-          'background-color-splash-background'
+          "absolute-fill",
+          "background-color-splash-background",
         ])}
       />
       <View
         style={style.flatten([
-          'absolute-fill',
-          'items-center',
-          'justify-center'
+          "absolute-fill",
+          "items-center",
+          "justify-center",
         ])}
       >
         <Animated.View
           style={StyleSheet.flatten([
             style.flatten([
-              'width-full',
-              'height-full',
-              'overflow-hidden',
-              'items-center',
-              'justify-center'
+              "width-full",
+              "height-full",
+              "overflow-hidden",
+              "items-center",
+              "justify-center",
             ]),
             {
               width: backgroundClippingWidth.position.interpolate({
                 inputRange: [0, 1],
-                outputRange: [Dimensions.get('window').width, expectedLogoSize]
+                outputRange: [Dimensions.get("window").width, expectedLogoSize],
               }),
               height: backgroundClippingHeight.position.interpolate({
                 inputRange: [0, 1],
                 outputRange: [
-                  Dimensions.get('window').height +
+                  Dimensions.get("window").height +
                     (StatusBar.currentHeight ?? 0),
-                  expectedLogoSize
-                ]
+                  expectedLogoSize,
+                ],
               }),
               borderRadius: backgroundClippingRadius.position.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, expectedBorderRadius]
-              })
-            }
+                outputRange: [0, expectedBorderRadius],
+              }),
+            },
           ])}
         >
           <Animated.Image
             style={StyleSheet.flatten([
-              style.flatten(['width-full', 'height-full']),
+              style.flatten(["width-full", "height-full"]),
               {
                 width: backgroundWidth.position.interpolate({
                   inputRange: [0, 1],
                   outputRange: [
-                    Dimensions.get('window').width,
-                    expectedLogoSize
-                  ]
+                    Dimensions.get("window").width,
+                    expectedLogoSize,
+                  ],
                 }),
                 height: backgroundHeight.position.interpolate({
                   inputRange: [0, 1],
                   outputRange: [
-                    Dimensions.get('window').height +
+                    Dimensions.get("window").height +
                       (StatusBar.currentHeight ?? 0),
-                    expectedLogoSize
-                  ]
-                })
-              }
+                    expectedLogoSize,
+                  ],
+                }),
+              },
             ])}
-            source={require('../../assets/logo/splash-screen-only-background.png')}
+            source={require("../../assets/logo/splash-screen-only-background.png")}
             resizeMode="stretch"
             fadeDuration={0}
             onLoadEnd={() => {
@@ -604,14 +604,14 @@ export const SplashContinuityEffectView: FunctionComponent<{
       </View>
       <View
         style={style.flatten([
-          'absolute-fill',
-          'items-center',
-          'justify-center'
+          "absolute-fill",
+          "items-center",
+          "justify-center",
         ])}
       >
         <Image
-          style={style.flatten(['width-full', 'height-full'])}
-          source={require('../../assets/logo/splash-screen-only-k.png')}
+          style={style.flatten(["width-full", "height-full"])}
+          source={require("../../assets/logo/splash-screen-only-k.png")}
           resizeMode="contain"
           fadeDuration={0}
           onLoad={(e) => {
