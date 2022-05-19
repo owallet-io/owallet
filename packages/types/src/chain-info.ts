@@ -1,7 +1,7 @@
-import { Currency, AppCurrency } from "./currency";
-import { BIP44 } from "./bip44";
-import { AxiosRequestConfig } from "axios";
-import { Bech32Config } from "./bech32";
+import { Currency, AppCurrency } from './currency';
+import { BIP44 } from './bip44';
+import { AxiosRequestConfig } from 'axios';
+import { Bech32Config } from './bech32';
 
 export interface ChainInfo {
   readonly rpc: string;
@@ -15,8 +15,8 @@ export interface ChainInfo {
    * You can get actual currency information from Currencies.
    */
   readonly stakeCurrency: Currency;
-  readonly walletUrl?: string;
-  readonly walletUrlForStaking?: string;
+  // readonly walletUrl?: string;
+  // readonly walletUrlForStaking?: string;
   readonly bip44: BIP44;
   readonly alternativeBIP44s?: BIP44[];
   readonly bech32Config: Bech32Config;

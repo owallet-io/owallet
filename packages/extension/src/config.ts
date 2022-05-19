@@ -121,7 +121,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinImageUrl:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
     },
-    walletUrl: 'https://api.wallet.orai.io',
+
     bip44: {
       coinType: 118
     },
@@ -165,14 +165,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinImageUrl:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
-        : 'http://localhost:8080/#/cosmoshub/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/cosmoshub/stake'
-        : 'http://localhost:8080/#/cosmoshub/stake',
+
     bip44: {
       coinType: 118
     },
@@ -215,14 +208,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinImageUrl:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/12220.png'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://app.osmosis.zone'
-        : 'https://app.osmosis.zone',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/osmosis/stake'
-        : 'http://localhost:8080/#/osmosis/stake',
+
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [
@@ -269,14 +255,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'secret'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/secret/stake'
-        : 'http://localhost:8080/#/secret/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/secret/stake'
-        : 'http://localhost:8080/#/secret/stake',
+
     bip44: {
       coinType: 529
     },
@@ -323,14 +302,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'akash-network'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/akashnet/stake'
-        : 'http://localhost:8080/#/akashnet/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/akashnet/stake'
-        : 'http://localhost:8080/#/akashnet/stake',
+
     bip44: {
       coinType: 118
     },
@@ -366,14 +338,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 8,
       coinGeckoId: 'crypto-com-chain'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/crypto-org/stake'
-        : 'http://localhost:8080/#/crypto-org/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/crypto-org/stake'
-        : 'http://localhost:8080/#/crypto-org/stake',
+
     bip44: {
       coinType: 394
     },
@@ -414,14 +379,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'starname'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/iov-mainnet/stake'
-        : 'http://localhost:8080/#/iov-mainnet/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/iov-mainnet/stake'
-        : 'http://localhost:8080/#/iov-mainnet/stake',
+
     bip44: {
       coinType: 234
     },
@@ -462,14 +420,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'sifchain'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/sifchain/stake'
-        : 'http://localhost:8080/#/sifchain/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/sifchain/stake'
-        : 'http://localhost:8080/#/sifchain/stake',
+
     bip44: {
       coinType: 118
     },
@@ -930,14 +881,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'certik'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/shentu/stake'
-        : 'http://localhost:8080/#/shentu/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/shentu/stake'
-        : 'http://localhost:8080/#/shentu/stake',
+
     bip44: {
       coinType: 118
     },
@@ -973,14 +917,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'iris-network'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/irishub/stake'
-        : 'http://localhost:8080/#/irishub/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/irishub/stake'
-        : 'http://localhost:8080/#/irishub/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1026,14 +963,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'regen'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/regen/stake'
-        : 'http://localhost:8080/#/regen/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/regen/stake'
-        : 'http://localhost:8080/#/regen/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1069,14 +999,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'persistence'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/core/stake'
-        : 'http://localhost:8080/#/core/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/core/stake'
-        : 'http://localhost:8080/#/core/stake',
+
     bip44: {
       coinType: 750
     },
@@ -1117,14 +1040,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'sentinel'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/sentinel/stake'
-        : 'http://localhost:8080/#/sentinel/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/sentinel/stake'
-        : 'http://localhost:8080/#/sentinel/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1165,14 +1081,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'kava'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/kava/stake'
-        : 'http://localhost:8080/#/kava/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/kava/stake'
-        : 'http://localhost:8080/#/kava/stake',
+
     bip44: { coinType: 459 },
     alternativeBIP44s: [{ coinType: 118 }],
     bech32Config: Bech32Address.defaultBech32Config('kava'),
@@ -1249,14 +1158,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'uixo',
       coinDecimals: 6
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/impacthub/stake'
-        : 'http://localhost:8080/#/impacthub/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/impacthub/stake'
-        : 'http://localhost:8080/#/impacthub/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1290,14 +1192,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'e-money'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/emoney/stake'
-        : 'http://localhost:8080/#/emoney/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/emoney/stake'
-        : 'http://localhost:8080/#/emoney/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1363,14 +1258,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'ubld',
       coinDecimals: 6
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/agoric/stake'
-        : 'http://localhost:8080/#/agoric/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/agoric/stake'
-        : 'http://localhost:8080/#/agoric/stake',
+
     bip44: {
       coinType: 564
     },
@@ -1414,14 +1302,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'boot',
       coinDecimals: 0
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/bostrom/stake'
-        : 'http://localhost:8080/#/bostrom/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/bostrom/stake'
-        : 'http://localhost:8080/#/bostrom/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1486,14 +1367,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'juno-network'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/juno/stake'
-        : 'http://localhost:8080/#/juno/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/juno/stake'
-        : 'http://localhost:8080/#/juno/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1540,14 +1414,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'stargaze'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/stargaze/stake'
-        : 'http://localhost:8080/#/stargaze/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/stargaze/stake'
-        : 'http://localhost:8080/#/stargaze/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1582,14 +1449,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'uaxl',
       coinDecimals: 6
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/axelar/stake'
-        : 'http://localhost:8080/#/axelar/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/axelar/stake'
-        : 'http://localhost:8080/#/axelar/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1628,14 +1488,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'sommelier'
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/sommelier/stake'
-        : 'http://localhost:8080/#/sommelier/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/sommelier/stake'
-        : 'http://localhost:8080/#/sommelier/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1670,14 +1523,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'uumee',
       coinDecimals: 6
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/umee/stake'
-        : 'http://localhost:8080/#/umee/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/umee/stake'
-        : 'http://localhost:8080/#/umee/stake',
+
     bip44: {
       coinType: 118
     },
@@ -1715,14 +1561,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'aevmos',
       coinDecimals: 18
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/evmos/stake'
-        : 'http://localhost:8080/#/evmos/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/evmos/stake'
-        : 'http://localhost:8080/#/evmos/stake',
+
     bip44: {
       coinType: 60
     },
@@ -1761,14 +1600,7 @@ export const EmbedChainInfos: ChainInfo[] = [
       coinMinimalDenom: 'astr',
       coinDecimals: 18
     },
-    walletUrl:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/straightedge/stake'
-        : 'http://localhost:8080/#/straightedge/stake',
-    walletUrlForStaking:
-      process.env.NODE_ENV === 'production'
-        ? 'https://wallet.owallet.app/#/straightedge/stake'
-        : 'http://localhost:8080/#/straightedge/stake',
+
     bip44: {
       coinType: 118
     },

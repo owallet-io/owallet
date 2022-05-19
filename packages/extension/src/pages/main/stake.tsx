@@ -174,11 +174,9 @@ export const StakeView: FunctionComponent = observer(() => {
           )}
         </div>
         <div style={{ flex: 1 }} />
-        <a
-          href={chainStore.current.walletUrlForStaking}
-          target="_blank"
-          rel="noopener noreferrer"
+        <div
           onClick={(e) => {
+            alert(`Not implement for ${chainStore.current.chainId}`);
             if (!isStakableExist) {
               e.preventDefault();
             } else {
@@ -216,7 +214,7 @@ export const StakeView: FunctionComponent = observer(() => {
               <FormattedMessage id="main.stake.tooltip.no-asset" />
             </Tooltip>
           ) : null}
-        </a>
+        </div>
       </div>
     </div>
   );
