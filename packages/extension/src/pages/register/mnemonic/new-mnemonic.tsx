@@ -140,12 +140,12 @@ export const GenerateMnemonicModePage: FunctionComponent<{
         onSubmit={handleSubmit(async (data: FormData) => {
           newMnemonicConfig.setName(data.name);
           newMnemonicConfig.setPassword(data.password);
-
           newMnemonicConfig.setMode('verify');
         })}
       >
         <TextArea
           className={style.mnemonic}
+          autoCapitalize="none"
           placeholder={intl.formatMessage({
             id: 'register.create.textarea.mnemonic.place-holder'
           })}
@@ -219,8 +219,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
                 validate: (confirmPassword: string): string | undefined => {
                   if (confirmPassword !== getValues()['password']) {
                     return intl.formatMessage({
-                      id:
-                        'register.create.input.confirm-password.error.unmatched'
+                      id: 'register.create.input.confirm-password.error.unmatched'
                     });
                   }
                 }
