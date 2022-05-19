@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
+import React, { FunctionComponent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
 import {
   Button,
   ButtonDropdown,
@@ -11,12 +11,12 @@ import {
   FormGroup,
   Label,
   Modal,
-  ModalBody,
-} from "reactstrap";
+  ModalBody
+} from 'reactstrap';
 
-import style from "./style.module.scss";
-import { Input } from "../input";
-import { FormattedMessage, useIntl } from "react-intl";
+import style from './style.module.scss';
+import { Input } from '../input';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 export const IBCChannelRegistrarModal: FunctionComponent<{
   isOpen: boolean;
@@ -28,13 +28,13 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
 
   const [isChainDropdownOpen, setIsChainDropdownOpen] = useState(false);
 
-  const [selectedChainId, setSelectedChainId] = useState("");
+  const [selectedChainId, setSelectedChainId] = useState('');
 
-  const [channelId, setChannelId] = useState("");
+  const [channelId, setChannelId] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   return (
     <Modal isOpen={isOpen} toggle={toggle} centered>
@@ -58,10 +58,14 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
                   <FormattedMessage id="component.ibc.channel-registrar.chain-selector.placeholder" />
                 )}
               </DropdownToggle>
-              <DropdownMenu>
+              <DropdownMenu
+                style={{
+                  overflowY: 'auto'
+                }}
+              >
                 {chainStore.chainInfos.map((chainInfo) => {
                   if (chainStore.current.chainId !== chainInfo.chainId) {
-                    if ((chainInfo.features ?? []).includes("ibc-transfer")) {
+                    if ((chainInfo.features ?? []).includes('ibc-transfer')) {
                       return (
                         <DropdownItem
                           key={chainInfo.chainId}
@@ -69,7 +73,7 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
                             e.preventDefault();
 
                             setSelectedChainId(chainInfo.chainId);
-                            setError("");
+                            setError('');
                           }}
                         >
                           {chainInfo.chainName}
@@ -84,17 +88,15 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
           <Input
             type="text"
             label={intl.formatMessage({
-              id:
-                "component.ibc.channel-registrar.chain-selector.add.channel.label",
+              id: 'component.ibc.channel-registrar.chain-selector.add.channel.label'
             })}
             placeholder={intl.formatMessage({
-              id:
-                "component.ibc.channel-registrar.chain-selector.add.channel.placeholder",
+              id: 'component.ibc.channel-registrar.chain-selector.add.channel.placeholder'
             })}
             onChange={(e) => {
               e.preventDefault();
               setChannelId(e.target.value);
-              setError("");
+              setError('');
             }}
             error={error}
           />
@@ -103,7 +105,7 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
             block
             color="primary"
             disabled={
-              selectedChainId === "" || channelId === "" || error !== ""
+              selectedChainId === '' || channelId === '' || error !== ''
             }
             data-loading={isLoading}
             onClick={async (e) => {
@@ -121,15 +123,15 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
                 .getClientStateOnTransferPort(channelId)
                 .waitFreshResponse();
 
-              let error = "";
+              let error = '';
 
               if (!channel || !clientState) {
-                error = "Failed to fetch the channel";
+                error = 'Failed to fetch the channel';
               }
 
               if (channel) {
-                if (channel.data.channel.state !== "STATE_OPEN") {
-                  error = "Channel is not on OPEN STATE";
+                if (channel.data.channel.state !== 'STATE_OPEN') {
+                  error = 'Channel is not on OPEN STATE';
                 }
               }
 
@@ -145,19 +147,19 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
               setIsLoading(false);
               setError(error);
 
-              if (channel && clientState && error === "") {
+              if (channel && clientState && error === '') {
                 await ibcChannelStore
                   .get(chainStore.current.chainId)
                   .addChannel({
-                    portId: "transfer",
+                    portId: 'transfer',
                     channelId,
-                    counterpartyChainId: selectedChainId,
+                    counterpartyChainId: selectedChainId
                   });
 
                 await ibcChannelStore.get(selectedChainId).addChannel({
                   portId: channel.data.channel.counterparty.port_id,
                   channelId: channel.data.channel.counterparty.channel_id,
-                  counterpartyChainId: chainStore.current.chainId,
+                  counterpartyChainId: chainStore.current.chainId
                 });
 
                 closeModal();

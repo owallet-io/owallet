@@ -43,5 +43,6 @@
 
   :global(.dropdown-menu.show) {
     width: 100%;
+    top: $header-height!important;
   }
 }

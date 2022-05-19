@@ -71,6 +71,7 @@ hr{
 .form-control {
   color: $color;
   background-color: $background-color-lighter;
+  padding: 0.625rem 0.75rem;
   &:focus {
     background-color: $background-color-lighter;
     color: $color-darker;
@@ -93,7 +94,7 @@ textarea.form-control{
   }
 }
 .modal-content{
-  background-color: $background-color-lighter;
+  background-color: mix($background-color,$background-color-lighter);
 }
 
 .btn-secondary:not(:disabled):not(.disabled):active, .btn-secondary:not(:disabled):not(.disabled).active, .show > .btn-secondary.dropdown-toggle{
@@ -142,6 +143,7 @@ button[data-loading="true"] {
   border-radius: 18px;  
   white-space: break-spaces;
   word-break: break-word;
+  padding: 0.625rem 0.75rem;
 }
 
 .btn-primary{
