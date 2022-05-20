@@ -14,17 +14,21 @@ import { KVStore, toGenerator } from '@owallet/common';
 import { DeepReadonly } from 'utility-types';
 import { HasMapStore } from '../map';
 import EventEmitter from 'eventemitter3';
+import { NetworkType } from '@owallet/types';
 
 export type QueryOptions = {
   // millisec
   cacheMaxAge: number;
   // millisec
   fetchingInterval: number;
+
+  data: { [key: string]: any };
 };
 
 export const defaultOptions: QueryOptions = {
   cacheMaxAge: Number.MAX_VALUE,
-  fetchingInterval: 0
+  fetchingInterval: 0,
+  data: null
 };
 
 export type QueryError<E> = {
@@ -420,8 +424,10 @@ export class ObservableQuery<
     options: Partial<QueryOptions> = {}
   ) {
     super(instance, options);
+
     makeObservable(this);
 
+    // reload when change url
     this.setUrl(url);
   }
 
@@ -463,9 +469,14 @@ export class ObservableQuery<
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<QueryResponse<T>> {
-    const result = await this.instance.get<T>(this.url, {
-      cancelToken
-    });
+    // may be post method in case of ethereum
+    const result = this.options.data
+      ? await this.instance.post<T>(this.url, this.options.data, {
+          cancelToken
+        })
+      : await this.instance.get<T>(this.url, {
+          cancelToken
+        });
     return {
       data: result.data,
       status: result.status,

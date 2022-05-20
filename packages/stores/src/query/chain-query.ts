@@ -18,7 +18,8 @@ export class ObservableChainQuery<
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    url: string
+    url: string,
+    data?: { [key: string]: any }
   ) {
     const chainInfo = chainGetter.getChain(chainId);
 
@@ -29,7 +30,7 @@ export class ObservableChainQuery<
       ...chainInfo.restConfig
     });
 
-    super(kvStore, instance, url);
+    super(kvStore, instance, url, data ? { data } : null);
 
     this._chainId = chainId;
     this._beta = chainInfo.beta;

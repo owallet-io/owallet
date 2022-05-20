@@ -727,9 +727,7 @@ export class KeyRing {
       // Use ether js to sign Ethereum tx
       const ethWallet = new Wallet(privKey.toBytes());
 
-      const signature = await ethWallet
-        ._signingKey()
-        .signDigest(keccak256(message));
+      const signature = ethWallet._signingKey().signDigest(keccak256(message));
       const splitSignature = BytesUtils.splitSignature(signature);
       return BytesUtils.arrayify(
         BytesUtils.concat([splitSignature.r, splitSignature.s])

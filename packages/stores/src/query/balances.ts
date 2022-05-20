@@ -111,7 +111,7 @@ export class ObservableQueryBalancesInner {
   @computed
   get stakable(): ObservableQueryBalanceInner {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-
+    if (!chainInfo.stakeCurrency) return null;
     return this.getBalanceInner(chainInfo.stakeCurrency);
   }
 
@@ -162,6 +162,7 @@ export class ObservableQueryBalancesInner {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
     const balances = this.balances;
+    if (!chainInfo.stakeCurrency) return balances;
     return balances.filter(
       (bal) =>
         new DenomHelper(bal.currency.coinMinimalDenom).type === 'native' &&
@@ -175,11 +176,11 @@ export class ObservableQueryBalancesInner {
   get unstakables(): ObservableQueryBalanceInner[] {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
+    const result = [];
+    if (!chainInfo.stakeCurrency) return result;
     const currencies = chainInfo.currencies.filter(
       (cur) => cur.coinMinimalDenom !== chainInfo.stakeCurrency.coinMinimalDenom
     );
-
-    const result = [];
 
     for (let i = 0; i < currencies.length; i++) {
       const currency = currencies[i];

@@ -7,9 +7,10 @@ export class StoreUtils {
     currenciesMap: {
       [denom: string]: Currency;
     },
-    bals: CoinPrimitive[]
+    bals?: CoinPrimitive[]
   ): CoinPretty[] {
     const result: CoinPretty[] = [];
+    if (!bals) return result;
     for (const bal of bals) {
       const currency = currenciesMap[bal.denom];
       if (currency) {
