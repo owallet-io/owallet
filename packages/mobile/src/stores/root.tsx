@@ -1,4 +1,3 @@
-import { EmbedChainInfos } from '../config';
 import {
   KeyRingStore,
   InteractionStore,
@@ -23,7 +22,7 @@ import { OWallet } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { WalletConnectStore } from './wallet-connect';
 import { FeeType } from '@owallet/hooks';
-import { AmplitudeApiKey } from '../config';
+import { AmplitudeApiKey, EmbedChainInfos } from '@owallet/common';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';

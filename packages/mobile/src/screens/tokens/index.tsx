@@ -34,7 +34,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
           return (
             <TokenItem
               key={token.currency.coinMinimalDenom}
-              chainInfo={chainStore.current}
+              chainInfo={{ stakeCurrency: chainStore.current.stakeCurrency }}
               balance={token.balance}
             />
           );
