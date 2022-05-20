@@ -2,7 +2,11 @@ import { computed, makeObservable, override } from 'mobx';
 import { DenomHelper, KVStore } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { CoinPretty, Int } from '@owallet/unit';
-import { BalanceRegistry, ObservableQueryBalanceInner } from '../balances';
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner
+} from '../balances';
 import { Cw20ContractBalance } from './types';
 import { ObservableCosmwasmContractChainQuery } from './contract-query';
 
@@ -93,6 +97,8 @@ export class ObservableQueryCw20BalanceInner extends ObservableQueryBalanceInner
 }
 
 export class ObservableQueryCw20BalanceRegistry implements BalanceRegistry {
+  readonly type: BalanceRegistryType = 'cw20';
+
   constructor(protected readonly kvStore: KVStore) {}
 
   getBalanceInner(

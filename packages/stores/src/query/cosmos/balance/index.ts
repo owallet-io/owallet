@@ -3,7 +3,11 @@ import { ChainGetter, QueryResponse } from '../../../common';
 import { computed, makeObservable, override } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { StoreUtils } from '../../../common';
-import { BalanceRegistry, ObservableQueryBalanceInner } from '../../balances';
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner
+} from '../../balances';
 import { ObservableChainQuery } from '../../chain-query';
 import { Balances } from './types';
 
@@ -117,6 +121,8 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
   protected nativeBalances: Map<string, ObservableQueryCosmosBalances> =
     new Map();
 
+  readonly type: BalanceRegistryType = 'cosmos';
+
   constructor(protected readonly kvStore: KVStore) {}
 
   getBalanceInner(
@@ -126,6 +132,7 @@ export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
+
     if (denomHelper.type !== 'native') {
       return;
     }

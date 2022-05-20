@@ -1,5 +1,7 @@
-export type Erc20ContractBalance = {
-  balance: string;
+export type Result = {
+  id: number;
+  jsonrpc: string;
+  result: string;
 };
 
 export type Erc20ContractTokenInfo = {

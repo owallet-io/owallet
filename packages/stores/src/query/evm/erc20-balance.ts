@@ -2,25 +2,39 @@ import { computed, makeObservable, override } from 'mobx';
 import { DenomHelper, KVStore } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { CoinPretty, Int } from '@owallet/unit';
-import { BalanceRegistry, ObservableQueryBalanceInner } from '../balances';
-import { Erc20ContractBalance } from './types';
-import { ObservableCosmwasmContractChainQuery } from './contract-query';
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner
+} from '../balances';
+import { Result } from './types';
+import { ObservableEvmContractChainQuery } from './contract-query';
+import { evmosToEth } from '@hanchon/ethermint-address-converter';
 
-export class ObservableQueryErc20Balance extends ObservableCosmwasmContractChainQuery<Erc20ContractBalance> {
+export class ObservableQueryErc20Balance extends ObservableEvmContractChainQuery<Result> {
   constructor(
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
-    protected readonly bech32Address: string
+    protected readonly address: string
   ) {
     super(kvStore, chainId, chainGetter, contractAddress, {
-      balance: { address: bech32Address }
+      jsonrpc: '2.0',
+      method: 'eth_call',
+      params: [
+        {
+          to: contractAddress,
+          data: `0x70a08231000000000000000000000000${address.replace('0x', '')}`
+        },
+        'latest'
+      ],
+      id: 'erc20-balance'
     });
   }
 
   protected canFetch(): boolean {
-    return super.canFetch() && this.bech32Address !== '';
+    return super.canFetch() && this.address !== '';
   }
 }
 
@@ -32,7 +46,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
     chainId: string,
     chainGetter: ChainGetter,
     denomHelper: DenomHelper,
-    protected readonly bech32Address: string
+    protected readonly address: string
   ) {
     super(
       kvStore,
@@ -50,7 +64,7 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
       chainId,
       chainGetter,
       denomHelper.contractAddress,
-      bech32Address
+      address
     );
   }
 
@@ -78,21 +92,20 @@ export class ObservableQueryErc20BalanceInner extends ObservableQueryBalanceInne
       throw new Error(`Unknown currency: ${denom}`);
     }
 
-    if (
-      !this.queryErc20Balance.response ||
-      !this.queryErc20Balance.response.data.balance
-    ) {
+    if (!this.queryErc20Balance.response?.data) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
 
     return new CoinPretty(
       currency,
-      new Int(this.queryErc20Balance.response.data.balance)
+      new Int(BigInt(this.queryErc20Balance.response.data.result).toString())
     );
   }
 }
 
 export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
+  readonly type: BalanceRegistryType = 'erc20';
+
   constructor(protected readonly kvStore: KVStore) {}
 
   getBalanceInner(
@@ -102,13 +115,13 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    if (denomHelper.type === 'erc20') {
+    if (bech32Address && denomHelper.type === 'erc20') {
       return new ObservableQueryErc20BalanceInner(
         this.kvStore,
         chainId,
         chainGetter,
         denomHelper,
-        bech32Address
+        evmosToEth(bech32Address)
       );
     }
   }

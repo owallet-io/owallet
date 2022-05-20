@@ -4,9 +4,7 @@ import { ChainGetter } from '../../common';
 import { CancelToken } from 'axios';
 import { QueryResponse } from '../../common';
 
-import { Buffer } from 'buffer/';
-
-export class ObservableCosmwasmContractChainQuery<
+export class ObservableEvmContractChainQuery<
   T
 > extends ObservableChainQuery<T> {
   constructor(
@@ -15,45 +13,9 @@ export class ObservableCosmwasmContractChainQuery<
     chainGetter: ChainGetter,
     protected readonly contractAddress: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
-    protected obj: object
+    protected data: { [key: string]: any }
   ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      ObservableCosmwasmContractChainQuery.getUrlFromObj(
-        contractAddress,
-        obj,
-        chainGetter.getChain(chainId).beta
-      )
-    );
-  }
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  protected static getUrlFromObj(
-    contractAddress: string,
-    obj: object,
-    beta?: boolean
-  ): string {
-    const msg = JSON.stringify(obj);
-    const query = Buffer.from(msg).toString('base64');
-
-    return `/wasm/${
-      beta ? 'v1beta1' : 'v1'
-    }/contract/${contractAddress}/smart/${query}`;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  protected setObj(obj: object) {
-    this.obj = obj;
-
-    this.setUrl(
-      ObservableCosmwasmContractChainQuery.getUrlFromObj(
-        this.contractAddress,
-        this.obj,
-        this.beta
-      )
-    );
+    super(kvStore, chainId, chainGetter, '', data);
   }
 
   protected canFetch(): boolean {
@@ -64,19 +26,14 @@ export class ObservableCosmwasmContractChainQuery<
     cancelToken: CancelToken
   ): Promise<QueryResponse<T>> {
     const response = await super.fetchResponse(cancelToken);
+    const evmResult = response.data;
 
-    const wasmResult = response.data as unknown as
-      | {
-          data: any;
-        }
-      | undefined;
-
-    if (!wasmResult) {
+    if (!evmResult) {
       throw new Error('Failed to get the response from the contract');
     }
 
     return {
-      data: wasmResult.data as T,
+      data: evmResult,
       status: response.status,
       staled: false,
       timestamp: Date.now()

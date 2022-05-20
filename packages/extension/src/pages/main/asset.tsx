@@ -306,10 +306,66 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
   );
 });
 
+export const AssetChartViewEvm: FunctionComponent = observer(() => {
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+
+  const intl = useIntl();
+
+  const language = useLanguage();
+
+  const fiatCurrency = language.fiatCurrency;
+
+  const current = chainStore.current;
+
+  const queries = queriesStore.get(current.chainId);
+
+  const chainInfo = chainStore.getChain(chainStore.current.chainId);
+
+  const accountInfo = accountStore.getAccount(current.chainId);
+
+  // wait for account to be
+  if (!accountInfo.evmosHexAddress) return null;
+
+  const balance = queries.evm.queryEvmBalance.getQueryBalance(
+    accountInfo.evmosHexAddress
+  ).balance;
+
+  return (
+    <React.Fragment>
+      <div style={{ marginTop: '12px', width: '100%' }}>
+        <div
+          className={styleAsset.legend}
+          style={{ flexDirection: 'column', alignItems: 'center' }}
+        >
+          <div className={styleAsset.label}>
+            <img src={chainInfo.stakeCurrency.coinImageUrl} />
+          </div>
+          <div
+            className={styleAsset.value}
+            style={{
+              color: '#D6CCF4'
+            }}
+          >
+            {balance?.shrink(true).maxDecimals(6).toString()}
+          </div>
+        </div>
+      </div>
+    </React.Fragment>
+  );
+});
+
 export const AssetView: FunctionComponent = () => {
   return (
     <div className={styleAsset.containerAsset}>
       <AssetStakedChartView />
+    </div>
+  );
+};
+
+export const AssetViewEvm: FunctionComponent = () => {
+  return (
+    <div className={styleAsset.containerAsset}>
+      <AssetChartViewEvm />
     </div>
   );
 };

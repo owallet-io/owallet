@@ -93,8 +93,9 @@ export const TxButtonView: FunctionComponent = observer(() => {
   const history = useHistory();
 
   const hasAssets =
-    queryBalances.balances.find((bal) => bal.balance.toDec().gt(new Dec(0))) !==
-    undefined;
+    queryBalances.balances.find((bal) =>
+      bal?.balance?.toDec().gt(new Dec(0))
+    ) !== undefined;
 
   const sendBtnRef = useRef<HTMLButtonElement>(null);
 

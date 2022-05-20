@@ -1,5 +1,3 @@
-import { ethers } from 'ethers';
-
 import { QueriesSetBase } from '../queries';
 import { ChainGetter } from '../../common';
 import { KVStore } from '@owallet/common';
@@ -8,7 +6,7 @@ import { DeepReadonly } from 'utility-types';
 import { ObservableQueryErc20BalanceRegistry } from './erc20-balance';
 import { QueriesWithCosmosAndSecretAndCosmwasm } from '../cosmwasm';
 import { OWallet } from '@owallet/types';
-import { ObservableQueryEvmBalanceRegistry } from './balance';
+import { ObservableQueryEvmBalance } from './evm-balance';
 
 export interface HasEvmQueries {
   evm: EvmQueries;
@@ -33,7 +31,8 @@ export class QueriesWithCosmosAndSecretAndCosmwasmAndEvm
 }
 
 export class EvmQueries {
-  public readonly queryerc20ContractInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
+  public readonly queryErc20ContractInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
+  public readonly queryEvmBalance: DeepReadonly<ObservableQueryEvmBalance>;
 
   constructor(
     base: QueriesSetBase,
@@ -42,14 +41,17 @@ export class EvmQueries {
     chainGetter: ChainGetter
   ) {
     base.queryBalances.addBalanceRegistry(
-      new ObservableQueryEvmBalanceRegistry(kvStore)
-    );
-
-    base.queryBalances.addBalanceRegistry(
       new ObservableQueryErc20BalanceRegistry(kvStore)
     );
 
-    this.queryerc20ContractInfo = new ObservableQueryErc20ContractInfo(
+    // queryEvmBalance
+    this.queryEvmBalance = new ObservableQueryEvmBalance(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryErc20ContractInfo = new ObservableQueryErc20ContractInfo(
       kvStore,
       chainId,
       chainGetter

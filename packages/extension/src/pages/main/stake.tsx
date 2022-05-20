@@ -36,8 +36,8 @@ export const StakeView: FunctionComponent = observer(() => {
   const isRewardExist = rewards.rewards.length > 0;
 
   const isStakableExist = useMemo(() => {
-    return stakable.balance.toDec().gt(new Dec(0));
-  }, [stakable.balance]);
+    return stakable?.balance.toDec().gt(new Dec(0));
+  }, [stakable?.balance]);
 
   const withdrawAllRewards = async () => {
     if (accountInfo.isReadyToSendMsgs) {

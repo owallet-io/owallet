@@ -58,7 +58,9 @@ export const AccountView: FunctionComponent = observer(() => {
               target="_blank"
               href={chainInfo.raw.txExplorer.accountUrl.replace(
                 '{address}',
-                accountInfo.bech32Address
+                chainInfo.raw.networkType === 'cosmos'
+                  ? accountInfo.bech32Address
+                  : accountInfo.evmosHexAddress
               )}
               title={intl.formatMessage({ id: 'setting.explorer' })}
             >

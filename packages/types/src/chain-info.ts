@@ -6,9 +6,9 @@ import { Bech32Config } from './bech32';
 export type NetworkType = 'cosmos' | 'evm';
 
 export interface ChainInfo {
-  readonly rpc: string;
+  readonly rpc?: string;
   readonly rpcConfig?: AxiosRequestConfig;
-  readonly rest?: string;
+  readonly rest: string;
   readonly restConfig?: AxiosRequestConfig;
   readonly chainId: string;
   readonly chainName: string;

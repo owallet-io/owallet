@@ -4,7 +4,11 @@ import { ChainGetter, QueryResponse } from '../../common';
 import { ObservableQuerySecretContractCodeHash } from './contract-hash';
 import { QueryError } from '../../common';
 import { CoinPretty, Int } from '@owallet/unit';
-import { BalanceRegistry, ObservableQueryBalanceInner } from '../balances';
+import {
+  BalanceRegistry,
+  BalanceRegistryType,
+  ObservableQueryBalanceInner
+} from '../balances';
 import { ObservableSecretContractChainQuery } from './contract-query';
 import { CancelToken } from 'axios';
 import { WrongViewingKeyError } from './errors';
@@ -167,6 +171,8 @@ export class ObservableQuerySecret20BalanceInner extends ObservableQueryBalanceI
 }
 
 export class ObservableQuerySecret20BalanceRegistry implements BalanceRegistry {
+  readonly type: BalanceRegistryType = 'cw20';
+
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly apiGetter: () => Promise<OWallet | undefined>,

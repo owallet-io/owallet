@@ -18,7 +18,7 @@ import {
   ChainSuggestStore,
   IBCChannelStore,
   IBCCurrencyRegsitrar,
-  QueriesWithCosmosAndSecretAndCosmwasm,
+  QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
   AccountWithAll,
   getOWalletFromWindow
 } from '@owallet/stores';
@@ -48,8 +48,8 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecret>;
-  public readonly accountStore: AccountStore<AccountWithCosmosAndSecret>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
+  public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
 
@@ -125,7 +125,7 @@ export class RootStore {
       new ExtensionKVStore('store_queries'),
       this.chainStore,
       getOWalletFromWindow,
-      QueriesWithCosmosAndSecretAndCosmwasm
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {

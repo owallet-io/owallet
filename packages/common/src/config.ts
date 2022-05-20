@@ -102,12 +102,19 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://data-seed-prebsc-1-s1.binance.org:8545',
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545',
     chainId: '97',
     chainName: 'Smart Chain - Testnet',
     bip44: {
       coinType: 60
+    },
+    stakeCurrency: {
+      coinDenom: 'BNB',
+      coinMinimalDenom: 'bnb',
+      coinDecimals: 18,
+      coinGeckoId: 'bnb',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
     },
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     networkType: 'evm',
@@ -116,7 +123,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'BNB',
         coinMinimalDenom: 'bnb',
         coinDecimals: 18,
-        coinGeckoId: 'bnb'
+        coinGeckoId: 'bnb',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
       },
       {
         coinDenom: 'ORAI',
@@ -133,7 +142,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'BNB',
         coinMinimalDenom: 'bnb',
         coinDecimals: 18,
-        coinGeckoId: 'bnb'
+        coinGeckoId: 'bnb',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
       }
     ],
     gasPriceStep: {

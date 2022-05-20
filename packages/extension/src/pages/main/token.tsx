@@ -207,23 +207,15 @@ const TokenView: FunctionComponent<{
   );
 });
 
-export const TokensView: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore } = useStore();
+export const TokensView: FunctionComponent<{
+  tokens: ObservableQueryBalanceInner[];
+}> = observer(({ tokens }) => {
+  // const { chainStore, accountStore, queriesStore } = useStore();
 
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
-  const tokens = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(accountInfo.bech32Address)
-    .unstakables // .filter((bal) => {
-    //   const denomHelper = new DenomHelper(bal.currency.coinMinimalDenom);
-    //   // Temporary implementation for trimming the 0 balanced native tokens.
-    //   // TODO: Remove this part.
-    //   if (denomHelper.type === 'native') {
-    //     return bal.balance.toDec().gt(new Dec('0'));
-    //   }
-    //   return true;
-    // })
+  const displayTokens = tokens
+    .filter((token) => token?.balance)
     .sort((a, b) => {
       const aDecIsZero = a.balance.toDec().isZero();
       const bDecIsZero = b.balance.toDec().isZero();
@@ -243,7 +235,7 @@ export const TokensView: FunctionComponent = observer(() => {
   return (
     <div className={styleToken.tokensContainer}>
       <h1 className={styleToken.title}>Tokens</h1>
-      {tokens.map((token, i) => {
+      {displayTokens.map((token, i) => {
         return (
           <TokenView
             key={i.toString()}
