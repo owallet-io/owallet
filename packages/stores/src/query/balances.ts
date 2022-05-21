@@ -135,9 +135,11 @@ export class ObservableQueryBalancesInner {
 
     const result = [];
 
-    for (let i = 0; i < chainInfo.currencies.length; i++) {
-      const currency = chainInfo.currencies[i];
-      result.push(this.getBalanceInner(currency));
+    for (const currency of chainInfo.currencies) {
+      const balanceInner = this.getBalanceInner(currency);
+      if (balanceInner) {
+        result.push(balanceInner);
+      }
     }
 
     return result;

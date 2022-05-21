@@ -346,7 +346,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: '#D6CCF4'
             }}
           >
-            {balance?.shrink(true).maxDecimals(6).toString()}
+            {balance?.trim(true).shrink(true).maxDecimals(6).toString()}
           </div>
         </div>
       </div>

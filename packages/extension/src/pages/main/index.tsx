@@ -21,8 +21,6 @@ import { useIntl } from 'react-intl';
 import { useConfirm } from '../../components/confirm';
 import { ChainUpdaterService } from '@owallet/background';
 import { IBCTransferView } from './ibc-transfer';
-import { DenomHelper } from '@owallet/common';
-import { Dec } from '@owallet/unit';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();

@@ -11,8 +11,8 @@ import { UncontrolledTooltip } from 'reactstrap';
 import { WrongViewingKeyError } from '@owallet/stores';
 import { useNotification } from '../../components/notification';
 import { useLoadingIndicator } from '../../components/loading-indicator';
-// import { DenomHelper } from '@owallet/common';
-// import { Dec } from '@owallet/unit';
+import { DenomHelper } from '@owallet/common';
+
 import { useLanguage } from '../../languages';
 
 const TokenView: FunctionComponent<{
@@ -28,8 +28,9 @@ const TokenView: FunctionComponent<{
     ['#F6F7FB', '#0e0314']
   ]);
 
-  const name = balance.currency.coinDenom.toUpperCase();
+  let name = balance.currency.coinDenom.toUpperCase();
   const minimalDenom = balance.currency.coinMinimalDenom;
+
   let amount = balance.balance.trim(true).shrink(true);
 
   const [backgroundColor, color] = useMemo(() => {
@@ -86,6 +87,9 @@ const TokenView: FunctionComponent<{
   // Show the actual coin denom to the top and just show the coin denom without channel info to the bottom.
   if ('originCurrency' in amount.currency && amount.currency.originCurrency) {
     amount = amount.setCurrency(amount.currency.originCurrency);
+  } else {
+    const denomHelper = new DenomHelper(amount.currency.coinMinimalDenom);
+    name += ` (${denomHelper.contractAddress})`;
   }
 
   const tokenPrice = priceStore.calculatePrice(amount, language.fiatCurrency);
