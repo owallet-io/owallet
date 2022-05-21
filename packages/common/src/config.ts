@@ -1764,7 +1764,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
 export const PrivilegedOrigins: string[] = [];
 
 // tracking ads
-export const AmplitudeApiKey = 'dbcaf47e30aae5b712bda7f892b2f0c4';
+export const AmplitudeApiKey = '879f08e23ff5926be676c19157bc4fd4';
 
 // default thumbnails for fix address
 export const ValidatorThumbnails: { [key: string]: string } = {
