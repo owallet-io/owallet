@@ -102,9 +102,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rest: 'https://data-seed-prebsc-1-s1.binance.org:8545',
-    chainId: '97',
-    chainName: 'Smart Chain - Testnet',
+    rest: 'https://bsc-dataseed1.ninicoin.io',
+    chainId: '56',
+    chainName: 'BNB Smart Chain',
     bip44: {
       coinType: 60
     },
@@ -130,11 +130,29 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         coinDenom: 'ORAI',
         coinMinimalDenom:
-          'erc20:0x9ad563929f05bd294d39f26e07b6cbc807b338c3:Oraichain Token',
+          'erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token',
         coinDecimals: 18,
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
+      {
+        coinDenom: 'AIRI',
+        coinMinimalDenom:
+          'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
+        coinDecimals: 18,
+        coinGeckoId: 'airight',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+      },
+      {
+        coinDenom: 'KWT',
+        coinMinimalDenom:
+          'erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands',
+        coinDecimals: 18,
+        coinGeckoId: 'kawaii-islands',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
       }
     ],
     feeCurrencies: [
