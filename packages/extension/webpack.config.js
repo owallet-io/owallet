@@ -110,6 +110,10 @@ const extensionConfig = (env, args) => {
             to: './'
           },
           {
+            from: './src/service_worker.js',
+            to: './'
+          },
+          {
             from: '../../node_modules/webextension-polyfill/dist/browser-polyfill.js'
           }
         ],
