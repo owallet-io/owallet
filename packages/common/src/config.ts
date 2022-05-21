@@ -173,8 +173,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: [],
     txExplorer: {
       name: 'Bsc Scan',
-      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
-      accountUrl: 'https://testnet.bscscan.com/address/{address}'
+      txUrl: 'https://bscscan.com/tx/${txHash}',
+      accountUrl: 'https://bscscan.com/address/{address}'
     }
   },
 
