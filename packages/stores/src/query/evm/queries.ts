@@ -44,7 +44,8 @@ export class EvmQueries {
       new ObservableQueryErc20BalanceRegistry(kvStore)
     );
 
-    // queryEvmBalance
+    // queryEvmBalance, we need to seperate native balance from cosmos as it is default implementation
+    // other implementations will require corresponding templates
     this.queryEvmBalance = new ObservableQueryEvmBalance(
       kvStore,
       chainId,
