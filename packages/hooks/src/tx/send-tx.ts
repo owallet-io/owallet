@@ -2,19 +2,19 @@ import {
   ChainGetter,
   CosmosMsgOpts,
   CosmwasmMsgOpts,
-  SecretMsgOpts
-} from '@owallet/stores';
-import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
-import { useFeeConfig, useMemoConfig, useRecipientConfig } from './index';
-import { useSendGasConfig } from './send-gas';
-import { useAmountConfig } from './amount';
+  SecretMsgOpts,
+} from "@owallet/stores";
+import { ObservableQueryBalances } from "@owallet/stores/build/query/balances";
+import { useFeeConfig, useMemoConfig, useRecipientConfig } from "./index";
+import { useSendGasConfig } from "./send-gas";
+import { useAmountConfig } from "./amount";
 
 type MsgOpts = CosmosMsgOpts & SecretMsgOpts;
 
 export const useSendTxConfig = (
   chainGetter: ChainGetter,
   chainId: string,
-  sendMsgOpts: MsgOpts['send'],
+  sendMsgOpts: MsgOpts["send"],
   sender: string,
   queryBalances: ObservableQueryBalances,
   ensEndpoint?: string
@@ -52,6 +52,6 @@ export const useSendTxConfig = (
     memoConfig,
     gasConfig,
     feeConfig,
-    recipientConfig
+    recipientConfig,
   };
 };
