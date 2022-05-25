@@ -1,16 +1,16 @@
-import React, { FunctionComponent, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { PageWithScrollView } from '../../../components/page';
-import { useStyle } from '../../../styles';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { View } from 'react-native';
-import { useStore } from '../../../stores';
-import { useDelegateTxConfig } from '@owallet/hooks';
-import { EthereumEndpoint } from '../../../config';
-import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
-import { Button } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation';
-import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
+import React, { FunctionComponent, useEffect } from "react";
+import { observer } from "mobx-react-lite";
+import { PageWithScrollView } from "../../../components/page";
+import { useStyle } from "../../../styles";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { View } from "react-native";
+import { useStore } from "../../../stores";
+import { useDelegateTxConfig } from "@owallet/hooks";
+import { EthereumEndpoint } from "../../../config";
+import { AmountInput, FeeButtons, MemoInput } from "../../../components/input";
+import { Button } from "../../../components/button";
+import { useSmartNavigation } from "../../../navigation";
+import { BondStatus } from "@owallet/stores/build/query/cosmos/staking/types";
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -38,7 +38,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const sendConfigs = useDelegateTxConfig(
     chainStore,
     chainStore.current.chainId,
-    account.msgOpts['delegate'].gas,
+    account.msgOpts["delegate"].gas,
     account.bech32Address,
     queries.queryBalances,
     EthereumEndpoint
@@ -64,10 +64,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      style={style.flatten(['padding-x-page'])}
-      contentContainerStyle={style.get('flex-grow-1')}
+      style={style.flatten(["padding-x-page"])}
+      contentContainerStyle={style.get("flex-grow-1")}
     >
-      <View style={style.flatten(['height-page-pad'])} />
+      <View style={style.flatten(["height-page-pad"])} />
       {/*
         // The recipient validator is selected by the route params, so no need to show the address input.
         <AddressInput
@@ -91,12 +91,12 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(['flex-1'])} />
+      <View style={style.flatten(["flex-1"])} />
       <Button
         text="Stake"
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === 'delegate'}
+        loading={account.isSendingMsg === "delegate"}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
@@ -107,33 +107,33 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetMemo: true,
-                  preferNoSetFee: true
+                  preferNoSetFee: true,
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent('Delegate tx broadcasted', {
+                    analyticsStore.logEvent("Delegate tx broadcasted", {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
                       validatorName: validator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType
+                      feeType: sendConfigs.feeConfig.feeType,
                     });
-                    smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: Buffer.from(txHash).toString('hex')
+                    smartNavigation.pushSmart("TxPendingResult", {
+                      txHash: Buffer.from(txHash).toString("hex"),
                     });
-                  }
+                  },
                 }
               );
             } catch (e) {
-              if (e?.message === 'Request rejected') {
+              if (e?.message === "Request rejected") {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart('Home', {});
+              smartNavigation.navigateSmart("Home", {});
             }
           }
         }}
       />
-      <View style={style.flatten(['height-page-pad'])} />
+      <View style={style.flatten(["height-page-pad"])} />
     </PageWithScrollView>
   );
 });

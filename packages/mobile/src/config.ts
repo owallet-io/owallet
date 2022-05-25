@@ -1,5 +1,5 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { ChainInfo } from "@keplr-wallet/types";
+import { Bech32Address } from "@owallet/cosmos";
+import { ChainInfo } from "@owallet/types";
 
 export const CoinGeckoAPIEndPoint = "https://api.coingecko.com/api/v3";
 
@@ -16,48 +16,6 @@ export interface AppChainInfo extends ChainInfo {
 }
 
 export const EmbedChainInfos: AppChainInfo[] = [
-  {
-    rpc: "https://rpc.orai.io",
-    rest: "https://lcd.orai.io",
-    chainId: "Oraichain",
-    chainName: "Oraichain",
-    stakeCurrency: {
-      coinDenom: "ORAI",
-      coinMinimalDenom: "orai",
-      coinDecimals: 6,
-      coinGeckoId: 'oraichain-token',
-      coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config('orai'),
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: 'AIRI',
-          coinMinimalDenom:
-            'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
-          coinDecimals: 6,
-          coinGeckoId: 'airight',
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
-        }
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004,
-    },
-    features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
-    chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png'
-  },
   {
     rpc: "https://rpc-cosmoshub.keplr.app",
     rest: "https://lcd-cosmoshub.keplr.app",
@@ -93,7 +51,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     coinType: 118,
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/atom.png",
     txExplorer: {
       name: "Mintscan",
@@ -145,10 +103,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 118,
     gasPriceStep: {
       low: 0,
-      average: 0,
-      high: 0.025,
+      average: 0.025,
+      high: 0.04,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go", "cosmwasm"],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png",
     txExplorer: {
       name: "Mintscan",
@@ -240,7 +198,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/akash.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -286,7 +244,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/crypto-org.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -330,7 +288,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/starname.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -649,7 +607,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/sifchain.png",
-    features: ["stargate"],
+    features: [],
     hideInUI: true,
   },
   {
@@ -683,7 +641,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "certik",
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -731,7 +689,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       high: 0.4,
     },
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/iris.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -769,7 +727,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/regen.png",
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
   },
   {
     rpc: "https://rpc-juno.keplr.app",
@@ -810,13 +768,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.0025,
       high: 0.004,
     },
-    features: [
-      "stargate",
-      "no-legacy-stdTx",
-      "cosmwasm",
-      "ibc-transfer",
-      "ibc-go",
-    ],
+    features: ["cosmwasm", "ibc-transfer", "ibc-go", "wasmd_0.24+"],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/juno.png",
     txExplorer: {
       name: "Mintscan",
@@ -857,7 +809,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/stargaze.png",
       },
     ],
-    features: ["stargate", "no-legacy-stdTx", "ibc-transfer", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/stargaze.png",
     txExplorer: {
@@ -909,7 +861,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/persistence.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer", "ibc-go"],
   },
   {
     rpc: "https://rpc-axelar.keplr.app",
@@ -933,6 +885,36 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
         coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/axelar.png",
       },
+      {
+        coinDenom: "WETH",
+        coinMinimalDenom: "weth-wei",
+        coinDecimals: 18,
+        coinGeckoId: "weth",
+      },
+      {
+        coinDenom: "USDC",
+        coinMinimalDenom: "uusdc",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+      },
+      {
+        coinDenom: "FRAX",
+        coinMinimalDenom: "frax-wei",
+        coinDecimals: 18,
+        coinGeckoId: "frax",
+      },
+      {
+        coinDenom: "DAI",
+        coinMinimalDenom: "dai-wei",
+        coinDecimals: 18,
+        coinGeckoId: "dai",
+      },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "uusdt",
+        coinDecimals: 6,
+        coinGeckoId: "tether",
+      },
     ],
     feeCurrencies: [
       {
@@ -947,7 +929,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.075,
       high: 0.1,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/axelar.png",
   },
@@ -985,7 +967,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/somm.png",
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/somm.png",
   },
   {
@@ -1024,8 +1006,86 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.025,
       high: 0.04,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/umee.png",
+  },
+  {
+    rpc: "https://rpc-agoric.keplr.app",
+    rest: "https://lcd-agoric.keplr.app",
+    chainId: "agoric-3",
+    chainName: "Agoric",
+    stakeCurrency: {
+      coinDenom: "BLD",
+      coinMinimalDenom: "ubld",
+      coinDecimals: 6,
+      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/agoric.png",
+    },
+    bip44: {
+      coinType: 564,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("agoric"),
+    currencies: [
+      {
+        coinDenom: "BLD",
+        coinMinimalDenom: "ubld",
+        coinDecimals: 6,
+        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/agoric.png",
+      },
+      {
+        coinDenom: "RUN",
+        coinMinimalDenom: "urun",
+        coinDecimals: 6,
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "RUN",
+        coinMinimalDenom: "urun",
+        coinDecimals: 6,
+      },
+    ],
+    gasPriceStep: {
+      low: 0,
+      average: 0,
+      high: 0,
+    },
+    features: ["ibc-go"],
+    chainSymbolImageUrl:
+      "https://dhj8dql1kzq2v.cloudfront.net/white/agoric.png",
+  },
+  {
+    rpc: "https://rpc-gravity-bridge.keplr.app",
+    rest: "https://lcd-gravity-bridge.keplr.app",
+    chainId: "gravity-bridge-3",
+    chainName: "Gravity Bridge",
+    stakeCurrency: {
+      coinDenom: "GRAV",
+      coinMinimalDenom: "ugraviton",
+      coinDecimals: 6,
+      coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/grav.png",
+    },
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("gravity"),
+    currencies: [
+      {
+        coinDenom: "GRAV",
+        coinMinimalDenom: "ugraviton",
+        coinDecimals: 6,
+        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/grav.png",
+      },
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: "GRAV",
+        coinMinimalDenom: "ugraviton",
+        coinDecimals: 6,
+        coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/grav.png",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/grav.png",
   },
   {
     rpc: "https://rpc-sentinel.keplr.app",
@@ -1039,6 +1099,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: "sentinel",
       coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/sentinel.png",
     },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/#/sentinel/stake"
+        : "http://localhost:8081/#/sentinel/stake",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/#/sentinel/stake"
+        : "http://localhost:8081/#/sentinel/stake",
     bip44: {
       coinType: 118,
     },
@@ -1068,7 +1136,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     chainSymbolImageUrl:
       "https://dhj8dql1kzq2v.cloudfront.net/white/sentinel.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1082,6 +1150,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
     },
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/#/ixo/stake"
+        : "http://localhost:8081/#/ixo/stake",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/#/ixo/stake"
+        : "http://localhost:8081/#/ixo/stake",
     bip44: {
       coinType: 118,
     },
@@ -1103,7 +1179,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       },
     ],
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ixo.png",
-    features: ["stargate"],
+    features: [],
     hideInUI: true,
   },
   {
@@ -1118,7 +1194,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: "e-money",
       coinImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ngm.png",
     },
-
+    walletUrl:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/#/emoney/stake"
+        : "http://localhost:8080/#/emoney/stake",
+    walletUrlForStaking:
+      process.env.NODE_ENV === "production"
+        ? "https://wallet.keplr.app/#/emoney/stake"
+        : "http://localhost:8080/#/emoney/stake",
     bip44: {
       coinType: 118,
     },
@@ -1153,7 +1236,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       high: 1,
     },
     chainSymbolImageUrl: "https://dhj8dql1kzq2v.cloudfront.net/white/ngm.png",
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1184,7 +1267,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
       },
     ],
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1241,7 +1324,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.015,
       high: 0.015,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1258,7 +1341,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118,
     },
-    bech32Config: Bech32Address.defaultBech32Config("cosmos"),
+    bech32Config: Bech32Address.defaultBech32Config("like"),
     currencies: [
       {
         coinDenom: "LIKE",
@@ -1275,7 +1358,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "likecoin",
       },
     ],
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1306,7 +1389,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
       },
     ],
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1340,7 +1423,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "bitcanna",
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1371,7 +1454,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
       },
     ],
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1402,7 +1485,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
       },
     ],
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1441,7 +1524,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 7,
       high: 9,
     },
-    features: ["stargate", "ibc-transfer"],
+    features: ["ibc-transfer"],
     hideInUI: true,
   },
   {
@@ -1472,7 +1555,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 0,
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1503,7 +1586,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1539,7 +1622,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 30,
       high: 50,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1575,7 +1658,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.03,
       high: 0.035,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1606,7 +1689,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1640,7 +1723,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "vidulum",
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1674,7 +1757,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: "desmos",
       },
     ],
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
   {
@@ -1710,72 +1793,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.03,
       high: 0.035,
     },
-    features: ["stargate", "ibc-transfer", "no-legacy-stdTx", "ibc-go"],
+    features: ["ibc-transfer", "ibc-go"],
     hideInUI: true,
   },
 ];
 
 export const AmplitudeApiKey = "dbcaf47e30aae5b712bda7f892b2f0c4";
-
-export const ValidatorThumbnails: { [key: string]: string } = {
-  oraivaloper1mxqeldsxg60t2y6gngpdm5jf3k96dnju5el96f:
-    "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-  oraivaloper1h89umsrsstyeuet8kllwvf2tp630n77aymck78:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645501963/stakeWithOraiKingLogo.jpg",
-  oraivaloper1xesqr8vjvy34jhu027zd70ypl0nnev5euy9nyl:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645432916/synergy.jpg",
-  oraivaloper1uhcwtfntsvk8gpwfxltesyl4e28aalmq9v9z0x:
-    "https://res.cloudinary.com/dcpwvhglr/image/upload/v1611912662/Superman_4_-_SAL_L_nwykie.jpg",
-  oraivaloper1cp0jml5fxkdvmajcwvkue9d0sym6s0vqly88hg:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645501939/stakement_orai_explorer.jpg",
-  oraivaloper1u2344d8jwtsx5as7u5jw7vel28puh34q7d3y64:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645502101/titan.jpg",
-  oraivaloper130jsl66rgss6eq7qur02yfr6tzppdvxglz7n7g:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645501772/vaiot.png",
-  oraivaloper14nz2pqskfv9kcez8u0a9gnnsgwjerzqxpmne0y:
-    "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-  oraivaloper16e6cpk6ycddk6208fpaya7tmmardhvr7h40yqy:
-    "https://res.cloudinary.com/c-ng-ty-c-ph-n-rikkeisoft/image/upload/v1616749893/photo_2021-03-25_18-39-37_tqfsof.jpg",
-  oraivaloper12ru3276mkzuuay6vhmg3t6z9hpvrsnplm2994n:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645502148/binnostakeLogo.png",
-  oraivaloper1kh9vejqxqqccavtv2nf683mx0z85mfpd7q566q:
-    "https://res.cloudinary.com/c-ng-ty-c-ph-n-rikkeisoft/image/upload/v1616994377/lux_logo_small_1_nvwpdi.png",
-  oraivaloper109vcny07r3waj9sld4ejasjyal0rudskeax7uc:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645502209/chandraLogo.png",
-  oraivaloper13ckyvg0ah9vuujtd49yner2ky92lej6nwjvrjv:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645501901/antOraiLogo.jpg",
-  oraivaloper1xsptthm2ylfw0salut97ldfan2jt032nye7s00:
-    "https://images.airight.io/validator/62641351385ee5000118de9e.png",
-  oraivaloper1f6q9wjn8qp3ll8y8ztd8290vtec2yxyxxygyy2:
-    "https://res.cloudinary.com/oraichain/image/upload/v1646573946/Blockval.png",
-  oraivaloper1h9gg3xavqdau6uy3r36vn4juvzsg0lqvszgtvc:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645502659/dime.jpg",
-  oraivaloper1yc9nysml8dxy447hp3aytr0nssr9pd9a47l7gx:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645502169/oraiBotValidatorLogo.png",
-  oraivaloper1mrv57zj3dpfyc9yd5xptnz2tqfez9fss4c9r85:
-    "https://images.airight.io/validator/62555944385ee500012733f0.png",
-  oraivaloper1v26tdegnk79edw7xkk2xh8qn89vy6qej6yhsev:
-    "https://res.cloudinary.com/oraichain/image/upload/v1645502256/TrinityLogo.jpg",
-  oraivaloper17zr98cwzfqdwh69r8v5nrktsalmgs5sa83gpd9:
-    "https://images.airight.io/validator/623c45bd385ee50001437260.png",
-  oraivaloper1qv5jn7tueeqw7xqdn5rem7s09n7zletreera88:
-    "https://images.airight.io/validator/626d483a385ee5000162832e.png",
-  oraivaloper10z9f6539v0ge78xlm4yh7tddrvw445s6d7s2xq:
-    "https://images.airight.io/validator/627565f6385ee5000181e778.JPG",
-  oraivaloper1ch3ewye24zm094ygmxu5e4z7d0xre3vhthctpn:
-    "https://images.airight.io/validator/62686b04385ee5000162832c.jpg",
-  oraivaloper1m2d5uhr65p9vvlw2w29kajud5q529a76v22wyu:
-    "https://images.airight.io/validator/626c1920385ee5000162832d.jpg",
-  oraivaloper1ucx0gm8kca2zvyr9d39z249j62y2t8r0rwtmr6:
-    "https://res.cloudinary.com/oraichain/image/upload/v1646034968/strong_node.jpg",
-  oraivaloper1g0hmvzs76akv6802x0he6ladjnftp94ygsf2lc:
-    "https://images.airight.io/validator/627231c8385ee5000162832f.png",
-  oraivaloper1rqq57xt5r5pnuguffcrltnvkul7n0jdxxdgey0:
-    "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-  oraivaloper1asz5wl5c2xt8y5kyp9r04v54zh77pq90qar7e8:
-    "https://images.airight.io/validator/62729055385ee50001499911.png",
-  oraivaloper1djm07np8dzyg4et3d7dqtr3692l80nggvl0edh:
-    "https://images.airight.io/validator/625522ca385ee50001b67f29.png",
-  oraivaloper14vcw5qk0tdvknpa38wz46js5g7vrvut8ku5kaa:
-    "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-};
