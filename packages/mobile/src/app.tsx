@@ -1,46 +1,48 @@
-import React, { FunctionComponent } from "react";
-import { StoreProvider } from "./stores";
-import { StyleProvider } from "./styles";
-import { AppNavigation } from "./navigation";
-import { IntlProvider } from "react-intl";
-import { ModalsProvider } from "./modals/base";
-import { Platform, StatusBar } from "react-native";
+import React, { FunctionComponent, useEffect } from 'react';
+import { StoreProvider, useStore } from './stores';
+import { StyleProvider } from './styles';
+import { AppNavigation } from './navigation';
+import { ModalsProvider } from './modals/base';
+import { Platform, StatusBar } from 'react-native';
+import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
+import codePush from 'react-native-code-push';
+import { InteractionModalsProivder } from './providers/interaction-modals-provider';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { LoadingScreenProvider } from './providers/loading-screen';
+import * as SplashScreen from 'expo-splash-screen';
+import { ConfirmModalProvider } from './providers/confirm-modal';
+import Bugsnag from '@bugsnag/react-native';
+import { AppIntlProvider } from '@owallet/common/src/languages';
+import { IntlProvider } from 'react-intl';
 
-import codePush from "react-native-code-push";
-import { InteractionModalsProivder } from "./providers/interaction-modals-provider";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { LoadingScreenProvider } from "./providers/loading-screen";
-import * as SplashScreen from "expo-splash-screen";
-import { ConfirmModalProvider } from "./providers/confirm-modal";
-
-if (Platform.OS === "android") {
+if (Platform.OS === 'android') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
 
   // Even though React Native supports the intl on android with "org.webkit:android-jsc-intl:+" option,
   // it seems that android doesn't support all intl API and this bothers me.
   // So, to reduce this problem on android, just use the javascript polyfill for intl.
-  require("@formatjs/intl-getcanonicallocales/polyfill");
-  require("@formatjs/intl-locale/polyfill");
+  require('@formatjs/intl-getcanonicallocales/polyfill');
+  require('@formatjs/intl-locale/polyfill');
 
-  require("@formatjs/intl-pluralrules/polyfill");
-  require("@formatjs/intl-pluralrules/locale-data/en.js");
+  require('@formatjs/intl-pluralrules/polyfill');
+  require('@formatjs/intl-pluralrules/locale-data/en.js');
 
-  require("@formatjs/intl-displaynames/polyfill");
-  require("@formatjs/intl-displaynames/locale-data/en.js");
+  require('@formatjs/intl-displaynames/polyfill');
+  require('@formatjs/intl-displaynames/locale-data/en.js');
 
   // require("@formatjs/intl-listformat/polyfill");
   // require("@formatjs/intl-listformat/locale-data/en.js");
 
-  require("@formatjs/intl-numberformat/polyfill");
-  require("@formatjs/intl-numberformat/locale-data/en.js");
+  require('@formatjs/intl-numberformat/polyfill');
+  require('@formatjs/intl-numberformat/locale-data/en.js');
 
-  require("@formatjs/intl-relativetimeformat/polyfill");
-  require("@formatjs/intl-relativetimeformat/locale-data/en.js");
+  require('@formatjs/intl-relativetimeformat/polyfill');
+  require('@formatjs/intl-relativetimeformat/locale-data/en.js');
 
-  require("@formatjs/intl-datetimeformat/polyfill");
-  require("@formatjs/intl-datetimeformat/locale-data/en.js");
+  require('@formatjs/intl-datetimeformat/polyfill');
+  require('@formatjs/intl-datetimeformat/locale-data/en.js');
 
-  require("@formatjs/intl-datetimeformat/add-golden-tz.js");
+  require('@formatjs/intl-datetimeformat/add-golden-tz.js');
 
   // https://formatjs.io/docs/polyfills/intl-datetimeformat/#default-timezone
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -62,12 +64,20 @@ SplashScreen.preventAutoHideAsync()
   )
   .catch(console.warn);
 
-const AppBody: FunctionComponent = () => {
+const AppIntlProviderWithStorage = ({ children }) => {
+  const store = useStore();
+
   return (
-    <StyleProvider>
-      <StoreProvider>
+    <AppIntlProvider
+      additionalMessages={AdditonalIntlMessages}
+      languageToFiatCurrency={LanguageToFiatCurrency}
+      storage={store.uiConfigStore.Storage}
+    >
+      {({ language, messages, automatic }) => (
         <IntlProvider
-          locale="en"
+          locale={language}
+          messages={messages}
+          key={`${language}${automatic ? '-auto' : ''}`}
           formats={{
             date: {
               en: {
@@ -75,16 +85,28 @@ const AppBody: FunctionComponent = () => {
                 // If the year is different with current time, recommend to show the year.
                 // However, this recomendation should be handled in the component logic.
                 // year: "numeric",
-                month: "short",
-                day: "2-digit",
-                hour: "2-digit",
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
                 hour12: false,
-                minute: "2-digit",
-                timeZoneName: "short",
-              },
-            },
+                minute: '2-digit',
+                timeZoneName: 'short'
+              }
+            }
           }}
         >
+          {children}
+        </IntlProvider>
+      )}
+    </AppIntlProvider>
+  );
+};
+
+const AppBody: FunctionComponent = () => {
+  return (
+    <StyleProvider>
+      <StoreProvider>
+        <AppIntlProviderWithStorage>
           <StatusBar
             translucent={true}
             backgroundColor="#FFFFFF00"
@@ -101,10 +123,37 @@ const AppBody: FunctionComponent = () => {
               </LoadingScreenProvider>
             </ModalsProvider>
           </SafeAreaProvider>
-        </IntlProvider>
+        </AppIntlProviderWithStorage>
       </StoreProvider>
     </StyleProvider>
   );
 };
 
-export const App: FunctionComponent = __DEV__ ? AppBody : codePush(AppBody);
+const ErrorBoundaryPlugin = Bugsnag.getPlugin('react');
+const ErrorBoundary = (() => {
+  if (ErrorBoundaryPlugin) {
+    console.log('ErrorBoundaryPlugin found');
+    return ErrorBoundaryPlugin.createErrorBoundary(React);
+  } else {
+    console.log(
+      'WARNING: ErrorBoundaryPlugin is null. Fallback to use basic AppBody'
+    );
+    return;
+  }
+})();
+
+const CodePushAppBody: FunctionComponent = __DEV__
+  ? AppBody
+  : codePush(AppBody);
+
+export const App: FunctionComponent = () => {
+  if (ErrorBoundary) {
+    return (
+      <ErrorBoundary>
+        <CodePushAppBody />
+      </ErrorBoundary>
+    );
+  } else {
+    return <CodePushAppBody />;
+  }
+};

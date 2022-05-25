@@ -10,7 +10,7 @@ import {
 import { observer } from 'mobx-react-lite';
 import { View } from 'react-native';
 import { useStore } from '../../../../stores';
-import { EthereumEndpoint } from '../../../../config';
+import { EthereumEndpoint } from '@owallet/common';
 import {
   AddressInput,
   MemoInput,

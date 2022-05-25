@@ -22,12 +22,19 @@ import { OWallet } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { WalletConnectStore } from './wallet-connect';
 import { FeeType } from '@owallet/hooks';
-import { AmplitudeApiKey, EmbedChainInfos } from '@owallet/common';
+import {
+  AmplitudeApiKey,
+  EmbedChainInfos,
+  FiatCurrencies,
+  UIConfigStore
+} from '@owallet/common';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
+import { FiatCurrency } from '@owallet/types';
 
 export class RootStore {
+  public readonly uiConfigStore: UIConfigStore;
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
 
@@ -72,6 +79,8 @@ export class RootStore {
     const router = new RNRouterUI(RNEnv.produceEnv);
 
     const eventEmitter = new EventEmitter();
+
+    this.uiConfigStore = new UIConfigStore(new AsyncKVStore('store_ui_config'));
 
     // Order is important.
     this.interactionStore = new InteractionStore(
@@ -161,62 +170,12 @@ export class RootStore {
 
     this.priceStore = new CoinGeckoPriceStore(
       new AsyncKVStore('store_prices'),
-      {
-        usd: {
-          currency: 'usd',
-          symbol: '$',
-          maxDecimals: 2,
-          locale: 'en-US'
-        },
-        eur: {
-          currency: 'eur',
-          symbol: '€',
-          maxDecimals: 2,
-          locale: 'de-DE'
-        },
-        gbp: {
-          currency: 'gbp',
-          symbol: '£',
-          maxDecimals: 2,
-          locale: 'en-GB'
-        },
-        cad: {
-          currency: 'cad',
-          symbol: 'CA$',
-          maxDecimals: 2,
-          locale: 'en-CA'
-        },
-        rub: {
-          currency: 'rub',
-          symbol: '₽',
-          maxDecimals: 0,
-          locale: 'ru'
-        },
-        krw: {
-          currency: 'krw',
-          symbol: '₩',
-          maxDecimals: 0,
-          locale: 'ko-KR'
-        },
-        hkd: {
-          currency: 'hkd',
-          symbol: 'HK$',
-          maxDecimals: 1,
-          locale: 'en-HK'
-        },
-        cny: {
-          currency: 'cny',
-          symbol: '¥',
-          maxDecimals: 1,
-          locale: 'zh-CN'
-        },
-        jpy: {
-          currency: 'jpy',
-          symbol: '¥',
-          maxDecimals: 0,
-          locale: 'ja-JP'
-        }
-      },
+      FiatCurrencies.reduce<{
+        [vsCurrency: string]: FiatCurrency;
+      }>((obj, fiat) => {
+        obj[fiat.currency] = fiat;
+        return obj;
+      }, {}),
       'usd'
     );
 

@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import { useSendTxConfig } from "@owallet/hooks";
-import { useStore } from "../../stores";
-import { EthereumEndpoint } from "../../config";
-import { PageWithScrollView } from "../../components/page";
-import { View } from "react-native";
+import React, { FunctionComponent, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useSendTxConfig } from '@owallet/hooks';
+import { useStore } from '../../stores';
+import { EthereumEndpoint } from '@owallet/common';
+import { PageWithScrollView } from '../../components/page';
+import { View } from 'react-native';
 import {
   AddressInput,
   AmountInput,
