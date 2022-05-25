@@ -4,7 +4,7 @@ import {
   EmbedChainInfos,
   ExtensionKVStore
 } from '@owallet/common';
-import { FiatCurrencies } from '../config.ui';
+import { FiatCurrencies } from '@owallet/common';
 import {
   KeyRingStore,
   InteractionStore,
@@ -31,7 +31,7 @@ import {
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
-import { UIConfigStore } from './ui-config';
+import { UIConfigStore } from '@owallet/common';
 import { FeeType } from '@owallet/hooks';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import Amplitude from 'amplitude-js';

@@ -2,7 +2,7 @@
  * Store the config related to UI.
  */
 import { action, makeObservable, observable, runInAction, toJS } from 'mobx';
-import { KVStore } from '@owallet/common';
+import { KVStore } from '../kv-store/interface';
 
 export interface UIConfigOptions {
   showAdvancedIBCTransfer: boolean;
@@ -18,6 +18,10 @@ export class UIConfigStore {
     makeObservable(this);
 
     this.init();
+  }
+
+  get Storage() {
+    return this.kvStore;
   }
 
   protected async init() {

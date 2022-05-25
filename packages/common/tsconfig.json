@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "build",
+    "jsx": "react" /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */,
     "declaration": true,
     "rootDir": "src"
   },

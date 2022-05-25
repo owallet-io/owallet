@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useMemo } from "react";
-import { HeaderLayout } from "../../layouts";
-import { useHistory } from "react-router";
-import { PageButton } from "./page-button";
-
-import style from "./style.module.scss";
-import { useLanguage } from "../../languages";
-import { useIntl } from "react-intl";
-import { observer } from "mobx-react-lite";
+import React, { FunctionComponent, useMemo } from 'react';
+import { HeaderLayout } from '../../layouts';
+import { useHistory } from 'react-router';
+import { PageButton } from './page-button';
+import style from './style.module.scss';
+import { useLanguage } from '@owallet/common';
+import { useIntl } from 'react-intl';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
 
 export const SettingPage: FunctionComponent = observer(() => {
   const language = useLanguage();
@@ -16,26 +16,26 @@ export const SettingPage: FunctionComponent = observer(() => {
   const paragraphLang = language.automatic
     ? intl.formatMessage(
         {
-          id: "setting.language.automatic-with-language",
+          id: 'setting.language.automatic-with-language'
         },
         {
           language: intl.formatMessage({
-            id: `setting.language.${language.language}`,
-          }),
+            id: `setting.language.${language.language}`
+          })
         }
       )
     : intl.formatMessage({
-        id: `setting.language.${language.language}`,
+        id: `setting.language.${language.language}`
       });
 
   const paragraphFiat = !language.isFiatCurrencyAutomatic
     ? language.fiatCurrency.toUpperCase()
     : intl.formatMessage(
         {
-          id: "setting.fiat.automatic-with-fiat",
+          id: 'setting.fiat.automatic-with-fiat'
         },
         {
-          fiat: language.fiatCurrency.toUpperCase(),
+          fiat: language.fiatCurrency.toUpperCase()
         }
       );
 
@@ -44,7 +44,7 @@ export const SettingPage: FunctionComponent = observer(() => {
       showChainName={false}
       canChangeChainInfo={false}
       alternativeTitle={intl.formatMessage({
-        id: "main.menu.settings",
+        id: 'main.menu.settings'
       })}
       onBackButton={() => {
         history.goBack();
@@ -53,12 +53,12 @@ export const SettingPage: FunctionComponent = observer(() => {
       <div className={style.container}>
         <PageButton
           title={intl.formatMessage({
-            id: "setting.language",
+            id: 'setting.language'
           })}
           paragraph={paragraphLang}
           onClick={() => {
             history.push({
-              pathname: "/setting/language",
+              pathname: '/setting/language'
             });
           }}
           icons={useMemo(
@@ -68,12 +68,12 @@ export const SettingPage: FunctionComponent = observer(() => {
         />
         <PageButton
           title={intl.formatMessage({
-            id: "setting.fiat",
+            id: 'setting.fiat'
           })}
           paragraph={paragraphFiat}
           onClick={() => {
             history.push({
-              pathname: "/setting/fiat",
+              pathname: '/setting/fiat'
             });
           }}
           icons={useMemo(
@@ -83,14 +83,14 @@ export const SettingPage: FunctionComponent = observer(() => {
         />
         <PageButton
           title={intl.formatMessage({
-            id: "setting.connections",
+            id: 'setting.connections'
           })}
           paragraph={intl.formatMessage({
-            id: "setting.connections.paragraph",
+            id: 'setting.connections.paragraph'
           })}
           onClick={() => {
             history.push({
-              pathname: "/setting/connections",
+              pathname: '/setting/connections'
             });
           }}
           icons={useMemo(
@@ -100,11 +100,11 @@ export const SettingPage: FunctionComponent = observer(() => {
         />
         <PageButton
           title={intl.formatMessage({
-            id: "setting.export-to-mobile",
+            id: 'setting.export-to-mobile'
           })}
           onClick={() => {
             history.push({
-              pathname: "/setting/export-to-mobile",
+              pathname: '/setting/export-to-mobile'
             });
           }}
           icons={useMemo(
@@ -113,12 +113,38 @@ export const SettingPage: FunctionComponent = observer(() => {
           )}
         />
         <PageButton
+          title="Show Advanced IBC Transfers"
+          onClick={() => {
+            uiConfigStore.setShowAdvancedIBCTransfer(
+              !uiConfigStore.showAdvancedIBCTransfer
+            );
+          }}
+          icons={[
+            <label
+              key="toggle"
+              className="custom-toggle"
+              style={{ marginBottom: 0 }}
+            >
+              <input
+                type="checkbox"
+                checked={uiConfigStore.showAdvancedIBCTransfer}
+                onChange={() => {
+                  uiConfigStore.setShowAdvancedIBCTransfer(
+                    !uiConfigStore.showAdvancedIBCTransfer
+                  );
+                }}
+              />
+              <span className="custom-toggle-slider rounded-circle" />
+            </label>
+          ]}
+        />
+        <PageButton
           title={intl.formatMessage({
-            id: "setting.credit",
+            id: 'setting.credit'
           })}
           onClick={() => {
             history.push({
-              pathname: "/setting/credit",
+              pathname: '/setting/credit'
             });
           }}
           icons={useMemo(

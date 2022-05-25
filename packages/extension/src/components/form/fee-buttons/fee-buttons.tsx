@@ -25,7 +25,7 @@ import {
   NotLoadedFeeError
 } from '@owallet/hooks';
 import { CoinGeckoPriceStore } from '@owallet/stores';
-import { useLanguage } from '../../../languages';
+import { useLanguage } from '@owallet/common';
 import { useIntl } from 'react-intl';
 import { GasInput } from '../gas-input';
 import { action, makeObservable, observable } from 'mobx';

@@ -13,7 +13,7 @@ import { useNotification } from '../../components/notification';
 import { useLoadingIndicator } from '../../components/loading-indicator';
 import { DenomHelper } from '@owallet/common';
 
-import { useLanguage } from '../../languages';
+import { useLanguage } from '@owallet/common';
 
 const TokenView: FunctionComponent<{
   balance: ObservableQueryBalanceInner;

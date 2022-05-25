@@ -15,7 +15,7 @@ import {
   IMemoConfig,
   SignDocHelper
 } from '@owallet/hooks';
-import { useLanguage } from '../../languages';
+import { useLanguage } from '@owallet/common';
 import { Badge, Button, Label } from 'reactstrap';
 import { renderDirectMessage } from './direct';
 

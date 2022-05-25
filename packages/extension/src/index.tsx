@@ -1,8 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import ReactDOM from 'react-dom';
 
-import { AppIntlProvider } from './languages';
-
 import './styles/global.scss';
 
 import { HashRouter, Route } from 'react-router-dom';
@@ -49,8 +47,11 @@ import { AddTokenPage } from './pages/setting/token/add';
 import { ManageTokenPage } from './pages/setting/token/manage';
 
 // import * as BackgroundTxResult from "../../background/tx/foreground";
-
-import { AdditonalIntlMessages, LanguageToFiatCurrency } from './config.ui';
+import {
+  AppIntlProvider,
+  AdditonalIntlMessages,
+  LanguageToFiatCurrency
+} from '@owallet/common';
 
 import manifest from './manifest.json';
 import { OWallet } from '@owallet/provider';
@@ -58,6 +59,7 @@ import { InExtensionMessageRequester } from '@owallet/router-extension';
 import { ExportToMobilePage } from './pages/setting/export-to-mobile';
 import { LogPageViewWrapper } from './components/analytics';
 import { ValidatorListPage } from './pages/stake/validator-list';
+import { IntlProvider } from 'react-intl';
 
 window.owallet = new OWallet(
   manifest.version,
@@ -131,12 +133,33 @@ const StateRenderer: FunctionComponent = observer(() => {
   }
 });
 
-ReactDOM.render(
-  <StoreProvider>
+const AppIntlProviderWithStorage = ({ children }) => {
+  const store = useStore();
+
+  return (
     <AppIntlProvider
       additionalMessages={AdditonalIntlMessages}
       languageToFiatCurrency={LanguageToFiatCurrency}
+      // language without region code
+      defaultLocale={navigator.language.split(/[-_]/)[0]}
+      storage={store.uiConfigStore.Storage}
     >
+      {({ language, messages, automatic }) => (
+        <IntlProvider
+          locale={language}
+          messages={messages}
+          key={`${language}${automatic ? '-auto' : ''}`}
+        >
+          {children}
+        </IntlProvider>
+      )}
+    </AppIntlProvider>
+  );
+};
+
+ReactDOM.render(
+  <StoreProvider>
+    <AppIntlProviderWithStorage>
       <LoadingIndicatorProvider>
         <NotificationStoreProvider>
           <NotificationProvider>
@@ -238,7 +261,7 @@ ReactDOM.render(
           </NotificationProvider>
         </NotificationStoreProvider>
       </LoadingIndicatorProvider>
-    </AppIntlProvider>
+    </AppIntlProviderWithStorage>
   </StoreProvider>,
   document.getElementById('app')
 );

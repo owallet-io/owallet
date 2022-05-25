@@ -1,10 +1,10 @@
-import { KVStore } from "./interface";
+import { KVStore } from './interface';
 
 export class LocalKVStore implements KVStore {
   constructor(private readonly _prefix: string) {}
 
   get<T = unknown>(key: string): Promise<T | undefined> {
-    const k = this.prefix() + "/" + key;
+    const k = this.prefix() + '/' + key;
 
     const data = localStorage.getItem(k);
     if (data === null) {
@@ -14,7 +14,7 @@ export class LocalKVStore implements KVStore {
   }
 
   set<T = unknown>(key: string, data: T | null): Promise<void> {
-    const k = this.prefix() + "/" + key;
+    const k = this.prefix() + '/' + key;
 
     if (data === null) {
       return Promise.resolve(localStorage.removeItem(k));

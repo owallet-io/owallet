@@ -7,7 +7,7 @@ import { useStore } from '../../stores';
 import styleAsset from './asset.module.scss';
 import { ToolTip } from '../../components/tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLanguage } from '../../languages';
+import { useLanguage } from '@owallet/common';
 
 const LazyDoughnut = React.lazy(async () => {
   const module = await import(
