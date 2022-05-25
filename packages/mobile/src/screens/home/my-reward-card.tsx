@@ -62,16 +62,16 @@ export const MyRewardCard: FunctionComponent<{
             if (e?.message === 'Request rejected') {
               return;
             }
-            console.log(e);
-            smartNavigation.navigateSmart('Home', {});
+            // console.log(e);
+            smartNavigation.navigateSmart("Home", {});
           }
         }}
         icon={
           <RewardIcon size={44} color={style.get('color-secondary').color} />
         }
         buttonText="Claim"
-        buttonMode="light"
-        buttonContainerStyle={style.flatten(['min-width-72'])}
+        buttonMode="outline"
+        buttonContainerStyle={style.flatten(["min-width-72"])}
         buttonDisabled={
           !account.isReadyToSendMsgs ||
           stakingReward.toDec().equals(new Dec(0)) ||

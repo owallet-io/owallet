@@ -17,15 +17,7 @@ export const SettingSectionTitle: FunctionComponent<{
         "padding-bottom-4",
       ])}
     >
-      <Text
-        style={style.flatten([
-          "text-caption1",
-          "color-text-black-very-low",
-          "uppercase",
-        ])}
-      >
-        {title}
-      </Text>
+      <Text style={style.flatten(["h4"])}>{title}</Text>
     </View>
   );
 };

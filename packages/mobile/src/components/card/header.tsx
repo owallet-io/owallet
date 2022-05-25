@@ -2,7 +2,7 @@ import React, { FunctionComponent, ReactElement } from "react";
 import { StyleSheet, Text, View, ViewStyle } from "react-native";
 import { useStyle } from "../../styles";
 import { Button } from "../button";
-import { RightArrowIcon } from "../icon";
+// import { RightArrowIcon } from "../icon";
 import { RectButton } from "../rect-button";
 
 export const CardHeaderWithButton: FunctionComponent<{
@@ -137,10 +137,18 @@ export const CardHeaderFullButton: FunctionComponent<{
             {buttonText}
           </Text>
         ) : null}
-        <RightArrowIcon
+        {/* <RightArrowIcon
           color={style.get("color-text-black-very-very-low").color}
           height={16}
-        />
+        /> */}
+        <Text
+          style={style.flatten([
+            "text-button3",
+            "color-text-black-very-very-low",
+          ])}
+        >
+          View all
+        </Text>
       </View>
     </RectButton>
   );
