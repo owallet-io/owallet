@@ -24,10 +24,12 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
+import { NAMESPACE } from './constants';
 
 export interface ProxyRequest {
   type: 'proxy-request';
   id: string;
+  namespace: string;
   method: keyof OWallet;
   args: any[];
 }
@@ -35,6 +37,7 @@ export interface ProxyRequest {
 export interface ProxyRequestResponse {
   type: 'proxy-request-response';
   id: string;
+  namespace: string;
   result: Result | undefined;
 }
 
@@ -62,7 +65,13 @@ export class InjectedOWallet implements IOWallet {
       const message: ProxyRequest = parseMessage
         ? parseMessage(e.data)
         : e.data;
-      if (!message || message.type !== 'proxy-request') {
+
+      // filter proxy-request by namespace
+      if (
+        !message ||
+        message.type !== 'proxy-request' ||
+        message.namespace !== NAMESPACE
+      ) {
         return;
       }
 
@@ -150,6 +159,7 @@ export class InjectedOWallet implements IOWallet {
 
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             return: JSONUint8Array.wrap(result)
@@ -160,6 +170,7 @@ export class InjectedOWallet implements IOWallet {
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
+          namespace: NAMESPACE,
           id: message.id,
           result: {
             error: e.message || e.toString()
@@ -181,6 +192,7 @@ export class InjectedOWallet implements IOWallet {
 
     const proxyMessage: ProxyRequest = {
       type: 'proxy-request',
+      namespace: NAMESPACE,
       id,
       method,
       args: JSONUint8Array.wrap(args)
