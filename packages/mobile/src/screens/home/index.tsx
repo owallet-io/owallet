@@ -150,15 +150,20 @@ export const HomeScreen: FunctionComponent = observer(() => {
           containerStyle={style.flatten(['margin-bottom-card-gap'])}
         />
       ) : null}
-      <MyRewardCard
-        containerStyle={style.flatten(['margin-bottom-card-gap'])}
-      />
-      <StakingInfoCard
-        containerStyle={style.flatten(['margin-bottom-card-gap'])}
-      />
-      <GovernanceCard
-        containerStyle={style.flatten(['margin-bottom-card-gap'])}
-      />
+      {currentChain.networkType === 'cosmos' && (
+        <>
+          <MyRewardCard
+            containerStyle={style.flatten(['margin-bottom-card-gap'])}
+          />
+          <StakingInfoCard
+            containerStyle={style.flatten(['margin-bottom-card-gap'])}
+          />
+
+          <GovernanceCard
+            containerStyle={style.flatten(['margin-bottom-card-gap'])}
+          />
+        </>
+      )}
     </PageWithScrollViewInBottomTabView>
   );
 });

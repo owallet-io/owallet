@@ -6,8 +6,8 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWithCosmosAndSecret,
-  AccountWithCosmosAndSecret,
+  QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
+  AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
   PermissionStore
@@ -25,9 +25,9 @@ import { FeeType } from '@owallet/hooks';
 import {
   AmplitudeApiKey,
   EmbedChainInfos,
-  FiatCurrencies,
-  UIConfigStore
+  FiatCurrencies
 } from '@owallet/common';
+import { UIConfigStore } from '@owallet/common/build/ui-config';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
@@ -43,8 +43,8 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecret>;
-  public readonly accountStore: AccountStore<AccountWithCosmosAndSecret>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
+  public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
 
@@ -126,7 +126,7 @@ export class RootStore {
         // TOOD: Set version for OWallet API
         return new OWallet('', 'core', new RNMessageRequesterInternal());
       },
-      QueriesWithCosmosAndSecret
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
     );
 
     this.accountStore = new AccountStore(

@@ -17,6 +17,8 @@ import {
   setLastUsedLedgerDeviceId
 } from '../utils/ledger';
 
+import { DAppInfos } from '../screens/web/config';
+
 const router = new RNRouterBackground(RNEnv.produceEnv);
 
 init(
@@ -24,7 +26,8 @@ init(
   (prefix: string) => new AsyncKVStore(prefix),
   new RNMessageRequesterInternalToUI(),
   EmbedChainInfos,
-  ['https://app.osmosis.zone'],
+  // allow all dApps
+  DAppInfos.map((dApp) => dApp.uri),
   getRandomBytesAsync,
   {
     scrypt: async (text: string, params: ScryptParams) => {
