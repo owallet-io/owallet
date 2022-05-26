@@ -69,7 +69,7 @@ export type OWalletKeystoreMayChangedEventParam = {
   }[];
 };
 
-export class OWalletWalletConnectV1 implements OWallet {
+export class OWalletConnectV1 implements OWallet {
   constructor(
     public readonly connector: IConnector,
     public readonly options: {
@@ -394,7 +394,7 @@ export class OWalletWalletConnectV1 implements OWallet {
   /**
    * In the extension environment, this API let the extension to send the tx on behalf of the client.
    * But, in the wallet connect environment, in order to send the tx on behalf of the client, wallet should receive the tx data from remote.
-   * However, this approach is not efficient and hard to ensure the stability and `OWalletWalletConnect` should have the informations of rpc and rest endpoints.
+   * However, this approach is not efficient and hard to ensure the stability and `OWalletConnect` should have the informations of rpc and rest endpoints.
    * So, rather than implementing this, just fallback to the client sided implementation or throw error of the client sided implementation is not delivered to the `options`.
    * @param chainId
    * @param stdTx

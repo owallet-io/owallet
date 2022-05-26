@@ -1,7 +1,7 @@
 import { OWallet } from '@owallet/types';
 import WalletConnect from '@walletconnect/client';
 import { OWalletQRCodeModalV1 } from '@owallet/wc-qrcode-modal';
-import { OWalletWalletConnectV1 } from '@owallet/wc-client';
+import { OWalletConnectV1 } from '@owallet/wc-client';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import Axios from 'axios';
 import { EmbedChainInfos } from './config';
@@ -55,7 +55,7 @@ export function getWCOWallet(): Promise<OWallet> {
           if (error) {
             reject(error);
           } else {
-            owallet = new OWalletWalletConnectV1(connector, {
+            owallet = new OWalletConnectV1(connector, {
               sendTx
             });
             resolve(owallet);
@@ -63,7 +63,7 @@ export function getWCOWallet(): Promise<OWallet> {
         });
       });
     } else {
-      owallet = new OWalletWalletConnectV1(connector, {
+      owallet = new OWalletConnectV1(connector, {
         sendTx
       });
       return Promise.resolve(owallet);
