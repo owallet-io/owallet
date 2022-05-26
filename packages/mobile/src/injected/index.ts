@@ -2,7 +2,7 @@ import { RNInjectedOWallet } from './injected-provider';
 import { init } from './init';
 
 // TODO: Set the OWallet version properly
-const owallet = new RNInjectedOWallet('0.9.6', 'mobile-web');
+const owallet = new RNInjectedOWallet('0.9.16', 'mobile-web');
 
 init(
   owallet,

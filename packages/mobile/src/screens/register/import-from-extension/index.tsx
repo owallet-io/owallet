@@ -70,7 +70,6 @@ export const ImportFromExtensionScreen: FunctionComponent = observer(() => {
 
     try {
       const sharedData = parseQRCodeDataForImportFromMobile(data);
-
       setIsLoading(true);
 
       const imported = await importFromMobile(

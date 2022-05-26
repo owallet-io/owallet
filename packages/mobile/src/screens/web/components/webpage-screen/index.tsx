@@ -20,19 +20,25 @@ import { WebViewStateContext } from '../context';
 import { URL } from 'react-native-url-polyfill';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
+import DeviceInfo from 'react-native-device-info';
+import { ORAIDEX_DEV_URL } from '../../config';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
+    if (__DEV__) {
+      fetch(`${ORAIDEX_DEV_URL}/injected-provider.bundle.js`)
+        .then((res) => res.text())
+        .then(setCode);
+      return;
+    }
     if (Platform.OS === 'ios') {
       RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(
-        (r) => setCode(r)
+        setCode
       );
     } else {
-      RNFS.readFileAssets('injected-provider.bundle.js').then((r) =>
-        setCode(r)
-      );
+      RNFS.readFileAssets('injected-provider.bundle.js').then(setCode);
     }
   }, []);
 
@@ -57,11 +63,10 @@ export const WebpageScreen: FunctionComponent<
     return '';
   });
 
-  // TODO: Set the version properly.
   const [owallet] = useState(
     () =>
       new OWallet(
-        '0.0.1',
+        DeviceInfo.getVersion(),
         'core',
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
@@ -83,6 +88,7 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
+      console.log('WebViewMessageEvent', event.nativeEvent.data);
       eventEmitter.emit('message', event.nativeEvent);
     },
     [eventEmitter]

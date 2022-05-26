@@ -9,8 +9,9 @@ export function init(
   getEnigmaUtils: (chainId: string) => SecretUtils
 ) {
   /* eslint-disable @typescript-eslint/ban-ts-comment */
-  // @ts-ignore
-  window.owallet = owallet;
+  // for compartible with keplr dapp
+  (window as any).keplr = owallet;
+  (window as any).owallet = owallet;
   // @ts-ignore
   window.getOfflineSigner = getOfflineSigner;
   // @ts-ignore

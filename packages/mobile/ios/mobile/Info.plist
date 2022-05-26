@@ -30,7 +30,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>app.owallet.oauth</string>
-				<string>owalletwallet</string>
+				<string>owallet</string>
 			</array>
 		</dict>
 	</array>
@@ -88,5 +88,11 @@
 		<key>apiKey</key>
 		<string>f07be1dce2391227e818fbe3e4235bf4</string>
 	</dict>
+  
+  <key>LSApplicationQueriesSchemes</key>
+  <array>
+    <string>owallet</string>
+  </array>
 </dict>
+
 </plist>

@@ -54,6 +54,7 @@ export async function importFromMobile(
     await connector.killSession();
   }
 
+  console.log('decrypted');
   await new Promise<void>((resolve, reject) => {
     connector.on('session_request', (error) => {
       if (error) {
@@ -65,6 +66,8 @@ export async function importFromMobile(
       }
     });
   });
+
+  console.log('decrypted1');
 
   const result = (
     await connector.sendCustomRequest({
