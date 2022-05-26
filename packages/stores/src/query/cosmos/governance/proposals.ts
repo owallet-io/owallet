@@ -90,7 +90,7 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
 
     let quorum = new Dec(paramTally.response.data.result.quorum);
     // Multiply 100
-    quorum = quorum.mulTruncate(DecUtils.getPrecisionDec(2));
+    quorum = quorum.mulTruncate(DecUtils.getTenExponentNInPrecisionRange(2));
 
     return new IntPretty(quorum);
   }

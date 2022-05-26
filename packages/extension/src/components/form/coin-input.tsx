@@ -198,7 +198,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             }}
             step={new Dec(1)
               .quo(
-                DecUtils.getPrecisionDec(
+                DecUtils.getTenExponentNInPrecisionRange(
                   amountConfig.sendCurrency?.coinDecimals ?? 0
                 )
               )

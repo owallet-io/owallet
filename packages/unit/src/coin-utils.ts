@@ -177,7 +177,7 @@ export class CoinUtils {
     separator: string = ' '
   ): string {
     const dec = new Dec(coin.amount).quoTruncate(
-      DecUtils.getPrecisionDec(currency.coinDecimals)
+      DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
     );
 
     return `${DecUtils.trim(dec)}${separator}${currency.coinDenom}`;

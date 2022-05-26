@@ -225,7 +225,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                         ratio = stakable
                           .toDec()
                           .quo(total.toDec())
-                          .mul(DecUtils.getPrecisionDec(2));
+                          .mul(DecUtils.getTenExponentNInPrecisionRange(2));
                       }
 
                       return `${
@@ -243,7 +243,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                         ratio = stakedSum
                           .toDec()
                           .quo(total.toDec())
-                          .mul(DecUtils.getPrecisionDec(2));
+                          .mul(DecUtils.getTenExponentNInPrecisionRange(2));
                       }
 
                       return `${

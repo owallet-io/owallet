@@ -94,7 +94,9 @@ export class SecretAccount {
       case 'secret20':
         const actualAmount = (() => {
           let dec = new Dec(amount);
-          dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
+          dec = dec.mul(
+            DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+          );
           return dec.truncate().toString();
         })();
 

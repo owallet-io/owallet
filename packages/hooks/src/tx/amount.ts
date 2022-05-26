@@ -136,7 +136,9 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return {
         denom: sendCurrency.coinMinimalDenom,
         amount: new Dec(amountStr)
-          .mul(DecUtils.getPrecisionDec(sendCurrency.coinDecimals))
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
+          )
           .truncate()
           .toString()
       };

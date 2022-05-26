@@ -117,7 +117,9 @@ export class CosmosAccount {
       case 'native':
         const actualAmount = (() => {
           let dec = new Dec(amount);
-          dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
+          dec = dec.mul(
+            DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+          );
           return dec.truncate().toString();
         })();
 
@@ -206,7 +208,9 @@ export class CosmosAccount {
 
     const actualAmount = (() => {
       let dec = new Dec(amount);
-      dec = dec.mul(DecUtils.getPrecisionDec(currency.coinDecimals));
+      dec = dec.mul(
+        DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+      );
       return dec.truncate().toString();
     })();
 
@@ -326,7 +330,9 @@ export class CosmosAccount {
     const currency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
     let dec = new Dec(amount);
-    dec = dec.mulTruncate(DecUtils.getPrecisionDec(currency.coinDecimals));
+    dec = dec.mulTruncate(
+      DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+    );
 
     const msg = {
       type: this.base.msgOpts.delegate.type,
@@ -404,7 +410,9 @@ export class CosmosAccount {
     const currency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
     let dec = new Dec(amount);
-    dec = dec.mulTruncate(DecUtils.getPrecisionDec(currency.coinDecimals));
+    dec = dec.mulTruncate(
+      DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+    );
 
     const msg = {
       type: this.base.msgOpts.undelegate.type,
@@ -485,7 +493,9 @@ export class CosmosAccount {
     const currency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
     let dec = new Dec(amount);
-    dec = dec.mulTruncate(DecUtils.getPrecisionDec(currency.coinDecimals));
+    dec = dec.mulTruncate(
+      DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+    );
 
     const msg = {
       type: this.base.msgOpts.redelegate.type,
