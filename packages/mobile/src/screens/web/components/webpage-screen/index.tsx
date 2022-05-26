@@ -88,7 +88,9 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      console.log('WebViewMessageEvent', event.nativeEvent.data);
+      if (__DEV__) {
+        console.log('WebViewMessageEvent', event.nativeEvent.data);
+      }
       eventEmitter.emit('message', event.nativeEvent);
     },
     [eventEmitter]
