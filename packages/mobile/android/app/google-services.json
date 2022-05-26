@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "571182425378",
-    "project_id": "keplr-main",
-    "storage_bucket": "keplr-main.appspot.com"
+    "project_number": "413225951063",
+    "project_id": "owallet-8ee97",
+    "storage_bucket": "owallet-8ee97.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:571182425378:android:7c8c2a46b952010d78717b",
+        "mobilesdk_app_id": "1:413225951063:android:924d2f59b8f6f463dee812",
         "android_client_info": {
-          "package_name": "com.chainapsis.keplr"
+          "package_name": "com.io.owallet"
         }
       },
       "oauth_client": [
         {
-          "client_id": "571182425378-i6k0k9brnrj06qesdhohhnqupjpjagq1.apps.googleusercontent.com",
+          "client_id": "413225951063-40pg5qfiav0s3j1j3907vjuiqm9rs0b2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCLk3RpnZ9-Yi-SzGcTkwjR1iuOEJIjJAs"
+          "current_key": "AIzaSyCCaS38ypUn0L379IPO9Ms1ry6DAn3Tgus"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "571182425378-i6k0k9brnrj06qesdhohhnqupjpjagq1.apps.googleusercontent.com",
+              "client_id": "413225951063-40pg5qfiav0s3j1j3907vjuiqm9rs0b2.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "571182425378-nhiicj2ct6e9j1emf9h9s53afh32l08k.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.chainapsis.keplr"
-              }
             }
           ]
         }

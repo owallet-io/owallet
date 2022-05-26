@@ -1,1 +1,1 @@
-package_name("com.chainapsis.owallet") # e.g. com.krausefx.app
+package_name("com.io.owallet") # e.g. com.krausefx.app

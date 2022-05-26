@@ -1,4 +1,4 @@
-package com.chainapsis.owallet.generated;
+package com.io.owallet.generated;
 
 import java.util.Arrays;
 import java.util.List;
