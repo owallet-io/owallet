@@ -151,6 +151,34 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
+    chainId: 'oraibridge-subnet',
+    chainName: 'OraiBridge',
+    rpc: 'https://bridge.rpc.orai.io',
+    rest: 'https://bridge.lcd.orai.io',
+    stakeCurrency: {
+      coinDenom: 'ORAIB',
+      coinMinimalDenom: 'uoraib',
+      coinDecimals: 6
+    },
+    bip44: {
+      coinType: 118
+    },
+    bech32Config: Bech32Address.defaultBech32Config('oraib'),
+    // List of all coin/tokens used in this chain.
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0,
+      high: 0
+    },
+    features: ['stargate', 'ibc-transfer', 'cosmwasm']
+  },
+  {
     rpc: 'https://rpc-cosmoshub.owallet.app',
     rest: 'https://lcd-cosmoshub.owallet.app',
     chainId: 'cosmoshub-4',
@@ -192,82 +220,82 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://www.mintscan.io/cosmos/txs/{txHash}'
     }
   },
-  {
-    rest: 'https://bsc-dataseed1.ninicoin.io',
-    chainId: '56',
-    chainName: 'BNB Smart Chain',
-    bip44: {
-      coinType: 60
-    },
-    stakeCurrency: {
-      coinDenom: 'BNB',
-      coinMinimalDenom: 'bnb',
-      coinDecimals: 18,
-      coinGeckoId: 'bnb',
-      coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-    },
-    bech32Config: Bech32Address.defaultBech32Config('evmos'),
-    networkType: 'evm',
-    currencies: [
-      {
-        coinDenom: 'BNB',
-        coinMinimalDenom: 'bnb',
-        coinDecimals: 18,
-        coinGeckoId: 'bnb',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-      },
-      {
-        coinDenom: 'ORAI',
-        coinMinimalDenom:
-          'erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token',
-        coinDecimals: 18,
-        coinGeckoId: 'oraichain-token',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-      },
-      {
-        coinDenom: 'AIRI',
-        coinMinimalDenom:
-          'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
-        coinDecimals: 18,
-        coinGeckoId: 'airight',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
-      },
-      {
-        coinDenom: 'KWT',
-        coinMinimalDenom:
-          'erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands',
-        coinDecimals: 18,
-        coinGeckoId: 'kawaii-islands',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
-      }
-    ],
-    feeCurrencies: [
-      {
-        coinDenom: 'BNB',
-        coinMinimalDenom: 'bnb',
-        coinDecimals: 18,
-        coinGeckoId: 'bnb',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-      }
-    ],
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
-    },
-    features: [],
-    txExplorer: {
-      name: 'Bsc Scan',
-      txUrl: 'https://bscscan.com/tx/${txHash}',
-      accountUrl: 'https://bscscan.com/address/{address}'
-    }
-  },
+  // {
+  //   rest: 'https://bsc-dataseed1.ninicoin.io',
+  //   chainId: '56',
+  //   chainName: 'BNB Smart Chain',
+  //   bip44: {
+  //     coinType: 60
+  //   },
+  //   stakeCurrency: {
+  //     coinDenom: 'BNB',
+  //     coinMinimalDenom: 'bnb',
+  //     coinDecimals: 18,
+  //     coinGeckoId: 'bnb',
+  //     coinImageUrl:
+  //       'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config('evmos'),
+  //   networkType: 'evm',
+  //   currencies: [
+  //     {
+  //       coinDenom: 'BNB',
+  //       coinMinimalDenom: 'bnb',
+  //       coinDecimals: 18,
+  //       coinGeckoId: 'bnb',
+  //       coinImageUrl:
+  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+  //     },
+  //     {
+  //       coinDenom: 'ORAI',
+  //       coinMinimalDenom:
+  //         'erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token',
+  //       coinDecimals: 18,
+  //       coinGeckoId: 'oraichain-token',
+  //       coinImageUrl:
+  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+  //     },
+  //     {
+  //       coinDenom: 'AIRI',
+  //       coinMinimalDenom:
+  //         'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
+  //       coinDecimals: 18,
+  //       coinGeckoId: 'airight',
+  //       coinImageUrl:
+  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+  //     },
+  //     {
+  //       coinDenom: 'KWT',
+  //       coinMinimalDenom:
+  //         'erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands',
+  //       coinDecimals: 18,
+  //       coinGeckoId: 'kawaii-islands',
+  //       coinImageUrl:
+  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+  //     }
+  //   ],
+  //   feeCurrencies: [
+  //     {
+  //       coinDenom: 'BNB',
+  //       coinMinimalDenom: 'bnb',
+  //       coinDecimals: 18,
+  //       coinGeckoId: 'bnb',
+  //       coinImageUrl:
+  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+  //     }
+  //   ],
+  //   gasPriceStep: {
+  //     low: 10000000000,
+  //     average: 25000000000,
+  //     high: 40000000000
+  //   },
+  //   features: [],
+  //   txExplorer: {
+  //     name: 'Bsc Scan',
+  //     txUrl: 'https://bscscan.com/tx/${txHash}',
+  //     accountUrl: 'https://bscscan.com/address/{address}'
+  //   }
+  // },
 
   {
     rpc: 'https://rpc-osmosis.owallet.app',
@@ -1852,7 +1880,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
 ];
 
 // The origins that are able to pass any permission that external webpages can have.
-export const PrivilegedOrigins: string[] = [];
+export const PrivilegedOrigins: string[] = [
+  'https://app.osmosis.zone',
+  'https://oraidex.io'
+];
 
 // tracking ads
 export const AmplitudeApiKey = '879f08e23ff5926be676c19157bc4fd4';

@@ -65,7 +65,6 @@ export const MainPage: FunctionComponent = observer(() => {
   }, [chainStore, confirm, chainStore.isInitializing, currentChainId, intl]);
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const chainInfo = chainStore.getChain(chainStore.current.chainId);
 
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -110,7 +109,7 @@ export const MainPage: FunctionComponent = observer(() => {
         <CardBody>
           <div className={style.containerAccountInner}>
             <AccountView />
-            {chainInfo.raw.networkType === 'evm' ? (
+            {chainStore.current.raw.networkType === 'evm' ? (
               <AssetViewEvm />
             ) : (
               <AssetView />
@@ -119,7 +118,7 @@ export const MainPage: FunctionComponent = observer(() => {
           </div>
         </CardBody>
       </Card>
-      {chainInfo.raw.networkType !== 'evm' && (
+      {chainStore.current.raw.networkType !== 'evm' && (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>
             <StakeView />

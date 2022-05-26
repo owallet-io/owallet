@@ -31,7 +31,7 @@ import {
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
-import { UIConfigStore } from '@owallet/common';
+import { UIConfigStore } from '@owallet/common/build/ui-config';
 import { FeeType } from '@owallet/hooks';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import Amplitude from 'amplitude-js';

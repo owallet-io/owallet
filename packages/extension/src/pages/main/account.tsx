@@ -13,7 +13,6 @@ import { WalletStatus } from '@owallet/stores';
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const chainInfo = chainStore.getChain(chainStore.current.chainId);
 
   const intl = useIntl();
 
@@ -53,13 +52,13 @@ export const AccountView: FunctionComponent = observer(() => {
             : 'Loading...'}
         </div>
         <div style={{ flex: 1, textAlign: 'right' }}>
-          {chainInfo.raw.txExplorer?.accountUrl && (
+          {chainStore.current.raw.txExplorer?.accountUrl && (
             <a
               target="_blank"
-              href={chainInfo.raw.txExplorer.accountUrl.replace(
+              href={chainStore.current.raw.txExplorer.accountUrl.replace(
                 '{address}',
                 // accountInfo.bech32Address
-                chainInfo.raw.networkType === 'evm'
+                chainStore.current.raw.networkType === 'evm'
                   ? accountInfo.evmosHexAddress
                   : accountInfo.bech32Address
               )}
@@ -70,7 +69,7 @@ export const AccountView: FunctionComponent = observer(() => {
           )}
         </div>
       </div>
-      {chainInfo.raw.networkType !== 'evm' && (
+      {chainStore.current.raw.networkType !== 'evm' && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div
