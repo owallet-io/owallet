@@ -10,28 +10,28 @@ import {
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
-  PermissionStore
-} from '@owallet/stores';
-import { AsyncKVStore } from '../common';
-import { APP_PORT } from '@owallet/router';
-import { ChainInfoWithEmbed } from '@owallet/background';
-import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
-import { ChainStore } from './chain';
-import EventEmitter from 'eventemitter3';
-import { OWallet } from '@owallet/provider';
-import { KeychainStore } from './keychain';
-import { WalletConnectStore } from './wallet-connect';
-import { FeeType } from '@owallet/hooks';
+  PermissionStore,
+} from "@owallet/stores";
+import { AsyncKVStore } from "../common";
+import { APP_PORT } from "@owallet/router";
+import { ChainInfoWithEmbed } from "@owallet/background";
+import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from "../router";
+import { ChainStore } from "./chain";
+import EventEmitter from "eventemitter3";
+import { OWallet } from "@owallet/provider";
+import { KeychainStore } from "./keychain";
+import { WalletConnectStore } from "./wallet-connect";
+import { FeeType } from "@owallet/hooks";
 import {
   AmplitudeApiKey,
   EmbedChainInfos,
-  FiatCurrencies
-} from '@owallet/common';
-import { UIConfigStore } from '@owallet/common/build/ui-config';
-import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
-import { Amplitude } from '@amplitude/react-native';
-import { ChainIdHelper } from '@owallet/cosmos';
-import { FiatCurrency } from '@owallet/types';
+  UIConfigStore,
+  FiatCurrencies,
+} from "@owallet/common";
+import { AnalyticsStore, NoopAnalyticsClient } from "@owallet/analytics";
+import { Amplitude } from "@amplitude/react-native";
+import { ChainIdHelper } from "@owallet/cosmos";
+import { FiatCurrency } from "@owallet/types";
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -59,7 +59,7 @@ export class RootStore {
       chainName?: string;
       toChainId?: string;
       toChainName?: string;
-      registerType?: 'seed' | 'google' | 'apple' | 'ledger' | 'qr';
+      registerType?: "seed" | "google" | "apple" | "ledger" | "qr";
       feeType?: FeeType | undefined;
       isIbc?: boolean;
       validatorName?: string;
@@ -68,8 +68,8 @@ export class RootStore {
       proposalTitle?: string;
     },
     {
-      registerType?: 'seed' | 'google' | 'ledger' | 'qr' | 'apple';
-      accountType?: 'mnemonic' | 'privateKey' | 'ledger';
+      registerType?: "seed" | "google" | "ledger" | "qr" | "apple";
+      accountType?: "mnemonic" | "privateKey" | "ledger";
       currency?: string;
       language?: string;
     }
@@ -80,7 +80,7 @@ export class RootStore {
 
     const eventEmitter = new EventEmitter();
 
-    this.uiConfigStore = new UIConfigStore(new AsyncKVStore('store_ui_config'));
+    this.uiConfigStore = new UIConfigStore(new AsyncKVStore("store_ui_config"));
 
     // Order is important.
     this.interactionStore = new InteractionStore(
@@ -100,16 +100,16 @@ export class RootStore {
     this.chainStore = new ChainStore(
       EmbedChainInfos,
       new RNMessageRequesterInternal(),
-      new AsyncKVStore('store_chains')
+      new AsyncKVStore("store_chains")
     );
 
     this.keyRingStore = new KeyRingStore(
       {
         dispatchEvent: (type: string) => {
           eventEmitter.emit(type);
-        }
+        },
       },
-      'pbkdf2',
+      "pbkdf2",
       this.chainStore,
       new RNMessageRequesterInternal(),
       this.interactionStore
@@ -120,11 +120,11 @@ export class RootStore {
       // In the case of storage where the prefix key is "store_queries" or "store_queries_fix", we should not use it because it is already corrupted in some users.
       // https://github.com/chainapsis/owallet-wallet/issues/275
       // https://github.com/chainapsis/owallet-wallet/issues/278
-      new AsyncKVStore('store_queries_fix2'),
+      new AsyncKVStore("store_queries_fix2"),
       this.chainStore,
       async () => {
         // TOOD: Set version for OWallet API
-        return new OWallet('', 'core', new RNMessageRequesterInternal());
+        return new OWallet("", "core", new RNMessageRequesterInternal());
       },
       QueriesWithCosmosAndSecretAndCosmwasmAndEvm
     );
@@ -136,7 +136,7 @@ export class RootStore {
         },
         removeEventListener: (type: string, fn: () => void) => {
           eventEmitter.removeListener(type, fn);
-        }
+        },
       },
       AccountWithCosmosAndSecret,
       this.chainStore,
@@ -148,42 +148,42 @@ export class RootStore {
           autoInit: true,
           getOWallet: async () => {
             // TOOD: Set version for OWallet API
-            return new OWallet('', 'core', new RNMessageRequesterInternal());
-          }
+            return new OWallet("", "core", new RNMessageRequesterInternal());
+          },
         },
         chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
-          if (chainInfo.chainId.startsWith('osmosis')) {
+          if (chainInfo.chainId.startsWith("osmosis")) {
             return {
               chainId: chainInfo.chainId,
               msgOpts: {
                 withdrawRewards: {
-                  gas: 200000
-                }
-              }
+                  gas: 200000,
+                },
+              },
             };
           }
 
           return { chainId: chainInfo.chainId };
-        })
+        }),
       }
     );
 
     this.priceStore = new CoinGeckoPriceStore(
-      new AsyncKVStore('store_prices'),
+      new AsyncKVStore("store_prices"),
       FiatCurrencies.reduce<{
         [vsCurrency: string]: FiatCurrency;
       }>((obj, fiat) => {
         obj[fiat.currency] = fiat;
         return obj;
       }, {}),
-      'usd'
+      "usd"
     );
 
     this.tokensStore = new TokensStore(
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
-        }
+        },
       },
       this.chainStore,
       new RNMessageRequesterInternal(),
@@ -191,7 +191,7 @@ export class RootStore {
     );
 
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
-      new AsyncKVStore('store_test_ibc_currency_registrar'),
+      new AsyncKVStore("store_test_ibc_currency_registrar"),
       24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
@@ -201,19 +201,19 @@ export class RootStore {
     router.listen(APP_PORT);
 
     this.keychainStore = new KeychainStore(
-      new AsyncKVStore('store_keychain'),
+      new AsyncKVStore("store_keychain"),
       this.keyRingStore
     );
 
     this.walletConnectStore = new WalletConnectStore(
-      new AsyncKVStore('store_wallet_connect'),
+      new AsyncKVStore("store_wallet_connect"),
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
         },
         removeEventListener: (type: string, fn: () => void) => {
           eventEmitter.removeListener(type, fn);
-        }
+        },
       },
       this.chainStore,
       this.keyRingStore,
@@ -235,7 +235,7 @@ export class RootStore {
         logEvent: (eventName, eventProperties) => {
           if (eventProperties?.chainId || eventProperties?.toChainId) {
             eventProperties = {
-              ...eventProperties
+              ...eventProperties,
             };
 
             if (eventProperties.chainId) {
@@ -253,9 +253,9 @@ export class RootStore {
 
           return {
             eventName,
-            eventProperties
+            eventProperties,
           };
-        }
+        },
       }
     );
   }

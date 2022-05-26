@@ -58,7 +58,6 @@ export const Colors = {
   "text-black-very-low": "#899BB6",
   "text-black-very-very-low": "#C6C6CD",
   "text-black-very-very-very-low": "#DCDCE3",
-  "text-primary": "#4334F1",
   "border-gray": "#C6C6CD",
   "border-white": "#F5F5F5",
   white: "#fff",
@@ -329,7 +328,6 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "104": 104,
     "116": 116,
     "122": 122,
-    "160": 160,
     "214": 214,
     "400": 400,
     "600": 600,
@@ -374,9 +372,6 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "52": 52,
     "64": 64,
     "66": 66,
-    "76": 76,
-    "101": 101,
-    "306": 306,
 
     page: 20,
     "card-horizontal": 20,
@@ -421,7 +416,6 @@ export const { StyleProvider, useStyle } = createStyleProvider({
     "106": 106,
     "150": 150,
     "288": 288,
-    "306": 306,
 
     page: 20,
     "card-horizontal": 20,

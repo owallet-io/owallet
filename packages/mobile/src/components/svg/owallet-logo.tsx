@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import Svg, { Path, Defs, Rect, Stop, LinearGradient } from 'react-native-svg';
+import React, { FunctionComponent } from "react";
+import Svg, { Path, Defs, Rect, Stop, LinearGradient } from "react-native-svg";
 
 export const OWalletLogo: FunctionComponent<{
   width?: number | string;
@@ -9,7 +9,7 @@ export const OWalletLogo: FunctionComponent<{
     <Svg
       style={{
         width,
-        height
+        height,
       }}
       viewBox="0 0 284 96"
     >
