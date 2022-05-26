@@ -67,6 +67,11 @@ export const SignModal: FunctionComponent<{
       amountConfig,
       gasConfig
     );
+    console.log(
+      'feeConfig',
+      feeConfig.fee?.toCoin().amount,
+      amountConfig.amount
+    );
     const memoConfig = useMemoConfig(chainStore, chainId);
 
     const signDocWapper = signInteractionStore.waitingData?.data.signDocWrapper;

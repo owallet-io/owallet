@@ -67,6 +67,7 @@ export const FeeInSign: FunctionComponent<{
       chainStore.getChain(feeConfig.chainId).stakeCurrency,
       new Dec('0')
     );
+
   const feePrice = priceStore.calculatePrice(fee);
 
   // If the signing request is from internal and the "preferNoSetFee" option is set,
@@ -120,7 +121,7 @@ export const FeeInSign: FunctionComponent<{
             <Text
               style={style.flatten(
                 ['subtitle1', 'color-text-black-medium'],
-                [canFeeEditable && 'color-primary']
+                [canFeeEditable ? 'color-primary' : false]
               )}
             >
               {fee.trim(true).toString()}
