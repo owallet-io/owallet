@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { useHeaderHeight } from "@react-navigation/stack";
 import { PageWithScrollView } from "../../components/page";
-import { OWalletLogo } from "../../components/svg";
 import { GoogleIcon, AppleIcon } from "../../components/icon";
 import { useStyle } from "../../styles";
 import { View, Text, Dimensions, Platform, StyleSheet } from "react-native";
@@ -11,6 +10,7 @@ import { useRegisterConfig } from "@owallet/hooks";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { OWalletLogo } from "./owallet-logo";
 
 export const RegisterNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -38,7 +38,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten(["flex-grow-1", "items-center", "padding-x-18"])}
       >
-        <OWalletLogo width="100%" />
+        <OWalletLogo />
       </View>
       {Platform.OS === "ios" ? (
         <Button
