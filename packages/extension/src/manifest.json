@@ -5,7 +5,7 @@
   "version": "0.9.16",
   "applications": {
     "gecko": {
-      "id": "owallet-extension@owallet.app",
+      "id": "owallet-extension@orai.io",
       "strict_min_version": "56.0"
     }
   },

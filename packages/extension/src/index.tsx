@@ -66,6 +66,8 @@ window.owallet = new OWallet(
   'core',
   new InExtensionMessageRequester()
 );
+// also for keplr
+(window as any).keplr = window.owallet;
 
 // Make sure that icon file will be included in bundle
 require('./public/assets/orai_wallet_logo.png');

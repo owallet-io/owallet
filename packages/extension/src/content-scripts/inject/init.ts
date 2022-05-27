@@ -37,4 +37,7 @@ export function init(
     window.getOfflineSignerAuto = getOfflineSignerAuto;
     window.getEnigmaUtils = getEnigmaUtils;
   }
+
+  // also for keplr
+  (window as any).keplr = owallet;
 }
