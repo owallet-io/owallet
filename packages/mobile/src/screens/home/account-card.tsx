@@ -1,21 +1,26 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { Card, CardBody } from '../../components/card';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { useStore } from '../../stores';
-import { useStyle } from '../../styles';
-import { AddressCopyable } from '../../components/address-copyable';
-import { DoubleDoughnutChart } from '../../components/svg';
-import { Button } from '../../components/button';
-import { LoadingSpinner } from '../../components/spinner';
-import { StakedTokenSymbol, TokenSymbol } from '../../components/token-symbol';
-import { useSmartNavigation } from '../../navigation';
-import { NetworkErrorView } from './network-error-view';
-import { FormattedMessage } from 'react-intl';
-import { CoinPretty } from '@owallet/unit/build';
-import { ObservableQueryBalanceInner } from '@owallet/stores';
-import { ObservableQueryEvmBalanceInner } from '@owallet/stores/build/query/evm/evm-balance';
-
+import React, { FunctionComponent } from "react";
+import { observer } from "mobx-react-lite";
+import { Card, CardBody } from "../../components/card";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
+import { useStore } from "../../stores";
+import { useStyle } from "../../styles";
+import { AddressCopyable } from "../../components/address-copyable";
+// import { DoubleDoughnutChart } from "../../components/svg";
+import { Button } from "../../components/button";
+import { LoadingSpinner } from "../../components/spinner";
+// import { StakedTokenSymbol, TokenSymbol } from "../../components/token-symbol";
+import { useSmartNavigation } from "../../navigation";
+import { NetworkErrorView } from "./network-error-view";
+import { ProgressBar } from "../../components/progress-bar";
+import { Scanner } from "../../components/icon";
+import { useNavigation } from "@react-navigation/native";
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -35,68 +40,66 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  let data: [number, number];
-  let total: CoinPretty;
-  let stakedSum: CoinPretty;
-  let stakable: CoinPretty;
-  let balanceQuery:
-    | ObservableQueryEvmBalanceInner
-    | ObservableQueryBalanceInner;
-  if (chainStore.current.networkType === 'evm') {
-    balanceQuery = queries.evm.queryEvmBalance.getQueryBalance(
-      account.evmosHexAddress
-    );
+  const queryStakable = queries.queryBalances.getQueryBech32Address(
+    account.bech32Address
+  ).stakable;
+  const stakable = queryStakable.balance;
 
-    total = balanceQuery?.balance?.trim(true);
-    data = [1, 1];
-  } else {
-    balanceQuery = queries.queryBalances.getQueryBech32Address(
-      account.bech32Address
-    ).stakable;
-    stakable = balanceQuery.balance;
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+  const delegated = queryDelegated.total;
 
-    const queryDelegated =
-      queries.cosmos.queryDelegations.getQueryBech32Address(
-        account.bech32Address
-      );
-    const delegated = queryDelegated.total;
+  const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+  const unbonding = queryUnbonding.total;
 
-    const queryUnbonding =
-      queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-        account.bech32Address
-      );
-    const unbonding = queryUnbonding.total;
+  const stakedSum = delegated.add(unbonding);
 
-    stakedSum = delegated.add(unbonding);
+  const total = stakable.add(stakedSum);
 
-    total = stakable.add(stakedSum);
-    data = [
-      parseFloat(stakable.toDec().toString()),
-      parseFloat(stakedSum.toDec().toString())
-    ];
-  }
+  const totalPrice = priceStore.calculatePrice(total);
 
-  const totalPrice = total
-    ? priceStore.calculatePrice(total) ?? total.shrink(true).maxDecimals(6)
-    : null;
+  const data: [number, number] = [
+    parseFloat(stakable.toDec().toString()),
+    parseFloat(stakedSum.toDec().toString()),
+  ];
 
   return (
     <Card style={containerStyle}>
-      <CardBody style={style.flatten(['padding-bottom-0'])}>
-        <View style={style.flatten(['flex', 'items-center'])}>
-          <Text style={style.flatten(['h4', 'margin-bottom-8'])}>
-            {account.name || '...'}
-          </Text>
-          <AddressCopyable
-            address={
-              chainStore.current.networkType === 'evm'
-                ? account.evmosHexAddress
-                : account.bech32Address
-            }
-            maxCharacters={22}
-          />
-          <View style={style.flatten(['margin-top-28', 'margin-bottom-16'])}>
-            <DoubleDoughnutChart data={data} />
+      <CardBody style={style.flatten(["padding-bottom-0"])}>
+        <View style={style.flatten(["flex-row", "justify-between"])}>
+          <Text style={style.flatten(["h4"])}>{account.name || "..."}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Others", {
+                screen: "Camera",
+              });
+            }}
+          >
+            <Scanner size={28} color={style.get("color-primary").color} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={style.flatten(["flex", "items-center"])}>
+          <View
+            style={style.flatten([
+              "margin-top-28",
+              "margin-bottom-16",
+              "width-full",
+            ])}
+          >
+            {/* <DoubleDoughnutChart data={data} /> */}
+            <ImageBackground
+              resizeMode={"contain"}
+              source={require("../../assets/image/background-card.png")}
+              style={style.flatten(["width-full", "height-214"])}
+            />
+            <ProgressBar
+              progress={(data?.[0] / data?.reduce((a, b) => a + b, 0)) * 100}
+              styles={["margin-top-24"]}
+            />
             <View
               style={style.flatten([
                 'absolute-fill',
@@ -111,12 +114,14 @@ export const AccountCard: FunctionComponent<{
                   "margin-bottom-4",
                 ])}
               >
-                <FormattedMessage id="main.account.chart.total-balance" />
+                Total Balance
               </Text>
-              <Text style={style.flatten(['h3', 'color-text-black-high'])}>
-                {totalPrice ? totalPrice.toString() : ''}
+              <Text style={style.flatten(["h1", "color-white"])}>
+                {totalPrice
+                  ? totalPrice.toString()
+                  : total.shrink(true).maxDecimals(6).toString()}
               </Text>
-              {balanceQuery.isFetching ? (
+              {queryStakable.isFetching ? (
                 <View
                   style={StyleSheet.flatten([
                     style.flatten(['absolute']),
@@ -140,9 +145,9 @@ export const AccountCard: FunctionComponent<{
           </View>
         </View>
       </CardBody>
-      {chainStore.current.networkType === 'cosmos' && <NetworkErrorView />}
-      <CardBody style={style.flatten(['padding-top-16'])}>
-        <View style={style.flatten(['flex', 'items-center'])}>
+      <NetworkErrorView />
+      <CardBody style={style.flatten(["padding-top-16"])}>
+        <View style={style.flatten(["flex", "items-center"])}>
           <View
             style={style.flatten([
               'flex-row',
@@ -152,26 +157,40 @@ export const AccountCard: FunctionComponent<{
           >
             {/* <TokenSymbol
               size={44}
-              chainInfo={{ stakeCurrency: chainStore.current.stakeCurrency }}
+              chainInfo={chainStore.current}
               currency={chainStore.current.stakeCurrency}
-            />
-            {chainStore.current.networkType === 'cosmos' && (
-              <View style={style.flatten(['margin-left-12'])}>
+            /> */}
+            <View style={style.flatten(["margin-left-12"])}>
+              <View
+                style={style.flatten([
+                  "flex-row",
+                  "items-center",
+                  "margin-bottom-4",
+                ])}
+              >
+                <View
+                  style={style.flatten([
+                    "width-8",
+                    "height-8",
+                    "background-color-primary",
+                    "border-radius-8",
+                    "margin-right-4",
+                  ])}
+                />
                 <Text
                   style={style.flatten([
-                    'subtitle3',
-                    'color-primary',
-                    'margin-bottom-4'
+                    "subtitle3",
+                    "color-text-black-very-low",
                   ])}
                 >
                   Available
                 </Text>
-                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
-                  {stakable.maxDecimals(6).trim(true).shrink(true).toString()}
-                </Text>
               </View>
-            )}
-            <View style={style.flatten(['flex-1'])} />
+              <Text style={style.flatten(["h5", "color-text-black-medium"])}>
+                {stakable.maxDecimals(6).trim(true).shrink(true).toString()}
+              </Text>
+            </View>
+            <View style={style.flatten(["flex-1"])} />
             <Button
               text="Deposit"
               mode="outline"
@@ -184,41 +203,55 @@ export const AccountCard: FunctionComponent<{
               }}
             />
           </View>
-          {chainStore.current.networkType === 'cosmos' && (
-            <View
-              style={style.flatten([
-                'flex-row',
-                'items-center',
-                'margin-bottom-8'
-              ])}
-            >
-              <StakedTokenSymbol size={44} />
-              <View style={style.flatten(['margin-left-12'])}>
+          <View
+            style={style.flatten([
+              "flex-row",
+              "items-center",
+              "margin-bottom-8",
+            ])}
+          >
+            {/* <StakedTokenSymbol size={44} /> */}
+            <View style={style.flatten(["margin-left-12"])}>
+              <View
+                style={style.flatten([
+                  "flex-row",
+                  "items-center",
+                  "margin-bottom-4",
+                ])}
+              >
+                <View
+                  style={style.flatten([
+                    "width-8",
+                    "height-8",
+                    "background-color-secondary-500",
+                    "border-radius-8",
+                    "margin-right-4",
+                  ])}
+                />
                 <Text
                   style={style.flatten([
-                    'subtitle3',
-                    'color-primary',
-                    'margin-bottom-4'
+                    "subtitle3",
+                    "color-text-black-very-low",
                   ])}
                 >
                   Staking
                 </Text>
-                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
-                  {stakedSum.maxDecimals(6).trim(true).shrink(true).toString()}
-                </Text>
               </View>
-              <View style={style.flatten(['flex-1'])} />
-              <Button
-                text="Stake"
-                mode="light"
-                size="small"
-                containerStyle={style.flatten(['min-width-72'])}
-                onPress={() => {
-                  smartNavigation.navigateSmart('Validator.List', {});
-                }}
-              />
+              <Text style={style.flatten(["h5", "color-text-black-medium"])}>
+                {stakedSum.maxDecimals(6).trim(true).shrink(true).toString()}
+              </Text>
             </View>
-          )}
+            <View style={style.flatten(["flex-1"])} />
+            <Button
+              text="Stake"
+              mode="outline"
+              size="small"
+              containerStyle={style.flatten(["min-width-72"])}
+              onPress={() => {
+                smartNavigation.navigateSmart("Validator.List", {});
+              }}
+            />
+          </View>
         </View>
       </CardBody>
     </Card>
