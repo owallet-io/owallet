@@ -105,7 +105,7 @@ export class SecretAccount {
         }
         await this.sendExecuteSecretContractMsg(
           'send',
-          currency.contractAddress,
+          currency.contractAddress || denomHelper.contractAddress,
           {
             transfer: {
               recipient: recipient,

@@ -1,11 +1,10 @@
-import { Router } from '@owallet/router';
+import { Router, RequestSignDirectMsg } from '@owallet/router';
 import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
   GetKeyMsg,
   UnlockKeyRingMsg,
   RequestSignAminoMsg,
-  RequestSignDirectMsg,
   LockKeyRingMsg,
   DeleteKeyRingMsg,
   UpdateNameKeyRingMsg,

@@ -444,6 +444,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     if (this.hasNoLegacyStdFeature()) {
       const key = await owallet.getKey(this.chainId);
+
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
           messages: protoMsgs,

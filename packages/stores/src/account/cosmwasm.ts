@@ -108,7 +108,7 @@ export class CosmwasmAccount {
         }
         await this.sendExecuteContractMsg(
           'send',
-          currency.contractAddress,
+          currency.contractAddress || denomHelper.contractAddress,
           {
             transfer: {
               recipient: recipient,
@@ -196,7 +196,7 @@ export class CosmwasmAccount {
               }
         ]
       : undefined;
-
+    console.log('protoMsgs', msg.value);
     await this.base.sendMsgs(
       type,
       {

@@ -1,11 +1,16 @@
-import { Env, Handler, InternalHandler, Message } from '@owallet/router';
+import {
+  Env,
+  Handler,
+  InternalHandler,
+  RequestSignDirectMsg,
+  Message
+} from '@owallet/router';
 import {
   CreateMnemonicKeyMsg,
   CreatePrivateKeyMsg,
   GetKeyMsg,
   UnlockKeyRingMsg,
   RequestSignAminoMsg,
-  RequestSignDirectMsg,
   LockKeyRingMsg,
   DeleteKeyRingMsg,
   UpdateNameKeyRingMsg,
@@ -24,9 +29,8 @@ import {
   RequestVerifyADR36AminoSignDoc
 } from './messages';
 import { KeyRingService } from './service';
-import { Bech32Address } from '@owallet/cosmos';
+import { Bech32Address, cosmos } from '@owallet/cosmos';
 
-import { cosmos } from '@owallet/cosmos';
 import Long from 'long';
 
 export const getHandler: (service: KeyRingService) => Handler = (

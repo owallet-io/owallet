@@ -22,9 +22,9 @@ This repo uses git-secret to encrypt the endpoints and the api keys. **So, you c
 
 Clone this repo and run:
 ```sh
-yarn dev
-``` 
-Extension's build output is placed in `packages/extension/dist`, and you can check out [this page](https://developer.chrome.com/extensions/getstarted) for installing the developing extension.  
+yarn bootstrap
+yarn dev # -d false in second time
+```
 
 You can add your chain by adding the chain infomation into `chain-info.ts`. 
 
