@@ -1,8 +1,10 @@
 import { AppCurrency } from '@owallet/types';
-import { cosmos, UnknownMessage } from '@owallet/cosmos';
+import { cosmos, cosmwasm, UnknownMessage } from '@owallet/cosmos';
+import { fromUtf8 } from '@cosmjs/encoding';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
+  renderMsgExecuteContract,
   renderMsgSend,
   renderMsgUndelegate,
   renderUnknownMessage
@@ -45,9 +47,30 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
     );
   }
 
+  if (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract) {
+    return renderMsgExecuteContract(
+      currencies,
+      msg.funds as CoinPrimitive,
+      msg.contract,
+      msg.msg
+    );
+  }
+
+  if (msg instanceof cosmwasm.wasm.v1beta1.MsgExecuteContract) {
+    return renderMsgExecuteContract(
+      currencies,
+      msg.sent_funds as CoinPrimitive,
+      undefined,
+      msg.contract,
+      JSON.parse(fromUtf8(msg.msg))
+    );
+  }
+
   if (msg instanceof UnknownMessage) {
     return renderUnknownMessage(msg.toJSON());
   }
+
+  console.log('msg', msg);
 
   return renderUnknownMessage({
     typeUrl: msg.typeUrl || msg.type_url || 'Unknown',
