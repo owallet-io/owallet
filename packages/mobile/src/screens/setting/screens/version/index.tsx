@@ -3,7 +3,6 @@ import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { SettingItem, SettingSectionTitle } from '../../components';
 import DeviceInfo from 'react-native-device-info';
 import codePush from 'react-native-code-push';
-import { codeBundleId } from '../../../../../bugsnag.env';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export const OWalletVersionScreen: FunctionComponent = () => {

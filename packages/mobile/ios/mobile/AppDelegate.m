@@ -15,7 +15,6 @@
 
 #import <AppCenterReactNative.h>
 #import <AppCenterReactNativeAnalytics.h>
-#import <AppCenterReactNativeCrashes.h>
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -86,7 +85,7 @@ static void InitializeFlipper(UIApplication *application) {
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
   return [CodePush bundleURL];
 #endif

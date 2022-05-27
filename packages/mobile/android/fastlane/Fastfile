@@ -61,9 +61,10 @@ platform :android do
       UI.error("Invalid version #{target_version}")
     end
 
-    UI.message("Code push will be deployed for Android #{target_version}")
-
-    sh("cd ../.. && appcenter codepush release-react -a #{ENV["ANDROID_APPCENTER_APP_NAME"]} -d Production -t #{target_version}")
+    
+    # A problem may have occurred due to the above step. So, check the typing error.
+    sh("cd ../.. && yarn typecheck")    
+    sh("cd ../.. && appcenter codepush release-react -a #{ENV["ANDROID_APPCENTER_APP_NAME"]} -d Production -t #{target_version} --output-dir build")    
   end
 
   desc "Deploy a new version to the Google Play"
