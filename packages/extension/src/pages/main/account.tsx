@@ -69,7 +69,7 @@ export const AccountView: FunctionComponent = observer(() => {
           )}
         </div>
       </div>
-      {chainStore.current.raw.networkType !== 'evm' && (
+      {chainStore.current.raw.networkType === 'cosmos' && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div

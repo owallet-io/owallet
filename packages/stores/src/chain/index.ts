@@ -11,7 +11,8 @@ import {
   Bech32Config,
   BIP44,
   ChainInfo,
-  Currency
+  Currency,
+  NetworkType
 } from '@owallet/types';
 import { ChainGetter } from '../common';
 import { ChainIdHelper } from '@owallet/cosmos';
@@ -129,6 +130,10 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
 
   get raw(): C {
     return this._chainInfo;
+  }
+
+  get networkType(): NetworkType {
+    return this._chainInfo.networkType || 'cosmos';
   }
 
   get chainId(): string {

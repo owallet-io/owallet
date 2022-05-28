@@ -79,7 +79,8 @@ export const FiatCurrencies: FiatCurrency[] = [
 
 export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
   default: 'usd',
-  ko: 'krw'
+  ko: 'krw',
+  vi: 'vnd'
 };
 
 export const ADDITIONAL_SIGN_IN_PREPEND: RegisterOption[] | undefined =
@@ -115,7 +116,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinImageUrl:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
     },
-
     bip44: {
       coinType: 118
     },

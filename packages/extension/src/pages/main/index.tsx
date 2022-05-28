@@ -118,7 +118,7 @@ export const MainPage: FunctionComponent = observer(() => {
           </div>
         </CardBody>
       </Card>
-      {chainStore.current.raw.networkType !== 'evm' && (
+      {chainStore.current.raw.networkType === 'cosmos' && (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>
             <StakeView />
