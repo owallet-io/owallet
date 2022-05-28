@@ -18,7 +18,7 @@ import { useStore } from '../../stores';
 import { Buffer } from 'buffer/';
 import { observer } from 'mobx-react-lite';
 import { FormattedMessage } from 'react-intl';
-import Badge from '../../components/badge';
+import { Badge } from '../../components/badge';
 
 const h = new Hypher(english);
 
@@ -459,7 +459,6 @@ export function renderMsgExecuteContract(
           <React.Fragment>
             <Badge
               color="primary"
-              pill
               style={{ marginTop: '6px', marginBottom: '6px' }}
             >
               <FormattedMessage id="sign.list.message.wasm/MsgExecuteContract.content.badge.secret-wasm" />
@@ -504,7 +503,7 @@ export const WasmExecutionMsgView: FunctionComponent<{
 
           const keplr = await accountStore
             .getAccount(chainStore.current.chainId)
-            .getKeplr();
+            .getOWallet();
           if (!keplr) {
             throw new Error("Can't get the keplr API");
           }
@@ -538,138 +537,6 @@ export const WasmExecutionMsgView: FunctionComponent<{
     </Text>
   );
 });
-
-/*
-export function renderMsgInstantiateContract(
-  currencies: Currency[],
-  intl: IntlShape,
-  initFunds: CoinPrimitive[],
-  admin: string | undefined,
-  codeId: string,
-  label: string,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  initMsg: object
-) {
-  const funds: { amount: string; denom: string }[] = [];
-  for (const coinPrimitive of initFunds) {
-    const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
-    const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
-    funds.push({
-      amount: clearDecimals(parsed.amount),
-      denom: parsed.denom,
-    });
-  }
-  return {
-    icon: "fas fa-cog",
-    title: intl.formatMessage({
-      id: "sign.list.message.wasm/MsgInstantiateContract.title",
-    }),
-    content: (
-      <React.Fragment>
-        <FormattedMessage
-          id="sign.list.message.wasm/MsgInstantiateContract.content"
-          values={{
-            b: (...chunks: any[]) => <b>{chunks}</b>,
-            br: <br />,
-            admin: admin ? Bech32Address.shortenAddress(admin, 30) : "",
-            ["only-admin-exist"]: (...chunks: any[]) => (admin ? chunks : ""),
-            codeId: codeId,
-            label: label,
-            ["only-funds-exist"]: (...chunks: any[]) =>
-              funds.length > 0 ? chunks : "",
-            funds: funds
-              .map((coin) => {
-                return `${coin.amount} ${coin.denom}`;
-              })
-              .join(","),
-          }}
-        />
-        <br />
-        <WasmExecutionMsgView msg={initMsg} />
-      </React.Fragment>
-    ),
-  };
-}
-export const WasmExecutionMsgView: FunctionComponent<{
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  msg: object | string;
-}> = observer(({ msg }) => {
-  const { chainStore, accountStore } = useStore();
-  const [isOpen, setIsOpen] = useState(true);
-  const intl = useIntl();
-  const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
-  const [detailsMsg, setDetailsMsg] = useState(() =>
-    JSON.stringify(msg, null, 2)
-  );
-  const [warningMsg, setWarningMsg] = useState("");
-  useEffect(() => {
-    // If msg is string, it will be the message for secret-wasm.
-    // So, try to decrypt.
-    // But, if this msg is not encrypted via Keplr, Keplr cannot decrypt it.
-    // TODO: Handle the error case. If an error occurs, rather than rejecting the signing, it informs the user that Kepler cannot decrypt it and allows the user to choose.
-    if (typeof msg === "string") {
-      (async () => {
-        try {
-          let cipherText = Buffer.from(Buffer.from(msg, "base64"));
-          // Msg is start with 32 bytes nonce and 32 bytes public key.
-          const nonce = cipherText.slice(0, 32);
-          cipherText = cipherText.slice(64);
-          const keplr = await accountStore
-            .getAccount(chainStore.current.chainId)
-            .getKeplr();
-          if (!keplr) {
-            throw new Error("Can't get the keplr API");
-          }
-          const enigmaUtils = keplr.getEnigmaUtils(chainStore.current.chainId);
-          let plainText = Buffer.from(
-            await enigmaUtils.decrypt(cipherText, nonce)
-          );
-          // Remove the contract code hash.
-          plainText = plainText.slice(64);
-          setDetailsMsg(
-            JSON.stringify(JSON.parse(plainText.toString()), null, 2)
-          );
-          setWarningMsg("");
-        } catch {
-          setWarningMsg(
-            intl.formatMessage({
-              id:
-                "sign.list.message.wasm/MsgExecuteContract.content.warning.secret-wasm.failed-decryption",
-            })
-          );
-        }
-      })();
-    }
-  }, [chainStore, chainStore.current.chainId, intl, msg]);
-  return (
-    <div>
-      {isOpen ? (
-        <React.Fragment>
-          <pre style={{ width: "280px" }}>{isOpen ? detailsMsg : ""}</pre>
-          {warningMsg ? <div>{warningMsg}</div> : null}
-        </React.Fragment>
-      ) : null}
-      <Button
-        size="sm"
-        style={{ float: "right", marginRight: "6px" }}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          toggleOpen();
-        }}
-      >
-        {isOpen
-          ? intl.formatMessage({
-              id: "sign.list.message.wasm.button.close",
-            })
-          : intl.formatMessage({
-              id: "sign.list.message.wasm.button.details",
-            })}
-      </Button>
-    </div>
-  );
-});
- */
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const UnknownMsgView: FunctionComponent<{ msg: object }> = ({ msg }) => {

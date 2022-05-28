@@ -50,16 +50,17 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
   if (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract) {
     return renderMsgExecuteContract(
       currencies,
-      msg.funds as CoinPrimitive,
+      msg.funds as CoinPrimitive[],
+      undefined,
       msg.contract,
-      msg.msg
+      JSON.parse(fromUtf8(msg.msg))
     );
   }
 
   if (msg instanceof cosmwasm.wasm.v1beta1.MsgExecuteContract) {
     return renderMsgExecuteContract(
       currencies,
-      msg.sent_funds as CoinPrimitive,
+      msg.sent_funds as CoinPrimitive[],
       undefined,
       msg.contract,
       JSON.parse(fromUtf8(msg.msg))
