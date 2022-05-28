@@ -107,7 +107,6 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     // https://github.com/chainapsis/owallet-wallet/issues/275
     // https://github.com/chainapsis/owallet-wallet/issues/278
     // TODO: Erase this part soon
-    // console.log("proposals response data", this.response.data);
 
     const result: ObservableQueryProposal[] = [];
 
