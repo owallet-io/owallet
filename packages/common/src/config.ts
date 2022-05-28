@@ -131,9 +131,19 @@ export const EmbedChainInfos: AppChainInfo[] = [
           contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
           coinDecimals: 6,
           coinGeckoId: 'airight',
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
         },
+        {
+          type: 'cw20',
+          coinDenom: 'ORAIX',
+          coinMinimalDenom:
+            'cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:OraiDex Token',
+          contractAddress: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
+          coinDecimals: 6,
+          // coinGeckoId: 'oraix',
+          coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
+        },
+
         {
           type: 'cw20',
           coinDenom: 'USDT',
