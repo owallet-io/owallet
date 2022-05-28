@@ -11,6 +11,7 @@ import { Card } from '../../components/card';
 import { RectButton } from '../../components/rect-button';
 import { Currency } from '@owallet/types';
 import { TokenSymbol } from '../../components/token-symbol';
+import { DenomHelper } from '@owallet/common';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -58,15 +59,16 @@ export const TokenItem: FunctionComponent<{
 
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
-  const balanceCoinDenom = (() => {
-    if (
-      'originCurrency' in balance.currency &&
-      balance.currency.originCurrency
-    ) {
-      return balance.currency.originCurrency.coinDenom;
-    }
-    return balance.currency.coinDenom;
-  })();
+  let balanceCoinDenom: string;
+  let name = balance.currency.coinDenom;
+
+  if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
+    balanceCoinDenom = balance.currency.originCurrency.coinDenom;
+  } else {
+    const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
+    balanceCoinDenom = name;
+    name += ` (${denomHelper.contractAddress})`;
+  }
 
   return (
     <RectButton
@@ -100,7 +102,7 @@ export const TokenItem: FunctionComponent<{
             'uppercase'
           ])}
         >
-          {balance.currency.coinDenom}
+          {name}
         </Text>
         <Text
           style={style.flatten([
