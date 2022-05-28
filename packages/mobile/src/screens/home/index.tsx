@@ -150,7 +150,7 @@ export const HomeScreen: FunctionComponent = observer(() => {
           containerStyle={style.flatten(['margin-bottom-card-gap'])}
         />
       ) : null}
-      {currentChain.networkType === 'cosmos' && (
+      {currentChain.networkType !== 'evm' && (
         <>
           <MyRewardCard
             containerStyle={style.flatten(['margin-bottom-card-gap'])}

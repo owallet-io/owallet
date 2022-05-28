@@ -40,10 +40,18 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
-  const stakable = queryStakable.balance;
+  let data: [number, number];
+  let total: CoinPretty;
+  let stakedSum: CoinPretty;
+  let stakable: CoinPretty;
+  let balanceQuery:
+    | ObservableQueryEvmBalanceInner
+    | ObservableQueryBalanceInner;
+
+  if (chainStore.current.networkType === 'evm') {
+    balanceQuery = queries.evm.queryEvmBalance.getQueryBalance(
+      account.evmosHexAddress
+    );
 
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
@@ -145,9 +153,9 @@ export const AccountCard: FunctionComponent<{
           </View>
         </View>
       </CardBody>
-      <NetworkErrorView />
-      <CardBody style={style.flatten(["padding-top-16"])}>
-        <View style={style.flatten(["flex", "items-center"])}>
+      {chainStore.current.networkType !== 'evm' && <NetworkErrorView />}
+      <CardBody style={style.flatten(['padding-top-16'])}>
+        <View style={style.flatten(['flex', 'items-center'])}>
           <View
             style={style.flatten([
               'flex-row',
@@ -159,24 +167,9 @@ export const AccountCard: FunctionComponent<{
               size={44}
               chainInfo={chainStore.current}
               currency={chainStore.current.stakeCurrency}
-            /> */}
-            <View style={style.flatten(["margin-left-12"])}>
-              <View
-                style={style.flatten([
-                  "flex-row",
-                  "items-center",
-                  "margin-bottom-4",
-                ])}
-              >
-                <View
-                  style={style.flatten([
-                    "width-8",
-                    "height-8",
-                    "background-color-primary",
-                    "border-radius-8",
-                    "margin-right-4",
-                  ])}
-                />
+            />
+            {chainStore.current.networkType !== 'evm' && (
+              <View style={style.flatten(['margin-left-12'])}>
                 <Text
                   style={style.flatten([
                     "subtitle3",
@@ -203,31 +196,16 @@ export const AccountCard: FunctionComponent<{
               }}
             />
           </View>
-          <View
-            style={style.flatten([
-              "flex-row",
-              "items-center",
-              "margin-bottom-8",
-            ])}
-          >
-            {/* <StakedTokenSymbol size={44} /> */}
-            <View style={style.flatten(["margin-left-12"])}>
-              <View
-                style={style.flatten([
-                  "flex-row",
-                  "items-center",
-                  "margin-bottom-4",
-                ])}
-              >
-                <View
-                  style={style.flatten([
-                    "width-8",
-                    "height-8",
-                    "background-color-secondary-500",
-                    "border-radius-8",
-                    "margin-right-4",
-                  ])}
-                />
+          {chainStore.current.networkType !== 'evm' && (
+            <View
+              style={style.flatten([
+                'flex-row',
+                'items-center',
+                'margin-bottom-8'
+              ])}
+            >
+              <StakedTokenSymbol size={44} />
+              <View style={style.flatten(['margin-left-12'])}>
                 <Text
                   style={style.flatten([
                     "subtitle3",
