@@ -175,10 +175,58 @@ export const EmbedChainInfos: AppChainInfo[] = [
     beta: true // use v1beta1
   },
   {
-    chainId: "oraibridge-subnet",
-    chainName: "OraiBridge",
-    rpc: "https://bridge.rpc.orai.io",
-    rest: "https://bridge.lcd.orai.io",
+    rpc: 'https://testnet-rpc.orai.io/',
+    rest: 'https://testnet-lcd.orai.io/',
+    chainId: 'Oraichain-testnet',
+    chainName: 'Oraichain-testnet',
+    stakeCurrency: {
+      coinDenom: 'ORAI',
+      coinMinimalDenom: 'orai',
+      coinDecimals: 6,
+      coinGeckoId: 'oraichain-token',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+    },
+
+    bip44: {
+      coinType: 118
+    },
+    bech32Config: Bech32Address.defaultBech32Config('orai'),
+    get currencies() {
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'AIRI',
+          coinMinimalDenom:
+            'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
+          coinDecimals: 6,
+          coinGeckoId: 'airight',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+        }
+      ];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004
+    },
+    features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
+    chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
+    txExplorer: {
+      name: 'Oraiscan',
+      txUrl: 'https://scan.orai.io/txs/{txHash}',
+      accountUrl: 'https://scan.orai.io/account/{address}'
+    }
+  },
+  {
+    chainId: 'oraibridge-subnet',
+    chainName: 'OraiBridge',
+    rpc: 'https://bridge.rpc.orai.io',
+    rest: 'https://bridge.lcd.orai.io',
     stakeCurrency: {
       coinDenom: 'ORAIB',
       coinMinimalDenom: 'uoraib',
@@ -1916,6 +1964,14 @@ export const PrivilegedOrigins: string[] = [
 
 // tracking ads
 export const AmplitudeApiKey = '879f08e23ff5926be676c19157bc4fd4';
+
+export const OraiBridgeTokens: { [key: string]: string } = {
+  gravity0x7e2a35c746f2f7c240b664f1da4dd100141ae71f: 'BEP20 AIRI',
+  oraib0x7e2a35c746f2f7c240b664f1da4dd100141ae71f: 'BEP20 AIRI',
+  gravity0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0: 'BEP20 ORAI',
+  oraib0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0: 'BEP20 ORAI',
+  oraib0x55d398326f99059ff775485246999027b3197955: 'BEP20 USDT'
+};
 
 // default thumbnails for fix address
 export const ValidatorThumbnails: { [key: string]: string } = {
