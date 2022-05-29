@@ -88,10 +88,7 @@ export class ObservableQueryBalancesInner {
         const chainInfo = this.chainGetter.getChain(this.chainId);
         for (const registry of this.balanceRegistries) {
           // if is evm then do not use ObservableQueryBalanceNative
-          if (
-            chainInfo.raw.networkType === 'evm' &&
-            registry.type !== 'erc20'
-          ) {
+          if (chainInfo.networkType === 'evm' && registry.type !== 'erc20') {
             continue;
           }
 

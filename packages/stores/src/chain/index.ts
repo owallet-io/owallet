@@ -181,6 +181,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
    */
   forceFindCurrency(coinMinimalDenom: string): AppCurrency {
     const currency = this.findCurrency(coinMinimalDenom);
+
     if (!currency) {
       return {
         coinMinimalDenom,

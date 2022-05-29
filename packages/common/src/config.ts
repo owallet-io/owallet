@@ -143,7 +143,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           // coinGeckoId: 'oraix',
           coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
         },
-
         {
           type: 'cw20',
           coinDenom: 'USDT',
@@ -238,7 +237,47 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config('oraib'),
     // List of all coin/tokens used in this chain.
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'BEP20 ORAI',
+          coinMinimalDenom: 'gravity0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0',
+          coinDecimals: 18,
+          coinGeckoId: 'oraichain-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+        },
+        {
+          coinDenom: 'BEP20 AIRI',
+          coinMinimalDenom: 'gravity0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F',
+          coinDecimals: 18,
+          coinGeckoId: 'airight',
+          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+        },
+        {
+          coinDenom: 'BEP20 ORAI',
+          coinMinimalDenom: 'oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0',
+          coinDecimals: 18,
+          coinGeckoId: 'oraichain-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+        },
+        {
+          coinDenom: 'BEP20 AIRI',
+          coinMinimalDenom: 'oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F',
+          coinDecimals: 18,
+          coinGeckoId: 'airight',
+          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+        },
+        {
+          coinDenom: 'BEP20 USDT',
+          coinMinimalDenom: 'oraib0x55d398326f99059fF775485246999027B3197955',
+          coinDecimals: 18,
+          coinGeckoId: 'tether',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        }
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
@@ -1964,14 +2003,6 @@ export const PrivilegedOrigins: string[] = [
 
 // tracking ads
 export const AmplitudeApiKey = '879f08e23ff5926be676c19157bc4fd4';
-
-export const OraiBridgeTokens: { [key: string]: string } = {
-  gravity0x7e2a35c746f2f7c240b664f1da4dd100141ae71f: 'BEP20 AIRI',
-  oraib0x7e2a35c746f2f7c240b664f1da4dd100141ae71f: 'BEP20 AIRI',
-  gravity0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0: 'BEP20 ORAI',
-  oraib0xa325ad6d9c92b55a3fc5ad7e412b1518f96441c0: 'BEP20 ORAI',
-  oraib0x55d398326f99059ff775485246999027b3197955: 'BEP20 USDT'
-};
 
 // default thumbnails for fix address
 export const ValidatorThumbnails: { [key: string]: string } = {

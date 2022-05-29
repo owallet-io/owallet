@@ -1,6 +1,6 @@
 import { AmountConfig, IFeeConfig } from '../tx';
 import { ChainGetter } from '@owallet/stores';
-import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
+import { ObservableQueryBalances } from '@owallet/stores';
 import { AppCurrency } from '@owallet/types';
 import { computed, makeObservable } from 'mobx';
 import { DenomHelper } from '@owallet/common';

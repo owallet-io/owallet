@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useHistory } from 'react-router';
 import { Hash } from '@owallet/crypto';
-import { ObservableQueryBalanceInner } from '@owallet/stores/build/query/balances';
+import { ObservableQueryBalanceInner } from '@owallet/stores';
 import classmames from 'classnames';
 import { UncontrolledTooltip } from 'reactstrap';
 import { WrongViewingKeyError } from '@owallet/stores';
@@ -14,6 +14,7 @@ import { useLoadingIndicator } from '../../components/loading-indicator';
 import { DenomHelper } from '@owallet/common';
 
 import { useLanguage } from '@owallet/common';
+import { Bech32Address } from '@owallet/cosmos';
 
 const TokenView: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
@@ -89,7 +90,12 @@ const TokenView: FunctionComponent<{
     amount = amount.setCurrency(amount.currency.originCurrency);
   } else {
     const denomHelper = new DenomHelper(amount.currency.coinMinimalDenom);
-    name += ` (${denomHelper.contractAddress})`;
+    if (denomHelper.contractAddress) {
+      name += ` (${Bech32Address.shortenAddress(
+        denomHelper.contractAddress,
+        24
+      )})`;
+    }
   }
 
   const tokenPrice = priceStore.calculatePrice(amount, language.fiatCurrency);

@@ -109,7 +109,7 @@ export const MainPage: FunctionComponent = observer(() => {
         <CardBody>
           <div className={style.containerAccountInner}>
             <AccountView />
-            {chainStore.current.raw.networkType === 'evm' ? (
+            {chainStore.current.networkType === 'evm' ? (
               <AssetViewEvm />
             ) : (
               <AssetView />
@@ -118,7 +118,7 @@ export const MainPage: FunctionComponent = observer(() => {
           </div>
         </CardBody>
       </Card>
-      {chainStore.current.raw.networkType === 'cosmos' && (
+      {chainStore.current.networkType === 'cosmos' && (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>
             <StakeView />

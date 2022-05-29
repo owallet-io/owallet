@@ -40,7 +40,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
   get rewards(): CoinPretty[] {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    if (chainInfo.raw.networkType === 'evm') {
+    if (chainInfo.networkType === 'evm') {
       return [];
     }
 
@@ -64,7 +64,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
     (validatorAddress: string): CoinPretty[] => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      if (chainInfo.raw.networkType === 'evm') {
+      if (chainInfo.networkType === 'evm') {
         return [];
       }
 
@@ -92,7 +92,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
   @computed
   get stakableReward(): CoinPretty {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    if (chainInfo.raw.networkType === 'evm') {
+    if (chainInfo.networkType === 'evm') {
       return;
     }
 
@@ -106,7 +106,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
     (validatorAddress: string): CoinPretty => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      if (chainInfo.raw.networkType === 'evm') {
+      if (chainInfo.networkType === 'evm') {
         return;
       }
 
@@ -125,7 +125,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
   get unstakableRewards(): CoinPretty[] {
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    if (chainInfo.raw.networkType === 'evm') {
+    if (chainInfo.networkType === 'evm') {
       return [];
     }
 
@@ -152,7 +152,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
     (validatorAddress: string): CoinPretty[] => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      if (chainInfo.raw.networkType === 'evm') {
+      if (chainInfo.networkType === 'evm') {
         return [];
       }
 
@@ -215,7 +215,7 @@ export class ObservableQueryRewardsInner extends ObservableChainQuery<Rewards> {
 
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      if (chainInfo.raw.networkType === 'evm') {
+      if (chainInfo.networkType === 'evm') {
         return [];
       }
 

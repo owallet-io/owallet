@@ -1,10 +1,7 @@
 import React, { FunctionComponent, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ObservableQueryBalanceInner } from '@owallet/stores/build/query/balances';
-import {
-  BondStatus,
-  Validator
-} from '@owallet/stores/build/query/cosmos/staking/types';
+import { ObservableQueryBalanceInner } from '@owallet/stores';
+import { BondStatus } from '@owallet/stores';
 import { CoinPretty, Dec } from '@owallet/unit';
 import { useStore } from '../../stores';
 import style from './validator-list.module.scss';

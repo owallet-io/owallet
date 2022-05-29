@@ -1,6 +1,5 @@
 import { Buffer } from 'buffer/';
 import { Hash } from '@owallet/crypto';
-import { OraiBridgeTokens } from '../config';
 
 export class DenomHelper {
   static ibcDenom(
@@ -24,13 +23,6 @@ export class DenomHelper {
         .toString('hex')
         .toUpperCase()
     );
-  }
-
-  static bridgeDenom(coinDenom: string): string {
-    const [denom, channel] = coinDenom.split(/\s+/);
-    let returnDenom = OraiBridgeTokens[denom.toLowerCase()] ?? denom;
-    if (channel) returnDenom += ' ' + channel;
-    return returnDenom;
   }
 
   protected readonly _type: string;

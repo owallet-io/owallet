@@ -58,7 +58,7 @@ export const AccountView: FunctionComponent = observer(() => {
               href={chainStore.current.raw.txExplorer.accountUrl.replace(
                 '{address}',
                 // accountInfo.bech32Address
-                chainStore.current.raw.networkType === 'evm'
+                chainStore.current.networkType === 'evm'
                   ? accountInfo.evmosHexAddress
                   : accountInfo.bech32Address
               )}
@@ -69,7 +69,7 @@ export const AccountView: FunctionComponent = observer(() => {
           )}
         </div>
       </div>
-      {chainStore.current.raw.networkType === 'cosmos' && (
+      {chainStore.current.networkType === 'cosmos' && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div

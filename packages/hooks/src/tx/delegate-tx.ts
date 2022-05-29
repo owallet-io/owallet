@@ -1,5 +1,5 @@
 import { ChainGetter } from '@owallet/stores';
-import { ObservableQueryBalances } from '@owallet/stores/build/query/balances';
+import { ObservableQueryBalances } from '@owallet/stores';
 import {
   AmountConfig,
   useFeeConfig,
