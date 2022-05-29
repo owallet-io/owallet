@@ -12,6 +12,7 @@ import { RectButton } from '../../components/rect-button';
 import { Currency } from '@owallet/types';
 import { TokenSymbol } from '../../components/token-symbol';
 import { DenomHelper } from '@owallet/common';
+import { Bech32Address } from '@owallet/cosmos';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -60,15 +61,23 @@ export const TokenItem: FunctionComponent<{
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
-  let name = balance.currency.coinDenom;
+  let name: string;
 
   if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
-    balanceCoinDenom = balance.currency.originCurrency.coinDenom;
+    name = DenomHelper.bridgeDenom(balance.currency.coinDenom);
+    balanceCoinDenom = DenomHelper.bridgeDenom(
+      balance.currency.originCurrency.coinDenom
+    );
   } else {
     const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
-    balanceCoinDenom = name;
-    name += ` (${denomHelper.contractAddress})`;
+    balanceCoinDenom = balance.currency.coinDenom;
+    name = `${balance.currency.coinDenom} (${Bech32Address.shortenAddress(
+      denomHelper.contractAddress,
+      24
+    )})`;
   }
+
+  // console.log(balanceCoinDenom);
 
   return (
     <RectButton
@@ -98,8 +107,8 @@ export const TokenItem: FunctionComponent<{
           style={style.flatten([
             'subtitle3',
             'color-text-black-low',
-            'margin-bottom-4',
-            'uppercase'
+            'margin-bottom-4'
+            // 'uppercase'
           ])}
         >
           {name}
@@ -108,7 +117,7 @@ export const TokenItem: FunctionComponent<{
           style={style.flatten([
             'h5',
             'color-text-black-medium',
-            'max-width-240'
+            'max-width-300'
           ])}
           numberOfLines={1}
           ellipsizeMode="tail"
