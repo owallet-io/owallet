@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
-import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
 import { PageWithScrollView } from '../../../components/page';
 import { Card, CardBody, CardDivider } from '../../../components/card';

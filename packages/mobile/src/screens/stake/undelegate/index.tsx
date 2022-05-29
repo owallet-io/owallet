@@ -9,7 +9,7 @@ import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
 import { Text, View } from 'react-native';
 import { Button } from '../../../components/button';
 import { Card, CardBody, CardDivider } from '../../../components/card';
-import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { Buffer } from 'buffer/';
 import { useSmartNavigation } from '../../../navigation';

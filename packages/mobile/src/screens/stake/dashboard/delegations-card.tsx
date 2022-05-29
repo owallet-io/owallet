@@ -6,10 +6,7 @@ import { Text, View, ViewStyle } from 'react-native';
 import { useStyle } from '../../../styles';
 import { StakedTokenSymbol } from '../../../components/token-symbol';
 import { Button } from '../../../components/button';
-import {
-  BondStatus,
-  Validator
-} from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus, Validator } from '@owallet/stores';
 import { RightArrowIcon } from '../../../components/icon';
 import { useSmartNavigation } from '../../../navigation';
 import { ValidatorThumbnail } from '../../../components/thumbnail';

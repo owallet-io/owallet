@@ -3,10 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { PageWithSectionList } from '../../../components/page';
 import { Text, View } from 'react-native';
-import {
-  BondStatus,
-  Validator
-} from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus, Validator } from '@owallet/stores';
 import { useStyle } from '../../../styles';
 import { SelectorModal, TextInput } from '../../../components/input';
 import { GradientBackground } from '../../../components/svg';

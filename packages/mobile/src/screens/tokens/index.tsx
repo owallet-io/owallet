@@ -61,23 +61,20 @@ export const TokenItem: FunctionComponent<{
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
-  let name: string;
+  let name = balance.currency.coinDenom;
 
   if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
-    name = DenomHelper.bridgeDenom(balance.currency.coinDenom);
-    balanceCoinDenom = DenomHelper.bridgeDenom(
-      balance.currency.originCurrency.coinDenom
-    );
+    balanceCoinDenom = balance.currency.originCurrency.coinDenom;
   } else {
     const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
     balanceCoinDenom = balance.currency.coinDenom;
-    name = `${balance.currency.coinDenom} (${Bech32Address.shortenAddress(
-      denomHelper.contractAddress,
-      24
-    )})`;
+    if (denomHelper.contractAddress) {
+      name += ` (${Bech32Address.shortenAddress(
+        denomHelper.contractAddress,
+        24
+      )})`;
+    }
   }
-
-  // console.log(balanceCoinDenom);
 
   return (
     <RectButton

@@ -71,8 +71,6 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
     return renderUnknownMessage(msg.toJSON());
   }
 
-  console.log('msg', msg);
-
   return renderUnknownMessage({
     typeUrl: msg.typeUrl || msg.type_url || 'Unknown',
     value: Buffer.from(msg.value).toString('base64')

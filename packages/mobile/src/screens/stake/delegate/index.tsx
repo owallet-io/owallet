@@ -10,7 +10,7 @@ import { EthereumEndpoint } from '@owallet/common';
 import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation';
-import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores';
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<

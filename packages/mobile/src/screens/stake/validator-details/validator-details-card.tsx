@@ -2,7 +2,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../../components/card';
 import { useStore } from '../../../stores';
-import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores';
 import { Text, View, ViewStyle } from 'react-native';
 import { useStyle } from '../../../styles';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';

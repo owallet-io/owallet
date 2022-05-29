@@ -7,7 +7,7 @@ import { useStyle } from '../../../styles';
 import { useIntl } from 'react-intl';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { ProgressBar } from '../../../components/progress-bar';
-import { BondStatus } from '@owallet/stores/build/query/cosmos/staking/types';
+import { BondStatus } from '@owallet/stores';
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
