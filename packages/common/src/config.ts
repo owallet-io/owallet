@@ -1921,9 +1921,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     hideInUI: true,
   },
   {
-    rest: "https://bsc-dataseed1.ninicoin.io",
-    chainId: "57",
-    chainName: "BNB Smart Chain(Coming soon)",
+    rest: 'https://bsc-dataseed1.ninicoin.io',
+    chainId: '57',
+    chainName: 'BNB Smart Chain\n(Coming soon)',
     bip44: {
       coinType: 60,
     },
@@ -1998,9 +1998,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     disabled: true,
   },
   {
-    rest: "https://bsc-dataseed1.ninicoin.io",
-    chainId: "58",
-    chainName: "Ethereum(Coming soon)",
+    rest: 'https://bsc-dataseed1.ninicoin.io',
+    chainId: '58',
+    chainName: 'Ethereum\n(Coming soon)',
     bip44: {
       coinType: 60,
     },
@@ -2075,9 +2075,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     disabled: true,
   },
   {
-    rest: "https://bsc-dataseed1.ninicoin.io",
-    chainId: "59",
-    chainName: "Add manually(Coming soon)",
+    rest: 'https://bsc-dataseed1.ninicoin.io',
+    chainId: '59',
+    chainName: 'Add manually\n(Coming soon)',
     bip44: {
       coinType: 60,
     },
