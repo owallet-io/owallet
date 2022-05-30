@@ -10,7 +10,7 @@ import { Button } from 'reactstrap';
 
 import { FormattedMessage } from 'react-intl';
 
-import { useRegisterConfig } from '@owallet/hooks';
+import { RegisterOption, useRegisterConfig } from '@owallet/hooks';
 import { useStore } from '../../stores';
 import { NewMnemonicIntro, NewMnemonicPage, TypeNewMnemonic } from './mnemonic';
 import {
@@ -24,7 +24,8 @@ import {
   TypeImportLedger
 } from './ledger';
 import { WelcomePage } from './welcome';
-import { AdditionalSignInPrepend } from '@owallet/common';
+
+export const AdditionalSignInPrepend: RegisterOption[] | undefined = undefined;
 
 export enum NunWords {
   WORDS12,

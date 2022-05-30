@@ -1,6 +1,5 @@
 import { Bech32Address } from '@owallet/cosmos';
 import { AppChainInfo } from '@owallet/types';
-import { RegisterOption } from '@owallet/hooks';
 import { IntlMessages, TypeLanguageToFiatCurrency } from './languages';
 import { FiatCurrency } from '@owallet/types';
 
@@ -83,15 +82,7 @@ export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
   vi: 'vnd'
 };
 
-export const ADDITIONAL_SIGN_IN_PREPEND: RegisterOption[] | undefined =
-  undefined;
-
-export const ADDITIONAL_INTL_MESSAGES: IntlMessages = {};
-
-export const AdditionalSignInPrepend: RegisterOption[] | undefined =
-  ADDITIONAL_SIGN_IN_PREPEND;
-
-export const AdditonalIntlMessages: IntlMessages = ADDITIONAL_INTL_MESSAGES;
+export const AdditonalIntlMessages: IntlMessages = {};
 
 // coingecko api for both evm and cosmos based networks
 export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
