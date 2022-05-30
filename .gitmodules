@@ -1,3 +1,0 @@
-[submodule "packages/extension/src/owallet-torus-signin"]
-	path = packages/extension/src/owallet-torus-signin
-	url = https://github.com/chainapsis/owallet-torus-signin.git
