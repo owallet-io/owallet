@@ -57,9 +57,16 @@ import {
   DelegateScreen,
   StakingDashboardScreen,
   ValidatorDetailsScreen,
-  ValidatorListScreen
-} from './screens/stake';
-import { OpenDrawerIcon, ScanIcon } from './components/icon';
+  ValidatorListScreen,
+} from "./screens/stake";
+import {
+  DownArrowIcon,
+  OpenDrawerIcon,
+  ScanIcon,
+  SendIcon,
+  SettingIcon,
+  WalletIcon,
+} from "./components/icon";
 import {
   AddAddressBookScreen,
   AddressBookScreen
@@ -79,9 +86,9 @@ import { RedelegateScreen } from './screens/stake/redelegate';
 import { CameraScreen } from './screens/camera';
 import {
   FocusedScreenProvider,
-  useFocusedScreen
-} from './providers/focused-screen';
-import Svg, { Path, Rect } from 'react-native-svg';
+  useFocusedScreen,
+} from "./providers/focused-screen";
+// import Svg, { Path, Rect } from "react-native-svg";
 import {
   TxFailedResultScreen,
   TxPendingResultScreen,
@@ -320,14 +327,9 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
         navigation.dispatch(DrawerActions.toggleDrawer());
       }}
     >
-      <View style={style.flatten(['flex-row', 'items-center'])}>
-        <OpenDrawerIcon size={28} color={style.get('color-primary').color} />
+      <View style={style.flatten(["flex-row", "items-center"])}>
         <Text
-          style={style.flatten([
-            'h4',
-            'color-text-black-high',
-            'margin-left-4'
-          ])}
+          style={style.flatten(["h4", "color-text-black-low", "margin-left-4"])}
         >
           {chainStore.current.chainName + " "}
         </Text>
@@ -356,7 +358,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           });
         }}
       >
-        <ScanIcon size={28} color={style.get('color-primary').color} />
+        {/* <ScanIcon size={28} color={style.get("color-primary").color} /> */}
       </HeaderRightButton>
       {walletConnectStore.sessions.length > 0 ? (
         <HeaderRightButton
@@ -856,7 +858,8 @@ export const MainTabNavigation: FunctionComponent = () => {
           shadowColor: style.get('color-transparent').color,
           elevation: 0,
           paddingLeft: 30,
-          paddingRight: 30
+          paddingRight: 30,
+          height: 70,
         },
         showLabel: false
       }}

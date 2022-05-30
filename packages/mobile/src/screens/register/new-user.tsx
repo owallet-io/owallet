@@ -40,7 +40,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
       >
         <OWalletLogo />
       </View>
-      {Platform.OS === "ios" ? (
+      {/* {Platform.OS === "ios" ? (
         <Button
           containerStyle={style.flatten([
             "margin-bottom-20",
@@ -68,8 +68,8 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
             });
           }}
         />
-      ) : null}
-      <Button
+      ) : null} */}
+      {/* <Button
         containerStyle={style.flatten(["margin-bottom-20"])}
         text="Sign in with Google"
         leftIcon={
@@ -97,7 +97,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
         ])}
       >
         Powered by Torus
-      </Text>
+      </Text> */}
       <Button
         text="Create new mnemonic"
         size="large"
