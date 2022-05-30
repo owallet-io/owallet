@@ -23,7 +23,7 @@ This repo uses git-secret to encrypt the endpoints and the api keys. **So, you c
 Clone this repo and run:
 ```sh
 yarn bootstrap
-yarn dev # -d false in second time
+yarn dev
 ```
 
 You can add your chain by adding the chain infomation into `chain-info.ts`. 
