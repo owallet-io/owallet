@@ -1441,13 +1441,17 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'LUNA',
         coinMinimalDenom: 'uluna',
         coinDecimals: 6,
-        coinGeckoId: 'terra-luna'
+        coinGeckoId: 'terra-luna',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/4172.png'
       },
       {
         coinDenom: 'UST',
         coinMinimalDenom: 'uusd',
         coinDecimals: 6,
-        coinGeckoId: 'terrausd'
+        coinGeckoId: 'terrausd',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7129.png'
       },
       {
         coinDenom: 'KRT',
