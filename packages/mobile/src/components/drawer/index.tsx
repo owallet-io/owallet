@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useMemo } from "react";
+import React, { FunctionComponent, useCallback } from "react";
 import { observer } from "mobx-react-lite";
 import {
   DrawerContentComponentProps,
