@@ -7,17 +7,22 @@ export type DAppInfo = {
   name: string;
   uri: string;
   thumbnail: ImageSourcePropType;
+  logo?: ImageSourcePropType;
 };
 
 export const DAppInfos: DAppInfo[] = [
   {
     name: "Oraidex",
-    thumbnail: require("../../assets/image/webpage/oraidex.png"),
+    thumbnail: require("../../assets/image/webpage/bgoraidex.png"),
     uri: __DEV__ ? ORAIDEX_DEV_URL : "https://oraidex.io",
+    logo: require("../../assets/image/webpage/orai_logo.png"),
   },
   {
     name: "Osmosis",
-    thumbnail: require("../../assets/image/webpage/osmosis.png"),
+    thumbnail: require("../../assets/image/webpage/bgomosis.png"),
     uri: "https://app.osmosis.zone",
+    logo: require("../../assets/image/webpage/osmosis_logo.png"),
+
   },
 ];
+ 
