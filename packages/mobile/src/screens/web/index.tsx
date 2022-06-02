@@ -139,8 +139,6 @@ export const WebpageImageButton: FunctionComponent<{
             <View
               style={style.flatten([
                 "absolute-fill",
-                "background-color-black",
-                "opacity-10",
               ])}
             />
           ) : null}
@@ -170,7 +168,7 @@ export const WebpageImageButton: FunctionComponent<{
                     "height-44",
                     "border-radius-32",
                     "padding-x-12",
-                    "background-color-text-black-very-very-low",
+                    "background-color-white",
                   ]),
                 ]}
               >
@@ -185,7 +183,7 @@ export const WebpageImageButton: FunctionComponent<{
                   source={logo}
                   fadeDuration={0}
                 />
-                <Text style={style.flatten(["font-extrabold", "subtitle1"])}>
+                <Text style={style.flatten(["font-bold", "subtitle1"])}>
                   {name}
                 </Text>
               </View>
@@ -199,7 +197,8 @@ export const WebpageImageButton: FunctionComponent<{
                   "width-44",
                   "height-44",
                   "border-radius-32",
-                  "background-color-text-black-very-very-low",
+                  "background-color-white",
+                  "font-bold"
                 ])}
               >
                 <GoIcon

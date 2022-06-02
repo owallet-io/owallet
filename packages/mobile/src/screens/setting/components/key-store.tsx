@@ -1,8 +1,15 @@
-import React, { FunctionComponent } from "react";
-import { useStyle } from "../../../styles";
-import { StyleSheet, Text, TextStyle, View, ViewStyle } from "react-native";
-import { RectButton } from "../../../components/rect-button";
-import Svg, { Path } from "react-native-svg";
+import React, { FunctionComponent } from 'react';
+import { useStyle } from '../../../styles';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { RectButton } from '../../../components/rect-button';
+import Svg, { Path } from 'react-native-svg';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
@@ -12,21 +19,29 @@ export const KeyStoreSectionTitle: FunctionComponent<{
   return (
     <View
       style={style.flatten([
-        "padding-x-20",
-        "padding-top-16",
-        "padding-bottom-12",
-        "margin-top-16",
-        "background-color-white",
+        'padding-x-20',
+        'padding-top-16',
+        'padding-bottom-12',
+        'margin-top-16',
+        'flex-row',
+        'items-center',
       ])}
     >
-      <Text
-        style={style.flatten([
-          "text-caption1",
-          "color-text-black-low",
-          "uppercase",
-        ])}
-      >
-        {title}
+      <Image
+        style={{
+          width: 20,
+          height: 20,
+          marginRight: 8,
+        }}
+        // onLoadEnd={onImageLoaded}
+        source={require('../../../assets/image/webpage/note-icon.png')}
+        fadeDuration={0}
+      />
+      <Text style={style.flatten(['color-text-black-low', 'subtitle1'])}>
+        {title &&
+          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
+            letter.toUpperCase()
+          )}
       </Text>
     </View>
   );
@@ -66,6 +81,8 @@ export const KeyStoreItem: FunctionComponent<{
   left?: React.ReactElement;
   right?: React.ReactElement;
 
+  active?: React.ReactElement;
+  notActive?: React.ReactElement;
   onPress?: () => void;
 
   topBorder?: boolean;
@@ -88,25 +105,39 @@ export const KeyStoreItem: FunctionComponent<{
   const renderChildren = () => {
     return (
       <React.Fragment>
+        <Image
+          style={{
+            width: 20,
+            height: 20,
+            marginRight: 8,
+          }}
+          source={
+            right
+              ? require('../../../assets/image/webpage/active.png')
+              : require('../../../assets/image/webpage/not-active.png')
+          }
+          fadeDuration={0}
+        />
+        <View />
         {left ? (
           left
         ) : (
           <View
             style={StyleSheet.flatten([
-              style.flatten(["margin-right-16"]),
+              style.flatten(['margin-right-16']),
               defaultRightWalletIconStyle,
             ])}
           >
-            <WalletIcon
-              color={style.get("color-text-black-medium").color}
+            {/* <WalletIcon
+              color={style.get('color-text-black-medium').color}
               height={45}
-            />
+            /> */}
           </View>
         )}
         <View>
           <Text
             style={StyleSheet.flatten([
-              style.flatten(["h5", "color-text-black-high"]),
+              style.flatten(['h5', 'color-text-black-high']),
               labelStyle,
             ])}
           >
@@ -116,9 +147,9 @@ export const KeyStoreItem: FunctionComponent<{
             <Text
               style={StyleSheet.flatten([
                 style.flatten([
-                  "subtitle3",
-                  "color-text-black-low",
-                  "margin-top-4",
+                  'subtitle3',
+                  'color-text-black-low',
+                  'margin-top-4',
                 ]),
                 paragraphStyle,
               ])}
@@ -127,20 +158,18 @@ export const KeyStoreItem: FunctionComponent<{
             </Text>
           ) : null}
         </View>
-        <View style={style.flatten(["flex-1"])} />
-        {right}
       </React.Fragment>
     );
   };
 
   return (
-    <View style={style.flatten(["background-color-white"])}>
+    <View style={style.flatten(['padding-x-20'])}>
       {topBorder ? (
         <View
           style={style.flatten([
-            "height-1",
-            "margin-x-20",
-            "background-color-border-white",
+            'height-1',
+            'margin-x-20',
+            'background-color-border-white',
           ])}
         />
       ) : null}
@@ -148,10 +177,13 @@ export const KeyStoreItem: FunctionComponent<{
         <RectButton
           style={StyleSheet.flatten([
             style.flatten([
-              "height-87",
-              "flex-row",
-              "items-center",
-              "padding-x-20",
+              'height-87',
+              'flex-row',
+              'items-center',
+              'padding-x-20',
+              'background-color-white',
+              'margin-y-8',
+              'border-radius-12'
             ]),
             containerStyle,
           ])}
@@ -163,10 +195,10 @@ export const KeyStoreItem: FunctionComponent<{
         <View
           style={StyleSheet.flatten([
             style.flatten([
-              "height-87",
-              "flex-row",
-              "items-center",
-              "padding-x-20",
+              'height-87',
+              'flex-row',
+              'items-center',
+              'padding-x-20',
             ]),
             containerStyle,
           ])}
@@ -177,9 +209,9 @@ export const KeyStoreItem: FunctionComponent<{
       {bottomBorder ? (
         <View
           style={style.flatten([
-            "height-1",
-            "margin-x-20",
-            "background-color-border-white",
+            'height-1',
+            'margin-x-20',
+            'background-color-border-white',
           ])}
         />
       ) : null}
