@@ -19,10 +19,11 @@ import {
   OfflineSigner,
   StdSignature
 } from '@cosmjs/launchpad';
+
 import {
   EnableAccessMsg,
-  SuggestChainInfoMsg,
   GetKeyMsg,
+  SuggestChainInfoMsg,
   SuggestTokenMsg,
   SendTxMsg,
   GetSecret20ViewingKey,
@@ -32,7 +33,7 @@ import {
   RequestDecryptMsg,
   GetTxEncryptionKeyMsg,
   RequestVerifyADR36AminoSignDoc
-} from './types';
+} from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
 import { OWalletEnigmaUtils } from './enigma';

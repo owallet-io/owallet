@@ -24,8 +24,7 @@ import {
   TypeImportLedger
 } from './ledger';
 import { WelcomePage } from './welcome';
-
-export const AdditionalSignInPrepend: RegisterOption[] | undefined = undefined;
+import { AdditionalSignInPrepend } from '@owallet/common';
 
 export enum NunWords {
   WORDS12,

@@ -21,6 +21,7 @@
     "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/proto-signing": "^0.24.0-alpha.25",
     "@owallet/router": "^0.9.6",
+    "@owallet/background": "^0.9.16",
     "@owallet/types": "^0.9.12",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
