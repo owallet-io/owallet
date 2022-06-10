@@ -16,10 +16,10 @@ const tinyify = () => {
 
 const tsProc = spawn('tsc', ['--project', 'tsconfig.provider.json', '--watch']);
 tsProc.stdout.on('data', (data) => {
-  const msg = data.toString();
+  const msg = data.toString().trim();
+  console.log(msg);
+  // no error then re-compile
   if (msg.indexOf('Found 0 errors') !== -1) {
-    console.log(msg);
-    // no error then re-compile
     tinyify();
   }
 });
