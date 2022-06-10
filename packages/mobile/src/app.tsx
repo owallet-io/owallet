@@ -14,7 +14,7 @@ import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
 
-if (Platform.OS === 'android' || HermesInternal) {
+if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
 
   // Even though React Native supports the intl on android with "org.webkit:android-jsc-intl:+" option,
