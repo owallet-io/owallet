@@ -3,25 +3,26 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState
-} from 'react';
-import { BackHandler, Platform } from 'react-native';
-import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { useStyle } from '../../../../styles';
-import { OWallet } from '@owallet/provider';
-import { RNMessageRequesterExternal } from '../../../../router';
-import { RNInjectedOWallet } from '../../../../injected/injected-provider';
-import RNFS from 'react-native-fs';
-import EventEmitter from 'eventemitter3';
-import { PageWithViewInBottomTabView } from '../../../../components/page';
-import { OnScreenWebpageScreenHeader } from '../header';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { WebViewStateContext } from '../context';
-import { URL } from 'react-native-url-polyfill';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../../stores';
-import DeviceInfo from 'react-native-device-info';
-import { ORAIDEX_DEV_URL } from '../../config';
+  useState,
+} from "react";
+import { BackHandler, Platform } from "react-native";
+import WebView, { WebViewMessageEvent } from "react-native-webview";
+import { useStyle } from "../../../../styles";
+import { OWallet } from "@owallet/provider";
+import { RNMessageRequesterExternal } from "../../../../router";
+import { RNInjectedOWallet } from "../../../../injected/injected-provider";
+import RNFS from "react-native-fs";
+import EventEmitter from "eventemitter3";
+// import { PageWithViewInBottomTabView } from "../../../../components/page";
+import { PageWithView } from "../../../../components/page";
+import { OnScreenWebpageScreenHeader } from "../header";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import { WebViewStateContext } from "../context";
+import { URL } from "react-native-url-polyfill";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../../stores";
+import DeviceInfo from "react-native-device-info";
+import { ORAIDEX_DEV_URL } from "../../config";
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -33,7 +34,7 @@ export const useInjectedSourceCode = () => {
         .then(setCode);
       return;
     }
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(
         setCode
       );
