@@ -1,0 +1,19 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "module": "amd",
+        "baseUrl": ".",
+        "preserveConstEnums": true,
+        "outFile": "./build/injected/injected-provider.bundle.js",
+        "rootDir": "src",
+        "skipLibCheck": true,
+        "declaration": false,
+        "sourceMap": true
+    },
+    "files": [
+        "src/injected/index.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

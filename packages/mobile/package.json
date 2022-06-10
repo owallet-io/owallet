@@ -15,6 +15,7 @@
     "typecheck": "tsc",
     "watch-tsconfig": "tsc --project tsconfig.provider.json --watch",
     "shortlink-provider": "ln -s $PWD/build/injected/injected-provider.bundle.js $pathX",
+    "watch:provider": "tsc --project tsconfig.provider.dev.json --watch",
     "build:provider": "tsc --project tsconfig.provider.json && browserify -p tinyify build/injected/index.js -o build/injected/injected-provider.bundle.js && cp -rf build/injected/injected-provider.bundle.js android/app/src/main/assets/.",
     "start": "react-native start",
     "start:reset": "react-native start --reset-cache",
