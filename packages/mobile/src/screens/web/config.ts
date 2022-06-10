@@ -1,7 +1,7 @@
 import { ImageSourcePropType } from 'react-native';
+import { ORAIDEX_DEV_URL } from 'react-native-dotenv';
 
-export const ORAIDEX_DEV_URL = 'http://192.168.1.7:3000';
-// export const ORAIDEX_DEV_URL = "https://staging.oraidex.io";
+export const OraiDexUrl = ORAIDEX_DEV_URL || 'https://staging.oraidex.io';
 
 export type DAppInfo = {
   name: string;
@@ -14,7 +14,7 @@ export const DAppInfos: DAppInfo[] = [
   {
     name: 'Oraidex',
     thumbnail: require('../../assets/image/webpage/bgoraidex.png'),
-    uri: __DEV__ ? ORAIDEX_DEV_URL : 'https://oraidex.io',
+    uri: __DEV__ ? OraiDexUrl : 'https://oraidex.io',
     logo: require('../../assets/image/webpage/orai_logo.png')
   },
   {
