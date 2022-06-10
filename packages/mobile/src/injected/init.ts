@@ -10,8 +10,10 @@ export function init(
 ) {
   /* eslint-disable @typescript-eslint/ban-ts-comment */
   // for compartible with keplr dapp
-  (window as any).keplr = owallet;
-  (window as any).owallet = owallet;
+  // @ts-ignore
+  window.keplr = window.keplr || owallet;
+  // @ts-ignore
+  window.owallet = owallet;
   // @ts-ignore
   window.getOfflineSigner = getOfflineSigner;
   // @ts-ignore
