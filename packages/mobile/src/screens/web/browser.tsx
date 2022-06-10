@@ -11,15 +11,16 @@ import { useSmartNavigation } from '../../navigation';
 import { useNavigation } from '@react-navigation/core';
 import {
   BrowserSectionTitle,
-  BrowserSectionModal
+  BrowserSectionModal,
 } from './components/section-title';
 import {
   SearchIcon,
   RightArrowIcon,
   HomeIcon,
   ThreeDotsIcon,
-  TabIcon
+  TabIcon,
 } from '../../components/icon';
+import { ORAIDEX_DEV_URL } from './config';
 
 const isValidDomain = (url: string) => {
   const reg =
@@ -101,12 +102,13 @@ export const Browser: FunctionComponent = () => {
         uri:
           url?.toLowerCase().indexOf('http') >= 0
             ? url?.toLowerCase()
-            : 'https://' + url?.toLowerCase()
+            : 'https://' + url?.toLowerCase(),
       });
     } else {
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
-        uri: `https://www.google.com/search?q=${url ?? ''}`
+        // uri: `https://www.google.com/search?q=${url ?? ""}`,
+        uri: ORAIDEX_DEV_URL,
       });
     }
   };
@@ -141,7 +143,7 @@ export const Browser: FunctionComponent = () => {
           <Image
             style={{
               width: '100%',
-              height: '100%'
+              height: '100%',
             }}
             fadeDuration={0}
             resizeMode="stretch"
@@ -160,7 +162,7 @@ export const Browser: FunctionComponent = () => {
               'padding-20',
               'border-radius-16',
               'border-width-4',
-              'border-color-border-pink'
+              'border-color-border-pink',
             ])}
             returnKeyType={'next'}
             onSubmitEditing={onHandleUrl}
