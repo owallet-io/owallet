@@ -1,6 +1,6 @@
 import { ImageSourcePropType } from 'react-native';
 
-export const ORAIDEX_DEV_URL = 'http://192.168.68.92:3000';
+export const ORAIDEX_DEV_URL = 'http://192.168.1.7:3000';
 // export const ORAIDEX_DEV_URL = "https://staging.oraidex.io";
 
 export type DAppInfo = {
