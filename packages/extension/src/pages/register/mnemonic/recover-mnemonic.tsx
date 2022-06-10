@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { RegisterConfig } from '@owallet/hooks';
 import { AdvancedBIP44Option, useBIP44Option } from '../advanced-bip44';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { useStore } from '../../../stores';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -1,12 +1,12 @@
-import Web3 from "web3";
-import { flow, makeObservable, observable } from "mobx";
-import { Buffer } from "buffer/";
+import Web3 from 'web3';
+import { flow, makeObservable, observable } from 'mobx';
+import { Buffer } from 'buffer';
 
 // TODO: Add definition for ethereum-ens.
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const ENS = require("ethereum-ens");
+const ENS = require('ethereum-ens');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { Resolver } = require("@ensdomains/resolver");
+const { Resolver } = require('@ensdomains/resolver');
 
 const ensCache: Map<string, any> = new Map();
 
@@ -25,14 +25,14 @@ function getENSProvider(endpoint: string) {
 
 export class ObservableEnsFetcher {
   static isValidENS(name: string): boolean {
-    const strs = name.split(".");
+    const strs = name.split('.');
     if (strs.length <= 1) {
       return false;
     }
 
     const tld = strs[strs.length - 1];
     // TODO: What if more top level domain is added?
-    return tld === "eth" || tld === "xyz" || tld === "luxe" || tld === "kred";
+    return tld === 'eth' || tld === 'xyz' || tld === 'luxe' || tld === 'kred';
   }
 
   protected readonly ens: any;
@@ -41,7 +41,7 @@ export class ObservableEnsFetcher {
   protected _isFetching = false;
 
   @observable
-  protected _name: string = "";
+  protected _name: string = '';
 
   @observable
   protected _coinType: number | undefined = undefined;
@@ -99,7 +99,7 @@ export class ObservableEnsFetcher {
       // So to solve this problem, inject the recent public resolver's abi manually.
       const resolver = yield this.ens.resolver(name, Resolver.abi);
       const addr = yield resolver.addr(coinType);
-      this._address = Buffer.from(addr.replace("0x", ""), "hex");
+      this._address = Buffer.from(addr.replace('0x', ''), 'hex');
       this._error = undefined;
     } catch (e) {
       this._error = e;

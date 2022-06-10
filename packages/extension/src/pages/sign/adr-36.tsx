@@ -2,7 +2,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { SignDocWrapper } from '@owallet/cosmos';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { MsgRender } from './details-tab';
 import styleDetailsTab from './details-tab.module.scss';
 import { Label } from 'reactstrap';

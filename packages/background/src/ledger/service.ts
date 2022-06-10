@@ -10,7 +10,7 @@ import { BIP44HDPath } from '../keyring';
 import { KVStore } from '@owallet/common';
 import { InteractionService } from '../interaction';
 import { LedgerOptions } from './options';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 @singleton()
 export class LedgerService {

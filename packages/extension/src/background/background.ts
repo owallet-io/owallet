@@ -8,7 +8,7 @@ import {
 import { ExtensionKVStore } from '@owallet/common';
 import { init, ScryptParams } from '@owallet/background';
 import scrypt from 'scrypt-js';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
 

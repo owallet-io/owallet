@@ -8,7 +8,7 @@ import {
 import { Hash, RNG } from '@owallet/crypto';
 import pbkdf2 from 'pbkdf2';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 /**
  * This is similar to ethereum's key store.

@@ -7,7 +7,7 @@ import { PermissionService } from '../permission';
 import { TendermintTxTracer } from '@owallet/cosmos/build/tx-tracer';
 import { Notification } from './types';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 interface CosmosSdkError {
   codespace: string;

@@ -1,4 +1,4 @@
-import { Buffer } from "buffer/";
+import { Buffer } from 'buffer';
 
 export class UnknownMessage {
   constructor(
@@ -19,7 +19,7 @@ export class UnknownMessage {
   toJSON() {
     return {
       type_url: this._typeUrl,
-      value: Buffer.from(this._value).toString("base64"),
+      value: Buffer.from(this._value).toString('base64')
     };
   }
 }

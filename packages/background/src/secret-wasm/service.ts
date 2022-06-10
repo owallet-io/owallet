@@ -11,7 +11,7 @@ import { ChainInfo } from '@owallet/types';
 import { Bech32Address } from '@owallet/cosmos';
 import { Env } from '@owallet/router';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 @singleton()
 export class SecretWasmService {

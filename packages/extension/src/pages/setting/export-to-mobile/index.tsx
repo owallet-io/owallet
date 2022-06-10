@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import QRCode from 'qrcode.react';
 import style from './style.module.scss';
 import WalletConnect from '@walletconnect/client';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { useLoadingIndicator } from '../../../components/loading-indicator';
 import { Button, Form } from 'reactstrap';
 import { observer } from 'mobx-react-lite';

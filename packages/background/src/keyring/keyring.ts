@@ -11,7 +11,7 @@ import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 import { ChainInfo } from '@owallet/types';
 import { Env } from '@owallet/router';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { ChainIdHelper } from '@owallet/cosmos';
 
 import { Wallet } from '@ethersproject/wallet';

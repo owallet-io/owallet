@@ -4,7 +4,7 @@ import { ChainGetter } from '../../common';
 import { CancelToken } from 'axios';
 import { QueryResponse } from '../../common';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 export class ObservableCosmwasmContractChainQuery<
   T

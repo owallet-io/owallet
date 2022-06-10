@@ -36,7 +36,7 @@ import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
 
 import { RNG } from '@owallet/crypto';
 import { cosmos } from '@owallet/cosmos';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 @singleton()
 export class KeyRingService {

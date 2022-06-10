@@ -10,7 +10,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import yaml from 'js-yaml';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { CoinPrimitive } from '@owallet/stores';
 
 export interface MessageObj {

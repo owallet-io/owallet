@@ -7,7 +7,7 @@ import { Dec, DecUtils } from '@owallet/unit';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { DeepReadonly, Optional } from 'utility-types';
 import { cosmwasm } from '@owallet/cosmos';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 export interface HasCosmwasmAccount {
   cosmwasm: DeepReadonly<CosmwasmAccount>;

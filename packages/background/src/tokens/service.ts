@@ -21,7 +21,7 @@ import { KeyRingStatus } from '../keyring';
 import { InteractionService } from '../interaction';
 import { PermissionService } from '../permission';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { SuggestTokenMsg } from './messages';
 import { getSecret20ViewingKeyPermissionType } from './types';
 

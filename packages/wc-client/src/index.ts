@@ -26,7 +26,7 @@ import {
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { payloadId } from '@walletconnect/utils';
 import deepmerge from 'deepmerge';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { IndexedDBKVStore, KVStore } from '@owallet/common';
 
 // VersionFormatRegExp checks if a chainID is in the format required for parsing versions

@@ -5,7 +5,7 @@ import { OWalletConnectV1 } from '@owallet/wc-client';
 import { BroadcastMode, StdTx } from '@cosmjs/launchpad';
 import Axios from 'axios';
 import { EmbedChainInfos } from './config';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 let owallet: OWallet | undefined = undefined;
 let promise: Promise<OWallet> | undefined = undefined;

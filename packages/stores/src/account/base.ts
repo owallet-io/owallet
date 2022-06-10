@@ -26,7 +26,7 @@ import {
   TendermintTxTracer
 } from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import Long from 'long';
 import ICoin = cosmos.base.v1beta1.ICoin;
 import SignMode = cosmos.tx.signing.v1beta1.SignMode;
