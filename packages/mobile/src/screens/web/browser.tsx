@@ -103,7 +103,6 @@ export const Browser: FunctionComponent = () => {
             ? url?.toLowerCase()
             : 'https://' + url?.toLowerCase()
       });
-      return;
     } else {
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
