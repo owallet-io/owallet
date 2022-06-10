@@ -6,7 +6,7 @@ import {
 } from '../router';
 import { AsyncKVStore } from '../common';
 import scrypt from 'react-native-scrypt';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { getRandomBytesAsync } from '../common';
 import { BACKGROUND_PORT } from '@owallet/router';

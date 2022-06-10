@@ -12,7 +12,7 @@ import { Button } from '../../../components/button';
 import Clipboard from 'expo-clipboard';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');

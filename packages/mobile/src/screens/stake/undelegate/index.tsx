@@ -11,7 +11,7 @@ import { Button } from '../../../components/button';
 import { Card, CardBody, CardDivider } from '../../../components/card';
 import { BondStatus } from '@owallet/stores';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { useSmartNavigation } from '../../../navigation';
 
 export const UndelegateScreen: FunctionComponent = observer(() => {

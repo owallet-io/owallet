@@ -9,7 +9,7 @@ import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation';
 import { RightArrowIcon } from '../../components/icon';
 import { TendermintTxTracer } from '@owallet/cosmos';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import LottieView from 'lottie-react-native';
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
@@ -165,9 +165,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           'justify-center'
         ])}
       >
-        <View style={style.flatten(["flex-row", "width-full"])}>
+        <View style={style.flatten(['flex-row', 'width-full'])}>
           <Button
-            containerStyle={style.flatten(["flex-1"])}
+            containerStyle={style.flatten(['flex-1'])}
             size="default"
             text="Go to homescreen"
             mode="text"

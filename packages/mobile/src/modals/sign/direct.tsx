@@ -11,7 +11,7 @@ import {
 } from './messages';
 import { CoinPrimitive } from '@owallet/stores';
 
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 
 export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
   if (msg instanceof cosmos.bank.v1beta1.MsgSend) {

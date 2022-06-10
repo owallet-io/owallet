@@ -15,7 +15,7 @@ import Hypher from 'hypher';
 // @ts-ignore
 import english from 'hyphenation.en-us';
 import { useStore } from '../../stores';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { observer } from 'mobx-react-lite';
 import { FormattedMessage } from 'react-intl';
 import { Badge } from '../../components/badge';

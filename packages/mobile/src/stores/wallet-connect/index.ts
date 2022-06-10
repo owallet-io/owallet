@@ -9,7 +9,7 @@ import {
 } from 'mobx';
 import { ChainStore } from '../chain';
 import { OWallet } from '@owallet/provider';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { KVStore } from '@owallet/common';
 import { WCMessageRequester } from './msg-requester';
 import { RNRouterBackground } from '../../router';

@@ -10,13 +10,13 @@ import {
   AmountInput,
   MemoInput,
   CurrencySelector,
-  FeeButtons,
-} from "../../components/input";
-import { useStyle } from "../../styles";
-import { Button } from "../../components/button";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { useSmartNavigation } from "../../navigation";
-import { Buffer } from "buffer/";
+  FeeButtons
+} from '../../components/input';
+import { useStyle } from '../../styles';
+import { Button } from '../../components/button';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useSmartNavigation } from '../../navigation';
+import { Buffer } from 'buffer';
 
 export const SendScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
@@ -49,7 +49,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
-    account.msgOpts["send"],
+    account.msgOpts['send'],
     account.bech32Address,
     queries.queryBalances,
     EthereumEndpoint
@@ -82,10 +82,10 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get("flex-grow-1")}
-      style={style.flatten(["padding-x-page"])}
+      contentContainerStyle={style.get('flex-grow-1')}
+      style={style.flatten(['padding-x-page'])}
     >
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad'])} />
       <AddressInput
         label="Recipient"
         recipientConfig={sendConfigs.recipientConfig}
@@ -104,12 +104,12 @@ export const SendScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(["flex-1"])} />
+      <View style={style.flatten(['flex-1'])} />
       <Button
         text="Send"
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === "send"}
+        loading={account.isSendingMsg === 'send'}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
@@ -121,32 +121,32 @@ export const SendScreen: FunctionComponent = observer(() => {
                 sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetFee: true,
-                  preferNoSetMemo: true,
+                  preferNoSetMemo: true
                 },
                 {
                   onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent("Send token tx broadcasted", {
+                    analyticsStore.logEvent('Send token tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType,
+                      feeType: sendConfigs.feeConfig.feeType
                     });
-                    smartNavigation.pushSmart("TxPendingResult", {
-                      txHash: Buffer.from(txHash).toString("hex"),
+                    smartNavigation.pushSmart('TxPendingResult', {
+                      txHash: Buffer.from(txHash).toString('hex')
                     });
-                  },
+                  }
                 }
               );
             } catch (e) {
-              if (e?.message === "Request rejected") {
+              if (e?.message === 'Request rejected') {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart("Home", {});
+              smartNavigation.navigateSmart('Home', {});
             }
           }
         }}
       />
-      <View style={style.flatten(["height-page-pad"])} />
+      <View style={style.flatten(['height-page-pad', 'margin-bottom-87'])} />
     </PageWithScrollView>
   );
 });

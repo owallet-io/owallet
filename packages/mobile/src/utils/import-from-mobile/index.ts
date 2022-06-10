@@ -5,7 +5,7 @@ import {
 } from '@owallet/hooks';
 import WalletConnect from '@walletconnect/client';
 import AES, { Counter } from 'aes-js';
-import { Buffer } from 'buffer/';
+import { Buffer } from 'buffer';
 import { ExportKeyRingData } from '@owallet/background';
 import { KeyRingStore } from '@owallet/stores';
 import { Hash } from '@owallet/crypto';
