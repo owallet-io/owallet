@@ -124,7 +124,7 @@ export const WebpageScreen: FunctionComponent<
 
   useEffect(() => {
     RNInjectedOWallet.startProxy(
-      ethereum,
+      owallet,
 
       {
         addMessageListener: (fn) => {
@@ -145,7 +145,7 @@ export const WebpageScreen: FunctionComponent<
     );
 
     RNInjectedEthereum.startProxy(
-      owallet,
+      ethereum,
       {
         addMessageListener: (fn) => {
           eventEmitter.addListener('message', fn);
@@ -163,7 +163,7 @@ export const WebpageScreen: FunctionComponent<
       },
       RNInjectedOWallet.parseWebviewMessage
     );
-  }, [eventEmitter, owallet]);
+  }, [eventEmitter, owallet, ethereum]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {
