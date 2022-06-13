@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Linking, Text, View } from 'react-native';
 import {
   BIP44HDPath,
   ExportKeyRingData,
@@ -114,6 +114,7 @@ import { DAppWebpageScreen } from './screens/web/webpages';
 import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen';
 import { Browser } from './screens/web/browser';
 import { navigate, navigationRef } from './router/root';
+import { handleDeepLink } from './utils/helper';
 
 const { SmartNavigatorProvider, useSmartNavigation } =
   createSmartNavigatorProvider(
@@ -813,6 +814,14 @@ export const MainTabNavigation: FunctionComponent = () => {
   const focusedScreen = useFocusedScreen();
   const isDrawerOpen = useIsDrawerOpen();
 
+  // useEffect(() => {
+  //   Linking.addEventListener('url', handleDeepLink);
+  //   // NotificationUtils.getInstance().initListener();
+  //   return () => {
+  //     Linking.removeEventListener('url', handleDeepLink);
+  //   };
+  // }, []);
+
   useEffect(() => {
     // When the focused screen is not "Home" screen and the drawer is open,
     // try to close the drawer forcely.
@@ -925,7 +934,13 @@ export const MainTabNavigationWithDrawer: FunctionComponent = () => {
 
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
-
+  useEffect(() => {
+    Linking.addEventListener('url', handleDeepLink);
+    // NotificationUtils.getInstance().initListener();
+    return () => {
+      Linking.removeEventListener('url', handleDeepLink);
+    };
+  }, []);
   return (
     <PageScrollPositionProvider>
       <FocusedScreenProvider>

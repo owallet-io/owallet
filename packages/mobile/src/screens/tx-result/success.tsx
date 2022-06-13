@@ -158,7 +158,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           <Button
             containerStyle={style.flatten(["flex-1"])}
             size="large"
-            text="Confirm"
+            text="OK"
             onPress={() => {
               smartNavigation.navigateSmart("Home", {});
             }}

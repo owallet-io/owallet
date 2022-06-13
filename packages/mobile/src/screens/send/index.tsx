@@ -17,10 +17,11 @@ import { Button } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation';
 import { Buffer } from 'buffer';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const SendScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
-
+  const safeAreaInsets = useSafeAreaInsets();
   const route = useRoute<
     RouteProp<
       Record<
@@ -85,7 +86,12 @@ export const SendScreen: FunctionComponent = observer(() => {
       contentContainerStyle={style.get('flex-grow-1')}
       style={style.flatten(['padding-x-page'])}
     >
-      <View style={style.flatten(['height-page-pad'])} />
+      <View
+        style={{
+          marginTop: safeAreaInsets.top,
+        }}
+      />
+      {/* <View style={style.flatten(['height-page-pad'])} /> */}
       <AddressInput
         label="Recipient"
         recipientConfig={sendConfigs.recipientConfig}
@@ -146,7 +152,7 @@ export const SendScreen: FunctionComponent = observer(() => {
           }
         }}
       />
-      <View style={style.flatten(['height-page-pad', 'margin-bottom-87'])} />
+      <View style={style.flatten(['height-page-pad', 'margin-bottom-102'])} />
     </PageWithScrollView>
   );
 });

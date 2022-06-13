@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OWalletLogo } from "./owallet-logo";
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore , analyticsStore } = useStore();
 
   const style = useStyle();
 
@@ -44,7 +44,13 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         size="large"
         mode="light"
         onPress={() => {
-          smartNavigation.navigateSmart("Register.NewUser", {
+          // smartNavigation.navigateSmart("Register.NewUser", {
+          //   registerConfig,
+          // });
+          analyticsStore.logEvent("Create account started", {
+            registerType: "seed",
+          });
+          smartNavigation.navigateSmart("Register.NewMnemonic", {
             registerConfig,
           });
         }}
@@ -54,7 +60,13 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         text="Import existing wallet"
         size="large"
         onPress={() => {
-          smartNavigation.navigateSmart("Register.NotNewUser", {
+          // smartNavigation.navigateSmart("Register.NotNewUser", {
+          //   registerConfig,
+          // });
+          analyticsStore.logEvent("Import account started", {
+            registerType: "seed",
+          });
+          smartNavigation.navigateSmart("Register.RecoverMnemonic", {
             registerConfig,
           });
         }}
