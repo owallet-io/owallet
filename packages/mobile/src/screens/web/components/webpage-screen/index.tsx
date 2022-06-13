@@ -3,7 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { BackHandler, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
@@ -80,7 +80,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -113,7 +113,7 @@ export const WebpageScreen: FunctionComponent<
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
-        }
+        },
       },
       RNInjectedOWallet.parseWebviewMessage
     );
@@ -173,7 +173,7 @@ export const WebpageScreen: FunctionComponent<
     // So, checking platform is required.
     if (Platform.OS === 'ios') {
       navigation.setOptions({
-        gestureEnabled: !canGoBack
+        gestureEnabled: !canGoBack,
       });
     }
   }, [canGoBack, navigation]);
@@ -191,7 +191,7 @@ export const WebpageScreen: FunctionComponent<
           name: props.name,
           url: currentURL,
           canGoBack,
-          canGoForward
+          canGoForward,
         }}
       >
         <OnScreenWebpageScreenHeader />

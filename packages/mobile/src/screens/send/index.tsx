@@ -10,7 +10,7 @@ import {
   AmountInput,
   MemoInput,
   CurrencySelector,
-  FeeButtons
+  FeeButtons,
 } from '../../components/input';
 import { useStyle } from '../../styles';
 import { Button } from '../../components/button';
@@ -121,19 +121,19 @@ export const SendScreen: FunctionComponent = observer(() => {
                 sendConfigs.feeConfig.toStdFee(),
                 {
                   preferNoSetFee: true,
-                  preferNoSetMemo: true
+                  preferNoSetMemo: true,
                 },
                 {
                   onBroadcasted: (txHash) => {
                     analyticsStore.logEvent('Send token tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
-                      feeType: sendConfigs.feeConfig.feeType
+                      feeType: sendConfigs.feeConfig.feeType,
                     });
                     smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: Buffer.from(txHash).toString('hex')
+                      txHash: Buffer.from(txHash).toString('hex'),
                     });
-                  }
+                  },
                 }
               );
             } catch (e) {
