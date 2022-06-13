@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { Text, View } from 'react-native';
 import {
   BIP44HDPath,
@@ -99,6 +99,7 @@ import { TorusSignInScreen } from './screens/register/torus';
 import {
   HeaderAddIcon,
   HeaderWalletConnectIcon,
+  HeaderBackButtonIcon,
 } from './components/header/icon';
 import { BlurredBottomTabBar } from './components/bottom-tabbar';
 import { UnlockScreen } from './screens/unlock';
@@ -111,6 +112,8 @@ import {
 } from './screens/register/import-from-extension';
 import { DAppWebpageScreen } from './screens/web/webpages';
 import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen';
+import { Browser } from './screens/web/browser';
+import { navigate, navigationRef } from './router/root';
 
 const { SmartNavigatorProvider, useSmartNavigation } =
   createSmartNavigatorProvider(
@@ -228,6 +231,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       },
       'Web.dApp': {
         upperScreenName: 'Web',
+      },
+      Browser: {
+        upperScreenName: 'Browser',
       },
       'Web.dApp': {
         upperScreenName: 'Web'
@@ -349,6 +355,26 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
   );
 });
 
+const BrowserScreenHeaderLeft: FunctionComponent = observer(() => {
+  const style = useStyle();
+
+  const navigation = useNavigation();
+
+  return (
+    <HeaderLeftButton
+      onPress={() => {
+        navigation.goBack();
+      }}
+    >
+      <View style={style.flatten(['flex-row', 'items-center'])}>
+        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
+          <HeaderBackButtonIcon />
+        </Text>
+      </View>
+    </HeaderLeftButton>
+  );
+});
+
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const { walletConnectStore } = useStore();
 
@@ -402,6 +428,22 @@ export const MainNavigation: FunctionComponent = () => {
         }}
         name="Home"
         component={HomeScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: 'Browser',
+          headerLeft: () => <BrowserScreenHeaderLeft />,
+        }}
+        name="Browser"
+        component={Browser}
+      />
+      <Stack.Screen
+        options={{
+          title: 'Web',
+          headerShown: false,
+        }}
+        name="Web"
+        component={WebNavigation}
       />
     </Stack.Navigator>
   );
@@ -786,7 +828,8 @@ export const MainTabNavigation: FunctionComponent = () => {
           switch (route.name) {
             case 'Main':
               return <WalletIcon color={color} size={24} />;
-            case 'Web':
+            // case "Web":
+            case 'Send':
               return <SendIcon />;
             case 'Settings':
               return <SettingIcon color={color} />;
@@ -835,7 +878,18 @@ export const MainTabNavigation: FunctionComponent = () => {
       )}
     >
       <Tab.Screen name="Main" component={MainNavigation} />
-      {__DEV__ ? <Tab.Screen name="Web" component={WebScreen} /> : null}
+      {/* <Tab.Screen name="Web" component={WebNavigation} /> */}
+      <Tab.Screen
+        options={{
+          title: 'Send',
+        }}
+        name="Send"
+        component={SendScreen}
+        initialParams={{
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+          chainId: chainStore.current.chainId,
+        }}
+      />
       <Tab.Screen
         name="Settings"
         component={SettingStackScreen}
@@ -876,7 +930,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
     <PageScrollPositionProvider>
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
-          <NavigationContainer>
+          <NavigationContainer ref={navigationRef}>
             <Stack.Navigator
               initialRouteName={
                 keyRingStore.status !== KeyRingStatus.UNLOCKED

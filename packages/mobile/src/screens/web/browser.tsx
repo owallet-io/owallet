@@ -20,7 +20,7 @@ import {
   ThreeDotsIcon,
   TabIcon,
 } from '../../components/icon';
-import { ORAIDEX_DEV_URL } from './config';
+import { OraiDexUrl } from './config';
 
 const isValidDomain = (url: string) => {
   const reg =
@@ -107,8 +107,8 @@ export const Browser: FunctionComponent = () => {
     } else {
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
-        // uri: `https://www.google.com/search?q=${url ?? ""}`,
-        uri: ORAIDEX_DEV_URL,
+        // uri: `https://www.google.com/search?q=${url ?? ''}`,
+        uri: 'http://192.168.68.95:3000/',
       });
     }
   };
