@@ -7,6 +7,7 @@ import {
   OWalletMode,
   OWalletSignOptions,
   Key,
+  EthereumMode,
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
 import {
@@ -451,7 +452,7 @@ export class InjectedOWallet implements IOWallet {
 
 export class InjectedEthereum implements Ethereum {
   static startProxy(
-    owallet: IOWallet,
+    ethereum: Ethereum,
     eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       postMessage: (message: any) => void;
@@ -496,8 +497,8 @@ export class InjectedEthereum implements Ethereum {
         }
 
         if (
-          !owallet[message.method] ||
-          typeof owallet[message.method] !== 'function'
+          !ethereum[message.method] ||
+          typeof ethereum[message.method] !== 'function'
         ) {
           throw new Error(`Invalid method: ${message.method}`);
         }
@@ -519,57 +520,6 @@ export class InjectedEthereum implements Ethereum {
         if (message.method === 'getEnigmaUtils') {
           throw new Error("GetEnigmaUtils method can't be proxy request");
         }
-
-        const result =
-          message.method === 'signDirect'
-            ? await (async () => {
-                const receivedSignDoc: {
-                  bodyBytes?: Uint8Array | null;
-                  authInfoBytes?: Uint8Array | null;
-                  chainId?: string | null;
-                  accountNumber?: string | null;
-                } = message.args[2];
-
-                const result = await owallet.signDirect(
-                  message.args[0],
-                  message.args[1],
-                  {
-                    bodyBytes: receivedSignDoc.bodyBytes,
-                    authInfoBytes: receivedSignDoc.authInfoBytes,
-                    chainId: receivedSignDoc.chainId,
-                    accountNumber: receivedSignDoc.accountNumber
-                      ? Long.fromString(receivedSignDoc.accountNumber)
-                      : null,
-                  },
-                  message.args[3]
-                );
-
-                return {
-                  signed: {
-                    bodyBytes: result.signed.bodyBytes,
-                    authInfoBytes: result.signed.authInfoBytes,
-                    chainId: result.signed.chainId,
-                    accountNumber: result.signed.accountNumber.toString(),
-                  },
-                  signature: result.signature,
-                };
-              })()
-            : await owallet[message.method](
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                ...JSONUint8Array.unwrap(message.args)
-              );
-
-        const proxyResponse: ProxyRequestResponse = {
-          type: 'proxy-request-response',
-          namespace: NAMESPACE,
-          id: message.id,
-          result: {
-            return: JSONUint8Array.wrap(result),
-          },
-        };
-
-        eventListener.postMessage(proxyResponse);
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
@@ -640,7 +590,7 @@ export class InjectedEthereum implements Ethereum {
 
   constructor(
     public readonly version: string,
-    public readonly mode: OWalletMode,
+    public readonly mode: EthereumMode,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
