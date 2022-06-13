@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 // import { PageWithScrollViewInBottomTabView } from "../../components/page";
-
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
 // import { Button } from "../../components/button";
@@ -20,7 +19,7 @@ import {
   ThreeDotsIcon,
   TabIcon,
 } from '../../components/icon';
-import { OraiDexUrl } from './config';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const isValidDomain = (url: string) => {
   const reg =
@@ -107,8 +106,8 @@ export const Browser: FunctionComponent = () => {
     } else {
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
-        // uri: `https://www.google.com/search?q=${url ?? ''}`,
-        uri: 'http://192.168.68.95:3000/',
+        uri: `https://www.google.com/search?q=${url ?? ''}`,
+        // uri: 'http://192.168.68.95:3000/',
       });
     }
   };
@@ -168,7 +167,9 @@ export const Browser: FunctionComponent = () => {
             onSubmitEditing={onHandleUrl}
             onChangeText={(txt) => setUrl(txt.toLowerCase())}
             inputRight={
-              <SearchIcon onPress={onHandleUrl} color={'gray'} size={20} />
+              <TouchableOpacity onPress={onHandleUrl}>
+                <SearchIcon color={'gray'} size={20} />
+              </TouchableOpacity>
             }
           />
         </View>
