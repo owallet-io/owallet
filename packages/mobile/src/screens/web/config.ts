@@ -10,12 +10,20 @@ export type DAppInfo = {
   logo?: ImageSourcePropType;
 };
 
+const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
+const oraiThumbnail = require('../../assets/image/webpage/bgoraidex.png');
 export const DAppInfos: DAppInfo[] = [
   {
     name: 'Oraidex',
-    thumbnail: require('../../assets/image/webpage/bgoraidex.png'),
-    uri: __DEV__ ? OraiDexUrl : 'https://oraidex.io',
-    logo: require('../../assets/image/webpage/orai_logo.png')
+    thumbnail: oraiThumbnail,
+    uri: 'https://oraidex.io',
+    logo: oraiLogo
+  },
+  {
+    name: 'Oraidex',
+    thumbnail: oraiThumbnail,
+    uri: 'https://staging.oraidex.io',
+    logo: oraiLogo
   },
   {
     name: 'Osmosis',
@@ -24,4 +32,12 @@ export const DAppInfos: DAppInfo[] = [
     logo: require('../../assets/image/webpage/osmosis_logo.png')
   }
 ];
- 
+
+if (__DEV__ && ORAIDEX_DEV_URL) {
+  DAppInfos.push({
+    name: 'Oraidex',
+    thumbnail: oraiThumbnail,
+    uri: ORAIDEX_DEV_URL,
+    logo: oraiLogo
+  });
+}
