@@ -18,6 +18,8 @@ export function init(
   // @ts-ignore
   window.ethereumX = ethereum;
   // @ts-ignore
+  window.ethereum = window.ethereum || ethereum;
+  // @ts-ignore
   window.getOfflineSigner = getOfflineSigner;
   // @ts-ignore
   window.getEnigmaUtils = getEnigmaUtils;

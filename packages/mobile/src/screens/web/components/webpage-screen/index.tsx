@@ -114,9 +114,9 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      if (__DEV__) {
-        console.log('WebViewMessageEvent', event.nativeEvent.data);
-      }
+      // if (__DEV__) {
+      //   console.log('WebViewMessageEvent', event.nativeEvent.data);
+      // }
       eventEmitter.emit('message', event.nativeEvent);
     },
     [eventEmitter]
@@ -134,8 +134,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
+              message
+            )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -144,26 +144,26 @@ export const WebpageScreen: FunctionComponent<
       RNInjectedOWallet.parseWebviewMessage
     );
 
-    RNInjectedEthereum.startProxy(
-      ethereum,
-      {
-        addMessageListener: (fn) => {
-          eventEmitter.addListener('message', fn);
-        },
-        postMessage: (message) => {
-          webviewRef.current?.injectJavaScript(
-            `
-                window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
-                true; // note: this is required, or you'll sometimes get silent failures
-              `
-          );
-        }
-      },
-      RNInjectedEthereum.parseWebviewMessage
-    );
-  }, [eventEmitter, owallet, ethereum]);
+    // RNInjectedEthereum.startProxy(
+    //   ethereum,
+    //   {
+    //     addMessageListener: (fn) => {
+    //       eventEmitter.addListener('message', fn);
+    //     },
+    //     postMessage: (message) => {
+    //       webviewRef.current?.injectJavaScript(
+    //         `
+    //             window.postMessage(${JSON.stringify(
+    //           message
+    //         )}, window.location.origin);
+    //             true; // note: this is required, or you'll sometimes get silent failures
+    //           `
+    //       );
+    //     },
+    //   },
+    //   RNInjectedEthereum.parseWebviewMessage
+    // );
+  }, [eventEmitter, owallet]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {

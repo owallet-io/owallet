@@ -8,7 +8,7 @@ const bundle = () => {
     fullPaths: true,
     insertGlobals: true,
     fast: true,
-    debug: true
+    // debug: true
   })
     // .transform(unassertify, { global: true })
     // .transform(envify, { global: true })

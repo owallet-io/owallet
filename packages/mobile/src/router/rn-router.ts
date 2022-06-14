@@ -35,8 +35,12 @@ export class RNRouterBase extends Router {
       return;
     }
 
+    console.log("in the onMessage function, ready to handle message with sender: ", sender);
+    console.log("message: ", message)
+
     try {
       const result = await this.handleMessage(message, sender);
+      console.log("result after handling the message: ", result)
       sender.resolver({
         return: result
       });

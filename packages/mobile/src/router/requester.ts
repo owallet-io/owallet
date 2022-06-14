@@ -17,13 +17,17 @@ export class RNMessageRequesterBase implements MessageRequester {
         origin: 'react-native://internal'
       };
     }
-  ) {}
+  ) { }
 
   async sendMessage<M extends Message<unknown>>(
     port: string,
     msg: M
   ): Promise<M extends Message<infer R> ? R : never> {
     msg.validateBasic();
+
+    console.log("in send message mobile with msg: ", msg);
+
+    const sender = this.getSender();
 
     // Set message's origin.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -51,6 +55,8 @@ export class RNMessageRequesterBase implements MessageRequester {
         });
       })
     );
+
+    console.log("result send msg: ", result)
 
     if (!result) {
       throw new Error('Null result');
