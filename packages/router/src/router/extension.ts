@@ -36,7 +36,7 @@ export class ExtensionRouter extends Router {
     message: any,
     sender: MessageSender
   ): Promise<Result> | undefined => {
-    if (message.port !== this.port || message.cmd) {
+    if (message.port !== this.port) {
       return;
     }
 
