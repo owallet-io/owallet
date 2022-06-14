@@ -6,6 +6,7 @@ import {
   OWalletMode,
   OWalletSignOptions,
   Key,
+  EthereumMode,
 } from '@owallet/types';
 import {
   BACKGROUND_PORT,
@@ -288,7 +289,7 @@ export class OWallet implements IOWallet {
 export class Ethereum implements IEthereum {
   constructor(
     public readonly version: string,
-    public readonly mode: OWalletMode,
+    public readonly mode: EthereumMode,
     protected readonly requester: MessageRequester
   ) {}
 
