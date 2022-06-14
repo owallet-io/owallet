@@ -27,35 +27,36 @@ export class SignInteractionStore {
   protected get waitingDatas() {
     return this.interactionStore.getDatas<
       | {
-          msgOrigin: string;
-          chainId: string;
-          mode: 'amino';
-          signer: string;
-          signDoc: StdSignDoc;
-          signOptions: OWalletSignOptions;
-          isADR36SignDoc: boolean;
-          isADR36WithString?: boolean;
-        }
+        msgOrigin: string;
+        chainId: string;
+        mode: 'amino';
+        signer: string;
+        signDoc: StdSignDoc;
+        signOptions: OWalletSignOptions;
+        isADR36SignDoc: boolean;
+        isADR36WithString?: boolean;
+      }
       | {
-          msgOrigin: string;
-          chainId: string;
-          mode: 'direct';
-          signer: string;
-          signDocBytes: Uint8Array;
-          signOptions: OWalletSignOptions;
-        }
+        msgOrigin: string;
+        chainId: string;
+        mode: 'direct';
+        signer: string;
+        signDocBytes: Uint8Array;
+        signOptions: OWalletSignOptions;
+      }
     >('request-sign');
   }
 
   @computed
   get waitingData():
     | InteractionWaitingData<{
-        msgOrigin: string;
-        signer: string;
-        signDocWrapper: SignDocWrapper;
-        signOptions: OWalletSignOptions;
-        isADR36WithString?: boolean;
-      }>
+      chainId: string;
+      msgOrigin: string;
+      signer: string;
+      signDocWrapper: SignDocWrapper;
+      signOptions: OWalletSignOptions;
+      isADR36WithString?: boolean;
+    }>
     | undefined {
     const datas = this.waitingDatas;
 
@@ -112,6 +113,7 @@ export class SignInteractionStore {
 
   @flow
   *approveAndWaitEnd(newSignDocWrapper: SignDocWrapper) {
+    console.log("approve and wait end!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     if (this.waitingDatas.length === 0) {
       return;
     }

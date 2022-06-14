@@ -56,7 +56,7 @@ export class OWallet implements IOWallet {
     public readonly version: string,
     public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
-  ) {}
+  ) { }
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
@@ -114,6 +114,7 @@ export class OWallet implements IOWallet {
     },
     signOptions: OWalletSignOptions = {}
   ): Promise<DirectSignResponse> {
+    console.log("ready to sign direcT!!!!!!!!!!!!!!!!!!!");
     const msg = new RequestSignDirectMsg(
       chainId,
       signer,
@@ -291,7 +292,7 @@ export class Ethereum implements IEthereum {
     public readonly version: string,
     public readonly mode: EthereumMode,
     protected readonly requester: MessageRequester
-  ) {}
+  ) { }
 
   async send(): Promise<void> {
     console.log('');

@@ -313,6 +313,7 @@ export class KeyRingService {
     signDoc: cosmos.tx.v1beta1.SignDoc,
     signOptions: OWalletSignOptions
   ): Promise<DirectSignResponse> {
+    console.log("in request sign direct heheeeeeeeeeeeeeeeeeeeeeeeeehehehehehehehehehe");
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
     const key = await this.keyRing.getKey(chainId, coinType);
