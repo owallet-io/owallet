@@ -25,18 +25,18 @@ import { URL } from 'react-native-url-polyfill';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import DeviceInfo from 'react-native-device-info';
-import { OraiDexUrl } from '../../config';
+// import { OraiDexUrl } from '../../config';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    if (__DEV__) {
-      fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
-        .then((res) => res.text())
-        .then(setCode);
-      return;
-    }
+    // if (__DEV__) {
+    //   fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
+    //     .then((res) => res.text())
+    //     .then(setCode);
+    //   return;
+    // }
     if (Platform.OS === 'ios') {
       RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(
         setCode
@@ -144,26 +144,26 @@ export const WebpageScreen: FunctionComponent<
       RNInjectedOWallet.parseWebviewMessage
     );
 
-    RNInjectedEthereum.startProxy(
-      ethereum,
-      {
-        addMessageListener: (fn) => {
-          eventEmitter.addListener('message', fn);
-        },
-        postMessage: (message) => {
-          webviewRef.current?.injectJavaScript(
-            `
-                window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
-                true; // note: this is required, or you'll sometimes get silent failures
-              `
-          );
-        },
-      },
-      RNInjectedOWallet.parseWebviewMessage
-    );
-  }, [eventEmitter, owallet, ethereum]);
+    // RNInjectedEthereum.startProxy(
+    //   ethereum,
+    //   {
+    //     addMessageListener: (fn) => {
+    //       eventEmitter.addListener('message', fn);
+    //     },
+    //     postMessage: (message) => {
+    //       webviewRef.current?.injectJavaScript(
+    //         `
+    //             window.postMessage(${JSON.stringify(
+    //               message
+    //             )}, window.location.origin);
+    //             true; // note: this is required, or you'll sometimes get silent failures
+    //           `
+    //       );
+    //     },
+    //   },
+    //   RNInjectedEthereum.parseWebviewMessage
+    // );
+  }, [eventEmitter, owallet]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {
