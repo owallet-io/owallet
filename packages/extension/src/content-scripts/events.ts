@@ -38,7 +38,7 @@ export function initEvents(router: Router) {
         if ((msg as PushEventDataMsg).data.type === 'keystore-changed') {
           window.dispatchEvent(new Event('owallet_keystorechange'));
         }
-        return;
+        return {};
       default:
         throw new Error('Unknown msg type');
     }

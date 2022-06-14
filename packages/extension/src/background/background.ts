@@ -13,8 +13,8 @@ import { Buffer } from 'buffer';
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
 
 const router = new ExtensionRouter(ExtensionEnv.produceEnv);
-// router.addGuard(ExtensionGuards.checkOriginIsValid);
-// router.addGuard(ExtensionGuards.checkMessageIsInternal);
+router.addGuard(ExtensionGuards.checkOriginIsValid);
+router.addGuard(ExtensionGuards.checkMessageIsInternal);
 
 // can extends more origins to PrivilegedOrigins
 init(

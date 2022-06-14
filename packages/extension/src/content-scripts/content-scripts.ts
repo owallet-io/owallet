@@ -15,7 +15,7 @@ InjectedOWallet.startProxy(
 );
 
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
-// router.addGuard(ContentScriptGuards.checkMessageIsInternal);
+router.addGuard(ContentScriptGuards.checkMessageIsInternal);
 initEvents(router);
 router.listen(WEBPAGE_PORT);
 
