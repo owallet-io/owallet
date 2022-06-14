@@ -41,7 +41,7 @@ export interface WalletConnectV1SessionRequest {
 // Wallet connect v1.0 is not suitable for handling multiple chains.
 // When the session requested, you cannot receive information from multiple chains,
 // so open a session unconditionally and manage permissions through custom requests.
-// Frontend should request the "owallet_enable_wallet_connect_V1" method with "chains" params.
+// Frontend should request the "keplr_enable_wallet_connect_V1" method with "chains" params.
 // "chains" params should be in form of https://github.com/ChainAgnostic/CAIPs/blob/master/CAIPs/caip-2.md
 export interface SessionRequestApproval {
   key: string;
@@ -265,7 +265,7 @@ export abstract class WalletConnectManager {
 
     try {
       switch (payload.method) {
-        case 'owallet_enable_wallet_connect_v1': {
+        case 'keplr_enable_wallet_connect_v1': {
           if (payload.params.length === 0) {
             throw new Error('Invalid parmas');
           }
@@ -281,7 +281,7 @@ export abstract class WalletConnectManager {
           });
           break;
         }
-        case 'owallet_get_key_wallet_connect_v1': {
+        case 'keplr_get_key_wallet_connect_v1': {
           if (payload.params.length !== 1) {
             throw new Error('Invalid parmas');
           }
@@ -304,7 +304,7 @@ export abstract class WalletConnectManager {
           });
           break;
         }
-        case 'owallet_sign_amino_wallet_connect_v1': {
+        case 'keplr_sign_amino_wallet_connect_v1': {
           if (payload.params.length !== 3 && payload.params.length !== 4) {
             throw new Error('Invalid parmas');
           }
@@ -365,13 +365,13 @@ export class WalletConnectStore extends WalletConnectManager {
      Unfortunately, owallet can handle the one key at the same time.
      So, if the other key was selected when the wallet connect connected and the frontend uses that account
      after the user changes the key on OWallet, the requests can't be handled properly.
-     To reduce this problem, OWallet send the "owallet_keystore_may_changed_event_wallet_connect_v1" to the connected clients
+     To reduce this problem, OWallet send the "keplr_keystore_may_changed_event_wallet_connect_v1" to the connected clients
      whenever the app is unlocked or user changes the key.
      */
-    this.eventListener.addEventListener('owallet_keystoreunlock', () =>
+    this.eventListener.addEventListener('keplr_keystoreunlock', () =>
       this.sendAccountMayChangedEventToClients()
     );
-    this.eventListener.addEventListener('owallet_keystorechange', () =>
+    this.eventListener.addEventListener('keplr_keystorechange', () =>
       this.sendAccountMayChangedEventToClients()
     );
   }
@@ -542,7 +542,7 @@ export class WalletConnectStore extends WalletConnectManager {
         client.sendCustomRequest({
           id: Math.floor(Math.random() * 100000),
           jsonrpc: '2.0',
-          method: 'owallet_keystore_may_changed_event_wallet_connect_v1',
+          method: 'keplr_keystore_may_changed_event_wallet_connect_v1',
           params: [keys]
         });
       }

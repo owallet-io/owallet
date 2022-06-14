@@ -3,7 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState,
+  useState
 } from 'react';
 import { BackHandler, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
@@ -12,7 +12,7 @@ import { OWallet, Ethereum } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import {
   RNInjectedEthereum,
-  RNInjectedOWallet,
+  RNInjectedOWallet
 } from '../../../../injected/injected-provider';
 import RNFS from 'react-native-fs';
 import EventEmitter from 'eventemitter3';
@@ -83,7 +83,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin,
+            origin: new URL(currentURL).origin
           };
         })
       )
@@ -105,7 +105,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin,
+            origin: new URL(currentURL).origin
           };
         })
       )
@@ -139,7 +139,7 @@ export const WebpageScreen: FunctionComponent<
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
-        },
+        }
       },
       RNInjectedOWallet.parseWebviewMessage
     );
@@ -159,7 +159,7 @@ export const WebpageScreen: FunctionComponent<
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
-        },
+        }
       },
       RNInjectedEthereum.parseWebviewMessage
     );
@@ -169,7 +169,7 @@ export const WebpageScreen: FunctionComponent<
     const keyStoreChangedListener = () => {
       webviewRef.current?.injectJavaScript(
         `
-            window.dispatchEvent(new Event("owallet_keystorechange"));
+            window.dispatchEvent(new Event("keplr_keystorechange"));
             true; // note: this is required, or you'll sometimes get silent failures
           `
       );
@@ -219,7 +219,7 @@ export const WebpageScreen: FunctionComponent<
     // So, checking platform is required.
     if (Platform.OS === 'ios') {
       navigation.setOptions({
-        gestureEnabled: !canGoBack,
+        gestureEnabled: !canGoBack
       });
     }
   }, [canGoBack, navigation]);
@@ -237,7 +237,7 @@ export const WebpageScreen: FunctionComponent<
           name: props.name,
           url: currentURL,
           canGoBack,
-          canGoForward,
+          canGoForward
         }}
       >
         <OnScreenWebpageScreenHeader />

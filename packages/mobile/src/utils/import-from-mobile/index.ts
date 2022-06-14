@@ -69,7 +69,7 @@ export async function importFromMobile(
   const result = (
     await connector.sendCustomRequest({
       id: Math.floor(Math.random() * 100000),
-      method: 'owallet_request_export_keyring_datas_wallet_connect_v1',
+      method: 'keplr_request_export_keyring_datas_wallet_connect_v1',
       params: [
         {
           addressBookChainIds: chainIdsForAddressBook

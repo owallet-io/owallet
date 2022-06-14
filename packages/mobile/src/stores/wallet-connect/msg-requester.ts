@@ -9,11 +9,11 @@ export class WCMessageRequester implements MessageRequester {
   ) {}
 
   static getVirtualSessionURL = (sessionId: string): string => {
-    return `https://owallet_wc_virtual.${sessionId}`;
+    return `https://keplr_wc_virtual.${sessionId}`;
   };
 
   static isVirtualSessionURL = (url: string): boolean => {
-    return url.startsWith('https://owallet_wc_virtual.');
+    return url.startsWith('https://keplr_wc_virtual.');
   };
 
   static getSessionIdFromVirtualURL = (url: string): string => {
@@ -21,7 +21,7 @@ export class WCMessageRequester implements MessageRequester {
       throw new Error('URL is not for wallet connect');
     }
 
-    return url.replace('https://owallet_wc_virtual.', '').replace('/', '');
+    return url.replace('https://keplr_wc_virtual.', '').replace('/', '');
   };
 
   async sendMessage<M extends Message<unknown>>(
