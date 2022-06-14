@@ -132,4 +132,5 @@ export interface Ethereum {
   send(): Promise<void>;
   request(): Promise<void>;
   asyncRequest(): Promise<void>;
+  getKey(chainId: string): Promise<Key>;
 }

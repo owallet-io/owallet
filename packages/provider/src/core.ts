@@ -302,4 +302,8 @@ export class Ethereum implements IEthereum {
   async asyncRequest(): Promise<void> {
     console.log('');
   }
+  async getKey(chainId: string): Promise<Key> {
+    const msg = new GetKeyMsg(chainId);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
 }
