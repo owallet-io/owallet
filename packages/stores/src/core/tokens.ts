@@ -32,13 +32,13 @@ export class TokensStoreInner {
 
     // If key store in the owallet extension is unlocked, this event will be dispatched.
     // This is needed becuase the token such as secret20 exists according to the account.
-    this.eventListener.addEventListener('owallet_keystoreunlock', () => {
+    this.eventListener.addEventListener('keplr_keystoreunlock', () => {
       this.refreshTokens();
     });
 
     // If key store in the owallet extension is changed, this event will be dispatched.
     // This is needed becuase the token such as secret20 exists according to the account.
-    this.eventListener.addEventListener('owallet_keystorechange', () => {
+    this.eventListener.addEventListener('keplr_keystorechange', () => {
       this.refreshTokens();
     });
   }

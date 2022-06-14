@@ -39,8 +39,8 @@ export function getWCOWallet(): Promise<OWallet> {
     const connector = new WalletConnect({
       bridge: 'https://bridge.walletconnect.org', // Required
       signingMethods: [
-        'owallet_enable_wallet_connect_v1',
-        'owallet_sign_amino_wallet_connect_v1'
+        'keplr_enable_wallet_connect_v1',
+        'keplr_sign_amino_wallet_connect_v1'
       ],
       qrcodeModal: new OWalletQRCodeModalV1()
     });

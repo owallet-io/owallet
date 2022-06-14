@@ -288,7 +288,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
             if (
               error ||
               payload.method !==
-                'owallet_request_export_keyring_datas_wallet_connect_v1'
+                'keplr_request_export_keyring_datas_wallet_connect_v1'
             ) {
               console.log(error, payload?.method);
               history.replace('/');
