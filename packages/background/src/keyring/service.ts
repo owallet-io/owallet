@@ -36,7 +36,7 @@ import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
 
 import { RNG } from '@owallet/crypto';
 import { cosmos } from '@owallet/cosmos';
-import { Buffer } from 'buffer';
+import { Buffer } from 'buffer/';
 
 @singleton()
 export class KeyRingService {
@@ -365,7 +365,7 @@ export class KeyRingService {
   ): Promise<boolean> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
-    const key = this.keyRing.getKey(chainId, coinType);
+    const key = await this.keyRing.getKey(chainId, coinType);
     const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
       .bech32Config.bech32PrefixAccAddr;
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);

@@ -35,5 +35,3 @@ export type Guard = (
   msg: Message<unknown>,
   sender: MessageSender
 ) => Promise<void>;
-
-export type WorkerCmd = 'load-url' | 'get-router-id';

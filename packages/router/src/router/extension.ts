@@ -1,5 +1,4 @@
 import { Router, MessageSender, Result, EnvProducer } from '@owallet/router';
-import { getOWalletExtensionRouterId } from '../utils';
 
 export class ExtensionRouter extends Router {
   listen(port: string): void {
@@ -38,15 +37,6 @@ export class ExtensionRouter extends Router {
     sender: MessageSender
   ): Promise<Result> | undefined => {
     if (message.port !== this.port) {
-      return;
-    }
-
-    // The receiverRouterId will be set when requesting an interaction from the background to the frontend.
-    // If this value exists, it compares this value with the current router id and processes them only if they are the same.
-    if (
-      message.msg?.routerMeta?.receiverRouterId &&
-      message.msg.routerMeta.receiverRouterId !== getOWalletExtensionRouterId()
-    ) {
       return;
     }
 

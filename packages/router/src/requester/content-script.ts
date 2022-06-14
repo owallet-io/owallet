@@ -15,11 +15,10 @@ export class ContentScriptMessageRequester implements MessageRequester {
     // Set message's origin.
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    msg['origin'] = `chrome-extension://${browser.runtime.id}`;
-    msg.routerMeta = {
-      ...msg.routerMeta,
-      routerId: getOWalletExtensionRouterId()
-    };
+    msg['origin'] =
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : new URL(browser.runtime.getURL('/')).origin;
 
     const wrappedMsg = JSONUint8Array.wrap(msg);
 

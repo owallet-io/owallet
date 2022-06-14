@@ -2,7 +2,6 @@ import {
   Env,
   FnRequestInteraction,
   MessageSender,
-  WorkerCmd,
   APP_PORT
 } from '@owallet/router';
 import { openPopupWindow as openPopupWindowInner } from '@owallet/popup';
@@ -64,10 +63,6 @@ async function openPopupWindow(
   return await openPopupQueue.add(() => openPopupWindowInner(url, channel));
 }
 
-export const assignCmd = async (cmd: WorkerCmd, params: any): Promise<any> => {
-  return browser.runtime.sendMessage({ cmd, params });
-};
-
 export class ExtensionEnv {
   static readonly produceEnv = (sender: MessageSender): Env => {
     const isInternalMsg = ExtensionEnv.checkIsInternalMessage(
@@ -97,8 +92,8 @@ export class ExtensionEnv {
         populate: true
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const tabId = window.tabs![0].id!;
+      let tabId: number;
+      tabId = window.tabs![0].id!;
 
       // Wait until that tab is loaded
       await (async () => {
@@ -154,16 +149,7 @@ export class ExtensionEnv {
         }
 
         // post message reload to popup
-        await assignCmd('reload-url', {
-          tabId: sender.tab?.id,
-          routerId: routerMeta.routerId,
-          url
-        });
-
-        msg.routerMeta = {
-          ...msg.routerMeta,
-          receiverRouterId: routerMeta.routerId
-        };
+        msg.routerMeta = { url };
 
         return await new InExtensionMessageRequester().sendMessage(
           APP_PORT,

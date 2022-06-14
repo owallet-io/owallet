@@ -66,8 +66,6 @@ window.owallet = new OWallet(
 );
 
 //@ts-ignore
-window.keplr = window.keplr || owallet;
-
 window.owallet = owallet;
 
 // Make sure that icon file will be included in bundle
