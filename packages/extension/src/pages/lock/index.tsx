@@ -53,7 +53,7 @@ export const LockPage: FunctionComponent = observer(() => {
     // auto unlock works
     if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
       // open popup not interaction window
-      if (!interactionInfo.interaction) {
+      if (interactionInfo.interactionInternal) {
         history.replace('/');
       }
     }
