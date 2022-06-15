@@ -5,7 +5,7 @@ import { InteractionWaitingData } from './types';
 import {
   Env,
   FnRequestInteractionOptions,
-  MessageRequester
+  MessageRequester,
 } from '@owallet/router';
 import { PushEventDataMsg, PushInteractionDataMsg } from './foreground';
 import { RNG } from '@owallet/crypto';
@@ -33,7 +33,7 @@ export class InteractionService {
 
     const msg = new PushEventDataMsg({
       type,
-      data
+      data,
     });
 
     this.eventMsgRequester.sendMessage(port, msg).catch((e) => {
@@ -74,7 +74,7 @@ export class InteractionService {
     return new Promise<unknown>((resolve, reject) => {
       this.resolverMap.set(id, {
         onApprove: resolve,
-        onReject: reject
+        onReject: reject,
       });
 
       fn();
@@ -117,7 +117,7 @@ export class InteractionService {
       id,
       type,
       isInternal,
-      data
+      data,
     };
 
     if (this.waitingMap.has(id)) {

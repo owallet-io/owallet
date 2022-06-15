@@ -103,6 +103,7 @@ export class OWallet implements IOWallet {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
+  // then here to sign
   async signDirect(
     chainId: string,
     signer: string,
@@ -128,6 +129,7 @@ export class OWallet implements IOWallet {
       },
       deepmerge(this.defaultOptions.sign ?? {}, signOptions)
     );
+
     const response = await this.requester.sendMessage(BACKGROUND_PORT, msg);
 
     return {

@@ -328,7 +328,7 @@ export class InjectedOWallet implements IOWallet {
       accountNumber: string;
     } = result.signed;
 
-    console.log("signed message after sign direct: ", signed)
+    console.log('accountNumber', signed);
 
     return {
       signed: {

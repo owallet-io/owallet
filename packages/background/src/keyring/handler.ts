@@ -26,7 +26,7 @@ import {
   GetIsKeyStoreCoinTypeSetMsg,
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
-  RequestVerifyADR36AminoSignDoc
+  RequestVerifyADR36AminoSignDoc,
 } from './messages';
 import { KeyRingService } from './service';
 import { Bech32Address, cosmos } from '@owallet/cosmos';
@@ -223,7 +223,7 @@ const handleLockKeyRingMsg: (
 ) => InternalHandler<LockKeyRingMsg> = (service) => {
   return () => {
     return {
-      status: service.lock()
+      status: service.lock(),
     };
   };
 };
@@ -233,7 +233,7 @@ const handleUnlockKeyRingMsg: (
 ) => InternalHandler<UnlockKeyRingMsg> = (service) => {
   return async (_, msg) => {
     return {
-      status: await service.unlock(msg.password)
+      status: await service.unlock(msg.password),
     };
   };
 };
@@ -259,7 +259,7 @@ const handleGetKeyMsg: (
         (await service.chainsService.getChainInfo(msg.chainId)).bech32Config
           .bech32PrefixAccAddr
       ),
-      isNanoLedger: key.isNanoLedger
+      isNanoLedger: key.isNanoLedger,
     };
   };
 };
@@ -285,6 +285,26 @@ const handleRequestSignAminoMsg: (
   };
 };
 
+const handleRequestVerifyADR36AminoSignDoc: (
+  service: KeyRingService
+) => InternalHandler<RequestVerifyADR36AminoSignDoc> = (service) => {
+  return async (env, msg) => {
+    await service.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      msg.chainId,
+      msg.origin
+    );
+
+    return await service.verifyADR36AminoSignDoc(
+      msg.chainId,
+      msg.signer,
+      msg.data,
+      msg.signature
+    );
+  };
+};
+
+//goes here
 const handleRequestSignDirectMsg: (
   service: KeyRingService
 ) => InternalHandler<RequestSignDirectMsg> = (service) => {
@@ -295,7 +315,7 @@ const handleRequestSignDirectMsg: (
       msg.origin
     );
 
-    console.log("in handle request sign direct heheeeeeeeeeeeeeeeeeeeeeeeeehehehehehehehehehe");
+    console.log('signDoc msg', msg);
 
     const signDoc = cosmos.tx.v1beta1.SignDoc.create({
       bodyBytes: msg.signDoc.bodyBytes,
@@ -303,7 +323,7 @@ const handleRequestSignDirectMsg: (
       chainId: msg.signDoc.chainId,
       accountNumber: msg.signDoc.accountNumber
         ? Long.fromString(msg.signDoc.accountNumber)
-        : undefined
+        : undefined,
     });
 
     const response = await service.requestSignDirect(
@@ -315,14 +335,16 @@ const handleRequestSignDirectMsg: (
       msg.signOptions
     );
 
+    console.log('response', response);
+
     return {
       signed: {
         bodyBytes: response.signed.bodyBytes,
         authInfoBytes: response.signed.authInfoBytes,
         chainId: response.signed.chainId,
-        accountNumber: response.signed.accountNumber.toString()
+        accountNumber: response.signed.accountNumber.toString(),
       },
-      signature: response.signature
+      signature: response.signature,
     };
   };
 };
@@ -332,7 +354,7 @@ const handleGetMultiKeyStoreInfoMsg: (
 ) => InternalHandler<GetMultiKeyStoreInfoMsg> = (service) => {
   return () => {
     return {
-      multiKeyStoreInfo: service.getMultiKeyStoreInfo()
+      multiKeyStoreInfo: service.getMultiKeyStoreInfo(),
     };
   };
 };

@@ -3,13 +3,14 @@ import { ROUTE } from './constants';
 import {
   KeyRing,
   KeyRingStatus,
-  MultiKeyStoreInfoWithSelected
+  MultiKeyStoreInfoWithSelected,
 } from './keyring';
 import { BIP44HDPath, ExportKeyRingData } from './types';
 
 import {
   Bech32Address,
-  checkAndValidateADR36AminoSignDoc
+  checkAndValidateADR36AminoSignDoc,
+  cosmos,
 } from '@owallet/cosmos';
 import { BIP44, OWalletSignOptions, Key } from '@owallet/types';
 
@@ -543,6 +544,81 @@ export class RequestSignAminoMsg extends Message<AminoSignResponse> {
 
   type(): string {
     return RequestSignAminoMsg.type();
+  }
+}
+
+// request goes here
+export class RequestSignDirectMsg extends Message<{
+  readonly signed: {
+    bodyBytes: Uint8Array;
+    authInfoBytes: Uint8Array;
+    chainId: string;
+    accountNumber: string;
+  };
+  readonly signature: StdSignature;
+}> {
+  public static type() {
+    return 'request-sign-direct';
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly signer: string,
+    public readonly signDoc: {
+      bodyBytes?: Uint8Array | null;
+      authInfoBytes?: Uint8Array | null;
+      chainId?: string | null;
+      accountNumber?: string | null;
+    },
+    public readonly signOptions: OWalletSignOptions = {}
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.signer) {
+      throw new Error('signer not set');
+    }
+
+    // Validate bech32 address.
+    Bech32Address.validate(this.signer);
+
+    const signDoc = cosmos.tx.v1beta1.SignDoc.create({
+      bodyBytes: this.signDoc.bodyBytes,
+      authInfoBytes: this.signDoc.authInfoBytes,
+      chainId: this.signDoc.chainId,
+      accountNumber: this.signDoc.accountNumber
+        ? Long.fromString(this.signDoc.accountNumber)
+        : undefined,
+    });
+
+    if (signDoc.chainId !== this.chainId) {
+      throw new OWalletError(
+        'keyring',
+        234,
+        'Chain id in the message is not matched with the requested chain id'
+      );
+    }
+
+    if (!this.signOptions) {
+      throw new Error('Sign options are null');
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSignDirectMsg.type();
   }
 }
 

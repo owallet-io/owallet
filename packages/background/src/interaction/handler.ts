@@ -2,6 +2,7 @@ import { Env, Handler, InternalHandler, Message } from '@owallet/router';
 import { ApproveInteractionMsg, RejectInteractionMsg } from './messages';
 import { InteractionService } from './service';
 
+// finally here
 export const getHandler: (service: InteractionService) => Handler = (
   service: InteractionService
 ) => {
