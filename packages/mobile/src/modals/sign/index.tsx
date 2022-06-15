@@ -10,7 +10,7 @@ import {
   useGasConfig,
   useMemoConfig,
   useSignDocAmountConfig,
-  useSignDocHelper
+  useSignDocHelper,
 } from '@owallet/hooks';
 import { Button } from '../../components/button';
 import { Msg as AminoMsg } from '@cosmjs/launchpad';
@@ -34,7 +34,7 @@ export const SignModal: FunctionComponent<{
       accountStore,
       queriesStore,
       walletConnectStore,
-      signInteractionStore
+      signInteractionStore,
     } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
@@ -72,6 +72,7 @@ export const SignModal: FunctionComponent<{
       feeConfig.fee?.toCoin().amount,
       amountConfig.amount
     );
+    console.log('feeConfig 2', feeConfig.fee?.toCoin());
     const memoConfig = useMemoConfig(chainStore, chainId);
 
     const signDocWapper = signInteractionStore.waitingData?.data.signDocWrapper;
@@ -116,7 +117,7 @@ export const SignModal: FunctionComponent<{
       memoConfig,
       signDocHelper,
       signInteractionStore.waitingData,
-      walletConnectStore
+      walletConnectStore,
     ]);
 
     const mode = signDocHelper.signDocWrapper
@@ -163,7 +164,7 @@ export const SignModal: FunctionComponent<{
                   style={style.flatten([
                     'height-1',
                     'background-color-border-white',
-                    'margin-x-16'
+                    'margin-x-16',
                   ])}
                 />
               ) : null}
@@ -190,7 +191,7 @@ export const SignModal: FunctionComponent<{
                   style={style.flatten([
                     'height-1',
                     'background-color-border-white',
-                    'margin-x-16'
+                    'margin-x-16',
                   ])}
                 />
               ) : null}
@@ -226,7 +227,7 @@ export const SignModal: FunctionComponent<{
               'border-radius-8',
               'border-width-1',
               'border-color-border-white',
-              'overflow-hidden'
+              'overflow-hidden',
             ])}
           >
             <ScrollView
@@ -258,6 +259,7 @@ export const SignModal: FunctionComponent<{
             console.log("on press sign")
             try {
               if (signDocHelper.signDocWrapper) {
+                //
                 await signInteractionStore.approveAndWaitEnd(
                   signDocHelper.signDocWrapper
                 );
@@ -272,6 +274,6 @@ export const SignModal: FunctionComponent<{
   }),
   {
     disableSafeArea: true,
-    blurBackdropOnIOS: true
+    blurBackdropOnIOS: true,
   }
 );

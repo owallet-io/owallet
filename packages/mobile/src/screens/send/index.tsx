@@ -146,7 +146,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               if (e?.message === 'Request rejected') {
                 return;
               }
-              console.log(e);
+              console.log('send error', e);
               smartNavigation.navigateSmart('Home', {});
             }
           }

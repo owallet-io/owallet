@@ -24,6 +24,7 @@ export class RNRouterBase extends Router {
     this.eventEmitter.removeListener('message', this.onMessage);
   }
 
+  // some how it get here
   protected onMessage = async (params: {
     message: any;
     sender: MessageSender & {
@@ -42,7 +43,7 @@ export class RNRouterBase extends Router {
       const result = await this.handleMessage(message, sender);
       console.log("result after handling the message: ", result)
       sender.resolver({
-        return: result
+        return: result,
       });
       return;
     } catch (e) {
@@ -51,11 +52,11 @@ export class RNRouterBase extends Router {
       );
       if (e) {
         sender.resolver({
-          error: e.message || e.toString()
+          error: e.message || e.toString(),
         });
       } else {
         sender.resolver({
-          error: 'Unknown error, and error is null'
+          error: 'Unknown error, and error is null',
         });
       }
     }

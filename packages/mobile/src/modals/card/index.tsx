@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import {
   Keyboard,
   KeyboardEvent,
@@ -7,17 +7,17 @@ import {
   Text,
   View,
   ViewStyle,
-} from "react-native";
-import { useStyle } from "../../styles";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PanGestureHandler } from "react-native-gesture-handler";
-import { useModalState, useModalTransision } from "../base";
-import Animated, { Easing } from "react-native-reanimated";
+} from 'react-native';
+import { useStyle } from '../../styles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+import { useModalState, useModalTransision } from '../base';
+import Animated, { Easing } from 'react-native-reanimated';
 import {
   DefaultAcceleration,
   DefaultCloseVelocity,
   DefaultOpenVelocity,
-} from "../base/const";
+} from '../base/const';
 
 const useAnimatedValueSet = () => {
   const [state] = useState(() => {
@@ -50,10 +50,8 @@ export const CardModal: FunctionComponent<{
   const style = useStyle();
   const safeAreaInsets = useSafeAreaInsets();
 
-  const [
-    softwareKeyboardBottomPadding,
-    setSoftwareKeyboardBottomPadding,
-  ] = useState(0);
+  const [softwareKeyboardBottomPadding, setSoftwareKeyboardBottomPadding] =
+    useState(0);
 
   useEffect(() => {
     const onKeyboarFrame = (e: KeyboardEvent) => {
@@ -66,15 +64,15 @@ export const CardModal: FunctionComponent<{
     };
 
     // No need to do this on android
-    if (Platform.OS !== "android") {
-      Keyboard.addListener("keyboardWillShow", onKeyboarFrame);
-      Keyboard.addListener("keyboardWillChangeFrame", onKeyboarFrame);
-      Keyboard.addListener("keyboardWillHide", onKeyboardClearFrame);
+    if (Platform.OS !== 'android') {
+      Keyboard.addListener('keyboardWillShow', onKeyboarFrame);
+      Keyboard.addListener('keyboardWillChangeFrame', onKeyboarFrame);
+      Keyboard.addListener('keyboardWillHide', onKeyboardClearFrame);
 
       return () => {
-        Keyboard.removeListener("keyboardWillShow", onKeyboarFrame);
-        Keyboard.removeListener("keyboardWillChangeFrame", onKeyboarFrame);
-        Keyboard.removeListener("keyboardWillHide", onKeyboardClearFrame);
+        Keyboard.removeListener('keyboardWillShow', onKeyboarFrame);
+        Keyboard.removeListener('keyboardWillChangeFrame', onKeyboarFrame);
+        Keyboard.removeListener('keyboardWillHide', onKeyboardClearFrame);
       };
     }
   }, [safeAreaInsets.bottom]);
@@ -93,7 +91,7 @@ export const CardModal: FunctionComponent<{
         ),
         [
           Animated.debug(
-            "start clock for keyboard avoiding",
+            'start clock for keyboard avoiding',
             animatedValueSet.value
           ),
           Animated.set(animatedValueSet.finished, 0),
@@ -261,7 +259,7 @@ export const CardModal: FunctionComponent<{
                           )
                         ),
                         Animated.debug(
-                          "velocityYAcceleration",
+                          'velocityYAcceleration',
                           velocityYAcceleration
                         ),
                         Animated.set(
@@ -323,7 +321,7 @@ export const CardModal: FunctionComponent<{
                           )
                         ),
                         Animated.debug(
-                          "velocityYAcceleration",
+                          'velocityYAcceleration',
                           velocityYAcceleration
                         ),
                         Animated.set(
@@ -380,10 +378,10 @@ export const CardModal: FunctionComponent<{
     <Animated.View
       style={StyleSheet.flatten([
         style.flatten([
-          "background-color-white",
-          "border-radius-top-left-8",
-          "border-radius-top-right-8",
-          "overflow-hidden",
+          'background-color-white',
+          'border-radius-top-left-8',
+          'border-radius-top-right-8',
+          'overflow-hidden',
         ]),
         {
           paddingBottom: Animated.add(
@@ -399,40 +397,47 @@ export const CardModal: FunctionComponent<{
         enabled={!disableGesture}
       >
         {/* Below view is not animated, but to let the gesture handler to accept the animated block, you should set the children of the gesture handler as the Animated.View */}
-        <Animated.View style={style.flatten(["padding-x-page"])}>
-          <View style={style.flatten(["items-center", "margin-bottom-16"])}>
+        <Animated.View style={style.flatten(['padding-x-page'])}>
+          <View style={style.flatten(['items-center', 'margin-bottom-16'])}>
             {!disableGesture ? (
               <View
                 style={style.flatten([
-                  "margin-top-8",
-                  "width-58",
-                  "height-5",
-                  "border-radius-16",
-                  "background-color-card-modal-handle",
+                  'margin-top-8',
+                  'width-58',
+                  'height-5',
+                  'border-radius-16',
+                  'background-color-card-modal-handle',
                 ])}
               />
             ) : null}
           </View>
-          <View
-            style={style.flatten([
-              "flex-row",
-              "items-center",
-              "margin-bottom-16",
-            ])}
-          >
-            <Text style={style.flatten(["h4", "color-text-black-high"])}>
-              {title}
-            </Text>
-            {right}
-          </View>
-          <View
-            style={style.flatten(["height-1", "background-color-border-white"])}
-          />
+          {title ? (
+            <React.Fragment>
+              <View
+                style={style.flatten([
+                  'flex-row',
+                  'items-center',
+                  'margin-bottom-16',
+                ])}
+              >
+                <Text style={style.flatten(['h4', 'color-text-black-high'])}>
+                  {title}
+                </Text>
+                {right}
+              </View>
+              <View
+                style={style.flatten([
+                  'height-1',
+                  'background-color-border-white',
+                ])}
+              />
+            </React.Fragment>
+          ) : null}
         </Animated.View>
       </PanGestureHandler>
       <View
         style={StyleSheet.flatten([
-          style.flatten(["padding-page", "padding-top-16"]),
+          style.flatten(['padding-page', 'padding-top-16']),
           childrenContainerStyle,
         ])}
       >

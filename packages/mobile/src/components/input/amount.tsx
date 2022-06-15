@@ -8,7 +8,7 @@ import {
   InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
-  ZeroAmountError
+  ZeroAmountError,
 } from '@owallet/hooks';
 import { Button } from '../button';
 import { useStyle } from '../../styles';
@@ -63,14 +63,14 @@ export const AmountInput: FunctionComponent<{
         errorLabelStyle={errorLabelStyle}
         value={amountConfig.amount}
         onChangeText={(text) => {
-          amountConfig.setAmount(text);
+          amountConfig.setAmount(text.replace(/,/g, '.'));
         }}
         inputRight={
           <View
             style={style.flatten([
               'height-1',
               'overflow-visible',
-              'justify-center'
+              'justify-center',
             ])}
           >
             <Button
