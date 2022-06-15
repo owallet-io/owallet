@@ -49,15 +49,12 @@ export const LockPage: FunctionComponent = observer(() => {
     }
   }, []);
 
-  useEffect(() => {
-    // auto unlock works
-    if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
-      // open popup not interaction window
-      if (interactionInfo.interactionInternal) {
-        history.replace('/');
-      }
-    }
-  }, [keyRingStore.status]);
+  if (
+    keyRingStore.status === KeyRingStatus.UNLOCKED &&
+    interactionInfo.interaction
+  ) {
+    return <MainPage />;
+  }
 
   return (
     <EmptyLayout style={{ height: '100%' }}>
