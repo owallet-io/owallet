@@ -44,8 +44,8 @@ export const getHandler: (service: PermissionService) => Handler = (
 const handleEnableAccessMsg: (
   service: PermissionService
 ) => InternalHandler<EnableAccessMsg> = (service) => {
-  return async (env, msg) => {
-    return await service.checkOrGrantBasicAccessPermission(
+  return (env, msg) => {
+    return service.checkOrGrantBasicAccessPermission(
       env,
       msg.chainIds,
       msg.origin
@@ -75,8 +75,8 @@ const handleGetOriginPermittedChainsMsg: (
 const handleAddPermissionOrigin: (
   service: PermissionService
 ) => InternalHandler<AddPermissionOrigin> = (service) => {
-  return async (_, msg) => {
-    await service.addPermission([msg.chainId], msg.permissionType, [
+  return (_, msg) => {
+    service.addPermission([msg.chainId], msg.permissionType, [
       msg.permissionOrigin
     ]);
   };
@@ -85,8 +85,8 @@ const handleAddPermissionOrigin: (
 const handleRemovePermissionOrigin: (
   service: PermissionService
 ) => InternalHandler<RemovePermissionOrigin> = (service) => {
-  return async (_, msg) => {
-    await service.removePermission(msg.chainId, msg.permissionType, [
+  return (_, msg) => {
+    service.removePermission(msg.chainId, msg.permissionType, [
       msg.permissionOrigin
     ]);
   };

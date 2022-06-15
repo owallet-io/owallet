@@ -229,6 +229,7 @@ export class KeyRing {
       bip44HDPath
     );
     this.password = password;
+    await this.kvStore.set<string>('password', password);
     this.multiKeyStore.push(this.keyStore);
 
     await this.save();
@@ -262,6 +263,7 @@ export class KeyRing {
       await this.assignKeyStoreIdMeta(meta)
     );
     this.password = password;
+    await this.kvStore.set<string>('password', password);
     this.multiKeyStore.push(this.keyStore);
 
     await this.save();
@@ -303,6 +305,7 @@ export class KeyRing {
     );
 
     this.password = password;
+    await this.kvStore.set<string>('password', password);
     this.keyStore = keyStore;
     this.multiKeyStore.push(this.keyStore);
 
@@ -323,6 +326,7 @@ export class KeyRing {
     this.privateKey = undefined;
     this.ledgerPublicKey = undefined;
     this.password = '';
+    this.kvStore.set<string>('password', '');
   }
 
   public async unlock(password: string) {
@@ -355,6 +359,7 @@ export class KeyRing {
     }
 
     this.password = password;
+    await this.kvStore.set<string>('password', password);
   }
 
   public async save() {
@@ -412,6 +417,19 @@ export class KeyRing {
     }
 
     this.loaded = true;
+    await this.autoUnlock();
+  }
+
+  public async autoUnlock(): Promise<boolean> {
+    // check if the password is still in session then try to unlock, store password is better than encrypted key, cause we can change it later
+    if (this.isLocked()) {
+      const pwd = await this.kvStore.get<string>('password');
+      if (pwd) {
+        await this.unlock(pwd);
+      }
+      return true;
+    }
+    return false;
   }
 
   private updateLegacyKeyStore(keyStore: KeyStore) {
@@ -516,7 +534,7 @@ export class KeyRing {
         // If there is a key store left
         if (multiKeyStore.length > 0) {
           // Lock key store at first
-          await this.lock();
+          this.lock();
           // Select first key store
           this.keyStore = multiKeyStore[0];
           // And unlock it

@@ -234,11 +234,10 @@ export class KeyRingService {
   ): Promise<AminoSignResponse> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
-    const key = await this.keyRing.getKey(chainId, coinType);
-    const bech32Address = new Bech32Address(key.address).toBech32(
-      (await this.chainsService.getChainInfo(chainId)).bech32Config
-        .bech32PrefixAccAddr
-    );
+    const key = this.keyRing.getKey(chainId, coinType);
+    const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
+      .bech32Config.bech32PrefixAccAddr;
+    const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
     if (signer !== bech32Address) {
       throw new Error('Signer mismatched');
     }
@@ -316,7 +315,7 @@ export class KeyRingService {
     console.log("in request sign direct heheeeeeeeeeeeeeeeeeeeeeeeeehehehehehehehehehe");
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
-    const key = await this.keyRing.getKey(chainId, coinType);
+    const key = this.keyRing.getKey(chainId, coinType);
     const bech32Address = new Bech32Address(key.address).toBech32(
       (await this.chainsService.getChainInfo(chainId)).bech32Config
         .bech32PrefixAccAddr
@@ -370,7 +369,7 @@ export class KeyRingService {
   ): Promise<boolean> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
-    const key = await this.keyRing.getKey(chainId, coinType);
+    const key = this.keyRing.getKey(chainId, coinType);
     const bech32Prefix = (await this.chainsService.getChainInfo(chainId))
       .bech32Config.bech32PrefixAccAddr;
     const bech32Address = new Bech32Address(key.address).toBech32(bech32Prefix);
