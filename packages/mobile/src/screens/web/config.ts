@@ -3,6 +3,14 @@ import { ORAIDEX_DEV_URL } from 'react-native-dotenv';
 
 export const OraiDexUrl = ORAIDEX_DEV_URL || 'https://staging.oraidex.io';
 
+export const injectableUrl = [
+  'https://oraidex.io/',
+  'https://staging.oraidex.io/',
+  'https://app.osmosis.zone/',
+  'https://scan.orai.io/',
+  'https://testnet.scan.orai.io/',
+];
+
 export type DAppInfo = {
   name: string;
   uri: string;
@@ -17,20 +25,20 @@ export const DAppInfos: DAppInfo[] = [
     name: 'Oraidex',
     thumbnail: oraiThumbnail,
     uri: 'https://oraidex.io',
-    logo: oraiLogo
+    logo: oraiLogo,
   },
   {
     name: 'Oraidex',
     thumbnail: oraiThumbnail,
     uri: 'https://staging.oraidex.io',
-    logo: oraiLogo
+    logo: oraiLogo,
   },
   {
     name: 'Osmosis',
     thumbnail: require('../../assets/image/webpage/bgomosis.png'),
     uri: 'https://app.osmosis.zone',
-    logo: require('../../assets/image/webpage/osmosis_logo.png')
-  }
+    logo: require('../../assets/image/webpage/osmosis_logo.png'),
+  },
 ];
 
 if (__DEV__ && ORAIDEX_DEV_URL) {
@@ -38,6 +46,6 @@ if (__DEV__ && ORAIDEX_DEV_URL) {
     name: 'Oraidex',
     thumbnail: oraiThumbnail,
     uri: ORAIDEX_DEV_URL,
-    logo: oraiLogo
+    logo: oraiLogo,
   });
 }

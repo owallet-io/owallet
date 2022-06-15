@@ -25,14 +25,7 @@ import { URL } from 'react-native-url-polyfill';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import DeviceInfo from 'react-native-device-info';
-import { OraiDexUrl } from '../../config';
-
-const ịnjectableUrl = [
-  'https://oraidex.io/',
-  'https://staging.oraidex.io/',
-  'https://app.osmosis.zone/',
-  'https://scan.orai.io/',
-];
+import { OraiDexUrl, injectableUrl } from '../../config';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -234,7 +227,7 @@ export const WebpageScreen: FunctionComponent<
   const sourceCode = useInjectedSourceCode();
 
   useEffect(() => {
-    if (sourceCode && ịnjectableUrl.includes(currentURL)) {
+    if (sourceCode && injectableUrl.includes(currentURL)) {
       webviewRef.current.reload();
     }
   }, [sourceCode, currentURL]);
