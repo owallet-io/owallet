@@ -26,6 +26,7 @@
   "dependencies": {
     "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/proto-signing": "^0.24.0-alpha.25",
+    "@ethereumjs/common": "^2.6.4",
     "@ethersproject/bytes": "^5.5.0",
     "@ethersproject/keccak256": "^5.5.0",
     "@ethersproject/wallet": "^5.5.0",
@@ -46,7 +47,8 @@
     "bip39": "^3.0.2",
     "buffer": "^6.0.3",
     "delay": "^4.4.0",
-    "joi": "^17.3.0",
+    "ethereumjs-tx": "^2.1.2",
+    "joi": "^17.5.0",
     "ledger-cosmos-js": "^2.1.8",
     "reflect-metadata": "^0.1.13",
     "secp256k1": "^4.0.2",

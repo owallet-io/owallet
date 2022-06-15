@@ -361,6 +361,49 @@ export class KeyRingService {
     }
   }
 
+  async requestSignEthereum(
+    env: Env,
+    chainId: string,
+    signer: string,
+    data: string,
+  ): Promise<string> {
+    console.log("in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha");
+    const coinType = await this.chainsService.getChainCoinType(chainId);
+
+    // TODO: add UI here so users can change gas, memo & fee
+    // const newSignDocBytes = (await this.interactionService.waitApprove(
+    //   env,
+    //   '/sign',
+    //   'request-sign',
+    //   {
+    //     msgOrigin,
+    //     chainId,
+    //     mode: 'direct',
+    //     signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
+    //     signer,
+    //     signOptions,
+    //   }
+    // )) as Uint8Array;
+
+    // const newSignDoc = cosmos.tx.v1beta1.SignDoc.decode(newSignDocBytes);
+
+    try {
+      // it stuck here in ledger
+      // console.log('ledger stuck');
+      const rawTxHex = await this.keyRing.signRawEthereum(
+        chainId,
+        coinType,
+        data
+      );
+
+      return rawTxHex;
+    } catch (e) {
+      console.log('e', e.message);
+    } finally {
+      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+    }
+  }
+
   async verifyADR36AminoSignDoc(
     chainId: string,
     signer: string,

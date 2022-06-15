@@ -18,6 +18,8 @@ import { Wallet } from '@ethersproject/wallet';
 import * as BytesUtils from '@ethersproject/bytes';
 import { ETH } from '@tharsis/address-converter';
 import { keccak256 } from '@ethersproject/keccak256';
+import Common from '@ethereumjs/common';
+import { TransactionOptions, Transaction } from 'ethereumjs-tx';
 
 export enum KeyRingStatus {
   NOTLOADED,
@@ -719,6 +721,50 @@ export class KeyRing {
     }
   }
 
+  public async signRawEthereum(
+    chainId: string,
+    defaultCoinType: number,
+    message: string
+  ): Promise<string> {
+    if (this.status !== KeyRingStatus.UNLOCKED) {
+      throw new Error('Key ring is not unlocked');
+    }
+
+    if (!this.keyStore) {
+      throw new Error('Key Store is empty');
+    }
+
+    if (this.keyStore.type === 'ledger') {
+      // TODO: Ethereum Ledger Integration
+      throw new Error('Ethereum signing with Ledger is not yet supported');
+    } else {
+      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+      if (coinType !== 60) {
+        throw new Error(
+          'Invalid coin type passed in to Ethereum signing (expected 60)'
+        );
+      }
+
+      const privKey = this.loadPrivKey(coinType);
+
+      const customCommon = Common.custom(
+
+        {
+          name: 'kawaii_6886-1', // TODO: hard code Kawaiiverse for testing
+          networkId: 6886,
+          chainId: 6886,
+        },
+      )
+      const opts: TransactionOptions = { common: customCommon } as any;
+      const tx = new Transaction(JSON.parse(message), opts)
+      tx.sign(Buffer.from(privKey.toBytes()));
+      const serializedTx = tx.serialize();
+      const rawTxHex = '0x' + serializedTx.toString('hex');
+
+      return rawTxHex;
+    }
+  }
+
   public async signEthereum(
     chainId: string,
     defaultCoinType: number,
@@ -912,7 +958,7 @@ export class KeyRing {
         bip44HDPath: keyStore.bip44HDPath,
         selected: this.keyStore
           ? KeyRing.getKeyStoreId(keyStore) ===
-            KeyRing.getKeyStoreId(this.keyStore)
+          KeyRing.getKeyStoreId(this.keyStore)
           : false,
       });
     }

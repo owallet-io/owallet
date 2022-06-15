@@ -31,7 +31,7 @@ export class BackgroundTxService {
     public readonly permissionService: PermissionService,
     @inject(TYPES.Notification)
     protected readonly notification: Notification
-  ) {}
+  ) { }
 
   async sendTx(
     chainId: string,
@@ -56,24 +56,24 @@ export class BackgroundTxService {
 
     const params = isProtoTx
       ? {
-          tx_bytes: Buffer.from(tx as any).toString('base64'),
-          mode: (() => {
-            switch (mode) {
-              case 'async':
-                return 'BROADCAST_MODE_ASYNC';
-              case 'block':
-                return 'BROADCAST_MODE_BLOCK';
-              case 'sync':
-                return 'BROADCAST_MODE_SYNC';
-              default:
-                return 'BROADCAST_MODE_UNSPECIFIED';
-            }
-          })()
-        }
+        tx_bytes: Buffer.from(tx as any).toString('base64'),
+        mode: (() => {
+          switch (mode) {
+            case 'async':
+              return 'BROADCAST_MODE_ASYNC';
+            case 'block':
+              return 'BROADCAST_MODE_BLOCK';
+            case 'sync':
+              return 'BROADCAST_MODE_SYNC';
+            default:
+              return 'BROADCAST_MODE_UNSPECIFIED';
+          }
+        })()
+      }
       : {
-          tx,
-          mode: mode
-        };
+        tx,
+        mode: mode
+      };
 
     try {
       const result = await restInstance.post(
@@ -100,6 +100,39 @@ export class BackgroundTxService {
       console.log(e);
       BackgroundTxService.processTxErrorNotification(this.notification, e);
       throw e;
+    }
+  }
+
+  async sendEthereumTx(
+    rpc: string,
+    method: string,
+    params: any[],
+  ): Promise<Uint8Array> {
+
+    const restInstance = Axios.create({
+      ...{
+        baseURL: rpc
+      },
+      adapter: fetchAdapter
+    });
+
+
+    try {
+      const response = await restInstance.post('/', {
+        jsonrpc: '2.0',
+        id: 1,
+        method,
+        params,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+      })
+      if (response.data.result) return response.data.result;
+      else throw response.data.error.message;
+    } catch (error) {
+      console.error("error calling request from ethereum provider: ", error)
     }
   }
 

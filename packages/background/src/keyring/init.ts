@@ -20,7 +20,8 @@ import {
   RestoreKeyRingMsg,
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
-  RequestVerifyADR36AminoSignDoc
+  RequestVerifyADR36AminoSignDoc,
+  RequestSignEthereumMsg
 } from './messages';
 import { ROUTE } from './constants';
 import { getHandler } from './handler';
@@ -42,6 +43,7 @@ export function init(router: Router, service: KeyRingService): void {
   router.registerMessage(GetKeyMsg);
   router.registerMessage(RequestSignAminoMsg);
   router.registerMessage(RequestSignDirectMsg);
+  router.registerMessage(RequestSignEthereumMsg);
   router.registerMessage(GetMultiKeyStoreInfoMsg);
   router.registerMessage(ChangeKeyRingMsg);
   router.registerMessage(GetIsKeyStoreCoinTypeSetMsg);

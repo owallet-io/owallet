@@ -27,6 +27,7 @@ import {
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
   RequestVerifyADR36AminoSignDoc,
+  RequestSignEthereumMsg
 } from './messages';
 import { KeyRingService } from './service';
 import { Bech32Address, cosmos } from '@owallet/cosmos';
@@ -85,6 +86,11 @@ export const getHandler: (service: KeyRingService) => Handler = (
         return handleRequestSignDirectMsg(service)(
           env,
           msg as RequestSignDirectMsg
+        );
+      case RequestSignEthereumMsg:
+        return handleRequestSignEthereumMsg(service)(
+          env,
+          msg as RequestSignEthereumMsg
         );
       case GetMultiKeyStoreInfoMsg:
         return handleGetMultiKeyStoreInfoMsg(service)(
@@ -346,6 +352,33 @@ const handleRequestSignDirectMsg: (
       },
       signature: response.signature,
     };
+  };
+};
+
+const handleRequestSignEthereumMsg: (
+  service: KeyRingService
+) => InternalHandler<RequestSignEthereumMsg> = (service) => {
+  return async (env, msg) => {
+    await service.permissionService.checkOrGrantBasicAccessPermission(
+      env,
+      msg.chainId,
+      msg.origin,
+    );
+
+    console.log(
+      'in handle request sign ethereum msg hohohohohohohohohohohohoho'
+    );
+
+    const response = await service.requestSignEthereum(
+      env,
+      msg.chainId,
+      msg.signer,
+      msg.data,
+    );
+
+    console.log('response sign ethereum msg', response);
+
+    return { rawTxHex: response };
   };
 };
 
