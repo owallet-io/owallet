@@ -27,7 +27,7 @@ export class ChainsService {
     protected readonly chainUpdaterKeeper: ChainUpdaterService,
     @inject(delay(() => InteractionService))
     protected readonly interactionKeeper: InteractionService
-  ) {}
+  ) { }
 
   readonly getChainInfos: () => Promise<ChainInfoWithEmbed[]> =
     Debouncer.promise(async () => {
@@ -92,13 +92,24 @@ export class ChainsService {
     this.cachedChainInfos = undefined;
   }
 
-  async getChainInfo(chainId: string): Promise<ChainInfoWithEmbed> {
-    const chainInfo = (await this.getChainInfos()).find((chainInfo) => {
-      return (
-        ChainIdHelper.parse(chainInfo.chainId).identifier ===
-        ChainIdHelper.parse(chainId).identifier
-      );
-    });
+  async getChainInfo(chainId: string, networkType?: string): Promise<ChainInfoWithEmbed> {
+
+    var chainInfo: ChainInfoWithEmbed;
+    if (networkType) {
+      chainInfo = (await this.getChainInfos()).find((chainInfo) => {
+        return (
+          ChainIdHelper.parse(chainInfo.chainId).identifier ===
+          ChainIdHelper.parse(chainId).identifier && chainInfo.networkType === networkType
+        );
+      });
+    } else {
+      chainInfo = (await this.getChainInfos()).find((chainInfo) => {
+        return (
+          ChainIdHelper.parse(chainInfo.chainId).identifier ===
+          ChainIdHelper.parse(chainId).identifier
+        );
+      });
+    }
 
     if (!chainInfo) {
       throw new Error(`There is no chain info for ${chainId}`);

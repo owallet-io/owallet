@@ -41,6 +41,6 @@ const handleSendEthereumTxMsg: (
       msg.origin
     );
 
-    return await service.sendEthereumTx(msg.rpc, msg.method, msg.params);
+    return await service.request(msg.rpc, msg.method, msg.params);
   };
 };

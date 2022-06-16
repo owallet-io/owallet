@@ -633,7 +633,7 @@ export class RequestSignEthereumMsg extends Message<{
   constructor(
     public readonly chainId: string,
     public readonly signer: string,
-    public readonly data: string,
+    public readonly data: object,
     // public readonly signOptions: OWalletSignOptions = {}
   ) {
     super();

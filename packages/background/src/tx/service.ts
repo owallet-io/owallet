@@ -104,7 +104,7 @@ export class BackgroundTxService {
     }
   }
 
-  async sendEthereumTx(
+  async request(
     rpc: string,
     method: string,
     params: any[],

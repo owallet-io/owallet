@@ -7,6 +7,7 @@ export type NetworkType = 'cosmos' | 'evm';
 
 export interface ChainInfo {
   readonly rpc?: string;
+  readonly evmRpc?: string,
   readonly rpcConfig?: AxiosRequestConfig;
   readonly rest: string;
   readonly restConfig?: AxiosRequestConfig;

@@ -305,6 +305,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
+    evmRpc: "https://endpoint1.kawaii.global",
     rest: 'https://cosmos1.kawaii.global',
     chainId: 'kawaii_6886-1',
     chainName: 'Kawaii Islands network',

@@ -8,6 +8,7 @@ import {
   OWalletSignOptions,
   Key,
   EthereumMode,
+  RequestArguments,
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
 import {
@@ -33,6 +34,14 @@ export interface ProxyRequest {
   id: string;
   namespace: string;
   method: keyof OWallet;
+  args: any[];
+}
+
+export interface ProxyRequestEthereum {
+  type: 'proxy-request-ethereum';
+  id: string;
+  namespace: string;
+  method: keyof Ethereum;
   args: any[];
 }
 
@@ -473,14 +482,14 @@ export class InjectedEthereum implements Ethereum {
   ) {
     // listen method when inject send to
     eventListener.addMessageListener(async (e: MessageEvent) => {
-      const message: ProxyRequest = parseMessage
+      const message: ProxyRequestEthereum = parseMessage
         ? parseMessage(e.data)
         : e.data;
 
       // filter proxy-request by namespace
       if (
         !message ||
-        message.type !== 'proxy-request' ||
+        message.type !== 'proxy-request-ethereum' ||
         message.namespace !== NAMESPACE
       ) {
         return;
@@ -491,60 +500,41 @@ export class InjectedEthereum implements Ethereum {
           throw new Error('Empty id');
         }
 
-        // const result =
-        //   message.method === 'signDirect'
-        //     ? await (async () => {
-        //       console.log(
-        //         'before sign docs ???????????????????????????????????????'
-        //       );
+        // TODO: eth_sendTransaction is special case. Other case => pass through custom request RPC without signing
+        const result =
+          message.method === 'eth_sendTransaction' as keyof Ethereum
+            ? await (async () => {
 
-        //       const receivedSignDoc: {
-        //         bodyBytes?: Uint8Array | null;
-        //         authInfoBytes?: Uint8Array | null;
-        //         chainId?: string | null;
-        //         accountNumber?: string | null;
-        //       } = message.args[2];
+              console.log("message before signing raw ethereum xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: ", message.args)
 
-        //       const result = await ethereum.request(
-        //         message.args[0],
-        //         message.args[1],
-        //         {
-        //           bodyBytes: receivedSignDoc.bodyBytes,
-        //           authInfoBytes: receivedSignDoc.authInfoBytes,
-        //           chainId: receivedSignDoc.chainId,
-        //           accountNumber: receivedSignDoc.accountNumber
-        //             ? Long.fromString(receivedSignDoc.accountNumber)
-        //             : null,
-        //         },
-        //         message.args[3]
-        //       );
+              const { rawTxHex } = await ethereum.signRawEthereum(
+                message.args[0],
+                message.args[1],
+                message.args[2][0]
+              );
 
-        //       return {
-        //         signed: {
-        //           bodyBytes: result.signed.bodyBytes,
-        //           authInfoBytes: result.signed.authInfoBytes,
-        //           chainId: result.signed.chainId,
-        //           accountNumber: result.signed.accountNumber.toString(),
-        //         },
-        //         signature: result.signature,
-        //       };
-        //     })()
-        //     : await ethereum[message.method](
-        //       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //       // @ts-ignore
-        //       ...JSONUint8Array.unwrap(message.args)
-        //     );
+              console.log("raw tx hex after START PROXY: ", rawTxHex); // this is the transaction hash already
 
-        // const proxyResponse: ProxyRequestResponse = {
-        //   type: 'proxy-request-response',
-        //   namespace: NAMESPACE,
-        //   id: message.id,
-        //   result: {
-        //     return: JSONUint8Array.wrap(result),
-        //   },
-        // };
+              return {
+                rawTxHex
+              };
+            })()
+            : await ethereum[message.method as any](
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              ...JSONUint8Array.unwrap(message.args)
+            );
 
-        // eventListener.postMessage(proxyResponse);
+        const proxyResponse: ProxyRequestResponse = {
+          type: 'proxy-request-response',
+          namespace: NAMESPACE,
+          id: message.id,
+          result: {
+            return: JSONUint8Array.wrap(result),
+          },
+        };
+
+        eventListener.postMessage(proxyResponse);
 
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
@@ -561,7 +551,7 @@ export class InjectedEthereum implements Ethereum {
     });
   }
 
-  protected requestMethod(method: keyof IOWallet, args: any[]): Promise<any> {
+  protected requestMethod(method: keyof Ethereum, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
       .map((value) => {
@@ -569,8 +559,8 @@ export class InjectedEthereum implements Ethereum {
       })
       .join('');
 
-    const proxyMessage: ProxyRequest = {
-      type: 'proxy-request',
+    const proxyMessage: ProxyRequestEthereum = {
+      type: 'proxy-request-ethereum',
       namespace: NAMESPACE,
       id,
       method,
@@ -578,10 +568,12 @@ export class InjectedEthereum implements Ethereum {
     };
 
     return new Promise((resolve, reject) => {
+
       const receiveResponse = (e: MessageEvent) => {
         const proxyResponse: ProxyRequestResponse = this.parseMessage
           ? this.parseMessage(e.data)
           : e.data;
+
 
         if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
           return;
@@ -593,6 +585,7 @@ export class InjectedEthereum implements Ethereum {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
+
 
         if (!result) {
           reject(new Error('Result is null'));
@@ -636,14 +629,15 @@ export class InjectedEthereum implements Ethereum {
   //   console.log('console.log send');
   // }
 
-  async request(): Promise<void> {
-    console.log('console.log request');
-    alert('console.log request');
+  // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
+  async request(args: RequestArguments): Promise<any> {
+    console.log(`arguments: ${JSON.stringify(args)}`);
+    await this.requestMethod(args.method as keyof Ethereum, [args.chainId, args.signer, args.params]);
   }
 
-  async signRawEthereum(chainId: string, signer: string, data: string): Promise<any> {
+  async signRawEthereum(chainId: string, signer: string, data: string): Promise<{ rawTxHex: string }> {
     console.log('console.log sign');
-    alert('console.log sign');
+    return { rawTxHex: "" }
   }
 
   // async asyncRequest(): Promise<void> {

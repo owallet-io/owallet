@@ -121,6 +121,12 @@ export type EthereumMode =
   | 'mobile-web'
   | 'walletconnect';
 
+export interface RequestArguments {
+  method: string;
+  params?: any;
+  [key: string]: any;
+}
+
 export interface Ethereum {
   readonly version: string;
   /**
@@ -130,7 +136,7 @@ export interface Ethereum {
    */
   readonly mode: EthereumMode;
   // send(): Promise<void>;
-  request(method: string, params: any[]): Promise<any>;
+  request(args: RequestArguments): Promise<any>;
   signRawEthereum(chainId: string, signer: string, data: string): Promise<{ rawTxHex: string }>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;

@@ -7,6 +7,7 @@ import {
   OWalletSignOptions,
   Key,
   EthereumMode,
+  RequestArguments,
 } from '@owallet/types';
 import {
   BACKGROUND_PORT,
@@ -300,9 +301,13 @@ export class Ethereum implements IEthereum {
   // async send(): Promise<void> {
   //   console.log('');
   // }
-  async request(method: string, params: any[]): Promise<any> {
-    const msg = new SendTxEthereumMsg('kawaii_6886-1', 'https://endpoint1.kawaii.global', method, params); // TODO: hard code chain id & rpc of kawaii to test
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  async request(args: RequestArguments): Promise<any> {
+    // const msg = new SendTxEthereumMsg('kawaii_6886-1', 'https://endpoint1.kawaii.global', method, params); // TODO: hard code chain id & rpc of kawaii to test
+    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    // console.log("request in provider core: ", args);
+    // const msg = new RequestSignEthereumMsg(args.chainId, args.signer, JSON.stringify(args.params[0]));
+    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    return;
   }
 
   async signRawEthereum(chainId: string, signer: string, data: string): Promise<{ rawTxHex: string; }> {

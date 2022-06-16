@@ -722,8 +722,21 @@ export class KeyRing {
     }
   }
 
-  // TODO: temp function to automatically trigger broadcast tx after signing (for demo purpose)
-  async sendEthereumTx(
+  validateChainId(chainId: string): number {
+    // chain id example: kawaii_6886-1. If chain id input is already a number in string => parse it immediately
+    if (isNaN(parseInt(chainId))) {
+      const firstSplit = chainId.split('_')[1];
+      if (firstSplit) {
+        const chainId = parseInt(firstSplit.split('-')[0]);
+        return chainId;
+      }
+      throw new Error("Invalid chain id. Please try again")
+    }
+    return parseInt(chainId);
+  }
+
+  // TODO: need a place to store this function globally
+  async request(
     rpc: string,
     method: string,
     params: any[],
@@ -758,9 +771,14 @@ export class KeyRing {
 
   public async signRawEthereum(
     chainId: string,
-    defaultCoinType: number,
-    message: string
+    coinType: number,
+    signer: string,
+    rpc: string,
+    message: object
   ): Promise<string> {
+    console.log("sign raw ethereum");
+    const nonce = (await this.request(rpc, 'eth_getTransactionCount', [signer, 'latest']));
+    const finalMessage = { ...message, nonce }
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error('Key ring is not unlocked');
     }
@@ -769,34 +787,40 @@ export class KeyRing {
       throw new Error('Key Store is empty');
     }
 
+    const cType = this.computeKeyStoreCoinType(chainId, coinType);
+    if (cType !== 60) {
+      throw new Error(
+        'Invalid coin type passed in to Ethereum signing (expected 60)'
+      );
+    }
+
     if (this.keyStore.type === 'ledger') {
       // TODO: Ethereum Ledger Integration
       throw new Error('Ethereum signing with Ledger is not yet supported');
     } else {
-      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-      if (coinType !== 60) {
-        throw new Error(
-          'Invalid coin type passed in to Ethereum signing (expected 60)'
-        );
-      }
-
       const privKey = this.loadPrivKey(coinType);
-
+      const chainIdNumber = this.validateChainId(chainId);
       const customCommon = Common.custom(
 
         {
-          name: 'kawaii_6886-1', // TODO: hard code Kawaiiverse for testing
-          networkId: 6886,
-          chainId: 6886,
+          name: chainId,
+          networkId: chainIdNumber,
+          chainId: chainIdNumber,
         },
       )
       const opts: TransactionOptions = { common: customCommon } as any;
-      const tx = new Transaction(JSON.parse(message), opts)
+      const tx = new Transaction(finalMessage, opts)
       tx.sign(Buffer.from(privKey.toBytes()));
+
+      // validate signer. Has to get substring(2) to remove 0x
+      if (!tx.getSenderAddress().equals(Buffer.from(signer.substring(2), 'hex'))) {
+        throw new Error('Signer mismatched');
+      }
+
       const serializedTx = tx.serialize();
       const rawTxHex = '0x' + serializedTx.toString('hex');
 
-      const response = await this.sendEthereumTx('https://endpoint1.kawaii.global', 'eth_sendRawTransaction', [rawTxHex]);
+      const response = await this.request(rpc, 'eth_sendRawTransaction', [rawTxHex]);
       return response;
     }
   }

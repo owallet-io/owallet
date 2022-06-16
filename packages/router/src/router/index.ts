@@ -78,7 +78,6 @@ export abstract class Router {
       throw new Error('Null router');
     }
     const handler = this.registeredHandler.get(route);
-    console.log("handler in handle message: ", handler)
     if (!handler) {
       throw new Error("Can't get handler");
     }
