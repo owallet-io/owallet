@@ -39,6 +39,12 @@ export const DAppInfos: DAppInfo[] = [
     uri: 'https://app.osmosis.zone',
     logo: require('../../assets/image/webpage/osmosis_logo.png'),
   },
+  {
+    name: 'Oraiscan testnet',
+    thumbnail: oraiThumbnail,
+    uri: 'https://testnet.scan.orai.io',
+    logo: oraiLogo,
+  },
 ];
 
 if (__DEV__ && ORAIDEX_DEV_URL) {
