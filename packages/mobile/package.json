@@ -8,9 +8,9 @@
     ]
   },
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
-    "android": "yarn build:provider && react-native run-android",
-    "ios": "yarn build:provider && react-native run-ios",
+    "clean": "sh ./scripts/clean.sh",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "android:connect": "adb reverse tcp:8081 tcp:8081",
     "typecheck": "tsc",
     "shortlink-provider": "ln -s $PWD/build/injected/injected-provider.bundle.js $pathX",
