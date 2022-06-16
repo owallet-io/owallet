@@ -78,18 +78,37 @@ export const Browser: FunctionComponent<any> = (props) => {
         ?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
   }, [navigation]);
 
+  useEffect(() => {
+    if (props?.route?.params?.path) {
+      updateScreen(props.route.params.path);
+    }
+  }, []);
+
+  const updateScreen = async (uri) => {
+    const deepLinkUri = uri || deepLinkUriStore.getDeepLink();
+    if (deepLinkUri) {
+      deepLinkUriStore.updateDeepLink('');
+      smartNavigation.pushSmart('Web.dApp', {
+        name: 'Browser',
+        uri: decodeURIComponent(deepLinkUri) || 'https://oraidex.io',
+      });
+    }
+  };
+
   const [url, setUrl] = useState('');
 
   useEffect(() => {
-    if (isValidDomain(props?.route?.params?.url?.toLowerCase())) {
-      smartNavigation.pushSmart('Web.dApp', {
-        name: 'Browser',
-        uri:
-          props.route.params.url?.toLowerCase().indexOf('http') >= 0
-            ? props.route.params.url?.toLowerCase()
-            : 'https://' + props.route.params?.url?.toLowerCase(),
-      });
-    }
+    setTimeout(function () {
+      if (isValidDomain(props?.route?.params?.url?.toLowerCase())) {
+        smartNavigation.pushSmart('Web.dApp', {
+          name: 'Browser',
+          uri:
+            props.route.params.url?.toLowerCase().indexOf('http') >= 0
+              ? props.route.params.url?.toLowerCase()
+              : 'https://' + props.route.params?.url?.toLowerCase(),
+        });
+      }
+    }, 1000);
   }, [props, smartNavigation, url]);
 
   const onHandleUrl = () => {
