@@ -137,7 +137,7 @@ export interface Ethereum {
   readonly mode: EthereumMode;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
-  signRawEthereum(chainId: string, signer: string, data: string): Promise<{ rawTxHex: string }>;
+  signAndBroadcastEthereum(chainId: string, signer: string, data: object): Promise<{ rawTxHex: string }>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }

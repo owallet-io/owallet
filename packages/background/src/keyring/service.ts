@@ -398,7 +398,7 @@ export class KeyRingService {
     try {
       // it stuck here in ledger
       // console.log('ledger stuck');
-      const rawTxHex = await this.keyRing.signRawEthereum(
+      const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         chainId,
         coinType,
         signer,

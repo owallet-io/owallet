@@ -22,6 +22,40 @@ interface ABCIMessageLog {
   // Events StringEvents
 }
 
+// TODO: is this place good to place this function?
+export async function request(
+  rpc: string,
+  method: string,
+  params: any[],
+): Promise<string> {
+
+  const restInstance = Axios.create({
+    ...{
+      baseURL: rpc
+    },
+    adapter: fetchAdapter
+  });
+
+
+  try {
+    const response = await restInstance.post('/', {
+      jsonrpc: '2.0',
+      id: 1,
+      method,
+      params,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+    })
+    if (response.data.result) return response.data.result;
+    else throw response.data.error.message;
+  } catch (error) {
+    console.error("error calling request from ethereum provider: ", error)
+  }
+}
+
 @singleton()
 export class BackgroundTxService {
   constructor(
@@ -110,31 +144,7 @@ export class BackgroundTxService {
     params: any[],
   ): Promise<string> {
 
-    const restInstance = Axios.create({
-      ...{
-        baseURL: rpc
-      },
-      adapter: fetchAdapter
-    });
-
-
-    try {
-      const response = await restInstance.post('/', {
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-        params,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-      })
-      if (response.data.result) return response.data.result;
-      else throw response.data.error.message;
-    } catch (error) {
-      console.error("error calling request from ethereum provider: ", error)
-    }
+    return request(rpc, method, params);
   }
 
   private static processTxResultNotification(

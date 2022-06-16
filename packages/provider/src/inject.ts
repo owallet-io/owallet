@@ -3,6 +3,7 @@ import {
   OWallet,
   OWallet as IOWallet,
   Ethereum,
+  Ethereum as IEthereum,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
@@ -11,6 +12,7 @@ import {
   RequestArguments,
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
+import { request } from '@owallet/background';
 import {
   BroadcastMode,
   AminoSignResponse,
@@ -27,23 +29,23 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
-import { NAMESPACE } from './constants';
+import { NAMESPACE, NAMESPACE_ETHEREUM } from './constants';
 
 export interface ProxyRequest {
   type: 'proxy-request';
   id: string;
   namespace: string;
-  method: keyof OWallet;
+  method: keyof OWallet | Ethereum | string;
   args: any[];
 }
 
-export interface ProxyRequestEthereum {
-  type: 'proxy-request-ethereum';
-  id: string;
-  namespace: string;
-  method: keyof Ethereum;
-  args: any[];
-}
+// export interface ProxyRequestEthereum {
+//   type: 'proxy-request';
+//   id: string;
+//   namespace: string;
+//   method: keyof Ethereum;
+//   args: any[];
+// }
 
 export interface ProxyRequestResponse {
   type: 'proxy-request-response';
@@ -104,8 +106,8 @@ export class InjectedOWallet implements IOWallet {
         }
 
         if (
-          !owallet[message.method] ||
-          typeof owallet[message.method] !== 'function'
+          !owallet[message.method as keyof OWallet] ||
+          typeof owallet[message.method as keyof OWallet] !== 'function'
         ) {
           throw new Error(`Invalid method: ${message.method}`);
         }
@@ -166,7 +168,7 @@ export class InjectedOWallet implements IOWallet {
                 signature: result.signature,
               };
             })()
-            : await owallet[message.method](
+            : await owallet[message.method as any](
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
               ...JSONUint8Array.unwrap(message.args)
@@ -214,8 +216,13 @@ export class InjectedOWallet implements IOWallet {
     };
 
     return new Promise((resolve, reject) => {
-      const receiveResponse = (e: any) => {
-        const proxyResponse: ProxyRequestResponse = e.data;
+
+      console.log("IN REQUEST METHOD RECEIVE RESPONSE OF OWALLET????????");
+
+      const receiveResponse = (e: MessageEvent) => {
+        const proxyResponse: ProxyRequestResponse = this.parseMessage
+          ? this.parseMessage(e.data)
+          : e.data;
 
         if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
           return;
@@ -482,15 +489,15 @@ export class InjectedEthereum implements Ethereum {
   ) {
     // listen method when inject send to
     eventListener.addMessageListener(async (e: MessageEvent) => {
-      const message: ProxyRequestEthereum = parseMessage
+      const message: ProxyRequest = parseMessage
         ? parseMessage(e.data)
         : e.data;
 
       // filter proxy-request by namespace
       if (
         !message ||
-        message.type !== 'proxy-request-ethereum' ||
-        message.namespace !== NAMESPACE
+        message.type !== 'proxy-request' ||
+        message.namespace !== NAMESPACE_ETHEREUM
       ) {
         return;
       }
@@ -500,34 +507,36 @@ export class InjectedEthereum implements Ethereum {
           throw new Error('Empty id');
         }
 
+        if (message.method === 'version') {
+          throw new Error('Version is not function');
+        }
+
+        if (message.method === 'mode') {
+          throw new Error('Mode is not function');
+        }
+
         // TODO: eth_sendTransaction is special case. Other case => pass through custom request RPC without signing
         const result =
-          message.method === 'eth_sendTransaction' as keyof Ethereum
+          message.method === 'eth_sendTransaction' as any
             ? await (async () => {
 
               console.log("message before signing raw ethereum xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: ", message.args)
 
-              const { rawTxHex } = await ethereum.signRawEthereum(
-                message.args[0],
+              const { rawTxHex } = await ethereum.signAndBroadcastEthereum(
                 message.args[1],
-                message.args[2][0]
+                message.args[2],
+                message.args[0][0] // TODO: is this okay to assume that we only need the first item of the params?
               );
 
               console.log("raw tx hex after START PROXY: ", rawTxHex); // this is the transaction hash already
 
-              return {
-                rawTxHex
-              };
+              return rawTxHex;
             })()
-            : await ethereum[message.method as any](
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              ...JSONUint8Array.unwrap(message.args)
-            );
+            : await request(message.args[3], message.method as string, message.args[0]);
 
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
-          namespace: NAMESPACE,
+          namespace: NAMESPACE_ETHEREUM,
           id: message.id,
           result: {
             return: JSONUint8Array.wrap(result),
@@ -539,7 +548,7 @@ export class InjectedEthereum implements Ethereum {
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
-          namespace: NAMESPACE,
+          namespace: NAMESPACE_ETHEREUM,
           id: message.id,
           result: {
             error: e.message || e.toString(),
@@ -551,7 +560,7 @@ export class InjectedEthereum implements Ethereum {
     });
   }
 
-  protected requestMethod(method: keyof Ethereum, args: any[]): Promise<any> {
+  protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
       .map((value) => {
@@ -559,9 +568,9 @@ export class InjectedEthereum implements Ethereum {
       })
       .join('');
 
-    const proxyMessage: ProxyRequestEthereum = {
-      type: 'proxy-request-ethereum',
-      namespace: NAMESPACE,
+    const proxyMessage: ProxyRequest = {
+      type: 'proxy-request',
+      namespace: NAMESPACE_ETHEREUM,
       id,
       method,
       args: JSONUint8Array.wrap(args),
@@ -573,6 +582,8 @@ export class InjectedEthereum implements Ethereum {
         const proxyResponse: ProxyRequestResponse = this.parseMessage
           ? this.parseMessage(e.data)
           : e.data;
+
+        console.log("proxy response: ", proxyResponse)
 
 
         if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
@@ -632,10 +643,10 @@ export class InjectedEthereum implements Ethereum {
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
     console.log(`arguments: ${JSON.stringify(args)}`);
-    await this.requestMethod(args.method as keyof Ethereum, [args.chainId, args.signer, args.params]);
+    await this.requestMethod(args.method as string, [args.params, args.chainId, args.signer, args.rpc]); // TODO: how to collect chain id, signer & rpc?
   }
 
-  async signRawEthereum(chainId: string, signer: string, data: string): Promise<{ rawTxHex: string }> {
+  async signAndBroadcastEthereum(chainId: string, signer: string, data: object): Promise<{ rawTxHex: string }> {
     console.log('console.log sign');
     return { rawTxHex: "" }
   }

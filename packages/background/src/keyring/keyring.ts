@@ -20,7 +20,7 @@ import { ETH } from '@tharsis/address-converter';
 import { keccak256 } from '@ethersproject/keccak256';
 import Common from '@ethereumjs/common';
 import { TransactionOptions, Transaction } from 'ethereumjs-tx';
-import Axios from 'axios';
+import { request } from '../tx';
 
 export enum KeyRingStatus {
   NOTLOADED,
@@ -735,41 +735,7 @@ export class KeyRing {
     return parseInt(chainId);
   }
 
-  // TODO: need a place to store this function globally
-  async request(
-    rpc: string,
-    method: string,
-    params: any[],
-  ): Promise<string> {
-
-    const restInstance = Axios.create({
-      ...{
-        baseURL: rpc
-      },
-      adapter: fetchAdapter
-    });
-
-
-    try {
-      const response = await restInstance.post('/', {
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-        params,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-      })
-      if (response.data.result) return response.data.result;
-      else throw response.data.error.message;
-    } catch (error) {
-      console.error("error calling request from ethereum provider: ", error)
-    }
-  }
-
-  public async signRawEthereum(
+  public async signAndBroadcastEthereum(
     chainId: string,
     coinType: number,
     signer: string,
@@ -777,7 +743,7 @@ export class KeyRing {
     message: object
   ): Promise<string> {
     console.log("sign raw ethereum");
-    const nonce = (await this.request(rpc, 'eth_getTransactionCount', [signer, 'latest']));
+    const nonce = (await request(rpc, 'eth_getTransactionCount', [signer, 'latest']));
     const finalMessage = { ...message, nonce }
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error('Key ring is not unlocked');
@@ -820,7 +786,7 @@ export class KeyRing {
       const serializedTx = tx.serialize();
       const rawTxHex = '0x' + serializedTx.toString('hex');
 
-      const response = await this.request(rpc, 'eth_sendRawTransaction', [rawTxHex]);
+      const response = await request(rpc, 'eth_sendRawTransaction', [rawTxHex]);
       return response;
     }
   }
