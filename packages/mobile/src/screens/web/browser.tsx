@@ -20,23 +20,9 @@ import {
   TabIcon,
 } from '../../components/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { isValidDomain } from '../../utils/helper';
 
-const isValidDomain = (url: string) => {
-  const reg =
-    /^(http(s)?:\/\/.)?(www\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
-  if (reg.test(url)) {
-    return true;
-  }
-  // try with URL
-  try {
-    const { origin } = new URL(url);
-    return origin.length > 0;
-  } catch {
-    return false;
-  }
-};
-
-export const Browser: FunctionComponent = () => {
+export const Browser: FunctionComponent<any> = (props) => {
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
   const [isOpenSetting, setIsOpenSetting] = useState(false);
@@ -93,6 +79,18 @@ export const Browser: FunctionComponent = () => {
   }, [navigation]);
 
   const [url, setUrl] = useState('');
+
+  useEffect(() => {
+    if (isValidDomain(props?.route?.params?.url?.toLowerCase())) {
+      smartNavigation.pushSmart('Web.dApp', {
+        name: 'Browser',
+        uri:
+          props.route.params.url?.toLowerCase().indexOf('http') >= 0
+            ? props.route.params.url?.toLowerCase()
+            : 'https://' + props.route.params?.url?.toLowerCase(),
+      });
+    }
+  }, [props, smartNavigation, url]);
 
   const onHandleUrl = () => {
     if (isValidDomain(url?.toLowerCase())) {

@@ -2,6 +2,7 @@ import { ImageSourcePropType } from 'react-native';
 import { ORAIDEX_DEV_URL } from 'react-native-dotenv';
 
 export const OraiDexUrl = ORAIDEX_DEV_URL || 'https://staging.oraidex.io';
+export const OraiDexProdUrl = 'https://oraidex.io';
 
 export const injectableUrl = [
   'https://oraidex.io/',

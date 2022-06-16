@@ -25,18 +25,23 @@ import { URL } from 'react-native-url-polyfill';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import DeviceInfo from 'react-native-device-info';
-import { OraiDexUrl, injectableUrl } from '../../config';
+import { OraiDexUrl, injectableUrl, OraiDexProdUrl } from '../../config';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    if (__DEV__) {
-      fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
-        .then((res) => res.text())
-        .then(setCode);
-      return;
-    }
+    // if (__DEV__) {
+    //   fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
+    //     .then((res) => res.text())
+    //     .then(setCode);
+    //   return;
+    // } else {
+    //   fetch(`${OraiDexProdUrl}/injected-provider.bundle.js`)
+    //     .then((res) => res.text())
+    //     .then(setCode);
+    //   return;
+    // }
     if (Platform.OS === 'ios') {
       RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(
         setCode
@@ -228,6 +233,7 @@ export const WebpageScreen: FunctionComponent<
 
   useEffect(() => {
     if (sourceCode && injectableUrl.includes(currentURL)) {
+      // if (sourceCode) {
       webviewRef.current.reload();
     }
   }, [sourceCode, currentURL]);
@@ -280,19 +286,13 @@ export const WebpageScreen: FunctionComponent<
           ref={webviewRef}
           onMessage={onMessage}
           onNavigationStateChange={(e) => {
-            // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-            // Use two handlers to measure simultaneously in ios and android.
             setCanGoBack(e.canGoBack);
             setCanGoForward(e.canGoForward);
-
             setCurrentURL(e.url);
           }}
           onLoadProgress={(e) => {
-            // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-            // Use two handlers to measure simultaneously in ios and android.
             setCanGoBack(e.nativeEvent.canGoBack);
             setCanGoForward(e.nativeEvent.canGoForward);
-
             setCurrentURL(e.nativeEvent.url);
           }}
           contentInsetAdjustmentBehavior="never"

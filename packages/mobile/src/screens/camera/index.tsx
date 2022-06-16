@@ -12,23 +12,26 @@ import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
 import { AddressCopyable } from '../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
+import { useNavigation } from '@react-navigation/native';
+
 import { Bech32Address } from '@owallet/cosmos';
 import { FullScreenCameraView } from '../../components/camera';
 import {
   importFromMobile,
   parseQRCodeDataForImportFromMobile,
   registerExportedAddressBooks,
-  registerExportedKeyRingDatas
+  registerExportedKeyRingDatas,
 } from '../../utils/import-from-mobile';
 import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
 import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
+import { isValidDomain } from '../../utils/helper';
 
 export const CameraScreen: FunctionComponent = observer(() => {
   const { chainStore, walletConnectStore, keyRingStore } = useStore();
 
   const style = useStyle();
-
+  const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +72,12 @@ export const CameraScreen: FunctionComponent = observer(() => {
             setIsLoading(true);
 
             try {
+              if (isValidDomain(data.toLowerCase())) {
+                console.log('data', data);
+                navigation.navigate('Browser', { url: data.toLowerCase() });
+
+                return;
+              }
               if (data.startsWith('wc:')) {
                 await walletConnectStore.initClient(data);
 
@@ -94,7 +103,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
                   if (chainInfo) {
                     smartNavigation.pushSmart('Send', {
                       chainId: chainInfo.chainId,
-                      recipient: data
+                      recipient: data,
                     });
                   } else {
                     smartNavigation.navigateSmart('Home', {});
@@ -129,10 +138,10 @@ export const CameraScreen: FunctionComponent = observer(() => {
                       {
                         name: 'Register',
                         params: {
-                          screen: 'Register.End'
-                        }
-                      }
-                    ]
+                          screen: 'Register.End',
+                        },
+                      },
+                    ],
                   });
                 }
               }
@@ -153,7 +162,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
             containerStyle={style.flatten([
               'margin-top-64',
               'border-radius-64',
-              'opacity-90'
+              'opacity-90',
             ])}
             style={style.flatten(['padding-x-52'])}
             onPress={() => {
@@ -207,9 +216,9 @@ export const AddressQRCodeModal: FunctionComponent<{
                 style={StyleSheet.flatten([
                   {
                     width: 200,
-                    height: 200
+                    height: 200,
                   },
-                  style.flatten(['background-color-disabled'])
+                  style.flatten(['background-color-disabled']),
                 ])}
               />
             )}
@@ -223,7 +232,7 @@ export const AddressQRCodeModal: FunctionComponent<{
               loading={account.bech32Address === ''}
               onPress={() => {
                 Share.share({
-                  message: account.bech32Address
+                  message: account.bech32Address,
                 }).catch((e) => {
                   console.log(e);
                 });
@@ -235,6 +244,6 @@ export const AddressQRCodeModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true
+    disableSafeArea: true,
   }
 );
