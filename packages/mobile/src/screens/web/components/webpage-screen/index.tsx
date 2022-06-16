@@ -31,12 +31,13 @@ export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    // if (__DEV__) {
-    //   fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
-    //     .then((res) => res.text())
-    //     .then(setCode);
-    //   return;
-    // } else {
+    if (__DEV__) {
+      fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
+        .then((res) => res.text())
+        .then(setCode);
+      // return;
+    }
+    // else {
     //   fetch(`${OraiDexProdUrl}/injected-provider.bundle.js`)
     //     .then((res) => res.text())
     //     .then(setCode);
