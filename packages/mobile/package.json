@@ -21,7 +21,9 @@
     "generate:splash-image": "expo-splash-screen --background-color \"#141414\" --image-path ./src/assets/logo/splash-screen-only-k.png --image-resize-mode contain --status-bar-translucent --status-bar-background-color \"#141414\" --status-bar-style dark-content",
     "pod-install": "pod-install",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "sh ./scripts/fix-android-splash-screen-flash.sh"
+    "postinstall": "sh ./scripts/fix-android-splash-screen-flash.sh && sh ./scripts/force-export-ble-manager-from-ledger.sh",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.3 --output-dir build",
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.1 --output-dir build"
   },
   "dependencies": {
     "@amplitude/react-native": "^2.7.0",
