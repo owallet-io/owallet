@@ -38,6 +38,7 @@ export class BackgroundTxService {
     tx: unknown,
     mode: 'async' | 'sync' | 'block'
   ): Promise<Uint8Array> {
+    console.log("finally, in send tx to broadcast Keplr message");
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     const restInstance = Axios.create({
       ...{
@@ -107,7 +108,7 @@ export class BackgroundTxService {
     rpc: string,
     method: string,
     params: any[],
-  ): Promise<Uint8Array> {
+  ): Promise<string> {
 
     const restInstance = Axios.create({
       ...{

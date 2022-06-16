@@ -46,9 +46,9 @@ export class SendTxMsg extends Message<Uint8Array> {
 }
 
 // Return the tx hash
-export class SendTxEthereumMsg extends Message<Uint8Array> {
+export class SendTxEthereumMsg extends Message<string> {
   public static type() {
-    return 'send-tx-to-background';
+    return 'send-tx-ethereum-to-background';
   }
 
   constructor(

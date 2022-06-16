@@ -5,7 +5,7 @@ import {
   PubKeySecp256k1,
   RNG,
 } from '@owallet/crypto';
-import { KVStore } from '@owallet/common';
+import { fetchAdapter, KVStore } from '@owallet/common';
 import { LedgerService } from '../ledger';
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 import { ChainInfo } from '@owallet/types';
@@ -20,6 +20,7 @@ import { ETH } from '@tharsis/address-converter';
 import { keccak256 } from '@ethersproject/keccak256';
 import Common from '@ethereumjs/common';
 import { TransactionOptions, Transaction } from 'ethereumjs-tx';
+import Axios from 'axios';
 
 export enum KeyRingStatus {
   NOTLOADED,
@@ -721,6 +722,40 @@ export class KeyRing {
     }
   }
 
+  // TODO: temp function to automatically trigger broadcast tx after signing (for demo purpose)
+  async sendEthereumTx(
+    rpc: string,
+    method: string,
+    params: any[],
+  ): Promise<string> {
+
+    const restInstance = Axios.create({
+      ...{
+        baseURL: rpc
+      },
+      adapter: fetchAdapter
+    });
+
+
+    try {
+      const response = await restInstance.post('/', {
+        jsonrpc: '2.0',
+        id: 1,
+        method,
+        params,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+      })
+      if (response.data.result) return response.data.result;
+      else throw response.data.error.message;
+    } catch (error) {
+      console.error("error calling request from ethereum provider: ", error)
+    }
+  }
+
   public async signRawEthereum(
     chainId: string,
     defaultCoinType: number,
@@ -761,7 +796,8 @@ export class KeyRing {
       const serializedTx = tx.serialize();
       const rawTxHex = '0x' + serializedTx.toString('hex');
 
-      return rawTxHex;
+      const response = await this.sendEthereumTx('https://endpoint1.kawaii.global', 'eth_sendRawTransaction', [rawTxHex]);
+      return response;
     }
   }
 
