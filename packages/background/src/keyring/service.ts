@@ -312,7 +312,9 @@ export class KeyRingService {
     signDoc: cosmos.tx.v1beta1.SignDoc,
     signOptions: OWalletSignOptions
   ): Promise<DirectSignResponse> {
-    console.log("in request sign direct heheeeeeeeeeeeeeeeeeeeeeeeeehehehehehehehehehe");
+    console.log(
+      'in request sign direct heheeeeeeeeeeeeeeeeeeeeeeeeehehehehehehehehehe'
+    );
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
     const key = this.keyRing.getKey(chainId, coinType);
@@ -323,6 +325,7 @@ export class KeyRingService {
     if (signer !== bech32Address) {
       throw new Error('Signer mismatched');
     }
+    console.log('it gonna be here');
 
     const newSignDocBytes = (await this.interactionService.waitApprove(
       env,
@@ -365,9 +368,11 @@ export class KeyRingService {
     env: Env,
     chainId: string,
     signer: string,
-    data: string,
+    data: string
   ): Promise<string> {
-    console.log("in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha");
+    console.log(
+      'in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha'
+    );
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
     // TODO: add UI here so users can change gas, memo & fee
