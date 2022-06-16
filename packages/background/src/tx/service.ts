@@ -28,7 +28,9 @@ export async function request(
   method: string,
   params: any[],
 ): Promise<string> {
-
+  console.log("rpc: ", rpc)
+  console.log("method: ", method)
+  console.log("params: ", params)
   const restInstance = Axios.create({
     ...{
       baseURL: rpc
