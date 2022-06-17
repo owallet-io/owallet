@@ -465,6 +465,10 @@ export class InjectedOWallet implements IOWallet {
 }
 
 export class InjectedEthereum implements Ethereum {
+
+  // we use this chain id for chain id switching from user
+  public static chainId: string;
+
   static startProxy(
     ethereum: Ethereum,
     eventListener: {
@@ -513,7 +517,7 @@ export class InjectedEthereum implements Ethereum {
 
         // TODO: eth_sendTransaction is special case. Other case => pass through custom request RPC without signing
         var result: any;
-        const chainId = message.args[1] ? message.args[1] : ethereum.chainId;
+        const chainId = message.args[1] ? message.args[1] : this.chainId ? this.chainId : ethereum.chainId;
 
         switch (message.method) {
           case 'eth_sendTransaction' as any:
@@ -535,29 +539,15 @@ export class InjectedEthereum implements Ethereum {
           case 'eth_chainId' as any:
             result = chainId;
             break;
+          case 'wallet_switchEthereumChain' as any:
+            const param = message.args[0][0];
+            if (param && typeof param === 'string') this.chainId = message.args[0][0];
+            else throw new Error(`Chain Id: ${param} is invalid`);
+            break;
           default:
             result = await ethereum.request({ method: message.method as string, params: message.args[0], chainId })
             break;
         }
-
-        // const result =
-        //   message.method === 'eth_sendTransaction' as any
-        //     ? await (async () => {
-
-        //       console.log("message before signing raw ethereum xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx: ", message.args)
-
-        //       const { rawTxHex } = await ethereum.signAndBroadcastEthereum(
-        //         message.args[1],
-        //         message.args[2],
-        //         message.args[0][0] // TODO: is this okay to assume that we only need the first item of the params?
-        //       );
-
-        //       console.log("raw tx hex after START PROXY: ", rawTxHex); // this is the transaction hash already
-
-        //       return rawTxHex;
-        //     })()
-        //     : 
-        //     await request(message.args[3], message.method as string, message.args[0]);
 
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
