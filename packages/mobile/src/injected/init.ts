@@ -16,8 +16,6 @@ export function init(
   // @ts-ignore
   window.owallet = owallet;
   // @ts-ignore
-  window.ethereumX = ethereum;
-  // @ts-ignore
   window.ethereum = window.ethereum || ethereum;
   // @ts-ignore
   window.getOfflineSigner = getOfflineSigner;
