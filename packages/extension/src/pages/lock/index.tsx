@@ -17,8 +17,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useInteractionInfo } from '@owallet/hooks';
 import { useHistory } from 'react-router';
 import delay from 'delay';
-import { KeyRingStatus } from '@owallet/background';
-import { MainPage } from '../main';
 
 interface FormData {
   password: string;
