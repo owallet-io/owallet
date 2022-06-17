@@ -19,7 +19,7 @@ pipeline {
     }
     post {
         success {
-            mail bcc: '', body: 'Build successfully!', cc: '', from: '', replyTo: '', subject: '[Ci/cd] Owallet build bundle file', to: 'phu.tx@orai.io'
+            mail bcc: '', body: 'Build successfully!', cc: 'son.lha@orai.io', from: '', replyTo: '', subject: '[Ci/cd] Owallet build bundle file', to: 'phu.tx@orai.io'
         }
     }
 }
