@@ -3,7 +3,7 @@ import {
   Mnemonic,
   PrivKeySecp256k1,
   PubKeySecp256k1,
-  RNG,
+  RNG
 } from '@owallet/crypto';
 import { fetchAdapter, KVStore } from '@owallet/common';
 import { LedgerService } from '../ledger';
@@ -26,7 +26,7 @@ export enum KeyRingStatus {
   NOTLOADED,
   EMPTY,
   LOCKED,
-  UNLOCKED,
+  UNLOCKED
 }
 
 export interface Key {
@@ -198,8 +198,8 @@ export class KeyRing {
 
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
-      ChainIdHelper.parse(chainId).identifier
-      ] ?? defaultCoinType
+          ChainIdHelper.parse(chainId).identifier
+        ] ?? defaultCoinType
       : defaultCoinType;
   }
 
@@ -232,14 +232,13 @@ export class KeyRing {
       bip44HDPath
     );
     this.password = password;
-    await this.kvStore.set<string>('password', password);
     this.multiKeyStore.push(this.keyStore);
 
     await this.save();
 
     return {
       status: this.status,
-      multiKeyStoreInfo: await this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: await this.getMultiKeyStoreInfo()
     };
   }
 
@@ -266,14 +265,13 @@ export class KeyRing {
       await this.assignKeyStoreIdMeta(meta)
     );
     this.password = password;
-    await this.kvStore.set<string>('password', password);
     this.multiKeyStore.push(this.keyStore);
 
     await this.save();
 
     return {
       status: this.status,
-      multiKeyStoreInfo: await this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: await this.getMultiKeyStoreInfo()
     };
   }
 
@@ -308,7 +306,6 @@ export class KeyRing {
     );
 
     this.password = password;
-    await this.kvStore.set<string>('password', password);
     this.keyStore = keyStore;
     this.multiKeyStore.push(this.keyStore);
 
@@ -316,7 +313,7 @@ export class KeyRing {
 
     return {
       status: this.status,
-      multiKeyStoreInfo: await this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: await this.getMultiKeyStoreInfo()
     };
   }
 
@@ -329,7 +326,6 @@ export class KeyRing {
     this.privateKey = undefined;
     this.ledgerPublicKey = undefined;
     this.password = '';
-    this.kvStore.set<string>('password', '');
   }
 
   public async unlock(password: string) {
@@ -362,7 +358,6 @@ export class KeyRing {
     }
 
     this.password = password;
-    await this.kvStore.set<string>('password', password);
   }
 
   public async save() {
@@ -420,19 +415,6 @@ export class KeyRing {
     }
 
     this.loaded = true;
-    await this.autoUnlock();
-  }
-
-  public async autoUnlock(): Promise<boolean> {
-    // check if the password is still in session then try to unlock, store password is better than encrypted key, cause we can change it later
-    if (this.isLocked()) {
-      const pwd = await this.kvStore.get<string>('password');
-      if (pwd) {
-        await this.unlock(pwd);
-      }
-      return true;
-    }
-    return false;
   }
 
   private updateLegacyKeyStore(keyStore: KeyStore) {
@@ -450,7 +432,7 @@ export class KeyRing {
       })();
       keyStore.coinTypeForChain = {
         ...keyStore.coinTypeForChain,
-        [ChainIdHelper.parse(chainInfo.chainId).identifier]: coinType,
+        [ChainIdHelper.parse(chainInfo.chainId).identifier]: coinType
       };
     }
   }
@@ -463,7 +445,7 @@ export class KeyRing {
     return (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-      ChainIdHelper.parse(chainId).identifier
+        ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     );
   }
@@ -476,7 +458,7 @@ export class KeyRing {
     if (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-      ChainIdHelper.parse(chainId).identifier
+        ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     ) {
       throw new Error('Coin type already set');
@@ -484,7 +466,7 @@ export class KeyRing {
 
     this.keyStore.coinTypeForChain = {
       ...this.keyStore.coinTypeForChain,
-      [ChainIdHelper.parse(chainId).identifier]: coinType,
+      [ChainIdHelper.parse(chainId).identifier]: coinType
     };
 
     const keyStoreInMulti = this.multiKeyStore.find((keyStore) => {
@@ -497,7 +479,7 @@ export class KeyRing {
 
     if (keyStoreInMulti) {
       keyStoreInMulti.coinTypeForChain = {
-        ...this.keyStore.coinTypeForChain,
+        ...this.keyStore.coinTypeForChain
       };
     }
 
@@ -555,7 +537,7 @@ export class KeyRing {
     await this.save();
     return {
       multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
-      keyStoreChanged,
+      keyStoreChanged
     };
   }
 
@@ -606,7 +588,7 @@ export class KeyRing {
         algo: 'secp256k1',
         pubKey: pubKey.toBytes(),
         address: pubKey.getAddress(),
-        isNanoLedger: true,
+        isNanoLedger: true
       };
     } else {
       const privKey = this.loadPrivKey(coinType);
@@ -621,7 +603,7 @@ export class KeyRing {
           algo: 'ethsecp256k1',
           pubKey: pubKey.toBytes(),
           address: ethereumAddress,
-          isNanoLedger: false,
+          isNanoLedger: false
         };
       }
 
@@ -630,7 +612,7 @@ export class KeyRing {
         algo: 'secp256k1',
         pubKey: pubKey.toBytes(),
         address: pubKey.getAddress(),
-        isNanoLedger: false,
+        isNanoLedger: false
       };
     }
   }
@@ -730,7 +712,7 @@ export class KeyRing {
         const chainId = parseInt(firstSplit.split('-')[0]);
         return chainId;
       }
-      throw new Error("Invalid chain id. Please try again")
+      throw new Error('Invalid chain id. Please try again');
     }
     return parseInt(chainId);
   }
@@ -742,9 +724,12 @@ export class KeyRing {
     rpc: string,
     message: object
   ): Promise<string> {
-    console.log("sign raw ethereum");
-    const nonce = (await request(rpc, 'eth_getTransactionCount', [signer, 'latest']));
-    const finalMessage = { ...message, nonce }
+    console.log('sign raw ethereum');
+    const nonce = await request(rpc, 'eth_getTransactionCount', [
+      signer,
+      'latest'
+    ]);
+    const finalMessage = { ...message, nonce };
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error('Key ring is not unlocked');
     }
@@ -766,20 +751,19 @@ export class KeyRing {
     } else {
       const privKey = this.loadPrivKey(coinType);
       const chainIdNumber = this.validateChainId(chainId);
-      const customCommon = Common.custom(
-
-        {
-          name: chainId,
-          networkId: chainIdNumber,
-          chainId: chainIdNumber,
-        },
-      )
+      const customCommon = Common.custom({
+        name: chainId,
+        networkId: chainIdNumber,
+        chainId: chainIdNumber
+      });
       const opts: TransactionOptions = { common: customCommon } as any;
-      const tx = new Transaction(finalMessage, opts)
+      const tx = new Transaction(finalMessage, opts);
       tx.sign(Buffer.from(privKey.toBytes()));
 
       // validate signer. Has to get substring(2) to remove 0x
-      if (!tx.getSenderAddress().equals(Buffer.from(signer.substring(2), 'hex'))) {
+      if (
+        !tx.getSenderAddress().equals(Buffer.from(signer.substring(2), 'hex'))
+      ) {
         throw new Error('Signer mismatched');
       }
 
@@ -886,7 +870,7 @@ export class KeyRing {
 
     await this.save();
     return {
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
     };
   }
 
@@ -913,7 +897,7 @@ export class KeyRing {
 
     await this.save();
     return {
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
     };
   }
 
@@ -946,7 +930,7 @@ export class KeyRing {
 
     await this.save();
     return {
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
     };
   }
 
@@ -968,7 +952,7 @@ export class KeyRing {
 
     await this.save();
     return {
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
     };
   }
 
@@ -984,8 +968,8 @@ export class KeyRing {
         bip44HDPath: keyStore.bip44HDPath,
         selected: this.keyStore
           ? KeyRing.getKeyStoreId(keyStore) ===
-          KeyRing.getKeyStoreId(this.keyStore)
-          : false,
+            KeyRing.getKeyStoreId(this.keyStore)
+          : false
       });
     }
 
@@ -1024,12 +1008,12 @@ export class KeyRing {
             bip44HDPath: keyStore.bip44HDPath ?? {
               account: 0,
               change: 0,
-              addressIndex: 0,
+              addressIndex: 0
             },
             coinTypeForChain: keyStore.coinTypeForChain,
             key: mnemonic,
             meta: keyStore.meta ?? {},
-            type: 'mnemonic',
+            type: 'mnemonic'
           });
 
           break;
@@ -1043,12 +1027,12 @@ export class KeyRing {
             bip44HDPath: keyStore.bip44HDPath ?? {
               account: 0,
               change: 0,
-              addressIndex: 0,
+              addressIndex: 0
             },
             coinTypeForChain: keyStore.coinTypeForChain,
             key: privateKey,
             meta: keyStore.meta ?? {},
-            type: 'privateKey',
+            type: 'privateKey'
           });
 
           break;
@@ -1125,7 +1109,7 @@ export class KeyRing {
   }> {
     // `__id__` is used to distinguish the key store.
     return Object.assign({}, meta, {
-      __id__: (await this.getIncrementalNumber()).toString(),
+      __id__: (await this.getIncrementalNumber()).toString()
     });
   }
 
@@ -1143,7 +1127,7 @@ export class KeyRing {
       return {
         account: 0,
         change: 0,
-        addressIndex: 0,
+        addressIndex: 0
       };
     }
     KeyRing.validateBIP44Path(keyStore.bip44HDPath);
