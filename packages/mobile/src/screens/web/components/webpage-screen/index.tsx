@@ -170,7 +170,7 @@ export const WebpageScreen: FunctionComponent<
       },
       RNInjectedEthereum.parseWebviewMessage
     );
-  }, [eventEmitter, owallet]);
+  }, [eventEmitter, owallet, ethereum]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {
