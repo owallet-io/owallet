@@ -390,7 +390,7 @@ export class KeyRingService {
     // )) as Uint8Array;
 
     // TEMP HARDCODE, need to have a pop up here to change gas & fee
-    const { gasPrice, gasLimit } = { gasPrice: 100, gasLimit: 1000000000 };
+    const { gasPrice, gasLimit } = { gasPrice: 100, gasLimit: 10000000 };
 
     // const newSignDoc = cosmos.tx.v1beta1.SignDoc.decode(newSignDocBytes);
     const newData = { ...data, gasPrice, gasLimit };
