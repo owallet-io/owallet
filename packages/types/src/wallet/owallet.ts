@@ -138,7 +138,7 @@ export interface Ethereum {
   chainId: string;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
-  signAndBroadcastEthereum(chainId: string, signer: string, data: object): Promise<{ rawTxHex: string }>;
+  signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }

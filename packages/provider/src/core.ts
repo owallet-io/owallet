@@ -307,8 +307,8 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAndBroadcastEthereum(chainId: string, signer: string, data: object): Promise<{ rawTxHex: string; }> {
-    const msg = new RequestSignEthereumMsg(chainId, signer, data);
+  async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string; }> {
+    const msg = new RequestSignEthereumMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

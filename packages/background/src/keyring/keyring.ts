@@ -198,8 +198,8 @@ export class KeyRing {
 
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
-          ChainIdHelper.parse(chainId).identifier
-        ] ?? defaultCoinType
+      ChainIdHelper.parse(chainId).identifier
+      ] ?? defaultCoinType
       : defaultCoinType;
   }
 
@@ -445,7 +445,7 @@ export class KeyRing {
     return (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-        ChainIdHelper.parse(chainId).identifier
+      ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     );
   }
@@ -458,7 +458,7 @@ export class KeyRing {
     if (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-        ChainIdHelper.parse(chainId).identifier
+      ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     ) {
       throw new Error('Coin type already set');
@@ -720,16 +720,10 @@ export class KeyRing {
   public async signAndBroadcastEthereum(
     chainId: string,
     coinType: number,
-    signer: string,
     rpc: string,
     message: object
   ): Promise<string> {
     console.log('sign raw ethereum');
-    const nonce = await request(rpc, 'eth_getTransactionCount', [
-      signer,
-      'latest'
-    ]);
-    const finalMessage = { ...message, nonce };
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error('Key ring is not unlocked');
     }
@@ -756,16 +750,24 @@ export class KeyRing {
         networkId: chainIdNumber,
         chainId: chainIdNumber
       });
+
+      const signer = new Wallet(privKey.toBytes()).address;
+      const nonce = await request(rpc, 'eth_getTransactionCount', [
+        signer,
+        'latest'
+      ]);
+      const finalMessage = { ...message, nonce };
+
       const opts: TransactionOptions = { common: customCommon } as any;
       const tx = new Transaction(finalMessage, opts);
       tx.sign(Buffer.from(privKey.toBytes()));
 
-      // validate signer. Has to get substring(2) to remove 0x
-      if (
-        !tx.getSenderAddress().equals(Buffer.from(signer.substring(2), 'hex'))
-      ) {
-        throw new Error('Signer mismatched');
-      }
+      // // validate signer. Has to get substring(2) to remove 0x
+      // if (
+      //   !tx.getSenderAddress().equals(Buffer.from(signer.substring(2), 'hex'))
+      // ) {
+      //   throw new Error('Signer mismatched');
+      // }
 
       const serializedTx = tx.serialize();
       const rawTxHex = '0x' + serializedTx.toString('hex');
@@ -968,7 +970,7 @@ export class KeyRing {
         bip44HDPath: keyStore.bip44HDPath,
         selected: this.keyStore
           ? KeyRing.getKeyStoreId(keyStore) ===
-            KeyRing.getKeyStoreId(this.keyStore)
+          KeyRing.getKeyStoreId(this.keyStore)
           : false
       });
     }

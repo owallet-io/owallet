@@ -372,7 +372,6 @@ const handleRequestSignEthereumMsg: (
     const response = await service.requestSignEthereum(
       env,
       msg.chainId,
-      msg.signer,
       msg.data,
     );
 

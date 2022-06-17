@@ -367,7 +367,6 @@ export class KeyRingService {
   async requestSignEthereum(
     env: Env,
     chainId: string,
-    signer: string,
     data: object,
   ): Promise<string> {
     console.log("in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha with data: ", data);
@@ -401,7 +400,6 @@ export class KeyRingService {
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         chainId,
         coinType,
-        signer,
         rpc,
         newData,
       );
