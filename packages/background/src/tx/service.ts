@@ -50,7 +50,8 @@ export async function request(
       },
     })
     if (response.data.result) return response.data.result;
-    else throw response.data.error.message;
+    if (response.data.error) throw new Error(JSON.stringify(response.data.error));
+    throw new Error(`Unexpected error from the network: ${JSON.stringify(response.data)}`);
   } catch (error) {
     console.error("error calling request from ethereum provider: ", error)
   }
@@ -148,11 +149,12 @@ export class BackgroundTxService {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     if (!chainInfo.evmRpc) throw new Error(`The given chain ID: ${chainId} does not have a RPC endpoint to connect to`);
     switch (method) {
-      case 'eth_accounts' || 'eth_requestAccounts':
+      case 'eth_accounts':
+      case 'eth_requestAccounts':
         const key = await this.keyRingService.getKey(chainId);
         return [`0x${Buffer.from(key.address).toString('hex')}`];
       default:
-        return request(chainInfo.evmRpc, method, params);
+        return await request(chainInfo.evmRpc, method, params);
     }
   }
 
