@@ -532,12 +532,6 @@ export class InjectedEthereum implements Ethereum {
               return rawTxHex;
             })()
             break;
-          case 'eth_accounts' || 'eth_requestAccounts' as any:
-            // TODO: check args of message. If undefined => notify error
-            // methods that need keyring will call the ethereum request method
-            const address = await ethereum.request({ method: message.method as string, params: message.args[0], chainId });
-            result = [address];
-            break;
           case 'eth_chainId' as any:
             result = chainId;
             break;

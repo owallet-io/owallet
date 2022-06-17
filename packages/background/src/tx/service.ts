@@ -28,7 +28,7 @@ export async function request(
   rpc: string,
   method: string,
   params: any[],
-): Promise<string> {
+): Promise<any> {
   const restInstance = Axios.create({
     ...{
       baseURL: rpc
@@ -144,13 +144,13 @@ export class BackgroundTxService {
     chainId: string,
     method: string,
     params: any[],
-  ): Promise<string> {
+  ): Promise<any> {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
     if (!chainInfo.evmRpc) throw new Error("The given chain ID does not have a RPC endpoint to connect to");
     switch (method) {
-      case 'eth_accounts':
+      case 'eth_accounts' || 'eth_requestAccounts':
         const key = await this.keyRingService.getKey(chainId);
-        return `0x${Buffer.from(key.address).toString('hex')}`;
+        return [`0x${Buffer.from(key.address).toString('hex')}`];
       default:
         return request(chainInfo.evmRpc, method, params);
     }
