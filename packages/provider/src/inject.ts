@@ -674,7 +674,7 @@ export class InjectedEthereum implements Ethereum {
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
     console.log(`arguments: ${JSON.stringify(args)}`);
-    return await this.requestMethod(args.method as string, [args.params, args.chainId, args.signer, args.rpc]); // TODO: how to collect chain id, signer & rpc?
+    return await this.requestMethod(args.method as string, [args.params, args.chainId, args.signer]); // TODO: how to collect chain id, signer & rpc?
   }
 
   async signAndBroadcastEthereum(chainId: string, signer: string, data: object): Promise<{ rawTxHex: string }> {
