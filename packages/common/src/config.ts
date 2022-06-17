@@ -12,74 +12,74 @@ export const FiatCurrencies: FiatCurrency[] = [
     currency: 'usd',
     symbol: '$',
     maxDecimals: 2,
-    locale: 'en-US'
+    locale: 'en-US',
   },
   {
     currency: 'eur',
     symbol: '€',
     maxDecimals: 2,
-    locale: 'de-DE'
+    locale: 'de-DE',
   },
   {
     currency: 'gbp',
     symbol: '£',
     maxDecimals: 2,
-    locale: 'en-GB'
+    locale: 'en-GB',
   },
   {
     currency: 'cad',
     symbol: 'CA$',
     maxDecimals: 2,
-    locale: 'en-CA'
+    locale: 'en-CA',
   },
   {
     currency: 'aud',
     symbol: 'AU$',
     maxDecimals: 2,
-    locale: 'en-AU'
+    locale: 'en-AU',
   },
   {
     currency: 'rub',
     symbol: '₽',
     maxDecimals: 0,
-    locale: 'ru'
+    locale: 'ru',
   },
   {
     currency: 'krw',
     symbol: '₩',
     maxDecimals: 0,
-    locale: 'ko-KR'
+    locale: 'ko-KR',
   },
   {
     currency: 'hkd',
     symbol: 'HK$',
     maxDecimals: 1,
-    locale: 'en-HK'
+    locale: 'en-HK',
   },
   {
     currency: 'cny',
     symbol: '¥',
     maxDecimals: 1,
-    locale: 'zh-CN'
+    locale: 'zh-CN',
   },
   {
     currency: 'jpy',
     symbol: '¥',
     maxDecimals: 0,
-    locale: 'ja-JP'
+    locale: 'ja-JP',
   },
   {
     currency: 'inr',
     symbol: '₹',
     maxDecimals: 1,
-    locale: 'en-IN'
-  }
+    locale: 'en-IN',
+  },
 ];
 
 export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
   default: 'usd',
   ko: 'krw',
-  vi: 'vnd'
+  vi: 'vnd',
 };
 
 export const AdditonalIntlMessages: IntlMessages = {};
@@ -105,10 +105,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'oraichain-token',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
     },
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     bech32Config: Bech32Address.defaultBech32Config('orai'),
     get currencies() {
@@ -122,7 +122,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
           coinDecimals: 6,
           coinGeckoId: 'airight',
-          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png',
         },
         {
           type: 'cw20',
@@ -132,7 +132,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           contractAddress: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
           coinDecimals: 6,
           // coinGeckoId: 'oraix',
-          coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
+          coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png',
         },
         {
           type: 'cw20',
@@ -143,8 +143,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 6,
           coinGeckoId: 'tether',
           coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
-        }
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
+        },
       ];
     },
     get feeCurrencies() {
@@ -153,87 +153,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
     gasPriceStep: {
       low: 0,
       average: 0.000025,
-      high: 0.00004
+      high: 0.00004,
     },
     features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
     txExplorer: {
       name: 'Oraiscan',
       txUrl: 'https://scan.orai.io/txs/{txHash}',
-      accountUrl: 'https://scan.orai.io/account/{address}'
+      accountUrl: 'https://scan.orai.io/account/{address}',
     },
-    beta: true // use v1beta1
-  },
-  {
-    rpc: 'https://testnet-rpc.orai.io/o',
-    rest: 'https://testnet-lcd.orai.io/',
-    chainId: 'Oraichain-testnet',
-    chainName: 'Oraichain-testnet',
-    stakeCurrency: {
-      coinDenom: 'ORAI',
-      coinMinimalDenom: 'orai',
-      coinDecimals: 6,
-      coinGeckoId: 'oraichain-token',
-      coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-    },
-
-    bip44: {
-      coinType: 118
-    },
-    bech32Config: Bech32Address.defaultBech32Config('orai'),
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          type: 'cw20',
-          coinDenom: 'AIRI',
-          coinMinimalDenom:
-            'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
-          contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
-          coinDecimals: 6,
-          coinGeckoId: 'airight',
-          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
-        },
-        {
-          type: 'cw20',
-          coinDenom: 'ORAIX',
-          coinMinimalDenom:
-            'cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:OraiDex Token',
-          contractAddress: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
-          coinDecimals: 6,
-          // coinGeckoId: 'oraix',
-          coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
-        },
-        {
-          type: 'cw20',
-          coinDenom: 'USDT',
-          coinMinimalDenom:
-            'cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:Tether',
-          contractAddress: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
-          coinDecimals: 6,
-          coinGeckoId: 'tether',
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
-        }
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
-    },
-    features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
-    chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
-    txExplorer: {
-      name: 'Oraiscan',
-      txUrl: 'https://scan.orai.io/txs/{txHash}',
-      accountUrl: 'https://scan.orai.io/account/{address}'
-    },
-    beta: true // use v1beta1
+    beta: true, // use v1beta1
   },
   {
     chainId: 'oraibridge-subnet',
@@ -243,10 +172,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: 'ORAIB',
       coinMinimalDenom: 'uoraib',
-      coinDecimals: 6
+      coinDecimals: 6,
     },
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     bech32Config: Bech32Address.defaultBech32Config('oraib'),
     // List of all coin/tokens used in this chain.
@@ -259,14 +188,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: 'oraichain-token',
           coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
         },
         {
           coinDenom: 'BEP20 AIRI',
           coinMinimalDenom: 'gravity0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F',
           coinDecimals: 18,
           coinGeckoId: 'airight',
-          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png',
         },
         {
           coinDenom: 'BEP20 ORAI',
@@ -274,14 +203,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: 'oraichain-token',
           coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
         },
         {
           coinDenom: 'BEP20 AIRI',
           coinMinimalDenom: 'oraib0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F',
           coinDecimals: 18,
           coinGeckoId: 'airight',
-          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png',
         },
         {
           coinDenom: 'BEP20 USDT',
@@ -289,8 +218,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 18,
           coinGeckoId: 'tether',
           coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
-        }
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
+        },
       ];
     },
     get feeCurrencies() {
@@ -299,24 +228,24 @@ export const EmbedChainInfos: AppChainInfo[] = [
     gasPriceStep: {
       low: 0,
       average: 0,
-      high: 0
+      high: 0,
     },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm']
+    features: ['stargate', 'ibc-transfer', 'cosmwasm'],
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
     evmRpc: 'https://endpoint1.kawaii.global',
     rest: 'https://cosmos1.kawaii.global',
     chainId: 'kawaii_6886-1',
-    chainName: 'Kawaii Islands network',
+    chainName: 'Kawaiiverse',
     stakeCurrency: {
       coinDenom: 'ORAIE',
       coinMinimalDenom: 'oraie',
       coinDecimals: 18,
-      coinGeckoId: 'oraie'
+      coinGeckoId: 'oraie',
     },
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
@@ -328,9 +257,38 @@ export const EmbedChainInfos: AppChainInfo[] = [
     gasPriceStep: {
       low: 0,
       average: 0.000025,
-      high: 0.00004
+      high: 0.00004,
     },
-    features: ['ibc-transfer', 'ibc-go', 'stargate']
+    features: ['ibc-transfer', 'ibc-go', 'stargate'],
+  },
+  {
+    rpc: 'https://tendermint-testnet.bignft.app/',
+    evmRpc: 'https://endpoint-testnet.bignft.app/',
+    rest: 'https://cosmos-testnet.bignft.app/',
+    chainId: 'balcony_888888-1',
+    chainName: 'Balcony Subnet',
+    stakeCurrency: {
+      coinDenom: 'ORAIN',
+      coinMinimalDenom: 'orain',
+      coinDecimals: 18,
+      coinGeckoId: 'orain',
+    },
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config('orain'),
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004,
+    },
+    features: ['ibc-transfer', 'ibc-go', 'stargate'],
   },
   {
     rpc: 'https://rpc-cosmoshub.keplr.app',
@@ -342,10 +300,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uatom',
       coinDecimals: 6,
       coinGeckoId: 'cosmos',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
     },
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     bech32Config: Bech32Address.defaultBech32Config('cosmos'),
     currencies: [
@@ -354,8 +312,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'uatom',
         coinDecimals: 6,
         coinGeckoId: 'cosmos',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
-      }
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
+      },
     ],
     feeCurrencies: [
       {
@@ -363,22 +321,23 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'uatom',
         coinDecimals: 6,
         coinGeckoId: 'cosmos',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
-      }
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
+      },
     ],
     coinType: 118,
     gasPriceStep: {
       low: 0,
       average: 0.025,
-      high: 0.04
+      high: 0.04,
     },
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
     txExplorer: {
       name: 'Mintscan',
-      txUrl: 'https://www.mintscan.io/cosmos/txs/{txHash}'
-    }
+      txUrl: 'https://www.mintscan.io/cosmos/txs/{txHash}',
+    },
   },
+
   {
     rpc: 'https://rpc-osmosis.keplr.app',
     rest: 'https://lcd-osmosis.keplr.app',
@@ -389,10 +348,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
       coinGeckoId: 'osmosis',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
     },
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [
@@ -401,7 +360,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'uosmo',
         coinDecimals: 6,
         coinGeckoId: 'osmosis',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
       },
       {
         coinDenom: 'ION',
@@ -409,8 +368,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: 'ion',
         coinImageUrl:
-          'https://dhj8dql1kzq2v.cloudfront.net/white/osmosis-ion.png'
-      }
+          'https://dhj8dql1kzq2v.cloudfront.net/white/osmosis-ion.png',
+      },
     ],
     feeCurrencies: [
       {
@@ -418,21 +377,21 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'uosmo',
         coinDecimals: 6,
         coinGeckoId: 'osmosis',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
-      }
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
+      },
     ],
     coinType: 118,
     gasPriceStep: {
       low: 0,
       average: 0.025,
-      high: 0.04
+      high: 0.04,
     },
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
     txExplorer: {
       name: 'Mintscan',
-      txUrl: 'https://www.mintscan.io/osmosis/txs/{txHash}'
-    }
+      txUrl: 'https://www.mintscan.io/osmosis/txs/{txHash}',
+    },
   },
   {
     rpc: 'https://rpc-juno.keplr.app',
@@ -444,10 +403,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'ujuno',
       coinDecimals: 6,
       coinGeckoId: 'juno-network',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png',
     },
     bip44: {
-      coinType: 118
+      coinType: 118,
     },
     bech32Config: Bech32Address.defaultBech32Config('juno'),
     currencies: [
@@ -456,8 +415,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'ujuno',
         coinDecimals: 6,
         coinGeckoId: 'juno-network',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png'
-      }
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png',
+      },
     ],
     feeCurrencies: [
       {
@@ -465,27 +424,27 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'ujuno',
         coinDecimals: 6,
         coinGeckoId: 'juno-network',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png'
-      }
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png',
+      },
     ],
     gasPriceStep: {
       low: 0.001,
       average: 0.0025,
-      high: 0.004
+      high: 0.004,
     },
     features: [
       'stargate',
       'no-legacy-stdTx',
       'cosmwasm',
       'ibc-transfer',
-      'ibc-go'
+      'ibc-go',
     ],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png',
     txExplorer: {
       name: 'Mintscan',
-      txUrl: 'https://www.mintscan.io/juno/txs/{txHash}'
-    }
-  }
+      txUrl: 'https://www.mintscan.io/juno/txs/{txHash}',
+    },
+  },
 
   // {
   //   rest: "https://bsc-dataseed1.ninicoin.io",
@@ -568,7 +527,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
 // The origins that are able to pass any permission that external webpages can have.
 export const PrivilegedOrigins: string[] = [
   'https://app.osmosis.zone',
-  'https://oraidex.io'
+  'https://oraidex.io',
 ];
 
 // tracking ads
@@ -635,5 +594,5 @@ export const ValidatorThumbnails: { [key: string]: string } = {
   oraivaloper1djm07np8dzyg4et3d7dqtr3692l80nggvl0edh:
     'https://images.airight.io/validator/625522ca385ee50001b67f29.png',
   oraivaloper14vcw5qk0tdvknpa38wz46js5g7vrvut8ku5kaa:
-    'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+    'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
 };
