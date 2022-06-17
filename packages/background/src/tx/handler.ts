@@ -1,5 +1,5 @@
 import { Env, Handler, InternalHandler, Message } from '@owallet/router';
-import { SendTxEthereumMsg, SendTxMsg } from './messages';
+import { RequestEthereumMsg, SendTxMsg } from './messages';
 import { BackgroundTxService } from './service';
 
 export const getHandler: (service: BackgroundTxService) => Handler = (
@@ -9,8 +9,8 @@ export const getHandler: (service: BackgroundTxService) => Handler = (
     switch (msg.constructor) {
       case SendTxMsg:
         return handleSendTxMsg(service)(env, msg as SendTxMsg);
-      case SendTxEthereumMsg:
-        return handleSendEthereumTxMsg(service)(env, msg as SendTxEthereumMsg);
+      case RequestEthereumMsg:
+        return handleRequestEthereumMsg(service)(env, msg as RequestEthereumMsg);
       default:
         throw new Error('Unknown msg type');
     }
@@ -31,9 +31,9 @@ const handleSendTxMsg: (
   };
 };
 
-const handleSendEthereumTxMsg: (
+const handleRequestEthereumMsg: (
   service: BackgroundTxService
-) => InternalHandler<SendTxEthereumMsg> = (service) => {
+) => InternalHandler<RequestEthereumMsg> = (service) => {
   return async (env, msg) => {
     await service.permissionService.checkOrGrantBasicAccessPermission(
       env,
@@ -41,6 +41,6 @@ const handleSendEthereumTxMsg: (
       msg.origin
     );
 
-    return await service.request(msg.rpc, msg.method, msg.params);
+    return await service.request(msg.chainId, msg.method, msg.params);
   };
 };

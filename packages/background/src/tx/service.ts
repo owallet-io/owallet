@@ -8,6 +8,7 @@ import { TendermintTxTracer } from '@owallet/cosmos/build/tx-tracer';
 import { Notification } from './types';
 
 import { Buffer } from 'buffer';
+import { KeyRingService } from '../keyring';
 
 interface CosmosSdkError {
   codespace: string;
@@ -28,9 +29,6 @@ export async function request(
   method: string,
   params: any[],
 ): Promise<string> {
-  console.log("rpc: ", rpc)
-  console.log("method: ", method)
-  console.log("params: ", params)
   const restInstance = Axios.create({
     ...{
       baseURL: rpc
@@ -63,6 +61,8 @@ export class BackgroundTxService {
   constructor(
     @inject(delay(() => ChainsService))
     protected readonly chainsService: ChainsService,
+    @inject(delay(() => KeyRingService))
+    protected readonly keyRingService: KeyRingService,
     @inject(delay(() => PermissionService))
     public readonly permissionService: PermissionService,
     @inject(TYPES.Notification)
@@ -141,12 +141,19 @@ export class BackgroundTxService {
   }
 
   async request(
-    rpc: string,
+    chainId: string,
     method: string,
     params: any[],
   ): Promise<string> {
-
-    return request(rpc, method, params);
+    const chainInfo = await this.chainsService.getChainInfo(chainId);
+    if (!chainInfo.evmRpc) throw new Error("The given chain ID does not have a RPC endpoint to connect to");
+    switch (method) {
+      case 'eth_accounts':
+        const key = await this.keyRingService.getKey(chainId);
+        return `0x${Buffer.from(key.address).toString('hex')}`;
+      default:
+        return request(chainInfo.evmRpc, method, params);
+    }
   }
 
   private static processTxResultNotification(

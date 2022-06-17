@@ -29,7 +29,7 @@ import {
   SuggestChainInfoMsg,
   SuggestTokenMsg,
   SendTxMsg,
-  SendTxEthereumMsg,
+  RequestEthereumMsg,
   GetSecret20ViewingKey,
   RequestSignAminoMsg,
   GetPubkeyMsg,
@@ -295,19 +295,16 @@ export class Ethereum implements IEthereum {
   constructor(
     public readonly version: string,
     public readonly mode: EthereumMode,
+    public chainId: string,
     protected readonly requester: MessageRequester
-  ) { }
+  ) { this.chainId = chainId }
 
   // async send(): Promise<void> {
   //   console.log('');
   // }
   async request(args: RequestArguments): Promise<any> {
-    // const msg = new SendTxEthereumMsg('kawaii_6886-1', 'https://endpoint1.kawaii.global', method, params); // TODO: hard code chain id & rpc of kawaii to test
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    // console.log("request in provider core: ", args);
-    // const msg = new RequestSignEthereumMsg(args.chainId, args.signer, JSON.stringify(args.params[0]));
-    // return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-    return;
+    const msg = new RequestEthereumMsg(args.chainId, args.method, args.params);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async signAndBroadcastEthereum(chainId: string, signer: string, data: object): Promise<{ rawTxHex: string; }> {

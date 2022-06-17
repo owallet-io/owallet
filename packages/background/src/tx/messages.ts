@@ -45,15 +45,13 @@ export class SendTxMsg extends Message<Uint8Array> {
   }
 }
 
-// Return the tx hash
-export class SendTxEthereumMsg extends Message<string> {
+export class RequestEthereumMsg extends Message<string> {
   public static type() {
     return 'send-tx-ethereum-to-background';
   }
 
   constructor(
     public readonly chainId: string,
-    public readonly rpc: string,
     public readonly method: string,
     public readonly params: any[],
   ) {
@@ -67,10 +65,6 @@ export class SendTxEthereumMsg extends Message<string> {
 
     if (!this.method) {
       throw new Error('method is empty');
-    }
-
-    if (!this.rpc) {
-      throw new Error('rpc is empty');
     }
 
     if (!this.params) {
@@ -87,6 +81,6 @@ export class SendTxEthereumMsg extends Message<string> {
   }
 
   type(): string {
-    return SendTxEthereumMsg.type();
+    return RequestEthereumMsg.type();
   }
 }
