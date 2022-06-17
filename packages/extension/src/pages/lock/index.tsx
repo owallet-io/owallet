@@ -49,13 +49,6 @@ export const LockPage: FunctionComponent = observer(() => {
     }
   }, []);
 
-  if (
-    keyRingStore.status === KeyRingStatus.UNLOCKED &&
-    interactionInfo.interaction
-  ) {
-    return <MainPage />;
-  }
-
   return (
     <EmptyLayout style={{ height: '100%' }}>
       <Form
