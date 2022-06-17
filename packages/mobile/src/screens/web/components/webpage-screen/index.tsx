@@ -60,7 +60,7 @@ export const WebpageScreen: FunctionComponent<
     name: string;
   }
 > = observer((props) => {
-  const { keyRingStore } = useStore();
+  const { keyRingStore, chainStore } = useStore();
 
   const style = useStyle();
 
@@ -100,6 +100,7 @@ export const WebpageScreen: FunctionComponent<
       new Ethereum(
         DeviceInfo.getVersion(),
         'core',
+        chainStore.current.chainId,
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
             throw new Error('Webview not initialized yet');
