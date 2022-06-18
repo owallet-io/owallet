@@ -2,7 +2,7 @@ import { delay, inject, singleton } from 'tsyringe';
 import { TYPES } from '../types';
 
 import Axios from 'axios';
-import { ChainsService } from '../chains';
+import { ChainInfoWithEmbed, ChainsService } from '../chains';
 import { PermissionService } from '../permission';
 import { TendermintTxTracer } from '@owallet/cosmos/build/tx-tracer';
 import { Notification } from './types';
@@ -141,19 +141,30 @@ export class BackgroundTxService {
     }
   }
 
+  private parseChainId({ chainId }: { chainId: string }): { chainId: string, isEvm: boolean } {
+    if (!chainId) throw new Error("Invalid empty chain id when switching Ethereum chain");
+    if (chainId.substring(0, 2) === '0x') return { chainId: parseInt(chainId, 16).toString(), isEvm: true };
+    return { chainId, isEvm: false };
+  }
+
   async request(
     chainId: string,
     method: string,
     params: any[],
   ): Promise<any> {
-    const chainInfo = await this.chainsService.getChainInfo(chainId);
-    if (!chainInfo.evmRpc) throw new Error(`The given chain ID: ${chainId} does not have a RPC endpoint to connect to`);
+    var chainInfo: ChainInfoWithEmbed;
     switch (method) {
       case 'eth_accounts':
       case 'eth_requestAccounts':
         const key = await this.keyRingService.getKey(chainId);
         return [`0x${Buffer.from(key.address).toString('hex')}`];
+      case 'wallet_switchEthereumChain' as any:
+        const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
+        chainInfo = isEvm ? await this.chainsService.getChainInfo(inputChainId, 'evm') : await this.chainsService.getChainInfo(inputChainId);
+        return chainInfo.chainId;
       default:
+        chainInfo = await this.chainsService.getChainInfo(chainId);
+        if (!chainInfo.evmRpc) throw new Error(`The given chain ID: ${chainId} does not have a RPC endpoint to connect to`);
         return await request(chainInfo.evmRpc, method, params);
     }
   }

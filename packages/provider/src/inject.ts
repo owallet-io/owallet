@@ -539,9 +539,7 @@ export class InjectedEthereum implements Ethereum {
             result = chainId;
             break;
           case 'wallet_switchEthereumChain' as any:
-            const { chainId: inputChainId } = message.args[0]?.[0]; // metamask takes param as [{chainId}] => we have to follow its syntax
-            if (inputChainId && typeof inputChainId === 'string') this.chainId = inputChainId;
-            else throw new Error(`Chain Id: ${inputChainId} is invalid`);
+            this.chainId = await ethereum.request({ method: message.method as string, params: message.args[0], chainId });
             break;
           default:
             result = await ethereum.request({ method: message.method as string, params: message.args[0], chainId })
