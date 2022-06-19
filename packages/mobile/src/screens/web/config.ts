@@ -10,7 +10,8 @@ export const injectableUrl = [
   'https://app.osmosis.zone/',
   'https://scan.orai.io/',
   'https://testnet.scan.orai.io/',
-  'https://bignft.web.app/'
+  'https://bignft.web.app/',
+  'https://re.bignft.app/'
 ];
 
 export type DAppInfo = {
@@ -52,6 +53,12 @@ export const DAppInfos: DAppInfo[] = [
     name: 'Balcony Subnet',
     thumbnail: balconyLogo,
     uri: 'https://bignft.web.app',
+    logo: balconyLogo,
+  },
+  {
+    name: 'Balcony Subnet',
+    thumbnail: balconyLogo,
+    uri: 'https://re.bignft.app',
     logo: balconyLogo,
   },
 ];
