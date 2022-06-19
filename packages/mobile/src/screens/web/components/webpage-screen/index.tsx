@@ -141,8 +141,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-              message
-            )}, window.location.origin);
+                  message
+                )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -161,8 +161,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-              message
-            )}, window.location.origin);
+                  message
+                )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -233,12 +233,12 @@ export const WebpageScreen: FunctionComponent<
 
   const sourceCode = useInjectedSourceCode();
 
-  useEffect(() => {
-    if (sourceCode && injectableUrl.includes(currentURL)) {
-      // if (sourceCode) {
-      webviewRef.current.reload();
-    }
-  }, [sourceCode, currentURL]);
+  // useEffect(() => {
+  //   if (sourceCode && injectableUrl.includes(currentURL)) {
+  //     // if (sourceCode) {
+  //     webviewRef.current.reload();
+  //   }
+  // }, [sourceCode, currentURL]);
 
   return (
     <PageWithView
@@ -283,27 +283,7 @@ export const WebpageScreen: FunctionComponent<
           allowsBackForwardNavigationGestures={true}
           {...props}
         />
-      ) : (
-        <WebView
-          ref={webviewRef}
-          onMessage={onMessage}
-          onNavigationStateChange={(e) => {
-            setCanGoBack(e.canGoBack);
-            setCanGoForward(e.canGoForward);
-            setCurrentURL(e.url);
-          }}
-          onLoadProgress={(e) => {
-            setCanGoBack(e.nativeEvent.canGoBack);
-            setCanGoForward(e.nativeEvent.canGoForward);
-            setCurrentURL(e.nativeEvent.url);
-          }}
-          contentInsetAdjustmentBehavior="never"
-          automaticallyAdjustContentInsets={false}
-          decelerationRate="normal"
-          allowsBackForwardNavigationGestures={true}
-          {...props}
-        />
-      )}
+      ) : null}
     </PageWithView>
   );
 });
