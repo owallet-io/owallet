@@ -141,8 +141,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
+              message
+            )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -161,8 +161,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
+              message
+            )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -233,12 +233,12 @@ export const WebpageScreen: FunctionComponent<
 
   const sourceCode = useInjectedSourceCode();
 
-  // useEffect(() => {
-  //   if (sourceCode && injectableUrl.includes(currentURL)) {
-  //     // if (sourceCode) {
-  //     webviewRef.current.reload();
-  //   }
-  // }, [sourceCode, currentURL]);
+  useEffect(() => {
+    if (sourceCode && injectableUrl.includes(currentURL)) {
+      // if (sourceCode) {
+      webviewRef.current.reload();
+    }
+  }, [sourceCode, currentURL]);
 
   return (
     <PageWithView
