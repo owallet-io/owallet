@@ -265,7 +265,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: 'https://tendermint-testnet.bignft.app/',
     evmRpc: 'https://endpoint-testnet.bignft.app/',
     rest: 'https://cosmos-testnet.bignft.app/',
-    chainId: 'balcony_888888-1',
+    chainId: '888888',
+    // chainId: 'balcony_888888-1',
     chainName: 'Balcony Subnet',
     stakeCurrency: {
       coinDenom: 'ORAIN',
