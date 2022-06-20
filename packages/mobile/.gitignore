@@ -77,3 +77,5 @@ injected-provider.bundle.js
 *.zip
 *.mobileprovision
 .env
+
+.firebase/

@@ -1,0 +1,9 @@
+{
+  "hosting": [
+    {
+      "target": "owallet-provider",
+      "public": "build/injected",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
+    }
+  ]
+}
