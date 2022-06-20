@@ -267,7 +267,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: 'https://cosmos-testnet.bignft.app/',
     chainId: '888888',
     // chainId: 'balcony_888888-1',
-    chainName: 'Balcony Subnet',
+    chainName: 'Balcony Subnet\n(Testnet)',
     stakeCurrency: {
       coinDenom: 'ORAIN',
       coinMinimalDenom: 'orain',
@@ -448,68 +448,68 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rest: "https://bsc-dataseed1.ninicoin.io",
-    evmRpc: "https://bsc-dataseed1.ninicoin.io",
-    chainId: "56",
-    chainName: "BNB Smart Chain\n(Coming soon)",
+    rest: 'https://bsc-dataseed1.ninicoin.io',
+    evmRpc: 'https://bsc-dataseed1.ninicoin.io',
+    chainId: '56',
+    chainName: 'BNB Smart Chain\n(Coming soon)',
     bip44: {
       coinType: 60,
     },
     stakeCurrency: {
-      coinDenom: "BNB",
-      coinMinimalDenom: "bnb",
+      coinDenom: 'BNB',
+      coinMinimalDenom: 'bnb',
       coinDecimals: 18,
-      coinGeckoId: "bnb",
+      coinGeckoId: 'bnb',
       coinImageUrl:
-        "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
     },
-    bech32Config: Bech32Address.defaultBech32Config("evmos"),
-    networkType: "evm",
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
     currencies: [
       {
-        coinDenom: "BNB",
-        coinMinimalDenom: "bnb",
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
         coinDecimals: 18,
-        coinGeckoId: "bnb",
+        coinGeckoId: 'bnb',
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
       },
       {
-        coinDenom: "ORAI",
+        coinDenom: 'ORAI',
         coinMinimalDenom:
-          "erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token",
+          'erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token',
         coinDecimals: 18,
-        coinGeckoId: "oraichain-token",
+        coinGeckoId: 'oraichain-token',
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
       },
       {
-        coinDenom: "AIRI",
+        coinDenom: 'AIRI',
         coinMinimalDenom:
-          "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token",
+          'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
         coinDecimals: 18,
-        coinGeckoId: "airight",
+        coinGeckoId: 'airight',
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png',
       },
       {
-        coinDenom: "KWT",
+        coinDenom: 'KWT',
         coinMinimalDenom:
-          "erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands",
+          'erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands',
         coinDecimals: 18,
-        coinGeckoId: "kawaii-islands",
+        coinGeckoId: 'kawaii-islands',
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png',
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "BNB",
-        coinMinimalDenom: "bnb",
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
         coinDecimals: 18,
-        coinGeckoId: "bnb",
+        coinGeckoId: 'bnb',
         coinImageUrl:
-          "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
       },
     ],
     gasPriceStep: {
@@ -519,9 +519,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: [],
     txExplorer: {
-      name: "Bsc Scan",
-      txUrl: "https://bscscan.com/tx/${txHash}",
-      accountUrl: "https://bscscan.com/address/{address}",
+      name: 'Bsc Scan',
+      txUrl: 'https://bscscan.com/tx/${txHash}',
+      accountUrl: 'https://bscscan.com/address/{address}',
     },
   },
 ];
