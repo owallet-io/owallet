@@ -1,4 +1,5 @@
 import { navigate } from '../../router/root';
+import isValidDomain from 'is-valid-domain';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 
@@ -15,10 +16,8 @@ export const handleDeepLink = async ({ url }) => {
   }
 };
 
-export const isValidDomain = (url: string) => {
-  const reg =
-    /^(http(s)?:\/\/.)?(www\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/;
-  if (reg.test(url)) {
+export const checkValidDomain = (url: string) => {
+  if (isValidDomain(url)) {
     return true;
   }
   // try with URL
