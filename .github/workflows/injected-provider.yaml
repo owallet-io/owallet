@@ -45,7 +45,7 @@ jobs:
       - name: Install Yarn
         run: npm install -g yarn
       - name: Install Dependencies
-        run: yarn install
+        run: yarn --ignore-platform
       - name: Build Libs
         run: yarn build:libs      
       - name: Build Production
