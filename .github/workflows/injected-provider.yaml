@@ -56,6 +56,6 @@ jobs:
       - name: Deploy Firebase
         working-directory: ./packages/mobile
         run: |
-          yarn firebase use default --token ${{ secrets.FIREBASE_TOKEN }}
+          yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}
           yarn firebase target:apply hosting owallet-provider owallet-provider --token ${{ secrets.FIREBASE_TOKEN }}
           yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
