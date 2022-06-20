@@ -228,7 +228,8 @@ export const WebpageScreen: FunctionComponent<
   const sourceCode = useInjectedSourceCode();
 
   useEffect(() => {
-    if (sourceCode && injectableUrl.includes(currentURL)) {
+    if (sourceCode) {
+      // if (sourceCode) {
       webviewRef.current.reload();
     }
   }, [sourceCode, currentURL]);
@@ -249,36 +250,8 @@ export const WebpageScreen: FunctionComponent<
       >
         <OnScreenWebpageScreenHeader />
       </WebViewStateContext.Provider>
-      {/* For another url */}
-      {!injectableUrl.includes(currentURL) ? (
-        <WebView
-          ref={webviewRef}
-          onMessage={onMessage}
-          onNavigationStateChange={(e) => {
-            // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-            // Use two handlers to measure simultaneously in ios and android.
-            setCanGoBack(e.canGoBack);
-            setCanGoForward(e.canGoForward);
 
-            setCurrentURL(e.url);
-          }}
-          onLoadProgress={(e) => {
-            // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-            // Use two handlers to measure simultaneously in ios and android.
-            setCanGoBack(e.nativeEvent.canGoBack);
-            setCanGoForward(e.nativeEvent.canGoForward);
-
-            setCurrentURL(e.nativeEvent.url);
-          }}
-          contentInsetAdjustmentBehavior="never"
-          automaticallyAdjustContentInsets={false}
-          decelerationRate="normal"
-          allowsBackForwardNavigationGestures={true}
-          {...props}
-        />
-      ) : null}
-      {/* For injectable url */}
-      {sourceCode && injectableUrl.includes(currentURL) ? (
+      {sourceCode ? (
         <WebView
           ref={webviewRef}
           injectedJavaScriptBeforeContentLoaded={sourceCode}
