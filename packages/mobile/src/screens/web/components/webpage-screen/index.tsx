@@ -141,8 +141,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-              message
-            )}, window.location.origin);
+                  message
+                )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -161,8 +161,8 @@ export const WebpageScreen: FunctionComponent<
           webviewRef.current?.injectJavaScript(
             `
                 window.postMessage(${JSON.stringify(
-              message
-            )}, window.location.origin);
+                  message
+                )}, window.location.origin);
                 true; // note: this is required, or you'll sometimes get silent failures
               `
           );
@@ -233,12 +233,12 @@ export const WebpageScreen: FunctionComponent<
 
   const sourceCode = useInjectedSourceCode();
 
-  useEffect(() => {
-    if (sourceCode && injectableUrl.includes(currentURL)) {
-      // if (sourceCode) {
-      webviewRef.current.reload();
-    }
-  }, [sourceCode, currentURL]);
+  // useEffect(() => {
+  //   if (sourceCode && injectableUrl.includes(currentURL)) {
+  //     // if (sourceCode) {
+  //     webviewRef.current.reload();
+  //   }
+  // }, [sourceCode, currentURL]);
 
   return (
     <PageWithView
@@ -256,7 +256,36 @@ export const WebpageScreen: FunctionComponent<
       >
         <OnScreenWebpageScreenHeader />
       </WebViewStateContext.Provider>
-      {sourceCode ? (
+      {/* For another url */}
+      {!injectableUrl.includes(currentURL) ? (
+        <WebView
+          ref={webviewRef}
+          onMessage={onMessage}
+          onNavigationStateChange={(e) => {
+            // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+            // Use two handlers to measure simultaneously in ios and android.
+            setCanGoBack(e.canGoBack);
+            setCanGoForward(e.canGoForward);
+
+            setCurrentURL(e.url);
+          }}
+          onLoadProgress={(e) => {
+            // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+            // Use two handlers to measure simultaneously in ios and android.
+            setCanGoBack(e.nativeEvent.canGoBack);
+            setCanGoForward(e.nativeEvent.canGoForward);
+
+            setCurrentURL(e.nativeEvent.url);
+          }}
+          contentInsetAdjustmentBehavior="never"
+          automaticallyAdjustContentInsets={false}
+          decelerationRate="normal"
+          allowsBackForwardNavigationGestures={true}
+          {...props}
+        />
+      ) : null}
+      {/* For injectable url */}
+      {sourceCode && injectableUrl.includes(currentURL) ? (
         <WebView
           ref={webviewRef}
           injectedJavaScriptBeforeContentLoaded={sourceCode}
