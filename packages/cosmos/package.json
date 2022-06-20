@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
-    "build": "tsc",
+    "build": "yarn build:proto && tsc",
     "build:proto": "mkdir -p build/stargate/proto/generated && cp ./src/stargate/proto/generated/* ./build/stargate/proto/generated",
     "dev": "yarn build:proto && tsc -w",
     "test": "jest --passWithNoTests",
