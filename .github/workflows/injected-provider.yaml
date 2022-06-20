@@ -1,0 +1,61 @@
+# This is a basic workflow to help you get started with Actions
+
+name: injected-provider
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [develop]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-20.04 #orai-self-hosted
+    strategy:
+      matrix:
+        node-version: [14.16.0]
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            ./node_modules/
+          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install Yarn
+        run: npm install -g yarn
+      - name: Install Dependencies
+        run: yarn install
+      - name: Build Libs
+        run: yarn build:libs      
+      - name: Build Production
+        working-directory: ./packages/mobile
+        run: yarn build:provider
+        env:
+          CI: false      
+      - name: Deploy Firebase
+        working-directory: ./packages/mobile
+        run: |
+          yarn firebase use default --token ${{ secrets.FIREBASE_TOKEN }}
+          yarn firebase target:apply hosting owallet-provider owallet-provider --token ${{ secrets.FIREBASE_TOKEN }}
+          yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
