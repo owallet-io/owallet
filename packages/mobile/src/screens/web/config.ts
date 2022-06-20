@@ -10,8 +10,7 @@ export const injectableUrl = [
   'https://app.osmosis.zone/',
   'https://scan.orai.io/',
   'https://testnet.scan.orai.io/',
-  'https://bignft.web.app/',
-  'https://re.bignft.app/'
+  'https://info.oraidex.io',
 ];
 
 export type DAppInfo = {

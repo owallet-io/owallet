@@ -54,7 +54,11 @@ export const SettingItem: FunctionComponent<{
     return (
       <React.Fragment>
         {left}
-        <View>
+        <View
+          style={StyleSheet.flatten([
+            style.flatten(["flex-row", "justify-between", "items-center","width-full"]),
+          ])}
+        >
           <Text
             style={StyleSheet.flatten([
               style.flatten(["body1", "color-text-black-medium"]),

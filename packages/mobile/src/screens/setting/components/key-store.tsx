@@ -10,6 +10,19 @@ import {
 } from 'react-native';
 import { RectButton } from '../../../components/rect-button';
 import Svg, { Path } from 'react-native-svg';
+import {
+  USAIcon,
+  EURIcon,
+  GBPIcon,
+  CADIcon,
+  AUDIcon,
+  RUBIcon,
+  KRWIcon,
+  HKDIcon,
+  CNYIcon,
+  JPYIcon,
+  INRIcon,
+} from '../../../components/icon';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
@@ -70,6 +83,38 @@ export const WalletIcon: FunctionComponent<{
   );
 };
 
+export const renderFlag = (
+  flagName: string = 'usd',
+  heightFlag: number = 32
+) => {
+  switch (flagName.toLowerCase()) {
+    case 'usd':
+      return <USAIcon height={heightFlag} />;
+    case 'eur':
+      return <EURIcon height={heightFlag} />;
+    case 'gbp':
+      return <GBPIcon height={heightFlag} />;
+    case 'cad':
+      return <CADIcon height={heightFlag} />;
+    case 'aud':
+      return <AUDIcon height={heightFlag} />;
+    case 'rub':
+      return <RUBIcon height={heightFlag} />;
+    case 'krw':
+      return <KRWIcon height={heightFlag} />;
+    case 'hkd':
+      return <HKDIcon height={heightFlag} />;
+    case 'cny':
+      return <CNYIcon height={heightFlag} />;
+    case 'jpy':
+      return <JPYIcon height={heightFlag} />;
+    case 'inr':
+      return <INRIcon height={heightFlag} />;
+    default:
+      return <></>;
+  }
+};
+
 export const KeyStoreItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   labelStyle?: TextStyle;
@@ -104,61 +149,62 @@ export const KeyStoreItem: FunctionComponent<{
 
   const renderChildren = () => {
     return (
-      <React.Fragment>
-        <Image
-          style={{
-            width: 20,
-            height: 20,
-            marginRight: 8,
-          }}
-          source={
-            right
-              ? require('../../../assets/image/webpage/active.png')
-              : require('../../../assets/image/webpage/not-active.png')
-          }
-          fadeDuration={0}
-        />
-        <View />
-        {left ? (
-          left
-        ) : (
-          <View
-            style={StyleSheet.flatten([
-              style.flatten(['margin-right-16']),
-              defaultRightWalletIconStyle,
-            ])}
-          >
-            {/* <WalletIcon
-              color={style.get('color-text-black-medium').color}
-              height={45}
-            /> */}
-          </View>
-        )}
-        <View>
-          <Text
-            style={StyleSheet.flatten([
-              style.flatten(['h5', 'color-text-black-high']),
-              labelStyle,
-            ])}
-          >
-            {label}
-          </Text>
-          {paragraph ? (
-            <Text
+      <View
+        style={style.flatten([
+          'width-full',
+          'flex-row',
+          'justify-between',
+          'items-center',
+        ])}
+      >
+        <View style={style.flatten(['flex-row'])}>
+          {renderBall(!!right)}
+          <View />
+          {/* {left ? (
+            left
+          ) : (
+            <View
               style={StyleSheet.flatten([
-                style.flatten([
-                  'subtitle3',
-                  'color-text-black-low',
-                  'margin-top-4',
-                ]),
-                paragraphStyle,
+                style.flatten(['margin-right-16']),
+                defaultRightWalletIconStyle,
               ])}
             >
-              {paragraph}
+              <WalletIcon
+              color={style.get('color-text-black-medium').color}
+              height={45}
+            />
+            </View>
+          )} */}
+          <View>
+            <Text
+              style={StyleSheet.flatten([
+                style.flatten(['h5', 'color-text-black-high', 'margin-x-10']),
+                labelStyle,
+              ])}
+            >
+              {label}
             </Text>
-          ) : null}
+            {paragraph ? (
+              <Text
+                style={StyleSheet.flatten([
+                  style.flatten([
+                    'subtitle3',
+                    'color-text-black-low',
+                    'margin-top-4',
+                  ]),
+                  paragraphStyle,
+                ])}
+              >
+                {paragraph}
+              </Text>
+            ) : null}
+          </View>
         </View>
-      </React.Fragment>
+        <View>
+          {renderFlag(label)}
+          {/* <USAIcon height={30} /> */}
+        </View>
+      </View>
     );
   };
 

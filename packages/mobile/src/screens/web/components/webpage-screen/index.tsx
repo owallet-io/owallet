@@ -25,20 +25,14 @@ import { URL } from 'react-native-url-polyfill';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import DeviceInfo from 'react-native-device-info';
-import { OraiDexUrl, injectableUrl, OraiDexProdUrl } from '../../config';
+import { OraiDexUrl, injectableUrl } from '../../config';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    if (__DEV__) {
-      fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
-        .then((res) => res.text())
-        .then(setCode);
-      // return;
-    }
-    // else {
-    //   fetch(`${OraiDexProdUrl}/injected-provider.bundle.js`)
+    // if (__DEV__) {
+    //   fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
     //     .then((res) => res.text())
     //     .then(setCode);
     //   return;
@@ -233,12 +227,11 @@ export const WebpageScreen: FunctionComponent<
 
   const sourceCode = useInjectedSourceCode();
 
-  // useEffect(() => {
-  //   if (sourceCode && injectableUrl.includes(currentURL)) {
-  //     // if (sourceCode) {
-  //     webviewRef.current.reload();
-  //   }
-  // }, [sourceCode, currentURL]);
+  useEffect(() => {
+    if (sourceCode && injectableUrl.includes(currentURL)) {
+      webviewRef.current.reload();
+    }
+  }, [sourceCode, currentURL]);
 
   return (
     <PageWithView

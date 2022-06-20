@@ -1,12 +1,14 @@
-import React, { FunctionComponent } from "react";
-import Svg, { Path } from "react-native-svg";
+import React, { FunctionComponent } from 'react';
+import Svg, { Path } from 'react-native-svg';
 
 export const RefreshIcon: FunctionComponent<{
   color: string;
   size: number;
-}> = ({ color, size = 24 }) => {
+  onPress?: () => void;
+}> = ({ color, size = 24, onPress }) => {
   return (
     <Svg
+      onPress={onPress}
       width={size}
       height={size}
       fill="none"
