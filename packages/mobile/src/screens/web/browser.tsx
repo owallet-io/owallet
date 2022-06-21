@@ -20,7 +20,6 @@ import {
   TabIcon
 } from '../../components/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ORAIDEX_DEV_URL } from 'react-native-dotenv';
 import { checkValidDomain } from '../../utils/helper';
 import { useStore } from '../../stores';
 
@@ -126,7 +125,7 @@ export const Browser: FunctionComponent<any> = (props) => {
       });
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
-      // if (ORAIDEX_DEV_URL) uri = ORAIDEX_DEV_URL;
+      // if (INJECTED_PROVIDER_URL) uri = INJECTED_PROVIDER_URL;
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
         // uri: `https://staging.oraidex.io/ethereum`,
@@ -135,9 +134,7 @@ export const Browser: FunctionComponent<any> = (props) => {
     }
   };
 
-  const onPress = (type) => {
-    console.log({ type });
-
+  const onPress = (type: any) => {
     try {
       switch (type) {
         case 'settings':

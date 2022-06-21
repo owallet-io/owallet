@@ -1,3 +1,3 @@
 declare module 'react-native-dotenv' {
-  export const ORAIDEX_DEV_URL: string;
+  export const INJECTED_PROVIDER_URL: string;
 }

@@ -14,7 +14,6 @@ import {
   RNInjectedEthereum,
   RNInjectedOWallet
 } from '../../../../injected/injected-provider';
-import RNFS from 'react-native-fs';
 import EventEmitter from 'eventemitter3';
 // import { PageWithViewInBottomTabView } from "../../../../components/page";
 import { PageWithView } from '../../../../components/page';
@@ -25,25 +24,15 @@ import { URL } from 'react-native-url-polyfill';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import DeviceInfo from 'react-native-device-info';
-import { OraiDexUrl, injectableUrl } from '../../config';
+import { InjectedProviderUrl } from '../../config';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    // if (__DEV__) {
-    //   fetch(`${OraiDexUrl}/injected-provider.bundle.js`)
-    //     .then((res) => res.text())
-    //     .then(setCode);
-    //   return;
-    // }
-    if (Platform.OS === 'ios') {
-      RNFS.readFile(`${RNFS.MainBundlePath}/injected-provider.bundle.js`).then(
-        setCode
-      );
-    } else {
-      RNFS.readFileAssets('injected-provider.bundle.js').then(setCode);
-    }
+    fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
+      .then((res) => res.text())
+      .then(setCode);
   }, []);
 
   return code;
@@ -106,7 +95,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin,
+            origin: new URL(currentURL).origin
           };
         })
       )
@@ -122,49 +111,37 @@ export const WebpageScreen: FunctionComponent<
     },
     [eventEmitter]
   );
+  const eventListener = {
+    addMessageListener: (fn: any) => {
+      eventEmitter.addListener('message', fn);
+    },
+    postMessage: (message: any) => {
+      webviewRef.current?.injectJavaScript(
+        `
+            window.postMessage(${JSON.stringify(
+              message
+            )}, window.location.origin);
+            true; // note: this is required, or you'll sometimes get silent failures
+          `
+      );
+    }
+  };
 
   useEffect(() => {
     RNInjectedOWallet.startProxy(
       owallet,
-
-      {
-        addMessageListener: (fn) => {
-          eventEmitter.addListener('message', fn);
-        },
-        postMessage: (message) => {
-          webviewRef.current?.injectJavaScript(
-            `
-                window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
-                true; // note: this is required, or you'll sometimes get silent failures
-              `
-          );
-        }
-      },
+      eventListener,
       RNInjectedOWallet.parseWebviewMessage
     );
+  }, [eventEmitter, owallet]);
 
+  useEffect(() => {
     RNInjectedEthereum.startProxy(
       ethereum,
-      {
-        addMessageListener: (fn) => {
-          eventEmitter.addListener('message', fn);
-        },
-        postMessage: (message) => {
-          webviewRef.current?.injectJavaScript(
-            `
-                window.postMessage(${JSON.stringify(
-                  message
-                )}, window.location.origin);
-                true; // note: this is required, or you'll sometimes get silent failures
-              `
-          );
-        },
-      },
+      eventListener,
       RNInjectedEthereum.parseWebviewMessage
     );
-  }, [eventEmitter, owallet, ethereum]);
+  }, [eventEmitter, ethereum]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {
