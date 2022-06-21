@@ -22,6 +22,7 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { checkValidDomain } from '../../utils/helper';
 import { useStore } from '../../stores';
+import { InjectedProviderUrl } from './config';
 
 export const Browser: FunctionComponent<any> = (props) => {
   const style = useStyle();
@@ -125,7 +126,7 @@ export const Browser: FunctionComponent<any> = (props) => {
       });
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
-      // if (INJECTED_PROVIDER_URL) uri = INJECTED_PROVIDER_URL;
+      if (InjectedProviderUrl) uri = InjectedProviderUrl;
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
         // uri: `https://staging.oraidex.io/ethereum`,

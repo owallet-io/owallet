@@ -1,8 +1,7 @@
 import { ImageSourcePropType } from 'react-native';
-import { INJECTED_PROVIDER_URL } from 'react-native-dotenv';
+import { INJECTED_PROVIDER_URL } from '@env';
 
-export const InjectedProviderUrl =
-  INJECTED_PROVIDER_URL || 'https://owallet-provider.web.app';
+export const InjectedProviderUrl = INJECTED_PROVIDER_URL;
 
 export type DAppInfo = {
   name: string;
@@ -53,11 +52,11 @@ export const DAppInfos: DAppInfo[] = [
   }
 ];
 
-if (__DEV__ && INJECTED_PROVIDER_URL) {
+if (__DEV__) {
   DAppInfos.push({
     name: 'Oraidex',
     thumbnail: oraiThumbnail,
-    uri: INJECTED_PROVIDER_URL,
+    uri: InjectedProviderUrl,
     logo: oraiLogo
   });
 }
