@@ -204,13 +204,6 @@ export const WebpageScreen: FunctionComponent<
 
   const sourceCode = useInjectedSourceCode();
 
-  useEffect(() => {
-    if (sourceCode) {
-      // if (sourceCode) {
-      webviewRef.current.reload();
-    }
-  }, [sourceCode, currentURL]);
-
   return (
     <PageWithView
       style={style.flatten(['padding-0', 'padding-bottom-0'])}
