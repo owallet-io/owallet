@@ -13,7 +13,7 @@
     "ios": "react-native run-ios",
     "android:connect": "adb reverse tcp:8081 tcp:8081",
     "typecheck": "tsc",
-    "shortlink-provider": "ln -s $PWD/build/injected/injected-provider.bundle.js /Users/user/Documents/WorkingFolder/dex/public/injected-provider.bundle.js",
+    "link:provider": "ln -s $PWD/build/injected/injected-provider.bundle.js",
     "watch:provider": "node watch-provider",
     "build:provider": "tsc --project tsconfig.provider.json && browserify -p tinyify build/injected/index.js -o build/injected/injected-provider.bundle.js --full-paths && cp -rf build/injected/injected-provider.bundle.js android/app/src/main/assets/.",
     "start": "react-native start",
@@ -119,7 +119,7 @@
     "string_decoder": "^1.3.0",
     "text-encoding": "^0.7.0",
     "utility-types": "^3.10.0",
-    "is-valid-domain":"^0.1.6"
+    "is-valid-domain": "^0.1.6"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
