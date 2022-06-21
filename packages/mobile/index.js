@@ -26,7 +26,7 @@ const appName = require('./app.json').name;
 const CodePushApp = __DEV__
   ? App
   : CodePush({
-      installMode: CodePush.InstallMode.IMMEDIATE,
+      installMode: CodePush.InstallMode.ON_NEXT_RESTART,
       checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME
     })(App);
 
