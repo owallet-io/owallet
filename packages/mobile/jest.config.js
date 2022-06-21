@@ -9,7 +9,7 @@ const env = process.env.ENV;
 
 const isE2e = env === 'e2e';
 
-export default {
+module.exports = {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 

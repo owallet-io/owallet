@@ -2,23 +2,27 @@ require('dotenv').config();
 
 const NodeEnvironment = require('jest-environment-node');
 const wd = require('wd');
-const path = require('path');
-
-const pagarme = require('../src/clients/pagarme');
 
 const APPIUM_PORT = 4723;
 
 const initializeDriver = (driver) => {
   const options = {
     autoLaunch: false,
-    platformName: 'iOS',
-    platformVersion: '15.4',
-    deviceName: 'ThanhTu',
-    app: '/path/to/my.app'
-    // app: path.resolve('./android/app/build/outputs/apk/debug/app-debug.apk'),
-    // appPackage: 'com.chainapsis.owallet',
-    // appActivity: '.MainActivity',
-    // automationName: 'UiAutomator2'
+    // platformName: 'iOS',
+    // platformVersion: '15.4.1',
+    // xcodeOrgId: 'ORAICHAIN JOINT STOCK COMPANY',
+    // xcodeSigningId: 'iPhone Developer',
+    // deviceName: 'ThanhTu',
+    // bundleId: 'io.orai.owallet',
+    // automationName: 'XCUITest',
+    // app: process.env.IOS_DEBUG_APP
+    platformName: 'Android',
+    platformVersion: '9',
+    deviceName: 'Android Emulator',
+    app: process.env.ANDROID_DEBUG_APP,
+    appPackage: 'com.chainapsis.owallet',
+    appActivity: '.MainActivity',
+    automationName: 'UiAutomator2'
   };
 
   return driver.init(options);
@@ -60,13 +64,9 @@ class CustomEnvironment extends NodeEnvironment {
 
     await initializeDriver(driver);
 
-    const pagarmeClient = pagarme();
-    pagarmeClient.authenticate({ api_key: process.env.API_KEY });
-
     this.global.driver = driver;
     this.global.wd = wd;
     this.global.openAppLink = this.openAppLink;
-    this.global.pagarme = pagarmeClient;
     this.global.sleep = sleep;
   }
 
