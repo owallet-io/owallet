@@ -11,13 +11,14 @@ const APPIUM_PORT = 4723;
 const initializeDriver = (driver) => {
   const options = {
     autoLaunch: false,
-    platformName: 'Android',
-    platformVersion: '9',
-    deviceName: 'Android Emulator',
-    app: path.resolve('./android/app/build/outputs/apk/debug/app-debug.apk'),
-    appPackage: 'com.appiumapptypescript',
-    appActivity: '.MainActivity',
-    automationName: 'UiAutomator2'
+    platformName: 'iOS',
+    platformVersion: '15.4',
+    deviceName: 'ThanhTu',
+    app: '/path/to/my.app'
+    // app: path.resolve('./android/app/build/outputs/apk/debug/app-debug.apk'),
+    // appPackage: 'com.chainapsis.owallet',
+    // appActivity: '.MainActivity',
+    // automationName: 'UiAutomator2'
   };
 
   return driver.init(options);
