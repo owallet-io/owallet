@@ -73,6 +73,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
 
             try {
               if (checkValidDomain(data.toLowerCase())) {
+                console.log('data', data);
                 navigation.navigate('Browser', { url: data.toLowerCase() });
 
                 return;
