@@ -389,11 +389,8 @@ export class KeyRingService {
     // )) as Uint8Array;
 
     // TEMP HARDCODE, need to have a pop up here to change gas & fee
-    // const { gasPrice, gasLimit } = { gasPrice: 5000000000, gasLimit: 10000000 };
-    const { gasPrice, gasLimit } = { gasPrice: 0, gasLimit: 10000000 };
-
     // const newSignDoc = cosmos.tx.v1beta1.SignDoc.decode(newSignDocBytes);
-    const newData = { ...data, gasPrice, gasLimit };
+    // const newData = { ...data };
 
     try {
       // it stuck here in ledger
@@ -402,7 +399,7 @@ export class KeyRingService {
         chainId,
         coinType,
         rpc,
-        newData,
+        data,
       );
 
       return rawTxHex;

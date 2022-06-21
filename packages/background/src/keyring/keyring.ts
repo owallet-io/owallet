@@ -21,6 +21,8 @@ import { keccak256 } from '@ethersproject/keccak256';
 import Common from '@ethereumjs/common';
 import { TransactionOptions, Transaction } from 'ethereumjs-tx';
 import { request } from '../tx';
+import { ETHEREUM_BASE_FEE } from './constants';
+import { Big as BigInt } from 'big.js';
 
 export enum KeyRingStatus {
   NOTLOADED,
@@ -756,18 +758,22 @@ export class KeyRing {
         signer,
         'latest'
       ]);
-      const finalMessage = { ...message, nonce };
+
+      // auto gas
+      const estimatedGas = await request(rpc, 'eth_estimateGas', [message]);
+      const gasPrice = await request(rpc, 'eth_gasPrice', []);
+      let finalMessage = { ...message };
+      if (!(message as any).gasPrice || !(message as any).gas) {
+        if (estimatedGas.substring(0, 2) === '0x') {
+          finalMessage = { ...message, gas: estimatedGas, gasPrice };
+        }
+      }
+
+      finalMessage = { ...finalMessage, nonce };
 
       const opts: TransactionOptions = { common: customCommon } as any;
       const tx = new Transaction(finalMessage, opts);
       tx.sign(Buffer.from(privKey.toBytes()));
-
-      // // validate signer. Has to get substring(2) to remove 0x
-      // if (
-      //   !tx.getSenderAddress().equals(Buffer.from(signer.substring(2), 'hex'))
-      // ) {
-      //   throw new Error('Signer mismatched');
-      // }
 
       const serializedTx = tx.serialize();
       const rawTxHex = '0x' + serializedTx.toString('hex');
