@@ -11,7 +11,7 @@ import {
   MultiKeyStoreInfoWithSelectedElem
 } from '@owallet/background';
 import { View } from 'react-native';
-import { useSmartNavigation } from '../../../../navigation';
+import { useSmartNavigation } from '../../../../navigation.provider';
 
 const CheckIcon: FunctionComponent<{
   color: string;

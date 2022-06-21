@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';
 import { useStyle } from '../../../styles';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
 import { StyleSheet, View } from 'react-native';

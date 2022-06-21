@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { FullScreenCameraView } from '../../../components/camera';
 import { RNCamera } from 'react-native-camera';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { RouteProp, useRoute } from '@react-navigation/native';

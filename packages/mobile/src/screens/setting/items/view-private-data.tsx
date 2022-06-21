@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { SettingItem } from "../components";
-import { PasswordInputModal } from "../../../modals/password-input/modal";
-import { useStore } from "../../../stores";
-import { getPrivateDataTitle } from "../screens/view-private-data";
-import { useSmartNavigation } from "../../../navigation";
+import React, { FunctionComponent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { SettingItem } from '../components';
+import { PasswordInputModal } from '../../../modals/password-input/modal';
+import { useStore } from '../../../stores';
+import { getPrivateDataTitle } from '../screens/view-private-data';
+import { useSmartNavigation } from '../../../navigation.provider';
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
@@ -35,9 +35,9 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
           if (index >= 0) {
             const privateData = await keyRingStore.showKeyRing(index, password);
-            smartNavigation.navigateSmart("Setting.ViewPrivateData", {
+            smartNavigation.navigateSmart('Setting.ViewPrivateData', {
               privateData,
-              privateDataType: keyRingStore.keyRingType,
+              privateDataType: keyRingStore.keyRingType
             });
           }
         }}

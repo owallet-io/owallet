@@ -4,20 +4,20 @@ import { Image, View } from 'react-native';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
 // import { Button } from "../../components/button";
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 // import { PageWithScrollView } from "../../components/page";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { useNavigation } from '@react-navigation/core';
 import {
   BrowserSectionTitle,
-  BrowserSectionModal,
+  BrowserSectionModal
 } from './components/section-title';
 import {
   SearchIcon,
   RightArrowIcon,
   HomeIcon,
   ThreeDotsIcon,
-  TabIcon,
+  TabIcon
 } from '../../components/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ORAIDEX_DEV_URL } from 'react-native-dotenv';
@@ -92,7 +92,7 @@ export const Browser: FunctionComponent<any> = (props) => {
       deepLinkUriStore.updateDeepLink('');
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Browser',
-        uri: decodeURIComponent(deepLinkUri) || 'https://oraidex.io',
+        uri: decodeURIComponent(deepLinkUri) || 'https://oraidex.io'
       });
     }
   };
@@ -107,7 +107,7 @@ export const Browser: FunctionComponent<any> = (props) => {
           uri:
             props.route.params.url?.toLowerCase().indexOf('http') >= 0
               ? props.route.params.url?.toLowerCase()
-              : 'https://' + props.route.params?.url?.toLowerCase(),
+              : 'https://' + props.route.params?.url?.toLowerCase()
         });
       }
     }, 1000);
@@ -122,7 +122,7 @@ export const Browser: FunctionComponent<any> = (props) => {
         uri:
           url?.toLowerCase().indexOf('http') >= 0
             ? url?.toLowerCase()
-            : 'https://' + url?.toLowerCase(),
+            : 'https://' + url?.toLowerCase()
       });
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
@@ -130,7 +130,7 @@ export const Browser: FunctionComponent<any> = (props) => {
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
         // uri: `https://staging.oraidex.io/ethereum`,
-        uri,
+        uri
       });
     }
   };
@@ -165,7 +165,7 @@ export const Browser: FunctionComponent<any> = (props) => {
           <Image
             style={{
               width: '100%',
-              height: '100%',
+              height: '100%'
             }}
             fadeDuration={0}
             resizeMode="stretch"
@@ -184,7 +184,7 @@ export const Browser: FunctionComponent<any> = (props) => {
               'padding-20',
               'border-radius-16',
               'border-width-4',
-              'border-color-border-pink',
+              'border-color-border-pink'
             ])}
             returnKeyType={'next'}
             // defaultValue={ORAIDEX_DEV_URL}

@@ -15,7 +15,7 @@ import { useIntl } from 'react-intl';
 import { dateToLocalString } from './utils';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../../components/rect-button';
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 
 export const TallyVoteInfoView: FunctionComponent<{
   vote: 'yes' | 'no' | 'abstain' | 'noWithVeto';

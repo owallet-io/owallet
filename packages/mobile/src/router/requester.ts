@@ -17,7 +17,7 @@ export class RNMessageRequesterBase implements MessageRequester {
         origin: 'react-native://internal'
       };
     }
-  ) { }
+  ) {}
 
   async sendMessage<M extends Message<unknown>>(
     port: string,
@@ -25,7 +25,7 @@ export class RNMessageRequesterBase implements MessageRequester {
   ): Promise<M extends Message<infer R> ? R : never> {
     msg.validateBasic();
 
-    console.log("in send message mobile with msg: ", msg);
+    console.log('in send message mobile with msg: ', msg);
 
     const sender = this.getSender();
 
@@ -35,7 +35,7 @@ export class RNMessageRequesterBase implements MessageRequester {
     msg['origin'] = sender.origin;
 
     if (this.eventEmitter.listenerCount('message') === 0) {
-      throw new Error('There is no router to send');
+      throw new Error('There is no router to send' + JSON.stringify(msg));
     }
 
     const result: Result = JSONUint8Array.unwrap(
@@ -56,7 +56,7 @@ export class RNMessageRequesterBase implements MessageRequester {
       })
     );
 
-    console.log("result send msg: ", result)
+    console.log('result send msg: ', result);
 
     if (!result) {
       throw new Error('Null result');

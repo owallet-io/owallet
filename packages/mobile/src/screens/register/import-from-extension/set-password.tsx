@@ -4,7 +4,7 @@ import { PageWithScrollView } from '../../../components/page';
 import { View } from 'react-native';
 import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { ExportKeyRingData } from '@owallet/background';
 import { Controller, useForm } from 'react-hook-form';
 import {

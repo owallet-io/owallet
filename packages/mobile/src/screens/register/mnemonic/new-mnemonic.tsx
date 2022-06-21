@@ -12,7 +12,7 @@ import { Button } from '../../../components/button';
 import Clipboard from 'expo-clipboard';
 import { TextInput } from '../../../components/input';
 import { Controller, useForm } from 'react-hook-form';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { useSimpleTimer } from '../../../hooks';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 

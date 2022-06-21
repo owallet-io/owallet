@@ -9,7 +9,7 @@ import { useDelegateTxConfig } from '@owallet/hooks';
 import { EthereumEndpoint } from '@owallet/common';
 import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
 import { Button } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { BondStatus } from '@owallet/stores';
 
 export const DelegateScreen: FunctionComponent = observer(() => {

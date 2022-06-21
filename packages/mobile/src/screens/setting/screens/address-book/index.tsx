@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../../../components/page';
 import { useStyle } from '../../../../styles';
 import { Text, View } from 'react-native';
-import { useSmartNavigation } from '../../../../navigation';
+import { useSmartNavigation } from '../../../../navigation.provider';
 import {
   IMemoConfig,
   IRecipientConfig,

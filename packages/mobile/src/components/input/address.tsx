@@ -16,7 +16,7 @@ import { LoadingSpinner } from '../spinner';
 import { useStyle } from '../../styles';
 import { AddressBookIcon } from '../icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 
 export const AddressInput: FunctionComponent<{
   labelStyle?: TextStyle;

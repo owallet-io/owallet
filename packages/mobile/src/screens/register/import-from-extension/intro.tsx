@@ -8,7 +8,7 @@ import { Button } from '../../../components/button';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import ImportFromExtensionSvg from '../../../assets/svg/import-from-extension.svg';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 
 export const ImportFromExtensionIntroScreen: FunctionComponent = () => {
   const route = useRoute<

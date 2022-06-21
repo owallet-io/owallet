@@ -8,7 +8,7 @@ import { useStyle } from '../../../styles';
 import { SelectorModal, TextInput } from '../../../components/input';
 import { GradientBackground } from '../../../components/svg';
 import { CardDivider } from '../../../components/card';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { CoinPretty, Dec } from '@owallet/unit';
 import { RightArrowIcon } from '../../../components/icon';
 import Svg, { Path } from 'react-native-svg';

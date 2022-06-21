@@ -7,7 +7,7 @@ import { Text, View, ViewStyle } from 'react-native';
 import { useStyle } from '../../../styles';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
 import { Button } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 
 export const ValidatorDetailsCard: FunctionComponent<{

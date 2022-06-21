@@ -1,12 +1,12 @@
-import React, { FunctionComponent } from "react";
-import { Card, CardBody, CardHeader } from "../../components/card";
-import { Text, View, ViewStyle } from "react-native";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { useStyle } from "../../styles";
-import { TokenItem } from "../tokens";
-import { useSmartNavigation } from "../../navigation";
-import { RectButton } from "../../components/rect-button";
+import React, { FunctionComponent } from 'react';
+import { Card, CardBody, CardHeader } from '../../components/card';
+import { Text, View, ViewStyle } from 'react-native';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { useStyle } from '../../styles';
+import { TokenItem } from '../tokens';
+import { useSmartNavigation } from '../../navigation.provider';
+import { RectButton } from '../../components/rect-button';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -29,12 +29,12 @@ export const TokensCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      <Card style={style.flatten(["padding-bottom-14"])}>
+      <Card style={style.flatten(['padding-bottom-14'])}>
         <CardHeader
-          containerStyle={style.flatten(["padding-bottom-6"])}
+          containerStyle={style.flatten(['padding-bottom-6'])}
           title="Token"
         />
-        <CardBody style={style.flatten(["padding-0"])}>
+        <CardBody style={style.flatten(['padding-0'])}>
           {tokens.map((token) => {
             return (
               <TokenItem
@@ -47,17 +47,17 @@ export const TokensCard: FunctionComponent<{
         </CardBody>
       </Card>
       <RectButton
-        style={style.flatten(["items-center", "padding-y-11"])}
+        style={style.flatten(['items-center', 'padding-y-11'])}
         onPress={() => {
-          smartNavigation.navigateSmart("Tokens", {});
+          smartNavigation.navigateSmart('Tokens', {});
         }}
       >
         <Text
           style={style.flatten([
-            "text-button3",
-            "color-text-black-low",
-            "normal-case",
-            "text-underline",
+            'text-button3',
+            'color-text-black-low',
+            'normal-case',
+            'text-underline'
           ])}
         >
           View all tokens

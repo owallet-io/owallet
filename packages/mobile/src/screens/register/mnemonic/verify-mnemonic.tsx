@@ -5,7 +5,7 @@ import { useStyle } from '../../../styles';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { NewMnemonicConfig } from './hook';
 import { RegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';

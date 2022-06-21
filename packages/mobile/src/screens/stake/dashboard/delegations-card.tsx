@@ -8,7 +8,7 @@ import { StakedTokenSymbol } from '../../../components/token-symbol';
 import { Button } from '../../../components/button';
 import { BondStatus, Validator } from '@owallet/stores';
 import { RightArrowIcon } from '../../../components/icon';
-import { useSmartNavigation } from '../../../navigation';
+import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { RectButton } from '../../../components/rect-button';
 

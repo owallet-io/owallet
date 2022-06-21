@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { KeyStoreItem } from '../../components';
-import { useSmartNavigation } from '../../../../navigation';
+import { useSmartNavigation } from '../../../../navigation.provider';
 import { Text, View } from 'react-native';
 import { useStyle } from '../../../../styles';
 
@@ -20,7 +20,7 @@ const SectionTitle: FunctionComponent<{
         'padding-bottom-12',
         'margin-top-16',
         'flex-row',
-        'items-center',
+        'items-center'
       ])}
     >
       <Text style={style.flatten(['color-text-black-low', 'subtitle1'])}>
@@ -36,7 +36,7 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
     return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
-        label: key.toUpperCase(),
+        label: key.toUpperCase()
       };
     });
   }, [priceStore.supportedVsCurrencies]);
@@ -46,7 +46,7 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
     return (
       <React.Fragment>
         <React.Fragment>
-        <SectionTitle title={title}  />
+          <SectionTitle title={title} />
           {currencyItems.map((cur, i) => {
             return (
               <KeyStoreItem
@@ -55,9 +55,7 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
                 topBorder={i === 0}
                 bottomBorder={currencyItems.length - 1 !== i}
                 right={
-                  priceStore.defaultVsCurrency == cur.key ? (
-                    <></>
-                  ) : undefined
+                  priceStore.defaultVsCurrency == cur.key ? <></> : undefined
                 }
                 onPress={async () => {
                   priceStore.setDefaultVsCurrency(cur.key || 'usd');

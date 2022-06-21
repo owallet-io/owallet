@@ -5,7 +5,7 @@ import { GoogleIcon, AppleIcon } from '../../components/icon';
 import { useStyle } from '../../styles';
 import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native';
 import { Button } from '../../components/button';
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 import { useRegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';

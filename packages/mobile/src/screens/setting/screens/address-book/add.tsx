@@ -17,7 +17,7 @@ import {
   TextInput
 } from '../../../../components/input';
 import { Button } from '../../../../components/button';
-import { useSmartNavigation } from '../../../../navigation';
+import { useSmartNavigation } from '../../../../navigation.provider';
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const route = useRoute<

@@ -9,7 +9,7 @@ import { Text, View } from 'react-native';
 import { LoadingSpinner } from '../../components/spinner';
 import { useIntl } from 'react-intl';
 import { dateToLocalString } from './utils';
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 import { RectButton } from '../../components/rect-button';
 
 export const GovernanceProposalStatusChip: FunctionComponent<{

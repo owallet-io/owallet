@@ -16,7 +16,7 @@ import { AddressCopyable } from '../../components/address-copyable';
 import { Button } from '../../components/button';
 import { LoadingSpinner } from '../../components/spinner';
 // import { StakedTokenSymbol, TokenSymbol } from "../../components/token-symbol";
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
 import { ProgressBar } from '../../components/progress-bar';
 import { Scanner } from '../../components/icon';

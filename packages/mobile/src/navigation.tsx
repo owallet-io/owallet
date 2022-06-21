@@ -1,11 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect } from 'react';
-import { Linking, Text, View } from 'react-native';
-import {
-  BIP44HDPath,
-  ExportKeyRingData,
-  KeyRingStatus
-} from '@owallet/background';
+import { Alert, Linking, Text, View } from 'react-native';
+import { KeyRingStatus } from '@owallet/background';
 import {
   DrawerActions,
   NavigationContainer,
@@ -31,7 +27,7 @@ import {
 import { DrawerContent } from './components/drawer';
 import { useStyle } from './styles';
 import { BorderlessButton } from 'react-native-gesture-handler';
-import { createSmartNavigatorProvider, SmartNavigator } from './hooks';
+
 import { SettingScreen } from './screens/setting';
 import { SettingSelectAccountScreen } from './screens/setting/screens/select-account';
 import { SettingSelectLangScreen } from './screens/setting/screens/select-lang';
@@ -39,7 +35,6 @@ import { ViewPrivateDataScreen } from './screens/setting/screens/view-private-da
 import { WebScreen } from './screens/web';
 import { RegisterIntroScreen } from './screens/register';
 import {
-  NewMnemonicConfig,
   NewMnemonicScreen,
   RecoverMnemonicScreen,
   VerifyMnemonicScreen
@@ -47,13 +42,7 @@ import {
 import { RegisterEndScreen } from './screens/register/end';
 import { RegisterNewUserScreen } from './screens/register/new-user';
 import { RegisterNotNewUserScreen } from './screens/register/not-new-user';
-import {
-  AddressBookConfig,
-  AddressBookData,
-  IMemoConfig,
-  IRecipientConfig,
-  RegisterConfig
-} from '@owallet/hooks';
+
 import {
   DelegateScreen,
   StakingDashboardScreen,
@@ -117,204 +106,7 @@ import { Browser } from './screens/web/browser';
 import { Transactions, TransactionDetail } from './screens/transactions';
 import { navigate, navigationRef } from './router/root';
 import { handleDeepLink } from './utils/helper';
-
-const { SmartNavigatorProvider, useSmartNavigation } =
-  createSmartNavigatorProvider(
-    new SmartNavigator({
-      'Register.Intro': {
-        upperScreenName: 'Register'
-      },
-      'Register.NewUser': {
-        upperScreenName: 'Register'
-      },
-      'Register.NotNewUser': {
-        upperScreenName: 'Register'
-      },
-      'Register.NewMnemonic': {
-        upperScreenName: 'Register'
-      },
-      'Register.VerifyMnemonic': {
-        upperScreenName: 'Register'
-      },
-      'Register.RecoverMnemonic': {
-        upperScreenName: 'Register'
-      },
-      'Register.NewLedger': {
-        upperScreenName: 'Register'
-      },
-      'Register.ImportFromExtension.Intro': {
-        upperScreenName: 'Register'
-      },
-      'Register.ImportFromExtension': {
-        upperScreenName: 'Register'
-      },
-      'Register.ImportFromExtension.SetPassword': {
-        upperScreenName: 'Register'
-      },
-      'Register.End': {
-        upperScreenName: 'Register'
-      },
-      Home: {
-        upperScreenName: 'Main'
-      },
-      Send: {
-        upperScreenName: 'Others'
-      },
-      Tokens: {
-        upperScreenName: 'Others'
-      },
-      Camera: {
-        upperScreenName: 'Others'
-      },
-      ManageWalletConnect: {
-        upperScreenName: 'Others'
-      },
-      'Staking.Dashboard': {
-        upperScreenName: 'Others'
-      },
-      'Validator.Details': {
-        upperScreenName: 'Others'
-      },
-      'Validator.List': {
-        upperScreenName: 'Others'
-      },
-      Delegate: {
-        upperScreenName: 'Others'
-      },
-      Undelegate: {
-        upperScreenName: 'Others'
-      },
-      Redelegate: {
-        upperScreenName: 'Others'
-      },
-      Governance: {
-        upperScreenName: 'Others'
-      },
-      'Governance Details': {
-        upperScreenName: 'Others'
-      },
-      Setting: {
-        upperScreenName: 'Settings'
-      },
-      SettingSelectAccount: {
-        upperScreenName: 'Settings'
-      },
-      SettingSelectLang: {
-        upperScreenName: 'Settings'
-      },
-      'Setting.ViewPrivateData': {
-        upperScreenName: 'Settings'
-      },
-      'Setting.Version': {
-        upperScreenName: 'Settings'
-      },
-      AddressBook: {
-        upperScreenName: 'AddressBooks'
-      },
-      AddAddressBook: {
-        upperScreenName: 'AddressBooks'
-      },
-      Result: {
-        upperScreenName: 'Others'
-      },
-      TxPendingResult: {
-        upperScreenName: 'Others'
-      },
-      TxSuccessResult: {
-        upperScreenName: 'Others'
-      },
-      TxFailedResult: {
-        upperScreenName: 'Others'
-      },
-      'Web.Intro': {
-        upperScreenName: 'Web'
-      },
-      'Web.dApp': {
-        upperScreenName: 'Web'
-      },
-      Browser: {
-        upperScreenName: 'Browser'
-      }
-    }).withParams<{
-      'Register.NewMnemonic': {
-        registerConfig: RegisterConfig;
-      };
-      'Register.VerifyMnemonic': {
-        registerConfig: RegisterConfig;
-        newMnemonicConfig: NewMnemonicConfig;
-        bip44HDPath: BIP44HDPath;
-      };
-      'Register.RecoverMnemonic': {
-        registerConfig: RegisterConfig;
-      };
-      'Register.NewLedger': {
-        registerConfig: RegisterConfig;
-      };
-      'Register.ImportFromExtension.Intro': {
-        registerConfig: RegisterConfig;
-      };
-      'Register.ImportFromExtension': {
-        registerConfig: RegisterConfig;
-      };
-      'Register.ImportFromExtension.SetPassword': {
-        registerConfig: RegisterConfig;
-        exportKeyRingDatas: ExportKeyRingData[];
-        addressBooks: { [chainId: string]: AddressBookData[] | undefined };
-      };
-      'Register.End': {
-        password?: string;
-      };
-      Send: {
-        chainId?: string;
-        currency?: string;
-        recipient?: string;
-      };
-      'Validator.Details': {
-        validatorAddress: string;
-      };
-      'Validator.List': {
-        validatorSelector?: (validatorAddress: string) => void;
-      };
-      Delegate: {
-        validatorAddress: string;
-      };
-      Undelegate: {
-        validatorAddress: string;
-      };
-      Redelegate: {
-        validatorAddress: string;
-      };
-      'Governance Details': {
-        proposalId: string;
-      };
-      'Setting.ViewPrivateData': {
-        privateData: string;
-        privateDataType: string;
-      };
-      AddressBook: {
-        recipientConfig?: IRecipientConfig;
-        memoConfig?: IMemoConfig;
-      };
-      AddAddressBook: {
-        chainId: string;
-        addressBookConfig: AddressBookConfig;
-      };
-      TxPendingResult: {
-        chainId?: string;
-        txHash: string;
-      };
-      TxSuccessResult: {
-        chainId?: string;
-        txHash: string;
-      };
-      TxFailedResult: {
-        chainId?: string;
-        txHash: string;
-      };
-    }>()
-  );
-
-export { useSmartNavigation };
+import { SmartNavigatorProvider } from './navigation.provider';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();

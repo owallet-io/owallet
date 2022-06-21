@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { RightArrow, SettingItem, SettingSectionTitle } from './components';
 // import { SettingSelectAccountItem } from "./items/select-account";
-import { useSmartNavigation } from '../../navigation';
+import { useSmartNavigation } from '../../navigation.provider';
 // import { SettingFiatCurrencyItem } from "./items/fiat-currency";
 import { SettingBiometricLockItem } from './items/biometric-lock';
 import { observer } from 'mobx-react-lite';
@@ -16,9 +16,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Platform,
+  Platform
 } from 'react-native';
-import { renderFlag } from './components';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore } = useStore();
@@ -40,11 +39,11 @@ export const SettingScreen: FunctionComponent = observer(() => {
             'padding-24',
             'padding-top-76',
             'padding-bottom-101',
-            'margin-bottom-102',
+            'margin-bottom-102'
           ],
           [
             Platform.OS === 'ios' && 'border-radius-top-left-32',
-            Platform.OS === 'ios' && 'border-radius-top-right-32',
+            Platform.OS === 'ios' && 'border-radius-top-right-32'
           ]
         )}
       >
@@ -58,9 +57,9 @@ export const SettingScreen: FunctionComponent = observer(() => {
               'margin-24',
               'margin-top-150',
               'border-radius-12',
-              'padding-20',
+              'padding-20'
             ]),
-            styles.shadowBox,
+            styles.shadowBox
           ]}
         >
           <TouchableOpacity
@@ -70,14 +69,14 @@ export const SettingScreen: FunctionComponent = observer(() => {
             style={style.flatten([
               'flex-row',
               'items-center',
-              'justify-between',
+              'justify-between'
             ])}
           >
             <View>
               <Text
                 style={style.flatten([
                   'text-caption2',
-                  'color-text-black-very-low',
+                  'color-text-black-very-low'
                 ])}
               >
                 WALLET
@@ -87,7 +86,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
                   'text-caption2',
                   'color-black',
                   'font-bold',
-                  'subtitle1',
+                  'subtitle1'
                 ])}
               >
                 {selected
@@ -105,35 +104,23 @@ export const SettingScreen: FunctionComponent = observer(() => {
               'flex-row',
               'items-center',
               'justify-between',
-              'padding-top-20',
+              'padding-top-20'
             ])}
           >
             <View>
               <Text
                 style={style.flatten([
                   'text-caption2',
-                  'color-text-black-very-low',
+                  'color-text-black-very-low'
                 ])}
               >
                 CURRENCY
               </Text>
-              <View style={style.flatten([
-                'flex-row',
-                'items-center',
-                'justify-center',
-              ])}>
-                {renderFlag(priceStore.defaultVsCurrency)}
-                <Text
-                  style={style.flatten([
-                    'text-caption2',
-                    'color-black',
-                    'body1',
-                    'margin-x-8'
-                  ])}
-                >
-                  {priceStore.defaultVsCurrency.toUpperCase()}
-                </Text>
-              </View>
+              <Text
+                style={style.flatten(['text-caption2', 'color-black', 'body1'])}
+              >
+                {priceStore.defaultVsCurrency.toUpperCase()}
+              </Text>
             </View>
             <RightArrow />
           </TouchableOpacity>
@@ -181,9 +168,9 @@ const styles = StyleSheet.create({
     shadowColor: '#ccc',
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 3
     },
     shadowRadius: 5,
-    shadowOpacity: 1.0,
-  },
+    shadowOpacity: 1.0
+  }
 });
