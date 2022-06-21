@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const NodeEnvironment = require('jest-environment-node');
 const wd = require('wd');
-
+const path = require('path');
 const APPIUM_PORT = 4723;
 
 const initializeDriver = (driver) => {
@@ -12,14 +12,15 @@ const initializeDriver = (driver) => {
     // platformVersion: '15.4.1',
     // xcodeOrgId: 'ORAICHAIN JOINT STOCK COMPANY',
     // xcodeSigningId: 'iPhone Developer',
-    // deviceName: 'ThanhTu',
+    // deviceName: process.env.DEVICE_NAME,
     // bundleId: 'io.orai.owallet',
     // automationName: 'XCUITest',
     // app: process.env.IOS_DEBUG_APP
+    noSign: true,
     platformName: 'Android',
-    platformVersion: '9',
-    deviceName: 'Android Emulator',
-    app: process.env.ANDROID_DEBUG_APP,
+    platformVersion: '11',
+    deviceName: process.env.DEVICE_NAME,
+    app: path.resolve(process.env.ANDROID_DEBUG_APP),
     appPackage: 'com.chainapsis.owallet',
     appActivity: '.MainActivity',
     automationName: 'UiAutomator2'
@@ -45,12 +46,9 @@ class CustomEnvironment extends NodeEnvironment {
 
     if (!driver) throw new Error('appium driver not initialized');
 
-    const deepLinkIntent = `-a android.intent.action.VIEW -d ${url}`;
-
     return driver.startActivity({
-      appPackage: 'com.appiumapptypescript',
-      appActivity: '.MainActivity',
-      optionalIntentArguments: deepLinkIntent
+      appPackage: 'com.chainapsis.owallet',
+      appActivity: '.MainActivity'
     });
   }
 
@@ -63,7 +61,7 @@ class CustomEnvironment extends NodeEnvironment {
     });
 
     await initializeDriver(driver);
-
+    console.log(await driver.hasElementByAccessibilityId('password'));
     this.global.driver = driver;
     this.global.wd = wd;
     this.global.openAppLink = this.openAppLink;
