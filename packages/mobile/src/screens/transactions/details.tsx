@@ -1,3 +1,4 @@
+import Clipboard from 'expo-clipboard';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   StyleSheet,
@@ -7,14 +8,15 @@ import {
   View,
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import { CopyIcon } from '../../components/icon';
+import { CopyFillIcon, CopyIcon } from '../../components/icon';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { useStyle } from '../../styles';
-import { TransactionItem, TransactionSectionTitle } from './components';
+import { TransactionSectionTitle } from './components';
 
 export const CopyIc: FunctionComponent<{
   paragraph?: string;
-}> = ({ paragraph }) => {
+  onPress?: () => void;
+}> = ({ paragraph, onPress }) => {
   const style = useStyle();
   return (
     <React.Fragment>
@@ -29,7 +31,11 @@ export const CopyIc: FunctionComponent<{
           {paragraph}
         </Text>
       ) : null}
-      <CopyIcon color={style.get('color-primary').color} size={24} />
+      <CopyFillIcon
+        onPress={onPress}
+        color={style.get('color-primary').color}
+        size={24}
+      />
     </React.Fragment>
   );
 };
@@ -48,7 +54,8 @@ export const DetailsItems: FunctionComponent<{
   onPress?: () => void;
   bottomBorder?: boolean;
 
-  colorParagraph?: TextStyle;
+  styleParagraph?: TextStyle;
+  styleLabel?: TextStyle;
 }> = ({
   label,
   onPress,
@@ -59,10 +66,10 @@ export const DetailsItems: FunctionComponent<{
   denom,
   right,
   styleReactButton,
-  colorParagraph,
+  styleParagraph,
+  styleLabel,
 }) => {
   const style = useStyle();
-
   const renderChildren = () => {
     return (
       <React.Fragment>
@@ -80,6 +87,7 @@ export const DetailsItems: FunctionComponent<{
             <Text
               style={StyleSheet.flatten([
                 style.flatten(['border-color-text-black-very-very-low']),
+                styleLabel,
               ])}
             >
               {label}
@@ -88,8 +96,8 @@ export const DetailsItems: FunctionComponent<{
               <Text
                 style={StyleSheet.flatten([
                   style.flatten(['body2', 'margin-top-4']),
-                  colorParagraph
-                    ? colorParagraph
+                  styleParagraph
+                    ? styleParagraph
                     : style.flatten(['color-text-black-low']),
                 ])}
               >
@@ -150,6 +158,10 @@ export const DetailsItems: FunctionComponent<{
 
 export const TransactionDetail: FunctionComponent<any> = () => {
   const style = useStyle();
+
+  const handleCopyText = (text: string) => {
+    Clipboard.setString(text);
+  };
   return (
     <PageWithScrollViewInBottomTabView>
       <View
@@ -160,7 +172,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
           'background-color-white',
         ])}
       >
-        <Text style={style.flatten(['h5'])}>Transaction Detail</Text>
+        <Text style={style.flatten(['h3'])}>Transaction Detail</Text>
       </View>
       <TransactionSectionTitle title={'Received token'} right={<></>} />
       <View>
@@ -168,25 +180,54 @@ export const TransactionDetail: FunctionComponent<any> = () => {
           label="From"
           topBorder={true}
           paragraph={'orai1nc752...74u9uylc'}
-          right={<CopyIc />}
+          right={
+            <CopyIc onPress={() => handleCopyText('orai1nc752...74u9uylc')} />
+          }
+          styleParagraph={style.flatten(['body1'])}
+          styleLabel={{
+            color: '#636366',
+            fontSize: 16,
+          }}
         />
         <DetailsItems
           label="To"
           topBorder={true}
           paragraph={'orai1nc752...74u9322'}
           right={<CopyIc />}
+          styleParagraph={style.flatten(['body1'])}
+          styleLabel={{
+            color: '#636366',
+            fontSize: 16,
+          }}
         />
         <DetailsItems
           label="Transaction hash"
           topBorder={true}
           paragraph={'051E23F9...87C52492'}
           right={<CopyIc />}
+          styleParagraph={{
+            color: '#4334F1',
+            fontSize: 18,
+            fontWeight: '400',
+          }}
+          styleLabel={{
+            color: '#636366',
+            fontSize: 16,
+          }}
         />
         <DetailsItems
           label="Amount"
           topBorder={true}
           paragraph={'+125,000 ORAI'}
-          colorParagraph={style.flatten(['color-primary'])}
+          styleParagraph={{
+            color: '#4BB10C',
+            fontSize: 18,
+            fontWeight: '700',
+          }}
+          styleLabel={{
+            color: '#636366',
+            fontSize: 16,
+          }}
         />
       </View>
       <TransactionSectionTitle title={'Detail'} right={<></>} />
@@ -223,9 +264,23 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         <DetailsItems
           label={e.label}
           topBorder={true}
-          right={<Text>{e.content}</Text>}
+          right={
+            <Text
+              style={{
+                color: e.label == 'Result' ? '#4BB10C' : '#1C1C1E',
+                fontSize: 16,
+              }}
+            >
+              {e.content}
+            </Text>
+          }
+          styleLabel={{
+            color: '#636366',
+            fontSize: 16,
+          }}
         />
       ))}
+      <View style={style.flatten(['height-1', 'margin-y-20'])} />
     </PageWithScrollViewInBottomTabView>
   );
 };

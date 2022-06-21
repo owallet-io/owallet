@@ -57,7 +57,13 @@ import {
   SendIcon,
   TransactionIcon,
   SettingIcon,
-  WalletIcon
+  WalletIcon,
+  WalletOutLineIcon,
+  ContactFillIcon,
+  ContactOutLineIcon,
+  TransactionOutlineIcon,
+  SettingFillIcon,
+  SettingOutLineIcon,
 } from './components/icon';
 import {
   AddAddressBookScreen,
@@ -239,11 +245,14 @@ export const MainNavigation: FunctionComponent = () => {
 export const TransactionNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator initialRouteName="Transactions" headerMode="screen">
-      <Stack.Screen name="Transactions" component={Transactions} />
+      <Stack.Screen name="Transactions" component={Transactions}  options={{
+          title: 'Transactions',
+          headerLeft: null,
+        }} />
       <Stack.Screen
         options={{
           title: '',
-          headerLeft: () => <ScreenHeaderLeft />,
+          headerLeft: () => <ScreenHeaderLeft uri="Transactions"/>,
         }}
         name="TransactionsDetails"
         component={TransactionDetail}
@@ -625,22 +634,41 @@ export const MainTabNavigation: FunctionComponent = () => {
     }
   }, [focusedScreen.name, isDrawerOpen, navigation]);
 
+  const checkActiveTabBottom = (color: string) => {
+    return color == '#C6C6CD';
+  };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color }) => {
           switch (route.name) {
             case 'Main':
-              return <WalletIcon color={color} size={24} />;
+              return checkActiveTabBottom(color) ? (
+                <WalletOutLineIcon size={24} />
+              ) : (
+                <WalletIcon size={24} />
+              );
             case 'AddressBook':
-              return <ContactIcon color={color} size={24} />;
-            // case "Web":
+              return checkActiveTabBottom(color) ? (
+                <ContactOutLineIcon size={24} />
+              ) : (
+                <ContactFillIcon size={24} />
+              );
             case 'Send':
               return <SendIcon />;
             case 'TransactionsTab':
-              return <TransactionIcon color={color} size={24} />;
+              return checkActiveTabBottom(color) ? (
+                <TransactionOutlineIcon size={24} />
+              ) : (
+                <TransactionIcon size={24} />
+              );
             case 'Settings':
-              return <SettingIcon color={color} />;
+              return checkActiveTabBottom(color) ? (
+                <SettingOutLineIcon size={24} />
+              ) : (
+                <SettingFillIcon size={24} />
+              );
           }
         },
 
@@ -742,6 +770,20 @@ export const MainTabNavigationWithDrawer: FunctionComponent = () => {
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
   useEffect(() => {
+    Linking.getInitialURL()
+      .then((url) => {
+        if (url) {
+          // const SCHEME_IOS = 'owallet://open_url?url=';
+          // const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
+          // deepLinkUriStore.updateDeepLink(
+          //   url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '')
+          // );
+          deepLinkUriStore.updateDeepLink('https://oraidex.io');
+        }
+      })
+      .catch((err) => {
+        console.warn('Deeplinking error', err);
+      });
     Linking.addEventListener('url', handleDeepLink);
     // NotificationUtils.getInstance().initListener();
     return () => {
