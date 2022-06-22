@@ -367,30 +367,38 @@ export class KeyRingService {
   async requestSignEthereum(
     env: Env,
     chainId: string,
-    data: object,
+    data: object
+    // signDoc: cosmos.tx.v1beta1.SignDoc
   ): Promise<string> {
-    console.log("in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha with data: ", data);
+    console.log(
+      'in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha with data: ',
+      data
+    );
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = (await this.chainsService.getChainInfo(chainId)).evmRpc;
 
     // TODO: add UI here so users can change gas, memo & fee
-    // const newSignDocBytes = (await this.interactionService.waitApprove(
-    //   env,
-    //   '/sign',
-    //   'request-sign',
-    //   {
-    //     msgOrigin,
-    //     chainId,
-    //     mode: 'direct',
-    //     signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
-    //     signer,
-    //     signOptions,
-    //   }
-    // )) as Uint8Array;
-
+    try {
+      const newSignDocBytes = (await this.interactionService.waitApprove(
+        env,
+        '/sign',
+        'request-sign-ethereum',
+        {
+          env,
+          chainId,
+          mode: 'direct',
+          data,
+          // signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
+        }
+      )) as Uint8Array;
+    } catch (e) {
+      console.log('waitApprove err', e);
+    }
     // TEMP HARDCODE, need to have a pop up here to change gas & fee
-    // const newSignDoc = cosmos.tx.v1beta1.SignDoc.decode(newSignDocBytes);
-    // const newData = { ...data };
+    // const { gasPrice, gasLimit } = { gasPrice: 5000000000, gasLimit: 10000000 };
+    const { gasPrice, gasLimit } = { gasPrice: 0, gasLimit: 10000000 };
+
+    const newData = { ...data, gasPrice, gasLimit };
 
     try {
       // it stuck here in ledger
@@ -399,14 +407,18 @@ export class KeyRingService {
         chainId,
         coinType,
         rpc,
-        data,
+        newData
       );
 
       return rawTxHex;
     } catch (e) {
       console.log('e', e.message);
     } finally {
-      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        'request-sign-ethereum-end',
+        {}
+      );
     }
   }
 

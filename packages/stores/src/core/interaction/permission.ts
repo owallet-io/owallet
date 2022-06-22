@@ -10,7 +10,7 @@ import {
   splitSecret20ViewingKeyPermissionType,
   getSecret20ViewingKeyPermissionType,
   AddPermissionOrigin,
-  GetOriginPermittedChainsMsg
+  GetOriginPermittedChainsMsg,
 } from '@owallet/background';
 import { computed, flow, makeObservable, observable } from 'mobx';
 import { HasMapStore } from '../../common';
@@ -157,7 +157,7 @@ export class PermissionStore extends HasMapStore<
     const key = JSON.stringify({
       type: 'basicAccess',
       chainId,
-      contractAddress: ''
+      contractAddress: '',
     });
     return this.get(key) as BasicAccessPermissionInnerStore;
   }
@@ -179,7 +179,7 @@ export class PermissionStore extends HasMapStore<
     const key = JSON.stringify({
       type: 'viewingKey',
       chainId,
-      contractAddress
+      contractAddress,
     });
     return this.get(key) as Secret20ViewingKeyPermissionInnerStore;
   }
@@ -201,8 +201,8 @@ export class PermissionStore extends HasMapStore<
           id: data.id,
           data: {
             chainIds: data.data.chainIds,
-            origins: data.data.origins
-          }
+            origins: data.data.origins,
+          },
         });
       }
     }
@@ -231,8 +231,8 @@ export class PermissionStore extends HasMapStore<
             contractAddress: splitSecret20ViewingKeyPermissionType(
               data.data.type
             ),
-            origins: data.data.origins
-          }
+            origins: data.data.origins,
+          },
         });
       }
     }

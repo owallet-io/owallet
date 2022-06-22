@@ -27,7 +27,7 @@ import {
   CheckPasswordMsg,
   ExportKeyRingDatasMsg,
   RequestVerifyADR36AminoSignDoc,
-  RequestSignEthereumMsg
+  RequestSignEthereumMsg,
 } from './messages';
 import { KeyRingService } from './service';
 import { Bech32Address, cosmos } from '@owallet/cosmos';
@@ -359,6 +359,15 @@ const handleRequestSignEthereumMsg: (
   service: KeyRingService
 ) => InternalHandler<RequestSignEthereumMsg> = (service) => {
   return async (env, msg) => {
+    // const signDoc = cosmos.tx.v1beta1.SignDoc.create({
+    //   bodyBytes: msg.signDoc.bodyBytes,
+    //   authInfoBytes: msg.signDoc.authInfoBytes,
+    //   chainId: msg.signDoc.chainId,
+    //   accountNumber: msg.signDoc.accountNumber
+    //     ? Long.fromString(msg.signDoc.accountNumber)
+    //     : undefined,
+    // });
+
     await service.permissionService.checkOrGrantBasicAccessPermission(
       env,
       msg.chainId,
@@ -374,6 +383,7 @@ const handleRequestSignEthereumMsg: (
       env,
       msg.chainId,
       msg.data
+      // signDoc
     );
 
     console.log('response sign ethereum msg', response);
