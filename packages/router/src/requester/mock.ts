@@ -42,7 +42,7 @@ export class MockMessageRequester implements MessageRequester {
     }
 
     if (result.error) {
-      throw new Error(result.error);
+      throw result.error;
     }
 
     return result.return;
