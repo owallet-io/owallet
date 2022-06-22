@@ -103,18 +103,20 @@ export class ExtensionEnv {
         }
 
         return new Promise<void>((resolve) => {
-          browser.tabs.onUpdated.addListener((_tabId, changeInfo) => {
+          const handler = (_tabId: number, changeInfo: { status: string }) => {
             if (tabId === _tabId && changeInfo.status === 'complete') {
+              browser.tabs.onUpdated.removeListener(handler);
               resolve();
             }
-          });
+          };
+          browser.tabs.onUpdated.addListener(handler);
         });
       })();
 
       return await InExtensionMessageRequester.sendMessageToTab(
-        tabId,
         APP_PORT,
-        msg
+        msg,
+        tabId
       );
     };
 

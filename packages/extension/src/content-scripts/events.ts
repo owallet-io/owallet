@@ -1,33 +1,5 @@
-import { Message, Router } from '@owallet/router';
-
-class PushEventDataMsg extends Message<void> {
-  public static type() {
-    return 'push-event-data';
-  }
-
-  constructor(
-    public readonly data: {
-      type: string;
-      data: unknown;
-    }
-  ) {
-    super();
-  }
-
-  validateBasic(): void {
-    if (!this.data.type) {
-      throw new Error('Type should not be empty');
-    }
-  }
-
-  route(): string {
-    return 'interaction-foreground';
-  }
-
-  type(): string {
-    return PushEventDataMsg.type();
-  }
-}
+import { PushEventDataMsg } from '@owallet/background';
+import { Router } from '@owallet/router';
 
 export function initEvents(router: Router) {
   router.registerMessage(PushEventDataMsg);

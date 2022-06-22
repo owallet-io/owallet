@@ -1,4 +1,10 @@
-import { Router, MessageSender, Result, EnvProducer } from '@owallet/router';
+import {
+  Router,
+  MessageSender,
+  Result,
+  EnvProducer,
+  OWalletError
+} from '@owallet/router';
 
 export class ExtensionRouter extends Router {
   listen(port: string): void {
@@ -56,7 +62,16 @@ export class ExtensionRouter extends Router {
       console.log(
         `Failed to process msg ${message.type}: ${e?.message || e?.toString()}`
       );
-      if (e) {
+
+      if (e instanceof OWalletError) {
+        return Promise.resolve({
+          error: {
+            code: e.code,
+            module: e.module,
+            message: e.message || e.toString()
+          }
+        });
+      } else if (e) {
         return Promise.resolve({
           error: e.message || e.toString()
         });

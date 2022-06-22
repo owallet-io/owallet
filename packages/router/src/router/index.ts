@@ -27,10 +27,10 @@ export abstract class Router {
 
   protected port = '';
 
-  constructor(protected readonly envProducer: EnvProducer) { }
+  constructor(protected readonly envProducer: EnvProducer) {}
 
   public registerMessage(
-    msgCls: { new(...args: any): Message<unknown> } & { type(): string }
+    msgCls: { new (...args: any): Message<unknown> } & { type(): string }
   ): void {
     this.msgRegistry.registerMessage(msgCls);
   }
@@ -72,7 +72,6 @@ export abstract class Router {
     }
 
     const route = msg.route();
-    console.log("route of the message: ", route);
 
     if (!route) {
       throw new Error('Null router');

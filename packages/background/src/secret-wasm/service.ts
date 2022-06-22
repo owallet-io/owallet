@@ -46,7 +46,7 @@ export class SecretWasmService {
   async getPubkey(env: Env, chainId: string): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
-    const keyRingType = await this.keyRingService.getKeyRingType();
+    const keyRingType = this.keyRingService.getKeyRingType();
     if (keyRingType === 'none') {
       throw new Error('Key ring is not initialized');
     }
@@ -64,7 +64,7 @@ export class SecretWasmService {
   ): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
-    const keyRingType = await this.keyRingService.getKeyRingType();
+    const keyRingType = this.keyRingService.getKeyRingType();
     if (keyRingType === 'none') {
       throw new Error('Key ring is not initialized');
     }
@@ -84,7 +84,7 @@ export class SecretWasmService {
   ): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
-    const keyRingType = await this.keyRingService.getKeyRingType();
+    const keyRingType = this.keyRingService.getKeyRingType();
     if (keyRingType === 'none') {
       throw new Error('Key ring is not initialized');
     }
@@ -108,7 +108,7 @@ export class SecretWasmService {
   ): Promise<Uint8Array> {
     const chainInfo = await this.chainsService.getChainInfo(chainId);
 
-    const keyRingType = await this.keyRingService.getKeyRingType();
+    const keyRingType = this.keyRingService.getKeyRingType();
     if (keyRingType === 'none') {
       throw new Error('Key ring is not initialized');
     }

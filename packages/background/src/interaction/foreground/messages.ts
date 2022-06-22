@@ -1,4 +1,4 @@
-import { Message } from '@owallet/router';
+import { Message, OWalletError } from '@owallet/router';
 import { ROUTE } from './constants';
 import { InteractionWaitingData } from '../types';
 
@@ -39,7 +39,7 @@ export class PushEventDataMsg extends Message<void> {
 
   validateBasic(): void {
     if (!this.data.type) {
-      throw new Error('Type should not be empty');
+      throw new OWalletError('interaction', 101, 'Type should not be empty');
     }
   }
 

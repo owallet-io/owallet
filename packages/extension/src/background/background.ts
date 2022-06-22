@@ -17,6 +17,7 @@ router.addGuard(ExtensionGuards.checkOriginIsValid);
 router.addGuard(ExtensionGuards.checkMessageIsInternal);
 
 // can extends more origins to PrivilegedOrigins
+console.log('re-init', 'service worker re-load again', Date.now());
 init(
   router,
   (prefix: string) => new ExtensionKVStore(prefix),

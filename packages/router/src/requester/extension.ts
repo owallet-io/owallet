@@ -1,44 +1,22 @@
-import { MessageRequester, Message, JSONUint8Array } from '@owallet/router';
-import { getOWalletExtensionRouterId } from '../utils';
+import {
+  MessageRequester,
+  Message,
+  JSONUint8Array,
+  OWalletError
+} from '@owallet/router';
 
 export class InExtensionMessageRequester implements MessageRequester {
   async sendMessage<M extends Message<unknown>>(
     port: string,
     msg: M
   ): Promise<M extends Message<infer R> ? R : never> {
-    msg.validateBasic();
-
-    // Set message's origin.
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    msg['origin'] =
-      typeof window !== 'undefined'
-        ? window.location.origin
-        : new URL(browser.runtime.getURL('/')).origin;
-
-    const result = JSONUint8Array.unwrap(
-      await browser.runtime.sendMessage({
-        port,
-        type: msg.type(),
-        msg: JSONUint8Array.wrap(msg)
-      })
-    );
-
-    if (!result) {
-      throw new Error('Null result');
-    }
-
-    if (result.error) {
-      throw new Error(result.error);
-    }
-
-    return result.return;
+    return InExtensionMessageRequester.sendMessageToTab(port, msg);
   }
 
   static async sendMessageToTab<M extends Message<unknown>>(
-    tabId: number,
     port: string,
-    msg: M
+    msg: M,
+    tabId?: number
   ): Promise<M extends Message<infer R> ? R : never> {
     msg.validateBasic();
 
@@ -50,12 +28,15 @@ export class InExtensionMessageRequester implements MessageRequester {
         ? window.location.origin
         : new URL(browser.runtime.getURL('/')).origin;
 
+    const message = {
+      port,
+      type: msg.type(),
+      msg: JSONUint8Array.wrap(msg)
+    };
     const result = JSONUint8Array.unwrap(
-      await browser.tabs.sendMessage(tabId, {
-        port,
-        type: msg.type(),
-        msg: JSONUint8Array.wrap(msg)
-      })
+      Number.isInteger(tabId)
+        ? await browser.tabs.sendMessage(tabId, message)
+        : await browser.runtime.sendMessage(message)
     );
 
     if (!result) {
@@ -63,7 +44,15 @@ export class InExtensionMessageRequester implements MessageRequester {
     }
 
     if (result.error) {
-      throw new Error(result.error);
+      if (typeof result.error === 'string') {
+        throw new Error(result.error);
+      } else {
+        throw new OWalletError(
+          result.error.module,
+          result.error.code,
+          result.error.message
+        );
+      }
     }
 
     return result.return;
