@@ -22,7 +22,7 @@ export class SignInteractionStore {
         }
       }
 
-      const datasEthereum = this.waitingEthereumDatas.slice();
+      const datasEthereum = this.waitingEthereumDatas?.slice();
 
       if (datasEthereum.length > 1) {
         for (let i = 1; i < datasEthereum.length; i++) {
@@ -141,8 +141,11 @@ export class SignInteractionStore {
   }
 
   protected isEnded(): boolean {
+    return this.interactionStore.getEvents<void>('request-sign-end').length > 0;
+  }
+
+  protected isEthereumEnded(): boolean {
     return (
-      this.interactionStore.getEvents<void>('request-sign-end').length > 0 &&
       this.interactionStore.getEvents<void>('request-sign-ethereum-end')
         .length > 0
     );
@@ -169,21 +172,34 @@ export class SignInteractionStore {
     });
   }
 
+  protected waitEthereumEnd(): Promise<void> {
+    if (this.isEthereumEnded()) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+      const disposer = autorun(() => {
+        if (this.isEthereumEnded()) {
+          resolve();
+          this.clearEnded();
+          disposer();
+        }
+      });
+    });
+  }
+
   @flow
   *approveAndWaitEnd(newSignDocWrapper: SignDocWrapper) {
     console.log(
       'approve and wait end!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
     );
-    if (
-      this.waitingDatas.length === 0 &&
-      this.waitingEthereumDatas.length === 0
-    ) {
+
+    if (this.waitingDatas.length === 0) {
       return;
     }
 
     this._isLoading = true;
     const id = this.waitingDatas[0].id;
-    const idEthereum = this.waitingEthereumDatas[0].id;
     try {
       const newSignDoc =
         newSignDocWrapper.mode === 'amino'
@@ -191,15 +207,32 @@ export class SignInteractionStore {
           : newSignDocWrapper.protoSignDoc.toBytes();
 
       yield this.interactionStore.approveWithoutRemovingData(id, newSignDoc);
-      yield this.interactionStore.approveWithoutRemovingData(
-        idEthereum,
-        this.waitingEthereumDatas[0].data
-      );
     } finally {
       yield this.waitEnd();
-      this.interactionStore.removeData('request-sign', id);
-      this.interactionStore.removeData('request-sign-ethereum', id);
       this._isLoading = false;
+      this.interactionStore.removeData('request-sign', id);
+    }
+  }
+
+  @flow
+  *approveEthereumAndWaitEnd(gas = 0.01) {
+    if (this.waitingEthereumDatas?.length === 0) {
+      return;
+    }
+
+    this._isLoading = true;
+    const idEthereum = this.waitingEthereumDatas?.[0]?.id;
+    try {
+      if (this.waitingEthereumDatas?.length > 0) {
+        yield this.interactionStore.approveWithoutRemovingData(idEthereum, {
+          ...this.waitingEthereumDatas[0].data,
+          gas,
+        });
+      }
+    } finally {
+      yield this.waitEthereumEnd();
+      this._isLoading = false;
+      this.interactionStore.removeData('request-sign-ethereum', idEthereum);
     }
   }
 
@@ -217,7 +250,7 @@ export class SignInteractionStore {
       );
       yield this.interactionStore.reject(
         'request-ethereum-sign',
-        this.waitingEthereumDatas[0].id
+        this.waitingEthereumDatas?.[0].id
       );
     } finally {
       this._isLoading = false;
@@ -228,10 +261,12 @@ export class SignInteractionStore {
   *rejectAll() {
     this._isLoading = true;
     try {
-      yield this.interactionStore.rejectAll('request-sign');
-      yield this.waitingEthereumDatas.map((wd) => {
-        alert('we');
-        this.interactionStore.reject('request-sign-ethereum', wd.id);
+      // yield this.interactionStore.rejectAll('request-sign');
+      yield this.waitingDatas?.map((wd) => {
+        this.interactionStore.reject('request-sign', wd.id);
+      });
+      yield this.waitingEthereumDatas?.map((wed) => {
+        this.interactionStore.reject('request-sign-ethereum', wed.id);
       });
     } finally {
       this._isLoading = false;

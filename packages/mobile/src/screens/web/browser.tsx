@@ -171,8 +171,8 @@ export const Browser: FunctionComponent<any> = (props) => {
       if (InjectedProviderUrl) uri = InjectedProviderUrl;
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
-        // uri: `https://staging.oraidex.io/ethereum`,
-        uri,
+        uri: `https://staging.oraidex.io/ethereum`,
+        // uri,
       });
     }
   };
@@ -285,6 +285,7 @@ export const Browser: FunctionComponent<any> = (props) => {
               },
             ].map((e) => (
               <TouchableOpacity
+                key={e.uri}
                 style={style.flatten([
                   'height-44',
                   'margin-bottom-10',

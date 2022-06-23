@@ -6,7 +6,7 @@ import {
   Env,
   FnRequestInteractionOptions,
   MessageRequester,
-  OWalletError
+  OWalletError,
 } from '@owallet/router';
 import { PushEventDataMsg, PushInteractionDataMsg } from './foreground';
 import { RNG } from '@owallet/crypto';
@@ -34,7 +34,7 @@ export class InteractionService {
 
     const msg = new PushEventDataMsg({
       type,
-      data
+      data,
     });
 
     this.eventMsgRequester.sendMessage(port, msg).catch((e) => {
@@ -64,8 +64,6 @@ export class InteractionService {
 
     const msg = new PushInteractionDataMsg(interactionWaitingData);
 
-    console.log('msg waitApprove', msg);
-
     return await this.wait(msg.data.id, () => {
       env.requestInteraction(url, msg, options);
     });
@@ -79,7 +77,7 @@ export class InteractionService {
     return new Promise<unknown>((resolve, reject) => {
       this.resolverMap.set(id, {
         onApprove: resolve,
-        onReject: reject
+        onReject: reject,
       });
 
       fn();
@@ -124,7 +122,7 @@ export class InteractionService {
       id,
       type,
       isInternal,
-      data
+      data,
     };
 
     if (this.waitingMap.has(id)) {
@@ -132,7 +130,6 @@ export class InteractionService {
     }
 
     this.waitingMap.set(id, interactionWaitingData);
-    console.log('this.waitingMap', this.waitingMap);
 
     return interactionWaitingData;
   }

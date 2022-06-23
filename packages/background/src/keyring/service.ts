@@ -344,8 +344,6 @@ export class KeyRingService {
     const newSignDoc = cosmos.tx.v1beta1.SignDoc.decode(newSignDocBytes);
 
     try {
-      // it stuck here in ledger
-      console.log('ledger stuck');
       const signature = await this.keyRing.sign(
         env,
         chainId,
@@ -378,31 +376,32 @@ export class KeyRingService {
     const rpc = (await this.chainsService.getChainInfo(chainId)).evmRpc;
 
     // TODO: add UI here so users can change gas, memo & fee
-    try {
-      const newSignDocBytes = (await this.interactionService.waitApprove(
+
+    const newSignDocBytes = (await this.interactionService.waitApprove(
+      env,
+      '/sign',
+      'request-sign-ethereum',
+      {
         env,
-        '/sign',
-        'request-sign-ethereum',
-        {
-          env,
-          chainId,
-          mode: 'direct',
-          data,
-          // signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
-        }
-      )) as Uint8Array;
-    } catch (e) {
-      console.log('waitApprove err', e);
-    }
+        chainId,
+        mode: 'direct',
+        data,
+        // signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
+      }
+    )) as Uint8Array;
+
+    console.log('newSignDocBytes', newSignDocBytes);
+
+    // TODO: get the gasPrice from newSignDocBytes
+
     // TEMP HARDCODE, need to have a pop up here to change gas & fee
     // const { gasPrice, gasLimit } = { gasPrice: 5000000000, gasLimit: 10000000 };
     const { gasPrice, gasLimit } = { gasPrice: 0, gasLimit: 10000000 };
 
+    // move this part to approve button
     const newData = { ...data, gasPrice, gasLimit };
 
     try {
-      // it stuck here in ledger
-      // console.log('ledger stuck');
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
         chainId,
         coinType,

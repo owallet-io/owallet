@@ -24,7 +24,7 @@ import WalletConnect from '@walletconnect/client';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
 
-export const SignModal: FunctionComponent<{
+export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
 }> = registerModal(
@@ -57,7 +57,8 @@ export const SignModal: FunctionComponent<{
     const amountConfig = useSignDocAmountConfig(
       chainStore,
       chainId,
-      accountStore.getAccount(chainId).msgOpts
+      accountStore.getAccount(chainId).msgOpts,
+      signer
     );
     const feeConfig = useFeeConfig(
       chainStore,
@@ -213,7 +214,7 @@ export const SignModal: FunctionComponent<{
     })();
 
     return (
-      <CardModal title="Confirm Transaction">
+      <CardModal title="Confirm Ethereum Transaction">
         {wcSession ? (
           <WCAppLogoAndName
             containerStyle={style.flatten(['margin-y-14'])}
@@ -258,20 +259,16 @@ export const SignModal: FunctionComponent<{
           text="Approve"
           size="large"
           disabled={
-            signDocWapper == null ||
-            signDocHelper.signDocWrapper == null ||
-            memoConfig.getError() != null ||
-            feeConfig.getError() != null
+            false
+            // signDocWapper == null ||
+            // signDocHelper.signDocWrapper == null ||
+            // memoConfig.getError() != null ||
+            // feeConfig.getError() != null
           }
           loading={signInteractionStore.isLoading}
           onPress={async () => {
-            console.log('on press sign');
             try {
-              if (signDocHelper.signDocWrapper) {
-                await signInteractionStore.approveAndWaitEnd(
-                  signDocHelper.signDocWrapper
-                );
-              }
+              await signInteractionStore.approveEthereumAndWaitEnd();
             } catch (error) {
               console.log(error);
             }

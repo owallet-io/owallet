@@ -9,6 +9,7 @@ import { WCGoBackToBrowserModal } from '../../modals/wc-go-back-to-browser';
 import { BackHandler, Platform } from 'react-native';
 import { LoadingScreenModal } from '../loading-screen/modal';
 import { KeyRingStatus } from '@owallet/background';
+import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -108,13 +109,11 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         {signInteractionStore.waitingData ? (
           <SignModal
             isOpen={true}
-            close={() => {
-              signInteractionStore.rejectAll();
-            }}
+            close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
         {signInteractionStore.waitingEthereumData ? (
-          <SignModal
+          <SignEthereumModal
             isOpen={true}
             close={() => {
               signInteractionStore.rejectAll();
