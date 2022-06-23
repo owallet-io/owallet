@@ -245,7 +245,13 @@ export const Browser: FunctionComponent<any> = (props) => {
             }
           />
         </View>
-        <View style={style.flatten(['height-full', 'background-color-white','margin-y-48'])}>
+        <View
+          style={style.flatten([
+            'height-full',
+            'background-color-white',
+            'margin-y-48',
+          ])}
+        >
           <BrowserSection />
           <View style={style.flatten(['height-full', 'padding-20'])}>
             {[
