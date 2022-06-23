@@ -3,7 +3,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +16,7 @@ import {
   DefaultCloseVelocity,
   DefaultOpenVelocity,
   OpenMinDuration,
-  CloseMinDuration,
+  CloseMinDuration
 } from './const';
 
 export interface ModalBaseProps {
@@ -46,7 +46,7 @@ const usePreviousDiff = () => {
           Animated.sub(value, previous),
           value
         ),
-      previous,
+      previous
     };
   }, [previous]);
 };
@@ -62,7 +62,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   onOpenTransitionEnd,
   onCloseTransitionEnd,
   containerStyle,
-  disableSafeArea,
+  disableSafeArea
 }) => {
   const style = useStyle();
 
@@ -126,7 +126,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     safeAreaInsets.top,
     safeAreaInsets.bottom,
     transition.startY,
-    transition.isInitialized,
+    transition.isInitialized
   ]);
 
   useEffect(() => {
@@ -153,7 +153,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         ),
         new Animated.Value(1),
         new Animated.Value(0)
-      ),
+      )
     ]);
   }, [transition.isInitialized, transition.startY]);
 
@@ -181,11 +181,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           Animated.not(transition.isPaused)
         ),
         [
-          Animated.cond(
-            Animated.defined(previousDiff.previous),
-            Animated.debug('before previous', previousDiff.previous),
-            Animated.debug('before previous undefined', new Animated.Value(0))
-          ),
+          // Animated.cond(
+          //   Animated.defined(previousDiff.previous),
+          //   Animated.debug('before previous', previousDiff.previous),
+          //   Animated.debug('before previous undefined', new Animated.Value(0))
+          // ),
           // Animated.debug(
           //   `modal "isOpen" diff`,
           //   previousDiff.diff(transition.isOpen)
@@ -201,7 +201,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                 Animated.set(transition.time, 0),
                 Animated.set(transition.translateY, transition.startY),
                 Animated.set(transition.frameTime, 0),
-                Animated.startClock(transition.clock),
+                Animated.startClock(transition.clock)
               ],
               Animated.cond(
                 Animated.eq(transition.durationSetOnExternal, 0),
@@ -238,10 +238,10 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                           ),
                           OpenMinDuration
                         )
-                      ),
+                      )
                     ],
                     Animated.set(transition.duration, 0)
-                  ),
+                  )
                   // Animated.debug(
                   //   'open transition initialized',
                   //   Animated.clockRunning(transition.clock)
@@ -250,7 +250,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                   // Animated.debug('transition duration is', transition.duration),
                 ]
                 // Animated.debug('duration set on external', transition.duration)
-              ),
+              )
             ]
           ),
           Animated.cond(
@@ -265,7 +265,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                 // No need to reset the `translateY`, just remain it.
                 // Animated.set(transition.translateY, 0),
                 Animated.set(transition.frameTime, 0),
-                Animated.startClock(transition.clock),
+                Animated.startClock(transition.clock)
               ],
               Animated.cond(
                 Animated.eq(transition.durationSetOnExternal, 0), // Set the duration
@@ -311,10 +311,10 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                           ),
                           CloseMinDuration
                         )
-                      ),
+                      )
                     ],
                     Animated.set(transition.duration, 0)
-                  ),
+                  )
                   // Animated.debug(
                   //   'close transition initialized',
                   //   Animated.clockRunning(transition.clock)
@@ -323,7 +323,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                   // Animated.debug('transition duration is', transition.duration),
                 ]
                 // Animated.debug('duration set on external', transition.duration)
-              ),
+              )
             ]
           ),
           Animated.cond(
@@ -341,17 +341,17 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                     finished: transition.finished,
                     position: transition.translateY,
                     time: transition.time,
-                    frameTime: transition.frameTime,
+                    frameTime: transition.frameTime
                   },
                   {
                     toValue: 0,
                     duration: transition.duration,
-                    easing: Easing.out(Easing.cubic),
+                    easing: Easing.out(Easing.cubic)
                   }
                 ),
                 Animated.cond(transition.finished, [
                   Animated.stopClock(transition.clock),
-                  Animated.set(transition.durationSetOnExternal, 0),
+                  Animated.set(transition.durationSetOnExternal, 0)
                 ]),
                 Animated.cond(
                   Animated.diff(transition.finished),
@@ -362,9 +362,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                       if (openTransitionRef.current) {
                         openTransitionRef.current();
                       }
-                    }),
+                    })
                   ])
-                ),
+                )
                 // Animated.debug(
                 //   'open duration clock is running',
                 //   Animated.clockRunning(transition.clock)
@@ -395,8 +395,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                     if (openTransitionRef.current) {
                       openTransitionRef.current();
                     }
-                  }),
-                ]),
+                  })
+                ])
               ]
             ),
             Animated.cond(
@@ -412,17 +412,17 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                     finished: transition.finished,
                     position: transition.translateY,
                     time: transition.time,
-                    frameTime: transition.frameTime,
+                    frameTime: transition.frameTime
                   },
                   {
                     toValue: transition.startY,
                     duration: transition.duration,
-                    easing: Easing.out(Easing.quad),
+                    easing: Easing.out(Easing.quad)
                   }
                 ),
                 Animated.cond(transition.finished, [
                   Animated.stopClock(transition.clock),
-                  Animated.set(transition.durationSetOnExternal, 0),
+                  Animated.set(transition.durationSetOnExternal, 0)
                 ]),
                 Animated.cond(
                   Animated.diff(transition.finished),
@@ -433,9 +433,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                       if (closeTransitionRef.current) {
                         closeTransitionRef.current();
                       }
-                    }),
+                    })
                   ])
-                ),
+                )
                 // Animated.debug(
                 //   'close duration clock is running',
                 //   Animated.clockRunning(transition.clock)
@@ -469,16 +469,16 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                     if (closeTransitionRef.current) {
                       closeTransitionRef.current();
                     }
-                  }),
-                ]),
+                  })
+                ])
               ]
             )
           ),
-          previousDiff.set(transition.isOpen),
+          previousDiff.set(transition.isOpen)
           // Animated.debug("after previous", previousDiff.previous),
         ]
       ),
-      transition.translateY,
+      transition.translateY
     ]);
   }, [
     openTransitionVelocity,
@@ -499,7 +499,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     transitionAcceleration,
     closeVelocityValue,
     openCallbackOnce,
-    closeCallbackOnce,
+    closeCallbackOnce
   ]);
 
   return (
@@ -514,7 +514,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             [
               align === 'center' && 'justify-center',
               align === 'top' && 'justify-start',
-              align === 'bottom' && 'justify-end',
+              align === 'bottom' && 'justify-end'
             ]
           )}
           pointerEvents="box-none"
@@ -529,9 +529,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             style={StyleSheet.flatten([
               {
                 transform: [{ translateY }],
-                opacity,
+                opacity
               },
-              containerStyle,
+              containerStyle
             ])}
           >
             {children}
@@ -544,7 +544,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             [
               align === 'center' && 'justify-center',
               align === 'top' && 'justify-start',
-              align === 'bottom' && 'justify-end',
+              align === 'bottom' && 'justify-end'
             ]
           )}
           pointerEvents="box-none"
@@ -559,9 +559,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             style={StyleSheet.flatten([
               {
                 transform: [{ translateY }],
-                opacity,
+                opacity
               },
-              containerStyle,
+              containerStyle
             ])}
           >
             {children}

@@ -19,7 +19,7 @@
     "start": "react-native start",
     "start:reset": "react-native start --reset-cache",
     "generate:splash-image": "expo-splash-screen --background-color \"#141414\" --image-path ./src/assets/logo/splash-screen-only-k.png --image-resize-mode contain --status-bar-translucent --status-bar-background-color \"#141414\" --status-bar-style dark-content",
-    "pod-install": "pod-install",
+    "pod:install": "pod-install",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "sh ./scripts/fix-android-splash-screen-flash.sh && sh ./scripts/force-export-ble-manager-from-ledger.sh",
