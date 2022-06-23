@@ -1,0 +1,1381 @@
+WARNING | unexpected system image feature string, emulator might not function correctly, please try updating the emulator.
+WARNING | cannot add library /Users/phamtu/Library/Android/sdk/emulator/qemu/darwin-aarch64/lib64/vulkan/libvulkan.dylib: failed
+VERBOSE | autoconfig: -skin 1080x1920
+VERBOSE | autoconfig: -skindir (null)
+VERBOSE | autoconfig: -kernel /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//kernel-ranchu
+VERBOSE | Target arch = 'arm64'
+VERBOSE | Auto-detect: Kernel image requires new device naming scheme.
+VERBOSE | Auto-detect: Kernel does not support YAFFS2 partitions.
+VERBOSE | autoconfig: -ramdisk /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//ramdisk.img
+VERBOSE | Using initial system image: /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//system.img
+VERBOSE | Using initial vendor image: /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//vendor.img
+VERBOSE | autoconfig: -data /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/userdata-qemu.img
+VERBOSE | autoconfig: -initdata /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/userdata.img
+VERBOSE | autoconfig: -cache /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/cache.img
+VERBOSE | INFO: ignore sdcard for arm at api level >= 30
+VERBOSE | Increasing RAM size to 2048MB
+VERBOSE | VM heap size 256MB is below hardware specified minimum of 512MB,setting it to that value
+VERBOSE | System image is read only
+VERBOSE | Found 3 DNS servers:
+VERBOSE | 	8.8.8.8
+VERBOSE | 	8.8.4.4
+VERBOSE | 	10.15.99.1
+VERBOSE | Unexpected feature list:
+VERBOSE | Vulkan
+VERBOSE | found magic skin width=1080 height=1920 bpp=16
+
+VERBOSE | Requested console port 11094: Inferring adb port 11095.
+VERBOSE | CPU Acceleration: working
+VERBOSE | CPU Acceleration status: Hypervisor.Framework OS X Version 12.2
+VERBOSE | handleCpuAcceleration: feature check for hvf
+VERBOSE | Bluetooth requested by guest
+VERBOSE | started modem simulator host server at port: 62012
+INFO    | Warning: QMetaObject::connectSlotsByName: No matching signal for on_new_posture_requested(int) ((null):0, (null))
+
+INFO    | Warning: QMetaObject::connectSlotsByName: No matching signal for on_dismiss_posture_selection_dialog() ((null):0, (null))
+
+INFO    | Warning: QMetaObject::connectSlotsByName: No matching signal for on_new_resizable_requested(PresetEmulatorSizeType) ((null):0, (null))
+
+INFO    | Warning: QMetaObject::connectSlotsByName: No matching signal for on_dismiss_resizable_dialog() ((null):0, (null))
+
+VERBOSE | GPU emulation enabled using 'host' mode
+VERBOSE | Initializing hardware OpenGLES emulation support
+VERBOSE | create display 0
+VERBOSE | setDisplayPose 0 x 0 y 0 w 1080 h 1920 dpi 0
+INFO    | added library /Users/phamtu/Library/Android/sdk/emulator/lib64/vulkan/libvulkan.dylib
+INFO    | configAndStartRenderer: setting vsync to 60 hz
+VERBOSE | INFO: ignore sdcard for arm at api level >= 30
+INFO    | Sending adb public key [QAAAAL9CIvHB0lVPyZhfvsn77qG4DDIz8PUXJLYt0RGl+Zbng6XW1jH9ebrZud1bwHhpYnbJCuk40EHV97365HKlxvTg9mcWokdvk9riThryvkuHdaXmOsGUedVV3yfiL86lf+UN79xFgwfaK/LEXiWTMh6q4aiNP1YSHnuaJOhdo+LdHas9dT6RCMnRvdVz1vv0HnuWSS2cCA5AoAnRDDqaGy0N7IWIqGVwWwHLrVAGsKwXAPuF6rZDmKTEHlA1GzkshSa8Aw2HgSvStrGsYWTGUmLFvqh6m81aZ9oQ7NwZdAYdaSkr1YcVCQNwChVNXHICwW5gHuwQPiyIg089vw+pwVa7aHu4WY1K1GTwHv2i9p2rKsAQ8povTXosUtzBI1Uio4tsHzGQFuTO3I8dw5cLD9bjLH/VPTV9hgy/5CZxpzl+fog6upsR/ky9QqQq1aIndKdp3UdAfsP8u8/4MSa6hMjAug193u5XNmkyQxh0atBCarSRrXLOgnxD9SNU7DnXcbqU33lddqcmP/3AxUc3XGCJ3jDj+lhM6vltVxn0Yn73iVf+xbyKBCcyYvxyUALbTvxYdYsrtf7eC/aKppyv79i0OvdwCrY8MO4S3qA1fxqtqtw9WUPmj6ErdeNeku084SkeeZboC8kpwhYGfgMt0EYrbhKZaEONb6/3hUAga0eadNp2QgEAAQA= phamtu@unknown]
+VERBOSE | Found 3 DNS servers:
+VERBOSE | 	8.8.8.8
+VERBOSE | 	8.8.4.4
+VERBOSE | 	10.15.99.1
+INFO    | Content of hardware configuration file:
+INFO    | 	hw.cpu.arch = arm64
+INFO    | 	hw.cpu.ncore = 4
+INFO    | 	hw.ramSize = 2048
+INFO    | 	hw.screen = multi-touch
+INFO    | 	hw.mainKeys = false
+INFO    | 	hw.trackBall = false
+INFO    | 	hw.keyboard = true
+INFO    | 	hw.keyboard.lid = false
+INFO    | 	hw.keyboard.charmap = qwerty2
+INFO    | 	hw.dPad = false
+INFO    | 	hw.rotaryInput = false
+INFO    | 	hw.gsmModem = true
+INFO    | 	hw.gps = true
+INFO    | 	hw.battery = true
+INFO    | 	hw.accelerometer = true
+INFO    | 	hw.gyroscope = true
+INFO    | 	hw.audioInput = true
+INFO    | 	hw.audioOutput = true
+INFO    | 	hw.sdCard = true
+INFO    | 	disk.cachePartition = true
+INFO    | 	disk.cachePartition.path = /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/cache.img
+INFO    | 	disk.cachePartition.size = 66m
+INFO    | 	test.quitAfterBootTimeOut = -1
+INFO    | 	test.delayAdbTillBootComplete = 0
+INFO    | 	test.monitorAdb = 0
+INFO    | 	hw.lcd.width = 1080
+INFO    | 	hw.lcd.height = 1920
+INFO    | 	hw.lcd.depth = 16
+INFO    | 	hw.lcd.density = 420
+INFO    | 	hw.lcd.backlight = true
+INFO    | 	hw.lcd.vsync = 60
+INFO    | 	hw.gltransport = pipe
+INFO    | 	hw.gltransport.asg.writeBufferSize = 1048576
+INFO    | 	hw.gltransport.asg.writeStepSize = 4096
+INFO    | 	hw.gltransport.asg.dataRingSize = 32768
+INFO    | 	hw.gltransport.drawFlushInterval = 800
+INFO    | 	hw.displayRegion.0.1.xOffset = -1
+INFO    | 	hw.displayRegion.0.1.yOffset = -1
+INFO    | 	hw.displayRegion.0.1.width = 0
+INFO    | 	hw.displayRegion.0.1.height = 0
+INFO    | 	hw.displayRegion.0.2.xOffset = -1
+INFO    | 	hw.displayRegion.0.2.yOffset = -1
+INFO    | 	hw.displayRegion.0.2.width = 0
+INFO    | 	hw.displayRegion.0.2.height = 0
+INFO    | 	hw.displayRegion.0.3.xOffset = -1
+INFO    | 	hw.displayRegion.0.3.yOffset = -1
+INFO    | 	hw.displayRegion.0.3.width = 0
+INFO    | 	hw.displayRegion.0.3.height = 0
+INFO    | 	hw.display1.width = 0
+INFO    | 	hw.display1.height = 0
+INFO    | 	hw.display1.density = 0
+INFO    | 	hw.display1.xOffset = -1
+INFO    | 	hw.display1.yOffset = -1
+INFO    | 	hw.display1.flag = 0
+INFO    | 	hw.display2.width = 0
+INFO    | 	hw.display2.height = 0
+INFO    | 	hw.display2.density = 0
+INFO    | 	hw.display2.xOffset = -1
+INFO    | 	hw.display2.yOffset = -1
+INFO    | 	hw.display2.flag = 0
+INFO    | 	hw.display3.width = 0
+INFO    | 	hw.display3.height = 0
+INFO    | 	hw.display3.density = 0
+INFO    | 	hw.display3.xOffset = -1
+INFO    | 	hw.display3.yOffset = -1
+INFO    | 	hw.display3.flag = 0
+INFO    | 	hw.gpu.enabled = true
+INFO    | 	hw.gpu.mode = host
+INFO    | 	hw.initialOrientation = Portrait
+INFO    | 	hw.camera.back = virtualscene
+INFO    | 	hw.camera.front = emulated
+INFO    | 	vm.heapSize = 512
+INFO    | 	hw.sensors.light = true
+INFO    | 	hw.sensors.pressure = true
+INFO    | 	hw.sensors.humidity = true
+INFO    | 	hw.sensors.proximity = true
+INFO    | 	hw.sensors.magnetic_field = true
+INFO    | 	hw.sensors.magnetic_field_uncalibrated = true
+INFO    | 	hw.sensors.gyroscope_uncalibrated = true
+INFO    | 	hw.sensors.orientation = true
+INFO    | 	hw.sensors.temperature = true
+INFO    | 	hw.sensors.rgbclight = false
+INFO    | 	hw.sensor.hinge = false
+INFO    | 	hw.sensor.hinge.count = 0
+INFO    | 	hw.sensor.hinge.type = 0
+INFO    | 	hw.sensor.hinge.sub_type = 0
+INFO    | 	hw.sensor.hinge.fold_to_displayRegion.0.1_at_posture = 1
+INFO    | 	hw.sensor.roll = false
+INFO    | 	hw.sensor.roll.count = 0
+INFO    | 	hw.sensor.roll.resize_to_displayRegion.0.1_at_posture = 6
+INFO    | 	hw.sensor.roll.resize_to_displayRegion.0.2_at_posture = 6
+INFO    | 	hw.sensor.roll.resize_to_displayRegion.0.3_at_posture = 6
+INFO    | 	hw.sensors.heart_rate = false
+INFO    | 	hw.sensors.wrist_tilt = false
+INFO    | 	hw.useext4 = true
+INFO    | 	hw.arc = false
+INFO    | 	hw.arc.autologin = false
+INFO    | 	hw.device.name = pixel_2
+INFO    | 	kernel.path = /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//kernel-ranchu
+INFO    | 	kernel.newDeviceNaming = yes
+INFO    | 	kernel.supportsYaffs2 = no
+INFO    | 	disk.ramdisk.path = /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//ramdisk.img
+INFO    | 	disk.systemPartition.initPath = /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//system.img
+INFO    | 	disk.systemPartition.size = 2737m
+INFO    | 	disk.vendorPartition.initPath = /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//vendor.img
+INFO    | 	disk.vendorPartition.size = 800m
+INFO    | 	disk.dataPartition.path = /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/userdata-qemu.img
+INFO    | 	disk.dataPartition.size = 6g
+INFO    | 	disk.encryptionKeyPartition.path = /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/encryptionkey.img
+INFO    | 	PlayStore.enabled = true
+INFO    | 	avd.name = Pixel_2_API_Tiramisu
+INFO    | 	avd.id = Pixel_2_API_Tiramisu
+INFO    | 	fastboot.forceColdBoot = false
+INFO    | 	android.sdk.root = /Users/phamtu/Library/Android/sdk
+INFO    | 	android.avd.home = /Users/phamtu/.android/avd
+INFO    | .
+INFO    | QEMU options list:
+INFO    | 	 argv[00] = "/Users/phamtu/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64"
+INFO    | 	 argv[01] = "-dns-server"
+INFO    | 	 argv[02] = "8.8.8.8,8.8.4.4,10.15.99.1"
+INFO    | 	 argv[03] = "-no-audio"
+INFO    | 	 argv[04] = "-serial"
+INFO    | 	 argv[05] = "null"
+INFO    | 	 argv[06] = "-android-ports"
+INFO    | 	 argv[07] = "11094,11095"
+INFO    | 	 argv[08] = "-cpu"
+INFO    | 	 argv[09] = "cortex-a53"
+INFO    | 	 argv[10] = "-machine"
+INFO    | 	 argv[11] = "type=virt"
+INFO    | 	 argv[12] = "-enable-hvf"
+INFO    | 	 argv[13] = "-smp"
+INFO    | 	 argv[14] = "cores=4"
+INFO    | 	 argv[15] = "-m"
+INFO    | 	 argv[16] = "2048"
+INFO    | 	 argv[17] = "-lcd-density"
+INFO    | 	 argv[18] = "420"
+INFO    | 	 argv[19] = "-nodefaults"
+INFO    | 	 argv[20] = "-kernel"
+INFO    | 	 argv[21] = "/Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//kernel-ranchu"
+INFO    | 	 argv[22] = "-initrd"
+INFO    | 	 argv[23] = "/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/initrd"
+INFO    | 	 argv[24] = "-drive"
+INFO    | 	 argv[25] = "index=0,id=vendor,if=none,file=/Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//vendor.img,read-only"
+INFO    | 	 argv[26] = "-device"
+INFO    | 	 argv[27] = "virtio-blk-device,drive=vendor"
+INFO    | 	 argv[28] = "-drive"
+INFO    | 	 argv[29] = "index=1,id=encrypt,if=none,file=/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/encryptionkey.img.qcow2,overlap-check=none,cache=unsafe,l2-cache-size=1048576"
+INFO    | 	 argv[30] = "-device"
+INFO    | 	 argv[31] = "virtio-blk-device,drive=encrypt"
+INFO    | 	 argv[32] = "-drive"
+INFO    | 	 argv[33] = "index=2,id=userdata,if=none,file=/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/userdata-qemu.img.qcow2,overlap-check=none,cache=unsafe,l2-cache-size=1048576"
+INFO    | 	 argv[34] = "-device"
+INFO    | 	 argv[35] = "virtio-blk-device,drive=userdata"
+INFO    | 	 argv[36] = "-drive"
+INFO    | 	 argv[37] = "index=3,id=cache,if=none,file=/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/cache.img.qcow2,overlap-check=none,cache=unsafe,l2-cache-size=1048576"
+INFO    | 	 argv[38] = "-device"
+INFO    | 	 argv[39] = "virtio-blk-device,drive=cache"
+INFO    | 	 argv[40] = "-drive"
+INFO    | 	 argv[41] = "index=4,id=system,if=none,file=/Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//system.img,read-only"
+INFO    | 	 argv[42] = "-device"
+INFO    | 	 argv[43] = "virtio-blk-device,drive=system"
+INFO    | 	 argv[44] = "-netdev"
+INFO    | 	 argv[45] = "user,id=mynet"
+INFO    | 	 argv[46] = "-device"
+INFO    | 	 argv[47] = "virtio-net-device,netdev=mynet"
+INFO    | 	 argv[48] = "-chardev"
+INFO    | 	 argv[49] = "null,id=forhvc0"
+INFO    | 	 argv[50] = "-chardev"
+INFO    | 	 argv[51] = "null,id=forhvc1"
+INFO    | 	 argv[52] = "-device"
+INFO    | 	 argv[53] = "virtio-serial-pci,ioeventfd=off"
+INFO    | 	 argv[54] = "-device"
+INFO    | 	 argv[55] = "virtconsole,chardev=forhvc0"
+INFO    | 	 argv[56] = "-device"
+INFO    | 	 argv[57] = "virtconsole,chardev=forhvc1"
+INFO    | 	 argv[58] = "-chardev"
+INFO    | 	 argv[59] = "rootcanal,id=rootcanal"
+INFO    | 	 argv[60] = "-device"
+INFO    | 	 argv[61] = "virtserialport,chardev=rootcanal,name=bluetooth"
+INFO    | 	 argv[62] = "-device"
+INFO    | 	 argv[63] = "virtio-serial,ioeventfd=off"
+INFO    | 	 argv[64] = "-chardev"
+INFO    | 	 argv[65] = "socket,port=62011,host=::1,nowait,nodelay,ipv6,id=modem"
+INFO    | 	 argv[66] = "-device"
+INFO    | 	 argv[67] = "virtserialport,chardev=modem,name=modem"
+INFO    | 	 argv[68] = "-device"
+INFO    | 	 argv[69] = "virtio-rng-device"
+INFO    | 	 argv[70] = "-show-cursor"
+INFO    | 	 argv[71] = "-device"
+INFO    | 	 argv[72] = "virtio_input_multi_touch_pci_1"
+INFO    | 	 argv[73] = "-device"
+INFO    | 	 argv[74] = "virtio_input_multi_touch_pci_2"
+INFO    | 	 argv[75] = "-device"
+INFO    | 	 argv[76] = "virtio_input_multi_touch_pci_3"
+INFO    | 	 argv[77] = "-device"
+INFO    | 	 argv[78] = "virtio_input_multi_touch_pci_4"
+INFO    | 	 argv[79] = "-device"
+INFO    | 	 argv[80] = "virtio_input_multi_touch_pci_5"
+INFO    | 	 argv[81] = "-device"
+INFO    | 	 argv[82] = "virtio_input_multi_touch_pci_6"
+INFO    | 	 argv[83] = "-device"
+INFO    | 	 argv[84] = "virtio_input_multi_touch_pci_7"
+INFO    | 	 argv[85] = "-device"
+INFO    | 	 argv[86] = "virtio_input_multi_touch_pci_8"
+INFO    | 	 argv[87] = "-device"
+INFO    | 	 argv[88] = "virtio_input_multi_touch_pci_9"
+INFO    | 	 argv[89] = "-device"
+INFO    | 	 argv[90] = "virtio_input_multi_touch_pci_10"
+INFO    | 	 argv[91] = "-device"
+INFO    | 	 argv[92] = "virtio_input_multi_touch_pci_11"
+INFO    | 	 argv[93] = "-device"
+INFO    | 	 argv[94] = "virtio-keyboard-pci"
+INFO    | 	 argv[95] = "-netdev"
+INFO    | 	 argv[96] = "user,id=virtio-wifi,dhcpstart=10.0.2.16"
+INFO    | 	 argv[97] = "-device"
+INFO    | 	 argv[98] = "virtio-wifi-pci,netdev=virtio-wifi"
+INFO    | 	 argv[99] = "-device"
+INFO    | 	 argv[100] = "virtio-vsock-pci,guest-cid=77"
+INFO    | 	 argv[101] = "-L"
+INFO    | 	 argv[102] = "/Users/phamtu/Library/Android/sdk/emulator/lib/pc-bios"
+INFO    | 	 argv[103] = "-soundhw"
+INFO    | 	 argv[104] = "hda"
+INFO    | 	 argv[105] = "-append"
+INFO    | 	 argv[106] = "no_timer_check keep_bootcon earlyprintk=ttyAMA0 console=0 cma=288M@0-4G ndns=3 loop.max_part=7 printk.devkmsg=on bootconfig"
+INFO    | 	 argv[107] = "-android-hw"
+INFO    | 	 argv[108] = "/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/hardware-qemu.ini"
+INFO    | Concatenated QEMU options: /Users/phamtu/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64 -dns-server 8.8.8.8,8.8.4.4,10.15.99.1 -no-audio -serial null -android-ports 11094,11095 -cpu cortex-a53 -machine type=virt -enable-hvf -smp cores=4 -m 2048 -lcd-density 420 -nodefaults -kernel /Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//kernel-ranchu -initrd /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/initrd -drive index=0,id=vendor,if=none,file=/Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//vendor.img,read-only -device virtio-blk-device,drive=vendor -drive index=1,id=encrypt,if=none,file=/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/encryptionkey.img.qcow2,overlap-check=none,cache=unsafe,l2-cache-size=1048576 -device virtio-blk-device,drive=encrypt -drive index=2,id=userdata,if=none,file=/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/userdata-qemu.img.qcow2,overlap-check=none,cache=unsafe,l2-cache-size=1048576 -device virtio-blk-device,drive=userdata -drive index=3,id=cache,if=none,file=/Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/cache.img.qcow2,overlap-check=none,cache=unsafe,l2-cache-size=1048576 -device virtio-blk-device,drive=cache -drive index=4,id=system,if=none,file=/Users/phamtu/Library/Android/sdk/system-images/android-Tiramisu/google_apis_playstore/arm64-v8a//system.img,read-only -device virtio-blk-device,drive=system -netdev user,id=mynet -device virtio-net-device,netdev=mynet -chardev null,id=forhvc0 -chardev null,id=forhvc1 -device virtio-serial-pci,ioeventfd=off -device virtconsole,chardev=forhvc0 -device virtconsole,chardev=forhvc1 -chardev rootcanal,id=rootcanal -device virtserialport,chardev=rootcanal,name=bluetooth -device virtio-serial,ioeventfd=off -chardev socket,port=62011,host=::1,nowait,nodelay,ipv6,id=modem -device virtserialport,chardev=modem,name=modem -device virtio-rng-device -show-cursor -device virtio_input_multi_touch_pci_1 -device virtio_input_multi_touch_pci_2 -device virtio_input_multi_touch_pci_3 -device virtio_input_multi_touch_pci_4 -device virtio_input_multi_touch_pci_5 -device virtio_input_multi_touch_pci_6 -device virtio_input_multi_touch_pci_7 -device virtio_input_multi_touch_pci_8 -device virtio_input_multi_touch_pci_9 -device virtio_input_multi_touch_pci_10 -device virtio_input_multi_touch_pci_11 -device virtio-keyboard-pci -netdev user,id=virtio-wifi,dhcpstart=10.0.2.16 -device virtio-wifi-pci,netdev=virtio-wifi -device virtio-vsock-pci,guest-cid=77 -L /Users/phamtu/Library/Android/sdk/emulator/lib/pc-bios -soundhw hda -append 'no_timer_check keep_bootcon earlyprintk=ttyAMA0 console=0 cma=288M@0-4G ndns=3 loop.max_part=7 printk.devkmsg=on bootconfig' -android-hw /Users/phamtu/.android/avd/Pixel_2_API_Tiramisu.avd/hardware-qemu.ini
+VERBOSE | Starting hostapd main loop.
+VERBOSE | Android qemu version 31.2.10.0 (build_id 8420304) (CL:N/A)
+VERBOSE | Starting QEMU main loop
+VERBOSE | registered 'boot-properties' qemud service
+VERBOSE | Adding boot property: 'ro.opengles.version' = '196608'
+VERBOSE | Adding boot property: 'qemu.sf.fake_camera' = 'front'
+VERBOSE | Adding boot property: 'qemu.adb.secure' = '1'
+VERBOSE | Adding boot property: 'dalvik.vm.heapsize' = '512m'
+VERBOSE | Adding boot property: 'qemu.hw.mainkeys' = '0'
+VERBOSE | Adding boot property: 'qemu.sf.lcd_density' = '420'
+INFO    | Rootcanal has  been activated.
+VERBOSE | goldfish_events.have-dpad: false
+VERBOSE | goldfish_events.have-trackball: false
+VERBOSE | goldfish_events.have-camera: true
+VERBOSE | goldfish_events.have-keyboard: false
+VERBOSE | goldfish_events.have-lidswitch: false
+VERBOSE | goldfish_events.have-tabletmode: false
+VERBOSE | goldfish_events.have-touch: false
+VERBOSE | goldfish_events.have-multitouch: false
+VERBOSE | Adding boot property: 'net.wifi_mac_prefix' = '11094'
+WARNING | Requested adb port (11095) is outside the recommended range [5555,5586]. ADB may not function properly for the emulator. See -help-port for details.
+VERBOSE | Not using any http proxy
+VERBOSE | Adding boot property: 'qemu.timezone' = 'Asia/Ho_Chi_Minh'
+VERBOSE | android_hw_fingerprint_init: fingerprint qemud listen service initialized
+VERBOSE | emulator_window_fb_rotate
+VERBOSE | config multidisplay with config.ini 0x0 0x0 0x0
+VERBOSE | Path:/Users/phamtu/Library/Android/sdk/platform-tools/adb protocol version: 41
+VERBOSE | Path:/Users/phamtu/Library/Android/sdk/platform-tools/adb protocol version: 41
+VERBOSE | Path:/Users/phamtu/Library/Android/sdk/platform-tools/adb protocol version: 41
+VERBOSE | Found: 3 adb executables
+VERBOSE | Adb: /Users/phamtu/Library/Android/sdk/platform-tools/adb
+VERBOSE | Adb: /Users/phamtu/Library/Android/sdk/platform-tools/adb
+VERBOSE | Adb: /Users/phamtu/Library/Android/sdk/platform-tools/adb
+VERBOSE | Path:/Users/phamtu/Library/Android/sdk/platform-tools/adb protocol version: 41
+VERBOSE | Path:/Users/phamtu/Library/Android/sdk/platform-tools/adb protocol version: 41
+VERBOSE | Path:/Users/phamtu/Library/Android/sdk/platform-tools/adb protocol version: 41
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1546.17,297.769 gbl=1546.17,297.769 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1546.17,-297.769 last=-1546.17,-297.769 Δ 1546.17,297.769) : no target window ((null):0, (null))
+
+VERBOSE | setDisplayPose 0 x -1 y -1 w 1080 h 1920 dpi 72
+VERBOSE | _hwFingerprint_connect: connect finger print listen is called
+VERBOSE | got message from guest system fingerprint HAL
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | setDisplayPose 0 x -1 y -1 w 1080 h 1920 dpi 72
+VERBOSE | _hwFingerprint_connect: connect finger print listen is called
+VERBOSE | got message from guest system fingerprint HAL
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1265.19,584.303 gbl=1265.19,584.303 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1265.19,-584.303 last=-1265.19,-584.303 Δ 1265.19,584.303) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1087.59,947.282 gbl=1087.59,947.282 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1087.59,-947.282 last=-1087.59,-947.282 Δ 1087.59,947.282) : no target window ((null):0, (null))
+
+INFO    | boot completed
+INFO    | boot time 12127 ms
+INFO    | Increasing screen off timeout, logcat buffer size to 2M.
+INFO    | Revoking microphone permissions for Google App.
+VERBOSE | Registering pipe service multidisplay
+VERBOSE | MultiDisplayPipe created 0x600001ea8750
+VERBOSE | MultiDisplayPipe recevied QUERY
+VERBOSE | MultiDisplayPipe send add id 0 width 1080 height 1920 dpi 72 flag 0
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1237.83,648.802 gbl=1237.83,648.802 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1237.83,-648.802 last=-1237.83,-648.802 Δ 1237.83,648.802) : no target window ((null):0, (null))
+
+INFO    | Warning: QMetaObject::connectSlotsByName: No matching signal for on_rgbcSensorValueWidget_valueChanged() ((null):0, (null))
+
+INFO    | Warning: QMetaObject::connectSlotsByName: No matching signal for on_posture_valueChanged(int) ((null):0, (null))
+
+INFO    | Info: 
+
+GLImplementation: 
+Surface Type: OpenGL
+Surface Profile: CoreProfile
+Surface Version: 4.1
+Using Default SG Backend: no
+Using Software Dynamic GL: no
+Using Angle: no
+
+Init Parameters:
+  *  application-name Emulator 
+  *  browser-subprocess-path /Users/phamtu/Library/Android/sdk/emulator/lib64/qt/libexec/QtWebEngineProcess 
+  *  disable-features DnsOverHttpsUpgrade,ConsolidatedMovementXY,InstalledApp,BackgroundFetch,WebOTP,WebPayments,WebUSB,PictureInPicture 
+  *  disable-gpu  
+  *  disable-speech-api  
+  *  enable-features TracingServiceInProcess 
+  *  enable-threaded-compositing  
+ ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No TLS backend is available ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No TLS backend is available ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+INFO    | Warning: No functional TLS backend was found ((null):0, (null))
+
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1405.26,151.114 gbl=1405.26,151.114 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1405.26,-151.114 last=-1405.26,-151.114 Δ 1405.26,151.114) : no target window ((null):0, (null))
+
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1546.3,1023.56 gbl=1546.3,1023.56 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1546.3,-1023.56 last=-1546.3,-1023.56 Δ 1546.3,1023.56) : no target window ((null):0, (null))
+
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | VirtIO WiFi: unexpected full virtqueue
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    �  
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1269.58,798.832 gbl=1269.58,798.832 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1269.58,-798.832 last=-1269.58,-798.832 Δ 1269.58,798.832) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1541.05,918.071 gbl=1541.05,918.071 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1541.05,-918.071 last=-1541.05,-918.071 Δ 1541.05,918.071) : no target window ((null):0, (null))
+
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Timed out with running command |/Users/phamtu/Library/Android/sdk/platform-tools/adb -s emulator-11094 shell dumpsys package com.google.android.gms |
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    �  
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1428.88,746.964 gbl=1428.88,746.964 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1428.88,-746.964 last=-1428.88,-746.964 Δ 1428.88,746.964) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=1381.94,301.447 gbl=1381.94,301.447 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-1381.94,-301.447 last=-1381.94,-301.447 Δ 1381.94,301.447) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=606.707,95.091 gbl=606.707,95.091 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-606.707,-95.091 last=-606.707,-95.091 Δ 606.707,95.091) : no target window ((null):0, (null))
+
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=725.251,892.419 gbl=725.251,892.419 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-725.251,-892.419 last=-725.251,-892.419 Δ 725.251,892.419) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=790.877,826.068 gbl=790.877,826.068 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-790.877,-826.068 last=-790.877,-826.068 Δ 790.877,826.068) : no target window ((null):0, (null))
+
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=603.087,651.976 gbl=603.087,651.976 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-603.087,-651.976 last=-603.087,-651.976 Δ 603.087,651.976) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=546.515,484.175 gbl=546.515,484.175 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-546.515,-484.175 last=-546.515,-484.175 Δ 546.515,484.175) : no target window ((null):0, (null))
+
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=112.459,103.862 gbl=112.459,103.862 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-112.459,-103.862 last=-112.459,-103.862 Δ 112.459,103.862) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=1 ts=0 pos=0,0 scn=635.078,914.319 gbl=635.078,914.319 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-635.078,-914.319 last=-635.078,-914.319 Δ 635.078,914.319) : no target window ((null):0, (null))
+
+INFO    | Warning: delivering touch release to same window QWindow(0x0) not QWidgetWindow(0x6000001a10e0, name="EmulatorContainerClassWindow") ((null):0, (null))
+
+INFO    | Warning: skipping QEventPoint(id=0 ts=0 pos=0,0 scn=954.632,1027.19 gbl=954.632,1027.19 Released ellipse=(1x1 ∡ 0) vel=0,0 press=-954.632,-1027.19 last=-954.632,-1027.19 Δ 954.632,1027.19) : no target window ((null):0, (null))
+
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    
+VERBOSE | Unexpected ether type. Dump frame: Data (Data)
+    :    

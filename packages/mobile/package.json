@@ -136,7 +136,8 @@
     "pod-install": "^0.1.27",
     "react-native-svg-transformer": "^0.14.3",
     "react-test-renderer": "16.13.1",
-    "tinyify": "^3.0.0"
+    "tinyify": "^3.0.0",
+    "detox": "^19.7.1"
   },
   "jest": {
     "preset": "react-native",
