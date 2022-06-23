@@ -14,3 +14,8 @@ build
 packages/extension/src/config.ui.var.tsx
 
 .cache
+
+coverage
+
+.yarn/
+.yarnrc
