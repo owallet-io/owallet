@@ -386,12 +386,13 @@ export class KeyRingService {
       }
     )) as any;
 
-    const { gasPrice, gasLimit } = {
-      gasPrice: approveData.gasPrice,
+    const { gasPrice, gasLimit, memo } = {
+      gasPrice: approveData.gasPrice ?? '0x0',
+      memo: approveData.memo ?? '',
       gasLimit: 10000000,
     };
 
-    const newData = { ...data, gasPrice, gasLimit };
+    const newData = { ...data, gasPrice, gasLimit, memo };
 
     try {
       const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
