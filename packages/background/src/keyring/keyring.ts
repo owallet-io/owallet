@@ -767,6 +767,8 @@ export class KeyRing {
       // auto gas
       const estimatedGas = await request(rpc, 'eth_estimateGas', [message]);
       const gasPrice = await request(rpc, 'eth_gasPrice', []);
+      console.log('gas price', gasPrice);
+
       let finalMessage = { ...message };
       if (!(message as any).gasPrice || !(message as any).gas) {
         if (estimatedGas.substring(0, 2) === '0x') {

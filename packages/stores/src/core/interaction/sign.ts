@@ -215,7 +215,7 @@ export class SignInteractionStore {
   }
 
   @flow
-  *approveEthereumAndWaitEnd(gas = 0.01) {
+  *approveEthereumAndWaitEnd({ gasPrice = '0x0', memo = '' }) {
     if (this.waitingEthereumDatas?.length === 0) {
       return;
     }
@@ -226,7 +226,8 @@ export class SignInteractionStore {
       if (this.waitingEthereumDatas?.length > 0) {
         yield this.interactionStore.approveWithoutRemovingData(idEthereum, {
           ...this.waitingEthereumDatas[0].data,
-          gas,
+          gasPrice,
+          memo,
         });
       }
     } finally {

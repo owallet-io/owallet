@@ -366,7 +366,6 @@ export class KeyRingService {
     env: Env,
     chainId: string,
     data: object
-    // signDoc: cosmos.tx.v1beta1.SignDoc
   ): Promise<string> {
     console.log(
       'in request sign ethereum hahahahahahahhhhhhhhhhhhhhhhhhhhhhhhhhhaahahahaha with data: ',
@@ -375,9 +374,7 @@ export class KeyRingService {
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = (await this.chainsService.getChainInfo(chainId)).evmRpc;
 
-    // TODO: add UI here so users can change gas, memo & fee
-
-    const newSignDocBytes = (await this.interactionService.waitApprove(
+    const approveData = (await this.interactionService.waitApprove(
       env,
       '/sign',
       'request-sign-ethereum',
@@ -386,19 +383,14 @@ export class KeyRingService {
         chainId,
         mode: 'direct',
         data,
-        // signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
       }
-    )) as Uint8Array;
+    )) as any;
 
-    console.log('newSignDocBytes', newSignDocBytes);
+    const { gasPrice, gasLimit } = {
+      gasPrice: approveData.gasPrice,
+      gasLimit: 10000000,
+    };
 
-    // TODO: get the gasPrice from newSignDocBytes
-
-    // TEMP HARDCODE, need to have a pop up here to change gas & fee
-    // const { gasPrice, gasLimit } = { gasPrice: 5000000000, gasLimit: 10000000 };
-    const { gasPrice, gasLimit } = { gasPrice: 0, gasLimit: 10000000 };
-
-    // move this part to approve button
     const newData = { ...data, gasPrice, gasLimit };
 
     try {
@@ -410,8 +402,6 @@ export class KeyRingService {
       );
 
       return rawTxHex;
-    } catch (e) {
-      console.log('e', e.message);
     } finally {
       this.interactionService.dispatchEvent(
         APP_PORT,

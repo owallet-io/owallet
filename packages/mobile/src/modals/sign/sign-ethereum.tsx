@@ -4,40 +4,25 @@ import { CardModal } from '../card';
 import { ScrollView, Text, View } from 'react-native';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
-import { MemoInput } from '../../components/input';
-import {
-  useFeeConfig,
-  useGasConfig,
-  useMemoConfig,
-  useSignDocAmountConfig,
-  useSignDocHelper,
-} from '@owallet/hooks';
+
 import { Button } from '../../components/button';
-import { Msg as AminoMsg } from '@cosmjs/launchpad';
-import { Msg } from './msg';
+
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
-import { FeeInSign } from './fee';
-import { WCMessageRequester } from '../../stores/wallet-connect/msg-requester';
 import { WCAppLogoAndName } from '../../components/wallet-connect';
 import WalletConnect from '@walletconnect/client';
-import { renderAminoMessage } from './amino';
-import { renderDirectMessage } from './direct';
+import { navigationRef } from '../../router/root';
+import { TextInput } from '../../components/input';
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
 }> = registerModal(
   observer(() => {
-    const {
-      chainStore,
-      accountStore,
-      queriesStore,
-      walletConnectStore,
-      signInteractionStore,
-    } = useStore();
+    const { chainStore, signInteractionStore } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
+      navigationRef.current.goBack();
     });
 
     // Check that the request is from the wallet connect.
@@ -46,172 +31,20 @@ export const SignEthereumModal: FunctionComponent<{
       WalletConnect['session'] | undefined
     >();
 
-    const style = useStyle();
+    const [fee, setFee] = useState<string>('0x0');
+    const [memo, setMemo] = useState<string>('');
 
-    const [signer, setSigner] = useState('');
+    const style = useStyle();
 
     const [chainId, setChainId] = useState(chainStore.current.chainId);
 
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
-    const gasConfig = useGasConfig(chainStore, chainId, 1);
-    const amountConfig = useSignDocAmountConfig(
-      chainStore,
-      chainId,
-      accountStore.getAccount(chainId).msgOpts,
-      signer
-    );
-    const feeConfig = useFeeConfig(
-      chainStore,
-      chainId,
-      signer,
-      queriesStore.get(chainId).queryBalances,
-      amountConfig,
-      gasConfig
-    );
-    console.log(
-      'feeConfig',
-      feeConfig.fee?.toCoin().amount,
-      amountConfig.amount
-    );
-    const memoConfig = useMemoConfig(chainStore, chainId);
-
-    const signDocWapper = signInteractionStore.waitingData?.data.signDocWrapper;
-    const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
-    amountConfig.setSignDocHelper(signDocHelper);
-
-    const [isInternal, setIsInternal] = useState(false);
 
     useEffect(() => {
-      console.log(
-        'signInteractionStore 1',
-        signInteractionStore.waitingEthereumData
-      );
-
-      if (signInteractionStore.waitingData) {
-        const data = signInteractionStore.waitingData;
-        setIsInternal(data.isInternal);
-        signDocHelper.setSignDocWrapper(data.data.signDocWrapper);
-        setChainId(data.data.signDocWrapper.chainId);
-        gasConfig.setGas(data.data.signDocWrapper.gas);
-        memoConfig.setMemo(data.data.signDocWrapper.memo);
-        if (
-          data.data.signOptions.preferNoSetFee &&
-          data.data.signDocWrapper.fees[0]
-        ) {
-          feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
-        } else {
-          feeConfig.setFeeType('average');
-        }
-        setSigner(data.data.signer);
-
-        if (
-          data.data.msgOrigin &&
-          WCMessageRequester.isVirtualSessionURL(data.data.msgOrigin)
-        ) {
-          const sessionId = WCMessageRequester.getSessionIdFromVirtualURL(
-            data.data.msgOrigin
-          );
-          setWCSession(walletConnectStore.getSession(sessionId));
-        } else {
-          setWCSession(undefined);
-        }
-      }
-
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
       }
-    }, [
-      feeConfig,
-      gasConfig,
-      memoConfig,
-      signDocHelper,
-      signInteractionStore.waitingData,
-      signInteractionStore.waitingEthereumData,
-      walletConnectStore,
-    ]);
-
-    const mode = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode
-      : 'none';
-    const msgs = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode === 'amino'
-        ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
-        : signDocHelper.signDocWrapper.protoSignDoc.txMsgs
-      : [];
-
-    const renderedMsgs = (() => {
-      if (mode === 'amino') {
-        return (msgs as readonly AminoMsg[]).map((msg, i) => {
-          const account = accountStore.getAccount(chainId);
-          const chainInfo = chainStore.getChain(chainId);
-          const { title, content, scrollViewHorizontal } = renderAminoMessage(
-            account.msgOpts,
-            msg,
-            chainInfo.currencies
-          );
-
-          return (
-            <View key={i.toString()}>
-              <Msg title={title}>
-                {scrollViewHorizontal ? (
-                  <ScrollView horizontal={true}>
-                    <Text
-                      style={style.flatten(['body3', 'color-text-black-low'])}
-                    >
-                      {content}
-                    </Text>
-                  </ScrollView>
-                ) : (
-                  <Text
-                    style={style.flatten(['body3', 'color-text-black-low'])}
-                  >
-                    {content}
-                  </Text>
-                )}
-              </Msg>
-              {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16',
-                  ])}
-                />
-              ) : null}
-            </View>
-          );
-        });
-      } else if (mode === 'direct') {
-        return (msgs as any[]).map((msg, i) => {
-          const chainInfo = chainStore.getChain(chainId);
-          const { title, content } = renderDirectMessage(
-            msg,
-            chainInfo.currencies
-          );
-
-          return (
-            <View key={i.toString()}>
-              <Msg title={title}>
-                <Text style={style.flatten(['body3', 'color-text-black-low'])}>
-                  {content}
-                </Text>
-              </Msg>
-              {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16',
-                  ])}
-                />
-              ) : null}
-            </View>
-          );
-        });
-      } else {
-        return null;
-      }
-    })();
+    }, [signInteractionStore.waitingEthereumData]);
 
     return (
       <CardModal title="Confirm Ethereum Transaction">
@@ -224,7 +57,7 @@ export const SignEthereumModal: FunctionComponent<{
         <View style={style.flatten(['margin-bottom-16'])}>
           <Text style={style.flatten(['margin-bottom-3'])}>
             <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-              {`${msgs.length.toString()} `}
+              {`0`}
             </Text>
             <Text
               style={style.flatten(['subtitle3', 'color-text-black-medium'])}
@@ -240,35 +73,37 @@ export const SignEthereumModal: FunctionComponent<{
               'overflow-hidden',
             ])}
           >
-            <ScrollView
+            {/* <ScrollView
               style={style.flatten(['max-height-214'])}
               persistentScrollbar={true}
-            >
-              {renderedMsgs}
-            </ScrollView>
+            ></ScrollView> */}
           </View>
         </View>
-        <MemoInput label="Memo" memoConfig={memoConfig} />
-        <FeeInSign
-          feeConfig={feeConfig}
-          gasConfig={gasConfig}
-          signOptions={signInteractionStore.waitingData?.data.signOptions}
-          isInternal={isInternal}
+        <TextInput
+          label="Memo"
+          onChangeText={(txt) => {
+            setMemo(txt);
+          }}
+          defaultValue={''}
+        />
+        <TextInput
+          label="Fee"
+          onChangeText={(txt) => {
+            setFee(txt);
+          }}
+          defaultValue={'0x0'}
         />
         <Button
           text="Approve"
           size="large"
-          disabled={
-            false
-            // signDocWapper == null ||
-            // signDocHelper.signDocWrapper == null ||
-            // memoConfig.getError() != null ||
-            // feeConfig.getError() != null
-          }
+          disabled={false}
           loading={signInteractionStore.isLoading}
           onPress={async () => {
             try {
-              await signInteractionStore.approveEthereumAndWaitEnd();
+              await signInteractionStore.approveEthereumAndWaitEnd({
+                gasPrice: '0x0',
+                memo,
+              });
             } catch (error) {
               console.log(error);
             }

@@ -10,6 +10,7 @@ import { BackHandler, Platform } from 'react-native';
 import { LoadingScreenModal } from '../loading-screen/modal';
 import { KeyRingStatus } from '@owallet/background';
 import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
+import { navigationRef } from '../../router/root';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -117,6 +118,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             isOpen={true}
             close={() => {
               signInteractionStore.rejectAll();
+              navigationRef.current.goBack();
             }}
           />
         ) : null}
