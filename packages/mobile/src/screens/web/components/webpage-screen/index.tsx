@@ -30,8 +30,7 @@ export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    const fixed = 'http://192.168.68.107:3000';
-    fetch(`${fixed}/injected-provider.bundle.js`)
+    fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
       .then((res) => res.text())
       .then(setCode);
   }, []);
