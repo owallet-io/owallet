@@ -10,19 +10,19 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { useNavigation } from '@react-navigation/core';
 import {
   BrowserSectionTitle,
-  BrowserSectionModal,
+  BrowserSectionModal
 } from './components/section-title';
 import {
   SearchIcon,
   RightArrowIcon,
   HomeIcon,
   ThreeDotsIcon,
-  TabIcon,
+  TabIcon
 } from '../../components/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { checkValidDomain } from '../../utils/helper';
 import { useStore } from '../../stores';
-import { InjectedProviderUrl } from './config';
+import { DAppInfos, InjectedProviderUrl } from './config';
 
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -35,14 +35,14 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
           'flex-row',
           'justify-between',
           'items-center',
-          'padding-20',
+          'padding-20'
         ])}
       >
         <Text
           style={{
             fontSize: 18,
             fontWeight: '500',
-            color: '#1C1C1E',
+            color: '#1C1C1E'
           }}
         >
           Bookmarks
@@ -51,7 +51,7 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
           style={{
             fontSize: 14,
             fontWeight: '400',
-            color: '#4334F1',
+            color: '#4334F1'
           }}
         >
           {/* View all */}
@@ -61,7 +61,7 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
         style={style.flatten([
           'height-1',
           'margin-x-20',
-          'background-color-border-white',
+          'background-color-border-white'
         ])}
       />
     </React.Fragment>
@@ -135,7 +135,7 @@ export const Browser: FunctionComponent<any> = (props) => {
       deepLinkUriStore.updateDeepLink('');
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Browser',
-        uri: decodeURIComponent(deepLinkUri) || 'https://oraidex.io',
+        uri: decodeURIComponent(deepLinkUri) || 'https://oraidex.io'
       });
     }
   };
@@ -150,7 +150,7 @@ export const Browser: FunctionComponent<any> = (props) => {
           uri:
             props.route.params.url?.toLowerCase().indexOf('http') >= 0
               ? props.route.params.url?.toLowerCase()
-              : 'https://' + props.route.params?.url?.toLowerCase(),
+              : 'https://' + props.route.params?.url?.toLowerCase()
         });
       }
     }, 1000);
@@ -164,7 +164,7 @@ export const Browser: FunctionComponent<any> = (props) => {
         uri:
           url?.toLowerCase().indexOf('http') >= 0
             ? url?.toLowerCase()
-            : 'https://' + url?.toLowerCase(),
+            : 'https://' + url?.toLowerCase()
       });
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
@@ -172,7 +172,7 @@ export const Browser: FunctionComponent<any> = (props) => {
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Google',
         // uri: `https://staging.oraidex.io/ethereum`,
-        uri,
+        uri
       });
     }
   };
@@ -180,7 +180,7 @@ export const Browser: FunctionComponent<any> = (props) => {
   const handleClickUri = (uri: string, name: string) => {
     smartNavigation.pushSmart('Web.dApp', {
       name,
-      uri,
+      uri
     });
   };
 
@@ -212,7 +212,7 @@ export const Browser: FunctionComponent<any> = (props) => {
           <Image
             style={{
               width: '100%',
-              height: '100%',
+              height: '100%'
             }}
             fadeDuration={0}
             resizeMode="stretch"
@@ -222,7 +222,7 @@ export const Browser: FunctionComponent<any> = (props) => {
             containerStyle={{
               width: '100%',
               padding: 20,
-              marginTop: -50,
+              marginTop: -50
             }}
             inputStyle={style.flatten([
               'flex-row',
@@ -231,7 +231,7 @@ export const Browser: FunctionComponent<any> = (props) => {
               'padding-20',
               'border-radius-16',
               'border-width-4',
-              'border-color-border-pink',
+              'border-color-border-pink'
             ])}
             returnKeyType={'next'}
             // defaultValue={ORAIDEX_DEV_URL}
@@ -249,55 +249,37 @@ export const Browser: FunctionComponent<any> = (props) => {
           style={style.flatten([
             'height-full',
             'background-color-white',
-            'margin-y-48',
+            'margin-y-48'
           ])}
         >
           <BrowserSection />
           <View style={style.flatten(['height-full', 'padding-20'])}>
-            {[
-              {
-                label: 'Oraidex',
-                uri: 'https://oraidex.io',
-                logo: (
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 20,
-                    }}
-                    source={require('../../assets/image/webpage/oraidex_icon.png')}
-                    fadeDuration={0}
-                  />
-                ),
-              },
-              {
-                label: 'Osmosis Trade',
-                uri: 'https://app.osmosis.zone',
-                logo: (
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 22,
-                    }}
-                    source={require('../../assets/image/webpage/osmosis_icon.png')}
-                    fadeDuration={0}
-                  />
-                ),
-              },
-            ].map((e) => (
+            {DAppInfos.map((dappInfo) => (
               <TouchableOpacity
                 key={e.uri}
                 style={style.flatten([
                   'height-44',
                   'margin-bottom-10',
-                  'flex-row',
+                  'flex-row'
                 ])}
-                onPress={() => handleClickUri(e.uri, e.label)}
+                onPress={() => handleClickUri(dappInfo.uri, dappInfo.name)}
               >
-                <View style={style.flatten(['padding-top-5'])}>{e.logo}</View>
+                <View style={style.flatten(['padding-top-5'])}>
+                  <Image
+                    style={{
+                      width: 20,
+                      height: 22
+                    }}
+                    source={dappInfo.logo}
+                    fadeDuration={0}
+                  />
+                </View>
                 <View style={style.flatten(['padding-x-15'])}>
-                  <Text style={style.flatten(['subtitle2'])}>{e.label}</Text>
+                  <Text style={style.flatten(['subtitle2'])}>
+                    {dappInfo.name}
+                  </Text>
                   <Text style={{ color: '#636366', fontSize: 14 }}>
-                    {e.uri}
+                    {dappInfo.uri}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -316,7 +298,7 @@ export const Browser: FunctionComponent<any> = (props) => {
             bottom: 80,
             borderRadius: 4,
             zIndex: 1,
-            padding: 10,
+            padding: 10
           }}
         >
           <BrowserSectionModal

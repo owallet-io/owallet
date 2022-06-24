@@ -1,6 +1,0 @@
-WARNING | unexpected system image feature string, emulator might not function correctly, please try updating the emulator.
-WARNING | cannot add library /Users/phamtu/Library/Android/sdk/emulator/qemu/darwin-aarch64/lib64/vulkan/libvulkan.dylib: failed
-ERROR   | EglOsGlLibrary: Could not open GL library libGLESv2.dylib [dlopen(libGLESv2.dylib, 0x0002): tried: '/Users/phamtu/Library/Android/sdk/emulator/lib64/qt/lib/libGLESv2.dylib' (no such file), '/Users/phamtu/Library/Android/sdk/emulator/lib64/gles_swiftshader/libGLESv2.dylib' (code signature in <B48F2D27-E9C4-30EF-A9]
-
-ERROR   | EglOsEglDispatcher: Could not open EGL library libEGL.dylib [dlopen(libEGL.dylib, 0x0002): tried: '/Users/phamtu/Library/Android/sdk/emulator/lib64/qt/lib/libEGL.dylib' (no such file), '/Users/phamtu/Library/Android/sdk/emulator/lib64/gles_swiftshader/libEGL.dylib' (code signature in <5C3ABCC5-722A-3AEA-AF5B-6CEEFF]
-

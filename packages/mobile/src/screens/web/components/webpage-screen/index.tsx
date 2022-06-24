@@ -3,7 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState,
+  useState
 } from 'react';
 import { BackHandler, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
@@ -12,7 +12,7 @@ import { OWallet, Ethereum } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import {
   RNInjectedEthereum,
-  RNInjectedOWallet,
+  RNInjectedOWallet
 } from '../../../../injected/injected-provider';
 import EventEmitter from 'eventemitter3';
 // import { PageWithViewInBottomTabView } from "../../../../components/page";
@@ -72,7 +72,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin,
+            origin: new URL(currentURL).origin
           };
         })
       )
@@ -95,7 +95,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin,
+            origin: new URL(currentURL).origin
           };
         })
       )
@@ -124,7 +124,7 @@ export const WebpageScreen: FunctionComponent<
             true; // note: this is required, or you'll sometimes get silent failures
           `
       );
-    },
+    }
   };
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export const WebpageScreen: FunctionComponent<
     // So, checking platform is required.
     if (Platform.OS === 'ios') {
       navigation.setOptions({
-        gestureEnabled: !canGoBack,
+        gestureEnabled: !canGoBack
       });
     }
   }, [canGoBack, navigation]);
@@ -215,7 +215,7 @@ export const WebpageScreen: FunctionComponent<
           name: props.name,
           url: currentURL,
           canGoBack,
-          canGoForward,
+          canGoForward
         }}
       >
         <OnScreenWebpageScreenHeader />
