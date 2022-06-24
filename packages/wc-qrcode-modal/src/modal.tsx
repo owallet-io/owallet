@@ -60,10 +60,10 @@ export const Modal: FunctionComponent<{
         // Save the mobile link.
         saveMobileLinkInfo({
           name: 'OWallet',
-          href: 'intent://wcV1#Intent;package=com.chainapsis.owallet;scheme=owallet;end;'
+          href: 'intent://wcV1#Intent;package=com.io.owallet;scheme=owallet;end;'
         });
 
-        return `intent://wcV1?${uri}#Intent;package=com.chainapsis.owallet;scheme=owallet;end;`;
+        return `intent://wcV1?${uri}#Intent;package=com.io.owallet;scheme=owallet;end;`;
       } else {
         // Save the mobile link.
         saveMobileLinkInfo({
