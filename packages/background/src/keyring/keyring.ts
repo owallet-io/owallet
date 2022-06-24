@@ -765,6 +765,8 @@ export class KeyRing {
       ]);
 
       // auto gas
+      // message now has gasPrice and memo in it
+      // TODO: Use gasPrice and memo
       const estimatedGas = await request(rpc, 'eth_estimateGas', [message]);
       const gasPrice = await request(rpc, 'eth_gasPrice', []);
 
