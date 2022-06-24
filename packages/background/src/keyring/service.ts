@@ -5,14 +5,14 @@ import {
   Key,
   KeyRing,
   KeyRingStatus,
-  MultiKeyStoreInfoWithSelected,
+  MultiKeyStoreInfoWithSelected
 } from './keyring';
 
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
   makeADR36AminoSignDoc,
-  verifyADR36AminoSignDoc,
+  verifyADR36AminoSignDoc
 } from '@owallet/cosmos';
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 
@@ -30,7 +30,7 @@ import {
   serializeSignDoc,
   AminoSignResponse,
   StdSignDoc,
-  StdSignature,
+  StdSignature
 } from '@cosmjs/launchpad';
 import { DirectSignResponse, makeSignBytes } from '@cosmjs/proto-signing';
 
@@ -76,7 +76,7 @@ export class KeyRingService {
     await this.keyRing.restore();
     return {
       status: this.keyRing.status,
-      multiKeyStoreInfo: this.keyRing.getMultiKeyStoreInfo(),
+      multiKeyStoreInfo: this.keyRing.getMultiKeyStoreInfo()
     };
   }
 
@@ -115,7 +115,7 @@ export class KeyRingService {
       keyStoreChanged = result.keyStoreChanged;
       return {
         multiKeyStoreInfo: result.multiKeyStoreInfo,
-        status: this.keyRing.status,
+        status: this.keyRing.status
       };
     } finally {
       if (keyStoreChanged) {
@@ -136,7 +136,7 @@ export class KeyRingService {
   }> {
     const multiKeyStoreInfo = await this.keyRing.updateNameKeyRing(index, name);
     return {
-      multiKeyStoreInfo,
+      multiKeyStoreInfo
     };
   }
 
@@ -206,10 +206,14 @@ export class KeyRingService {
     return this.keyRing.status;
   }
 
-  async getKey(chainId: string): Promise<Key> {
+  async getKey(chainIdOrCoinType: string | number): Promise<Key> {
+    // if getKey directly from cointype as number
+    if (typeof chainIdOrCoinType === 'number') {
+      return this.keyRing.getKeyFromCoinType(chainIdOrCoinType);
+    }
     return this.keyRing.getKey(
-      chainId,
-      await this.chainsService.getChainCoinType(chainId)
+      chainIdOrCoinType,
+      await this.chainsService.getChainCoinType(chainIdOrCoinType)
     );
   }
 
@@ -270,7 +274,7 @@ export class KeyRingService {
         signer,
         signOptions,
         isADR36SignDoc,
-        isADR36WithString: signOptions.isADR36WithString,
+        isADR36WithString: signOptions.isADR36WithString
       }
     )) as StdSignDoc;
 
@@ -297,7 +301,7 @@ export class KeyRingService {
 
       return {
         signed: newSignDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature),
+        signature: encodeSecp256k1Signature(key.pubKey, signature)
       };
     } finally {
       this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
@@ -337,7 +341,7 @@ export class KeyRingService {
         mode: 'direct',
         signDocBytes: cosmos.tx.v1beta1.SignDoc.encode(signDoc).finish(),
         signer,
-        signOptions,
+        signOptions
       }
     )) as Uint8Array;
 
@@ -353,7 +357,7 @@ export class KeyRingService {
 
       return {
         signed: newSignDoc,
-        signature: encodeSecp256k1Signature(key.pubKey, signature),
+        signature: encodeSecp256k1Signature(key.pubKey, signature)
       };
     } catch (e) {
       console.log('e', e.message);
@@ -399,7 +403,7 @@ export class KeyRingService {
         chainId,
         coinType,
         rpc,
-        newData
+        data
       );
 
       return rawTxHex;
@@ -549,7 +553,7 @@ export class KeyRingService {
 
       result.push({
         path,
-        bech32Address,
+        bech32Address
       });
     }
 
