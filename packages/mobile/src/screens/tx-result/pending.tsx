@@ -10,7 +10,6 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
 import { TendermintTxTracer } from '@owallet/cosmos';
 import { Buffer } from 'buffer';
-import LottieView from 'lottie-react-native';
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
@@ -100,26 +99,9 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             ...style.flatten(['absolute', 'justify-center', 'items-center'])
           }}
         >
-          <LottieView
-            source={require('../../assets/lottie/pending.json')}
-            colorFilters={[
-              {
-                keypath: '#dot01',
-                color: style.get('color-primary').color
-              },
-              {
-                keypath: '#dot02',
-                color: style.get('color-primary').color
-              },
-              {
-                keypath: '#dot03',
-                color: style.get('color-primary').color
-              }
-            ]}
-            autoPlay
-            loop
-            style={style.flatten(['width-160'])}
-          />
+          <View style={style.flatten(['width-160'])}>
+            <Text>pending here </Text>
+          </View>
         </View>
       </View>
 

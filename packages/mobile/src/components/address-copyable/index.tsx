@@ -6,7 +6,6 @@ import Clipboard from 'expo-clipboard';
 import { RectButton } from '../rect-button';
 import { CopyIcon } from '../icon';
 import { useSimpleTimer } from '../../hooks';
-import LottieView from 'lottie-react-native';
 
 export const AddressCopyable: FunctionComponent<{
   style?: ViewStyle;
@@ -61,13 +60,9 @@ export const AddressCopyable: FunctionComponent<{
                   }
                 ])}
               >
-                <LottieView
-                  source={require('../../assets/lottie/check.json')}
-                  autoPlay
-                  speed={2}
-                  loop={false}
-                  style={style.flatten(['width-58', 'height-58'])}
-                />
+                <View style={style.flatten(['width-58', 'height-58'])}>
+                  <Text>Check here</Text>
+                </View>
               </View>
             </View>
           </View>

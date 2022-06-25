@@ -63,7 +63,7 @@ import {
   ContactOutLineIcon,
   TransactionOutlineIcon,
   SettingFillIcon,
-  SettingOutLineIcon,
+  SettingOutLineIcon
 } from './components/icon';
 import {
   AddAddressBookScreen,
@@ -92,20 +92,11 @@ import {
   TxPendingResultScreen,
   TxSuccessResultScreen
 } from './screens/tx-result';
-import {
-  HeaderAddIcon,
-  HeaderWalletConnectIcon,
-  HeaderBackButtonIcon
-} from './components/header/icon';
+import { HeaderAddIcon, HeaderBackButtonIcon } from './components/header/icon';
 import { BlurredBottomTabBar } from './components/bottom-tabbar';
 import { UnlockScreen } from './screens/unlock';
 import { OWalletVersionScreen } from './screens/setting/screens/version';
-import { ManageWalletConnectScreen } from './screens/manage-wallet-connect';
-import {
-  ImportFromExtensionIntroScreen,
-  ImportFromExtensionScreen,
-  ImportFromExtensionSetPasswordScreen
-} from './screens/register/import-from-extension';
+
 import { DAppWebpageScreen } from './screens/web/webpages';
 import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen';
 import { Browser } from './screens/web/browser';
@@ -168,10 +159,6 @@ const BrowserScreenHeaderLeft: FunctionComponent = observer(() => {
 });
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
-  const { walletConnectStore } = useStore();
-
-  const style = useStyle();
-
   const navigation = useNavigation();
 
   return (
@@ -182,23 +169,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
             screen: 'Camera'
           });
         }}
-      >
-        {/* <ScanIcon size={28} color={style.get("color-primary").color} /> */}
-      </HeaderRightButton>
-      {walletConnectStore.sessions.length > 0 ? (
-        <HeaderRightButton
-          style={{
-            right: 42
-          }}
-          onPress={() => {
-            navigation.navigate('Others', {
-              screen: 'ManageWalletConnect'
-            });
-          }}
-        >
-          <HeaderWalletConnectIcon />
-        </HeaderRightButton>
-      ) : null}
+      ></HeaderRightButton>
     </React.Fragment>
   );
 });
@@ -224,11 +195,19 @@ export const MainNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: 'Browser',
-          headerLeft: () => <BrowserScreenHeaderLeft />
+          title: 'Browser'
+          // headerLeft: () => <ScreenHeaderLeft />,
         }}
         name="Browser"
         component={Browser}
+      />
+      <Stack.Screen
+        options={{
+          title: 'BookMarks'
+          // headerLeft: () => <ScreenHeaderLeft uri="Browser"/>,
+        }}
+        name="BookMarks"
+        component={BookMarks}
       />
       <Stack.Screen
         options={{
@@ -245,14 +224,18 @@ export const MainNavigation: FunctionComponent = () => {
 export const TransactionNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator initialRouteName="Transactions" headerMode="screen">
-      <Stack.Screen name="Transactions" component={Transactions}  options={{
+      <Stack.Screen
+        name="Transactions"
+        component={Transactions}
+        options={{
           title: 'Transactions',
-          headerLeft: null,
-        }} />
+          headerLeft: null
+        }}
+      />
       <Stack.Screen
         options={{
           title: '',
-          headerLeft: () => <ScreenHeaderLeft uri="Transactions"/>,
+          headerLeft: () => <ScreenHeaderLeft uri="Transactions" />
         }}
         name="TransactionsDetails"
         component={TransactionDetail}
@@ -324,28 +307,6 @@ export const RegisterNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          // Only show the back button.
-          title: ''
-        }}
-        name="Register.ImportFromExtension.Intro"
-        component={ImportFromExtensionIntroScreen}
-      />
-      <Stack.Screen
-        options={{
-          headerShown: false
-        }}
-        name="Register.ImportFromExtension"
-        component={ImportFromExtensionScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: 'Import Extension'
-        }}
-        name="Register.ImportFromExtension.SetPassword"
-        component={ImportFromExtensionSetPasswordScreen}
-      />
-      <Stack.Screen
-        options={{
           headerShown: false
         }}
         name="Register.End"
@@ -386,13 +347,6 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Camera"
         component={CameraScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: 'WalletConnect'
-        }}
-        name="ManageWalletConnect"
-        component={ManageWalletConnectScreen}
       />
       <Stack.Screen
         options={{
@@ -719,7 +673,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         component={AddressBookScreen}
         initialParams={{
           currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-          chainId: chainStore.current.chainId,
+          chainId: chainStore.current.chainId
         }}
       />
       <Tab.Screen

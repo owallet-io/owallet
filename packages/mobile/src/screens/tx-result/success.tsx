@@ -8,7 +8,6 @@ import { Button } from '../../components/button';
 import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
-import LottieView from 'lottie-react-native';
 import * as WebBrowser from 'expo-web-browser';
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
@@ -40,26 +39,6 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
 
   const chainInfo = chainStore.getChain(chainId);
 
-  useEffect(() => {
-    const animateLottie = () => {
-      Animated.timing(successAnimProgress, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: false
-      }).start();
-      Animated.timing(pangpareAnimProgress, {
-        toValue: 1,
-        duration: 5000,
-        useNativeDriver: false
-      }).start();
-    };
-
-    const timeoutId = setTimeout(animateLottie, 200);
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <PageWithView
       disableSafeArea
@@ -78,15 +57,15 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
           'items-center'
         ])}
       >
-        <LottieView
-          source={require('../../assets/lottie/pangpare.json')}
-          progress={pangpareAnimProgress}
+        <View
           style={style.flatten([
             'width-full',
             'height-400',
             'margin-bottom-24'
           ])}
-        />
+        >
+          <Text>pangpare here pangpareAnimProgress {pangpareAnimProgress}</Text>
+        </View>
         <View
           style={{
             left: 0,
@@ -101,11 +80,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             ])
           }}
         >
-          <LottieView
-            source={require('../../assets/lottie/success.json')}
-            progress={successAnimProgress}
-            style={style.flatten(['width-160'])}
-          />
+          <View style={style.flatten(['width-160'])}>
+            <Text>success here</Text>
+          </View>
         </View>
       </View>
 

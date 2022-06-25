@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
-import { createRootStore, RootStore } from "./root";
+import { createRootStore, RootStore } from './root';
 
 const storeContext = React.createContext<RootStore | null>(null);
 
@@ -30,7 +30,7 @@ export const StoreProvider: FunctionComponent = ({ children }) => {
 export const useStore = () => {
   const store = React.useContext(storeContext);
   if (!store) {
-    throw new Error("You have forgot to use StoreProvider");
+    throw new Error('You have forgot to use StoreProvider');
   }
   return store;
 };

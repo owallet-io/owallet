@@ -10,7 +10,7 @@ import {
   useGasConfig,
   useMemoConfig,
   useSignDocAmountConfig,
-  useSignDocHelper,
+  useSignDocHelper
 } from '@owallet/hooks';
 import { Button } from '../../components/button';
 import { Msg as AminoMsg } from '@cosmjs/launchpad';
@@ -18,9 +18,6 @@ import { Msg } from './msg';
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
-import { WCMessageRequester } from '../../stores/wallet-connect/msg-requester';
-import { WCAppLogoAndName } from '../../components/wallet-connect';
-import WalletConnect from '@walletconnect/client';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
 
@@ -29,22 +26,11 @@ export const SignModal: FunctionComponent<{
   close: () => void;
 }> = registerModal(
   observer(() => {
-    const {
-      chainStore,
-      accountStore,
-      queriesStore,
-      walletConnectStore,
-      signInteractionStore,
-    } = useStore();
+    const { chainStore, accountStore, queriesStore, signInteractionStore } =
+      useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
-
-    // Check that the request is from the wallet connect.
-    // If this is undefiend, the request is not from the wallet connect.
-    const [wcSession, setWCSession] = useState<
-      WalletConnect['session'] | undefined
-    >();
 
     const style = useStyle();
 
@@ -102,18 +88,6 @@ export const SignModal: FunctionComponent<{
           feeConfig.setFeeType('average');
         }
         setSigner(data.data.signer);
-
-        if (
-          data.data.msgOrigin &&
-          WCMessageRequester.isVirtualSessionURL(data.data.msgOrigin)
-        ) {
-          const sessionId = WCMessageRequester.getSessionIdFromVirtualURL(
-            data.data.msgOrigin
-          );
-          setWCSession(walletConnectStore.getSession(sessionId));
-        } else {
-          setWCSession(undefined);
-        }
       }
 
       if (signInteractionStore.waitingEthereumData) {
@@ -124,9 +98,7 @@ export const SignModal: FunctionComponent<{
       gasConfig,
       memoConfig,
       signDocHelper,
-      signInteractionStore.waitingData,
-      signInteractionStore.waitingEthereumData,
-      walletConnectStore,
+      signInteractionStore.waitingData
     ]);
 
     const mode = signDocHelper.signDocWrapper
@@ -173,7 +145,7 @@ export const SignModal: FunctionComponent<{
                   style={style.flatten([
                     'height-1',
                     'background-color-border-white',
-                    'margin-x-16',
+                    'margin-x-16'
                   ])}
                 />
               ) : null}
@@ -200,7 +172,7 @@ export const SignModal: FunctionComponent<{
                   style={style.flatten([
                     'height-1',
                     'background-color-border-white',
-                    'margin-x-16',
+                    'margin-x-16'
                   ])}
                 />
               ) : null}
@@ -214,12 +186,6 @@ export const SignModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Transaction">
-        {wcSession ? (
-          <WCAppLogoAndName
-            containerStyle={style.flatten(['margin-y-14'])}
-            peerMeta={wcSession.peerMeta}
-          />
-        ) : null}
         <View style={style.flatten(['margin-bottom-16'])}>
           <Text style={style.flatten(['margin-bottom-3'])}>
             <Text style={style.flatten(['subtitle3', 'color-primary'])}>
@@ -236,7 +202,7 @@ export const SignModal: FunctionComponent<{
               'border-radius-8',
               'border-width-1',
               'border-color-border-white',
-              'overflow-hidden',
+              'overflow-hidden'
             ])}
           >
             <ScrollView
@@ -282,6 +248,6 @@ export const SignModal: FunctionComponent<{
   }),
   {
     disableSafeArea: true,
-    blurBackdropOnIOS: true,
+    blurBackdropOnIOS: true
   }
 );

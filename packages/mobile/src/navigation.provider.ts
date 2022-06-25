@@ -58,9 +58,6 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Camera: {
         upperScreenName: 'Others'
       },
-      ManageWalletConnect: {
-        upperScreenName: 'Others'
-      },
       'Staking.Dashboard': {
         upperScreenName: 'Others'
       },

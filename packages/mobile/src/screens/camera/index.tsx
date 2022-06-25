@@ -16,19 +16,13 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Bech32Address } from '@owallet/cosmos';
 import { FullScreenCameraView } from '../../components/camera';
-import {
-  importFromMobile,
-  parseQRCodeDataForImportFromMobile,
-  registerExportedAddressBooks,
-  registerExportedKeyRingDatas,
-} from '../../utils/import-from-mobile';
 import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
 import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
 import { checkValidDomain } from '../../utils/helper';
 
 export const CameraScreen: FunctionComponent = observer(() => {
-  const { chainStore, walletConnectStore, keyRingStore } = useStore();
+  const { chainStore, keyRingStore } = useStore();
 
   const style = useStyle();
   const navigation = useNavigation();
@@ -78,71 +72,31 @@ export const CameraScreen: FunctionComponent = observer(() => {
 
                 return;
               }
-              if (data.startsWith('wc:')) {
-                await walletConnectStore.initClient(data);
 
-                smartNavigation.navigateSmart('Home', {});
-              } else {
-                const isBech32Address = (() => {
-                  try {
-                    // Check that the data is bech32 address.
-                    // If this is not valid bech32 address, it will throw an error.
-                    Bech32Address.validate(data);
-                  } catch {
-                    return false;
-                  }
-                  return true;
-                })();
+              const isBech32Address = (() => {
+                try {
+                  // Check that the data is bech32 address.
+                  // If this is not valid bech32 address, it will throw an error.
+                  Bech32Address.validate(data);
+                } catch {
+                  return false;
+                }
+                return true;
+              })();
 
-                if (isBech32Address) {
-                  const prefix = data.slice(0, data.indexOf('1'));
-                  const chainInfo = chainStore.chainInfosInUI.find(
-                    (chainInfo) =>
-                      chainInfo.bech32Config.bech32PrefixAccAddr === prefix
-                  );
-                  if (chainInfo) {
-                    smartNavigation.pushSmart('Send', {
-                      chainId: chainInfo.chainId,
-                      recipient: data,
-                    });
-                  } else {
-                    smartNavigation.navigateSmart('Home', {});
-                  }
-                } else {
-                  const sharedData = parseQRCodeDataForImportFromMobile(data);
-
-                  const improted = await importFromMobile(
-                    sharedData,
-                    chainStore.chainInfosInUI.map(
-                      (chainInfo) => chainInfo.chainId
-                    )
-                  );
-
-                  // In this case, there are other accounts definitely.
-                  // So, there is no need to consider the password.
-                  await registerExportedKeyRingDatas(
-                    keyRingStore,
-                    registerConfig,
-                    improted.KeyRingDatas,
-                    ''
-                  );
-
-                  await registerExportedAddressBooks(
-                    addressBookConfigMap,
-                    improted.addressBooks
-                  );
-
-                  smartNavigation.reset({
-                    index: 0,
-                    routes: [
-                      {
-                        name: 'Register',
-                        params: {
-                          screen: 'Register.End',
-                        },
-                      },
-                    ],
+              if (isBech32Address) {
+                const prefix = data.slice(0, data.indexOf('1'));
+                const chainInfo = chainStore.chainInfosInUI.find(
+                  (chainInfo) =>
+                    chainInfo.bech32Config.bech32PrefixAccAddr === prefix
+                );
+                if (chainInfo) {
+                  smartNavigation.pushSmart('Send', {
+                    chainId: chainInfo.chainId,
+                    recipient: data
                   });
+                } else {
+                  smartNavigation.navigateSmart('Home', {});
                 }
               }
 
@@ -162,7 +116,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
             containerStyle={style.flatten([
               'margin-top-64',
               'border-radius-64',
-              'opacity-90',
+              'opacity-90'
             ])}
             style={style.flatten(['padding-x-52'])}
             onPress={() => {
@@ -216,9 +170,9 @@ export const AddressQRCodeModal: FunctionComponent<{
                 style={StyleSheet.flatten([
                   {
                     width: 200,
-                    height: 200,
+                    height: 200
                   },
-                  style.flatten(['background-color-disabled']),
+                  style.flatten(['background-color-disabled'])
                 ])}
               />
             )}
@@ -232,7 +186,7 @@ export const AddressQRCodeModal: FunctionComponent<{
               loading={account.bech32Address === ''}
               onPress={() => {
                 Share.share({
-                  message: account.bech32Address,
+                  message: account.bech32Address
                 }).catch((e) => {
                   console.log(e);
                 });
@@ -244,6 +198,6 @@ export const AddressQRCodeModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: true
   }
 );

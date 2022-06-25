@@ -8,12 +8,10 @@ import { Button } from '../../components/button';
 import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
-import LottieView from 'lottie-react-native';
 import * as WebBrowser from 'expo-web-browser';
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
-  const [failedAnimProgress] = React.useState(new Animated.Value(0));
 
   const route = useRoute<
     RouteProp<
@@ -39,21 +37,6 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
 
   const chainInfo = chainStore.getChain(chainId);
 
-  useEffect(() => {
-    const animateLottie = () => {
-      Animated.timing(failedAnimProgress, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: false
-      }).start();
-    };
-
-    const timeoutId = setTimeout(animateLottie, 500);
-
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <PageWithView
       disableSafeArea
@@ -74,11 +57,9 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
             ...style.flatten(['absolute', 'justify-center', 'items-center'])
           }}
         >
-          <LottieView
-            source={require('../../assets/lottie/failed.json')}
-            progress={failedAnimProgress}
-            style={style.flatten(['width-160'])}
-          />
+          <View style={style.flatten(['width-160'])}>
+            <Text>failed here</Text>
+          </View>
         </View>
       </View>
 
