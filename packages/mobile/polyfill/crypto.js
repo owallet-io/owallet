@@ -6,18 +6,21 @@ exports.randomBytes =
   exports.prng =
     randomBytes;
 
-exports.getRandomValues = function (arr) {
-  let orig = arr;
-  if (arr.byteLength != arr.length) {
-    // Get access to the underlying raw bytes
-    arr = new Uint8Array(arr.buffer);
-  }
-  const bytes = randomBytes(arr.length);
-  for (var i = 0; i < bytes.length; i++) {
-    arr[i] = bytes[i];
-  }
+// polyfill for webcrypto
+exports.webcrypto = {
+  getRandomValues: function (arr) {
+    let orig = arr;
+    if (arr.byteLength != arr.length) {
+      // Get access to the underlying raw bytes
+      arr = new Uint8Array(arr.buffer);
+    }
+    const bytes = randomBytes(arr.length);
+    for (var i = 0; i < bytes.length; i++) {
+      arr[i] = bytes[i];
+    }
 
-  return orig;
+    return orig;
+  }
 };
 
 exports.createHash = exports.Hash = require('create-hash');
@@ -50,5 +53,5 @@ Object.assign(
 
 // implement window crypto
 if (typeof window === 'object') {
-  if (!window.crypto) window.crypto = exports;
+  if (!window.crypto) window.crypto = exports.webcrypto;
 }

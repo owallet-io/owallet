@@ -14,9 +14,10 @@ import {
   getLastUsedLedgerDeviceId,
   setLastUsedLedgerDeviceId
 } from '../utils/ledger';
-import { getRandomValues } from '../../polyfill/crypto';
 import { DAppInfos } from '../screens/web/config';
 
+// done polyfill
+const { webcrypto } = require('crypto');
 const router = new RNRouterBackground(RNEnv.produceEnv);
 
 init(
@@ -27,7 +28,7 @@ init(
   // allow all dApps
   DAppInfos.map((dApp) => dApp.uri),
   // @ts-ignore
-  getRandomValues,
+  webcrypto.getRandomValues,
   {
     scrypt: async (text: string, params: ScryptParams) => {
       return Buffer.from(
