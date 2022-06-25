@@ -1,8 +1,7 @@
 import { ImageSourcePropType } from 'react-native';
-import { INJECTED_PROVIDER_URL } from '@env';
 
 export const InjectedProviderUrl =
-  INJECTED_PROVIDER_URL || 'https://owallet-provider.oraidex.io';
+  process.env.INJECTED_PROVIDER_URL || 'https://owallet-provider.oraidex.io';
 
 export type DAppInfo = {
   name: string;

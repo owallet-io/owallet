@@ -8,9 +8,9 @@ import { AsyncKVStore } from '../common';
 import scrypt from 'react-native-scrypt';
 import { Buffer } from 'buffer';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
-import { getRandomBytesAsync } from '../common';
+import { randomBytes } from 'react-native-randombytes';
 import { BACKGROUND_PORT } from '@owallet/router';
-
+// import { RNG } from '@owallet/crypto';
 import { EmbedChainInfos } from '@owallet/common';
 import {
   getLastUsedLedgerDeviceId,
@@ -21,6 +21,24 @@ import { DAppInfos } from '../screens/web/config';
 
 const router = new RNRouterBackground(RNEnv.produceEnv);
 
+// const getRandomBytesAsync: RNG = async (array) => {
+//   if (array) {
+//     const random = await randomBytes(array.byteLength);
+
+//     const bytes = new Uint8Array(
+//       array.buffer,
+//       array.byteOffset,
+//       array.byteLength
+//     );
+
+//     for (let i = 0; i < random.length; i++) {
+//       bytes[i] = random[i];
+//     }
+//   }
+
+//   return array;
+// };
+
 init(
   router,
   (prefix: string) => new AsyncKVStore(prefix),
@@ -28,7 +46,8 @@ init(
   EmbedChainInfos,
   // allow all dApps
   DAppInfos.map((dApp) => dApp.uri),
-  getRandomBytesAsync,
+  // @ts-ignore
+  window.crypto.getRandomValues,
   {
     scrypt: async (text: string, params: ScryptParams) => {
       return Buffer.from(

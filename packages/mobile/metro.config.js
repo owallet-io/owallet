@@ -59,18 +59,11 @@ module.exports = (async () => {
     projectRoot: path.resolve(__dirname, '.'),
     watchFolders,
     resolver: {
-      // For react-native-svg-transformer
       assetExts: assetExts.filter((ext) => ext !== 'svg'),
       sourceExts: [...sourceExts, 'svg'],
-      // To prevent that multiple react instances exist,
-      // add the react in this package to the blacklist,
-      // and use the only react in the root project.
       blacklistRE: blacklist([/packages\/mobile\/node_modules\/react\/.*/]),
       extraNodeModules: {
-        crypto: path.resolve(
-          __dirname,
-          './node_modules/react-native-crypto-polyfill'
-        ),
+        crypto: path.resolve(__dirname, './polyfill/crypto'),
         buffer: path.resolve(__dirname, '../../node_modules/buffer'),
         stream: path.resolve(__dirname, '../../node_modules/stream-browserify'),
         string_decoder: path.resolve(
