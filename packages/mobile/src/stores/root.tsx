@@ -10,23 +10,24 @@ import {
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
-  PermissionStore
+  PermissionStore,
 } from '@owallet/stores';
 import { AsyncKVStore } from '../common';
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
 import { ChainStore } from './chain';
-import { DeepLinkStore } from './deeplink';
+import { DeepLinkStore, BrowserStore } from './browser';
 import EventEmitter from 'eventemitter3';
 import { OWallet } from '@owallet/provider';
 import { KeychainStore } from './keychain';
+import { WalletConnectStore } from './wallet-connect';
 import { FeeType } from '@owallet/hooks';
 import {
   AmplitudeApiKey,
   EmbedChainInfos,
   UIConfigStore,
-  FiatCurrencies
+  FiatCurrencies,
 } from '@owallet/common';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import { Amplitude } from '@amplitude/react-native';
@@ -73,6 +74,9 @@ export class RootStore {
       language?: string;
     }
   >;
+
+  public readonly deepLinkUriStore: DeepLinkStore;
+  public readonly browserStore: BrowserStore;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -148,7 +152,7 @@ export class RootStore {
           getOWallet: async () => {
             // TOOD: Set version for OWallet API
             return new OWallet('', 'core', new RNMessageRequesterInternal());
-          }
+          },
         },
         chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
           if (chainInfo.chainId.startsWith('osmosis')) {
@@ -204,6 +208,21 @@ export class RootStore {
       this.keyRingStore
     );
 
+    this.walletConnectStore = new WalletConnectStore(
+      new AsyncKVStore('store_wallet_connect'),
+      {
+        addEventListener: (type: string, fn: () => void) => {
+          eventEmitter.addListener(type, fn);
+        },
+        removeEventListener: (type: string, fn: () => void) => {
+          eventEmitter.removeListener(type, fn);
+        },
+      },
+      this.chainStore,
+      this.keyRingStore,
+      this.permissionStore
+    );
+
     this.analyticsStore = new AnalyticsStore(
       (() => {
         if (!AmplitudeApiKey) {
@@ -242,6 +261,8 @@ export class RootStore {
         }
       }
     );
+    this.deepLinkUriStore = new DeepLinkStore();
+    this.browserStore = new BrowserStore();
   }
 }
 
