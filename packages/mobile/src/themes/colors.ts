@@ -66,5 +66,7 @@ export const colors = {
   'card-modal-handle': '#DCDCE3',
   'setting-screen-background': '#FAFBFD',
   'camera-loading-background': 'rgba(255,255,255,0.95)',
-  'big-image-placeholder': '#E7E4EF'
+  'big-image-placeholder': '#E7E4EF',
+  'gray-50': '#F2F2F7',
+  'gray-400': '#AEAEB2'
 }
