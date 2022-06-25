@@ -6,25 +6,19 @@ exports.randomBytes =
   exports.prng =
     randomBytes;
 
-// implement window.getRandomValues(), for packages that rely on it
-if (typeof window === 'object') {
-  if (!window.crypto) window.crypto = {};
-  if (!window.crypto.getRandomValues) {
-    window.crypto.getRandomValues = function getRandomValues(arr) {
-      let orig = arr;
-      if (arr.byteLength != arr.length) {
-        // Get access to the underlying raw bytes
-        arr = new Uint8Array(arr.buffer);
-      }
-      const bytes = randomBytes(arr.length);
-      for (var i = 0; i < bytes.length; i++) {
-        arr[i] = bytes[i];
-      }
-
-      return orig;
-    };
+exports.getRandomValues = function (arr) {
+  let orig = arr;
+  if (arr.byteLength != arr.length) {
+    // Get access to the underlying raw bytes
+    arr = new Uint8Array(arr.buffer);
   }
-}
+  const bytes = randomBytes(arr.length);
+  for (var i = 0; i < bytes.length; i++) {
+    arr[i] = bytes[i];
+  }
+
+  return orig;
+};
 
 exports.createHash = exports.Hash = require('create-hash');
 exports.createHmac = exports.Hmac = require('create-hmac');
@@ -53,3 +47,8 @@ Object.assign(
   require('public-encrypt'),
   require('randomfill')
 );
+
+// implement window crypto
+if (typeof window === 'object') {
+  if (!window.crypto) window.crypto = exports;
+}
