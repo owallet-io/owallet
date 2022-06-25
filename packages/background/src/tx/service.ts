@@ -163,9 +163,6 @@ export class BackgroundTxService {
     let chainInfo: ChainInfoWithEmbed;
     switch (method) {
       case 'eth_accounts':
-        chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (chainInfo.coinType !== 60) return undefined;
-        return true;
       case 'eth_requestAccounts':
         chainInfo = await this.chainsService.getChainInfo(chainId);
         if (chainInfo.coinType !== 60) return undefined;
