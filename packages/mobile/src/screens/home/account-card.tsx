@@ -33,13 +33,13 @@ import {
   DepositIcon,
   SendDashboardIcon,
 } from '../../components/icon/button';
-import { typography } from '../../themes';
+import { colors, spacing, typography } from '../../themes';
+import { navigate } from '../../router/root';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
@@ -84,6 +84,7 @@ export const AccountCard: FunctionComponent<{
 
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
+      navigate('Browser', { path: 'https://oraidex.io' });
     }
     if (name === 'Deposit') {
     }
@@ -110,10 +111,10 @@ export const AccountCard: FunctionComponent<{
     return (
       <TouchableOpacity
         style={{
-          backgroundColor: '#8B1BFB',
+          backgroundColor: colors['violet'],
           borderWidth: 0.5,
-          borderRadius: 8,
-          borderColor: '#8B1BFB',
+          borderRadius: spacing['8'],
+          borderColor: colors['violet'],
         }}
         onPress={() => onPressBtnMain(name)}
       >
@@ -122,16 +123,16 @@ export const AccountCard: FunctionComponent<{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            padding: 8,
+            padding: spacing['8'],
           }}
         >
           {icon}
           <Text
             style={{
-              fontSize: 14,
-              lineHeight: 20,
-              color: '#FFFFFF',
-              paddingLeft: 6,
+              ...typography['h7'],
+              lineHeight: spacing['20'],
+              color: colors['white'],
+              paddingLeft: spacing['6'],
               fontWeight: '700',
             }}
           >
@@ -144,13 +145,13 @@ export const AccountCard: FunctionComponent<{
 
   return (
     <Card style={containerStyle}>
-      <CardBody style={{ paddingBottom: 0 }}>
+      <CardBody style={{ paddingBottom: spacing['0'] }}>
         <View
           style={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            paddingBottom: 26,
+            paddingBottom: spacing['26'],
           }}
         >
           <Text
@@ -159,7 +160,6 @@ export const AccountCard: FunctionComponent<{
             }}
             style={typography['h4']}
           >
-            {account.name || '...'}
           </Text>
           {/* {chainStore.current.chainName + ' '} */}
           <TouchableOpacity
@@ -176,17 +176,17 @@ export const AccountCard: FunctionComponent<{
         <View
           style={{
             height: 256,
-            borderWidth: 0.5,
-            borderColor: '#F2F6FA',
-            borderRadius: 12,
+            borderWidth: spacing['0.5'],
+            borderColor: colors['gray-100'],
+            borderRadius: spacing['12'],
           }}
         >
           <View
             style={{
-              borderTopLeftRadius: 11,
-              borderTopRightRadius: 11,
+              borderTopLeftRadius: spacing['11'],
+              borderTopRightRadius: spacing['11'],
               height: 179,
-              backgroundColor: '#4C4C56',
+              backgroundColor: '#5E499A', //linear-gradient(112.91deg, #161532 0%, #5E499A 89.85%)
             }}
           >
             <View
@@ -236,16 +236,16 @@ export const AccountCard: FunctionComponent<{
           </View>
           <View
             style={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: colors['white'],
               display: 'flex',
               height: 75,
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
-              paddingLeft: 12,
-              paddingRight: 18,
-              borderBottomLeftRadius: 11,
-              borderBottomRightRadius: 11,
+              paddingLeft: spacing['12'],
+              paddingRight: spacing['18'],
+              borderBottomLeftRadius: spacing['11'],
+              borderBottomRightRadius: spacing['11'],
               shadowColor: 'rgba(24, 39, 75, 0.12)',
               shadowOffset: {
                 width: 0,
@@ -266,18 +266,18 @@ export const AccountCard: FunctionComponent<{
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingBottom: 2,
+                  paddingBottom: spacing['2'],
                 }}
               >
                 <Image
                   style={{
-                    width: 26,
-                    height: 26,
+                    width: spacing['26'],
+                    height: spacing['26'],
                   }}
                   source={require('../../assets/image/address_default.png')}
                   fadeDuration={0}
                 />
-                <Text style={{ paddingLeft: 6 }}>{account.name || '...'}</Text>
+                <Text style={{ paddingLeft: spacing['6'] }}>{account.name || '...'}</Text>
               </View>
 
               <AddressCopyable
@@ -286,7 +286,7 @@ export const AccountCard: FunctionComponent<{
               />
             </View>
             <View>
-              <DownArrowIcon height={30} color={'#5F5E77'} />
+              <DownArrowIcon height={30} color={colors['gray-150']} />
             </View>
           </View>
           {queryStakable.isFetching ? (
@@ -297,7 +297,7 @@ export const AccountCard: FunctionComponent<{
                 left: '50%',
               }}
             >
-              <LoadingSpinner color={'gray'} size={22} />
+              <LoadingSpinner color={colors['gray-150']} size={22} />
             </View>
           ) : null}
         </View>
@@ -307,10 +307,10 @@ export const AccountCard: FunctionComponent<{
         <View
           style={{
             height: 75,
-            borderWidth: 0.5,
-            borderColor: '#F2F6FA',
-            borderRadius: 12,
-            backgroundColor: 'white',
+            borderWidth: spacing['0.5'],
+            borderColor: colors['gray-100'],
+            borderRadius: spacing['12'],
+            backgroundColor: colors['white'],
             shadowColor: 'rgba(24, 39, 75, 0.12)',
             shadowOffset: {
               width: 0,
@@ -327,8 +327,8 @@ export const AccountCard: FunctionComponent<{
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
-              paddingLeft: 12,
-              paddingRight: 8,
+              paddingLeft: spacing['12'],
+              paddingRight: spacing['8'],
             }}
           >
             <View
@@ -337,7 +337,7 @@ export const AccountCard: FunctionComponent<{
                 justifyContent: 'space-between',
               }}
             >
-              <Text style={{ paddingBottom: 6 }}>Namespace</Text>
+              <Text style={{ paddingBottom: spacing['6'] }}>Namespace</Text>
               <View
                 style={{
                   display: 'flex',
@@ -355,20 +355,20 @@ export const AccountCard: FunctionComponent<{
                 />
                 <Text
                   style={{
-                    paddingLeft: 6,
+                    paddingLeft: spacing['6'],
                     fontWeight: '700',
-                    fontSize: 18,
+                    fontSize: spacing['18'],
                     lineHeight: 26,
                     textAlign: 'center',
-                    color: '#1C1C1E',
+                    color: colors['gray-900'],
                   }}
                 >
                   Harris.orai
                 </Text>
               </View>
             </View>
-            <View style={{ paddingTop: 10 }}>
-              <SettingDashboardIcon size={30} color={'#5F5E77'} />
+            <View style={{ paddingTop: spacing['10'] }}>
+              <SettingDashboardIcon size={30} color={colors['gray-150']} />
             </View>
           </View>
         </View>
