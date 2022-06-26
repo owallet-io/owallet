@@ -451,7 +451,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: 'https://bsc-dataseed1.ninicoin.io',
     evmRpc: 'https://bsc-dataseed1.ninicoin.io',
     chainId: '56',
-    chainName: 'BNB Smart Chain\n(Coming soon)',
+    chainName: 'BNB Chain\n(Coming soon)',
     bip44: {
       coinType: 60,
     },
