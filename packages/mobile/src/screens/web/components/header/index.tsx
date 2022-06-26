@@ -98,17 +98,17 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
           // Because of the lack of space, it slightly invades the notch, giving it a bit more space.
           paddingTop:
             safeAreaInsets.top -
-            (Platform.OS === 'ios' && safeAreaInsets.top > 44 ? 6 : 0)
+            (Platform.OS === 'ios' && safeAreaInsets.top > 44 ? 6 : 0),
         },
-        style.flatten(['background-color-white', 'flex-row', 'items-center'])
+        style.flatten(['background-color-white', 'flex-row', 'items-center']),
       ])}
     >
       <View
         style={StyleSheet.flatten([
           style.flatten(['width-full', 'items-center', 'justify-center']),
           {
-            height: actualHeaderHeight
-          }
+            height: actualHeaderHeight,
+          },
         ])}
       >
         {/* Name and refresh icon on center */}
@@ -119,7 +119,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             'border-radius-4',
             'padding-left-12',
             'padding-right-10',
-            'padding-y-5'
+            'padding-y-5',
           ])}
           onPress={() => {
             if (webViewState.webView) {
@@ -131,7 +131,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             style={style.flatten([
               'h4',
               'color-text-black-medium',
-              'margin-right-8'
+              'margin-right-8',
             ])}
           >
             {webViewState.name}
@@ -149,16 +149,16 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               'absolute',
               'width-full',
               'flex-row',
-              'items-center'
+              'items-center',
             ]),
             {
               left: 0,
-              height: actualHeaderHeight
-            }
+              height: actualHeaderHeight,
+            },
           ])}
           pointerEvents="box-none"
         >
-          <RectButton
+          {/* <RectButton
             style={style.flatten([
               'border-radius-4',
               'padding-4',
@@ -196,13 +196,13 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
               size={32}
               color={style.get('color-primary').color}
             />
-          </RectButton>
+          </RectButton> */}
           <View style={style.get('flex-1')} />
-          <RectButton
+          {/* <RectButton
             style={style.flatten([
               'border-radius-4',
               'padding-4',
-              'margin-right-20'
+              'margin-right-20',
             ])}
             rippleColor={style.get('color-primary-50').color}
             activeOpacity={1}
@@ -213,7 +213,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = () => {
             }}
           >
             <HomeIcon size={32} color={style.get('color-primary').color} />
-          </RectButton>
+          </RectButton> */}
         </View>
       </View>
     </View>

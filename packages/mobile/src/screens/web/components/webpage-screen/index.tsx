@@ -3,16 +3,16 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState
+  useState,
 } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import { BackHandler, Platform, View } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { useStyle } from '../../../../styles';
 import { OWallet, Ethereum } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import {
   RNInjectedEthereum,
-  RNInjectedOWallet
+  RNInjectedOWallet,
 } from '../../../../injected/injected-provider';
 import EventEmitter from 'eventemitter3';
 // import { PageWithViewInBottomTabView } from "../../../../components/page";
@@ -25,6 +25,8 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import DeviceInfo from 'react-native-device-info';
 import { InjectedProviderUrl } from '../../config';
+import { BrowserFooterSection } from '../footer-section';
+import { SwtichTab } from '../switch-tabs';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -44,7 +46,7 @@ export const WebpageScreen: FunctionComponent<
   }
 > = observer((props) => {
   const { keyRingStore, chainStore } = useStore();
-
+  const [isSwitchTab, setIsSwitchTab] = useState(false);
   const style = useStyle();
 
   const webviewRef = useRef<WebView | null>(null);
@@ -72,7 +74,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -95,7 +97,7 @@ export const WebpageScreen: FunctionComponent<
 
           return {
             url: currentURL,
-            origin: new URL(currentURL).origin
+            origin: new URL(currentURL).origin,
           };
         })
       )
@@ -124,7 +126,7 @@ export const WebpageScreen: FunctionComponent<
             true; // note: this is required, or you'll sometimes get silent failures
           `
       );
-    }
+    },
   };
 
   useEffect(() => {
@@ -197,59 +199,82 @@ export const WebpageScreen: FunctionComponent<
     // So, checking platform is required.
     if (Platform.OS === 'ios') {
       navigation.setOptions({
-        gestureEnabled: !canGoBack
+        gestureEnabled: !canGoBack,
       });
     }
   }, [canGoBack, navigation]);
 
   const sourceCode = useInjectedSourceCode();
 
+  const renderWebContent = useCallback(() => {
+    return (
+      <>
+        <WebViewStateContext.Provider
+          value={{
+            webView: webviewRef.current,
+            name: props.name,
+            url: currentURL,
+            canGoBack,
+            canGoForward,
+          }}
+        >
+          <OnScreenWebpageScreenHeader />
+        </WebViewStateContext.Provider>
+
+        {sourceCode ? (
+          <WebView
+            ref={webviewRef}
+            incognito={true}
+            injectedJavaScriptBeforeContentLoaded={sourceCode}
+            onMessage={onMessage}
+            onNavigationStateChange={(e) => {
+              // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+              // Use two handlers to measure simultaneously in ios and android.
+              setCanGoBack(e.canGoBack);
+              setCanGoForward(e.canGoForward);
+
+              setCurrentURL(e.url);
+            }}
+            onLoadProgress={(e) => {
+              // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+              // Use two handlers to measure simultaneously in ios and android.
+              setCanGoBack(e.nativeEvent.canGoBack);
+              setCanGoForward(e.nativeEvent.canGoForward);
+
+              setCurrentURL(e.nativeEvent.url);
+            }}
+            contentInsetAdjustmentBehavior="never"
+            automaticallyAdjustContentInsets={false}
+            decelerationRate="normal"
+            allowsBackForwardNavigationGestures={true}
+            {...props}
+          />
+        ) : null}
+      </>
+    );
+  }, [sourceCode]);
+
   return (
     <PageWithView
       style={style.flatten(['padding-0', 'padding-bottom-0'])}
       disableSafeArea
     >
+      {isSwitchTab ? <SwtichTab /> : renderWebContent()}
+
       <WebViewStateContext.Provider
         value={{
-          webView: webviewRef.current,
-          name: props.name,
-          url: currentURL,
-          canGoBack,
-          canGoForward
+          webView: null,
+          name: 'Browser',
+          url: null,
+          canGoBack: false,
+          canGoForward: false,
         }}
       >
-        <OnScreenWebpageScreenHeader />
-      </WebViewStateContext.Provider>
-
-      {sourceCode ? (
-        <WebView
-          ref={webviewRef}
-          incognito={true}
-          injectedJavaScriptBeforeContentLoaded={sourceCode}
-          onMessage={onMessage}
-          onNavigationStateChange={(e) => {
-            // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-            // Use two handlers to measure simultaneously in ios and android.
-            setCanGoBack(e.canGoBack);
-            setCanGoForward(e.canGoForward);
-
-            setCurrentURL(e.url);
-          }}
-          onLoadProgress={(e) => {
-            // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-            // Use two handlers to measure simultaneously in ios and android.
-            setCanGoBack(e.nativeEvent.canGoBack);
-            setCanGoForward(e.nativeEvent.canGoForward);
-
-            setCurrentURL(e.nativeEvent.url);
-          }}
-          contentInsetAdjustmentBehavior="never"
-          automaticallyAdjustContentInsets={false}
-          decelerationRate="normal"
-          allowsBackForwardNavigationGestures={true}
-          {...props}
+        <BrowserFooterSection
+          isSwitchTab={isSwitchTab}
+          setIsSwitchTab={setIsSwitchTab}
         />
-      ) : null}
+      </WebViewStateContext.Provider>
     </PageWithView>
   );
 });
