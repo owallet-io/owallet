@@ -30,3 +30,10 @@ export const checkValidDomain = (url: string) => {
 }
 
 export const _keyExtract = (item, index) => index.toString()
+
+export const formatContractAddress = (address: string) => {
+  const fristLetter = address.slice(0, 10)
+  const lastLetter = address.slice(-5)
+
+  return `${fristLetter}...${lastLetter}`
+}
