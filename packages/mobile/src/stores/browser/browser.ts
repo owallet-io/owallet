@@ -5,7 +5,7 @@ export class BrowserStore {
   @observable
   protected bookmarks: Array<any>;
   protected tabs: Array<any>;
-  protected selectedTab: object;
+  protected selectedTab: { id: string; name: string; uri: string };
 
   constructor() {
     this.bookmarks = [...DAppInfos];
@@ -20,7 +20,7 @@ export class BrowserStore {
 
   @action
   removeBoorkmark(boorkmark) {
-    const rIndex = this.tabs.findIndex((b) => b.uri === boorkmark.uri);
+    const rIndex = this.tabs.findIndex((b) => b.id === boorkmark.id);
     if (rIndex > -1) {
       this.bookmarks.splice(rIndex, 1);
     }
@@ -60,9 +60,14 @@ export class BrowserStore {
 
   @action
   removeTab(tab) {
-    const rTabIndex = this.tabs.findIndex((t) => t.uri === tab.uri);
+    console.log('tab', tab, this.tabs);
+
+    const rTabIndex = this.tabs.findIndex((t) => t.id === tab.id);
+    console.log('rTabIndex', rTabIndex);
+
     if (rTabIndex > -1) {
       this.tabs.splice(rTabIndex, 1);
+      console.log('this.tabs', this.tabs);
     }
   }
 

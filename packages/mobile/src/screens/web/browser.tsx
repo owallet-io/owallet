@@ -133,13 +133,17 @@ export const Browser: FunctionComponent<any> = (props) => {
   const onHandleUrl = () => {
     console.log('valid', checkValidDomain(url?.toLowerCase()));
     if (checkValidDomain(url?.toLowerCase())) {
-      smartNavigation.pushSmart('Web.dApp', {
+      const tab = {
+        id: Date.now(),
         name: 'Browser',
         uri:
           url?.toLowerCase().indexOf('http') >= 0
             ? url?.toLowerCase()
             : 'https://' + url?.toLowerCase(),
-      });
+      };
+      browserStore.addTab(tab);
+      browserStore.updateSelectedTab(tab);
+      smartNavigation.pushSmart('Web.dApp', tab);
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
       if (InjectedProviderUrl) uri = InjectedProviderUrl;

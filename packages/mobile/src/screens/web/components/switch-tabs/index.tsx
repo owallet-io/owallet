@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import {
   View,
   Text,
@@ -9,9 +9,8 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import WebView from 'react-native-webview';
 import { useStore } from '../../../../stores';
-import { DAppInfos } from '../../config';
+import { observer } from 'mobx-react-lite';
 
 const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
 
@@ -27,115 +26,126 @@ const perspective = 1000;
 const rotateX = -Math.PI / 6;
 const z = 150 * Math.sin(Math.abs(rotateX));
 
-export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = ({
-  onPressItem,
-}) => {
-  const { browserStore } = useStore();
+export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
+  ({ onPressItem }) => {
+    const { browserStore } = useStore();
 
-  const onPressDelete = (item) => () => {
-    // ReduxDispatcher(removeTab(item));
-  };
+    const onPressDelete = (item) => () => {
+      browserStore.removeTab(item);
+    };
 
-  const onPress = (item) => () => {
-    onPressItem(item);
-    // ReduxDispatcher(setTabDefault(item));
-  };
+    const onPress = (item) => () => {
+      onPressItem(item);
+      browserStore.updateSelectedTab(item);
+    };
 
-  const renderItem = (item, index) => {
-    // const isSelect = item.id === currentTab?.id;
-    const isSelect = index % 2 === 0;
-    return (
-      <TouchableWithoutFeedback
-        onPress={onPress(item)}
-        style={{ padding: DIMENSION_PADDING_MEDIUM }}
-      >
-        <View key={index} style={styles.wrapItem}>
-          <View
-            style={[
-              styles.wrapContent,
-              {
-                borderColor: isSelect ? COLOR_PRIMARY : COLOR_WHITE,
-              },
-            ]}
-          >
+    const renderItem = (item, index) => {
+      const isSelect = item.id === browserStore.getSelectedTab()?.id;
+      return (
+        <View style={{ padding: DIMENSION_PADDING_MEDIUM }}>
+          <View key={index} style={styles.wrapItem}>
             <View
               style={[
-                styles.wrapTitle,
+                styles.wrapContent,
                 {
-                  flexDirection: 'row',
-                  width: '100%',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  borderColor: isSelect ? COLOR_PRIMARY : COLOR_WHITE,
                 },
               ]}
             >
-              <Text
-                style={{ flex: 1, fontWeight: 'bold', color: '#fff' }}
-                numberOfLines={1}
+              <View
+                style={[
+                  styles.wrapTitle,
+                  {
+                    flexDirection: 'row',
+                    width: '100%',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  },
+                ]}
               >
-                {item?.name ?? (item?.uri || 'New tab')}
-              </Text>
-              <TouchableOpacity>
-                <Text>X</Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={[
-                styles.webview,
-                { justifyContent: 'center', alignItems: 'center' },
-              ]}
-            >
-              <Image
-                source={oraiLogo}
-                style={{
-                  width: DEVICE_WIDTH / 5,
-                  height: DEVICE_WIDTH / 5,
-                }}
-              />
+                <Text
+                  style={{ flex: 1, fontWeight: 'bold', color: '#fff' }}
+                  numberOfLines={1}
+                >
+                  {item?.name ?? (item?.uri || 'New tab')}
+                </Text>
+                <TouchableOpacity onPress={onPressDelete(item)}>
+                  <Text>X</Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={[
+                  styles.webview,
+                  { justifyContent: 'center', alignItems: 'center' },
+                ]}
+              >
+                <TouchableWithoutFeedback
+                  style={[styles.webview]}
+                  onPress={onPress(item)}
+                >
+                  <Image
+                    source={oraiLogo}
+                    style={{
+                      width: DEVICE_WIDTH / 5,
+                      height: DEVICE_WIDTH / 5,
+                    }}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
             </View>
           </View>
         </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+      );
+    };
 
-  const renderContent = () => {
-    // if (!tabs?.length) {
-    //   return (
-    //     <View paddingHorizontal={DIMENSION_PADDING_MEDIUM} center full>
-    //       <Text bold size={18}>
-    //         No Open Tabs
-    //       </Text>
-    //       <Text style={{ marginTop: DIMENSION_PADDING_SMALL }}>
-    //         To browse the decentralized web, add a new tab
-    //       </Text>
-    //     </View>
-    //   );
-    // }
+    const renderContent = () => {
+      if (browserStore.getTabs()?.length < 1) {
+        return (
+          <View
+            style={{
+              paddingHorizontal: DIMENSION_PADDING_MEDIUM,
+              width: '100%',
+              height: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingTop: 40,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+              No Open Tabs
+            </Text>
+            <Text style={{ marginTop: DIMENSION_PADDING_SMALL }}>
+              To browse the decentralized web, add a new tab
+            </Text>
+          </View>
+        );
+      }
+      return (
+        <ScrollView
+          contentContainerStyle={{
+            padding: DIMENSION_PADDING_MEDIUM,
+            paddingBottom: 100,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {browserStore.getTabs()?.map(renderItem)}
+        </ScrollView>
+      );
+    };
+
     return (
-      <ScrollView
-        contentContainerStyle={{
-          padding: DIMENSION_PADDING_MEDIUM,
-          paddingBottom: 100,
+      <View
+        style={{
+          paddingTop: 40,
+          width: '100%',
+          height: '100%',
         }}
-        showsVerticalScrollIndicator={false}
       >
-        {DAppInfos.map(renderItem)}
-      </ScrollView>
+        {renderContent()}
+      </View>
     );
-  };
-
-  return (
-    <View
-      style={{
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      {renderContent()}
-    </View>
-  );
-};
+  }
+);
 
 const styles = StyleSheet.create({
   webview: { width: '100%', height: 100 },
