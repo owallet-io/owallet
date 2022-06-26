@@ -1,11 +1,9 @@
 import { ChainGetter, ObservableQueryDelegations } from '@owallet/stores';
 import { ObservableQueryBalances } from '@owallet/stores';
-import {
-  useFeeConfig,
-  useGasConfig,
-  useMemoConfig,
-  useRecipientConfig
-} from './index';
+import { useFeeConfig } from './fee';
+import { useGasConfig } from './gas';
+import { useMemoConfig } from './memo';
+import { useRecipientConfig } from './recipient';
 import { useStakedAmountConfig } from './staked-amount';
 
 export const useRedelegateTxConfig = (

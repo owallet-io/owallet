@@ -1,12 +1,10 @@
 import { ChainGetter } from '@owallet/stores';
 import { ObservableQueryBalances } from '@owallet/stores';
-import {
-  AmountConfig,
-  useFeeConfig,
-  useGasConfig,
-  useMemoConfig,
-  useRecipientConfig
-} from './index';
+import { useFeeConfig } from './fee';
+import { AmountConfig } from './amount';
+import { useGasConfig } from './gas';
+import { useMemoConfig } from './memo';
+import { useRecipientConfig } from './recipient';
 import { AppCurrency } from '@owallet/types';
 import { useState } from 'react';
 

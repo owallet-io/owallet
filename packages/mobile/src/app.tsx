@@ -63,6 +63,9 @@ SplashScreen.preventAutoHideAsync()
   )
   .catch(console.warn);
 
+// we already log in debugging tools
+LogBox.ignoreAllLogs();
+
 const AppIntlProviderWithStorage = ({ children }) => {
   const store = useStore();
 

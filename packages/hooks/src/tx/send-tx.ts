@@ -5,7 +5,9 @@ import {
   SecretMsgOpts
 } from '@owallet/stores';
 import { ObservableQueryBalances } from '@owallet/stores';
-import { useFeeConfig, useMemoConfig, useRecipientConfig } from './index';
+import { useFeeConfig } from './fee';
+import { useMemoConfig } from './memo';
+import { useRecipientConfig } from './recipient';
 import { useSendGasConfig } from './send-gas';
 import { useAmountConfig } from './amount';
 
