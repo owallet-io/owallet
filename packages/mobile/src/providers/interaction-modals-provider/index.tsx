@@ -3,13 +3,16 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { SignModal } from '../../modals/sign';
 import { LedgerGranterModal } from '../../modals/ledger';
+import { HomeBaseModal } from '../../modals/home-base';
+import { Text } from 'react-native-svg';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
     const {
       ledgerInitStore,
       permissionStore,
-      signInteractionStore
+      signInteractionStore,
+      modalStore,
     } = useStore();
 
     console.log(
@@ -47,15 +50,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
-        {signInteractionStore.waitingEthereumData ? (
-          <SignEthereumModal
-            isOpen={true}
-            close={() => {
-              signInteractionStore.rejectAll();
-              navigationRef.current.goBack();
-            }}
-          />
+        {modalStore.getState() ? (
+          <HomeBaseModal isOpen={true} close={() => modalStore.close()}>
+            {<Text>123123</Text>}
+          </HomeBaseModal>
         ) : null}
+
         {children}
       </React.Fragment>
     );
