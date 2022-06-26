@@ -25,35 +25,10 @@ const watchFolders = [
   })
 ];
 
-module.exports = (async () => {
+module.exports = (() => {
   const {
     resolver: { sourceExts, assetExts }
-  } = await getDefaultConfig();
-
-  // patch code
-  const gasFile = path.resolve(
-    __dirname,
-    '../../node_modules/@cosmjs/launchpad/build/gas.js'
-  );
-
-  fs.writeFileSync(
-    gasFile,
-    fs
-      .readFileSync(gasFile)
-      .toString()
-      .replace(
-        `const matchResult = gasPrice.match(/^(?<amount>.+?)(?<denom>[a-z]+)$/);
-        if (!matchResult) {
-            throw new Error("Invalid gas price string");
-        }
-        const { amount, denom } = matchResult.groups;`,
-        `const matchResult = gasPrice.match(/^(.+?)([a-z]+)$/);
-        if (!matchResult) {
-            throw new Error("Invalid gas price string");
-        }
-        const [ amount, denom ] = matchResult.slice(1);`
-      )
-  );
+  } = getDefaultConfig(__dirname);
 
   return {
     projectRoot: path.resolve(__dirname, '.'),
@@ -78,7 +53,7 @@ module.exports = (async () => {
     },
     transformer: {
       babelTransformerPath: require.resolve('react-native-svg-transformer'),
-      getTransformOptions: async () => ({
+      getTransformOptions: () => ({
         transform: {
           experimentalImportSupport: false,
           inlineRequires: false
