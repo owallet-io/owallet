@@ -7,10 +7,10 @@ import {
   View,
   ViewStyle,
   ImageBackground,
-  TouchableOpacity
+  Image,
 } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
-import { useStyle } from '../../styles';
 import { AddressCopyable } from '../../components/address-copyable';
 // import { DoubleDoughnutChart } from "../../components/svg";
 import { Button } from '../../components/button';
@@ -19,22 +19,26 @@ import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
 import { ProgressBar } from '../../components/progress-bar';
-import { Scanner } from '../../components/icon';
-import { useNavigation } from '@react-navigation/native';
+import {
+  DownArrowIcon,
+  RightArrowIcon,
+  Scanner,
+  SendIcon,
+  SettingDashboardIcon,
+} from '../../components/icon';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { FormattedMessage, useIntl } from 'react-intl';
+import {
+  BuyIcon,
+  DepositIcon,
+  SendDashboardIcon,
+} from '../../components/icon/button';
+import { typography } from '../../themes';
+
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    analyticsStore,
-  } = useStore();
-
-  const style = useStyle();
-
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const intl = useIntl();
 
   const smartNavigation = useSmartNavigation();
@@ -75,109 +79,327 @@ export const AccountCard: FunctionComponent<{
 
   const data: [number, number] = [
     parseFloat(stakable.toDec().toString()),
-    parseFloat(stakedSum.toDec().toString())
+    parseFloat(stakedSum.toDec().toString()),
   ];
+
+  const onPressBtnMain = (name) => {
+    if (name === 'Buy') {
+    }
+    if (name === 'Deposit') {
+    }
+    if (name === 'Send') {
+      smartNavigation.navigateSmart('Send', {
+        currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+      });
+    }
+  };
+
+  const RenderBtnMain = ({ name }) => {
+    let icon;
+    switch (name) {
+      case 'Buy':
+        icon = <BuyIcon />;
+        break;
+      case 'Deposit':
+        icon = <DepositIcon />;
+        break;
+      case 'Send':
+        icon = <SendDashboardIcon />;
+        break;
+    }
+    return (
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#8B1BFB',
+          borderWidth: 0.5,
+          borderRadius: 8,
+          borderColor: '#8B1BFB',
+        }}
+        onPress={() => onPressBtnMain(name)}
+      >
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: 8,
+          }}
+        >
+          {icon}
+          <Text
+            style={{
+              fontSize: 14,
+              lineHeight: 20,
+              color: '#FFFFFF',
+              paddingLeft: 6,
+              fontWeight: '700',
+            }}
+          >
+            {name}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <Card style={containerStyle}>
-      <CardBody style={style.flatten(['padding-bottom-0'])}>
-        <View style={style.flatten(['flex-row', 'justify-between'])}>
-          <Text style={style.flatten(['h4'])}>{account.name || '...'}</Text>
+      <CardBody style={{ paddingBottom: 0 }}>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingBottom: 26,
+          }}
+        >
+          <Text
+            onPress={() => {
+              navigation.dispatch(DrawerActions.toggleDrawer());
+            }}
+            style={typography['h4']}
+          >
+            {account.name || '...'}
+          </Text>
+          {/* {chainStore.current.chainName + ' '} */}
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('Others', {
-                screen: 'Camera'
+                screen: 'Camera',
               });
             }}
           >
-            <Scanner size={28} color={style.get('color-primary').color} />
+            <Scanner size={28} color={'#5064fb'} />
           </TouchableOpacity>
         </View>
 
-        <View style={style.flatten(['flex', 'items-center'])}>
+        <View
+          style={{
+            height: 256,
+            borderWidth: 0.5,
+            borderColor: '#F2F6FA',
+            borderRadius: 12,
+          }}
+        >
           <View
-            style={style.flatten([
-              'margin-top-28',
-              'margin-bottom-16',
-              'width-full'
-            ])}
+            style={{
+              borderTopLeftRadius: 11,
+              borderTopRightRadius: 11,
+              height: 179,
+              backgroundColor: '#4C4C56',
+            }}
           >
-            {/* <DoubleDoughnutChart data={data} /> */}
-            <ImageBackground
-              resizeMode={'contain'}
-              source={require('../../assets/image/background-card.png')}
-              style={style.flatten(['width-full', 'height-214'])}
-            />
-            <ProgressBar
-              progress={(data?.[0] / data?.reduce((a, b) => a + b, 0)) * 100}
-              styles={['margin-top-24']}
-            />
             <View
-              style={style.flatten([
-                'absolute-fill',
-                'items-center',
-                'justify-center'
-              ])}
+              style={{
+                marginTop: 28,
+                marginBottom: 16,
+              }}
             >
               <Text
-                style={style.flatten([
-                  'subtitle2',
-                  'color-text-black-very-very-very-low',
-                  'margin-bottom-4'
-                ])}
+                style={{
+                  textAlign: 'center',
+                  color: '#AEAEB2',
+                  fontSize: 14,
+                  lineHeight: 20,
+                }}
               >
                 Total Balance
               </Text>
-              <Text style={style.flatten(['h1', 'color-white'])}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  fontWeight: '900',
+                  fontSize: 34,
+                  lineHeight: 50,
+                }}
+              >
                 {totalPrice
                   ? totalPrice.toString()
                   : total.shrink(true).maxDecimals(6).toString()}
               </Text>
-              {queryStakable.isFetching ? (
-                <View
-                  style={StyleSheet.flatten([
-                    style.flatten(['absolute']),
-                    {
-                      bottom: 33
-                    }
-                  ])}
-                >
-                  <LoadingSpinner
-                    color={style.get('color-loading-spinner').color}
-                    size={22}
-                  />
-                </View>
-              ) : null}
+            </View>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingTop: 6,
+                paddingLeft: 20,
+                paddingRight: 20,
+              }}
+            >
+              {['Buy', 'Deposit', 'Send'].map((e, i) => (
+                <RenderBtnMain key={i} name={e} />
+              ))}
+            </View>
+          </View>
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              display: 'flex',
+              height: 75,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingLeft: 12,
+              paddingRight: 18,
+              borderBottomLeftRadius: 11,
+              borderBottomRightRadius: 11,
+              shadowColor: 'rgba(24, 39, 75, 0.12)',
+              shadowOffset: {
+                width: 0,
+                height: 12,
+              },
+              shadowOpacity: 1,
+              shadowRadius: 16.0,
+            }}
+          >
+            <View
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingBottom: 2,
+                }}
+              >
+                <Image
+                  style={{
+                    width: 26,
+                    height: 26,
+                  }}
+                  source={require('../../assets/image/address_default.png')}
+                  fadeDuration={0}
+                />
+                <Text style={{ paddingLeft: 6 }}>{account.name || '...'}</Text>
+              </View>
+
               <AddressCopyable
-                style={style.flatten(['margin-24'])}
                 address={account.bech32Address}
                 maxCharacters={22}
               />
             </View>
+            <View>
+              <DownArrowIcon height={30} color={'#5F5E77'} />
+            </View>
           </View>
+          {queryStakable.isFetching ? (
+            <View
+              style={{
+                position: 'absolute',
+                bottom: 50,
+                left: '50%',
+              }}
+            >
+              <LoadingSpinner color={'gray'} size={22} />
+            </View>
+          ) : null}
         </View>
       </CardBody>
       <NetworkErrorView />
-      <CardBody style={style.flatten(['padding-top-16'])}>
-        <View style={style.flatten(['flex', 'items-center'])}>
+      <CardBody>
+        <View
+          style={{
+            height: 75,
+            borderWidth: 0.5,
+            borderColor: '#F2F6FA',
+            borderRadius: 12,
+            backgroundColor: 'white',
+            shadowColor: 'rgba(24, 39, 75, 0.12)',
+            shadowOffset: {
+              width: 0,
+              height: 12,
+            },
+            shadowOpacity: 1,
+            shadowRadius: 16.0,
+          }}
+        >
+          <View
+            style={{
+              display: 'flex',
+              height: 75,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingLeft: 12,
+              paddingRight: 8,
+            }}
+          >
+            <View
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Text style={{ paddingBottom: 6 }}>Namespace</Text>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
+              >
+                <Image
+                  style={{
+                    width: 26,
+                    height: 26,
+                  }}
+                  source={require('../../assets/image/namespace_default.png')}
+                  fadeDuration={0}
+                />
+                <Text
+                  style={{
+                    paddingLeft: 6,
+                    fontWeight: '700',
+                    fontSize: 18,
+                    lineHeight: 26,
+                    textAlign: 'center',
+                    color: '#1C1C1E',
+                  }}
+                >
+                  Harris.orai
+                </Text>
+              </View>
+            </View>
+            <View style={{ paddingTop: 10 }}>
+              <SettingDashboardIcon size={30} color={'#5F5E77'} />
+            </View>
+          </View>
+        </View>
+      </CardBody>
+      {/* <CardBody style={{
+        paddingTop: 16
+      }}>
+        <View style={{
+          display: 'flex',
+          alignItems: 'center'
+        }}>
           <View
             style={style.flatten([
               'flex-row',
               'items-center',
-              'margin-bottom-28'
+              'margin-bottom-28',
             ])}
           >
-            {/* <TokenSymbol
+            <TokenSymbol
               size={44}
               chainInfo={chainStore.current}
               currency={chainStore.current.stakeCurrency}
-            /> */}
-            <View style={style.flatten(['margin-left-12'])}>
+            />
+            <View style={{
+              marginLeft: 12
+            }}>
               <View
                 style={style.flatten([
                   'flex-row',
                   'items-center',
-                  'margin-bottom-4'
+                  'margin-bottom-4',
                 ])}
               >
                 <View
@@ -186,13 +408,13 @@ export const AccountCard: FunctionComponent<{
                     'height-8',
                     'background-color-primary',
                     'border-radius-8',
-                    'margin-right-4'
+                    'margin-right-4',
                   ])}
                 />
                 <Text
                   style={style.flatten([
                     'subtitle3',
-                    'color-text-black-very-low'
+                    'color-text-black-very-low',
                   ])}
                 >
                   Available
@@ -210,7 +432,7 @@ export const AccountCard: FunctionComponent<{
               containerStyle={style.flatten(['min-width-72'])}
               onPress={() => {
                 smartNavigation.navigateSmart('Send', {
-                  currency: chainStore.current.stakeCurrency.coinMinimalDenom
+                  currency: chainStore.current.stakeCurrency.coinMinimalDenom,
                 });
               }}
             />
@@ -219,16 +441,16 @@ export const AccountCard: FunctionComponent<{
             style={style.flatten([
               'flex-row',
               'items-center',
-              'margin-bottom-8'
+              'margin-bottom-8',
             ])}
           >
-            {/* <StakedTokenSymbol size={44} /> */}
+            <StakedTokenSymbol size={44} />
             <View style={style.flatten(['margin-left-12'])}>
               <View
                 style={style.flatten([
                   'flex-row',
                   'items-center',
-                  'margin-bottom-4'
+                  'margin-bottom-4',
                 ])}
               >
                 <View
@@ -237,13 +459,13 @@ export const AccountCard: FunctionComponent<{
                     'height-8',
                     'background-color-secondary-500',
                     'border-radius-8',
-                    'margin-right-4'
+                    'margin-right-4',
                   ])}
                 />
                 <Text
                   style={style.flatten([
                     'subtitle3',
-                    'color-text-black-very-low'
+                    'color-text-black-very-low',
                   ])}
                 >
                   Staking
@@ -265,7 +487,7 @@ export const AccountCard: FunctionComponent<{
             />
           </View>
         </View>
-      </CardBody>
+      </CardBody> */}
     </Card>
   );
 });

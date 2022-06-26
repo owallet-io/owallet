@@ -2,7 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useRef
+  useRef,
 } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { AccountCard } from './account-card';
@@ -10,7 +10,7 @@ import {
   AppState,
   AppStateStatus,
   RefreshControl,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 import { useStore } from '../../stores';
 import { StakingInfoCard } from './staking-info-card';
@@ -83,7 +83,7 @@ export const HomeScreen: FunctionComponent = observer(() => {
       previousChainStoreIsInitializing,
       currentChainId,
       previousChainId,
-      checkAndUpdateChainInfo
+      checkAndUpdateChainInfo,
     ])
   );
 
@@ -115,7 +115,7 @@ export const HomeScreen: FunctionComponent = observer(() => {
         .waitFreshResponse(),
       queries.cosmos.queryUnbondingDelegations
         .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse()
+        .waitFreshResponse(),
     ]);
 
     setRefreshing(false);
@@ -144,7 +144,7 @@ export const HomeScreen: FunctionComponent = observer(() => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      <AccountCard containerStyle={style.flatten(['margin-y-card-gap'])} />
+      <AccountCard containerStyle={{ marginBottom: 12, marginTop: 12 , backgroundColor: '#F2F6FA' }} />
       {tokens.length > 0 ? (
         <TokensCard
           containerStyle={style.flatten(['margin-bottom-card-gap'])}

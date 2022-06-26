@@ -17,6 +17,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors, metrics, spacing, typography } from '../../themes'
 
 const styles = StyleSheet.create({
   'padding-x-page': {
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
     height: 20,
   },
   'flex-1': {
+    display: 'flex',
     flex: 1,
   },
   'margin-bottom-102': {

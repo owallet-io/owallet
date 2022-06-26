@@ -5,7 +5,7 @@ import {
   Text,
   View,
   Keyboard,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
@@ -97,18 +97,19 @@ export const Browser: FunctionComponent<any> = (props) => {
   }, [navigation]);
 
   useEffect(() => {
-    if (props?.route?.params?.path) {
-      updateScreen(props.route.params.path);
+    const deepLinkUri =
+      props?.route?.params?.path || deepLinkUriStore.getDeepLink();
+    if (deepLinkUri) {
+      updateScreen(deepLinkUri);
     }
   }, []);
 
   const updateScreen = async (uri) => {
-    const deepLinkUri = uri || deepLinkUriStore.getDeepLink();
-    if (deepLinkUri) {
+    if (uri) {
       deepLinkUriStore.updateDeepLink('');
       smartNavigation.pushSmart('Web.dApp', {
         name: 'Browser',
-        uri: decodeURIComponent(deepLinkUri) || 'https://oraidex.io',
+        uri: decodeURIComponent(uri) || 'https://oraidex.io',
       });
     }
   };
@@ -182,102 +183,113 @@ export const Browser: FunctionComponent<any> = (props) => {
     };
   }, []);
 
-  const renderBrowser = () => {
-    return (
-      <TouchableWithoutFeedback
-        onPress={() => {
-          if (isKeyboardVisible) Keyboard.dismiss();
-        }}
-      >
-        <View style={[style.flatten(['height-full', 'justify-between'])]}>
-          <View>
-            <BrowserSectionTitle title="Browser" />
-            <View style={{ height: 260 }}>
-              <Image
-                style={{
-                  width: '100%',
-                  height: '100%',
-                }}
-                fadeDuration={0}
-                resizeMode="stretch"
-                source={require('../../assets/image/background.png')}
-              />
-              <TextInput
-                containerStyle={{
-                  width: '100%',
-                  padding: 20,
-                  marginTop: -50,
-                }}
-                inputStyle={style.flatten([
-                  'flex-row',
-                  'items-center',
-                  'background-color-white',
-                  'padding-20',
-                  'border-radius-16',
-                  'border-width-4',
-                  'border-color-border-pink',
-                ])}
-                returnKeyType={'next'}
-                placeholder={'Search website'}
-                placeholderTextColor={'#AEAEB2'}
-                onSubmitEditing={onHandleUrl}
-                value={url}
-                onChangeText={(txt) => setUrl(txt.toLowerCase())}
-                inputRight={
-                  <TouchableOpacity onPress={onHandleUrl}>
-                    <SearchIcon color={'gray'} size={20} />
-                  </TouchableOpacity>
-                }
-              />
-            </View>
-            <View
-              style={style.flatten([
+  return (
+    <TouchableWithoutFeedback
+      style={style.flatten(['flex-column', 'justify-between', 'height-full'])}
+      onPress={() => {
+        if (isKeyboardVisible) Keyboard.dismiss();
+      }}
+    >
+      <View>
+        <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
+          <BrowserSectionTitle title="Browser" />
+          <View style={{ height: 260 }}>
+            <Image
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+              fadeDuration={0}
+              resizeMode="stretch"
+              source={require('../../assets/image/background.png')}
+            />
+            <TextInput
+              containerStyle={{
+                width: '100%',
+                padding: 20,
+                marginTop: -50,
+              }}
+              inputStyle={style.flatten([
+                'flex-row',
+                'items-center',
                 'background-color-white',
-                'height-full',
-                'margin-top-64',
-                'padding-bottom-64',
+                'padding-20',
+                'border-radius-16',
+                'border-width-4',
+                'border-color-border-pink',
               ])}
-            >
-              <BrowserBookmark />
-              <View style={style.flatten(['padding-20'])}>
-                {browserStore.getBookmarks()?.map((e) => (
-                  <TouchableOpacity
-                    key={e.uri}
-                    style={style.flatten([
-                      'height-44',
-                      'margin-bottom-15',
-                      'flex-row',
-                    ])}
-                    onPress={() => {
-                      handleClickUri(e.uri, e.name);
-                      setUrl(e.uri);
-                    }}
-                  >
-                    <View style={style.flatten(['padding-top-5'])}>
-                      <Image
-                        style={{
-                          width: 20,
-                          height: 22,
-                        }}
-                        source={e.logo}
-                        fadeDuration={0}
-                      />
-                    </View>
-                    <View style={style.flatten(['padding-x-15'])}>
-                      <Text style={style.flatten(['subtitle2'])}>{e.name}</Text>
-                      <Text style={{ color: '#636366', fontSize: 14 }}>
-                        {e.uri}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              returnKeyType={'next'}
+              placeholder={'Search website'}
+              placeholderTextColor={'#AEAEB2'}
+              onSubmitEditing={onHandleUrl}
+              value={url}
+              onChangeText={(txt) => setUrl(txt.toLowerCase())}
+              inputRight={
+                <TouchableOpacity onPress={onHandleUrl}>
+                  <SearchIcon color={'gray'} size={20} />
+                </TouchableOpacity>
+              }
+            />
+          </View>
+          <View
+            style={style.flatten([
+              'height-full',
+              'background-color-white',
+              'margin-y-64',
+            ])}
+          >
+            <BrowserSection />
+            <View style={style.flatten(['height-full', 'padding-20'])}>
+              {DAppInfos.map(({ logo, uri, name }) => (
+                <TouchableOpacity
+                  style={style.flatten([
+                    'height-44',
+                    'margin-bottom-15',
+                    'flex-row',
+                  ])}
+                  onPress={() => handleClickUri(uri, name)}
+                >
+                  <View style={style.flatten(['padding-top-5'])}>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 20,
+                      }}
+                      source={logo}
+                      fadeDuration={0}
+                    />
+                  </View>
+                  <View style={style.flatten(['padding-x-15'])}>
+                    <Text style={style.flatten(['subtitle2'])}>{name}</Text>
+                    <Text style={{ color: '#636366', fontSize: 14 }}>
+                      {uri}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+        {isOpenSetting && (
+          <View
+            style={{
+              backgroundColor: '#132340',
+              height: 200,
+              width: 200,
+              position: 'absolute',
+              right: 0,
+              bottom: 80,
+              borderRadius: 4,
+              zIndex: 1,
+              padding: 10,
+            }}
+          >
+            <BrowserSectionModal
+              onClose={() => setIsOpenSetting(false)}
+              title="Setting"
+            />
+          </View>
+        )}
 
   return (
     <>

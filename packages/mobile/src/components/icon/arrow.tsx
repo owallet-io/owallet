@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import Svg, { Path } from "react-native-svg";
 
+
 export const RightArrowIcon: FunctionComponent<{
   color: string;
   height: number;

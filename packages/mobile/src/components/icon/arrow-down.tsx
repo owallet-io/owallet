@@ -2,17 +2,17 @@ import React, { FunctionComponent } from "react";
 import Svg, { Path } from "react-native-svg";
 
 export const DownArrowIcon: FunctionComponent<{
-  color: string;
-  height: number;
-}> = ({ color, height }) => {
+  color?: string;
+  height?: number;
+}> = ({ color= 'none', height = 24 }) => {
   return (
     <Svg
       fillRule="evenodd"
       strokeLinecap="round"
       strokeLinejoin="round"
       clipRule="evenodd"
-      width="12"
-      height="12"
+      width={height}
+      height={height}
       viewBox="0 0 12 12"
       style={{
         height,
