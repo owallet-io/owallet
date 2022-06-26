@@ -1,24 +1,20 @@
-import React, { FunctionComponent } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
-import { useStyle } from "../../styles";
+import React, { FunctionComponent } from 'react'
+import { View, ViewStyle } from 'react-native'
+import { colors, metrics } from '../../themes'
 
 export const Card: FunctionComponent<{
-  style?: ViewStyle;
+  style?: ViewStyle
 }> = ({ style: propStyle, children }) => {
-  const style = useStyle();
-
   return (
     <View
-      style={StyleSheet.flatten([
-        style.flatten([
-          "width-full",
-          "background-color-card",
-          "overflow-hidden",
-        ]),
-        propStyle,
-      ])}
+      style={{
+        width: metrics.screenWidth,
+        backgroundColor: colors['card'],
+        overflow: 'hidden',
+        ...propStyle
+      }}
     >
       {children}
     </View>
-  );
-};
+  )
+}

@@ -76,8 +76,7 @@ export const typography = {
   'text-button3': {
     fontSize: 14,
     lineHeight: 18,
-    letterSpacing: 0.2,
-    textTransform: 'capitalize'
+    letterSpacing: 0.2
   },
   'text-caption1': {
     fontSize: 13,
