@@ -1,7 +1,6 @@
 import React, { FunctionComponent, useMemo } from 'react'
-import { StyleSheet, View, ViewStyle } from 'react-native'
+import { View, ViewStyle } from 'react-native'
 import { AppCurrency, Currency } from '@owallet/types'
-import { useStyle } from '../../styles'
 import { Circle, Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 import FastImage from 'react-native-fast-image'
 import { Hash } from '@owallet/crypto'

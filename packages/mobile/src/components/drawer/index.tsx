@@ -1,42 +1,43 @@
-import React, { FunctionComponent, useCallback, useState } from 'react';
-import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useCallback, useState } from 'react'
+import { observer } from 'mobx-react-lite'
 import {
   DrawerContentComponentProps,
   DrawerContentOptions,
-  DrawerContentScrollView,
-} from '@react-navigation/drawer';
-import { useStore } from '../../stores';
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Alert, Text, View } from 'react-native';
-import { useStyle } from '../../styles';
-import { RectButton } from '../rect-button';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { VectorCharacter } from '../vector-character';
-import FastImage from 'react-native-fast-image';
-import { Hash } from '@owallet/crypto';
-import { BrowserIcon } from '../icon/browser';
+  DrawerContentScrollView
+} from '@react-navigation/drawer'
+import { useStore } from '../../stores'
+import { DrawerActions, useNavigation } from '@react-navigation/native'
+import { Alert, StyleSheet, Text, View } from 'react-native'
+import { useStyle } from '../../styles'
+import { RectButton } from '../rect-button'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { VectorCharacter } from '../vector-character'
+import FastImage from 'react-native-fast-image'
+import { Hash } from '@owallet/crypto'
+import { BrowserIcon } from '../icon/browser'
+import { colors, spacing, typography } from '../../themes'
 
 export type DrawerContentProps =
-  DrawerContentComponentProps<DrawerContentOptions>;
+  DrawerContentComponentProps<DrawerContentOptions>
 
 export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
-  (props) => {
-    const { chainStore, analyticsStore } = useStore();
-    const navigation = useNavigation();
-    const safeAreaInsets = useSafeAreaInsets();
-    const style = useStyle();
+  props => {
+    const { chainStore, analyticsStore } = useStore()
+    const navigation = useNavigation()
+    const safeAreaInsets = useSafeAreaInsets()
+    const style = useStyle()
 
-    const deterministicNumber = useCallback((chainInfo) => {
+    const deterministicNumber = useCallback(chainInfo => {
       const bytes = Hash.sha256(
         Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
-      );
+      )
       return (
         (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
-      );
-    }, []);
+      )
+    }, [])
 
     const profileColor = useCallback(
-      (chainInfo) => {
+      chainInfo => {
         const colors = [
           'sky-blue',
           'mint',
@@ -49,13 +50,13 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
           'purple',
           'red',
           'orange',
-          'yellow',
-        ];
+          'yellow'
+        ]
 
-        return colors[deterministicNumber(chainInfo) % colors.length];
+        return colors[deterministicNumber(chainInfo) % colors.length]
       },
       [deterministicNumber]
-    );
+    )
 
     return (
       <DrawerContentScrollView {...props}>
@@ -64,78 +65,74 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
             marginBottom: safeAreaInsets.bottom
           }}
         >
-          <View style={style.flatten(['justify-center', 'height-50'])}>
+          <View
+            style={{
+              justifyContent: 'center',
+              height: 50
+            }}
+          >
             <Text
-              style={style.flatten([
-                'h3',
-                'color-text-black-high',
-                'margin-left-24',
-              ])}
+              style={{
+                ...typography.h3,
+                color: colors['text-black-high'],
+                marginLeft: spacing['24']
+              }}
             >
               Networks
             </Text>
           </View>
           <View>
             <>
-              {chainStore.chainInfosInUI.map((chainInfo) => {
+              {chainStore.chainInfosInUI.map(chainInfo => {
                 const selected =
-                  chainStore.current.chainId === chainInfo.chainId;
+                  chainStore.current.chainId === chainInfo.chainId
 
                 return (
                   <RectButton
                     key={chainInfo.chainId}
                     onPress={() => {
                       if (!chainInfo.chainName.includes('soon')) {
-                        navigation.dispatch(DrawerActions.closeDrawer());
+                        navigation.dispatch(DrawerActions.closeDrawer())
                         analyticsStore.logEvent('Chain changed', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
                           toChainId: chainInfo.chainId,
-                          toChainName: chainInfo.chainName,
-                        });
-                        chainStore.selectChain(chainInfo.chainId);
-                        chainStore.saveLastViewChainId();
+                          toChainName: chainInfo.chainName
+                        })
+                        chainStore.selectChain(chainInfo.chainId)
+                        chainStore.saveLastViewChainId()
                       } else {
-                        Alert.alert('Coming soon!');
+                        Alert.alert('Coming soon!')
                       }
                     }}
-                    style={style.flatten([
-                      'flex-row',
-                      'height-84',
-                      'items-center',
-                      'padding-x-20',
-                    ])}
+                    style={{
+                      flexDirection: 'row',
+                      height: 84,
+                      alignItems: 'center',
+                      paddingHorizontal: spacing['20']
+                    }}
                     activeOpacity={1}
                     underlayColor={
                       style.get('color-drawer-rect-button-underlay').color
                     }
                   >
                     <View
-                      style={style.flatten(
-                        [
-                          'width-32',
-                          'height-32',
-                          'border-radius-64',
-                          'items-center',
-                          'justify-center',
-                          'overflow-hidden',
-                          'margin-right-16',
-                          `background-color-profile-${profileColor(
-                            chainInfo
-                          )}` as any,
-                        ],
-                        [selected && 'background-color-black']
-                      )}
+                      style={{
+                        ...styles.containerImage,
+                        backgroundColor: selected
+                          ? colors['black']
+                          : profileColor(chainInfo)
+                      }}
                     >
                       {chainInfo.raw.chainSymbolImageUrl ? (
                         <FastImage
                           style={{
                             width: 24,
-                            height: 24,
+                            height: 24
                           }}
                           resizeMode={FastImage.resizeMode.contain}
                           source={{
-                            uri: chainInfo.raw.chainSymbolImageUrl,
+                            uri: chainInfo.raw.chainSymbolImageUrl
                           }}
                         />
                       ) : (
@@ -147,48 +144,38 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
                       )}
                     </View>
                     <Text
-                      style={style.flatten(
-                        ['h5', 'color-text-black-very-very-low'],
-                        [selected && 'color-text-black-medium']
-                      )}
+                      style={{
+                        ...typography.h5,
+                        color: selected
+                          ? colors['text-black-medium']
+                          : colors['text-black-very-very-low']
+                      }}
                     >
                       {chainInfo.chainName}
                     </Text>
                   </RectButton>
-                );
+                )
               })}
               <RectButton
                 key={'browser'}
                 onPress={() => {
-                  navigation.navigate('Browser');
+                  navigation.navigate('Browser')
                 }}
-                style={style.flatten([
-                  'flex-row',
-                  'height-84',
-                  'items-center',
-                  'padding-x-20',
-                  'border-width-top-1',
-                ])}
+                style={styles.containerBtn}
                 activeOpacity={1}
                 underlayColor={
                   style.get('color-drawer-rect-button-underlay').color
                 }
               >
-                <View
-                  style={style.flatten([
-                    'width-32',
-                    'height-32',
-                    'border-radius-64',
-                    'items-center',
-                    'justify-center',
-                    'overflow-hidden',
-                    'margin-right-16',
-                    'background-color-profile-green',
-                  ])}
-                >
+                <View style={styles.containerBrowser}>
                   <BrowserIcon />
                 </View>
-                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
+                <Text
+                  style={{
+                    ...typography.h5,
+                    color: colors['text-black-medium']
+                  }}
+                >
                   {'Browser'}
                 </Text>
               </RectButton>
@@ -196,6 +183,34 @@ export const DrawerContent: FunctionComponent<DrawerContentProps> = observer(
           </View>
         </View>
       </DrawerContentScrollView>
-    );
+    )
   }
-);
+)
+
+const styles = StyleSheet.create({
+  containerBrowser: {
+    width: spacing['32'],
+    height: spacing['32'],
+    borderRadius: spacing['64'],
+    alignItems: 'center',
+    overflow: 'hidden',
+    marginRight: spacing['16'],
+    backgroundColor: colors['profile-green']
+  },
+  containerBtn: {
+    flexDirection: 'row',
+    height: 84,
+    alignItems: 'center',
+    paddingHorizontal: spacing['20'],
+    borderTopWidth: 1
+  },
+  containerImage: {
+    width: spacing['32'],
+    height: spacing['32'],
+    borderRadius: spacing['64'],
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginRight: spacing['16']
+  }
+})

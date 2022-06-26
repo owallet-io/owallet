@@ -69,6 +69,7 @@ export const colors = {
   'big-image-placeholder': '#E7E4EF',
   // red
   'red-500': '#E63A3A',
+  'red-700': '#FF0000',
 
   // gray
   'gray-50': '#F3F1F5',
@@ -76,6 +77,7 @@ export const colors = {
   'gray-400': '#AEAEB2',
   'gray-500': '#8E8E93',
   'gray-600': '#636366',
+  'gray-700': '#5F5E77',
   'gray-800': '#3A3A3C',
   'gray-900': '#1C1C1E',
 

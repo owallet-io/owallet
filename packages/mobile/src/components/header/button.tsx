@@ -1,48 +1,61 @@
-import React, { FunctionComponent } from "react";
-import { StackHeaderLeftButtonProps } from "@react-navigation/stack";
-import { StyleSheet, View, ViewStyle } from "react-native";
-import { useStyle } from "../../styles";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { HeaderBackButtonIcon } from "./icon";
+import React, { FunctionComponent } from 'react'
+import { StackHeaderLeftButtonProps } from '@react-navigation/stack'
+import { StyleSheet, View, ViewStyle } from 'react-native'
+import { useStyle } from '../../styles'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { HeaderBackButtonIcon } from './icon'
+import { spacing } from '../../themes'
 
-export const HeaderLeftButton: FunctionComponent<StackHeaderLeftButtonProps> = ({
-  children,
-  onPress,
-}) => {
-  const style = useStyle();
+export const HeaderLeftButton: FunctionComponent<
+  StackHeaderLeftButtonProps
+> = ({ children, onPress }) => {
+  const style = useStyle()
 
   return (
-    <View style={style.flatten(["absolute"])}>
+    <View
+      style={{
+        position: 'absolute'
+      }}
+    >
       <TouchableOpacity
         onPress={onPress}
-        style={StyleSheet.flatten([style.flatten(["padding-10"])])}
+        style={{
+          padding: spacing['10']
+        }}
       >
         {children}
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 export const HeaderRightButton: FunctionComponent<{
-  onPress?: () => void;
-  style?: ViewStyle;
+  onPress?: () => void
+  style?: ViewStyle
 }> = ({ children, style: propStyle, onPress }) => {
-  const style = useStyle();
+  const style = useStyle()
 
   return (
-    <View style={StyleSheet.flatten([style.flatten(["absolute"]), propStyle])}>
+    <View
+      style={{
+        position: 'absolute',
+        ...propStyle
+      }}
+    >
       <TouchableOpacity
         onPress={onPress}
-        style={StyleSheet.flatten([style.flatten(["padding-10"])])}
+        style={{
+          padding: spacing['10']
+        }}
       >
         {children}
       </TouchableOpacity>
     </View>
-  );
-};
-export const HeaderLeftBackButton: FunctionComponent<StackHeaderLeftButtonProps> = (
-  props
-) => {
+  )
+}
+export const HeaderLeftBackButton: FunctionComponent<
+  StackHeaderLeftButtonProps
+> = props => {
   return (
     <React.Fragment>
       {props.canGoBack ? (
@@ -51,5 +64,5 @@ export const HeaderLeftBackButton: FunctionComponent<StackHeaderLeftButtonProps>
         </HeaderLeftButton>
       ) : null}
     </React.Fragment>
-  );
-};
+  )
+}

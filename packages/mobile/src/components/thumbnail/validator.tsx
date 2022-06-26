@@ -1,33 +1,30 @@
-import React, { FunctionComponent } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import { useStyle } from '../../styles';
-import { PersonIcon } from '../icon';
+import React, { FunctionComponent } from 'react'
+import { StyleSheet, View, ViewStyle } from 'react-native'
+import FastImage from 'react-native-fast-image'
+import { useStyle } from '../../styles'
+import { colors } from '../../themes'
+import { PersonIcon } from '../icon'
 
 export const ValidatorThumbnail: FunctionComponent<{
-  style?: ViewStyle;
-  url?: string;
-  size: number;
+  style?: ViewStyle
+  url?: string
+  size: number
 }> = ({ style: propStyle, url, size }) => {
-  const style = useStyle();
+  const style = useStyle()
 
   return (
     <View
-      style={StyleSheet.flatten([
-        style.flatten([
-          'overflow-hidden',
-          'border-width-1',
-          'border-color-border-white',
-          'items-center',
-          'justify-center'
-        ]),
-        {
-          width: size,
-          height: size,
-          borderRadius: size
-        },
-        propStyle
-      ])}
+      style={{
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: colors['white'],
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size,
+        height: size,
+        borderRadius: size,
+        ...propStyle
+      }}
     >
       {url ? (
         <FastImage
@@ -44,5 +41,5 @@ export const ValidatorThumbnail: FunctionComponent<{
         <PersonIcon size={size} color="black" />
       )}
     </View>
-  );
-};
+  )
+}
