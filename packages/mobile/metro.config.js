@@ -25,10 +25,10 @@ const watchFolders = [
   })
 ];
 
-module.exports = (() => {
+module.exports = (async () => {
   const {
     resolver: { sourceExts, assetExts }
-  } = getDefaultConfig(__dirname);
+  } = await getDefaultConfig(__dirname);
 
   return {
     projectRoot: path.resolve(__dirname, '.'),
