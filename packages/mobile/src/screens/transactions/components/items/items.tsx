@@ -3,7 +3,6 @@ import { FunctionComponent } from 'react'
 import { StyleSheet, TextStyle, View } from 'react-native'
 import { Text } from '@rneui/base'
 import { RectButton } from '../../../../components/rect-button'
-import { useStyle } from '../../../../styles'
 import { colors, metrics, spacing, typography } from '../../../../themes'
 
 export const TransactionItem: FunctionComponent<{
@@ -30,31 +29,35 @@ export const TransactionItem: FunctionComponent<{
   right,
   styleReactButton
 }) => {
-  const style = useStyle()
-
   const renderChildren = () => {
     return (
-      <React.Fragment>
+      <>
         <View style={styles.containerFragment}>
-          <View>
-            <Text h4 h4Style={styles.textLabel}>
+          <View style={{ flex: 1 }}>
+            <Text h4 h4Style={styles.textLabel} numberOfLines={1}>
               {label}
             </Text>
             {paragraph ? (
               <Text style={styles.textParagraph}>{paragraph}</Text>
             ) : null}
           </View>
-          <View>
-            {right ? (
-              right
-            ) : (
-              <Text h4 h4Style={{ ...styles.textAmount, ...colorStyleAmount }}>
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>
+            {
+              <Text
+                h4
+                h4Style={{
+                  ...styles.textAmount,
+                  color: amount.includes('-')
+                    ? colors['red-500']
+                    : colors['green-500']
+                }}
+              >
                 {amount} {denom}
               </Text>
-            )}
+            }
           </View>
         </View>
-      </React.Fragment>
+      </>
     )
   }
 
@@ -64,8 +67,8 @@ export const TransactionItem: FunctionComponent<{
       <RectButton
         style={{
           ...styles.reactBtn,
-          marginHorizontal: styleReactButton ? styleReactButton : spacing['8'],
-          borderRadius: styleReactButton ? styleReactButton : spacing['12']
+          marginHorizontal: spacing['8'],
+          borderRadius: spacing['12']
         }}
         onPress={onPress}
       >
@@ -77,7 +80,8 @@ export const TransactionItem: FunctionComponent<{
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: spacing['20']
+    paddingHorizontal: spacing['20'],
+    marginVertical: spacing['8']
   },
   topBorder: {
     height: 1,
@@ -92,22 +96,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors['white']
   },
   containerFragment: {
-    width: metrics.screenWidth,
+    width: metrics.screenWidth - 40,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: spacing['20'],
+    paddingVertical: spacing['14'],
+    flex: 1
   },
   textLabel: {
     ...typography.h5,
-    color: colors['text-black-low']
+    color: colors['text-black'],
+    fontWeight: 'bold'
   },
   textParagraph: {
     marginTop: spacing['4'],
-    ...typography.subtitle3,
-    color: colors['text-black-low']
+    fontSize: 12,
+    color: colors['gray-600'],
+    fontWeight: 'normal'
   },
   textAmount: {
     ...typography.h5,
-    ...colorStyleAmount
+
+    fontWeight: '800'
   }
 })

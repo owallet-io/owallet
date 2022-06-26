@@ -67,6 +67,15 @@ export const colors = {
   'setting-screen-background': '#FAFBFD',
   'camera-loading-background': 'rgba(255,255,255,0.95)',
   'big-image-placeholder': '#E7E4EF',
+  // red
+  'red-500': '#E63A3A',
+
+  // gray
   'gray-50': '#F2F2F7',
-  'gray-400': '#AEAEB2'
+  'gray-300': '#8C93A7',
+  'gray-400': '#AEAEB2',
+  'gray-600': '#636366',
+
+  //green
+  'green-500': '#4BB10C'
 }

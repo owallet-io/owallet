@@ -27,7 +27,7 @@ const txsTransfer = [
     denom: 'ORAI'
   },
   {
-    label: 'Send token',
+    label: 'Send token to adfjlajdlfjwlelnkn',
     date: 'Apr 25, 2022',
     amount: '-100.02',
     denom: 'ORAI'
@@ -53,12 +53,31 @@ const txsTransfer = [
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
-    amount: '-100.02',
+    amount: '+100.02',
     denom: 'ORAI'
   }
 ]
 
-const txsReceiver = []
+const txsReceiver = [
+  {
+    label: 'Recevier token 3',
+    date: 'Apr 25, 2022',
+    amount: '+100.02',
+    denom: 'ORAI'
+  },
+  {
+    label: 'Recevier token',
+    date: 'Apr 25, 2022',
+    amount: '+12.02',
+    denom: 'ORAI'
+  },
+  {
+    label: 'Recevier token',
+    date: 'Apr 25, 2022',
+    amount: '+100.02',
+    denom: 'ORAI'
+  }
+]
 
 export const Transactions: FunctionComponent = () => {
   const style = useStyle()
