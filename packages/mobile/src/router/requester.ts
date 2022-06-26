@@ -1,5 +1,10 @@
-import { Message, MessageRequester, Result } from '@owallet/router';
-import { JSONUint8Array } from '@owallet/router/build/json-uint8-array';
+import {
+  Message,
+  MessageRequester,
+  OWalletError,
+  Result
+} from '@owallet/router';
+import { JSONUint8Array } from '@owallet/router';
 import EventEmitter from 'eventemitter3';
 import { RNRouterBackground, RNRouterUI } from './rn-router';
 
@@ -63,7 +68,15 @@ export class RNMessageRequesterBase implements MessageRequester {
     }
 
     if (result.error) {
-      throw new Error(result.error);
+      if (typeof result.error === 'string') {
+        throw new Error(result.error);
+      } else {
+        throw new OWalletError(
+          result.error.module,
+          result.error.code,
+          result.error.message
+        );
+      }
     }
 
     return result.return;

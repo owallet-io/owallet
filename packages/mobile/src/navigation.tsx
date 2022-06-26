@@ -51,6 +51,13 @@ import {
 } from './screens/stake';
 import {
   DownArrowIcon,
+  SendIcon,
+  TransactionIcon,
+  WalletIcon,
+  WalletOutLineIcon,
+  ContactFillIcon,
+  ContactOutLineIcon,
+  TransactionOutlineIcon,
   SettingFillIcon,
   SettingOutLineIcon,
   DotsIcon,
@@ -134,26 +141,24 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
   );
 });
 
-const BrowserScreenHeaderLeft: FunctionComponent = observer(() => {
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  return (
-    <HeaderLeftButton
-      onPress={() => {
-        // navigation.goBack();
-        navigate('MainTabDrawer');
-      }}
-    >
-      <View style={style.flatten(['flex-row', 'items-center'])}>
-        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
-          <HeaderBackButtonIcon />
-        </Text>
-      </View>
-    </HeaderLeftButton>
-  );
-});
+const ScreenHeaderLeft: FunctionComponent<{ uri: string }> = observer(
+  ({ uri = 'MainTabDrawer' }) => {
+    const style = useStyle();
+    return (
+      <HeaderLeftButton
+        onPress={() => {
+          navigate(uri);
+        }}
+      >
+        <View style={style.flatten(['flex-row', 'items-center'])}>
+          <Text style={style.flatten(['h4', 'color-text-black-low'])}>
+            <HeaderBackButtonIcon />
+          </Text>
+        </View>
+      </HeaderLeftButton>
+    );
+  }
+);
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
