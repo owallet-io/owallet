@@ -29,3 +29,5 @@ export * from './transaction';
 export * from './contact';
 export * from './country';
 export * from './remove';
+export * from './browser';
+export * from './invest';

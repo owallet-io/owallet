@@ -9,7 +9,7 @@ import {
   InvalidBech32Error,
   IRecipientConfig
 } from '@owallet/hooks';
-import { TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { TextInput } from './input';
 import { ObservableEnsFetcher } from '@owallet/ens';
 import { LoadingSpinner } from '../spinner';
@@ -17,6 +17,24 @@ import { useStyle } from '../../styles';
 import { AddressBookIcon } from '../icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
+
+const styles = StyleSheet.create({
+  absolute: {
+    position: 'absolute',
+  },
+  'height-16': {
+    height: 16,
+  },
+  'justify-center': {
+    justifyContent: 'center',
+  },
+  'margin-top-2': {
+    marginTop: 2,
+  },
+  'margin-left-4': {
+    marginLeft: 4,
+  },
+});
 
 export const AddressInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -89,17 +107,17 @@ export const AddressInput: FunctionComponent<{
             isENSLoading ? (
               <View>
                 <View
-                  style={style.flatten([
-                    'absolute',
-                    'height-16',
-                    'justify-center',
-                    'margin-top-2',
-                    'margin-left-4'
-                  ])}
+                  style={[
+                    styles['absolute'],
+                    styles['height-16'],
+                    styles['justify-center'],
+                    styles['margin-top-2'],
+                    styles['margin-left-4'],
+                  ]}
                 >
                   <LoadingSpinner
                     size={14}
-                    color={style.get('color-loading-spinner').color}
+                    color={"#83838F"}
                   />
                 </View>
               </View>
@@ -114,7 +132,7 @@ export const AddressInput: FunctionComponent<{
               style={style.flatten([
                 'height-1',
                 'overflow-visible',
-                'justify-center'
+                'justify-center',
               ])}
             >
               <TouchableOpacity
@@ -122,7 +140,7 @@ export const AddressInput: FunctionComponent<{
                 onPress={() => {
                   smartNavigation.navigateSmart('AddressBook', {
                     recipientConfig,
-                    memoConfig
+                    memoConfig,
                   });
                 }}
               >

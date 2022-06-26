@@ -4,7 +4,7 @@ import { useSendTxConfig } from '@owallet/hooks';
 import { useStore } from '../../stores';
 import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   AddressInput,
   AmountInput,
@@ -12,12 +12,30 @@ import {
   CurrencySelector,
   FeeButtons
 } from '../../components/input';
-import { useStyle } from '../../styles';
 import { Button } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const styles = StyleSheet.create({
+  'padding-x-page': {
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  'flex-grow': {
+    flexGrow: 1,
+  },
+  'height-page-pad': {
+    height: 20,
+  },
+  'flex-1': {
+    flex: 1,
+  },
+  'margin-bottom-102': {
+    marginBottom: 102,
+  },
+});
 
 export const SendScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
@@ -35,8 +53,6 @@ export const SendScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
-  const style = useStyle();
 
   const smartNavigation = useSmartNavigation();
 
@@ -83,15 +99,15 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get('flex-grow-1')}
-      style={style.flatten(['padding-x-page'])}
+      contentContainerStyle={styles['flex-grow']}
+      style={styles['padding-x-page']}
     >
       <View
         style={{
           marginTop: safeAreaInsets.top
         }}
       />
-      {/* <View style={style.flatten(['height-page-pad'])} /> */}
+      <View style={styles['height-page-pad']} />
       <AddressInput
         label="Recipient"
         recipientConfig={sendConfigs.recipientConfig}
@@ -110,7 +126,7 @@ export const SendScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(['flex-1'])} />
+      <View style={styles['flex-1']} />
       <Button
         text="Send"
         size="large"
@@ -152,7 +168,7 @@ export const SendScreen: FunctionComponent = observer(() => {
           }
         }}
       />
-      <View style={style.flatten(['height-page-pad', 'margin-bottom-102'])} />
+      <View style={[styles['height-page-pad'], styles['margin-bottom-102']]} />
     </PageWithScrollView>
   );
 });
