@@ -1,19 +1,17 @@
 import React, { FunctionComponent } from 'react';
-import { StyleSheet, Text, ViewStyle, View } from 'react-native';
-import { useStyle } from '../../styles';
+import {  Text, ViewStyle, View } from 'react-native';
 import { Bech32Address } from '@owallet/cosmos';
 import Clipboard from 'expo-clipboard';
 import { RectButton } from '../rect-button';
-import { CopyIcon } from '../icon';
+import { CopyAccountIcon, CopyIcon } from '../icon';
 import { useSimpleTimer } from '../../hooks';
+import { colors } from '../../themes';
 
 export const AddressCopyable: FunctionComponent<{
   style?: ViewStyle;
   address: string;
   maxCharacters: number;
 }> = ({ style: propStyle, address, maxCharacters }) => {
-  const style = useStyle();
-  const { analyticsStore, chainStore } = useStore();
   const { isTimedOut, setTimer } = useSimpleTimer();
 
   return (
@@ -39,8 +37,8 @@ export const AddressCopyable: FunctionComponent<{
         Clipboard.setString(address);
         setTimer(2000);
       }}
-      rippleColor={style.get('color-button-primary-outline-ripple').color}
-      underlayColor={style.get('color-button-primary-outline-underlay').color}
+      rippleColor={colors['primary-100']}
+      underlayColor={colors['primary-50']}
       activeOpacity={1}
     >
       <Text style={{ fontSize: 14, color: '#5F5E77' }}>
@@ -83,7 +81,9 @@ export const AddressCopyable: FunctionComponent<{
             </View>
           </View>
         ) : (
-          <CopyIcon color={style.get('color-primary').color} size={19} />
+          // <CopyIcon color={style.get('color-primary').color} size={19} />
+          <CopyAccountIcon size={19} />
+
         )}
       </View>
     </RectButton>

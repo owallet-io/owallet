@@ -1,99 +1,100 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
-import { Tab, Text } from '@rneui/base'
-import { FlatList, StyleSheet, View } from 'react-native'
-import { useStyle } from '../../styles'
-import { StackActions, useNavigation } from '@react-navigation/native'
-import { TransactionSectionTitle, TransactionItem } from './components'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { _keyExtract } from '../../utils/helper'
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { Tab, Text } from '@rneui/base';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { useStyle } from '../../styles';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import { TransactionSectionTitle, TransactionItem } from './components';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { _keyExtract } from '../../utils/helper';
+import { useSmartNavigation } from '../../navigation.provider';
 
 const txsTransfer = [
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
     amount: '-80.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
     amount: '-100.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
     amount: '-100.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token to adfjlajdlfjwlelnkn',
     date: 'Apr 25, 2022',
     amount: '-100.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
     amount: '-100.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token 3',
     date: 'Apr 25, 2022',
     amount: '-100.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
     amount: '-12.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Send token',
     date: 'Apr 25, 2022',
     amount: '+100.02',
-    denom: 'ORAI'
-  }
-]
+    denom: 'ORAI',
+  },
+];
 
 const txsReceiver = [
   {
     label: 'Recevier token 3',
     date: 'Apr 25, 2022',
     amount: '+100.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Recevier token',
     date: 'Apr 25, 2022',
     amount: '+12.02',
-    denom: 'ORAI'
+    denom: 'ORAI',
   },
   {
     label: 'Recevier token',
     date: 'Apr 25, 2022',
     amount: '+100.02',
-    denom: 'ORAI'
-  }
-]
+    denom: 'ORAI',
+  },
+];
 
 export const Transactions: FunctionComponent = () => {
-  const style = useStyle()
-  const [index, setIndex] = useState<number>(0)
-  const [txs, setTxs] = useState(txsTransfer)
-  const tabBarTitle = ['Transfer', 'Receiver']
-  const navigation = useNavigation()
-
+  const style = useStyle();
+  const [index, setIndex] = useState<number>(0);
+  const [txs, setTxs] = useState(txsTransfer);
+  const tabBarTitle = ['Transfer', 'Receiver'];
+  const navigation = useNavigation();
+  const smartNavigation = useSmartNavigation();
   const fetchTxs = () => {
     //TODO: fetch tx with type: transfer and receiver
-  }
+  };
 
   useEffect(() => {
     try {
     } catch (err) {}
-  }, [txs])
+  }, [txs]);
 
   const _renderItem = ({ item, index }) => {
     return (
@@ -103,25 +104,27 @@ export const Transactions: FunctionComponent = () => {
         amount={item.amount}
         denom={item.denom}
         key={index}
-        onPress={() =>
-          navigation.dispatch(StackActions.replace('TransactionsDetails'))
+        onPress={
+          () => smartNavigation.navigateSmart('Browser', {})
+
+        //  () =>  navigation.dispatch(StackActions.replace('TransactionsDetails'))
         }
         colorStyleAmount={style.flatten(['color-profile-red'])}
       />
-    )
-  }
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.tabBarHeader}>
         <Tab
           value={index}
-          onChange={e => {
-            setIndex(e)
-            setTxs(e === 0 ? txsTransfer : txsReceiver)
+          onChange={(e) => {
+            setIndex(e);
+            setTxs(e === 0 ? txsTransfer : txsReceiver);
           }}
           indicatorStyle={{
-            height: 0
+            height: 0,
           }}
           variant="default"
           containerStyle={styles.tabSelected}
@@ -130,15 +133,15 @@ export const Transactions: FunctionComponent = () => {
             <Tab.Item
               key={index}
               title={title}
-              titleStyle={active => ({
+              titleStyle={(active) => ({
                 fontSize: 14,
-                color: active ? colors['white'] : colors['gray-400']
+                color: active ? colors['white'] : colors['gray-400'],
               })}
-              containerStyle={active => ({
+              containerStyle={(active) => ({
                 ...styles.tabSelected,
                 backgroundColor: active
                   ? colors['primary']
-                  : colors['transparent']
+                  : colors['transparent'],
               })}
               variant="default"
             />
@@ -159,7 +162,7 @@ export const Transactions: FunctionComponent = () => {
                 h4
                 h4Style={{
                   ...typography.h4,
-                  color: colors['gray-400']
+                  color: colors['gray-400'],
                 }}
               >
                 {'Not found transaction'}
@@ -169,13 +172,13 @@ export const Transactions: FunctionComponent = () => {
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors['gray-50']
+    backgroundColor: colors['gray-50'],
   },
   tabBarHeader: {
     backgroundColor: colors['white'],
@@ -185,11 +188,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     height: spacing['44'],
     paddingVertical: spacing['20'],
-    paddingHorizontal: spacing['16']
+    paddingHorizontal: spacing['16'],
   },
   tabText: {
     ...typography.body2,
-    fontWeight: 'normal'
+    fontWeight: 'normal',
   },
   tabSelected: {
     width: metrics.screenWidth - 40,
@@ -197,15 +200,15 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing['8'],
     borderRadius: spacing['12'],
     backgroundColor: colors['gray-50'],
-    borderColor: colors['border-gray']
+    borderColor: colors['border-gray'],
   },
 
   transactionList: {
-    paddingBottom: spacing['12']
+    paddingBottom: spacing['12'],
   },
   transactionListEmpty: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: metrics.screenHeight / 4
-  }
-})
+    marginTop: metrics.screenHeight / 4,
+  },
+});

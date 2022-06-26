@@ -8,6 +8,8 @@ import {
   ViewStyle,
   ImageBackground,
   Image,
+  Touchable,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
@@ -20,7 +22,9 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
 import { ProgressBar } from '../../components/progress-bar';
 import {
+  DotsIcon,
   DownArrowIcon,
+  HistoryIcon,
   RightArrowIcon,
   Scanner,
   SendIcon,
@@ -35,6 +39,7 @@ import {
 } from '../../components/icon/button';
 import { colors, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -81,7 +86,7 @@ export const AccountCard: FunctionComponent<{
     parseFloat(stakable.toDec().toString()),
     parseFloat(stakedSum.toDec().toString()),
   ];
-
+  const safeAreaInsets = useSafeAreaInsets();
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('Browser', { path: 'https://oraidex.io' });
@@ -145,7 +150,12 @@ export const AccountCard: FunctionComponent<{
 
   return (
     <Card style={containerStyle}>
-      <CardBody style={{ paddingBottom: spacing['0'] }}>
+      <CardBody
+        style={{
+          paddingBottom: spacing['0'],
+          paddingTop: safeAreaInsets.top + 10,
+        }}
+      >
         <View
           style={{
             display: 'flex',
@@ -154,23 +164,59 @@ export const AccountCard: FunctionComponent<{
             paddingBottom: spacing['26'],
           }}
         >
-          <Text
+          <Text />
+          {/* <Text
             onPress={() => {
               navigation.dispatch(DrawerActions.toggleDrawer());
             }}
             style={typography['h4']}
           >
-          </Text>
-          {/* {chainStore.current.chainName + ' '} */}
-          <TouchableOpacity
+           
+          </Text> */}
+          <TouchableWithoutFeedback
             onPress={() => {
-              navigation.navigate('Others', {
-                screen: 'Camera',
-              });
+              navigation.dispatch(DrawerActions.toggleDrawer());
             }}
           >
-            <Scanner size={28} color={'#5064fb'} />
-          </TouchableOpacity>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingLeft: 50,
+              }}
+            >
+              <DotsIcon />
+              <Text
+                style={{
+                  ...typography['h5'],
+                  ...colors['color-text-black-low'],
+                  marginLeft: spacing['8'],
+                }}
+              >
+                {chainStore.current.chainName + ' '}
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <TouchableOpacity
+              onPress={() => {
+                smartNavigation.navigateSmart('Transactions', {});
+              }}
+              style={{ paddingRight: 15 }}
+            >
+              <HistoryIcon size={28} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Others', {
+                  screen: 'Camera',
+                });
+              }}
+            >
+              <Scanner size={28} color={'#5064fb'} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <View
@@ -277,7 +323,9 @@ export const AccountCard: FunctionComponent<{
                   source={require('../../assets/image/address_default.png')}
                   fadeDuration={0}
                 />
-                <Text style={{ paddingLeft: spacing['6'] }}>{account.name || '...'}</Text>
+                <Text style={{ paddingLeft: spacing['6'] }}>
+                  {account.name || '...'}
+                </Text>
               </View>
 
               <AddressCopyable

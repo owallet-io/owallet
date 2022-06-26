@@ -31,3 +31,4 @@ export * from './country';
 export * from './remove';
 export * from './browser';
 export * from './invest';
+export * from './history';

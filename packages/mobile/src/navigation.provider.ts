@@ -123,6 +123,12 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       },
       Browser: {
         upperScreenName: 'Browser'
+      },
+      Transactions: {
+        upperScreenName: 'Trans'
+      },
+      "Transactions.Detail": {
+        upperScreenName: 'TransactionsDetails'
       }
     }).withParams<{
       'Register.NewMnemonic': {
