@@ -14,6 +14,7 @@ import { TokenSymbol } from '../../components/token-symbol'
 import { DenomHelper } from '@owallet/common'
 import { Bech32Address } from '@owallet/cosmos'
 import { colors, spacing, typography } from '../../themes'
+import { AnimatedCircularProgress } from 'react-native-circular-progress'
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore()
@@ -61,14 +62,19 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
 export const TokenItem: FunctionComponent<{
   containerStyle?: ViewStyle
-
   chainInfo: {
     stakeCurrency: Currency
   }
   balance: CoinPretty
-}> = ({ containerStyle, chainInfo, balance }) => {
-  const style = useStyle()
-
+  balanceUsd?: number
+  totalBalance?: number
+}> = ({
+  containerStyle,
+  chainInfo,
+  balance,
+  balanceUsd = 41.39, // defautl value to test use
+  totalBalance = 100
+}) => {
   const smartNavigation = useSmartNavigation()
 
   // The IBC currency could have long denom (with the origin chain/channel information).
@@ -126,7 +132,7 @@ export const TokenItem: FunctionComponent<{
               marginBottom: spacing['4']
             }}
           >
-            {'60,342 ORAI'}
+            {`${balance}`}
           </Text>
           <Text
             style={{
@@ -135,10 +141,11 @@ export const TokenItem: FunctionComponent<{
               marginBottom: spacing['4']
             }}
           >
-            {'$30,358.23'}
+            {`$${balanceUsd}`}
           </Text>
         </View>
       </View>
+
       <View
         style={{
           flex: 0.5,
@@ -146,7 +153,23 @@ export const TokenItem: FunctionComponent<{
           alignItems: 'flex-end'
         }}
       >
-        <Text>{'72.1%'}</Text>
+        <AnimatedCircularProgress
+          size={spacing['64']}
+          width={6}
+          fill={(balanceUsd / totalBalance) * 100}
+          tintColor={colors['purple-700']}
+          backgroundColor={colors['gray-50']}
+          rotation={0}
+        >
+          {fill => (
+            <Text
+              h4
+              h4Style={{
+                ...typography.h7
+              }}
+            >{`${(balanceUsd / totalBalance) * 100}%`}</Text>
+          )}
+        </AnimatedCircularProgress>
       </View>
     </RectButton>
   )

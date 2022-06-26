@@ -46,8 +46,6 @@ export const TokenSymbol: FunctionComponent<{
   chainInfo,
   imageScale = 32 / 44
 }) => {
-  const style = useStyle()
-
   const isStakeCurrency =
     currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom
 

@@ -37,3 +37,8 @@ export const formatContractAddress = (address: string) => {
 
   return `${fristLetter}...${lastLetter}`
 }
+
+// capital first letter of string
+export const capitalizedText = (text: string) => {
+  return text.slice(0, 1).toUpperCase() + text.slice(1, text.length)
+}
