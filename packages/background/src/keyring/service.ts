@@ -307,8 +307,6 @@ export class KeyRingService {
         serializeSignDoc(newSignDoc)
       );
 
-      console.log('signDoc', signDoc, newSignDoc);
-
       return {
         signed: newSignDoc,
         signature: encodeSecp256k1Signature(key.pubKey, signature)
@@ -326,9 +324,6 @@ export class KeyRingService {
     signDoc: cosmos.tx.v1beta1.SignDoc,
     signOptions: OWalletSignOptions
   ): Promise<DirectSignResponse> {
-    console.log(
-      'in request sign direct heheeeeeeeeeeeeeeeeeeeeeeeeehehehehehehehehehe'
-    );
     const coinType = await this.chainsService.getChainCoinType(chainId);
 
     const key = this.keyRing.getKey(chainId, coinType);

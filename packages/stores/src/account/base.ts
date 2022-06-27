@@ -528,8 +528,6 @@ export class AccountSetBase<MsgOpts, Queries> {
       signedTx = makeStdTx(signResponse.signed, signResponse.signature);
     }
 
-    console.log('signDocMsg', signedTx);
-
     return {
       txHash: await owallet.sendTx(
         this.chainId,
