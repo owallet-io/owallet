@@ -52,7 +52,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         ) : null}
         {modalStore.getState() ? (
           <HomeBaseModal isOpen={true} close={() => modalStore.close()}>
-            {<Text>123123</Text>}
+            <Text>123123</Text>
           </HomeBaseModal>
         ) : null}
 
