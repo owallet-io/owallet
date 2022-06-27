@@ -67,11 +67,6 @@ export const SignModal: FunctionComponent<{
     const [isInternal, setIsInternal] = useState(false);
 
     useEffect(() => {
-      console.log(
-        'signInteractionStore 1',
-        signInteractionStore.waitingEthereumData
-      );
-
       if (signInteractionStore.waitingData) {
         const data = signInteractionStore.waitingData;
         setIsInternal(data.isInternal);

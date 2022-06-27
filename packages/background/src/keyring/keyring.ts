@@ -9,7 +9,7 @@ import { KVStore } from '@owallet/common';
 import { LedgerService } from '../ledger';
 import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
 import { ChainInfo } from '@owallet/types';
-import { Env } from '@owallet/router';
+import { Env, OWalletError } from '@owallet/router';
 
 import { Buffer } from 'buffer';
 import { ChainIdHelper } from '@owallet/cosmos';
@@ -668,18 +668,12 @@ export class KeyRing {
     defaultCoinType: number,
     message: Uint8Array
   ): Promise<Uint8Array> {
-    console.log(
-      'ready to sign the transaction FOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO'
-    );
-
-    console.log('message transaction', message);
-
     if (this.status !== KeyRingStatus.UNLOCKED) {
-      throw new Error('Key ring is not unlocked');
+      throw new OWalletError('keyring', 143, 'Key ring is not unlocked');
     }
 
     if (!this.keyStore) {
-      throw new Error('Key Store is empty');
+      throw new OWalletError('keyring', 130, 'Key store is empty');
     }
     // get here
     // Sign with Evmos/Ethereum
@@ -692,10 +686,12 @@ export class KeyRing {
       const pubKey = this.ledgerPublicKey;
 
       if (!pubKey) {
-        throw new Error('Ledger public key is not initialized');
+        throw new OWalletError(
+          'keyring',
+          151,
+          'Ledger public key is not initialized'
+        );
       }
-
-      console.log('ledger goes here');
 
       return await this.ledgerKeeper.sign(
         env,

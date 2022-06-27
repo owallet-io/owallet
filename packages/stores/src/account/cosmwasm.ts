@@ -167,12 +167,14 @@ export class CosmwasmAccount {
       value: {
         sender: this.base.bech32Address,
         contract: contractAddress,
-        msg: obj,
-        funds
+        msg: obj
       }
     };
-
     const chainInfo = this.chainGetter.getChain(this.chainId);
+
+    // dynamic msg based on beta
+    msg.value[chainInfo.beta ? 'sent_funds' : 'funds'] = funds;
+
     const protoMsgs = this.hasNoLegacyStdFeature()
       ? [
           chainInfo.beta
@@ -182,7 +184,7 @@ export class CosmwasmAccount {
                   sender: msg.value.sender,
                   contract: msg.value.contract,
                   msg: Buffer.from(JSON.stringify(msg.value.msg)),
-                  sent_funds: msg.value.funds
+                  sent_funds: funds
                 }).finish()
               }
             : {
@@ -191,7 +193,7 @@ export class CosmwasmAccount {
                   sender: msg.value.sender,
                   contract: msg.value.contract,
                   msg: Buffer.from(JSON.stringify(msg.value.msg)),
-                  funds: msg.value.funds
+                  funds: funds
                 }).finish()
               }
         ]

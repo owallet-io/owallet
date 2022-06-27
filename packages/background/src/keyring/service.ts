@@ -21,7 +21,7 @@ import { KVStore } from '@owallet/common';
 import { ChainsService } from '../chains';
 import { LedgerService } from '../ledger';
 import { BIP44, ChainInfo, OWalletSignOptions } from '@owallet/types';
-import { APP_PORT, Env, WEBPAGE_PORT } from '@owallet/router';
+import { APP_PORT, Env, OWalletError, WEBPAGE_PORT } from '@owallet/router';
 import { InteractionService } from '../interaction';
 import { PermissionService } from '../permission';
 
@@ -252,12 +252,14 @@ export class KeyRingService {
     );
     if (isADR36SignDoc) {
       if (signDoc.msgs[0].value.signer !== signer) {
-        throw new Error('Unmatched signer in sign doc');
+        throw new OWalletError('keyring', 233, 'Unmatched signer in sign doc');
       }
     }
 
     if (signOptions.isADR36WithString != null && !isADR36SignDoc) {
-      throw new Error(
+      throw new OWalletError(
+        'keyring',
+        236,
         'Sign doc is not for ADR-36. But, "isADR36WithString" option is defined'
       );
     }
@@ -282,10 +284,16 @@ export class KeyRingService {
       // Validate the new sign doc, if it was for ADR-36.
       if (checkAndValidateADR36AminoSignDoc(signDoc, bech32Prefix)) {
         if (signDoc.msgs[0].value.signer !== signer) {
-          throw new Error('Unmatched signer in new sign doc');
+          throw new OWalletError(
+            'keyring',
+            232,
+            'Unmatched signer in new sign doc'
+          );
         }
       } else {
-        throw new Error(
+        throw new OWalletError(
+          'keyring',
+          237,
           'Signing request was for ADR-36. But, accidentally, new sign doc is not for ADR-36'
         );
       }
@@ -298,6 +306,8 @@ export class KeyRingService {
         coinType,
         serializeSignDoc(newSignDoc)
       );
+
+      console.log('signDoc', signDoc, newSignDoc);
 
       return {
         signed: newSignDoc,

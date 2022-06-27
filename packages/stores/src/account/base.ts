@@ -517,6 +517,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         account.getAccountNumber().toString(),
         account.getSequence().toString()
       );
+
       const signResponse = await owallet.signAmino(
         this.chainId,
         this.bech32Address,
@@ -526,6 +527,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       signedTx = makeStdTx(signResponse.signed, signResponse.signature);
     }
+
+    console.log('signDocMsg', signedTx);
 
     return {
       txHash: await owallet.sendTx(

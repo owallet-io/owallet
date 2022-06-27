@@ -24,7 +24,7 @@ export class InExtensionMessageRequester implements MessageRequester {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     msg['origin'] =
-      typeof window !== 'undefined'
+      typeof window !== 'undefined' && window.location
         ? window.location.origin
         : new URL(browser.runtime.getURL('/')).origin;
 
