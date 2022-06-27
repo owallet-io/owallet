@@ -1,116 +1,117 @@
-import React, { ReactElement, useState } from 'react'
+import React, { FunctionComponent, ReactElement, useState } from 'react'
 import { StyleSheet, View, FlatList } from 'react-native'
 import { Text } from '@rneui/base'
 import { RectButton } from '../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../themes'
-import { ScanIcon } from '../../../components/icon'
 import { _keyExtract } from '../../../utils/helper'
+import FastImage from 'react-native-fast-image'
+import { VectorCharacter } from '../../../components/vector-character'
 
-const networkSupports = [
-  {
-    title: 'Oraichain network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  },
-  {
-    title: 'OraiBridge Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  },
-  {
-    title: 'Kawaiiverse Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  },
-  {
-    title: 'Balcony Subnet Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  },
-  {
-    title: 'Cosmos Hub Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  },
-  {
-    title: 'Osmosis Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  },
-  {
-    title: 'BNB Chain',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24'
-  }
-]
-
-const _renderItem = ({ item }) => {
-  return (
-    <RectButton
-      style={{
-        ...styles.containerBtn
-      }}
-    >
-      <View
+export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
+  const _renderItem = ({ item }) => {
+    return (
+      <RectButton
         style={{
-          justifyContent: 'flex-start',
-          flexDirection: 'row',
-          alignItems: 'center'
+          ...styles.containerBtn
+        }}
+        onPress={() => {
+          chainStore.selectChain(item.chainId)
+          chainStore.saveLastViewChainId()
+          modalStore.close()
         }}
       >
-        {item.icon}
         <View
           style={{
-            justifyContent: 'space-between',
-            marginLeft: spacing['12']
-          }}
-        >
-          <Text
-            style={{
-              ...typography.h6,
-              color: colors['gray-900'],
-              fontWeight: '900'
-            }}
-            numberOfLines={1}
-          >{`${item.title}`}</Text>
-          <Text
-            style={{
-              ...typography.h7,
-              color: colors['gray-300'],
-              fontWeight: '900',
-              fontSize: 12
-            }}
-          >{`$${item.price}`}</Text>
-        </View>
-      </View>
-
-      <View>
-        <View
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: spacing['32'],
-            backgroundColor: colors['primary'],
-            justifyContent: 'center',
+            justifyContent: 'flex-start',
+            flexDirection: 'row',
             alignItems: 'center'
           }}
         >
           <View
             style={{
-              width: 12,
-              height: 12,
-              borderRadius: spacing['32'],
-              backgroundColor: colors['white']
+              height: 38,
+              width: 38,
+              padding: spacing['2'],
+              borderRadius: spacing['12'],
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: profileColor(item)
             }}
-          />
-        </View>
-      </View>
-    </RectButton>
-  )
-}
+          >
+            {item.raw.chainSymbolImageUrl ? (
+              <FastImage
+                style={{
+                  width: 24,
+                  height: 24
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+                source={{
+                  uri: item.raw.chainSymbolImageUrl
+                }}
+              />
+            ) : (
+              <VectorCharacter
+                char={item.chainName[0]}
+                height={15}
+                color={colors['black']}
+              />
+            )}
+          </View>
 
-export const NetworkModal = (account): ReactElement => {
-  const [selected, isSelected] = useState<boolean>(false)
+          <View
+            style={{
+              justifyContent: 'space-between',
+              marginLeft: spacing['12']
+            }}
+          >
+            <Text
+              style={{
+                ...typography.h6,
+                color: colors['gray-900'],
+                fontWeight: '900'
+              }}
+              numberOfLines={1}
+            >
+              {item.chainName}
+            </Text>
+            <Text
+              style={{
+                ...typography.h7,
+                color: colors['gray-300'],
+                fontWeight: '900',
+                fontSize: 12
+              }}
+            >{`$${item.price}`}</Text>
+          </View>
+        </View>
+
+        <View>
+          <View
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: spacing['32'],
+              backgroundColor:
+                item.chainId === chainStore.current.chainId
+                  ? colors['purple-900']
+                  : colors['gray-100'],
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            <View
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: spacing['32'],
+                backgroundColor: colors['white']
+              }}
+            />
+          </View>
+        </View>
+      </RectButton>
+    )
+  }
 
   return (
     // container
@@ -144,7 +145,7 @@ export const NetworkModal = (account): ReactElement => {
         }}
       >
         <FlatList
-          data={networkSupports}
+          data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
           ListFooterComponent={() => (

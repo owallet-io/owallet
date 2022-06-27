@@ -1,26 +1,26 @@
-import { observable, action, computed, makeObservable, flow } from "mobx";
+import { observable, action, computed, makeObservable, flow } from 'mobx'
 
-import { ChainStore as BaseChainStore } from "@owallet/stores";
+import { ChainInfoInner, ChainStore as BaseChainStore } from '@owallet/stores'
 
-import { ChainInfo } from "@owallet/types";
+import { ChainInfo } from '@owallet/types'
 import {
   ChainInfoWithEmbed,
   GetChainInfosMsg,
   RemoveSuggestedChainInfoMsg,
-  TryUpdateChainMsg,
-} from "@owallet/background";
-import { BACKGROUND_PORT } from "@owallet/router";
+  TryUpdateChainMsg
+} from '@owallet/background'
+import { BACKGROUND_PORT } from '@owallet/router'
 
-import { MessageRequester } from "@owallet/router";
-import { KVStore, toGenerator } from "@owallet/common";
+import { MessageRequester } from '@owallet/router'
+import { KVStore, toGenerator } from '@owallet/common'
 
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
-  protected selectedChainId: string;
+  protected selectedChainId: string
 
   @observable
-  protected _isInitializing: boolean = false;
-  protected deferChainIdSelect: string = "";
+  protected _isInitializing: boolean = false
+  protected deferChainIdSelect: string = ''
 
   constructor(
     embedChainInfos: ChainInfo[],
@@ -28,31 +28,31 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     protected readonly kvStore: KVStore
   ) {
     super(
-      embedChainInfos.map((chainInfo) => {
+      embedChainInfos.map(chainInfo => {
         return {
           ...chainInfo,
           ...{
-            embeded: true,
-          },
-        };
+            embeded: true
+          }
+        }
       })
-    );
+    )
 
-    this.selectedChainId = embedChainInfos[0].chainId;
+    this.selectedChainId = embedChainInfos[0].chainId
 
-    makeObservable(this);
+    makeObservable(this)
 
-    this.init();
+    this.init()
   }
 
   get isInitializing(): boolean {
-    return this._isInitializing;
+    return this._isInitializing
   }
 
   get chainInfosInUI() {
-    return this.chainInfos.filter((chainInfo) => {
-      return !chainInfo.raw.hideInUI;
-    });
+    return this.chainInfos.filter(chainInfo => {
+      return !chainInfo.raw.hideInUI
+    })
   }
 
   get chainInfosStatus() {
@@ -64,71 +64,71 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @action
   selectChain(chainId: string) {
     if (this._isInitializing) {
-      this.deferChainIdSelect = chainId;
+      this.deferChainIdSelect = chainId
     }
-    this.selectedChainId = chainId;
+    this.selectedChainId = chainId
   }
 
   @computed
   get current(): ChainInfoWithEmbed {
     if (this.hasChain(this.selectedChainId)) {
-      return this.getChain(this.selectedChainId);
+      return this.getChain(this.selectedChainId)
     }
 
-    return this.chainInfos[0];
+    return this.chainInfos[0]
   }
 
   async saveLastViewChainId() {
     // Save last view chain id to kv store
-    await this.kvStore.set<string>("last_view_chain_id", this.selectedChainId);
+    await this.kvStore.set<string>('last_view_chain_id', this.selectedChainId)
   }
 
   @flow
   protected *init() {
-    this._isInitializing = true;
-    yield this.getChainInfosFromBackground();
+    this._isInitializing = true
+    yield this.getChainInfosFromBackground()
 
     // Get last view chain id from kv store
     const lastViewChainId = yield* toGenerator(
-      this.kvStore.get<string>("last_view_chain_id")
-    );
+      this.kvStore.get<string>('last_view_chain_id')
+    )
 
     if (!this.deferChainIdSelect) {
       if (lastViewChainId) {
-        this.selectChain(lastViewChainId);
+        this.selectChain(lastViewChainId)
       }
     }
-    this._isInitializing = false;
+    this._isInitializing = false
 
     if (this.deferChainIdSelect) {
-      this.selectChain(this.deferChainIdSelect);
-      this.deferChainIdSelect = "";
+      this.selectChain(this.deferChainIdSelect)
+      this.deferChainIdSelect = ''
     }
   }
 
   @flow
   protected *getChainInfosFromBackground() {
-    const msg = new GetChainInfosMsg();
+    const msg = new GetChainInfosMsg()
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
-    this.setChainInfos(result.chainInfos);
+    )
+    this.setChainInfos(result.chainInfos)
   }
 
   @flow
   *removeChainInfo(chainId: string) {
-    const msg = new RemoveSuggestedChainInfoMsg(chainId);
+    const msg = new RemoveSuggestedChainInfoMsg(chainId)
     const chainInfos = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    )
 
-    this.setChainInfos(chainInfos);
+    this.setChainInfos(chainInfos)
   }
 
   @flow
   *tryUpdateChain(chainId: string) {
-    const msg = new TryUpdateChainMsg(chainId);
-    yield this.requester.sendMessage(BACKGROUND_PORT, msg);
-    yield this.getChainInfosFromBackground();
+    const msg = new TryUpdateChainMsg(chainId)
+    yield this.requester.sendMessage(BACKGROUND_PORT, msg)
+    yield this.getChainInfosFromBackground()
   }
 }
