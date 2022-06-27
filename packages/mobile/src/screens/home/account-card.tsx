@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { Card, CardBody } from '../../components/card';
+import React, { FunctionComponent } from 'react'
+import { observer } from 'mobx-react-lite'
+import { Card, CardBody } from '../../components/card'
 import {
   StyleSheet,
   Text,
@@ -9,18 +9,18 @@ import {
   ImageBackground,
   Image,
   Touchable,
-  TouchableWithoutFeedback,
-} from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useStore } from '../../stores';
-import { AddressCopyable } from '../../components/address-copyable';
+  TouchableWithoutFeedback
+} from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useStore } from '../../stores'
+import { AddressCopyable } from '../../components/address-copyable'
 // import { DoubleDoughnutChart } from "../../components/svg";
-import { Button } from '../../components/button';
-import { LoadingSpinner } from '../../components/spinner';
+import { Button } from '../../components/button'
+import { LoadingSpinner } from '../../components/spinner'
 // import { StakedTokenSymbol, TokenSymbol } from "../../components/token-symbol";
-import { useSmartNavigation } from '../../navigation.provider';
-import { NetworkErrorView } from './network-error-view';
-import { ProgressBar } from '../../components/progress-bar';
+import { useSmartNavigation } from '../../navigation.provider'
+import { NetworkErrorView } from './network-error-view'
+import { ProgressBar } from '../../components/progress-bar'
 import {
   DotsIcon,
   DownArrowIcon,
@@ -28,90 +28,83 @@ import {
   RightArrowIcon,
   Scanner,
   SendIcon,
-  SettingDashboardIcon,
-} from '../../components/icon';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
-import { FormattedMessage, useIntl } from 'react-intl';
+  SettingDashboardIcon
+} from '../../components/icon'
+import { useNavigation, DrawerActions } from '@react-navigation/native'
+import { FormattedMessage, useIntl } from 'react-intl'
 import {
   BuyIcon,
   DepositIcon,
-  SendDashboardIcon,
-} from '../../components/icon/button';
-import { colors, spacing, typography } from '../../themes';
-import { navigate } from '../../router/root';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+  SendDashboardIcon
+} from '../../components/icon/button'
+import { colors, spacing, typography } from '../../themes'
+import { navigate } from '../../router/root'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export const AccountCard: FunctionComponent<{
-  containerStyle?: ViewStyle;
+  containerStyle?: ViewStyle
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
+    useStore()
 
-  const smartNavigation = useSmartNavigation();
-  const navigation = useNavigation();
+  const smartNavigation = useSmartNavigation()
+  const navigation = useNavigation()
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+  const account = accountStore.getAccount(chainStore.current.chainId)
+  const queries = queriesStore.get(chainStore.current.chainId)
 
-  let data: [number, number];
-  let total: CoinPretty;
-  let stakedSum: CoinPretty;
-  let stakable: CoinPretty;
-  let balanceQuery:
-    | ObservableQueryEvmBalanceInner
-    | ObservableQueryBalanceInner;
-
-  if (chainStore.current.networkType === 'evm') {
-    balanceQuery = queries.evm.queryEvmBalance.getQueryBalance(
-      account.evmosHexAddress
-    );
+  const queryStakable = queries.queryBalances.getQueryBech32Address(
+    account.bech32Address
+  ).stakable
+  const stakable = queryStakable.balance
 
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
-  );
-  const delegated = queryDelegated.total;
+  )
+  const delegated = queryDelegated.total
 
   const queryUnbonding =
     queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       account.bech32Address
-    );
-  const unbonding = queryUnbonding.total;
+    )
+  const unbonding = queryUnbonding.total
 
-  const stakedSum = delegated.add(unbonding);
+  const stakedSum = delegated.add(unbonding)
 
-  const total = stakable.add(stakedSum);
+  const total = stakable.add(stakedSum)
 
-  const totalPrice = priceStore.calculatePrice(total);
+  const totalPrice = priceStore.calculatePrice(total)
 
   const data: [number, number] = [
     parseFloat(stakable.toDec().toString()),
-    parseFloat(stakedSum.toDec().toString()),
-  ];
-  const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = (name) => {
+    parseFloat(stakedSum.toDec().toString())
+  ]
+  const safeAreaInsets = useSafeAreaInsets()
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
-      navigate('Browser', { path: 'https://oraidex.io' });
+      navigate('Browser', { path: 'https://oraidex.io' })
     }
     if (name === 'Deposit') {
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
-        currency: chainStore.current.stakeCurrency.coinMinimalDenom,
-      });
+        currency: chainStore.current.stakeCurrency.coinMinimalDenom
+      })
     }
-  };
+  }
 
   const RenderBtnMain = ({ name }) => {
-    let icon;
+    let icon
     switch (name) {
       case 'Buy':
-        icon = <BuyIcon />;
-        break;
+        icon = <BuyIcon />
+        break
       case 'Deposit':
-        icon = <DepositIcon />;
-        break;
+        icon = <DepositIcon />
+        break
       case 'Send':
-        icon = <SendDashboardIcon />;
-        break;
+        icon = <SendDashboardIcon />
+        break
     }
     return (
       <TouchableOpacity
@@ -119,7 +112,7 @@ export const AccountCard: FunctionComponent<{
           backgroundColor: colors['violet'],
           borderWidth: 0.5,
           borderRadius: spacing['8'],
-          borderColor: colors['violet'],
+          borderColor: colors['violet']
         }}
         onPress={() => onPressBtnMain(name)}
       >
@@ -128,7 +121,7 @@ export const AccountCard: FunctionComponent<{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            padding: spacing['8'],
+            padding: spacing['8']
           }}
         >
           {icon}
@@ -138,22 +131,22 @@ export const AccountCard: FunctionComponent<{
               lineHeight: spacing['20'],
               color: colors['white'],
               paddingLeft: spacing['6'],
-              fontWeight: '700',
+              fontWeight: '700'
             }}
           >
             {name}
           </Text>
         </View>
       </TouchableOpacity>
-    );
-  };
+    )
+  }
 
   return (
     <Card style={containerStyle}>
       <CardBody
         style={{
           paddingBottom: spacing['0'],
-          paddingTop: safeAreaInsets.top + 10,
+          paddingTop: safeAreaInsets.top + 10
         }}
       >
         <View
@@ -161,7 +154,7 @@ export const AccountCard: FunctionComponent<{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
-            paddingBottom: spacing['26'],
+            paddingBottom: spacing['26']
           }}
         >
           <Text />
@@ -175,7 +168,7 @@ export const AccountCard: FunctionComponent<{
           </Text> */}
           <TouchableWithoutFeedback
             onPress={() => {
-              navigation.dispatch(DrawerActions.toggleDrawer());
+              navigation.dispatch(DrawerActions.toggleDrawer())
             }}
           >
             <View
@@ -183,7 +176,7 @@ export const AccountCard: FunctionComponent<{
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                paddingLeft: 50,
+                paddingLeft: 50
               }}
             >
               <DotsIcon />
@@ -191,7 +184,7 @@ export const AccountCard: FunctionComponent<{
                 style={{
                   ...typography['h5'],
                   ...colors['color-text-black-low'],
-                  marginLeft: spacing['8'],
+                  marginLeft: spacing['8']
                 }}
               >
                 {chainStore.current.chainName + ' '}
@@ -201,7 +194,7 @@ export const AccountCard: FunctionComponent<{
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <TouchableOpacity
               onPress={() => {
-                smartNavigation.navigateSmart('Transactions', {});
+                smartNavigation.navigateSmart('Transactions', {})
               }}
               style={{ paddingRight: 15 }}
             >
@@ -210,8 +203,8 @@ export const AccountCard: FunctionComponent<{
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Others', {
-                  screen: 'Camera',
-                });
+                  screen: 'Camera'
+                })
               }}
             >
               <Scanner size={28} color={'#5064fb'} />
@@ -224,7 +217,7 @@ export const AccountCard: FunctionComponent<{
             height: 256,
             borderWidth: spacing['0.5'],
             borderColor: colors['gray-100'],
-            borderRadius: spacing['12'],
+            borderRadius: spacing['12']
           }}
         >
           <View
@@ -232,13 +225,13 @@ export const AccountCard: FunctionComponent<{
               borderTopLeftRadius: spacing['11'],
               borderTopRightRadius: spacing['11'],
               height: 179,
-              backgroundColor: '#5E499A', //linear-gradient(112.91deg, #161532 0%, #5E499A 89.85%)
+              backgroundColor: '#5E499A' //linear-gradient(112.91deg, #161532 0%, #5E499A 89.85%)
             }}
           >
             <View
               style={{
                 marginTop: 28,
-                marginBottom: 16,
+                marginBottom: 16
               }}
             >
               <Text
@@ -246,7 +239,7 @@ export const AccountCard: FunctionComponent<{
                   textAlign: 'center',
                   color: '#AEAEB2',
                   fontSize: 14,
-                  lineHeight: 20,
+                  lineHeight: 20
                 }}
               >
                 Total Balance
@@ -257,7 +250,7 @@ export const AccountCard: FunctionComponent<{
                   color: 'white',
                   fontWeight: '900',
                   fontSize: 34,
-                  lineHeight: 50,
+                  lineHeight: 50
                 }}
               >
                 {totalPrice
@@ -272,7 +265,7 @@ export const AccountCard: FunctionComponent<{
                 justifyContent: 'space-between',
                 paddingTop: 6,
                 paddingLeft: 20,
-                paddingRight: 20,
+                paddingRight: 20
               }}
             >
               {['Buy', 'Deposit', 'Send'].map((e, i) => (
@@ -295,16 +288,16 @@ export const AccountCard: FunctionComponent<{
               shadowColor: 'rgba(24, 39, 75, 0.12)',
               shadowOffset: {
                 width: 0,
-                height: 12,
+                height: 12
               },
               shadowOpacity: 1,
-              shadowRadius: 16.0,
+              shadowRadius: 16.0
             }}
           >
             <View
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <View
@@ -312,13 +305,13 @@ export const AccountCard: FunctionComponent<{
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingBottom: spacing['2'],
+                  paddingBottom: spacing['2']
                 }}
               >
                 <Image
                   style={{
                     width: spacing['26'],
-                    height: spacing['26'],
+                    height: spacing['26']
                   }}
                   source={require('../../assets/image/address_default.png')}
                   fadeDuration={0}
@@ -342,7 +335,7 @@ export const AccountCard: FunctionComponent<{
               style={{
                 position: 'absolute',
                 bottom: 50,
-                left: '50%',
+                left: '50%'
               }}
             >
               <LoadingSpinner color={colors['gray-150']} size={22} />
@@ -362,10 +355,10 @@ export const AccountCard: FunctionComponent<{
             shadowColor: 'rgba(24, 39, 75, 0.12)',
             shadowOffset: {
               width: 0,
-              height: 12,
+              height: 12
             },
             shadowOpacity: 1,
-            shadowRadius: 16.0,
+            shadowRadius: 16.0
           }}
         >
           <View
@@ -376,13 +369,13 @@ export const AccountCard: FunctionComponent<{
               justifyContent: 'space-between',
               alignItems: 'center',
               paddingLeft: spacing['12'],
-              paddingRight: spacing['8'],
+              paddingRight: spacing['8']
             }}
           >
             <View
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <Text style={{ paddingBottom: spacing['6'] }}>Namespace</Text>
@@ -390,13 +383,13 @@ export const AccountCard: FunctionComponent<{
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <Image
                   style={{
                     width: 26,
-                    height: 26,
+                    height: 26
                   }}
                   source={require('../../assets/image/namespace_default.png')}
                   fadeDuration={0}
@@ -408,16 +401,22 @@ export const AccountCard: FunctionComponent<{
                     fontSize: spacing['18'],
                     lineHeight: 26,
                     textAlign: 'center',
-                    color: colors['gray-900'],
+                    color: colors['gray-900']
                   }}
                 >
                   Harris.orai
                 </Text>
               </View>
             </View>
-            <View style={{ paddingTop: spacing['10'] }}>
+            <TouchableOpacity
+              style={{ paddingTop: spacing['10'] }}
+              onPress={() => {
+                modalStore.setOpen()
+                modalStore.setChildren(<Text>Hello Model</Text>)
+              }}
+            >
               <SettingDashboardIcon size={30} color={colors['gray-150']} />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </CardBody>
@@ -537,5 +536,5 @@ export const AccountCard: FunctionComponent<{
         </View>
       </CardBody> */}
     </Card>
-  );
-});
+  )
+})

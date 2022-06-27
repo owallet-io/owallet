@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useEffect } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { SignModal } from '../../modals/sign';
-import { LedgerGranterModal } from '../../modals/ledger';
-import { HomeBaseModal } from '../../modals/home-base';
-import { Text } from 'react-native';
+import React, { FunctionComponent, useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
+import { useStore } from '../../stores'
+import { SignModal } from '../../modals/sign'
+import { LedgerGranterModal } from '../../modals/ledger'
+import { HomeBaseModal } from '../../modals/home-base'
+import { Text } from 'react-native'
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -12,12 +12,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       ledgerInitStore,
       permissionStore,
       signInteractionStore,
-      modalStore,
-    } = useStore();
+      modalStore
+    } = useStore()
 
     // Example usage
-    // modalStore.setOpen();
-    // modalStore.setChildren(<Text>33333</Text>);
+    // modalStore.setOpen()
+    // modalStore.setChildren(<Text>33333</Text>)
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
@@ -25,11 +25,10 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         // All apps should be embeded explicitly.
         // If such apps needs the permissions, add these origins to the privileged origins.
         if (data.data.origins.length !== 1) {
-          permissionStore.reject(data.id);
+          permissionStore.reject(data.id)
         }
       }
-    }, [permissionStore, permissionStore.waitingDatas]);
-
+    }, [permissionStore, permissionStore.waitingDatas])
     return (
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (
@@ -44,14 +43,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
-        {modalStore.getState() ? (
-          <HomeBaseModal isOpen={true} close={() => modalStore.close()}>
-            <Text>123123</Text>
-          </HomeBaseModal>
+        {modalStore.getState ? (
+          <HomeBaseModal isOpen={true} close={() => modalStore.close()} />
         ) : null}
 
         {children}
       </React.Fragment>
-    );
+    )
   }
-);
+)
