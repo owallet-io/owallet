@@ -4,7 +4,7 @@ import { Text } from '@rneui/base'
 import { RectButton } from '../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../themes'
 import {
-  NamespaceBuy,
+  NamespaceBuyIcon,
   NamespaceRelinkIcon,
   NamespaceUnlinkIcon
 } from '../../../components/icon'
@@ -60,7 +60,7 @@ export const NamespaceModal = (account): ReactElement => {
             backgroundColor: colors['purple-900']
           }}
         >
-          <NamespaceBuy color={colors['white']} size={24} />
+          <NamespaceBuyIcon color={colors['white']} size={24} />
           <Text
             style={{
               ...typography.h6,

@@ -67,8 +67,8 @@ export const TransactionItem: FunctionComponent<{
       <RectButton
         style={{
           ...styles.reactBtn,
-          marginHorizontal: spacing['8'],
-          borderRadius: spacing['12']
+          borderRadius: spacing['12'],
+          paddingHorizontal: spacing['8']
         }}
         onPress={onPress}
       >

@@ -2,7 +2,6 @@ import React, { FunctionComponent } from 'react'
 import { Card } from '../../components/card'
 import {
   Image,
-  SectionList,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,8 +10,7 @@ import {
 } from 'react-native'
 import { observer } from 'mobx-react-lite'
 import { colors, metrics, spacing, typography } from '../../themes'
-import { AddIcon } from '../../components/icon'
-import { BuyIcon } from '../../components/icon/button'
+import { AddIcon, GiftIcon } from '../../components/icon'
 import { useSmartNavigation } from '../../navigation.provider'
 import { useStore } from '../../stores'
 import { Dec } from '@owallet/unit'
@@ -131,7 +129,7 @@ export const EarningCard: FunctionComponent<{
                   <LoadingSpinner color={colors['gray-150']} size={22} />
                 </View>
               ) : null}
-              <BuyIcon />
+              <GiftIcon color={colors['white']} />
               <Text style={styles['text-rewards']}>Claim Rewards</Text>
             </View>
           </TouchableOpacity>

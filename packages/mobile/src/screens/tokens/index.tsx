@@ -1,11 +1,15 @@
 import React, { FunctionComponent } from 'react'
-import { PageWithScrollView } from '../../components/page'
 import { observer } from 'mobx-react-lite'
 import { useStore } from '../../stores'
-import { StyleSheet, View, ViewStyle } from 'react-native'
+import {
+  StyleSheet,
+  TouchableWithoutFeedback,
+  TouchableWithoutFeedbackBase,
+  View,
+  ViewStyle
+} from 'react-native'
 import { Text } from '@rneui/base'
 import { CoinPretty } from '@owallet/unit'
-import { useStyle } from '../../styles'
 import { useSmartNavigation } from '../../navigation.provider'
 import { Card } from '../../components/card'
 import { RectButton } from '../../components/rect-button'
@@ -15,11 +19,11 @@ import { DenomHelper } from '@owallet/common'
 import { Bech32Address } from '@owallet/cosmos'
 import { colors, spacing, typography } from '../../themes'
 import { AnimatedCircularProgress } from 'react-native-circular-progress'
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
+import { _keyExtract } from '../../utils/helper'
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore()
-
-  const style = useStyle()
 
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -44,19 +48,30 @@ export const TokensScreen: FunctionComponent = observer(() => {
     })
 
   return (
-    <PageWithScrollView>
-      <Card style={style.flatten(['padding-bottom-14'])}>
-        {tokens.map(token => {
-          return (
-            <TokenItem
-              key={token.currency.coinMinimalDenom}
-              chainInfo={{ stakeCurrency: chainStore.current.stakeCurrency }}
-              balance={token.balance}
-            />
-          )
-        })}
+    <View>
+      <Card>
+        <FlatList
+          data={tokens}
+          renderItem={({ item }) => (
+            <View
+              style={{
+                backgroundColor: colors['gray-100'],
+                marginVertical: spacing['4'],
+                borderRadius: spacing['12'],
+                marginHorizontal: spacing['20'],
+                paddingHorizontal: spacing['10']
+              }}
+            >
+              <TokenItem
+                chainInfo={{ stakeCurrency: chainStore.current.stakeCurrency }}
+                balance={item.balance}
+              />
+            </View>
+          )}
+          keyExtractor={_keyExtract}
+        />
       </Card>
-    </PageWithScrollView>
+    </View>
   )
 })
 
@@ -96,7 +111,8 @@ export const TokenItem: FunctionComponent<{
   }
 
   return (
-    <RectButton
+    <TouchableOpacity
+      activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
         smartNavigation.navigateSmart('Send', {
@@ -119,6 +135,7 @@ export const TokenItem: FunctionComponent<{
           size={44}
           chainInfo={chainInfo}
           currency={balance.currency}
+          imageScale={0.54}
         />
         <View
           style={{
@@ -129,7 +146,8 @@ export const TokenItem: FunctionComponent<{
             style={{
               ...typography.subtitle2,
               color: colors['gray-900'],
-              marginBottom: spacing['4']
+              marginBottom: spacing['4'],
+              fontWeight: '800'
             }}
           >
             {`${balance}`}
@@ -154,7 +172,7 @@ export const TokenItem: FunctionComponent<{
         }}
       >
         <AnimatedCircularProgress
-          size={spacing['64']}
+          size={56}
           width={6}
           fill={(balanceUsd / totalBalance) * 100}
           tintColor={colors['purple-700']}
@@ -165,13 +183,14 @@ export const TokenItem: FunctionComponent<{
             <Text
               h4
               h4Style={{
-                ...typography.h7
+                ...typography.h7,
+                fontSize: 11
               }}
-            >{`${(balanceUsd / totalBalance) * 100}%`}</Text>
+            >{`${((balanceUsd / totalBalance) * 100).toFixed(2)}%`}</Text>
           )}
         </AnimatedCircularProgress>
       </View>
-    </RectButton>
+    </TouchableOpacity>
   )
 }
 
@@ -180,6 +199,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginHorizontal: spacing['4'],
-    paddingVertical: spacing['18']
+    marginVertical: spacing['8'],
+    paddingTop: spacing['18'],
+    paddingBottom: spacing['18']
   }
 })

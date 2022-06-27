@@ -81,7 +81,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
                 fontWeight: '900',
                 fontSize: 12
               }}
-            >{`$${item.price}`}</Text>
+            >{`$${item.price || 0}`}</Text>
           </View>
         </View>
 
@@ -145,6 +145,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
         }}
       >
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}

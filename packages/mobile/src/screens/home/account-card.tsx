@@ -386,6 +386,7 @@ export const AccountCard: FunctionComponent<{
               <DownArrowIcon height={30} color={colors['gray-150']} />
             </TouchableOpacity>
           </View>
+
           {queryStakable.isFetching ? (
             <View
               style={{

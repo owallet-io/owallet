@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
 import Svg, { Path } from 'react-native-svg'
 
-export const NamespaceBuy: FunctionComponent<{
+export const NamespaceBuyIcon: FunctionComponent<{
   color?: string
   size?: number
 }> = ({ color = '#292D32', size = 24 }) => {

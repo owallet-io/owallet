@@ -16,6 +16,7 @@ import {
 } from '../../utils/helper'
 import { DownArrowIcon } from '../../components/icon'
 
+// hard code data to test UI
 const nftsData = [
   {
     title: 'ERC-721',
@@ -160,8 +161,8 @@ export const TokensCard: FunctionComponent<{
               title={title}
               titleStyle={active => ({
                 fontSize: 14,
-                fontWeight: "700",
-                color: active ? colors['gray-900'] : colors['gray-600']
+                fontWeight: '700',
+                color: active ? colors['gray-900'] : colors['gray-300']
               })}
               containerStyle={{
                 backgroundColor: colors['transparent']
@@ -193,7 +194,7 @@ export const TokensCard: FunctionComponent<{
                 <>
                   <View
                     style={{
-                      marginTop: spacing['24'],
+                      marginTop: spacing['12'],
                       flexDirection: 'row'
                     }}
                   >
@@ -225,7 +226,11 @@ export const TokensCard: FunctionComponent<{
           <RectButton
             style={styles.containerBtn}
             onPress={() => {
-              smartNavigation.navigateSmart('Tokens', {})
+              if (index === 0) {
+                smartNavigation.navigateSmart('Tokens', {})
+              } else {
+                //TODO: router to nft screen
+              }
             }}
           >
             <Text style={styles.textLoadMore}>

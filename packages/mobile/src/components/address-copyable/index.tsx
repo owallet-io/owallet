@@ -1,18 +1,18 @@
-import React, { FunctionComponent } from 'react';
-import {  Text, ViewStyle, View } from 'react-native';
-import { Bech32Address } from '@owallet/cosmos';
-import Clipboard from 'expo-clipboard';
-import { RectButton } from '../rect-button';
-import { CopyAccountIcon, CopyIcon } from '../icon';
-import { useSimpleTimer } from '../../hooks';
-import { colors } from '../../themes';
+import React, { FunctionComponent } from 'react'
+import { Text, ViewStyle, View } from 'react-native'
+import { Bech32Address } from '@owallet/cosmos'
+import Clipboard from 'expo-clipboard'
+import { RectButton } from '../rect-button'
+import { CopyAccountIcon, CopyIcon } from '../icon'
+import { useSimpleTimer } from '../../hooks'
+import { colors } from '../../themes'
 
 export const AddressCopyable: FunctionComponent<{
-  style?: ViewStyle;
-  address: string;
-  maxCharacters: number;
+  style?: ViewStyle
+  address: string
+  maxCharacters: number
 }> = ({ style: propStyle, address, maxCharacters }) => {
-  const { isTimedOut, setTimer } = useSimpleTimer();
+  const { isTimedOut, setTimer } = useSimpleTimer()
 
   return (
     <RectButton
@@ -27,15 +27,11 @@ export const AddressCopyable: FunctionComponent<{
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        ...propStyle,
+        ...propStyle
       }}
       onPress={() => {
-        analyticsStore.logEvent("Address copied", {
-          chainId: chainStore.current.chainId,
-          chainName: chainStore.current.chainName,
-        });
-        Clipboard.setString(address);
-        setTimer(2000);
+        Clipboard.setString(address)
+        setTimer(2000)
       }}
       rippleColor={colors['primary-100']}
       underlayColor={colors['primary-50']}
@@ -47,10 +43,11 @@ export const AddressCopyable: FunctionComponent<{
       <View
         style={{
           marginLeft: 4,
-          width: 20,
+          width: 20
         }}
       >
-        {isTimedOut ? (
+        <CopyAccountIcon size={19} />
+        {/* {isTimedOut ? (
           <View style={{ marginLeft: 2 }}>
             <View
               style={{
@@ -83,9 +80,8 @@ export const AddressCopyable: FunctionComponent<{
         ) : (
           // <CopyIcon color={style.get('color-primary').color} size={19} />
           <CopyAccountIcon size={19} />
-
-        )}
+        )} */}
       </View>
     </RectButton>
-  );
-};
+  )
+}
