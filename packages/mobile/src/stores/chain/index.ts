@@ -55,12 +55,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     })
   }
 
-  get chainInfosStatus() {
-    return this.chainInfos.filter((chainInfo) => {
-      return chainInfo.disabled;
-    });
-  }
-
   @action
   selectChain(chainId: string) {
     if (this._isInitializing) {
