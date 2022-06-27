@@ -1,5 +1,6 @@
-import { observable, action, makeObservable } from 'mobx';
+import { observable, action, makeObservable, computed } from 'mobx';
 import { DAppInfos } from '../../screens/web/config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class BrowserStore {
   @observable
@@ -8,9 +9,9 @@ export class BrowserStore {
   protected selectedTab: { id: string; name: string; uri: string };
 
   constructor() {
+    makeObservable(this);
     this.bookmarks = [...DAppInfos];
     this.tabs = [];
-    makeObservable(this);
   }
 
   @action
@@ -33,8 +34,8 @@ export class BrowserStore {
     this.bookmarks = tempbookmarks;
   }
 
-  @action
-  getBookmarks() {
+  @computed
+  get getBookmarks() {
     return this.bookmarks;
   }
 
@@ -43,8 +44,8 @@ export class BrowserStore {
     this.tabs = tabs;
   }
 
-  @action
-  getTabs() {
+  @computed
+  get getTabs() {
     return this.tabs;
   }
 
@@ -53,21 +54,16 @@ export class BrowserStore {
     this.selectedTab = tab;
   }
 
-  @action
-  getSelectedTab() {
+  @computed
+  get getSelectedTab() {
     return this.selectedTab;
   }
 
   @action
   removeTab(tab) {
-    console.log('tab', tab, this.tabs);
-
     const rTabIndex = this.tabs.findIndex((t) => t.id === tab.id);
-    console.log('rTabIndex', rTabIndex);
-
     if (rTabIndex > -1) {
       this.tabs.splice(rTabIndex, 1);
-      console.log('this.tabs', this.tabs);
     }
   }
 

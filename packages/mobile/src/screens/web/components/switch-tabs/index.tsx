@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -29,9 +29,16 @@ const z = 150 * Math.sin(Math.abs(rotateX));
 export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
   ({ onPressItem }) => {
     const { browserStore } = useStore();
+    const [tabs, setTabs] = useState([]);
 
     const onPressDelete = (item) => () => {
       browserStore.removeTab(item);
+      const tmpTabs = [...tabs];
+      const rTabIndex = tabs.findIndex((t) => t.id === item.id);
+      if (rTabIndex > -1) {
+        tmpTabs.splice(rTabIndex, 1);
+      }
+      setTabs(tmpTabs);
     };
 
     const onPress = (item) => () => {
@@ -39,8 +46,12 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
       browserStore.updateSelectedTab(item);
     };
 
+    useEffect(() => {
+      setTabs(browserStore.getTabs);
+    }, []);
+
     const renderItem = (item, index) => {
-      const isSelect = item.id === browserStore.getSelectedTab()?.id;
+      const isSelect = item.id === browserStore.getSelectedTab?.id;
       return (
         <View style={{ padding: DIMENSION_PADDING_MEDIUM }}>
           <View key={index} style={styles.wrapItem}>
@@ -99,7 +110,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
     };
 
     const renderContent = () => {
-      if (browserStore.getTabs()?.length < 1) {
+      if (tabs.length < 1) {
         return (
           <View
             style={{
@@ -128,7 +139,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
           }}
           showsVerticalScrollIndicator={false}
         >
-          {browserStore.getTabs()?.map(renderItem)}
+          {tabs.map(renderItem)}
         </ScrollView>
       );
     };

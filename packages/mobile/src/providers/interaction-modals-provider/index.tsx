@@ -42,7 +42,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
-        {modalStore.getState ? (
+        {modalStore.getState() ? (
           <HomeBaseModal isOpen={true} close={() => modalStore.close()} />
         ) : null}
 

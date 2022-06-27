@@ -222,55 +222,41 @@ export const Browser: FunctionComponent<any> = (props) => {
                 'border-width-4',
                 'border-color-border-pink',
               ])}
-              returnKeyType={'next'}
-              placeholder={'Search website'}
-              placeholderTextColor={'#AEAEB2'}
-              onSubmitEditing={onHandleUrl}
-              value={url}
-              onChangeText={(txt) => setUrl(txt.toLowerCase())}
-              inputRight={
-                <TouchableOpacity onPress={onHandleUrl}>
-                  <SearchIcon color={'gray'} size={20} />
-                </TouchableOpacity>
-              }
-            />
-          </View>
-          <View
-            style={style.flatten([
-              'height-full',
-              'background-color-white',
-              'margin-y-64',
-            ])}
-          >
-            <BrowserSection />
-            <View style={style.flatten(['height-full', 'padding-20'])}>
-              {DAppInfos.map(({ logo, uri, name }) => (
-                <TouchableOpacity
-                  style={style.flatten([
-                    'height-44',
-                    'margin-bottom-15',
-                    'flex-row',
-                  ])}
-                  onPress={() => handleClickUri(uri, name)}
-                >
-                  <View style={style.flatten(['padding-top-5'])}>
-                    <Image
-                      style={{
-                        width: 20,
-                        height: 20,
-                      }}
-                      source={logo}
-                      fadeDuration={0}
-                    />
-                  </View>
-                  <View style={style.flatten(['padding-x-15'])}>
-                    <Text style={style.flatten(['subtitle2'])}>{name}</Text>
-                    <Text style={{ color: '#636366', fontSize: 14 }}>
-                      {uri}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+            >
+              <BrowserBookmark />
+              <View style={style.flatten(['padding-20'])}>
+                {browserStore.getBookmarks?.map((e) => (
+                  <TouchableOpacity
+                    key={e.uri}
+                    style={style.flatten([
+                      'height-44',
+                      'margin-bottom-15',
+                      'flex-row',
+                    ])}
+                    onPress={() => {
+                      handleClickUri(e.uri, e.name);
+                      setUrl(e.uri);
+                    }}
+                  >
+                    <View style={style.flatten(['padding-top-5'])}>
+                      <Image
+                        style={{
+                          width: 20,
+                          height: 22,
+                        }}
+                        source={e.logo}
+                        fadeDuration={0}
+                      />
+                    </View>
+                    <View style={style.flatten(['padding-x-15'])}>
+                      <Text style={style.flatten(['subtitle2'])}>{e.name}</Text>
+                      <Text style={{ color: '#636366', fontSize: 14 }}>
+                        {e.uri}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           </View>
         </View>

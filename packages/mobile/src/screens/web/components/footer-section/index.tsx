@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
 import { useSmartNavigation } from '../../../../navigation.provider';
@@ -12,13 +12,16 @@ import {
   TabIcon,
 } from '../../../../components/icon';
 import { BrowserSectionModal } from '../section-title';
+import { useStore } from '../../../../stores';
+import { observer } from 'mobx-react-lite';
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
   setIsSwitchTab: Function;
   onHandleUrl?: Function;
-}> = ({ isSwitchTab, setIsSwitchTab, onHandleUrl }) => {
+}> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl }) => {
   const style = useStyle();
+  const { browserStore } = useStore();
   const [isOpenSetting, setIsOpenSetting] = useState(false);
   const smartNavigation = useSmartNavigation();
   const webViewState = useWebViewState();
@@ -56,6 +59,8 @@ export const BrowserFooterSection: FunctionComponent<{
     }
   };
 
+  console.log('browserStore.getTabs', browserStore.getTabs);
+
   const arrayIcon = ['back', 'next', 'tabs', 'home', 'settings'];
   const renderIcon = (type, tabNum = 0) => {
     switch (type) {
@@ -74,13 +79,29 @@ export const BrowserFooterSection: FunctionComponent<{
       case 'tabs':
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
-            <TabIcon color={'white'} size={24} />
+            <View
+              style={{
+                padding: 3,
+                borderColor: '#fff',
+                borderWidth: 1,
+                borderRadius: 4,
+                alignItems: 'center',
+                width: 24,
+                height: 24,
+              }}
+            >
+              <Text style={{ color: '#fff' }}>
+                {browserStore.getTabs.length > 9
+                  ? '9+'
+                  : browserStore.getTabs.length}
+              </Text>
+            </View>
           </TouchableOpacity>
         );
       case 'home':
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
-            <HomeIcon color={'white'} size={18} />
+            <HomeIcon color={'white'} size={22} />
           </TouchableOpacity>
         );
       case 'settings':
@@ -148,4 +169,4 @@ export const BrowserFooterSection: FunctionComponent<{
       </View>
     </View>
   );
-};
+});

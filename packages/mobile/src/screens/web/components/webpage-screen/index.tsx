@@ -219,8 +219,6 @@ export const WebpageScreen: FunctionComponent<
 
   const sourceCode = useInjectedSourceCode();
 
-  console.log('current eUrl1', currentURL);
-
   return (
     <PageWithView
       style={style.flatten(['padding-0', 'padding-bottom-0'])}
@@ -249,8 +247,6 @@ export const WebpageScreen: FunctionComponent<
               injectedJavaScriptBeforeContentLoaded={sourceCode}
               onMessage={onMessage}
               onNavigationStateChange={(e) => {
-                console.log('eurl1', e);
-
                 // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
                 // Use two handlers to measure simultaneously in ios and android.
                 setCanGoBack(e.canGoBack);
