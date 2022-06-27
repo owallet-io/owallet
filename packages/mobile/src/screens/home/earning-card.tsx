@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import { Card } from '../../components/card';
+import React, { FunctionComponent } from 'react'
+import { Card } from '../../components/card'
 import {
   Image,
   SectionList,
@@ -7,44 +7,46 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ViewStyle,
-} from 'react-native';
-import { observer } from 'mobx-react-lite';
-import { colors, metrics, spacing, typography } from '../../themes';
-import { AddIcon } from '../../components/icon';
-import { BuyIcon } from '../../components/icon/button';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
-import { Dec } from '@owallet/unit';
-import { LoadingSpinner } from '../../components/spinner';
+  ViewStyle
+} from 'react-native'
+import { observer } from 'mobx-react-lite'
+import { colors, metrics, spacing, typography } from '../../themes'
+import { AddIcon } from '../../components/icon'
+import { BuyIcon } from '../../components/icon/button'
+import { useSmartNavigation } from '../../navigation.provider'
+import { useStore } from '../../stores'
+import { Dec } from '@owallet/unit'
+import { LoadingSpinner } from '../../components/spinner'
+import LinearGradient from 'react-native-linear-gradient'
 
 export const EarningCard: FunctionComponent<{
-  containerStyle?: ViewStyle;
+  containerStyle?: ViewStyle
 }> = observer(({ containerStyle }) => {
-  const smartNavigation = useSmartNavigation();
+  const smartNavigation = useSmartNavigation()
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
-    useStore();
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const account = accountStore.getAccount(chainStore.current.chainId);
+    useStore()
+  const queries = queriesStore.get(chainStore.current.chainId)
+  const account = accountStore.getAccount(chainStore.current.chainId)
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
-  );
-  const delegated = queryDelegated.total;
+  )
+  const delegated = queryDelegated.total
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
-  );
+  )
 
-  const totalPrice = priceStore.calculatePrice(delegated);
+  const totalPrice = priceStore.calculatePrice(delegated)
 
-  const stakingReward = queryReward.stakableReward;
-  const totalStakingReward = priceStore.calculatePrice(stakingReward);
+  const stakingReward = queryReward.stakableReward
+  const totalStakingReward = priceStore.calculatePrice(stakingReward)
   return (
     <View style={containerStyle}>
       <Card style={styles.card}>
-        <View
+        <LinearGradient
+          colors={['#161532', '#5E499A']}
           style={{
             ...styles['flex-center'],
-            paddingTop: spacing['24'],
+            paddingTop: spacing['24']
           }}
         >
           <Text style={{ ...styles['text-earn'] }}>Earnings</Text>
@@ -52,7 +54,7 @@ export const EarningCard: FunctionComponent<{
             style={{
               width: 100,
               height: 100,
-              marginTop: 30,
+              marginTop: 30
             }}
             source={require('../../assets/image/money.png')}
             resizeMode="contain"
@@ -60,7 +62,7 @@ export const EarningCard: FunctionComponent<{
           />
           <Text
             style={{
-              ...styles['text-amount'],
+              ...styles['text-amount']
             }}
           >
             {stakingReward
@@ -91,23 +93,23 @@ export const EarningCard: FunctionComponent<{
                   {},
                   {},
                   {
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: txHash => {
                       analyticsStore.logEvent('Claim reward tx broadcasted', {
                         chainId: chainStore.current.chainId,
-                        chainName: chainStore.current.chainName,
-                      });
+                        chainName: chainStore.current.chainName
+                      })
                       smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: Buffer.from(txHash).toString('hex'),
-                      });
-                    },
+                        txHash: Buffer.from(txHash).toString('hex')
+                      })
+                    }
                   }
-                );
+                )
               } catch (e) {
                 if (e?.message === 'Request rejected') {
-                  return;
+                  return
                 }
                 // console.log(e);
-                smartNavigation.navigateSmart('Home', {});
+                smartNavigation.navigateSmart('Home', {})
               }
             }}
           >
@@ -115,7 +117,7 @@ export const EarningCard: FunctionComponent<{
               style={{
                 ...styles['flex-center'],
                 flexDirection: 'row',
-                padding: spacing['8'],
+                padding: spacing['8']
               }}
             >
               {account.isSendingMsg === 'withdrawRewards' ? (
@@ -123,7 +125,7 @@ export const EarningCard: FunctionComponent<{
                   style={{
                     position: 'absolute',
                     bottom: 50,
-                    left: '50%',
+                    left: '50%'
                   }}
                 >
                   <LoadingSpinner color={colors['gray-150']} size={22} />
@@ -142,20 +144,20 @@ export const EarningCard: FunctionComponent<{
                 display: 'flex',
                 flexDirection: 'row',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <View
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <Image
                   style={{
                     width: 44,
-                    height: 44,
+                    height: 44
                   }}
                   source={require('../../assets/image/orai_earning.png')}
                   resizeMode="contain"
@@ -167,7 +169,7 @@ export const EarningCard: FunctionComponent<{
                       fontSize: 16,
                       lineHeight: 22,
                       color: colors['gray-900'],
-                      fontWeight: '600',
+                      fontWeight: '600'
                     }}
                   >
                     {delegated
@@ -182,7 +184,7 @@ export const EarningCard: FunctionComponent<{
                       fontSize: 14,
                       lineHeight: 20,
                       fontWeight: '600',
-                      color: colors['gray-300'],
+                      color: colors['gray-300']
                     }}
                   >
                     {totalPrice
@@ -191,15 +193,17 @@ export const EarningCard: FunctionComponent<{
                   </Text>
                 </View>
               </View>
-              <AddIcon  onPress={() => {
-                  smartNavigation.navigateSmart('Staking.Dashboard', {});
-                }}/>
+              <AddIcon
+                onPress={() => {
+                  smartNavigation.navigateSmart('Staking.Dashboard', {})
+                }}
+              />
             </View>
             <View>
               <TouchableOpacity
                 style={styles['btn-manage']}
                 onPress={() => {
-                  smartNavigation.navigateSmart('Staking.Dashboard', {});
+                  smartNavigation.navigateSmart('Staking.Dashboard', {})
                 }}
               >
                 <Text
@@ -210,50 +214,50 @@ export const EarningCard: FunctionComponent<{
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </LinearGradient>
       </Card>
     </View>
-  );
-});
+  )
+})
 
 const styles = StyleSheet.create({
   card: {
-    height: 516,
+    paddingBottom: spacing['20'],
     marginTop: spacing['32'],
     borderTopLeftRadius: spacing['24'],
     borderTopRightRadius: spacing['24'],
-    backgroundColor: '#39296D', //linear gradient
+    backgroundColor: '#5E499A' //linear gradient
   },
   'flex-center': {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
 
   'text-earn': {
     fontWeight: '800',
     fontSize: 16,
     lineHeight: 22,
-    color: colors['white'],
+    color: colors['white']
   },
   'text-amount': {
     fontWeight: '900',
     fontSize: 24,
     lineHeight: 34,
-    color: colors['white'],
+    color: colors['white']
   },
   'text-rewards': {
     ...typography['h7'],
     lineHeight: spacing['20'],
     color: colors['white'],
     paddingLeft: spacing['6'],
-    fontWeight: '700',
+    fontWeight: '700'
   },
   amount: {
     fontWeight: '700',
     fontSize: 16,
     lineHeight: 22,
-    color: '#AE94DE',
+    color: '#AE94DE'
   },
   'btn-claim': {
     backgroundColor: colors['violet'],
@@ -261,7 +265,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     width: metrics.screenWidth - 48,
     borderRadius: spacing['8'],
-    borderColor: colors['violet'],
+    borderColor: colors['violet']
   },
   'btn-manage': {
     backgroundColor: '#F3F1F5',
@@ -269,7 +273,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: metrics.screenWidth - 80,
     borderRadius: spacing['8'],
-    borderColor: '#F3F1F5',
+    borderColor: '#F3F1F5'
   },
   'view-box-staking': {
     height: 176,
@@ -281,6 +285,6 @@ const styles = StyleSheet.create({
     borderColor: colors['violet'],
     padding: 16,
     display: 'flex',
-    justifyContent: 'space-around',
-  },
-});
+    justifyContent: 'space-around'
+  }
+})

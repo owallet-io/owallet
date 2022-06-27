@@ -3,7 +3,11 @@ import { StyleSheet, View, Image } from 'react-native'
 import { Text } from '@rneui/base'
 import { RectButton } from '../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../themes'
-import { ScanIcon } from '../../../components/icon'
+import {
+  NamespaceBuy,
+  NamespaceRelinkIcon,
+  NamespaceUnlinkIcon
+} from '../../../components/icon'
 
 export const NamespaceModal = (account): ReactElement => {
   return (
@@ -56,7 +60,7 @@ export const NamespaceModal = (account): ReactElement => {
             backgroundColor: colors['purple-900']
           }}
         >
-          <ScanIcon color={colors['white']} size={24} />
+          <NamespaceBuy color={colors['white']} size={24} />
           <Text
             style={{
               ...typography.h6,
@@ -74,7 +78,7 @@ export const NamespaceModal = (account): ReactElement => {
             marginBottom: spacing['16']
           }}
         >
-          <ScanIcon color={colors['purple-900']} size={24} />
+          <NamespaceRelinkIcon color={colors['purple-900']} size={24} />
           <Text
             style={{
               ...typography.h6,
@@ -86,12 +90,12 @@ export const NamespaceModal = (account): ReactElement => {
         </RectButton>
 
         <RectButton style={styles.containerBtn}>
-          <ScanIcon color={colors['red-900']} size={24} />
+          <NamespaceUnlinkIcon color={colors['red-900']} size={24} />
           <Text
             style={{
               ...typography.h6,
               color: colors['red-900'],
-              fontWeight: '900',
+              fontWeight: '700',
               marginLeft: spacing['12']
             }}
           >{`Remove current Namespace`}</Text>
@@ -130,6 +134,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing['16'],
     borderRadius: spacing['8'],
     paddingHorizontal: spacing['16'],
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

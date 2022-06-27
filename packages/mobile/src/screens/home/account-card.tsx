@@ -7,11 +7,9 @@ import React, {
 import { observer } from 'mobx-react-lite'
 import { Card, CardBody } from '../../components/card'
 import {
-  StyleSheet,
   Text,
   View,
   ViewStyle,
-  ImageBackground,
   Image,
   Touchable,
   TouchableWithoutFeedback,
@@ -20,10 +18,8 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useStore } from '../../stores'
 import { AddressCopyable } from '../../components/address-copyable'
-// import { DoubleDoughnutChart } from "../../components/svg";
 import { Button } from '../../components/button'
 import { LoadingSpinner } from '../../components/spinner'
-// import { StakedTokenSymbol, TokenSymbol } from "../../components/token-symbol";
 import { useSmartNavigation } from '../../navigation.provider'
 import { NetworkErrorView } from './network-error-view'
 import { ProgressBar } from '../../components/progress-bar'
@@ -50,6 +46,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { NamespaceModal, NetworkModal } from './components'
 import { Hash } from '@owallet/crypto'
 import LinearGradient from 'react-native-linear-gradient'
+import MyWalletModal from './components/my-wallet-modal/my-wallet-modal'
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle
@@ -81,7 +78,7 @@ export const AccountCard: FunctionComponent<{
         'purple',
         'red',
         'orange',
-        'yellow'
+        'black'
       ]
 
       return colors[deterministicNumber(chainInfo) % colors.length]
@@ -151,9 +148,9 @@ export const AccountCard: FunctionComponent<{
     modalStore.setChildren(NamespaceModal(account))
   }
 
-  const onPressMyWallet = () => {
+  const _onPressMyWallet = () => {
     modalStore.setOpen()
-    modalStore.setChildren(MyWalletModal(account))
+    modalStore.setChildren(MyWalletModal())
   }
 
   const RenderBtnMain = ({ name }) => {
@@ -176,7 +173,8 @@ export const AccountCard: FunctionComponent<{
           borderWidth: 0.5,
           borderRadius: spacing['8'],
           borderColor: colors['transparent'],
-          marginHorizontal: spacing['12']
+          marginLeft: 10,
+          marginRight: 10
         }}
         onPress={() => onPressBtnMain(name)}
       >
@@ -384,9 +382,9 @@ export const AccountCard: FunctionComponent<{
                 maxCharacters={22}
               />
             </View>
-            <View>
+            <TouchableOpacity onPress={_onPressMyWallet}>
               <DownArrowIcon height={30} color={colors['gray-150']} />
-            </View>
+            </TouchableOpacity>
           </View>
           {queryStakable.isFetching ? (
             <View
