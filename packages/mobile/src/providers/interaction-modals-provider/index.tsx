@@ -4,7 +4,6 @@ import { useStore } from '../../stores'
 import { SignModal } from '../../modals/sign'
 import { LedgerGranterModal } from '../../modals/ledger'
 import { HomeBaseModal } from '../../modals/home-base'
-import { Text } from 'react-native'
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {

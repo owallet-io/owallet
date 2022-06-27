@@ -34,5 +34,6 @@ export class ModalStore {
   @action
   close() {
     this.isOpen = false
+    this.children = null
   }
 }
