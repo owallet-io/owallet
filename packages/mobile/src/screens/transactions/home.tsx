@@ -7,7 +7,6 @@ import { TransactionSectionTitle, TransactionItem } from './components';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
-
 const txsTransfer = [
   {
     label: 'Send token',
@@ -105,11 +104,9 @@ export const Transactions: FunctionComponent = () => {
         denom={item.denom}
         key={index}
         onPress={
-          () => smartNavigation.navigateSmart('Browser', {})
-
-        //  () =>  navigation.dispatch(StackActions.replace('TransactionsDetails'))
+          () => smartNavigation.navigateSmart('Transactions.Detail', {})
         }
-        colorStyleAmount={style.flatten(['color-profile-red'])}
+        colorStyleAmount={colors['color-profile-red']}
       />
     );
   };

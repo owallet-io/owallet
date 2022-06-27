@@ -12,9 +12,11 @@ import * as WebBrowser from 'expo-web-browser';
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
+  // const [successAnimProgress] = React.useState(new Animated.Value(0));
+  // const [pangpareAnimProgress] = React.useState(new Animated.Value(0));
 
   const route = useRoute<
-    RouteProp<
+    RouteProp< 
       Record<
         string,
         {
@@ -62,7 +64,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             'margin-bottom-24'
           ])}
         >
-          <Text>pangpare here</Text>
+          {/* <Text>pangpare here pangpareAnimProgress {pangpareAnimProgress}</Text> */}
         </View>
         <View
           style={{
