@@ -4,7 +4,7 @@ import { useStore } from '../../stores';
 import { SignModal } from '../../modals/sign';
 import { LedgerGranterModal } from '../../modals/ledger';
 import { HomeBaseModal } from '../../modals/home-base';
-import { Text } from 'react-native-svg';
+import { Text } from 'react-native';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -15,15 +15,9 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       modalStore,
     } = useStore();
 
-    console.log(
-      'signInteractionStore.waitingEthereumData',
-      signInteractionStore.waitingEthereumData
-    );
-
-    console.log(
-      'signInteractionStore.waitingData',
-      signInteractionStore.waitingData
-    );
+    // Example usage
+    // modalStore.setOpen();
+    // modalStore.setChildren(<Text>33333</Text>);
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
