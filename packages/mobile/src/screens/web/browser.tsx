@@ -35,7 +35,6 @@ import { WebViewStateContext } from './components/context';
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
-  const { browserStore } = useStore();
   const navigation = useNavigation();
   return (
     <React.Fragment>
@@ -142,6 +141,8 @@ export const Browser: FunctionComponent<any> = (props) => {
             : 'https://' + url?.toLowerCase(),
       };
       browserStore.addTab(tab);
+      console.log('tabs1 add');
+
       browserStore.updateSelectedTab(tab);
       smartNavigation.pushSmart('Web.dApp', tab);
     } else {

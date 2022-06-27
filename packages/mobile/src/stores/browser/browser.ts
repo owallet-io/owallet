@@ -5,7 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export class BrowserStore {
   @observable
   protected bookmarks: Array<any>;
+  @observable
   protected tabs: Array<any>;
+  @observable
   protected selectedTab: { id: string; name: string; uri: string };
 
   constructor() {
@@ -21,7 +23,7 @@ export class BrowserStore {
 
   @action
   removeBoorkmark(boorkmark) {
-    const rIndex = this.tabs.findIndex((b) => b.id === boorkmark.id);
+    const rIndex = this.bookmarks.findIndex((b) => b.id === boorkmark.id);
     if (rIndex > -1) {
       this.bookmarks.splice(rIndex, 1);
     }
@@ -29,9 +31,7 @@ export class BrowserStore {
 
   @action
   addBoorkmark(boorkmark: object) {
-    const tempbookmarks = [...this.bookmarks];
-    tempbookmarks.push(boorkmark);
-    this.bookmarks = tempbookmarks;
+    this.bookmarks.push(boorkmark);
   }
 
   @computed
@@ -69,8 +69,6 @@ export class BrowserStore {
 
   @action
   addTab(tab: object) {
-    const tempTabs = [...this.tabs];
-    tempTabs.push(tab);
-    this.tabs = tempTabs;
+    this.tabs.push(tab);
   }
 }

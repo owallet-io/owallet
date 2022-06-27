@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
@@ -58,9 +58,6 @@ export const BrowserFooterSection: FunctionComponent<{
       console.log({ error });
     }
   };
-
-  console.log('browserStore.getTabs', browserStore.getTabs);
-
   const arrayIcon = ['back', 'next', 'tabs', 'home', 'settings'];
   const renderIcon = (type, tabNum = 0) => {
     switch (type) {
@@ -151,6 +148,7 @@ export const BrowserFooterSection: FunctionComponent<{
           />
         </View>
       )}
+
       <View
         style={style.flatten([
           'width-full',

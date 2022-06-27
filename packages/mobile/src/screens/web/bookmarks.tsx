@@ -4,6 +4,8 @@ import { useStyle } from '../../styles';
 import { BrowserSectionTitle } from './components/section-title';
 import { RemoveIcon } from '../../components/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useStore } from '../../stores';
+import { observer } from 'mobx-react-lite';
 
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -16,14 +18,14 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
           'flex-row',
           'justify-between',
           'items-center',
-          'padding-20'
+          'padding-20',
         ])}
       >
         <Text
           style={{
             fontSize: 18,
             fontWeight: '500',
-            color: '#1C1C1E'
+            color: '#1C1C1E',
           }}
         >
           Bookmarks
@@ -33,17 +35,22 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
         style={style.flatten([
           'height-1',
           'margin-x-20',
-          'background-color-border-white'
+          'background-color-border-white',
         ])}
       />
     </React.Fragment>
   );
 };
 
-export const BookMarks: FunctionComponent<any> = () => {
+export const BookMarks: FunctionComponent<any> = observer(() => {
   const style = useStyle();
+  const { browserStore } = useStore();
   const [isOpenSetting] = useState(false);
-  useEffect(() => {}, []);
+
+  const removeBookmark = (bm) => {
+    browserStore.removeBoorkmark(bm);
+  };
+
   return (
     <View
       style={style.flatten(['flex-column', 'justify-between', 'height-full'])}
@@ -54,52 +61,32 @@ export const BookMarks: FunctionComponent<any> = () => {
           style={style.flatten([
             'height-full',
             'background-color-white',
-            'margin-y-24'
+            'margin-y-24',
           ])}
         >
           <BrowserSection />
           <View style={style.flatten(['height-full', 'padding-20'])}>
-            {[
-              {
-                label: 'Oraidex',
-                uri: 'https://oraidex.io',
-                logo: (
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 20
-                    }}
-                    source={require('../../assets/image/webpage/oraidex_icon.png')}
-                    fadeDuration={0}
-                  />
-                )
-              },
-              {
-                label: 'Osmosis Trade',
-                uri: 'https://app.osmosis.zone',
-                logo: (
-                  <Image
-                    style={{
-                      width: 20,
-                      height: 22
-                    }}
-                    source={require('../../assets/image/webpage/osmosis_icon.png')}
-                    fadeDuration={0}
-                  />
-                )
-              }
-            ].map((e) => (
+            {browserStore.getBookmarks?.map((e) => (
               <TouchableOpacity
                 style={style.flatten([
                   'height-44',
                   'margin-bottom-20',
                   'flex-row',
                   'items-center',
-                  'justify-between'
+                  'justify-between',
                 ])}
               >
                 <View style={style.flatten(['flex-row'])}>
-                  <View style={style.flatten(['padding-top-5'])}>{e.logo}</View>
+                  <View style={style.flatten(['padding-top-5'])}>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 22,
+                      }}
+                      source={e.logo}
+                      fadeDuration={0}
+                    />
+                  </View>
                   <View style={style.flatten(['padding-x-15'])}>
                     <Text style={style.flatten(['subtitle2'])}>{e.label}</Text>
                     <Text style={{ color: '#636366', fontSize: 14 }}>
@@ -107,7 +94,7 @@ export const BookMarks: FunctionComponent<any> = () => {
                     </Text>
                   </View>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => removeBookmark(e)}>
                   <RemoveIcon />
                 </TouchableOpacity>
               </TouchableOpacity>
@@ -117,4 +104,4 @@ export const BookMarks: FunctionComponent<any> = () => {
       </View>
     </View>
   );
-};
+});
