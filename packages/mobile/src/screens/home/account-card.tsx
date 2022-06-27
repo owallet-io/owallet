@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useCallback, useEffect } from 'react'
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useCallback,
+  useEffect
+} from 'react'
 import { observer } from 'mobx-react-lite'
 import { Card, CardBody } from '../../components/card'
 import {
@@ -44,6 +49,7 @@ import { navigate } from '../../router/root'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { NamespaceModal, NetworkModal } from './components'
 import { Hash } from '@owallet/crypto'
+import LinearGradient from 'react-native-linear-gradient'
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle
@@ -151,7 +157,7 @@ export const AccountCard: FunctionComponent<{
   }
 
   const RenderBtnMain = ({ name }) => {
-    let icon
+    let icon: ReactElement
     switch (name) {
       case 'Buy':
         icon = <BuyIcon />
@@ -166,19 +172,22 @@ export const AccountCard: FunctionComponent<{
     return (
       <TouchableOpacity
         style={{
-          backgroundColor: colors['gray-900'],
+          backgroundColor: colors['purple-900'],
           borderWidth: 0.5,
           borderRadius: spacing['8'],
-          borderColor: colors['violet']
+          borderColor: colors['transparent'],
+          marginHorizontal: spacing['12']
         }}
         onPress={() => onPressBtnMain(name)}
       >
         <View
           style={{
-            display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            padding: spacing['8']
+            paddingTop: spacing['6'],
+            paddingBottom: spacing['6'],
+            paddingLeft: spacing['12'],
+            paddingRight: spacing['12']
           }}
         >
           {icon}
@@ -267,12 +276,14 @@ export const AccountCard: FunctionComponent<{
             borderRadius: spacing['12']
           }}
         >
-          <View
+          <LinearGradient
+            colors={['#161532', '#5E499A']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
             style={{
               borderTopLeftRadius: spacing['11'],
               borderTopRightRadius: spacing['11'],
-              height: 179,
-              backgroundColor: '#5E499A' //linear-gradient(112.91deg, #161532 0%, #5E499A 89.85%)
+              height: 179
             }}
           >
             <View
@@ -309,17 +320,17 @@ export const AccountCard: FunctionComponent<{
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingTop: 6,
-                paddingLeft: 20,
-                paddingRight: 20
+                paddingTop: spacing['6'],
+                paddingLeft: spacing[22],
+                paddingRight: spacing['22'],
+                justifyContent: 'center'
               }}
             >
               {['Buy', 'Deposit', 'Send'].map((e, i) => (
                 <RenderBtnMain key={i} name={e} />
               ))}
             </View>
-          </View>
+          </LinearGradient>
           <View
             style={{
               backgroundColor: colors['white'],
