@@ -102,7 +102,7 @@ import {
   SmartNavigatorProvider,
   useSmartNavigation,
 } from './navigation.provider';
-import { NtfsScreen } from './screens/nfts';
+import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -351,7 +351,7 @@ export const OtherNavigation: FunctionComponent = () => {
           title: 'Send',
         }}
         name="Send"
-        component={SendScreen}
+        component={sendScreen}
       />
       <Stack.Screen
         options={{
@@ -759,7 +759,7 @@ export const MainTabNavigation: FunctionComponent = () => {
           title: 'Send',
         }}
         name="Send"
-        component={SendScreen}
+        component={TransferTokensScreen}
         initialParams={{
           currency: chainStore.current.stakeCurrency.coinMinimalDenom,
           chainId: chainStore.current.chainId,
