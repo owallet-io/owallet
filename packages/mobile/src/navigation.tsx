@@ -79,25 +79,24 @@ import { RedelegateScreen } from './screens/stake/redelegate';
 import { CameraScreen } from './screens/camera';
 import {
   FocusedScreenProvider,
-  useFocusedScreen,
-} from './providers/focused-screen';
-// import Svg, { Path, Rect } from "react-native-svg";
+  useFocusedScreen
+} from './providers/focused-screen'
 import {
   TxFailedResultScreen,
   TxPendingResultScreen,
-  TxSuccessResultScreen,
-} from './screens/tx-result';
-import { HeaderAddIcon, HeaderBackButtonIcon } from './components/header/icon';
-import { BlurredBottomTabBar } from './components/bottom-tabbar';
-import { UnlockScreen } from './screens/unlock';
-import { OWalletVersionScreen } from './screens/setting/screens/version';
-
-import { DAppWebpageScreen } from './screens/web/webpages';
-import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen';
-import { Browser } from './screens/web/browser';
-import { Transactions, TransactionDetail } from './screens/transactions';
-import { navigate, navigationRef } from './router/root';
-import { handleDeepLink } from './utils/helper';
+  TxSuccessResultScreen
+} from './screens/tx-result'
+import { HeaderAddIcon, HeaderBackButtonIcon } from './components/header/icon'
+import { BlurredBottomTabBar } from './components/bottom-tabbar'
+import { UnlockScreen } from './screens/unlock'
+import { OWalletVersionScreen } from './screens/setting/screens/version'
+import { DAppWebpageScreen } from './screens/web/webpages'
+import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen'
+import { Browser } from './screens/web/browser'
+import { BookMarks } from './screens/web/bookmarks'
+import { Transactions, TransactionDetail } from './screens/transactions'
+import { navigate, navigationRef } from './router/root'
+import { handleDeepLink } from './utils/helper'
 import {
   SmartNavigatorProvider,
   useSmartNavigation,
@@ -225,7 +224,7 @@ export const MainNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: 'Ntfs',
+          title: 'Ntf detail'
         }}
         name="Ntfs"
         component={NtfsScreen}

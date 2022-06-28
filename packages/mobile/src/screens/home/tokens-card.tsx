@@ -82,8 +82,7 @@ export const TokensCard: FunctionComponent<{
 
     const _renderFlatlistItem = ({ item }) => (
       <TouchableOpacity style={styles.flatListItem} onPress={() => {
-        smartNavigation.navigateSmart('Ntfs', {
-        })
+        smartNavigation.navigateSmart('Ntfs',{})
       }}>
         <Image
           source={{
