@@ -79,6 +79,7 @@
     "is-valid-domain": "^0.1.6",
     "js-yaml": "^4.1.0",
     "mobx": "^6.1.7",
+    "mobx-persist": "^0.4.1",
     "mobx-react-lite": "^3.2.0",
     "mobx-utils": "^6.0.3",
     "os-browserify": "^0.3.0",

@@ -1,12 +1,16 @@
 import { observable, action, makeObservable, computed } from 'mobx';
 import { DAppInfos } from '../../screens/web/config';
+import { create, persist } from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export class BrowserStore {
+  @persist('list')
   @observable
   protected bookmarks: Array<any>;
+  @persist('list')
   @observable
   protected tabs: Array<any>;
+  @persist('object')
   @observable
   protected selectedTab: { id: string; name: string; uri: string };
 
@@ -72,3 +76,15 @@ export class BrowserStore {
     this.tabs.push(tab);
   }
 }
+
+const hydrate = create({
+  storage: AsyncStorage, // or AsyncStorage in react-native.
+  jsonify: true, // if you use AsyncStorage, here shoud be true
+});
+
+// create the state
+export const browserStore = new BrowserStore();
+
+hydrate('browserStore', browserStore)
+  // post hydration
+  .then(() => console.log('browserStore hydrated'));

@@ -17,7 +17,7 @@ import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
 import { ChainStore } from './chain';
-import { DeepLinkStore, BrowserStore } from './browser';
+import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import EventEmitter from 'eventemitter3';
 import { OWallet } from '@owallet/provider';
 import { KeychainStore } from './keychain';
@@ -263,6 +263,7 @@ export class RootStore {
       }
     );
     this.deepLinkUriStore = new DeepLinkStore();
+    this.browserStore = browserStore;
     this.modalStore = new ModalStore();
   }
 }
