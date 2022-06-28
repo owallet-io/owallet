@@ -137,7 +137,7 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
   );
 });
 
-const ScreenHeaderLeft: FunctionComponent<{ uri: string }> = observer(
+const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(
   ({ uri = 'MainTabDrawer' }) => {
     const style = useStyle();
     const smartNavigation = useSmartNavigation();
@@ -199,14 +199,7 @@ export const MainNavigation: FunctionComponent = () => {
         name="Home"
         component={HomeScreen}
       />
-      <Stack.Screen
-        options={{
-          title: 'BookMarks',
-          // headerLeft: () => <ScreenHeaderLeft uri="Browser"/>,
-        }}
-        name="BookMarks"
-        component={BookMarks}
-      />
+
       <Stack.Screen
         options={{
           title: 'Web',
@@ -579,6 +572,14 @@ export const WebNavigation: FunctionComponent = () => {
         }}
         name="Browser"
         component={Browser}
+      />
+      <Stack.Screen
+        options={{
+          title: 'BookMarks',
+          headerLeft: () => <ScreenHeaderLeft />,
+        }}
+        name="BookMarks"
+        component={BookMarks}
       />
       <Stack.Screen
         options={{ headerShown: false }}

@@ -348,7 +348,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Amplitude\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Base64\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/CodePush\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/DoubleConversion\"",					
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/DoubleConversion\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXImageLoader\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXRandom\"",
@@ -403,7 +403,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-safe-area-context\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-webview\"",
 				);
-				MARKETING_VERSION = 0.0.6;
+				MARKETING_VERSION = 0.0.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -439,7 +439,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Amplitude\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/Base64\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/CodePush\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/DoubleConversion\"",					
+					"\"${PODS_CONFIGURATION_BUILD_DIR}/DoubleConversion\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXImageLoader\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/EXRandom\"",
@@ -494,7 +494,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-safe-area-context\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-webview\"",
 				);
-				MARKETING_VERSION = 0.0.6;
+				MARKETING_VERSION = 0.0.5;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

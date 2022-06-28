@@ -6,6 +6,7 @@ import { RemoveIcon } from '../../components/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
+import { PageWithScrollView } from '../../components/page';
 
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -52,8 +53,12 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   };
 
   return (
-    <View
-      style={style.flatten(['flex-column', 'justify-between', 'height-full'])}
+    <PageWithScrollView
+      contentContainerStyle={style.flatten([
+        'flex-column',
+        'justify-between',
+        'height-full',
+      ])}
     >
       <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
         <BrowserSectionTitle title="All bookmarks" />
@@ -88,7 +93,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
                     />
                   </View>
                   <View style={style.flatten(['padding-x-15'])}>
-                    <Text style={style.flatten(['subtitle2'])}>{e.label}</Text>
+                    <Text style={style.flatten(['subtitle2'])}>{e.name}</Text>
                     <Text style={{ color: '#636366', fontSize: 14 }}>
                       {e.uri}
                     </Text>
@@ -102,6 +107,6 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
           </View>
         </View>
       </View>
-    </View>
+    </PageWithScrollView>
   );
 });

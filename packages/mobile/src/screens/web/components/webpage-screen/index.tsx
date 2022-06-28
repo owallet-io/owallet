@@ -107,7 +107,7 @@ export const WebpageScreen: FunctionComponent<
 
   const onPressItem = ({ name, uri }) => {
     setIsSwitchTab(false);
-    if (browserStore.getSelectedTab()?.uri !== uri) {
+    if (browserStore.getSelectedTab?.uri !== uri) {
       browserStore.updateSelectedTab({ name, uri });
       smartNavigation.pushSmart('Web.dApp', {
         name,

@@ -26,6 +26,19 @@ export const BrowserFooterSection: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const webViewState = useWebViewState();
 
+  const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
+
+  const onPressBookmark = () => {
+    if (webViewState.url) {
+      browserStore.addBoorkmark({
+        id: Date.now(),
+        name: webViewState.name,
+        logo: oraiLogo,
+        uri: webViewState.url,
+      });
+    }
+  };
+
   const onPress = (type: any) => {
     try {
       switch (type) {
@@ -143,8 +156,8 @@ export const BrowserFooterSection: FunctionComponent<{
           }}
         >
           <BrowserSectionModal
+            onPress={onPressBookmark}
             onClose={() => setIsOpenSetting(false)}
-            title="Setting"
           />
         </View>
       )}

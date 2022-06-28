@@ -16,7 +16,7 @@ import { PageWithScrollView } from '../../components/page';
 import { useNavigation } from '@react-navigation/core';
 import {
   BrowserSectionTitle,
-  BrowserSectionModal,
+  // BrowserSectionModal,
 } from './components/section-title';
 import {
   SearchIcon,
@@ -28,10 +28,11 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { checkValidDomain } from '../../utils/helper';
 import { useStore } from '../../stores';
-import { DAppInfos, InjectedProviderUrl } from './config';
+import { InjectedProviderUrl } from './config';
 import { SwtichTab } from './components/switch-tabs';
 import { BrowserFooterSection } from './components/footer-section';
 import { WebViewStateContext } from './components/context';
+import { observer } from 'mobx-react-lite';
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -78,7 +79,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   );
 };
 
-export const Browser: FunctionComponent<any> = (props) => {
+export const Browser: FunctionComponent<any> = observer((props) => {
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
@@ -134,14 +135,13 @@ export const Browser: FunctionComponent<any> = (props) => {
     if (checkValidDomain(url?.toLowerCase())) {
       const tab = {
         id: Date.now(),
-        name: 'Browser',
+        name: url,
         uri:
           url?.toLowerCase().indexOf('http') >= 0
             ? url?.toLowerCase()
             : 'https://' + url?.toLowerCase(),
       };
       browserStore.addTab(tab);
-      console.log('tabs1 add');
 
       browserStore.updateSelectedTab(tab);
       smartNavigation.pushSmart('Web.dApp', tab);
@@ -236,6 +236,13 @@ export const Browser: FunctionComponent<any> = (props) => {
                     ])}
                     onPress={() => {
                       handleClickUri(e.uri, e.name);
+                      const tab = {
+                        id: Date.now(),
+                        name: e.name,
+                        uri: e.uri?.toLowerCase(),
+                      };
+                      browserStore.addTab(tab);
+                      browserStore.updateSelectedTab(tab);
                       setUrl(e.uri);
                     }}
                   >
@@ -308,4 +315,4 @@ export const Browser: FunctionComponent<any> = (props) => {
       </WebViewStateContext.Provider>
     </>
   );
-};
+});
