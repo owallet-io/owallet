@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['14'],
+    paddingVertical: spacing['12'],
     flex: 1
   },
   textLabel: {

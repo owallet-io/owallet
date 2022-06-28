@@ -24,7 +24,6 @@ import {
   TransactionItem,
   TransactionSectionTitle
 } from '../transactions/components'
-import { PageWithScrollViewInBottomTabView } from '../../components/page'
 
 // hardcode data to test UI.
 const txsReceiver = [
@@ -38,6 +37,12 @@ const txsReceiver = [
     label: 'Recevier token',
     date: 'Apr 25, 2022',
     amount: '+12.02',
+    denom: 'ORAI'
+  },
+  {
+    label: 'Recevier token',
+    date: 'Apr 25, 2022',
+    amount: '-100.02',
     denom: 'ORAI'
   },
   {
@@ -136,12 +141,11 @@ export const TokensScreen: FunctionComponent = observer(() => {
     <View>
       <View
         style={{
-          height: metrics.screenHeight / 5,
           borderWidth: spacing['0.5'],
           borderColor: colors['gray-100'],
           borderRadius: spacing['12'],
           marginHorizontal: spacing['24'],
-          marginVertical: spacing['32']
+          marginVertical: spacing['12']
         }}
       >
         <LinearGradient
@@ -233,10 +237,10 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
       <View
         style={{
-          height: metrics.screenHeight / 2,
           backgroundColor: colors['white'],
           borderRadius: spacing['24'],
-          paddingBottom: spacing['24']
+          paddingBottom: spacing['24'],
+          height: metrics.screenHeight /2
         }}
       >
         <TransactionSectionTitle title={'Transaction list'} />
@@ -265,6 +269,9 @@ export const TokensScreen: FunctionComponent = observer(() => {
           )}
           keyExtractor={_keyExtract}
           showsVerticalScrollIndicator={false}
+          ListFooterComponent={() => (<View style={{
+            height: 12
+          }} />)}
           ListEmptyComponent={
             <View style={styles.transactionListEmpty}>
               <Image
@@ -361,8 +368,8 @@ export const TokenItem: FunctionComponent<{
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
-        smartNavigation.navigateSmart('Send', {
-          currency: balance.currency.coinMinimalDenom
+        smartNavigation.navigateSmart('Tokens', {
+          
         })
       }}
     >
