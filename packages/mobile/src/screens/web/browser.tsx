@@ -1,5 +1,4 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-// import { PageWithScrollViewInBottomTabView } from "../../components/page";
 import {
   Image,
   Text,
@@ -9,10 +8,7 @@ import {
 } from 'react-native';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
-// import { Button } from "../../components/button";
-import { useSmartNavigation } from '../../navigation.provider';
 import { PageWithScrollView } from '../../components/page';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useNavigation } from '@react-navigation/core';
 import {
   BrowserSectionTitle,
@@ -81,7 +77,6 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
 
 export const Browser: FunctionComponent<any> = observer((props) => {
   const style = useStyle();
-  const smartNavigation = useSmartNavigation();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const navigation = useNavigation();
   const { deepLinkUriStore, browserStore } = useStore();
@@ -128,7 +123,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
         });
       }
     }, 1000);
-  }, [props, smartNavigation, url]);
+  }, [props, url]);
 
   const onHandleUrl = () => {
     console.log('valid', checkValidDomain(url?.toLowerCase()));

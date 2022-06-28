@@ -813,7 +813,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
                 name="MainTabDrawer"
                 component={MainTabNavigationWithDrawer}
               />
-              <Stack.Screen name="Browser" component={WebNavigation} />
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen

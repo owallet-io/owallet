@@ -1,14 +1,14 @@
+import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
 import { HeaderBackButtonIcon } from '../../../../components/header/icon';
-import { useSmartNavigation } from '../../../../navigation.provider';
 import { useStyle } from '../../../../styles';
 
 export const BrowserSectionTitle: FunctionComponent<{
   title: string;
 }> = ({ title }) => {
   const style = useStyle();
-  const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
 
   return (
     <View
@@ -20,7 +20,7 @@ export const BrowserSectionTitle: FunctionComponent<{
         'flex-row',
       ])}
     >
-      <TouchableOpacity onPress={() => smartNavigation.goBack()}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <HeaderBackButtonIcon />
       </TouchableOpacity>
       <Text style={style.flatten(['h4', 'margin-x-10'])}>{title}</Text>
