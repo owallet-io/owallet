@@ -58,9 +58,9 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route.params.chainId
-    ? route.params.chainId
-    : chainStore.current.chainId;
+  const chainId = route?.params?.chainId
+    ? route?.params?.chainId
+    : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -75,7 +75,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
-    if (route.params.currency) {
+    if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(
         (cur) => cur.coinMinimalDenom === route.params.currency
       );
@@ -83,13 +83,13 @@ export const SendScreen: FunctionComponent = observer(() => {
         sendConfigs.amountConfig.setSendCurrency(currency);
       }
     }
-  }, [route.params.currency, sendConfigs.amountConfig]);
+  }, [route?.params?.currency, sendConfigs.amountConfig]);
 
   useEffect(() => {
-    if (route.params.recipient) {
+    if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
     }
-  }, [route.params.recipient, sendConfigs.recipientConfig]);
+  }, [route?.params?.recipient, sendConfigs.recipientConfig]);
 
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??

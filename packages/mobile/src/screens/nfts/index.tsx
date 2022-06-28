@@ -12,8 +12,12 @@ import { Bech32Address } from '@owallet/cosmos'
 import { colors, metrics, spacing, typography } from '../../themes'
 import { AnimatedCircularProgress } from 'react-native-circular-progress'
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
-import { _keyExtract } from '../../utils/helper'
-import { TransactionOutlineIcon } from '../../components/icon'
+import { formatContractAddress, _keyExtract } from '../../utils/helper'
+import {
+  QuantityIcon,
+  SendIcon,
+  TransactionOutlineIcon
+} from '../../components/icon'
 import LinearGradient from 'react-native-linear-gradient'
 import {
   BuyIcon,
@@ -54,7 +58,7 @@ const txsReceiver = [
   }
 ]
 
-export const TokensScreen: FunctionComponent = observer(() => {
+export const NtfsScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore()
 
   const account = accountStore.getAccount(chainStore.current.chainId)
@@ -87,57 +91,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
     .slice(0, 2)
 
   const _onPressBtnMain = () => {}
-  const RenderBtnMain = ({ name }) => {
-    let icon: ReactElement
-    switch (name) {
-      case 'Buy':
-        icon = <BuyIcon />
-        break
-      case 'Deposit':
-        icon = <DepositIcon />
-        break
-      case 'Send':
-        icon = <SendDashboardIcon />
-        break
-    }
-    return (
-      <TouchableOpacity
-        style={{
-          backgroundColor: colors['purple-900'],
-          borderWidth: 0.5,
-          borderRadius: spacing['8'],
-          borderColor: colors['transparent'],
-          marginLeft: 10,
-          marginRight: 10
-        }}
-        onPress={() => _onPressBtnMain()}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingTop: spacing['6'],
-            paddingBottom: spacing['6'],
-            paddingLeft: spacing['12'],
-            paddingRight: spacing['12']
-          }}
-        >
-          {icon}
-          <Text
-            style={{
-              ...typography['h7'],
-              lineHeight: spacing['20'],
-              color: colors['white'],
-              paddingLeft: spacing['6'],
-              fontWeight: '700'
-            }}
-          >
-            {name}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    )
-  }
+
   return (
     <PageWithScrollViewInBottomTabView>
       <View
@@ -162,47 +116,107 @@ export const TokensScreen: FunctionComponent = observer(() => {
         >
           <View
             style={{
-              marginTop: 24,
+              marginTop: spacing['24'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
           >
-            <TokenSymbol
+            <Text
               style={{
-                marginRight: spacing['12']
+                ...typography.h5,
+                color: colors['white'],
+                fontWeight: '700'
               }}
-              size={44}
-              chainInfo={{
-                stakeCurrency: chainStore.current.stakeCurrency
+              numberOfLines={1}
+            >
+              {'The Empire State Building'}
+            </Text>
+
+            <Text
+              style={{
+                ...typography.h7,
+                color: colors['purple-400'],
+                fontWeight: '700'
               }}
-              currency={tokens[0].balance.currency}
-              imageScale={0.54}
+            >
+              {`#8281`}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              marginTop: spacing['8'],
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: colors['white'],
+              marginHorizontal: 22,
+              borderRadius: spacing['12'],
+              padding: spacing['8'],
+              marginBottom: spacing['24']
+            }}
+          >
+            <Image
+              source={{
+                uri: 'https://picsum.photos/id/1002/200'
+              }}
+              style={{
+                width: metrics.screenWidth - 110,
+                height: metrics.screenWidth - 110,
+                borderRadius: spacing['6']
+              }}
+              resizeMode="contain"
             />
             <View
               style={{
+                marginTop: spacing['12'],
+                width: '100%',
+                flexDirection: 'row',
                 justifyContent: 'space-between'
               }}
             >
-              <Text
+              <View>
+                <Text
+                  style={{
+                    ...typography.h6,
+                    color: colors['gray-900'],
+                    fontWeight: '700'
+                  }}
+                >
+                  {`49.14 ORAI`}
+                </Text>
+
+                <Text
+                  style={{
+                    ...typography.h7,
+                    color: colors['gray-500'],
+                    fontWeight: '700'
+                  }}
+                >{`$ ${58.23}`}</Text>
+              </View>
+
+              <View
                 style={{
-                  ...typography.h3,
-                  color: colors['white'],
-                  marginTop: spacing['8'],
-                  fontWeight: '800',
-                  textAlign: 'center'
+                  backgroundColor: colors['red-50'],
+                  borderRadius: spacing['6'],
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '50%'
                 }}
               >
-                {`${0} ORAI`}
-              </Text>
-              <Text
-                style={{
-                  ...typography.h6,
-                  color: colors['purple-400'],
-                  textAlign: 'center'
-                }}
-              >
-                {`$${0}`}
-              </Text>
+                <View style={{
+                  marginTop: spacing['6']
+                }}>
+                  <QuantityIcon size={24} color={colors['gray-150']} />
+                </View>
+                <Text
+                  style={{
+                    color: colors['gray-150']
+                  }}
+                >
+                  {`10`}
+                </Text>
+              </View>
             </View>
           </View>
 
@@ -217,23 +231,45 @@ export const TokensScreen: FunctionComponent = observer(() => {
               paddingBottom: spacing['24']
             }}
           >
-            {['Buy', 'Deposit', 'Send'].map((e, i) => (
-              <RenderBtnMain key={i} name={e} />
+            {['Transfer'].map((e, i) => (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: colors['purple-900'],
+                  borderWidth: 0.5,
+                  borderRadius: spacing['8'],
+                  borderColor: colors['transparent'],
+                  marginLeft: 10,
+                  marginRight: 10
+                }}
+                onPress={() => _onPressBtnMain()}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingTop: spacing['6'],
+                    paddingBottom: spacing['6'],
+                    paddingLeft: spacing['12'],
+                    paddingRight: spacing['12']
+                  }}
+                >
+                  <SendDashboardIcon />
+                  <Text
+                    style={{
+                      ...typography['h7'],
+                      lineHeight: spacing['20'],
+                      color: colors['white'],
+                      paddingLeft: spacing['6'],
+                      fontWeight: '700'
+                    }}
+                  >
+                    {`Transfer`}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             ))}
           </View>
         </LinearGradient>
-
-        {/* {queryStakable?.isFetching ? (
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 50,
-            left: '50%'
-          }}
-        >
-          <LoadingSpinner color={colors['gray-150']} size={22} />
-        </View>
-         ) : null}  */}
       </View>
 
       <View
@@ -241,12 +277,12 @@ export const TokensScreen: FunctionComponent = observer(() => {
           backgroundColor: colors['white'],
           borderRadius: spacing['24'],
           paddingBottom: spacing['24'],
-          height: metrics.screenHeight /2
+          height: metrics.screenHeight / 2
         }}
       >
         <TransactionSectionTitle title={'Transaction list'} />
         <FlatList
-          data={txsReceiver}
+          data={[]}
           renderItem={({ item, index }) => (
             <TransactionItem
               label={item.label + ' ' + index}
@@ -270,9 +306,13 @@ export const TokensScreen: FunctionComponent = observer(() => {
           )}
           keyExtractor={_keyExtract}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (<View style={{
-            height: 12
-          }} />)}
+          ListFooterComponent={() => (
+            <View
+              style={{
+                height: 12
+              }}
+            />
+          )}
           ListEmptyComponent={
             <View style={styles.transactionListEmpty}>
               <Image
@@ -330,7 +370,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
   )
 })
 
-export const TokenItem: FunctionComponent<{
+export const NftItem: FunctionComponent<{
   containerStyle?: ViewStyle
   chainInfo: {
     stakeCurrency: Currency
@@ -370,8 +410,7 @@ export const TokenItem: FunctionComponent<{
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
-        smartNavigation.navigateSmart('Tokens', {
-        })
+        smartNavigation.navigateSmart('Tokens', {})
       }}
     >
       <View

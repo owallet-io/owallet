@@ -52,8 +52,14 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Send: {
         upperScreenName: 'Others'
       },
+      // Tokens: {
+      //   upperScreenName: 'Others'
+      // },
       Tokens: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Main'
+      },
+      Ntfs: {
+        upperScreenName: 'Main'
       },
       Camera: {
         upperScreenName: 'Others'
@@ -129,7 +135,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       },
       "Transactions.Detail": {
         upperScreenName: 'Main'
-      }
+      },
     }).withParams<{
       'Register.NewMnemonic': {
         registerConfig: RegisterConfig;

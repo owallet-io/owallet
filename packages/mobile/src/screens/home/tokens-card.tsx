@@ -60,57 +60,7 @@ const nftsData = [
   }
 ]
 
-const _renderSectionItem = ({ item, section }) => {
-  return <View />
-}
 
-const _renderFlatlistItem = ({ item }) => (
-  <View style={styles.flatListItem}>
-    <Image
-      source={{
-        uri: item.uri
-      }}
-      style={styles.itemPhoto}
-      resizeMode="cover"
-    />
-    <View
-      style={{
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        marginTop: spacing['12'],
-        alignItems: 'flex-start'
-      }}
-    >
-      <Text
-        style={{
-          ...typography.h7,
-          color: colors['gray-900'],
-          fontWeight: '900'
-        }}
-      >
-        {formatContractAddress(item.title)}
-      </Text>
-
-      <Text
-        style={{
-          ...typography.h5,
-          color: colors['gray-900'],
-          fontWeight: '900'
-        }}
-      >
-        {item.oraiPrice}
-      </Text>
-
-      <Text
-        style={{
-          ...typography.h5,
-          color: colors['gray-900'],
-          fontWeight: '900'
-        }}
-      >{`$ ${58.23}`}</Text>
-    </View>
-  </View>
-)
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle
@@ -129,6 +79,57 @@ export const TokensCard: FunctionComponent<{
   const tokens = queryBalances.positiveNativeUnstakables
     .concat(queryBalances.nonNativeBalances)
     .slice(0, 2)
+
+    const _renderFlatlistItem = ({ item }) => (
+      <TouchableOpacity style={styles.flatListItem} onPress={() => {
+        smartNavigation.navigateSmart('Ntfs', {
+        })
+      }}>
+        <Image
+          source={{
+            uri: item.uri
+          }}
+          style={styles.itemPhoto}
+          resizeMode="cover"
+        />
+        <View
+          style={{
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            marginTop: spacing['12'],
+            alignItems: 'flex-start'
+          }}
+        >
+          <Text
+            style={{
+              ...typography.h7,
+              color: colors['gray-900'],
+              fontWeight: '900'
+            }}
+          >
+            {formatContractAddress(item.title)}
+          </Text>
+    
+          <Text
+            style={{
+              ...typography.h5,
+              color: colors['gray-900'],
+              fontWeight: '900'
+            }}
+          >
+            {item.oraiPrice}
+          </Text>
+    
+          <Text
+            style={{
+              ...typography.h5,
+              color: colors['gray-900'],
+              fontWeight: '900'
+            }}
+          >{`$ ${58.23}`}</Text>
+        </View>
+      </TouchableOpacity>
+    )
 
   return (
     <View style={containerStyle}>
