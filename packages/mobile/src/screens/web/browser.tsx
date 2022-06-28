@@ -107,7 +107,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
   const updateScreen = async (uri) => {
     if (uri) {
       deepLinkUriStore.updateDeepLink('');
-      smartNavigation.pushSmart('Web.dApp', {
+      navigation.navigate('Web.dApp', {
         name: 'Browser',
         uri: decodeURIComponent(uri) || 'https://oraidex.io',
       });
@@ -119,7 +119,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
   useEffect(() => {
     setTimeout(function () {
       if (checkValidDomain(props?.route?.params?.url?.toLowerCase())) {
-        smartNavigation.pushSmart('Web.dApp', {
+        navigation.navigate('Web.dApp', {
           name: 'Browser',
           uri:
             props.route.params.url?.toLowerCase().indexOf('http') >= 0
@@ -144,11 +144,11 @@ export const Browser: FunctionComponent<any> = observer((props) => {
       browserStore.addTab(tab);
 
       browserStore.updateSelectedTab(tab);
-      smartNavigation.pushSmart('Web.dApp', tab);
+      navigation.navigate('Web.dApp', tab);
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
       if (InjectedProviderUrl) uri = InjectedProviderUrl;
-      smartNavigation.pushSmart('Web.dApp', {
+      navigation.navigate('Web.dApp', {
         name: 'Google',
         // uri: `https://staging.oraidex.io/ethereum`,
         uri,
@@ -157,7 +157,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
   };
 
   const handleClickUri = (uri: string, name: string) => {
-    smartNavigation.pushSmart('Web.dApp', {
+    navigation.navigate('Web.dApp', {
       name,
       uri,
     });

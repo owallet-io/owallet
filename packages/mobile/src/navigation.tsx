@@ -201,14 +201,6 @@ export const MainNavigation: FunctionComponent = () => {
       />
 
       <Stack.Screen
-        options={{
-          title: 'Web',
-          headerShown: false,
-        }}
-        name="Web"
-        component={WebNavigation}
-      />
-      <Stack.Screen
         name="Transactions"
         component={Transactions}
         options={{
@@ -237,27 +229,6 @@ export const MainNavigation: FunctionComponent = () => {
         }}
         name="Ntfs"
         component={NtfsScreen}
-      />
-    </Stack.Navigator>
-  );
-};
-
-export const BrowserNavigation: FunctionComponent = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset,
-        headerTitle: '',
-      }}
-      headerMode="screen"
-    >
-      <Stack.Screen
-        options={{
-          title: 'Web',
-          headerShown: false,
-        }}
-        name="Web"
-        component={WebNavigation}
       />
     </Stack.Navigator>
   );
@@ -560,7 +531,7 @@ export const AddressBookStackScreen: FunctionComponent = () => {
 export const WebNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
-      // initialRouteName="Web.Intro"
+      initialRouteName="Browser"
       screenOptions={{
         ...WebpageScreenScreenOptionsPreset,
       }}
@@ -753,7 +724,7 @@ export const MainTabNavigation: FunctionComponent = () => {
       )}
     >
       <Tab.Screen name="Main" component={MainNavigation} />
-      <Tab.Screen name="Browser" component={BrowserNavigation} />
+      <Tab.Screen name="Browser" component={WebNavigation} />
       <Tab.Screen
         options={{
           title: 'Send',
@@ -843,7 +814,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
                 name="MainTabDrawer"
                 component={MainTabNavigationWithDrawer}
               />
-              <Stack.Screen name="Browser" component={BrowserNavigation} />
+              <Stack.Screen name="Browser" component={WebNavigation} />
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen

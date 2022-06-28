@@ -5,7 +5,7 @@ import {
   AddressBookData,
   IMemoConfig,
   IRecipientConfig,
-  RegisterConfig
+  RegisterConfig,
 } from '@owallet/hooks';
 
 import { createSmartNavigatorProvider, SmartNavigator } from './hooks';
@@ -14,127 +14,122 @@ const { SmartNavigatorProvider, useSmartNavigation } =
   createSmartNavigatorProvider(
     new SmartNavigator({
       'Register.Intro': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.NewUser': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.NotNewUser': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.NewMnemonic': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.VerifyMnemonic': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.RecoverMnemonic': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.NewLedger': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.ImportFromExtension.Intro': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.ImportFromExtension': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.ImportFromExtension.SetPassword': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       'Register.End': {
-        upperScreenName: 'Register'
+        upperScreenName: 'Register',
       },
       Home: {
-        upperScreenName: 'Main'
+        upperScreenName: 'Main',
       },
       Send: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       // Tokens: {
       //   upperScreenName: 'Others'
       // },
       Tokens: {
-        upperScreenName: 'Main'
-      },
-      Ntfs: {
-        upperScreenName: 'Main'
+        upperScreenName: 'Others',
       },
       Camera: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       'Staking.Dashboard': {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       'Validator.Details': {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       'Validator.List': {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       Delegate: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       Undelegate: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       Redelegate: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       Governance: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       'Governance Details': {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       Setting: {
-        upperScreenName: 'Settings'
+        upperScreenName: 'Settings',
       },
       SettingSelectAccount: {
-        upperScreenName: 'Settings'
+        upperScreenName: 'Settings',
       },
       SettingSelectLang: {
-        upperScreenName: 'Settings'
+        upperScreenName: 'Settings',
       },
       'Setting.ViewPrivateData': {
-        upperScreenName: 'Settings'
+        upperScreenName: 'Settings',
       },
       'Setting.Version': {
-        upperScreenName: 'Settings'
+        upperScreenName: 'Settings',
       },
       AddressBook: {
-        upperScreenName: 'AddressBooks'
+        upperScreenName: 'AddressBooks',
       },
       AddAddressBook: {
-        upperScreenName: 'AddressBooks'
+        upperScreenName: 'AddressBooks',
       },
       Result: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       TxPendingResult: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       TxSuccessResult: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       TxFailedResult: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Others',
       },
       'Web.Intro': {
-        upperScreenName: 'Web'
+        upperScreenName: 'Web',
       },
       'Web.dApp': {
-        upperScreenName: 'Web'
+        upperScreenName: 'Web',
       },
-      Browser: {
-        upperScreenName: 'Browser'
+
+      Transactions: {
+        upperScreenName: 'Main',
       },
-      "Transactions": {
-        upperScreenName: 'Main'
-      },
-      "Transactions.Detail": {
-        upperScreenName: 'Main'
+      'Transactions.Detail': {
+        upperScreenName: 'Main',
       },
     }).withParams<{
       'Register.NewMnemonic': {
