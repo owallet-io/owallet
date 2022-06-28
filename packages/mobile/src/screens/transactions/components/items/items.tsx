@@ -1,6 +1,6 @@
 import React from 'react'
 import { FunctionComponent } from 'react'
-import { StyleSheet, TextStyle, View } from 'react-native'
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
 import { Text } from '@rneui/base'
 import { RectButton } from '../../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../../themes'
@@ -18,6 +18,8 @@ export const TransactionItem: FunctionComponent<{
   topBorder?: boolean
   onPress?: () => void
   bottomBorder?: boolean
+  innerStyle?: ViewStyle
+  outnerStyle?: ViewStyle
 }> = ({
   label,
   onPress,
@@ -27,18 +29,37 @@ export const TransactionItem: FunctionComponent<{
   amount,
   denom,
   right,
-  styleReactButton
+  styleReactButton,
+  outnerStyle,
+  innerStyle
 }) => {
   const renderChildren = () => {
     return (
       <>
-        <View style={styles.containerFragment}>
+        <View style={{ ...styles.containerFragment }}>
           <View style={{ flex: 1 }}>
-            <Text h4 h4Style={styles.textLabel} numberOfLines={1}>
+            <Text
+              h4
+              h4Style={{
+                ...colorStyleAmount,
+                ...styles.textLabel,
+                fontStyle: 'normal',
+                fontWeight: '700'
+              }}
+              numberOfLines={1}
+            >
               {label}
             </Text>
             {paragraph ? (
-              <Text style={styles.textParagraph}>{paragraph}</Text>
+              <Text
+                h4
+                h4Style={{
+                  ...colorStyleAmount,
+                  ...styles.textParagraph
+                }}
+              >
+                {paragraph}
+              </Text>
             ) : null}
           </View>
           <View style={{ flex: 1, alignItems: 'flex-end' }}>
@@ -49,7 +70,8 @@ export const TransactionItem: FunctionComponent<{
                   ...styles.textAmount,
                   color: amount.includes('-')
                     ? colors['red-500']
-                    : colors['green-500']
+                    : colors['green-500'],
+                  fontWeight: '500'
                 }}
               >
                 {amount} {denom}
@@ -62,7 +84,7 @@ export const TransactionItem: FunctionComponent<{
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ ...outnerStyle }}>
       {topBorder ? <View style={styles.topBorder} /> : null}
       <RectButton
         style={{
@@ -79,10 +101,6 @@ export const TransactionItem: FunctionComponent<{
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: spacing['20'],
-    marginVertical: spacing['8']
-  },
   topBorder: {
     height: 1,
     marginVertical: spacing['20'],
@@ -92,8 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 87,
     alignItems: 'center',
-    paddingVertical: spacing['20'],
-    backgroundColor: colors['white']
+    paddingVertical: spacing['20']
   },
   containerFragment: {
     width: metrics.screenWidth - 40,
@@ -117,7 +134,6 @@ const styles = StyleSheet.create({
   },
   textAmount: {
     ...typography.h5,
-
     fontWeight: '800'
   }
 })

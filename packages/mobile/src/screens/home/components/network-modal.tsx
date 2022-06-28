@@ -94,7 +94,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
               backgroundColor:
                 item.chainId === chainStore.current.chainId
                   ? colors['purple-900']
-                  : colors['gray-100'],
+                  : colors['gray-400'],
               justifyContent: 'center',
               alignItems: 'center'
             }}

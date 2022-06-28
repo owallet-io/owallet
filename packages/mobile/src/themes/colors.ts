@@ -68,6 +68,7 @@ export const colors = {
   'camera-loading-background': 'rgba(255,255,255,0.95)',
   'big-image-placeholder': '#E7E4EF',
   // red
+  'red-50': '#F3F1F5',
   'red-500': '#E63A3A',
   'red-700': '#FF0000',
   'red-900': '#E53A3A',
@@ -89,6 +90,7 @@ export const colors = {
   'green-500': '#4BB10C',
 
   // purple
+  'purple-400': '#AE94DE',
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
 
