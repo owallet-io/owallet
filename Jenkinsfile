@@ -11,8 +11,8 @@ pipeline {
                 sshagent(['phu-cloud']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l phutx $SERVER_IP -p 22129 <<EOF
-                            cd /home/orai/owallet
-                            sudo git pull origin develop
+                            cd /home/orai/owallet && pwd && sudo git pull origin develop
+                            echo "DONE"
                     '''
                 }
             }
