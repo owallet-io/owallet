@@ -99,13 +99,10 @@ export const Transactions: FunctionComponent = () => {
   const _renderItem = ({ item, index }) => {
     return (
       <TransactionItem
-        label={item.label + ' ' + index}
-        paragraph={item.date}
-        amount={item.amount}
-        denom={item.denom}
+        item={item}
         key={index}
         onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
-        colorStyleAmount={colors['color-profile-red']}
+        containerStyle={{}} // customize item transaction
       />
     )
   }
@@ -199,7 +196,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors['gray-50'],
     borderColor: colors['border-gray']
   },
-
   transactionList: {
     paddingBottom: spacing['12']
   },

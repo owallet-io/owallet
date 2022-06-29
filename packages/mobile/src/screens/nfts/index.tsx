@@ -16,7 +16,7 @@ import { formatContractAddress, _keyExtract } from '../../utils/helper'
 import {
   QuantityIcon,
   SendIcon,
-  TransactionOutlineIcon
+  TransactionMinusIcon
 } from '../../components/icon'
 import LinearGradient from 'react-native-linear-gradient'
 import {
@@ -243,13 +243,13 @@ export const NtfsScreen: FunctionComponent = observer(() => {
               alignItems: 'center'
             }}
           >
-            <TransactionOutlineIcon size={18} color={colors['white']} />
+            <TransactionMinusIcon size={18} color={colors['white']} />
             <Text
               style={{
                 ...typography.h6,
                 color: colors['white'],
                 fontWeight: '700',
-                marginLeft: spacing['16']
+                marginLeft: spacing['10']
               }}
             >
               View all transactions

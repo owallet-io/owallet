@@ -27,20 +27,16 @@ import {
   DotsIcon,
   DownArrowIcon,
   HistoryIcon,
-  RightArrowIcon,
-  ScanIcon,
   Scanner,
-  SendIcon,
   SettingDashboardIcon
 } from '../../components/icon'
-import { useNavigation, DrawerActions } from '@react-navigation/native'
-import { FormattedMessage, useIntl } from 'react-intl'
+import { useNavigation } from '@react-navigation/native'
 import {
   BuyIcon,
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button'
-import { colors, metrics, spacing, typography } from '../../themes'
+import { colors, spacing, typography } from '../../themes'
 import { navigate } from '../../router/root'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { NamespaceModal, NetworkModal } from './components'
@@ -132,6 +128,7 @@ export const AccountCard: FunctionComponent<{
     }
   }
 
+  // open model
   const _onPressNetworkModal = () => {
     modalStore.setOpen()
     modalStore.setChildren(
@@ -142,12 +139,10 @@ export const AccountCard: FunctionComponent<{
       })
     )
   }
-
   const _onPressNamespace = () => {
     modalStore.setOpen()
     modalStore.setChildren(NamespaceModal(account))
   }
-
   const _onPressMyWallet = () => {
     modalStore.setOpen()
     modalStore.setChildren(MyWalletModal())

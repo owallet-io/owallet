@@ -13,7 +13,7 @@ import { colors, metrics, spacing, typography } from '../../themes'
 import { AnimatedCircularProgress } from 'react-native-circular-progress'
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
 import { _keyExtract } from '../../utils/helper'
-import { TransactionOutlineIcon } from '../../components/icon'
+import { TransactionMinusIcon } from '../../components/icon'
 import LinearGradient from 'react-native-linear-gradient'
 import {
   BuyIcon,
@@ -56,6 +56,7 @@ const txsReceiver = [
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore } = useStore()
+  const smartNavigation = useSmartNavigation()
 
   const account = accountStore.getAccount(chainStore.current.chainId)
   const queries = queriesStore.get(chainStore.current.chainId)
@@ -249,23 +250,9 @@ export const TokensScreen: FunctionComponent = observer(() => {
           data={txsReceiver}
           renderItem={({ item, index }) => (
             <TransactionItem
-              label={item.label + ' ' + index}
-              paragraph={item.date}
-              amount={item.amount}
-              denom={item.denom}
+              item={item}
               key={index}
-              // onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
-              colorStyleAmount={{
-                color: colors['profile-red'],
-                fontWeight: '800',
-                ...typography.subtitle2
-              }}
-              outnerStyle={{
-                backgroundColor: colors['red-50'],
-                marginHorizontal: spacing['24'],
-                borderRadius: spacing['8'],
-                marginTop: spacing['8']
-              }}
+              onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
             />
           )}
           keyExtractor={_keyExtract}
@@ -312,13 +299,13 @@ export const TokensScreen: FunctionComponent = observer(() => {
               alignItems: 'center'
             }}
           >
-            <TransactionOutlineIcon size={18} color={colors['white']} />
+            <TransactionMinusIcon size={18} color={colors['white']} />
             <Text
               style={{
                 ...typography.h6,
                 color: colors['white'],
                 fontWeight: '700',
-                marginLeft: spacing['16']
+                marginLeft: spacing['10']
               }}
             >
               View all transactions

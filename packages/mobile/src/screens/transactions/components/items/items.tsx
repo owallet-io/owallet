@@ -5,135 +5,109 @@ import { Text } from '@rneui/base'
 import { RectButton } from '../../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../../themes'
 
-export const TransactionItem: FunctionComponent<{
+interface Item {
   label?: string
-  paragraph?: string
-  left?: React.ReactElement
-  right?: React.ReactElement
-
-  colorStyleAmount?: TextStyle
-  styleReactButton?: number
+  date?: string
   amount?: string
   denom?: string
-  topBorder?: boolean
+}
+
+interface TransactionItemProps {
+  item: Item
   onPress?: () => void
-  bottomBorder?: boolean
-  innerStyle?: ViewStyle
-  outnerStyle?: ViewStyle
-}> = ({
-  label,
+  containerStyle?: ViewStyle
+}
+
+export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
+  item,
   onPress,
-  paragraph,
-  colorStyleAmount,
-  topBorder,
-  amount,
-  denom,
-  right,
-  styleReactButton,
-  outnerStyle,
-  innerStyle
+  containerStyle
 }) => {
   const renderChildren = () => {
     return (
-      <>
-        <View style={{ ...styles.containerFragment }}>
-          <View style={{ flex: 1 }}>
-            <Text
-              h4
-              h4Style={{
-                ...colorStyleAmount,
-                ...styles.textLabel,
-                fontStyle: 'normal',
-                fontWeight: '700'
-              }}
-              numberOfLines={1}
-            >
-              {label}
-            </Text>
-            {paragraph ? (
-              <Text
-                h4
-                h4Style={{
-                  ...colorStyleAmount,
-                  ...styles.textParagraph
-                }}
-              >
-                {paragraph}
-              </Text>
-            ) : null}
-          </View>
-          <View style={{ flex: 1, alignItems: 'flex-end' }}>
-            {
-              <Text
-                h4
-                h4Style={{
-                  ...styles.textAmount,
-                  color: amount.includes('-')
-                    ? colors['red-500']
-                    : colors['green-500'],
-                  fontWeight: '500'
-                }}
-              >
-                {amount} {denom}
-              </Text>
-            }
-          </View>
+      <View
+        style={{
+          ...styles.innerButton,
+          flex: 1
+        }}
+      >
+        <View>
+          <Text
+            style={{
+              ...styles.textInfo
+            }}
+          >
+            {item?.label || 'Send token'}
+          </Text>
         </View>
-      </>
+
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end'
+          }}
+        >
+          <Text
+            style={{
+              ...styles.textInfo,
+              color: colors['gray-300']
+            }}
+          >
+            {item?.date || 'Apr 25, 2022'}
+          </Text>
+          <Text
+            style={{
+              ...styles.textAmount,
+              marginTop: spacing['8'],
+              color: item?.amount.includes('-')
+                ? colors['red-500']
+                : colors['green-500']
+            }}
+          >
+            {item?.amount || '-100.02'} {item?.denom || 'ORAI'}
+          </Text>
+        </View>
+      </View>
     )
   }
 
   return (
-    <View style={{ ...outnerStyle }}>
-      {topBorder ? <View style={styles.topBorder} /> : null}
-      <RectButton
-        style={{
-          ...styles.reactBtn,
-          borderRadius: spacing['12'],
-          paddingHorizontal: spacing['8']
-        }}
-        onPress={onPress}
-      >
-        {renderChildren()}
-      </RectButton>
-    </View>
+    <RectButton
+      style={{
+        ...styles.container, // default style for container
+        ...containerStyle
+      }}
+      onPress={onPress}
+    >
+      {renderChildren()}
+    </RectButton>
   )
 }
 
 const styles = StyleSheet.create({
-  topBorder: {
-    height: 1,
-    marginVertical: spacing['20'],
-    backgroundColor: colors['white']
-  },
-  reactBtn: {
-    flexDirection: 'row',
-    height: 87,
-    alignItems: 'center',
-    paddingVertical: spacing['20']
-  },
-  containerFragment: {
-    width: metrics.screenWidth - 40,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['12'],
-    flex: 1
-  },
-  textLabel: {
-    ...typography.h5,
-    color: colors['text-black'],
-    fontWeight: 'bold'
-  },
-  textParagraph: {
+  container: {
+    flex: 1,
+    marginLeft: spacing['24'],
+    marginRight: spacing['24'],
+    borderRadius: spacing['8'],
+    backgroundColor: colors['red-50'],
     marginTop: spacing['4'],
-    fontSize: 12,
-    color: colors['gray-600'],
-    fontWeight: 'normal'
+    marginBottom: spacing['8']
+  },
+  textInfo: {
+    ...typography.h7,
+    color: colors['gray-900'],
+    fontWeight: '600'
   },
   textAmount: {
-    ...typography.h5,
+    ...typography.h6,
     fontWeight: '800'
+  },
+  innerButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: spacing['8'],
+    marginHorizontal: spacing['16']
   }
 })

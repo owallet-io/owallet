@@ -229,7 +229,7 @@ export const TokensCard: FunctionComponent<{
               if (index === 0) {
                 smartNavigation.navigateSmart('Tokens', {})
               } else {
-                //TODO: router to nft screen
+                smartNavigation.navigateSmart('Nfts', {})
               }
             }}
           >
