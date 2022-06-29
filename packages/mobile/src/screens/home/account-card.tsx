@@ -154,7 +154,9 @@ export const AccountCard: FunctionComponent<{
   };
 
   return (
-    <Card style={containerStyle}>
+    <Card style={{
+      ...containerStyle,
+    }}>
       <CardBody
         style={{
           paddingBottom: spacing['0'],

@@ -104,7 +104,7 @@ export const TokensCard: FunctionComponent<{
             style={{
               ...typography.h7,
               color: colors['gray-900'],
-              fontWeight: '900'
+              fontWeight: '700'
             }}
           >
             {formatContractAddress(item.title)}
@@ -114,7 +114,7 @@ export const TokensCard: FunctionComponent<{
             style={{
               ...typography.h5,
               color: colors['gray-900'],
-              fontWeight: '900'
+              fontWeight: '700'
             }}
           >
             {item.oraiPrice}
@@ -124,7 +124,7 @@ export const TokensCard: FunctionComponent<{
             style={{
               ...typography.h5,
               color: colors['gray-900'],
-              fontWeight: '900'
+              fontWeight: '700'
             }}
           >{`$ ${58.23}`}</Text>
         </View>
@@ -137,7 +137,8 @@ export const TokensCard: FunctionComponent<{
         style={{
           paddingTop: spacing['8'],
           paddingBottom: spacing['14'],
-          borderRadius: spacing['24']
+          borderRadius: spacing['24'],
+          backgroundColor: colors['white']
         }}
       >
         <Tab

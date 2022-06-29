@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { Card, CardBody } from '../../../components/card';
 import { ViewStyle, View, StyleSheet } from 'react-native';
-import { CText as Text} from "../../../components/text";
+import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { useIntl } from 'react-intl';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
@@ -40,7 +40,11 @@ export const UndelegationsCard: FunctionComponent<{
 
   return (
     <Card style={containerStyle}>
-      <CardBody>
+      <CardBody
+        style={{
+          backgroundColor: 'white',
+        }}
+      >
         <Text style={style.flatten(['h4', 'color-text-black-very-high'])}>
           My Unstaking
         </Text>

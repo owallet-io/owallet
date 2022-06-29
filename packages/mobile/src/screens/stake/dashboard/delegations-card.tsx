@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { Card, CardBody, CardDivider } from '../../../components/card';
 import { View, ViewStyle } from 'react-native';
-import { CText as Text} from "../../../components/text";
+import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { StakedTokenSymbol } from '../../../components/token-symbol';
 import { Button } from '../../../components/button';
@@ -67,7 +67,12 @@ export const DelegationsCard: FunctionComponent<{
 
   return (
     <Card style={containerStyle}>
-      <CardBody style={style.flatten(['padding-bottom-28'])}>
+      <CardBody
+        style={{
+          backgroundColor: 'white',
+          paddingBottom: 28
+        }}
+      >
         <Text
           style={style.flatten([
             'h4',
