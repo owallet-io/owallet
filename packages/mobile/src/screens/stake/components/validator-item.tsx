@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { Image, StyleSheet, View, ViewStyle } from 'react-native'
-import { colors, spacing } from '../../../themes'
+import { colors, spacing, typography } from '../../../themes'
 import { CText as Text } from '../../../components/text'
 
 interface Validator {
@@ -27,8 +27,44 @@ export const ValidatorItem: FunctionComponent<ValidatorItemProps> = ({
         ...containerStyle
       }}
     >
-      <Image source={{ uri: validator.imageUri }} height={38} width={38} />
-      <Text>{validator.name}</Text>
+      <View
+        style={{
+          ...styles.containerLeft
+        }}
+      >
+        <Image
+          source={{
+            uri: validator.imageUri
+          }}
+          style={{
+            height: 38,
+            width: 38,
+            borderRadius: spacing['6'],
+            marginRight: spacing['12']
+          }}
+          resizeMode="cover"
+        />
+        <Text
+          style={{
+            ...styles.textInfo,
+            fontWeight: '700'
+          }}
+        >
+          {validator.name}
+        </Text>
+      </View>
+
+      <View
+        style={{
+          ...styles.containerRight
+        }}
+      >
+        <Text
+          style={{
+            ...styles.textInfo
+          }}
+        >{`${validator.amount} ${validator.denom.toUpperCase()}`}</Text>
+      </View>
     </View>
   )
 }
@@ -38,6 +74,24 @@ const styles = StyleSheet.create({
     backgroundColor: colors['white'],
     borderRadius: spacing['8'],
     marginVertical: spacing['8'],
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginHorizontal: spacing['24'],
+    padding: spacing['8'],
+    flex: 1
+  },
+  containerLeft: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  containerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+    justifyContent: 'center'
+  },
+  textInfo: {
+    ...typography.h5,
+    fontWeight: '400',
+    color: colors['gray-900']
   }
 })

@@ -1,24 +1,27 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { PageWithSectionList } from '../../../components/page';
-import { View } from 'react-native';
-import { CText as Text} from "../../../components/text";
-import { BondStatus, Validator } from '@owallet/stores';
-import { useStyle } from '../../../styles';
-import { SelectorModal, TextInput } from '../../../components/input';
-import { GradientBackground } from '../../../components/svg';
-import { CardDivider } from '../../../components/card';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { CoinPretty, Dec } from '@owallet/unit';
-import { RightArrowIcon } from '../../../components/icon';
-import Svg, { Path } from 'react-native-svg';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { RectButton } from '../../../components/rect-button';
-import { ValidatorThumbnails } from '@owallet/common';
+import React, { FunctionComponent, useMemo, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { useStore } from '../../../stores'
+import { PageWithSectionList } from '../../../components/page'
+import { StyleSheet, View } from 'react-native'
+import { CText as Text } from '../../../components/text'
+import { BondStatus, Validator } from '@owallet/stores'
+import { useStyle } from '../../../styles'
+import { SelectorModal, TextInput } from '../../../components/input'
+import { GradientBackground } from '../../../components/svg'
+import { CardDivider } from '../../../components/card'
+import { useSmartNavigation } from '../../../navigation.provider'
+import { CoinPretty, Dec } from '@owallet/unit'
+import {
+  ArrowOpsiteUpDownIcon,
+  ValidatorOutlineIcon
+} from '../../../components/icon'
+import { ValidatorThumbnail } from '../../../components/thumbnail'
+import { RouteProp, useRoute } from '@react-navigation/native'
+import { RectButton } from '../../../components/rect-button'
+import { ValidatorThumbnails } from '@owallet/common'
+import { colors, spacing, typography } from '../../../themes'
 
-type Sort = 'APY' | 'Voting Power' | 'Name';
+type Sort = 'APY' | 'Voting Power' | 'Name'
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -26,33 +29,31 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          validatorSelector?: (validatorAddress: string) => void;
+          validatorSelector?: (validatorAddress: string) => void
         }
       >,
       string
     >
-  >();
+  >()
 
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore } = useStore()
 
-  const queries = queriesStore.get(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId)
 
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<Sort>('Voting Power');
-  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState<Sort>('Voting Power')
+  const [isSortModalOpen, setIsSortModalOpen] = useState(false)
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
-  );
-
-  const style = useStyle();
+  )
 
   const data = useMemo(() => {
-    let data = bondedValidators.validators;
+    let data = bondedValidators.validators
     if (search) {
-      data = data.filter((val) =>
+      data = data.filter(val =>
         val.description.moniker?.toLowerCase().includes(search.toLowerCase())
-      );
+      )
     }
     switch (sort) {
       case 'APY':
@@ -61,29 +62,29 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
             new Dec(val2.commission.commission_rates.rate)
           )
             ? 1
-            : -1;
-        });
-        break;
+            : -1
+        })
+        break
       case 'Name':
         data.sort((val1, val2) => {
           if (!val1.description.moniker) {
-            return 1;
+            return 1
           }
           if (!val2.description.moniker) {
-            return -1;
+            return -1
           }
-          return val1.description.moniker > val2.description.moniker ? -1 : 1;
-        });
-        break;
+          return val1.description.moniker > val2.description.moniker ? -1 : 1
+        })
+        break
       case 'Voting Power':
         data.sort((val1, val2) => {
-          return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
-        });
-        break;
+          return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1
+        })
+        break
     }
 
-    return data;
-  }, [bondedValidators.validators, search, sort]);
+    return data
+  }, [bondedValidators.validators, search, sort])
 
   useLogScreenView("Validator list", {
     chainId: chainStore.current.chainId,
@@ -95,28 +96,29 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
       { label: 'APY', key: 'APY' },
       { label: 'Amount Staked', key: 'Voting Power' },
       { label: 'Name', key: 'Name' }
-    ];
-  }, []);
+    ]
+  }, [])
 
   const sortItem = useMemo(() => {
-    const item = items.find((item) => item.key === sort);
+    const item = items.find(item => item.key === sort)
     if (!item) {
-      throw new Error(`Can't find the item for sort (${sort})`);
+      throw new Error(`Can't find the item for sort (${sort})`)
     }
-    return item;
-  }, [items, sort]);
+    return item
+  }, [items, sort])
 
   return (
     <React.Fragment>
       <SelectorModal
         close={() => {
-          setIsSortModalOpen(false);
+          setIsSortModalOpen(false)
         }}
         isOpen={isSortModalOpen}
         items={items}
         selectedKey={sort}
-        setSelectedKey={(key) => setSort(key as Sort)}
+        setSelectedKey={key => setSort(key as Sort)}
       />
+
       <PageWithSectionList
         sections={[
           {
@@ -127,183 +129,243 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         keyExtractor={(item: Validator) => item.operator_address}
         renderItem={({ item, index }: { item: Validator; index: number }) => {
           return (
-            <ValidatorItem
-              validatorAddress={item.operator_address}
-              index={index}
-              sort={sort}
-              onSelectValidator={route.params.validatorSelector}
-            />
-          );
+            <View
+              style={{
+                marginHorizontal: spacing['24'],
+                marginVertical: spacing['8'],
+                borderRadius: spacing['8']
+              }}
+            >
+              <ValidatorItem
+                validatorAddress={item.operator_address}
+                index={index}
+                sort={sort}
+                onSelectValidator={route.params.validatorSelector}
+              />
+            </View>
+          )
         }}
         ItemSeparatorComponent={() => <CardDivider />}
         renderSectionHeader={() => {
           return (
             <View>
-              <View
-                style={style.flatten(['absolute', 'width-full', 'height-full'])}
+              <Text
+                style={{
+                  ...typography.h3,
+                  fontWeight: '700',
+                  textAlign: 'center',
+                  color: colors['gray-900']
+                }}
               >
-                <GradientBackground />
-              </View>
+                {`Active validators`}
+              </Text>
               <View
-                style={style.flatten([
-                  'padding-x-20',
-                  'padding-top-12',
-                  'padding-bottom-4'
-                ])}
+                style={{
+                  paddingHorizontal: spacing['20'],
+                  paddingTop: spacing['12'],
+                  paddingBottom: spacing['4']
+                }}
               >
                 <TextInput
                   label="Search"
                   placeholder="Search"
-                  labelStyle={style.flatten(['display-none'])}
-                  containerStyle={style.flatten(['padding-0'])}
+                  labelStyle={{
+                    display: 'none'
+                  }}
+                  containerStyle={{
+                    padding: 0
+                  }}
                   value={search}
-                  onChangeText={(text) => {
-                    setSearch(text);
+                  onChangeText={text => {
+                    setSearch(text)
                   }}
                   paragraph={
-                    <View style={style.flatten(['flex-row', 'margin-top-12'])}>
-                      <View style={style.flatten(['flex-1'])} />
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        marginTop: spacing['32'],
+                        marginBottom: spacing['16']
+                      }}
+                    >
+                      <View
+                        style={{
+                          flex: 1,
+                          flexDirection: 'row'
+                        }}
+                      >
+                        <ValidatorOutlineIcon
+                          color={colors['gray-900']}
+                          size={16}
+                        />
+                        <Text
+                          style={{
+                            ...styles.title,
+                            marginLeft: spacing['8']
+                          }}
+                        >
+                          {`Validator list`}
+                        </Text>
+                      </View>
                       <RectButton
-                        style={style.flatten([
-                          'flex-row',
-                          'items-center',
-                          'padding-x-2'
-                        ])}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          paddingHorizontal: spacing['2']
+                        }}
                         onPress={() => {
-                          setIsSortModalOpen(true);
+                          setIsSortModalOpen(true)
                         }}
                       >
                         <Text
-                          style={style.flatten([
-                            'text-overline',
-                            'color-text-black-low',
-                            'margin-right-4',
-                            'uppercase'
-                          ])}
+                          style={{
+                            ...styles.title,
+                            marginRight: spacing['10'],
+                            textTransform: 'uppercase'
+                          }}
                         >
                           {sortItem.label}
                         </Text>
-                        <Svg
-                          width="6"
-                          height="12"
-                          fill={style.get('color-text-black-low').color}
-                          viewBox="0 0 6 12"
-                        >
-                          <Path
-                            fill={style.get('color-text-black-low').color}
-                            d="M2.625 0l2.273 4.5H.352L2.625 0zM2.625 12L.352 7.5h4.546L2.625 12z"
-                          />
-                        </Svg>
+                        <ArrowOpsiteUpDownIcon
+                          size={24}
+                          color={colors['gray-900']}
+                        />
                       </RectButton>
                     </View>
                   }
                 />
               </View>
             </View>
-          );
+          )
         }}
       />
     </React.Fragment>
-  );
-});
+  )
+})
 
 const ValidatorItem: FunctionComponent<{
-  validatorAddress: string;
-  index: number;
-  sort: Sort;
+  validatorAddress: string
+  index: number
+  sort: Sort
 
-  onSelectValidator?: (validatorAddress: string) => void;
+  onSelectValidator?: (validatorAddress: string) => void
 }> = observer(({ validatorAddress, index, sort, onSelectValidator }) => {
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore } = useStore()
 
-  const queries = queriesStore.get(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId)
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
-  );
+  )
 
-  const style = useStyle();
+  const style = useStyle()
 
-  const validator = bondedValidators.getValidator(validatorAddress);
+  const validator = bondedValidators.getValidator(validatorAddress)
 
-  const smartNavigation = useSmartNavigation();
+  const smartNavigation = useSmartNavigation()
 
   return validator ? (
     <RectButton
-      style={style.flatten([
-        'flex-row',
-        'background-color-white',
-        'height-72',
-        'items-center'
-      ])}
-      onPress={() => {
-        if (onSelectValidator) {
-          onSelectValidator(validatorAddress);
-          smartNavigation.goBack();
-        } else {
-          smartNavigation.navigateSmart('Validator.Details', {
-            validatorAddress
-          });
-        }
+      style={{
+        ...styles.container,
+        flexDirection: 'row',
+        backgroundColor: colors['white'],
+        alignItems: 'center'
       }}
+      // onPress={() => {
+      //   if (onSelectValidator) {
+      //     onSelectValidator(validatorAddress)
+      //     smartNavigation.goBack()
+      //   } else {
+      //     smartNavigation.navigateSmart('Validator.Details', {
+      //       validatorAddress
+      //     })
+      //   }
+      // }}
     >
-      <View
-        style={style.flatten(['items-center', 'width-40', 'margin-left-4'])}
-      >
-        <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
-          {index + 1}
-        </Text>
-      </View>
       <ValidatorThumbnail
-        style={style.flatten(['margin-right-8'])}
-        size={40}
+        style={{
+          marginRight: spacing['8']
+        }}
+        size={38}
         url={
           ValidatorThumbnails[validator.operator_address] ??
           bondedValidators.getValidatorThumbnail(validator.operator_address)
         }
       />
-      <Text
-        style={style.flatten([
-          'h6',
-          'color-text-black-medium',
-          'max-width-160'
-        ])}
-        numberOfLines={1}
-        ellipsizeMode="tail"
+
+      <View
+        style={{
+          ...styles.containerInfo
+        }}
       >
-        {validator.description.moniker}
-      </Text>
-      <View style={style.flatten(['flex-1'])} />
-      {sort === 'APY' ? (
-        <Text style={style.flatten(['body3', 'color-text-black-low'])}>
-          {queries.cosmos.queryInflation.inflation
-            .mul(
-              new Dec(1).sub(
-                new Dec(validator.commission.commission_rates.rate)
-              )
-            )
-            .maxDecimals(2)
-            .trim(true)
-            .toString() + '%'}
+        <Text
+          style={{
+            ...styles.textInfo,
+            color: colors['gray-900']
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {validator.description.moniker}
         </Text>
-      ) : null}
-      {sort === 'Voting Power' ? (
-        <Text style={style.flatten(['body2', 'color-text-black-low'])}>
+
+        <Text
+          style={{
+            ...styles.textInfo,
+            color: colors['gray-300']
+          }}
+        >
           {new CoinPretty(
             chainStore.current.stakeCurrency,
             new Dec(validator.tokens)
           )
             .maxDecimals(0)
             .hideDenom(true)
-            .toString()}
+            .toString() + ' staked'}
         </Text>
-      ) : null}
-      <View style={style.flatten(['margin-left-12', 'margin-right-20'])}>
-        <RightArrowIcon
-          height={14}
-          color={style.get('color-text-black-low').color}
-        />
       </View>
+      <View
+        style={{
+          flex: 1
+        }}
+      />
+      <Text
+        style={{
+          ...styles.textInfo
+        }}
+      >
+        {queries.cosmos.queryInflation.inflation
+          .mul(
+            new Dec(1).sub(new Dec(validator.commission.commission_rates.rate))
+          )
+          .maxDecimals(2)
+          .trim(true)
+          .toString() + '%'}
+      </Text>
     </RectButton>
-  ) : null;
-});
+  ) : null
+})
+
+const styles = StyleSheet.create({
+  title: {
+    ...typography.h7,
+    fontWeight: '400',
+    color: colors['gray-700']
+  },
+  container: {
+    backgroundColor: colors['white'],
+    flexDirection: 'row',
+    padding: spacing['8'],
+    flex: 1,
+    paddingLeft: spacing['8'],
+    paddingRight: spacing['16']
+  },
+  containerInfo: {
+    marginLeft: spacing['12']
+  },
+  textInfo: {
+    ...typography.h6,
+    fontWeight: '400',
+    color: colors['gray-900']
+  }
+})

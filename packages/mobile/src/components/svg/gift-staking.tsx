@@ -4,14 +4,15 @@ import Svg, { Path, Defs, Rect, Stop, LinearGradient } from 'react-native-svg'
 export const GiftStakingLogo: FunctionComponent<{
   width?: number | string
   height?: number | string
-}> = ({ width = 284, height = 96 }) => {
+}> = ({ width = 119, height = 149 }) => {
   return (
     <Svg
       style={{
         width,
         height
       }}
-      viewBox="0 0 284 96"
+      viewBox="0 0 119 149"
+      fill={"none"}
     >
       <Path
         d="M27 73.7048V149.295C27 151.93 28.9597 154 31.4545 154H120.545C123.04 154 125 151.93 125 149.295V81.044C125 79.3502 124.109 77.845 122.773 76.9978L110.746 69.6587C110.033 69.1879 109.231 69 108.518 69H89.3636L76 81.044L62.6364 69H31.4545C28.9597 69 27 71.0698 27 73.7048Z"
