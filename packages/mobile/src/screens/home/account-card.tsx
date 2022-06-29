@@ -290,7 +290,7 @@ export const AccountCard: FunctionComponent<{
               paddingRight: spacing['18'],
               borderBottomLeftRadius: spacing['11'],
               borderBottomRightRadius: spacing['11'],
-              shadowColor: 'rgba(24, 39, 75, 0.12)',
+              shadowColor: 'gray',
               shadowOffset: {
                 width: 0,
                 height: 12,
@@ -360,7 +360,7 @@ export const AccountCard: FunctionComponent<{
             borderColor: colors['gray-100'],
             borderRadius: spacing['12'],
             backgroundColor: colors['white'],
-            shadowColor: 'rgba(24, 39, 75, 0.12)',
+            shadowColor: 'gray',   
             shadowOffset: {
               width: 0,
               height: 12,

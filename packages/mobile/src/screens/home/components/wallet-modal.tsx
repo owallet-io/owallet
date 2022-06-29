@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   containerNamespace: {
     backgroundColor: colors['white'],
-    shadowColor: 'rgba(24, 39, 75, 0.12)',
+    shadowColor: 'gray',
     shadowOffset: {
       width: 0,
       height: 12
