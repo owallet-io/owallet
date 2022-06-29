@@ -1,8 +1,10 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-export default (props) => (
-  <Text {...props} style={[{ fontFamily: 'DMSans-Regular' }, props.style]}>
-    {props.children}
-  </Text>
-);
+export const CText = (props) => {
+  return (
+    <Text {...props} style={[{ fontFamily: 'DMSans-Regular' }, props.style]}>
+      {props.children}
+    </Text>
+  );
+};
