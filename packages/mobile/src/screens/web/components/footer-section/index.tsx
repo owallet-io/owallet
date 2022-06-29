@@ -28,7 +28,9 @@ export const BrowserFooterSection: FunctionComponent<{
   const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
 
   const onPressBookmark = () => {
-    if (webViewState.url) {
+    console.log('webViewState', webViewState);
+    setIsOpenSetting(false);
+    if (webViewState.webView) {
       browserStore.addBoorkmark({
         id: Date.now(),
         name: webViewState.name,
@@ -45,6 +47,7 @@ export const BrowserFooterSection: FunctionComponent<{
           return setIsOpenSetting(!isOpenSetting);
         case 'back':
           if (!webViewState.canGoBack) {
+            webViewState.clearWebViewContext();
             navigation.goBack();
           } else if (webViewState.webView) {
             webViewState.webView.goBack();

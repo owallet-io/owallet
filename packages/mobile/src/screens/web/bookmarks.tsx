@@ -53,13 +53,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   };
 
   return (
-    <PageWithScrollView
-      contentContainerStyle={style.flatten([
-        'flex-column',
-        'justify-between',
-        'height-full',
-      ])}
-    >
+    <PageWithScrollView>
       <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
         <BrowserSectionTitle title="All bookmarks" />
         <View

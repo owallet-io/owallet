@@ -3,7 +3,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
-  useState
+  useState,
 } from 'react';
 import { Dimensions, Image, StatusBar, StyleSheet, View , Linking } from 'react-native';
 import Animated, { Easing } from 'react-native-reanimated';
@@ -59,7 +59,7 @@ enum AutoBiomtricStatus {
   NO_NEED,
   NEED,
   FAILED,
-  SUCCESS
+  SUCCESS,
 }
 
 const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
@@ -123,7 +123,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!navigateToHomeOnce.current) {
       // Wait the account of selected chain is loaded.
       await waitAccountLoad(accountStore, chainStore.current.chainId);
-      navigation.dispatch(StackActions.replace('MainTabDrawer'));
+      navigation.dispatch(StackActions.replace('MainTab'));
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
@@ -156,7 +156,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         Animated.timing(animatedContinuityEffectOpacity, {
           toValue: 0,
           duration: 600,
-          easing: Easing.ease
+          easing: Easing.ease,
         }).start();
       }, 700);
     }
@@ -164,7 +164,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     animatedContinuityEffectOpacity,
     autoBiometryStatus,
     isSplashEnd,
-    keyRingStore.status
+    keyRingStore.status,
   ]);
 
   const [password, setPassword] = useState('');
@@ -227,7 +227,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         routeToRegisterOnce.current = true;
         navigation.dispatch(
           StackActions.replace('Register', {
-            screen: 'Register.Intro'
+            screen: 'Register.Intro',
           })
         );
       })();
@@ -248,7 +248,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       <View
         style={style.flatten([
           'absolute-fill',
-          'background-color-splash-background'
+          'background-color-splash-background',
         ])}
       />
       <View
@@ -264,8 +264,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                 style.flatten([
                   'width-full',
                   'height-full',
-                  'margin-bottom-102'
-                ])
+                  'margin-bottom-102',
+                ]),
               ])}
               fadeDuration={0}
               resizeMode="contain"
@@ -307,8 +307,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         style={StyleSheet.flatten([
           style.flatten(['absolute-fill']),
           {
-            opacity: animatedContinuityEffectOpacity
-          }
+            opacity: animatedContinuityEffectOpacity,
+          },
         ])}
         pointerEvents={isSplashEnd ? 'none' : 'auto'}
       >
@@ -328,7 +328,7 @@ const useAnimationState = () => {
       finished: new Animated.Value<number>(0),
       position: new Animated.Value<number>(0),
       time: new Animated.Value<number>(0),
-      frameTime: new Animated.Value<number>(0)
+      frameTime: new Animated.Value<number>(0),
     };
   })[0];
 };
@@ -357,7 +357,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
       backgroundClippingClock: new Animated.Clock(),
 
       backgroundDone: new Animated.Value(0),
-      backgroundClippingDone: new Animated.Value(0)
+      backgroundClippingDone: new Animated.Value(0),
     };
   });
 
@@ -409,7 +409,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 {
                   duration: backgroundClippingAnimationDuration,
                   easing: Easing.out(Easing.cubic),
-                  toValue: 1
+                  toValue: 1,
                 }
               ),
               Animated.timing(
@@ -418,7 +418,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 {
                   duration: backgroundClippingAnimationDuration,
                   easing: Easing.out(Easing.cubic),
-                  toValue: 1
+                  toValue: 1,
                 }
               ),
               Animated.timing(
@@ -427,7 +427,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
                 {
                   duration: backgroundClippingAnimationDuration,
                   easing: Easing.out(Easing.cubic),
-                  toValue: 1
+                  toValue: 1,
                 }
               ),
               Animated.cond(
@@ -441,13 +441,13 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   Animated.debug(
                     'Background clipping animation is done',
                     Animated.stopClock(animation.backgroundClippingClock)
-                  )
+                  ),
                 ]
-              )
+              ),
             ]
-          )
+          ),
         ]
-      )
+      ),
     ];
   }, [
     animation.backgroundClippingClock,
@@ -455,7 +455,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
     animation.isStarted,
     backgroundClippingHeight,
     backgroundClippingRadius,
-    backgroundClippingWidth
+    backgroundClippingWidth,
   ]);
 
   Animated.useCode(() => {
@@ -476,12 +476,12 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   Animated.timing(animation.backgroundClock, backgroundWidth, {
                     duration: backgroundAnimationDuration,
                     easing: Easing.out(Easing.quad),
-                    toValue: 1
+                    toValue: 1,
                   }),
                   Animated.timing(animation.backgroundClock, backgroundHeight, {
                     duration: backgroundAnimationDuration,
                     easing: Easing.out(Easing.quad),
-                    toValue: 1
+                    toValue: 1,
                   }),
                   Animated.cond(
                     Animated.and(
@@ -496,9 +496,9 @@ export const SplashContinuityEffectView: FunctionComponent<{
                       ),
                       Animated.call([], () => {
                         onAnimationEndRef.current();
-                      })
+                      }),
                     ]
-                  )
+                  ),
                 ],
                 [
                   // `backgroundDelay` is actually not used for animation,
@@ -506,20 +506,20 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   Animated.timing(animation.backgroundClock, backgroundDelay, {
                     duration: backgroundAnimationDelay,
                     easing: Easing.ease,
-                    toValue: 1
+                    toValue: 1,
                   }),
                   Animated.cond(backgroundDelay.finished, [
                     Animated.debug(
                       'Delay for background animation is reached',
                       backgroundDelay.finished
-                    )
-                  ])
+                    ),
+                  ]),
                 ]
-              )
+              ),
             ]
-          )
+          ),
         ]
-      )
+      ),
     ];
   }, [
     animation.isStarted,
@@ -527,7 +527,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
     animation.backgroundClock,
     backgroundDelay,
     backgroundWidth,
-    backgroundHeight
+    backgroundHeight,
   ]);
 
   return (
@@ -535,14 +535,14 @@ export const SplashContinuityEffectView: FunctionComponent<{
       <View
         style={style.flatten([
           'absolute-fill',
-          'background-color-splash-background'
+          'background-color-splash-background',
         ])}
       />
       <View
         style={style.flatten([
           'absolute-fill',
           'items-center',
-          'justify-center'
+          'justify-center',
         ])}
       >
         <Animated.View
@@ -552,26 +552,26 @@ export const SplashContinuityEffectView: FunctionComponent<{
               'height-full',
               'overflow-hidden',
               'items-center',
-              'justify-center'
+              'justify-center',
             ]),
             {
               width: backgroundClippingWidth.position.interpolate({
                 inputRange: [0, 1],
-                outputRange: [Dimensions.get('window').width, expectedLogoSize]
+                outputRange: [Dimensions.get('window').width, expectedLogoSize],
               }),
               height: backgroundClippingHeight.position.interpolate({
                 inputRange: [0, 1],
                 outputRange: [
                   Dimensions.get('window').height +
                     (StatusBar.currentHeight ?? 0),
-                  expectedLogoSize
-                ]
+                  expectedLogoSize,
+                ],
               }),
               borderRadius: backgroundClippingRadius.position.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, expectedBorderRadius]
-              })
-            }
+                outputRange: [0, expectedBorderRadius],
+              }),
+            },
           ])}
         >
           <Animated.Image
@@ -582,18 +582,18 @@ export const SplashContinuityEffectView: FunctionComponent<{
                   inputRange: [0, 1],
                   outputRange: [
                     Dimensions.get('window').width,
-                    expectedLogoSize
-                  ]
+                    expectedLogoSize,
+                  ],
                 }),
                 height: backgroundHeight.position.interpolate({
                   inputRange: [0, 1],
                   outputRange: [
                     Dimensions.get('window').height +
                       (StatusBar.currentHeight ?? 0),
-                    expectedLogoSize
-                  ]
-                })
-              }
+                    expectedLogoSize,
+                  ],
+                }),
+              },
             ])}
             source={require('../../assets/logo/splash-screen-only-background.png')}
             resizeMode="stretch"
@@ -608,7 +608,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
         style={style.flatten([
           'absolute-fill',
           'items-center',
-          'justify-center'
+          'justify-center',
         ])}
       >
         <Image

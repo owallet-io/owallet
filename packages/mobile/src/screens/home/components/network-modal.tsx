@@ -1,41 +1,74 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react'
-import { StyleSheet, View, FlatList } from 'react-native'
-import { Text } from '@rneui/base'
-import { RectButton } from '../../../components/rect-button'
-import { colors, metrics, spacing, typography } from '../../../themes'
-import { _keyExtract } from '../../../utils/helper'
-import FastImage from 'react-native-fast-image'
-import { VectorCharacter } from '../../../components/vector-character'
+import React, { ReactElement, useState } from 'react';
+import { StyleSheet, View, FlatList } from 'react-native';
+import { Text } from '@rneui/base';
+import { RectButton } from '../../../components/rect-button';
+import { colors, metrics, spacing, typography } from '../../../themes';
+import { ScanIcon } from '../../../components/icon';
+import { _keyExtract } from '../../../utils/helper';
 
-export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
-  const _renderItem = ({ item }) => {
-    return (
-      <RectButton
+const networkSupports = [
+  {
+    title: 'Oraichain network',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+  {
+    title: 'OraiBridge Network',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+  {
+    title: 'Kawaiiverse Network',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+  {
+    title: 'Balcony Subnet Network',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+  {
+    title: 'Cosmos Hub Network',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+  {
+    title: 'Osmosis Network',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+  {
+    title: 'BNB Chain',
+    icon: <ScanIcon color="black" size={38} />,
+    price: '$312.24',
+  },
+];
+
+const _renderItem = ({ item }) => {
+  return (
+    <RectButton
+      style={{
+        ...styles.containerBtn,
+      }}
+    >
+      <View
         style={{
-          ...styles.containerBtn
-        }}
-        onPress={() => {
-          chainStore.selectChain(item.chainId)
-          chainStore.saveLastViewChainId()
-          modalStore.close()
+          justifyContent: 'flex-start',
+          flexDirection: 'row',
+          alignItems: 'center',
         }}
       >
         <View
           style={{
-            justifyContent: 'flex-start',
-            flexDirection: 'row',
-            alignItems: 'center'
+            justifyContent: 'space-between',
+            marginLeft: spacing['12'],
           }}
         >
           <View
             style={{
-              height: 38,
-              width: 38,
-              padding: spacing['2'],
-              borderRadius: spacing['12'],
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: profileColor(item)
+              ...typography.h6,
+              color: colors['gray-900'],
+              fontWeight: '900',
             }}
           >
             {item.raw.chainSymbolImageUrl ? (
@@ -60,8 +93,10 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
 
           <View
             style={{
-              justifyContent: 'space-between',
-              marginLeft: spacing['12']
+              ...typography.h7,
+              color: colors['gray-300'],
+              fontWeight: '900',
+              fontSize: 12,
             }}
           >
             <Text
@@ -85,18 +120,23 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
           </View>
         </View>
 
-        <View>
+      <View>
+        <View
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: spacing['32'],
+            backgroundColor: colors['primary'],
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <View
             style={{
               width: 24,
               height: 24,
               borderRadius: spacing['32'],
-              backgroundColor:
-                item.chainId === chainStore.current.chainId
-                  ? colors['purple-900']
-                  : colors['gray-400'],
-              justifyContent: 'center',
-              alignItems: 'center'
+              backgroundColor: colors['white'],
             }}
           >
             <View
@@ -109,27 +149,31 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
             />
           </View>
         </View>
-      </RectButton>
-    )
-  }
+      </View>
+    </RectButton>
+  );
+};
+
+export const NetworkModal = (account): ReactElement => {
+  // const [selected, isSelected] = useState<boolean>(false)
 
   return (
     // container
     <View
       style={{
-        alignItems: 'center'
+        alignItems: 'center',
       }}
     >
       <View
         style={{
-          justifyContent: 'flex-start'
+          justifyContent: 'flex-start',
         }}
       >
         <Text
           style={{
             ...typography.h6,
             fontWeight: '900',
-            color: colors['gray-900']
+            color: colors['gray-900'],
           }}
         >
           {`Select networks`}
@@ -141,7 +185,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
           marginTop: spacing['12'],
           width: metrics.screenWidth - 48,
           justifyContent: 'space-between',
-          height: metrics.screenHeight / 2
+          height: metrics.screenHeight / 2,
         }}
       >
         <FlatList
@@ -152,15 +196,15 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
           ListFooterComponent={() => (
             <View
               style={{
-                height: spacing['10']
+                height: spacing['10'],
               }}
             />
           )}
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   containerBtn: {
@@ -171,6 +215,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: spacing['16'],
     alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-})
+    justifyContent: 'space-between',
+  },
+});

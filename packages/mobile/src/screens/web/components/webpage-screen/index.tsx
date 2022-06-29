@@ -277,6 +277,9 @@ export const WebpageScreen: FunctionComponent<
           url: currentURL,
           canGoBack,
           canGoForward,
+          clearWebViewContext: () => {
+            webviewRef.current = null;
+          },
         }}
       >
         <BrowserFooterSection

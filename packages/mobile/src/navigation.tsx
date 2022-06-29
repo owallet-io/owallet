@@ -137,26 +137,24 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
   );
 });
 
-const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(
-  ({ uri = 'MainTabDrawer' }) => {
-    const style = useStyle();
-    const smartNavigation = useSmartNavigation();
-    return (
-      <HeaderLeftButton
-        onPress={() => {
-          // navigate(uri);
-          smartNavigation.goBack();
-        }}
-      >
-        <View style={style.flatten(['flex-row', 'items-center'])}>
-          <Text style={style.flatten(['h4', 'color-text-black-low'])}>
-            <HeaderBackButtonIcon />
-          </Text>
-        </View>
-      </HeaderLeftButton>
-    );
-  }
-);
+const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(({}) => {
+  const style = useStyle();
+  const smartNavigation = useSmartNavigation();
+  return (
+    <HeaderLeftButton
+      onPress={() => {
+        // navigate(uri);
+        smartNavigation.goBack();
+      }}
+    >
+      <View style={style.flatten(['flex-row', 'items-center'])}>
+        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
+          <HeaderBackButtonIcon />
+        </Text>
+      </View>
+    </HeaderLeftButton>
+  );
+});
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
@@ -569,7 +567,6 @@ export const MainTabNavigation: FunctionComponent = () => {
   const navigation = useNavigation();
 
   const focusedScreen = useFocusedScreen();
-  const isDrawerOpen = useIsDrawerOpen();
 
   // useEffect(() => {
   //   Linking.addEventListener('url', handleDeepLink);
@@ -582,10 +579,11 @@ export const MainTabNavigation: FunctionComponent = () => {
   useEffect(() => {
     // When the focused screen is not "Home" screen and the drawer is open,
     // try to close the drawer forcely.
-    if (focusedScreen.name !== 'Home' && isDrawerOpen) {
-      navigation.dispatch(DrawerActions.toggleDrawer());
-    }
-  }, [focusedScreen.name, isDrawerOpen, navigation]);
+    // navigate("Browser")
+    // if (focusedScreen.name !== 'Home' && isDrawerOpen) {
+    //   navigation.dispatch(DrawerActions.toggleDrawer());
+    // }
+  }, [focusedScreen.name, navigation]);
 
   const checkActiveTabBottom = (color: string) => {
     return color == '#C6C6CD';
@@ -802,7 +800,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               initialRouteName={
                 keyRingStore.status !== KeyRingStatus.UNLOCKED
                   ? 'Unlock'
-                  : 'MainTabDrawer'
+                  : 'MainTab'
               }
               screenOptions={{
                 headerShown: false,
@@ -811,10 +809,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
               headerMode="screen"
             >
               <Stack.Screen name="Unlock" component={UnlockScreen} />
-              <Stack.Screen
-                name="MainTabDrawer"
-                component={MainTabNavigationWithDrawer}
-              />
+              <Stack.Screen name="MainTab" component={MainTabNavigation} />
               <Stack.Screen name="Register" component={RegisterNavigation} />
               <Stack.Screen name="Others" component={OtherNavigation} />
               <Stack.Screen
