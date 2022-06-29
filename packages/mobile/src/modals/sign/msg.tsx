@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
+import { CText as Text} from "../../components/text";
 import { useStyle } from "../../styles";
 
 export const Msg: FunctionComponent<{

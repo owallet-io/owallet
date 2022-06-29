@@ -5,7 +5,7 @@ import { CoinUtils, Coin } from '@owallet/unit';
 import { AppCurrency, Currency } from '@owallet/types';
 import yaml from 'js-yaml';
 import { CoinPrimitive } from '@owallet/stores';
-import { Text } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { useStyle } from '../../styles';
 import { Bech32Address } from '@owallet/cosmos';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

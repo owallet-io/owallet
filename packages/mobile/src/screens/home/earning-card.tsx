@@ -3,11 +3,11 @@ import { Card } from '../../components/card'
 import {
   Image,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   ViewStyle
 } from 'react-native'
+import { CText as Text} from "../../components/text";
 import { observer } from 'mobx-react-lite'
 import { colors, metrics, spacing, typography } from '../../themes'
 import { AddIcon, GiftIcon } from '../../components/icon'

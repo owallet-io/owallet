@@ -1,6 +1,6 @@
 import React, { ReactElement, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { Text } from '@rneui/base';
+import { CText as Text} from "../../../components/text";
 import { RectButton } from '../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../themes';
 import { ScanIcon } from '../../../components/icon';

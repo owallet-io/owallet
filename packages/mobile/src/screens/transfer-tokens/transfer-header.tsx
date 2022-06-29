@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { Text, TouchableOpacity, View , TouchableWithoutFeedback, StyleSheet} from 'react-native';
+import { TouchableOpacity, View , TouchableWithoutFeedback, StyleSheet} from 'react-native';
+import { CText as Text} from "../../components/text";
 import { DotsIcon, HistoryIcon, LeftArrowIcon, Scanner } from '../../components/icon';
 import { useStore } from '../../stores';
 import { colors, spacing, typography } from '../../themes';

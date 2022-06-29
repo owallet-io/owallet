@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useMemo, useState } from 'react';
-import { TouchableOpacity, View, Text } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { CText as Text} from "../../../../components/text";
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
 import { useNavigation } from '@react-navigation/core';

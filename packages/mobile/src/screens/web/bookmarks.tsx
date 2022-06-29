@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { useStyle } from '../../styles';
 import { BrowserSectionTitle } from './components/section-title';
 import { RemoveIcon } from '../../components/icon';

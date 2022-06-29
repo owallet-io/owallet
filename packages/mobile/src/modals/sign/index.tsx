@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { MemoInput } from '../../components/input';

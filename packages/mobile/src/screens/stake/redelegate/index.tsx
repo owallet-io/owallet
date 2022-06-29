@@ -7,7 +7,8 @@ import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
 import { PageWithScrollView } from '../../../components/page';
 import { Card, CardBody, CardDivider } from '../../../components/card';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { CText as Text} from "../../../components/text";
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import {
   AmountInput,

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Text } from '@rneui/base'
+import { CText as Text} from "../../../../components/text";
 import { RefreshIcon } from '../../../../components/icon/refresh'
 import { colors, spacing, typography } from '../../../../themes'
 

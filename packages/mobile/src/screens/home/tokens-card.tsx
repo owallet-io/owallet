@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useState } from 'react'
 import { Card, CardBody } from '../../components/card'
 import { SectionList, StyleSheet, View, ViewStyle } from 'react-native'
-import { Image, Text, Tab } from '@rneui/base'
+import { Image, Tab } from '@rneui/base'
+import { CText as Text} from "../../components/text";
 import { observer } from 'mobx-react-lite'
 import { useStore } from '../../stores'
 import { TokenItem } from '../tokens/components/token-item'
@@ -108,7 +109,7 @@ export const TokensCard: FunctionComponent<{
           >
             {formatContractAddress(item.title)}
           </Text>
-    
+
           <Text
             style={{
               ...typography.h5,
@@ -118,7 +119,7 @@ export const TokensCard: FunctionComponent<{
           >
             {item.oraiPrice}
           </Text>
-    
+
           <Text
             style={{
               ...typography.h5,

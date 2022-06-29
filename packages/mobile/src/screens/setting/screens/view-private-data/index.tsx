@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CText as Text} from "../../../../components/text";
 import { useStyle } from "../../../../styles";
 import { CheckIcon } from "../../../../components/icon";
 import { Button } from "../../../../components/button";

@@ -10,7 +10,8 @@ import { Button } from "../../../components/button";
 import { useStyle } from "../../../styles";
 import { registerModal } from "../../../modals/base";
 import { CardModal } from "../../../modals/card";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CText as Text} from "../../../components/text";
 import { TextInput } from "../../../components/input";
 
 export const BIP44AdvancedButton: FunctionComponent<{

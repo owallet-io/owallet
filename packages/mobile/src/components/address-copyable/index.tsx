@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react'
-import { Text, ViewStyle, View } from 'react-native'
+import { ViewStyle, View } from 'react-native'
+import { CText as Text} from "../text";
 import { Bech32Address } from '@owallet/cosmos'
 import Clipboard from 'expo-clipboard'
 import { RectButton } from '../rect-button'

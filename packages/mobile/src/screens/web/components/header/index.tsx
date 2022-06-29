@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
+import { CText as Text} from "../../../../components/text";
 import { useHeaderHeight } from '@react-navigation/stack';
 import { useStyle } from '../../../../styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react'
-import { Tab, Text } from '@rneui/base'
+import { Tab } from '@rneui/base'
+import { CText as Text} from "../../components/text";
 import { FlatList, StyleSheet, View } from 'react-native'
 import { useStyle } from '../../styles'
 import { StackActions, useNavigation } from '@react-navigation/native'

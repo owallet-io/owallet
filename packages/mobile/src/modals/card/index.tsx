@@ -4,10 +4,10 @@ import {
   KeyboardEvent,
   Platform,
   StyleSheet,
-  Text,
   View,
   ViewStyle
 } from 'react-native'
+import { CText as Text} from "../../components/text";
 import { useStyle } from '../../styles'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { PanGestureHandler } from 'react-native-gesture-handler'

@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { useStyle } from "../../styles";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CText as Text} from "../text";
 
 export const Chip: FunctionComponent<{
   color?: "primary" | "secondary" | "danger";

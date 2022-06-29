@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
-import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { Platform, StyleSheet, View, ViewStyle } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { Card, CardBody, CardDivider } from '../../components/card';
 import { useStyle } from '../../styles';
 import { Button } from '../../components/button';

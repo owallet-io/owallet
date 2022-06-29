@@ -2,11 +2,11 @@ import React, { FunctionComponent, useMemo, useRef, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TextStyle,
   View,
   ViewStyle,
 } from "react-native";
+import { CText as Text} from "../text";
 import { useStyle } from "../../styles";
 import { registerModal } from "../../modals/base";
 import { RectButton } from "../rect-button";

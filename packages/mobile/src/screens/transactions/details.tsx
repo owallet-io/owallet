@@ -1,7 +1,8 @@
 import Clipboard from 'expo-clipboard'
 import React, { FunctionComponent, useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { Text, Divider } from '@rneui/base'
+import { Divider } from '@rneui/base'
+import { CText as Text} from "../../components/text";
 import { RectButton } from 'react-native-gesture-handler'
 import { CopyFillIcon, CopyIcon } from '../../components/icon'
 import { PageWithScrollViewInBottomTabView } from '../../components/page'

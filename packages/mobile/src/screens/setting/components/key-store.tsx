@@ -3,11 +3,11 @@ import { useStyle } from '../../../styles';
 import {
   Image,
   StyleSheet,
-  Text,
   TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
+import { CText as Text} from "../../../components/text";
 import { RectButton } from '../../../components/rect-button';
 import Svg, { Path } from 'react-native-svg';
 import {

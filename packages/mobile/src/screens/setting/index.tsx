@@ -13,11 +13,11 @@ import { SettingViewPrivateDataItem } from './items/view-private-data';
 import { useStyle } from '../../styles';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Platform
 } from 'react-native';
+import { CText as Text} from "../../components/text";
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore } = useStore();

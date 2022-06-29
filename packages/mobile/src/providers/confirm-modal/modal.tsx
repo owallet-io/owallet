@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from "react";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CText as Text} from "../../components/text";
 import { Button } from "../../components/button";
 
 export const ConfirmModal: FunctionComponent<{

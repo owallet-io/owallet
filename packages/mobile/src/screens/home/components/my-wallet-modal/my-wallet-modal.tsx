@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, View, Image } from 'react-native'
-import { Text } from '@rneui/base'
+import { CText as Text} from "../../../../components/text";
 import { colors, spacing, typography } from '../../../../themes'
 import { _keyExtract } from '../../../../utils/helper'
 import { BookMnemonicSeedIcon } from '../../../../components/icon/new-wallet'

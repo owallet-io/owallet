@@ -5,7 +5,8 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { CText as Text} from "../../components/text";
 import Animated, { Easing } from 'react-native-reanimated';
 import { AlertIcon, RefreshIcon } from '../../components/icon';
 import { useStyle } from '../../styles';

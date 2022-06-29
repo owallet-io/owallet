@@ -7,7 +7,8 @@ import {
 } from '@react-navigation/drawer';
 import { useStore } from '../../stores';
 import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
+import { CText as Text} from "../text";
 import { useStyle } from '../../styles';
 import { RectButton } from '../rect-button';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

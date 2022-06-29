@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { CText as Text} from "../../../components/text";
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';

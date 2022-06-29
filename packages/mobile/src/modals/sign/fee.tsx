@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IFeeConfig, IGasConfig, NotLoadedFeeError } from '@owallet/hooks';
-import { Text, View } from 'react-native';
+import {  View } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { useStore } from '../../stores';
 import { useStyle } from '../../styles';
 import { CoinPretty, Dec } from '@owallet/unit';

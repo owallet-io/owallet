@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { registerModal } from "../base";
-import { Text } from "react-native";
+import { CText as Text} from "../../components/text";
 import { useStyle } from "../../styles";
 import { CardModal } from "../card";
 import { TextInput } from "../../components/input";

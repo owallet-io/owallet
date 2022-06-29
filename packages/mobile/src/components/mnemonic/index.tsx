@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from "react";
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { CText as Text} from "../text";
 import { useStyle } from "../../styles";
 
 export const WordChip: FunctionComponent<{

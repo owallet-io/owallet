@@ -2,13 +2,13 @@ import React from "react";
 import {
   Platform,
   StyleSheet,
-  Text,
   TextInput as NativeTextInput,
   TextStyle,
   View,
   ViewStyle,
-} from "react-native";
-import { useStyle } from "../../styles";
+} from 'react-native';
+import { CText as Text} from "../text";
+import { useStyle } from '../../styles';
 
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<

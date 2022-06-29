@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithView } from '../../components/page';
 import { useStyle } from '../../styles';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RouteProp, useRoute } from '@react-navigation/native';

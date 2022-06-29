@@ -1,5 +1,6 @@
-import React from "react";
-import { Text, View } from "react-native";
+import React from 'react';
+import { View } from 'react-native';
+import { CText as Text} from "../../../../components/text";
 import {
   ExistingWalletSquareIcon,
   LedgerNanoWalletSquareIcon,

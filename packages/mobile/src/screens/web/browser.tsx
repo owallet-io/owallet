@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   Image,
-  Text,
   View,
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
 import { PageWithScrollView } from '../../components/page';

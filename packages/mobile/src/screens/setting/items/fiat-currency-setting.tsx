@@ -3,7 +3,8 @@ import { RightArrow } from "../components";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../../stores";
 import { SelectorModal } from "../../../components/input";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
+import { CText as Text} from "../../../components/text";
 
 export const SettingFiatCurrencyTopItem: FunctionComponent<{
   style?: any;
@@ -51,7 +52,7 @@ export const SettingFiatCurrencyTopItem: FunctionComponent<{
           </Text>
           <Text
             style={style.flatten(["text-caption2", "color-black", "body1"])}
-          > 
+          >
             {priceStore.defaultVsCurrency.toUpperCase()}
           </Text>
         </View>

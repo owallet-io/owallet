@@ -4,9 +4,9 @@ import {
   Image,
   ImageSourcePropType,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
+import { CText as Text} from "../../components/text";
 import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -1,6 +1,7 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect } from 'react';
-import { Alert, Image, Linking, Text, View } from 'react-native';
+import { Alert, Image, Linking, View } from 'react-native';
+import { CText as Text} from "./components/text";
 import { KeyRingStatus } from '@owallet/background';
 import {
   DrawerActions,

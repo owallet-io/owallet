@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollView } from '../../../components/page';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { CText as Text} from "../../../components/text";
 import { useStyle } from '../../../styles';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';

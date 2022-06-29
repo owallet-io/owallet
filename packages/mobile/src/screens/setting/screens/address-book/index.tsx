@@ -2,7 +2,8 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../../../components/page';
 import { useStyle } from '../../../../styles';
-import { Text, View } from 'react-native';
+import {  View } from 'react-native';
+import { CText as Text} from "../../../../components/text";
 import { useSmartNavigation } from '../../../../navigation.provider';
 import {
   IMemoConfig,

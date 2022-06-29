@@ -4,7 +4,8 @@ import { useStore } from '../../../../stores';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { KeyStoreItem } from '../../components';
 import { useSmartNavigation } from '../../../../navigation.provider';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { CText as Text} from "../../../../components/text";
 import { useStyle } from '../../../../styles';
 
 const SectionTitle: FunctionComponent<{
