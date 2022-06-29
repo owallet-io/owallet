@@ -195,6 +195,8 @@ export const EarningCard: FunctionComponent<{
                 onPress={() => {
                   smartNavigation.navigateSmart('Staking.Dashboard', {})
                 }}
+                color={colors['black']}
+                size={24}
               />
             </View>
             <View>
