@@ -1,222 +1,222 @@
-import { BIP44HDPath, ExportKeyRingData } from '@owallet/background';
-import { NewMnemonicConfig } from './screens/register/mnemonic';
+import { BIP44HDPath, ExportKeyRingData } from '@owallet/background'
+import { NewMnemonicConfig } from './screens/register/mnemonic'
 import {
   AddressBookConfig,
   AddressBookData,
   IMemoConfig,
   IRecipientConfig,
-  RegisterConfig,
-} from '@owallet/hooks';
+  RegisterConfig
+} from '@owallet/hooks'
 
-import { createSmartNavigatorProvider, SmartNavigator } from './hooks';
+import { createSmartNavigatorProvider, SmartNavigator } from './hooks'
 
 const { SmartNavigatorProvider, useSmartNavigation } =
   createSmartNavigatorProvider(
     new SmartNavigator({
       'Register.Intro': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
+      },
+      NewUser: {
+        upperScreenName: 'Register.NewUser'
       },
       'Register.NewUser': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.NotNewUser': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.NewMnemonic': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.VerifyMnemonic': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.RecoverMnemonic': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.NewLedger': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.ImportFromExtension.Intro': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.ImportFromExtension': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.ImportFromExtension.SetPassword': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       'Register.End': {
-        upperScreenName: 'Register',
+        upperScreenName: 'Register'
       },
       Home: {
-        upperScreenName: 'Main',
+        upperScreenName: 'Main'
       },
       Send: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
-      // Tokens: {
-      //   upperScreenName: 'Others'
-      // },
+      Tokens: {
+        upperScreenName: 'Main'
+      },
       'Tokens.Detail': {
         upperScreenName: 'Main'
       },
-      Tokens: {
-        upperScreenName: 'Main',
-      },
       Nfts: {
-        upperScreenName: 'Main',
+        upperScreenName: 'Main'
       },
       'Nfts.Detail': {
-        upperScreenName: 'Main',
+        upperScreenName: 'Main'
       },
       Camera: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       'Staking.Dashboard': {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       'Validator.Details': {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       'Validator.List': {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       Delegate: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       Undelegate: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       Redelegate: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       Governance: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       'Governance Details': {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       Setting: {
-        upperScreenName: 'Settings',
+        upperScreenName: 'Settings'
       },
       SettingSelectAccount: {
-        upperScreenName: 'Settings',
+        upperScreenName: 'Settings'
       },
       SettingSelectLang: {
-        upperScreenName: 'Settings',
+        upperScreenName: 'Settings'
       },
       'Setting.ViewPrivateData': {
-        upperScreenName: 'Settings',
+        upperScreenName: 'Settings'
       },
       'Setting.Version': {
-        upperScreenName: 'Settings',
+        upperScreenName: 'Settings'
       },
       AddressBook: {
-        upperScreenName: 'AddressBooks',
+        upperScreenName: 'AddressBooks'
       },
       AddAddressBook: {
-        upperScreenName: 'AddressBooks',
+        upperScreenName: 'AddressBooks'
       },
       Result: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       TxPendingResult: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       TxSuccessResult: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       TxFailedResult: {
-        upperScreenName: 'Others',
+        upperScreenName: 'Others'
       },
       'Web.Intro': {
-        upperScreenName: 'Web',
+        upperScreenName: 'Web'
       },
       'Web.dApp': {
-        upperScreenName: 'Web',
+        upperScreenName: 'Web'
       },
 
       Transactions: {
-        upperScreenName: 'Main',
+        upperScreenName: 'Main'
       },
       'Transactions.Detail': {
-        upperScreenName: 'Main',
-      },
+        upperScreenName: 'Main'
+      }
     }).withParams<{
       'Register.NewMnemonic': {
-        registerConfig: RegisterConfig;
-      };
+        registerConfig: RegisterConfig
+      }
       'Register.VerifyMnemonic': {
-        registerConfig: RegisterConfig;
-        newMnemonicConfig: NewMnemonicConfig;
-        bip44HDPath: BIP44HDPath;
-      };
+        registerConfig: RegisterConfig
+        newMnemonicConfig: NewMnemonicConfig
+        bip44HDPath: BIP44HDPath
+      }
       'Register.RecoverMnemonic': {
-        registerConfig: RegisterConfig;
-      };
+        registerConfig: RegisterConfig
+      }
       'Register.NewLedger': {
-        registerConfig: RegisterConfig;
-      };
+        registerConfig: RegisterConfig
+      }
       'Register.ImportFromExtension.Intro': {
-        registerConfig: RegisterConfig;
-      };
+        registerConfig: RegisterConfig
+      }
       'Register.ImportFromExtension': {
-        registerConfig: RegisterConfig;
-      };
+        registerConfig: RegisterConfig
+      }
       'Register.ImportFromExtension.SetPassword': {
-        registerConfig: RegisterConfig;
-        exportKeyRingDatas: ExportKeyRingData[];
-        addressBooks: { [chainId: string]: AddressBookData[] | undefined };
-      };
+        registerConfig: RegisterConfig
+        exportKeyRingDatas: ExportKeyRingData[]
+        addressBooks: { [chainId: string]: AddressBookData[] | undefined }
+      }
       'Register.End': {
-        password?: string;
-      };
+        password?: string
+      }
       Send: {
-        chainId?: string;
-        currency?: string;
-        recipient?: string;
-      };
+        chainId?: string
+        currency?: string
+        recipient?: string
+      }
       'Validator.Details': {
-        validatorAddress: string;
-      };
+        validatorAddress: string
+      }
       'Validator.List': {
-        validatorSelector?: (validatorAddress: string) => void;
-      };
+        validatorSelector?: (validatorAddress: string) => void
+      }
       Delegate: {
-        validatorAddress: string;
-      };
+        validatorAddress: string
+      }
       Undelegate: {
-        validatorAddress: string;
-      };
+        validatorAddress: string
+      }
       Redelegate: {
-        validatorAddress: string;
-      };
+        validatorAddress: string
+      }
       'Governance Details': {
-        proposalId: string;
-      };
+        proposalId: string
+      }
       'Setting.ViewPrivateData': {
-        privateData: string;
-        privateDataType: string;
-      };
+        privateData: string
+        privateDataType: string
+      }
       AddressBook: {
-        recipientConfig?: IRecipientConfig;
-        memoConfig?: IMemoConfig;
-      };
+        recipientConfig?: IRecipientConfig
+        memoConfig?: IMemoConfig
+      }
       AddAddressBook: {
-        chainId: string;
-        addressBookConfig: AddressBookConfig;
-      };
+        chainId: string
+        addressBookConfig: AddressBookConfig
+      }
       TxPendingResult: {
-        chainId?: string;
-        txHash: string;
-      };
+        chainId?: string
+        txHash: string
+      }
       TxSuccessResult: {
-        chainId?: string;
-        txHash: string;
-      };
+        chainId?: string
+        txHash: string
+      }
       TxFailedResult: {
-        chainId?: string;
-        txHash: string;
-      };
+        chainId?: string
+        txHash: string
+      }
     }>()
-  );
+  )
 
-export { SmartNavigatorProvider, useSmartNavigation };
+export { SmartNavigatorProvider, useSmartNavigation }

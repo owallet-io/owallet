@@ -54,7 +54,7 @@ const nftsData = [
   }
 ]
 
-export const NtfsScreen: FunctionComponent = observer(() => {
+export const NftsScreen: FunctionComponent = observer(() => {
   const [index, setIndex] = useState<number>(0)
   const [activeSection, setActiveSection] = useState([])
   const smartNavigation = useSmartNavigation()
@@ -87,7 +87,8 @@ export const NtfsScreen: FunctionComponent = observer(() => {
   const _renderContent = section => {
     return (
       <View style={{
-        height: 456
+        height: 456,
+        marginBottom: spacing['16']
       }}>
         <FlatList
           data={section.data}

@@ -30,7 +30,7 @@ import {
 } from '../transactions/components'
 import { PageWithScrollViewInBottomTabView } from '../../components/page'
 
-export const NtfDetailScreen: FunctionComponent = observer(() => {
+export const NftDetailScreen: FunctionComponent = observer(() => {
   const _onPressBtnMain = () => {}
 
   return (
