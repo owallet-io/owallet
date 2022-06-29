@@ -64,9 +64,16 @@
 	<key>NSCameraUsageDescription</key>
 	<string>App uses camera to scan address</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>$(PRODUCT_NAME) Authentication with TouchId or FaceID</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>App uses Face ID to unlock wallet</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>DMSans-Bold.ttf</string>
+		<string>DMSans-BoldItalic.ttf</string>
+		<string>DMSans-Italic.ttf</string>
+		<string>DMSans-Medium.ttf</string>
+		<string>DMSans-MediumItalic.ttf</string>
+		<string>DMSans-Regular.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>SplashScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -83,14 +90,5 @@
 	<false/>
 	<key>XSAppIconAssets</key>
 	<string>Images.xcassets/AppIcon.appiconset</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>DMSans-Bold.ttf</string>
-		<string>DMSans-BoldItalic.ttf</string>
-		<string>DMSans-Italic.ttf</string>
-		<string>DMSans-Medium.ttf</string>
-		<string>DMSans-MediumItalic.ttf</string>
-		<string>DMSans-Regular.ttf</string>
-	</array>
 </dict>
 </plist>

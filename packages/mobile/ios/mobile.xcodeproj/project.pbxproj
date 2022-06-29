@@ -10,20 +10,21 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		8244ECEC84DBA3D6A0B1184E /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C11D8F0BF1A2C2F192A26BFE /* libPods-mobile.a */; };
-		C15FB49F265238C1007E541F /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = C15FB49E265238C1007E541F /* AppCenter-Config.plist */; };
-		F440259FD5AC4BC59C04EFD2 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28CAF3B0E76A4F7AACA3C6A1 /* SplashScreen.storyboard */; };
 		1663BFBFB25D472097779956 /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 969E9A5415F946048B17BD53 /* DMSans-Bold.ttf */; };
+		24AD4AC2C5B244F686362823 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 89EC9F59CFFF4C2BA10B8360 /* DMSans-Regular.ttf */; };
 		340AE5B610D2425E8D89BDF9 /* DMSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BAE3D5AAE4934550BF197537 /* DMSans-BoldItalic.ttf */; };
 		595FFFADDAD04E2DA37BE677 /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C33BE89116734207B9627193 /* DMSans-Italic.ttf */; };
+		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8244ECEC84DBA3D6A0B1184E /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C11D8F0BF1A2C2F192A26BFE /* libPods-mobile.a */; };
 		969C898B113E4E4694C8E1C0 /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00FB44ADA8B74A79816F351A /* DMSans-Medium.ttf */; };
+		C15FB49F265238C1007E541F /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = C15FB49E265238C1007E541F /* AppCenter-Config.plist */; };
 		CDD637B6D81E4F5F995865FB /* DMSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D973E53012C94148874D0646 /* DMSans-MediumItalic.ttf */; };
-		24AD4AC2C5B244F686362823 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 89EC9F59CFFF4C2BA10B8360 /* DMSans-Regular.ttf */; };
+		F440259FD5AC4BC59C04EFD2 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28CAF3B0E76A4F7AACA3C6A1 /* SplashScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		00FB44ADA8B74A79816F351A /* DMSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Medium.ttf"; path = "../assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = mobile/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = mobile/AppDelegate.m; sourceTree = "<group>"; };
@@ -40,21 +41,20 @@
 		5707450A9744C43EE4C545F2 /* Pods-mobile-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-mobile-tvOSTests/Pods-mobile-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		83444F25CF7D6EC5DD2D81F7 /* libPods-mobile-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		89EC9F59CFFF4C2BA10B8360 /* DMSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Regular.ttf"; path = "../assets/fonts/DMSans-Regular.ttf"; sourceTree = "<group>"; };
+		969E9A5415F946048B17BD53 /* DMSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Bold.ttf"; path = "../assets/fonts/DMSans-Bold.ttf"; sourceTree = "<group>"; };
 		B56D6446EF8820C583A84E4A /* libPods-mobile-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BAE3D5AAE4934550BF197537 /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-BoldItalic.ttf"; path = "../assets/fonts/DMSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		C11D8F0BF1A2C2F192A26BFE /* libPods-mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C15FB49E265238C1007E541F /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
+		C33BE89116734207B9627193 /* DMSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Italic.ttf"; path = "../assets/fonts/DMSans-Italic.ttf"; sourceTree = "<group>"; };
 		CE259BE22844D3820001E907 /* mobileRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mobileRelease.entitlements; path = mobile/mobileRelease.entitlements; sourceTree = "<group>"; };
 		D70D1CFC5885FFC008C1B004 /* Pods-mobile-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile-tvOS.release.xcconfig"; path = "Target Support Files/Pods-mobile-tvOS/Pods-mobile-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		D973E53012C94148874D0646 /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-MediumItalic.ttf"; path = "../assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		DB18BF20943132DAD9EDE496 /* Pods-mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.debug.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.debug.xcconfig"; sourceTree = "<group>"; };
 		E8C4D832F1AB3C21F459078A /* Pods-mobile-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-mobile-tvOSTests/Pods-mobile-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
-		969E9A5415F946048B17BD53 /* DMSans-Bold.ttf */ = {isa = PBXFileReference; name = "DMSans-Bold.ttf"; path = "../assets/fonts/DMSans-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BAE3D5AAE4934550BF197537 /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; name = "DMSans-BoldItalic.ttf"; path = "../assets/fonts/DMSans-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C33BE89116734207B9627193 /* DMSans-Italic.ttf */ = {isa = PBXFileReference; name = "DMSans-Italic.ttf"; path = "../assets/fonts/DMSans-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		00FB44ADA8B74A79816F351A /* DMSans-Medium.ttf */ = {isa = PBXFileReference; name = "DMSans-Medium.ttf"; path = "../assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D973E53012C94148874D0646 /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; name = "DMSans-MediumItalic.ttf"; path = "../assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		89EC9F59CFFF4C2BA10B8360 /* DMSans-Regular.ttf */ = {isa = PBXFileReference; name = "DMSans-Regular.ttf"; path = "../assets/fonts/DMSans-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +82,19 @@
 				28CAF3B0E76A4F7AACA3C6A1 /* SplashScreen.storyboard */,
 			);
 			name = mobile;
+			sourceTree = "<group>";
+		};
+		18FD9DADA28A40A69BD61867 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				969E9A5415F946048B17BD53 /* DMSans-Bold.ttf */,
+				BAE3D5AAE4934550BF197537 /* DMSans-BoldItalic.ttf */,
+				C33BE89116734207B9627193 /* DMSans-Italic.ttf */,
+				00FB44ADA8B74A79816F351A /* DMSans-Medium.ttf */,
+				D973E53012C94148874D0646 /* DMSans-MediumItalic.ttf */,
+				89EC9F59CFFF4C2BA10B8360 /* DMSans-Regular.ttf */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -143,20 +156,6 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
-		};
-		18FD9DADA28A40A69BD61867 /* Resources */ = {
-			isa = "PBXGroup";
-			children = (
-				969E9A5415F946048B17BD53 /* DMSans-Bold.ttf */,
-				BAE3D5AAE4934550BF197537 /* DMSans-BoldItalic.ttf */,
-				C33BE89116734207B9627193 /* DMSans-Italic.ttf */,
-				00FB44ADA8B74A79816F351A /* DMSans-Medium.ttf */,
-				D973E53012C94148874D0646 /* DMSans-MediumItalic.ttf */,
-				89EC9F59CFFF4C2BA10B8360 /* DMSans-Regular.ttf */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-			path = "";
 		};
 /* End PBXGroup section */
 
@@ -368,7 +367,7 @@
 				CODE_SIGN_ENTITLEMENTS = mobile/mobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46P8362P8Z;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = mobile/Info.plist;
@@ -460,7 +459,7 @@
 				CODE_SIGN_ENTITLEMENTS = mobile/mobileRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 46P8362P8Z;
 				INFOPLIST_FILE = mobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
