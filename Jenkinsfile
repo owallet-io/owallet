@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SERVER_IP = credentials('DO_SENTRY2')
+        SERVER_IP = credentials('VIETTEL_IP_SERVER')
     }
 
     stages {
@@ -11,7 +11,8 @@ pipeline {
                 sshagent(['phu-cloud']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l root $SERVER_IP <<EOF
-                            sh /root/owallet.sh
+                            cd /home/orai/owallet
+                            git pull origin develop
                     '''
                 }
             }
@@ -19,7 +20,7 @@ pipeline {
     }
     post {
         success {
-            mail bcc: '', body: 'Build successfully!', cc: 'son.lha@orai.io', from: '', replyTo: '', subject: '[Ci/cd] Owallet build bundle file', to: 'phu.tx@orai.io'
+            mail bcc: '', body: 'Build successfully!', cc: '', from: '', replyTo: '', subject: '[Ci/cd] Owallet build bundle file', to: 'phu.tx@orai.io'
         }
     }
 }
