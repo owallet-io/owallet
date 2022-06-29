@@ -1,5 +1,6 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
     "prettier.singleQuote": true,
-    "prettier.jsxSingleQuote": false
+    "prettier.jsxSingleQuote": false,
+    "prettier.trailingComma": "none"
 }
