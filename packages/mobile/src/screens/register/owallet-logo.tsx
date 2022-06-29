@@ -1,16 +1,45 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
+import { View, Image } from 'react-native';
 
-import { useStyle } from "../../styles";
-import { View, Image } from "react-native";
-
-export const OWalletLogo: FunctionComponent = () => {
-  const style = useStyle();
-
+export const OWalletLogo: FunctionComponent = (props) => {
   return (
-    <View style={style.flatten(["flex-row", "items-center"])}>
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <Image
-        style={style.flatten(["width-80", "height-80"])}
-        source={require("../../assets/logo/splash-screen-only-k.png")}
+        style={{
+          width: props?.size || 120,
+          height: props?.size || 120,
+        }}
+        source={require('../../assets/logo/splash-background-owallet.png')}
+        resizeMode="contain"
+        fadeDuration={0}
+      />
+    </View>
+  );
+};
+
+export const OWalletUnion: FunctionComponent = () => {
+  return (
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Image
+        style={{
+          width: 28,
+          height: 16,
+        }}
+        source={require('../../assets/logo/splash-union.png')}
         resizeMode="contain"
         fadeDuration={0}
       />

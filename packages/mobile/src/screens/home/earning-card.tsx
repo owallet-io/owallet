@@ -260,12 +260,12 @@ const styles = StyleSheet.create({
     color: '#AE94DE'
   },
   'btn-claim': {
-    backgroundColor: colors['violet'],
+    backgroundColor: colors['purple-900'],
     borderWidth: 0.5,
     marginTop: 16,
     width: metrics.screenWidth - 48,
     borderRadius: spacing['8'],
-    borderColor: colors['violet']
+    borderColor: colors['purple-900']
   },
   'btn-manage': {
     backgroundColor: '#F3F1F5',
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     width: metrics.screenWidth - 48,
     borderRadius: spacing['8'],
-    borderColor: colors['violet'],
+    borderColor: colors['purple-900'],
     padding: 16,
     display: 'flex',
     justifyContent: 'space-around'

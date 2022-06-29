@@ -33,3 +33,18 @@ export const popToTop = () => {
   }
   goBack();
 };
+
+export const checkRouter = (uri, route) => {
+  return uri == route
+}
+
+function BottomTabBar() {
+  // const bottomTabBarHeight = useBottomTabBarHeight();
+  const { bottom } = useSafeAreaInsets();
+  return bottom + 20
+}
+
+export const checkRouterPaddingBottomBar = (uri, route) => {
+  if (BottomTabBar()) return uri == route ? BottomTabBar() : 0
+  return 0;
+} 

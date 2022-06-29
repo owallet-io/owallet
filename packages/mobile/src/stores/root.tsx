@@ -266,7 +266,7 @@ export class RootStore {
     );
     this.deepLinkUriStore = new DeepLinkStore();
     this.browserStore = browserStore;
-    this.appInitStore = new AppInit();
+    this.appInitStore = appInit;
     this.modalStore = new ModalStore();
   }
 }

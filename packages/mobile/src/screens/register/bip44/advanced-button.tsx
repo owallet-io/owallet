@@ -3,22 +3,19 @@ import React, {
   useCallback,
   useMemo,
   useState,
-} from "react";
-import { observer } from "mobx-react-lite";
-import { BIP44Option } from "./bip44-option";
-import { Button } from "../../../components/button";
-import { useStyle } from "../../../styles";
-import { registerModal } from "../../../modals/base";
-import { CardModal } from "../../../modals/card";
-import { View } from "react-native";
-import { CText as Text} from "../../../components/text";
-import { TextInput } from "../../../components/input";
+} from 'react';
+import { observer } from 'mobx-react-lite';
+import { BIP44Option } from './bip44-option';
+import { registerModal } from '../../../modals/base';
+import { CardModal } from '../../../modals/card';
+import { Text, View } from 'react-native';
+import { TextInput } from '../../../components/input';
+import { colors, typography } from '../../../themes';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ bip44Option }) => {
-  const style = useStyle();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -28,15 +25,16 @@ export const BIP44AdvancedButton: FunctionComponent<{
         close={() => setIsModalOpen(false)}
         bip44Option={bip44Option}
       />
-      <Button
-        containerStyle={style.flatten(["margin-bottom-16"])}
-        text="Advanced"
-        mode="text"
-        size="small"
-        onPress={() => {
-          setIsModalOpen(true);
+      <Text
+        style={{
+          textAlign: 'center',
+          marginBottom: 16,
+          color: colors['purple-900'],
         }}
-      />
+        onPress={() => setIsModalOpen(true)}
+      >
+        Advanced
+      </Text>
     </React.Fragment>
   );
 });
@@ -48,7 +46,7 @@ const useZeroOrPositiveIntegerString = (initialValue: string) => {
     value,
     setValue: useCallback((text: string) => {
       if (!text) {
-        setValue("");
+        setValue('');
         return;
       }
 
@@ -77,7 +75,6 @@ export const BIP44SelectModal: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {
-    const style = useStyle();
 
     const account = useZeroOrPositiveIntegerString(
       bip44Option.account.toString()
@@ -93,60 +90,110 @@ export const BIP44SelectModal: FunctionComponent<{
     return (
       <CardModal title="HD Derivation Path">
         <Text
-          style={style.flatten([
-            "body2",
-            "color-text-black-medium",
-            "margin-bottom-18",
-          ])}
+          style={{
+            ...typography['body2'],
+            marginBottom: 18,
+            color: colors['text-black-medium'],
+          }}
         >
           Set custom address derivation path by modifying the indexes below:
         </Text>
         <View
-          style={style.flatten([
-            "flex-row",
-            "items-center",
-            "margin-bottom-16",
-          ])}
+          style={{
+            marginBottom: 16,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
         >
           <Text
-            style={style.flatten(["body2", "color-text-black-medium"])}
-          >{`m/44’/${bip44Option.coinType ?? "-"}’`}</Text>
+            style={{
+              ...typography['body2'],
+              color: colors['text-black-medium'],
+            }}
+          >{`m/44’/${bip44Option.coinType ?? '-'}’`}</Text>
           <TextInput
             value={account.value}
-            containerStyle={style.flatten(["min-width-58", "padding-bottom-0"])}
-            style={style.flatten(["text-right"])}
+            containerStyle={{
+              minWidth: 58,
+              paddingBottom: 0,
+            }}
+            style={{ textAlign: 'right' }}
             keyboardType="number-pad"
             onChangeText={account.setValue}
           />
           <Text>’/</Text>
           <TextInput
             value={change.value}
-            containerStyle={style.flatten(["min-width-58", "padding-bottom-0"])}
-            style={style.flatten(["text-right"])}
+            containerStyle={{
+              minWidth: 58,
+              paddingBottom: 0,
+            }}
+            style={{ textAlign: 'right' }}
             keyboardType="number-pad"
             onChangeText={change.setValue}
           />
           <Text>/</Text>
           <TextInput
             value={index.value}
-            containerStyle={style.flatten(["min-width-58", "padding-bottom-0"])}
-            style={style.flatten(["text-right"])}
+            containerStyle={{
+              minWidth: 58,
+              paddingBottom: 0,
+            }}
+            style={{ textAlign: 'right' }}
             keyboardType="number-pad"
             onChangeText={index.setValue}
           />
         </View>
         {change.isValid && !isChangeZeroOrOne ? (
           <Text
-            style={style.flatten([
-              "text-caption2",
-              "color-danger",
-              "margin-bottom-8",
-            ])}
+            style={{
+              color: colors['color-danger'],
+              paddingBottom: 8,
+              ...typography['text-caption2'],
+            }}
           >
             Change should be 0 or 1
           </Text>
         ) : null}
-        <Button
+        <TouchableOpacity
+          disabled={
+            !account.isValid ||
+            !change.isValid ||
+            !index.isValid ||
+            !isChangeZeroOrOne
+          }
+          style={{
+            marginBottom: 24,
+            marginTop: 32,
+            backgroundColor: colors['purple-900'],
+            borderRadius: 8,
+          }}
+          onPress={() => {
+            bip44Option.setAccount(account.number);
+            bip44Option.setChange(change.number);
+            bip44Option.setIndex(index.number);
+            close();
+          }}
+        >
+          <View
+            style={{
+              padding: 18,
+            }}
+          >
+            <Text
+              style={{
+                color: 'white',
+                textAlign: 'center',
+                fontWeight: '700',
+                fontSize: 16,
+              }}
+            >
+              Confirm
+            </Text>
+          </View>
+        </TouchableOpacity>
+        {/* <Button
           text="Confirm"
           size="large"
           disabled={
@@ -162,7 +209,7 @@ export const BIP44SelectModal: FunctionComponent<{
 
             close();
           }}
-        />
+        /> */}
       </CardModal>
     );
   }),

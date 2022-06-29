@@ -90,10 +90,9 @@ export const colors = {
   'green-500': '#4BB10C',
 
   // purple
+  'purple-50': '#EAE9FF',
+  'purple-100': '#E2DEEB',
   'purple-400': '#AE94DE',
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
-
-  // Violet
-  violet: '#8B1BFB'
 }

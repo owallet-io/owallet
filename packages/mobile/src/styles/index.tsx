@@ -48,7 +48,7 @@ export const Colors = {
   "profile-orange": "#FEC078",
   "profile-yellow": "#F2ED64",
   icon: "#2C4163",
-  card: "rgba(255,255,255,0.95)",
+  card: "#000",
   success: "#2DCE89",
   error: "#F5365C",
   "text-black-very-high": "#030C1D",
@@ -64,11 +64,11 @@ export const Colors = {
   black: "#000",
   disabled: "#EEEEF3",
   divider: "#F5F5F5",
-  transparent: "rgba(255,255,255,0)",
-  "modal-backdrop": "rgba(9,18,50,0.6)",
+  transparent: "#000",
+  "modal-backdrop": "#000",
   "card-modal-handle": "#DCDCE3",
   "setting-screen-background": "#FAFBFD",
-  "camera-loading-background": "rgba(255,255,255,0.95)",
+  "camera-loading-background": "#000",
   "big-image-placeholder": "#E7E4EF",
 };
 
