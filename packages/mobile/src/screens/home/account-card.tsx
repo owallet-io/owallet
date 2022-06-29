@@ -164,10 +164,10 @@ export const AccountCard: FunctionComponent<{
     return (
       <TouchableOpacity
         style={{
-          backgroundColor: colors['violet'],
-          borderWidth: 0.5,
+          backgroundColor: colors['purple-900'],
           borderRadius: spacing['8'],
-          borderColor: colors['violet'],
+          marginLeft: 8,
+          marginRight: 8
         }}
         onPress={() => onPressBtnMain(name)}
       >
@@ -337,13 +337,13 @@ export const AccountCard: FunctionComponent<{
               paddingRight: spacing['18'],
               borderBottomLeftRadius: spacing['11'],
               borderBottomRightRadius: spacing['11'],
-              shadowColor: 'gray',
+              shadowColor: colors['gray-150'],
               shadowOffset: {
                 width: 0,
-                height: 12
+                height: 6
               },
-              shadowOpacity: 1,
-              shadowRadius: 16.0
+              shadowOpacity: 0.3,
+              shadowRadius: 4
             }}
           >
             <View
@@ -407,13 +407,13 @@ export const AccountCard: FunctionComponent<{
             borderColor: colors['gray-100'],
             borderRadius: spacing['12'],
             backgroundColor: colors['white'],
-            shadowColor: 'gray',
+            shadowColor: colors['gray-150'],
             shadowOffset: {
               width: 0,
-              height: 12
+              height: 6
             },
-            shadowOpacity: 1,
-            shadowRadius: 16.0
+            shadowOpacity: 0.3,
+            shadowRadius: 4
           }}
         >
           <View

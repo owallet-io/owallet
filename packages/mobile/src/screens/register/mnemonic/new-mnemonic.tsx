@@ -347,7 +347,7 @@ const WordsCard: FunctionComponent<{
           alignItems: 'center',
         }}
       >
-        {!isTimedOut && <CopyFillIcon />}
+        {!isTimedOut && <CopyFillIcon color={colors["purple-700"]} />}
         <Button
           textStyle={{
             ...typography['text-button2'],

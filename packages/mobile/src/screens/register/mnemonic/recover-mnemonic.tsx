@@ -284,6 +284,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
               onSubmitEditing={() => {
                 setFocus('name');
               }}
+              inputStyle={{
+                ...styles.borderInput,
+              }}
               error={errors.mnemonic?.message}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -313,6 +316,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 if (mode === 'create') {
                   setFocus('password');
                 }
+              }}
+              inputStyle={{
+                ...styles.borderInput,
               }}
               error={errors.name?.message}
               onBlur={onBlur}
@@ -347,6 +353,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
                   }}
+                  inputStyle={{
+                    ...styles.borderInput,
+                  }}
                   error={errors.password?.message}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -380,6 +389,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   secureTextEntry={true}
                   onSubmitEditing={() => {
                     submit();
+                  }}
+                  inputStyle={{
+                    ...styles.borderInput,
                   }}
                   error={errors.confirmPassword?.message}
                   onBlur={onBlur}
@@ -451,4 +463,18 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       />
     </PageWithScrollView>
   );
+});
+
+
+const styles = StyleSheet.create({
+  borderInput: {
+    borderColor: colors['purple-100'],
+    borderWidth: 1,
+    backgroundColor: colors['white'],
+    paddingLeft: 11,
+    paddingRight: 11,
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderRadius: 4,
+  },
 });

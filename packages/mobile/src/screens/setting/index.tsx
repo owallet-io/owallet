@@ -1,6 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { RightArrow, SettingItem, SettingSectionTitle } from './components';
+import {
+  renderFlag,
+  RightArrow,
+  SettingItem,
+  SettingSectionTitle
+} from './components';
 // import { SettingSelectAccountItem } from "./items/select-account";
 import { useSmartNavigation } from '../../navigation.provider';
 // import { SettingFiatCurrencyItem } from "./items/fiat-currency";
@@ -11,13 +16,9 @@ import { SettingRemoveAccountItem } from './items/remove-account';
 import { canShowPrivateData } from './screens/view-private-data';
 import { SettingViewPrivateDataItem } from './items/view-private-data';
 import { useStyle } from '../../styles';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Platform
-} from 'react-native';
-import { CText as Text} from "../../components/text";
+import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { CText as Text } from '../../components/text';
+import { colors } from '../../themes';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore } = useStore();
@@ -33,19 +34,15 @@ export const SettingScreen: FunctionComponent = observer(() => {
       backgroundColor={style.get('color-setting-screen-background').color}
     >
       <View
-        style={style.flatten(
-          [
-            'background-color-primary-400',
-            'padding-24',
-            'padding-top-76',
-            'padding-bottom-101',
-            'margin-bottom-102'
-          ],
-          [
-            Platform.OS === 'ios' && 'border-radius-top-left-32',
-            Platform.OS === 'ios' && 'border-radius-top-right-32'
-          ]
-        )}
+        style={{
+          backgroundColor: colors['purple-700'],
+          padding: 24,
+          paddingTop: 76,
+          paddingBottom: 101,
+          marginBottom: 102,
+          borderTopLeftRadius: Platform.OS === 'ios' ? 32 : 0,
+          borderTopRightRadius: Platform.OS === 'ios' ? 32 : 0
+        }}
       >
         <Text style={style.flatten(['h1', 'color-white'])}>Setting</Text>
         <View
@@ -116,11 +113,25 @@ export const SettingScreen: FunctionComponent = observer(() => {
               >
                 CURRENCY
               </Text>
-              <Text
-                style={style.flatten(['text-caption2', 'color-black', 'body1'])}
+              <View
+                style={style.flatten([
+                  'flex-row',
+                  'items-center',
+                  'justify-center'
+                ])}
               >
-                {priceStore.defaultVsCurrency.toUpperCase()}
-              </Text>
+                {renderFlag(priceStore.defaultVsCurrency)}
+                <Text
+                  style={style.flatten([
+                    'text-caption2',
+                    'color-black',
+                    'body1',
+                    'margin-x-8'
+                  ])}
+                >
+                  {priceStore.defaultVsCurrency.toUpperCase()}
+                </Text>
+              </View>
             </View>
             <RightArrow />
           </TouchableOpacity>

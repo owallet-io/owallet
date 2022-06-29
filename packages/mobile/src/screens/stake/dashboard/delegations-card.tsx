@@ -12,6 +12,7 @@ import { RightArrowIcon } from '../../../components/icon';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { RectButton } from '../../../components/rect-button';
+import { colors } from '../../../themes';
 
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -66,7 +67,10 @@ export const DelegationsCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   return (
-    <Card style={containerStyle}>
+    <Card style={{
+      ...containerStyle,
+      backgroundColor: colors['white']
+    }}>
       <CardBody
         style={{
           backgroundColor: 'white',
@@ -111,7 +115,9 @@ export const DelegationsCard: FunctionComponent<{
       </CardBody>
       {delegations && delegations.length > 0 && <CardDivider />}
       {delegations && delegations.length > 0 && (
-        <CardBody style={style.flatten(['padding-x-0', 'padding-y-14'])}>
+        <CardBody style={{
+        backgroundColor: colors['white']
+        }}>
           {delegations.map((del) => {
             const val = validatorsMap.get(del.validator_address);
             if (!val) {
