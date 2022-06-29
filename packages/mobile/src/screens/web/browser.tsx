@@ -91,24 +91,6 @@ export const Browser: FunctionComponent<any> = observer((props) => {
         ?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
   }, [navigation]);
 
-  // useEffect(() => {
-  //   const deepLinkUri =
-  //     props?.route?.params?.path || deepLinkUriStore.getDeepLink();
-  //   if (deepLinkUri) {
-  //     // updateScreen(deepLinkUri);
-  //   }
-  // }, []);
-
-  // const updateScreen = async (uri) => {
-  //   if (uri) {
-  //     deepLinkUriStore.updateDeepLink('');
-  //     navigation.navigate('Web.dApp', {
-  //       name: 'Browser',
-  //       uri: decodeURIComponent(uri) || 'https://oraidex.io',
-  //     });
-  //   }
-  // };
-
   const [url, setUrl] = useState('');
 
   useEffect(() => {
@@ -123,7 +105,22 @@ export const Browser: FunctionComponent<any> = observer((props) => {
         });
       }
     }, 1000);
-  }, [props, url]);
+  }, [props?.route?.params?.url]);
+
+  useEffect(() => {
+    setTimeout(function () {
+      deepLinkUriStore.updateDeepLink('');
+      if (checkValidDomain(deepLinkUriStore.link.toLowerCase())) {
+        navigation.navigate('Web.dApp', {
+          name: 'Browser',
+          uri:
+            deepLinkUriStore.link?.toLowerCase().indexOf('http') >= 0
+              ? deepLinkUriStore.link?.toLowerCase()
+              : 'https://' + deepLinkUriStore.link?.toLowerCase(),
+        });
+      }
+    }, 1000);
+  }, []);
 
   const onHandleUrl = () => {
     console.log('valid', checkValidDomain(url?.toLowerCase()));

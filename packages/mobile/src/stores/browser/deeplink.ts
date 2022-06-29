@@ -1,4 +1,4 @@
-import { observable, action, makeObservable } from 'mobx';
+import { observable, action, makeObservable, computed } from 'mobx';
 
 export class DeepLinkStore {
   @observable
@@ -14,8 +14,8 @@ export class DeepLinkStore {
     this.linkUri = link;
   }
 
-  @action
-  getDeepLink() {
+  @computed
+  get link() {
     return this.linkUri;
   }
 }
