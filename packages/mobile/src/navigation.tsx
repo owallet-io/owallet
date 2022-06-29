@@ -71,12 +71,12 @@ import {
   getPlainHeaderScreenOptionsPresetWithBackgroundColor,
   HeaderLeftButton,
   HeaderRightButton,
-  PlainHeaderScreenOptionsPreset,
-} from './components/header';
-import { TokensScreen } from './screens/tokens';
-import { UndelegateScreen } from './screens/stake/undelegate';
-import { RedelegateScreen } from './screens/stake/redelegate';
-import { CameraScreen } from './screens/camera';
+  PlainHeaderScreenOptionsPreset
+} from './components/header'
+import { TokensScreen, TokenDetailScreen } from './screens/tokens'
+import { UndelegateScreen } from './screens/stake/undelegate'
+import { RedelegateScreen } from './screens/stake/redelegate'
+import { CameraScreen } from './screens/camera'
 import {
   FocusedScreenProvider,
   useFocusedScreen
@@ -223,11 +223,25 @@ export const MainNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: 'Ntf detail'
+          title: 'My NFTs'
         }}
         name="Ntfs"
         component={NtfsScreen}
       />
+      <Stack.Screen
+        options={{
+          title: 'Token detail'
+        }}
+        name="Token.Detail"
+        component={TokenDetailScreen}
+      />
+      {/* <Stack.Screen
+        options={{
+          title: 'Ntf detail'
+        }}
+        name="Nfts.Detail"
+        component={NtfsScreen}
+      /> */}
     </Stack.Navigator>
   );
 };

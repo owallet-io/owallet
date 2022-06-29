@@ -30,13 +30,11 @@ export const StakedTokenSymbol: FunctionComponent<{
 
 export const TokenSymbol: FunctionComponent<{
   style?: ViewStyle
-
   currency: AppCurrency
-  chainInfo: {
+  chainInfo?: {
     stakeCurrency: Currency
   }
-  size: number
-
+  size?: number
   imageScale?: number
 }> = ({
   style: propStyle,
