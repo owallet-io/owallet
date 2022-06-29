@@ -96,12 +96,13 @@ export const Browser: FunctionComponent<any> = observer((props) => {
   useEffect(() => {
     setTimeout(function () {
       if (checkValidDomain(props?.route?.params?.url?.toLowerCase())) {
+        const tabUri =
+          props.route.params.url?.toLowerCase().indexOf('http') >= 0
+            ? props.route.params.url?.toLowerCase()
+            : 'https://' + props.route.params?.url?.toLowerCase();
         navigation.navigate('Web.dApp', {
-          name: 'Browser',
-          uri:
-            props.route.params.url?.toLowerCase().indexOf('http') >= 0
-              ? props.route.params.url?.toLowerCase()
-              : 'https://' + props.route.params?.url?.toLowerCase(),
+          name: tabUri,
+          uri: tabUri,
         });
       }
     }, 1000);
@@ -111,12 +112,13 @@ export const Browser: FunctionComponent<any> = observer((props) => {
     setTimeout(function () {
       deepLinkUriStore.updateDeepLink('');
       if (checkValidDomain(deepLinkUriStore.link.toLowerCase())) {
+        const tabUri =
+          deepLinkUriStore.link?.toLowerCase().indexOf('http') >= 0
+            ? deepLinkUriStore.link?.toLowerCase()
+            : 'https://' + deepLinkUriStore.link?.toLowerCase();
         navigation.navigate('Web.dApp', {
-          name: 'Browser',
-          uri:
-            deepLinkUriStore.link?.toLowerCase().indexOf('http') >= 0
-              ? deepLinkUriStore.link?.toLowerCase()
-              : 'https://' + deepLinkUriStore.link?.toLowerCase(),
+          name: tabUri,
+          uri: tabUri,
         });
       }
     }, 1000);
@@ -134,7 +136,6 @@ export const Browser: FunctionComponent<any> = observer((props) => {
             : 'https://' + url?.toLowerCase(),
       };
       browserStore.addTab(tab);
-
       browserStore.updateSelectedTab(tab);
       navigation.navigate('Web.dApp', tab);
     } else {
