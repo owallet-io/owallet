@@ -1,4 +1,9 @@
-import React, { FunctionComponent } from 'react';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useCallback,
+  useEffect
+} from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
 import {
@@ -8,15 +13,14 @@ import {
   Image,
   Touchable,
   TouchableWithoutFeedback,
+  LogBox
 } from 'react-native';
-
+import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
-// import { DoubleDoughnutChart } from "../../components/svg";
 import { Button } from '../../components/button';
 import { LoadingSpinner } from '../../components/spinner';
-// import { StakedTokenSymbol, TokenSymbol } from "../../components/token-symbol";
 import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
 import { ProgressBar } from '../../components/progress-bar';
@@ -26,27 +30,60 @@ import {
   HistoryIcon,
   Scanner,
   SendIcon,
-  SettingDashboardIcon,
+  SettingDashboardIcon
 } from '../../components/icon';
-import { useNavigation } from '@react-navigation/native';
-import { CText as Text } from '../../components/text';
-// import { FormattedMessage, useIntl } from "react-intl"
+import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
   BuyIcon,
   DepositIcon,
-  SendDashboardIcon,
+  SendDashboardIcon
 } from '../../components/icon/button';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, NetworkModal } from './components';
-// import { RectButton } from '../../components/rect-button';
+import { Hash } from '@owallet/crypto';
+import LinearGradient from 'react-native-linear-gradient';
+import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
     useStore();
+
+  const deterministicNumber = useCallback((chainInfo) => {
+    const bytes = Hash.sha256(
+      Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
+    );
+    return (
+      (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
+    );
+  }, []);
+
+  const profileColor = useCallback(
+    (chainInfo) => {
+      const colors = [
+        'sky-blue',
+        'mint',
+        'red',
+        'orange',
+        'blue-violet',
+        'green',
+        'sky-blue',
+        'mint',
+        'red',
+        'purple',
+        'red',
+        'orange',
+        'black'
+      ];
+
+      return colors[deterministicNumber(chainInfo) % colors.length];
+    },
+    [deterministicNumber]
+  );
 
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
@@ -57,7 +94,7 @@ export const AccountCard: FunctionComponent<{
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
-  const stakable = queryStakable.balance;
+  const stakable = queryStakable?.balance;
 
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
@@ -78,7 +115,7 @@ export const AccountCard: FunctionComponent<{
 
   const data: [number, number] = [
     parseFloat(stakable.toDec().toString()),
-    parseFloat(stakedSum.toDec().toString()),
+    parseFloat(stakedSum.toDec().toString())
   ];
   const safeAreaInsets = useSafeAreaInsets();
   const onPressBtnMain = (name) => {
@@ -89,7 +126,7 @@ export const AccountCard: FunctionComponent<{
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
-        currency: chainStore.current.stakeCurrency.coinMinimalDenom,
+        currency: chainStore.current.stakeCurrency.coinMinimalDenom
       });
     }
   };
@@ -97,7 +134,13 @@ export const AccountCard: FunctionComponent<{
   // open model
   const _onPressNetworkModal = () => {
     modalStore.setOpen();
-    modalStore.setChildren(NetworkModal(account));
+    modalStore.setChildren(
+      NetworkModal({
+        profileColor,
+        chainStore,
+        modalStore
+      })
+    );
   };
 
   const _onPressNamespace = () => {
@@ -106,7 +149,7 @@ export const AccountCard: FunctionComponent<{
   };
 
   const RenderBtnMain = ({ name }) => {
-    let icon;
+    let icon: ReactElement;
     switch (name) {
       case 'Buy':
         icon = <BuyIcon />;
@@ -154,9 +197,11 @@ export const AccountCard: FunctionComponent<{
   };
 
   return (
-    <Card style={{
-      ...containerStyle,
-    }}>
+    <Card
+      style={{
+        ...containerStyle
+      }}
+    >
       <CardBody
         style={{
           paddingBottom: spacing['0'],
@@ -207,7 +252,7 @@ export const AccountCard: FunctionComponent<{
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate('Others', {
-                  screen: 'Camera',
+                  screen: 'Camera'
                 });
               }}
             >
@@ -238,7 +283,7 @@ export const AccountCard: FunctionComponent<{
             <View
               style={{
                 marginTop: 28,
-                marginBottom: 16,
+                marginBottom: 16
               }}
             >
               <Text
@@ -246,7 +291,7 @@ export const AccountCard: FunctionComponent<{
                   textAlign: 'center',
                   color: '#AEAEB2',
                   fontSize: 14,
-                  lineHeight: 20,
+                  lineHeight: 20
                 }}
               >
                 Total Balance
@@ -257,7 +302,7 @@ export const AccountCard: FunctionComponent<{
                   color: 'white',
                   fontWeight: '900',
                   fontSize: 34,
-                  lineHeight: 50,
+                  lineHeight: 50
                 }}
               >
                 {totalPrice
@@ -295,10 +340,10 @@ export const AccountCard: FunctionComponent<{
               shadowColor: 'gray',
               shadowOffset: {
                 width: 0,
-                height: 12,
+                height: 12
               },
               shadowOpacity: 1,
-              shadowRadius: 16.0,
+              shadowRadius: 16.0
             }}
           >
             <View
@@ -362,13 +407,13 @@ export const AccountCard: FunctionComponent<{
             borderColor: colors['gray-100'],
             borderRadius: spacing['12'],
             backgroundColor: colors['white'],
-            shadowColor: 'gray',   
+            shadowColor: 'gray',
             shadowOffset: {
               width: 0,
-              height: 12,
+              height: 12
             },
             shadowOpacity: 1,
-            shadowRadius: 16.0,
+            shadowRadius: 16.0
           }}
         >
           <View
@@ -399,7 +444,7 @@ export const AccountCard: FunctionComponent<{
                 <Image
                   style={{
                     width: 26,
-                    height: 26,
+                    height: 26
                   }}
                   source={require('../../assets/image/namespace_default.png')}
                   fadeDuration={0}
