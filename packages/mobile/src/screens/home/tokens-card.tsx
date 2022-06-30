@@ -1,21 +1,21 @@
-import React, { FunctionComponent, useState } from 'react'
-import { Card, CardBody } from '../../components/card'
-import { SectionList, StyleSheet, View, ViewStyle } from 'react-native'
-import { Image, Tab } from '@rneui/base'
-import { CText as Text} from "../../components/text";
-import { observer } from 'mobx-react-lite'
-import { useStore } from '../../stores'
-import { TokenItem } from '../tokens/components/token-item'
-import { useSmartNavigation } from '../../navigation.provider'
-import { RectButton } from '../../components/rect-button'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
+import React, { FunctionComponent, useState } from 'react';
+import { Card, CardBody } from '../../components/card';
+import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
+import { Image, Tab } from '@rneui/base';
+import { CText as Text } from '../../components/text';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { TokenItem } from '../tokens/components/token-item';
+import { useSmartNavigation } from '../../navigation.provider';
+import { RectButton } from '../../components/rect-button';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import {
   capitalizedText,
   formatContractAddress,
   _keyExtract
-} from '../../utils/helper'
-import { DownArrowIcon } from '../../components/icon'
+} from '../../utils/helper';
+import { DownArrowIcon } from '../../components/icon';
 
 // hard code data to test UI
 const nftsData = [
@@ -59,77 +59,78 @@ const nftsData = [
       }
     ]
   }
-]
-
-
+];
 
 export const TokensCard: FunctionComponent<{
-  containerStyle?: ViewStyle
+  containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, queriesStore, accountStore } = useStore()
+  const { chainStore, queriesStore, accountStore } = useStore();
 
-  const smartNavigation = useSmartNavigation()
-  const [index, setIndex] = useState<number>(0)
+  const smartNavigation = useSmartNavigation();
+  const [index, setIndex] = useState<number>(0);
 
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
-    )
+    );
 
   const tokens = queryBalances.positiveNativeUnstakables
     .concat(queryBalances.nonNativeBalances)
-    .slice(0, 2)
+    .slice(0, 2);
 
-    const _renderFlatlistItem = ({ item }) => (
-      <TouchableOpacity style={styles.flatListItem} onPress={() => {
-        smartNavigation.navigateSmart('Nfts.Detail',{})
-      }}>
-        <Image
-          source={{
-            uri: item.uri
-          }}
-          style={styles.itemPhoto}
-          resizeMode="cover"
-        />
-        <View
+  const _renderFlatlistItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.flatListItem}
+      onPress={() => {
+        smartNavigation.navigateSmart('Nfts.Detail', {});
+      }}
+    >
+      <Image
+        source={{
+          uri: item.uri
+        }}
+        style={styles.itemPhoto}
+        resizeMode="cover"
+      />
+      <View
+        style={{
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          marginTop: spacing['12'],
+          alignItems: 'flex-start'
+        }}
+      >
+        <Text
           style={{
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            marginTop: spacing['12'],
-            alignItems: 'flex-start'
+            ...typography.h7,
+            color: colors['gray-900'],
+            fontWeight: '700'
           }}
         >
-          <Text
-            style={{
-              ...typography.h7,
-              color: colors['gray-900'],
-              fontWeight: '700'
-            }}
-          >
-            {formatContractAddress(item.title)}
-          </Text>
+          {formatContractAddress(item.title)}
+        </Text>
 
-          <Text
-            style={{
-              ...typography.h5,
-              color: colors['gray-900'],
-              fontWeight: '700'
-            }}
-          >
-            {item.oraiPrice}
-          </Text>
+        <Text
+          style={{
+            ...typography.h5,
+            color: colors['gray-900'],
+            fontWeight: '700'
+          }}
+        >
+          {item.oraiPrice}
+        </Text>
 
-          <Text
-            style={{
-              ...typography.h5,
-              color: colors['gray-900'],
-              fontWeight: '700'
-            }}
-          >{`$ ${58.23}`}</Text>
-        </View>
-      </TouchableOpacity>
-    )
+        <Text
+          style={{
+            ...typography.h5,
+            color: colors['gray-900'],
+            fontWeight: '700'
+          }}
+        >{`$ ${58.23}`}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
   return (
     <View style={containerStyle}>
@@ -141,38 +142,40 @@ export const TokensCard: FunctionComponent<{
           backgroundColor: colors['white']
         }}
       >
-        <Tab
-          value={index}
-          onChange={e => {
-            setIndex(e)
-          }}
-          indicatorStyle={{
-            height: spacing['1'],
-            backgroundColor: colors['black']
-          }}
-          variant="default"
-          containerStyle={{
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            alignItems: 'center',
             width: metrics.screenWidth - 64,
-            marginHorizontal: spacing['32'],
-            justifyContent: 'space-between'
+            marginHorizontal: spacing['32']
           }}
         >
-          {['Tokens', 'NFTs'].map((title: string, index: number) => (
-            <Tab.Item
-              key={index}
-              title={title}
-              titleStyle={active => ({
-                fontSize: 14,
-                fontWeight: '700',
-                color: active ? colors['gray-900'] : colors['gray-300']
-              })}
-              containerStyle={{
-                backgroundColor: colors['transparent']
+          {['Tokens', 'NFTs'].map((title: string, i: number) => (
+            <TouchableOpacity
+              key={i}
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: spacing['12']
               }}
-              variant="default"
-            />
+              onPress={() => {
+                setIndex(i);
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: '700',
+                  color: index === i ? colors['gray-900'] : colors['gray-300']
+                }}
+              >
+                {title}
+              </Text>
+            </TouchableOpacity>
           ))}
-        </Tab>
+        </View>
+        
         {index === 0 ? (
           <CardBody>
             {tokens.map(token => {
@@ -184,7 +187,7 @@ export const TokensCard: FunctionComponent<{
                   }}
                   balance={token.balance}
                 />
-              )
+              );
             })}
           </CardBody>
         ) : (
@@ -229,9 +232,9 @@ export const TokensCard: FunctionComponent<{
             style={styles.containerBtn}
             onPress={() => {
               if (index === 0) {
-                smartNavigation.navigateSmart('Tokens', {})
+                smartNavigation.navigateSmart('Tokens', {});
               } else {
-                smartNavigation.navigateSmart('Nfts', {})
+                smartNavigation.navigateSmart('Nfts', {});
               }
             }}
           >
@@ -242,8 +245,8 @@ export const TokensCard: FunctionComponent<{
         </View>
       </Card>
     </View>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   textLoadMore: {
@@ -280,4 +283,4 @@ const styles = StyleSheet.create({
   itemText: {
     color: colors['gray-800']
   }
-})
+});

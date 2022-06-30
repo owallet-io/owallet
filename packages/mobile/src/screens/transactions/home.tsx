@@ -1,13 +1,11 @@
-import React, { FunctionComponent, useEffect, useState } from 'react'
-import { Tab } from '@rneui/base'
-import { CText as Text} from "../../components/text";
-import { FlatList, StyleSheet, View } from 'react-native'
-import { useStyle } from '../../styles'
-import { StackActions, useNavigation } from '@react-navigation/native'
-import { TransactionSectionTitle, TransactionItem } from './components'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { _keyExtract } from '../../utils/helper'
-import { useSmartNavigation } from '../../navigation.provider'
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { CText as Text } from '../../components/text';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import { TransactionSectionTitle, TransactionItem } from './components';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { _keyExtract } from '../../utils/helper';
+import { useSmartNavigation } from '../../navigation.provider';
 
 // hard code data to test UI
 const txsTransfer = [
@@ -59,7 +57,7 @@ const txsTransfer = [
     amount: '-100.02',
     denom: 'ORAI'
   }
-]
+];
 
 const txsReceiver = [
   {
@@ -80,22 +78,22 @@ const txsReceiver = [
     amount: '+100.02',
     denom: 'ORAI'
   }
-]
+];
 
 export const Transactions: FunctionComponent = () => {
-  const [index, setIndex] = useState<number>(0)
-  const [txs, setTxs] = useState(txsTransfer)
-  const tabBarTitle = ['Transfer', 'Receiver']
-  const navigation = useNavigation()
-  const smartNavigation = useSmartNavigation()
+  const [index, setIndex] = useState<number>(0);
+  const [txs, setTxs] = useState(txsTransfer);
+  const tabBarTitle = ['Transfer', 'Receiver'];
+  const navigation = useNavigation();
+  const smartNavigation = useSmartNavigation();
   const fetchTxs = () => {
     //TODO: fetch tx with type: transfer and receiver
-  }
+  };
 
   useEffect(() => {
     try {
     } catch (err) {}
-  }, [txs])
+  }, [txs]);
 
   const _renderItem = ({ item, index }) => {
     return (
@@ -105,42 +103,47 @@ export const Transactions: FunctionComponent = () => {
         onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
         containerStyle={{}} // customize item transaction
       />
-    )
-  }
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabBarHeader}>
-        <Tab
-          value={index}
-          onChange={e => {
-            setIndex(e)
-            setTxs(e === 0 ? txsTransfer : txsReceiver)
-          }}
-          indicatorStyle={{
-            height: 0
-          }}
-          variant="default"
-          containerStyle={styles.tabSelected}
-        >
-          {tabBarTitle.map((title: string, index: number) => (
-            <Tab.Item
-              key={index}
-              title={title}
-              titleStyle={active => ({
-                fontSize: 14,
-                color: active ? colors['white'] : colors['gray-400']
-              })}
-              containerStyle={active => ({
-                ...styles.tabSelected,
-                backgroundColor: active
-                  ? colors['primary']
-                  : colors['transparent']
-              })}
-              variant="default"
-            />
-          ))}
-        </Tab>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          marginTop: spacing['12']
+        }}
+      >
+        {['Transfer', 'Receiver'].map((title: string, i: number) => (
+          <TouchableOpacity
+            key={i}
+            style={{
+              ...styles.tabSelected,
+              width: (metrics.screenWidth - 60) / 2,
+              alignItems: 'center',
+              paddingVertical: spacing['12'],
+              borderRadius: spacing['12'],
+              backgroundColor:
+                index === i ? colors['primary'] : colors['transparent']
+            }}
+            onPress={() => {
+              setIndex(i);
+              setTxs(i === 0 ? txsTransfer : txsReceiver);
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: index === i ? colors['white'] : colors['gray-300']
+              }}
+            >
+              {title}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
       <View style={{ flex: 1 }}>
         <TransactionSectionTitle title={'Transfer list'} />
@@ -154,8 +157,7 @@ export const Transactions: FunctionComponent = () => {
           ListEmptyComponent={
             <View style={styles.transactionListEmpty}>
               <Text
-                h4
-                h4Style={{
+                style={{
                   ...typography.h4,
                   color: colors['gray-400']
                 }}
@@ -167,8 +169,8 @@ export const Transactions: FunctionComponent = () => {
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -181,21 +183,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: metrics.screenWidth,
     justifyContent: 'space-around',
-    height: spacing['44'],
-    paddingVertical: spacing['20'],
-    paddingHorizontal: spacing['16']
+    height: spacing['44']
+    // paddingVertical: spacing['20'],
+    // paddingHorizontal: spacing['16']
   },
   tabText: {
     ...typography.body2,
     fontWeight: 'normal'
   },
   tabSelected: {
-    width: metrics.screenWidth - 40,
-    marginVertical: spacing['6'],
-    marginHorizontal: spacing['8'],
-    borderRadius: spacing['12'],
-    backgroundColor: colors['gray-50'],
-    borderColor: colors['border-gray']
+    // width: metrics.screenWidth - 40,
+    // marginVertical: spacing['6'],
+    // marginHorizontal: spacing['8'],
+    // borderRadius: spacing['12'],
+    // backgroundColor: colors['gray-50'],
+    // borderColor: colors['border-gray']
   },
   transactionList: {
     paddingBottom: spacing['12']
@@ -205,4 +207,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: metrics.screenHeight / 4
   }
-})
+});

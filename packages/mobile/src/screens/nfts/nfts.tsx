@@ -1,14 +1,14 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react'
-import { observer } from 'mobx-react-lite'
-import { FlatList, Image, StyleSheet, View, Animated } from 'react-native'
-import { Text, Tab } from '@rneui/base'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { formatContractAddress, _keyExtract } from '../../utils/helper'
-import { AddIcon, DownArrowIcon } from '../../components/icon'
-import { PageWithScrollViewInBottomTabView } from '../../components/page'
-import Accordion from 'react-native-collapsible/Accordion'
-import { useSmartNavigation } from '../../navigation.provider'
+import React, { FunctionComponent, ReactElement, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { FlatList, Image, StyleSheet, View, Animated } from 'react-native';
+import { Text, Tab } from '@rneui/base';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { formatContractAddress, _keyExtract } from '../../utils/helper';
+import { AddIcon, DownArrowIcon } from '../../components/icon';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import Accordion from 'react-native-collapsible/Accordion';
+import { useSmartNavigation } from '../../navigation.provider';
 
 // hard code data to test UI
 const nftsData = [
@@ -52,15 +52,15 @@ const nftsData = [
       }
     ]
   }
-]
+];
 
 export const NftsScreen: FunctionComponent = observer(() => {
-  const [index, setIndex] = useState<number>(0)
-  const [activeSection, setActiveSection] = useState([])
-  const smartNavigation = useSmartNavigation()
+  const [index, setIndex] = useState<number>(0);
+  const [activeSection, setActiveSection] = useState([]);
+  const smartNavigation = useSmartNavigation();
 
   //function shadow
-  const _renderSectionTitle = section => {}
+  const _renderSectionTitle = section => {};
   const _renderHeader = (section, _, isActive) => {
     return (
       <View
@@ -73,7 +73,9 @@ export const NftsScreen: FunctionComponent = observer(() => {
             ...typography.h7,
             fontWeight: '400'
           }}
-        >{section.title}</Text>
+        >
+          {section.title}
+        </Text>
         <View
           style={{
             marginLeft: spacing['14']
@@ -82,14 +84,16 @@ export const NftsScreen: FunctionComponent = observer(() => {
           <DownArrowIcon color={colors['black']} height={16} />
         </View>
       </View>
-    )
-  }
+    );
+  };
   const _renderContent = section => {
     return (
-      <View style={{
-        height: 456,
-        marginBottom: spacing['16']
-      }}>
+      <View
+        style={{
+          height: 456,
+          marginBottom: spacing['16']
+        }}
+      >
         <FlatList
           data={section.data}
           renderItem={_renderFlatlistItem}
@@ -99,16 +103,16 @@ export const NftsScreen: FunctionComponent = observer(() => {
           showsVerticalScrollIndicator={false}
         />
       </View>
-    )
-  }
+    );
+  };
   const _updateSections = activeSection => {
-    setActiveSection(activeSection)
-  }
+    setActiveSection(activeSection);
+  };
   const _renderFlatlistItem = ({ item }) => (
     <TouchableOpacity
       style={styles.flatListItem}
       onPress={() => {
-        smartNavigation.navigateSmart('Nfts.Detail',{})
+        smartNavigation.navigateSmart('Nfts.Detail', {});
       }}
     >
       <Image
@@ -155,7 +159,7 @@ export const NftsScreen: FunctionComponent = observer(() => {
         >{`$ ${58.23}`}</Text>
       </View>
     </TouchableOpacity>
-  )
+  );
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -173,37 +177,32 @@ export const NftsScreen: FunctionComponent = observer(() => {
             ...styles.container
           }}
         >
-          <Tab
-            value={index}
-            onChange={e => {
-              setIndex(e)
-            }}
-            indicatorStyle={{
-              height: spacing['1'],
-              backgroundColor: colors['black']
-            }}
-            variant="default"
-            containerStyle={{
-              ...styles.containerTab
+          <View
+            style={{
+              marginTop: spacing['12'],
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+              marginHorizontal: spacing['32'],
             }}
           >
-            {['ERC-721', 'ERC-1155'].map((title: string, index: number) => (
-              <Tab.Item
-                key={index}
-                title={title}
-                titleStyle={active => ({
-                  fontSize: 16,
-                  fontWeight: '700',
-                  color: active ? colors['gray-900'] : colors['gray-300']
-                })}
-                containerStyle={{
-                  backgroundColor: colors['transparent']
-                }}
-                variant="default"
-              />
+            {['ERC-721', 'ERC-1155'].map((title: string, i: number) => (
+              <TouchableOpacity
+                key={i}
+                style={{ ...styles.containerTab }}
+                onPress={() => setIndex(i)}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '700',
+                    color: index === i ? colors['gray-900'] : colors['gray-300']
+                  }}
+                >
+                  {title}
+                </Text>
+              </TouchableOpacity>
             ))}
-          </Tab>
-
+          </View> 
           <View
             style={{
               ...styles.containerCollection
@@ -253,8 +252,8 @@ export const NftsScreen: FunctionComponent = observer(() => {
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -262,10 +261,6 @@ const styles = StyleSheet.create({
     borderRadius: spacing['24']
   },
   containerTab: {
-    width: metrics.screenWidth - 64,
-    marginHorizontal: spacing['32'],
-    justifyContent: 'space-between',
-    marginTop: 12
   },
   title: {
     ...typography.h3,
@@ -297,12 +292,12 @@ const styles = StyleSheet.create({
     height: (metrics.screenWidth - 120) / 2,
     borderRadius: spacing['6']
   },
-  containerCollection:{
+  containerCollection: {
     marginHorizontal: spacing['24'],
     marginTop: spacing['32']
   },
-  containerSectionTitle:{
+  containerSectionTitle: {
     flexDirection: 'row',
     marginBottom: spacing['16']
   }
-})
+});
