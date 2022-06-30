@@ -29,7 +29,10 @@ module.exports = (async () => {
   const {
     resolver: { sourceExts, assetExts }
   } = await getDefaultConfig(__dirname);
-
+  const injectedProviderFile = path.resolve(
+    __dirname,
+    './build/injected/injected-provider.bundle.js'
+  );
   return {
     projectRoot: path.resolve(__dirname, '.'),
     watchFolders,
@@ -59,6 +62,16 @@ module.exports = (async () => {
           inlineRequires: false
         }
       })
+    },
+    server: {
+      enhanceMiddleware: (middleare) => {
+        return (req, res, next) => {
+          if (req.originalUrl === '/injected-provider.bundle.js') {
+            return res.end(fs.readFileSync(injectedProviderFile));
+          }
+          return middleare(req, res, next);
+        };
+      }
     }
   };
 })();
