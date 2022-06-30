@@ -18,31 +18,31 @@ export const DAppInfos: DAppInfo[] = [
     id: 1,
     name: 'Oraidex',
     uri: 'https://oraidex.io',
-    logo: oraiLogo,
+    logo: oraiLogo
   },
   {
     id: 2,
     name: 'Oraidex',
     uri: 'https://staging.oraidex.io',
-    logo: oraiLogo,
+    logo: oraiLogo
   },
   {
     id: 3,
     name: 'Osmosis',
     uri: 'https://app.osmosis.zone',
-    logo: require('../../assets/image/webpage/osmosis_logo.png'),
+    logo: require('../../assets/image/webpage/osmosis_logo.png')
   },
   {
     id: 4,
     name: 'Oraiscan testnet',
     uri: 'https://testnet.scan.orai.io',
-    logo: oraiLogo,
+    logo: oraiLogo
   },
   {
     id: 5,
     name: 'Oraiscan',
     uri: 'https://scan.orai.io',
-    logo: oraiLogo,
+    logo: oraiLogo
   },
   // {
   //   name: 'Balcony Subnet',
@@ -53,8 +53,8 @@ export const DAppInfos: DAppInfo[] = [
     id: 6,
     name: 'Balcony Subnet',
     uri: 'https://re.bignft.app',
-    logo: balconyLogo,
-  },
+    logo: balconyLogo
+  }
 ];
 
 if (__DEV__) {
@@ -62,6 +62,6 @@ if (__DEV__) {
     id: 1,
     name: 'Oraidex',
     uri: InjectedProviderUrl,
-    logo: oraiLogo,
+    logo: oraiLogo
   });
 }
