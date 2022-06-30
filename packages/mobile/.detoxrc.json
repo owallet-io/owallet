@@ -5,7 +5,8 @@
   "apps": {
     "ios": {
       "type": "ios.app",
-      "binaryPath": ""
+      "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/mobile.app",
+      "build": "xcodebuild -workspace ios/mobile.xcworkspace -scheme mobile -configuration Debug -sdk iphonesimulator -derivedDataPath ios/build"
     },
     "android": {
       "type": "android.apk",
@@ -17,7 +18,7 @@
     "simulator": {
       "type": "ios.simulator",
       "device": {
-        "type": "iPhone 11"
+        "type": "iPhone 13"
       }
     },
     "emulator": {
