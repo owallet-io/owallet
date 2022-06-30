@@ -2,6 +2,7 @@ import React, { FunctionComponent } from 'react'
 import { Image, StyleSheet, View, ViewStyle } from 'react-native'
 import { colors, spacing, typography } from '../../../themes'
 import { CText as Text } from '../../../components/text'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 interface Validator {
   imageUri?: string
@@ -20,12 +21,17 @@ export const ValidatorItem: FunctionComponent<ValidatorItemProps> = ({
   validator,
   containerStyle
 }) => {
+  const _onPress = () => {
+
+  }
+
   return (
-    <View
+    <TouchableOpacity
       style={{
         ...styles.container,
         ...containerStyle
       }}
+      onPress={_onPress}
     >
       <View
         style={{
@@ -65,7 +71,7 @@ export const ValidatorItem: FunctionComponent<ValidatorItemProps> = ({
           }}
         >{`${validator.amount} ${validator.denom.toUpperCase()}`}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }
 
