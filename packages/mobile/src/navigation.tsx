@@ -778,7 +778,6 @@ export const MainTabNavigation: FunctionComponent = () => {
             />
           </View>
         ),
-        tabBarVisible: false
       })}
       tabBarOptions={{
         activeTintColor: style.get('color-primary').color,

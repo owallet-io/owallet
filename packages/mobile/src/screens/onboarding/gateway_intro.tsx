@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     color: colors['gray-150'],
     fontWeight: '400',
     fontSize: 14,
-    lineHeight: spacing['20'],
+    lineHeight: spacing['20']
   }
 })
 
@@ -58,7 +58,9 @@ const GatewayIntroScreen: FunctionComponent = () => {
             source={require('../../assets/image/onboarding-gateway.png')}
             fadeDuration={0}
             resizeMode="contain"
-            height={metrics.screenHeight}
+            style={{
+              width: '100%',
+            }}
           />
         </View>
         <View style={{ marginTop: spacing['25'] }}>
@@ -72,7 +74,11 @@ const GatewayIntroScreen: FunctionComponent = () => {
             }}
           >
             <Text
-              style={{ color: colors['white'], fontWeight: '700', fontSize: 16 }}
+              style={{
+                color: colors['white'],
+                fontWeight: '700',
+                fontSize: 16
+              }}
             >
               Get started!
             </Text>

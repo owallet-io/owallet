@@ -61,12 +61,14 @@ const ManageIntroScreen: FunctionComponent = () => {
           </Text>
         </View>
 
-        <View>
+        <View style={{  alignItems: 'center' }}>
           <Image
             source={require('../../assets/image/onboarding-manage.png')}
             fadeDuration={0}
             resizeMode="contain"
-            height={317}
+            style={{
+              width: '100%',
+            }}
           />
         </View>
       </View>

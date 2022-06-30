@@ -60,13 +60,14 @@ const WelcomeIntroScreen: FunctionComponent = () => {
             Bitcoin.
           </Text>
         </View>
-
-        <View>
+        <View style={{  alignItems: 'center' }}>
           <Image
             source={require('../../assets/image/onboarding-welcome.png')}
-            resizeMode="contain"
             fadeDuration={0}
-            height={1}
+            resizeMode="contain"
+            style={{
+              width: '100%',
+            }}
           />
         </View>
       </View>
