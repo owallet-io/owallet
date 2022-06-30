@@ -26,9 +26,9 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 
-export const HomeScreen: FunctionComponent = observer(() => {
+export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
-
+  
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);

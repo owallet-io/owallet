@@ -64,7 +64,7 @@ const nftsData = [
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, queriesStore, accountStore } = useStore();
+  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -75,9 +75,9 @@ export const TokensCard: FunctionComponent<{
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
 
-  const tokens = queryBalances.positiveNativeUnstakables
-    .concat(queryBalances.nonNativeBalances)
-    .slice(0, 2);
+  const tokens = queryBalances.positiveNativeUnstakables.concat(
+    queryBalances.nonNativeBalances
+  );
 
   const _renderFlatlistItem = ({ item }) => (
     <TouchableOpacity
@@ -104,6 +104,16 @@ export const TokensCard: FunctionComponent<{
         <Text
           style={{
             ...typography.h7,
+            color: colors['gray-900'],
+            fontWeight: '700'
+          }}
+        >
+          {formatContractAddress(item.title)}
+        </Text>
+
+        <Text
+          style={{
+            ...typography.h5,
             color: colors['gray-900'],
             fontWeight: '700'
           }}
@@ -178,7 +188,7 @@ export const TokensCard: FunctionComponent<{
         
         {index === 0 ? (
           <CardBody>
-            {tokens.map(token => {
+            {tokens.slice(0, 3).map((token) => {
               return (
                 <TokenItem
                   key={token.currency.coinMinimalDenom}
@@ -186,6 +196,14 @@ export const TokensCard: FunctionComponent<{
                     stakeCurrency: chainStore.current.stakeCurrency
                   }}
                   balance={token.balance}
+                  priceToken={{
+                    airight: {
+                      usd: 0.00080235
+                    },
+                    tether: {
+                      usd: 1.001
+                    }
+                  }}
                 />
               );
             })}

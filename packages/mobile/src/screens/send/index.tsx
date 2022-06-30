@@ -4,7 +4,7 @@ import { useSendTxConfig } from '@owallet/hooks';
 import { useStore } from '../../stores';
 import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   AddressInput,
   AmountInput,
@@ -17,26 +17,26 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, metrics, spacing, typography } from '../../themes'
-
+import { colors, metrics, spacing, typography } from '../../themes';
+import { CText as Text } from '../../components/text';
 const styles = StyleSheet.create({
   'padding-x-page': {
     paddingLeft: 20,
-    paddingRight: 20,
+    paddingRight: 20
   },
   'flex-grow': {
-    flexGrow: 1,
+    flexGrow: 1
   },
   'height-page-pad': {
-    height: 20,
+    height: 20
   },
   'flex-1': {
     display: 'flex',
-    flex: 1,
+    flex: 1
   },
   'margin-bottom-102': {
-    marginBottom: 102,
-  },
+    marginBottom: 102
+  }
 });
 
 export const SendScreen: FunctionComponent = observer(() => {
@@ -129,11 +129,13 @@ export const SendScreen: FunctionComponent = observer(() => {
         gasConfig={sendConfigs.gasConfig}
       />
       <View style={styles['flex-1']} />
-      <Button
-        text="Send"
-        size="large"
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === 'send'}
+      <TouchableOpacity
+        style={{
+          marginBottom: 24,
+          marginTop: 32,
+          backgroundColor: colors['purple-900'],
+          borderRadius: 8
+        }}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {
             try {
@@ -169,7 +171,19 @@ export const SendScreen: FunctionComponent = observer(() => {
             }
           }
         }}
-      />
+      >
+        <Text
+          style={{
+            color: 'white',
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 16
+          }}
+        >
+          Send
+        </Text>
+      </TouchableOpacity>
       <View style={[styles['height-page-pad'], styles['margin-bottom-102']]} />
     </PageWithScrollView>
   );

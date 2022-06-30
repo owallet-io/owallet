@@ -258,7 +258,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16,
-            padding: 18
+            padding: 16
           }}
         >
           Next

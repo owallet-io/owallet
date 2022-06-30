@@ -158,7 +158,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             fontWeight: '700',
             fontSize: 16,
             lineHeight: 22,
-            padding: 18
+            padding: 16
           }}
         >
           Done

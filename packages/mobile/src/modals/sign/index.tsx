@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import { ScrollView, View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { MemoInput } from '../../components/input';
@@ -21,6 +21,7 @@ import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
+import { colors } from '../../themes';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -216,16 +217,13 @@ export const SignModal: FunctionComponent<{
           signOptions={signInteractionStore.waitingData?.data.signOptions}
           isInternal={isInternal}
         />
-        <Button
-          text="Approve"
-          size="large"
+        <TouchableOpacity
           disabled={
             signDocWapper == null ||
             signDocHelper.signDocWrapper == null ||
             memoConfig.getError() != null ||
             feeConfig.getError() != null
           }
-          loading={signInteractionStore.isLoading}
           onPress={async () => {
             console.log('on press sign');
             try {
@@ -238,7 +236,25 @@ export const SignModal: FunctionComponent<{
               console.log(error);
             }
           }}
-        />
+          style={{
+            marginTop: 32,
+            backgroundColor: colors['purple-900'],
+            borderRadius: 8
+          }}
+        >
+          <Text
+            style={{
+              color: 'white',
+              textAlign: 'center',
+              fontWeight: '700',
+              fontSize: 16,
+              padding: 16
+            }}
+          >
+            Approve
+          </Text>
+        </TouchableOpacity>
+        {/* loading={signInteractionStore.isLoading} */}
       </CardModal>
     );
   }),

@@ -176,22 +176,17 @@ export const BIP44SelectModal: FunctionComponent<{
             close();
           }}
         >
-          <View
-            style={{
-              padding: 18,
-            }}
-          >
             <Text
               style={{
                 color: 'white',
                 textAlign: 'center',
                 fontWeight: '700',
                 fontSize: 16,
+                padding: 16,
               }}
             >
               Confirm
             </Text>
-          </View>
         </TouchableOpacity>
         {/* <Button
           text="Confirm"

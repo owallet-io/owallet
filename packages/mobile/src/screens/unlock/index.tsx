@@ -297,6 +297,16 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               containerStyle={{
                 paddingBottom: 40
               }}
+              inputStyle={{
+                borderColor: colors['purple-100'],
+                borderWidth: 1,
+                backgroundColor: colors['white'],
+                paddingLeft: 11,
+                paddingRight: 11,
+                paddingTop: 12,
+                paddingBottom: 12,
+                borderRadius: 4
+              }}
               label="Password"
               accessibilityLabel="password"
               returnKeyType="done"
@@ -316,7 +326,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             >
               <View
                 style={{
-                  padding: 18,
+                  padding: 16,
                   alignItems: 'center'
                 }}
               >

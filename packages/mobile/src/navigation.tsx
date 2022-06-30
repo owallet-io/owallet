@@ -192,9 +192,16 @@ export const MainNavigation: FunctionComponent = () => {
           // headerRight: () => <HomeScreenHeaderRight />,
         }}
         name="Home"
+        initialParams={useSmartNavigation}
         component={HomeScreen}
       />
-
+      {/* <Stack.Screen
+        options={{
+          title: 'Browser'
+        }}
+        name="BrowserMain"
+        component={Browser}
+      /> */}
       <Stack.Screen
         name="Transactions"
         component={Transactions}
@@ -855,23 +862,23 @@ export const MainTabNavigationWithDrawer: FunctionComponent = () => {
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
   useEffect(() => {
-    // Linking.getInitialURL()
-    //   .then(url => {
-    //     if (url) {
-    //       const SCHEME_IOS = 'owallet://open_url?url='
-    //       const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url='
-    //       deepLinkUriStore.updateDeepLink(
-    //         url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '')
-    //       )
-    //     }
-    //   })
-    //   .catch(err => {
-    //     console.warn('Deeplinking error', err)
-    //   })
-    // Linking.addEventListener('url', handleDeepLink)
-    // return () => {
-    //   Linking.removeEventListener('url', handleDeepLink)
-    // }
+    Linking.getInitialURL()
+      .then((url) => {
+        if (url) {
+          const SCHEME_IOS = 'owallet://open_url?url=';
+          const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
+          deepLinkUriStore.updateDeepLink(
+            url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '')
+          );
+        }
+      })
+      .catch((err) => {
+        console.warn('Deeplinking error', err);
+      });
+    Linking.addEventListener('url', handleDeepLink);
+    return () => {
+      Linking.removeEventListener('url', handleDeepLink);
+    };
   }, []);
 
   return (

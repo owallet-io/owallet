@@ -2,14 +2,24 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { PageWithView } from '../../components/page';
-import { View, Animated, StyleSheet } from 'react-native';
-import { CText as Text} from "../../components/text";
-import { Button } from '../../components/button';
-import { useStyle } from '../../styles';
+import {
+  PageWithScrollViewInBottomTabView,
+  PageWithView
+} from '../../components/page';
+import {
+  View,
+  Animated,
+  StyleSheet,
+  Image,
+  TouchableOpacity
+} from 'react-native';
+import { CText as Text } from '../../components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
 import * as WebBrowser from 'expo-web-browser';
+import { Card } from '../../components/card';
+import { colors, metrics } from '../../themes';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
@@ -33,112 +43,168 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     : chainStore.current.chainId;
   const txHash = route.params.txHash;
 
-  const style = useStyle();
   const smartNavigation = useSmartNavigation();
-
   const chainInfo = chainStore.getChain(chainId);
+  const { bottom } = useSafeAreaInsets();
 
   return (
-    <PageWithView
-      disableSafeArea
-      style={style.flatten([
-        'flex-grow-1',
-        'items-center',
-        'background-color-white'
-      ])}
-    >
-      <View style={style.flatten(['flex-3'])} />
-      <View style={style.flatten(['width-122', 'height-122'])}>
+    <View>
+      <Card
+        style={{
+          backgroundColor: colors['white'],
+          marginTop: 78,
+          borderRadius: 24
+        }}
+      >
         <View
           style={{
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            ...style.flatten(['absolute', 'justify-center', 'items-center'])
+            height: metrics.screenHeight  - bottom - 74,
+            paddingTop: 80
           }}
         >
-          <View style={style.flatten(['width-160'])}>
-            <Text>failed here</Text>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+          >
+            <Image
+              style={{
+                width: 24,
+                height: 2
+              }}
+              fadeDuration={0}
+              resizeMode="stretch"
+              source={require('../../assets/image/transactions/line_fail_short.png')}
+            />
+            <Image
+              style={{
+                width: 140,
+                height: 32,
+                marginLeft: 8,
+                marginRight: 9
+              }}
+              fadeDuration={0}
+              resizeMode="stretch"
+              source={require('../../assets/image/transactions/fail.png')}
+            />
+            <Image
+              style={{
+                width: metrics.screenWidth - 185,
+                height: 2
+              }}
+              fadeDuration={0}
+              resizeMode="stretch"
+              source={require('../../assets/image/transactions/line_fail_short.png')}
+            />
           </View>
-        </View>
-      </View>
-
-      <Text
-        style={style.flatten([
-          'h2',
-          'color-text-black-medium',
-          'margin-top-82',
-          'margin-bottom-32'
-        ])}
-      >
-        Transaction failed
-      </Text>
-
-      {/* To match the height of text with other tx result screens,
-         set the explicit height to upper view*/}
-      <View
-        style={StyleSheet.flatten([
-          style.flatten(['padding-x-36']),
-          {
-            height: style.get('body2').lineHeight * 3,
-            overflow: 'visible'
-          }
-        ])}
-      >
-        <Text
-          style={style.flatten([
-            'body2',
-            'text-center',
-            'color-text-black-low'
-          ])}
-        >
-          Transaction unsuccessful. Please check the block explorer for more
-          information.
-        </Text>
-      </View>
-
-      <View
-        style={style.flatten(['padding-x-48', 'height-116', 'margin-top-58'])}
-      >
-        <View style={style.flatten(['flex-row', 'width-full'])}>
-          <Button
-            containerStyle={style.flatten(['flex-1'])}
-            size="large"
-            text="Confirm"
+          <View
+            style={{
+              paddingLeft: 32,
+              paddingRight: 72
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: '700',
+                fontSize: 24,
+                lineHeight: 34,
+                paddingTop: 44,
+                paddingBottom: 16
+              }}
+            >
+              Transaction fail
+            </Text>
+            <Text
+              style={{
+                fontWeight: '400',
+                fontSize: 14,
+                lineHeight: 20,
+                color: colors['gray-150']
+              }}
+            >
+              Please try again!
+            </Text>
+            <Text
+              style={{
+                fontWeight: '400',
+                fontSize: 14,
+                lineHeight: 20,
+                color: colors['gray-150'],
+                paddingTop: 6
+              }}
+            >
+              Your transaction fail to be written to the blockchain.
+            </Text>
+            {chainInfo.raw.txExplorer ? (
+              <TouchableOpacity
+                style={{
+                  paddingTop: 32,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}
+                onPress={() => {
+                  if (chainInfo.raw.txExplorer) {
+                    WebBrowser.openBrowserAsync(
+                      chainInfo.raw.txExplorer.txUrl.replace(
+                        '{txHash}',
+                        txHash.toUpperCase()
+                      )
+                    );
+                  }
+                }}
+              >
+                <Image
+                  style={{
+                    width: 22,
+                    height: 22
+                  }}
+                  fadeDuration={0}
+                  resizeMode="stretch"
+                  source={require('../../assets/image/transactions/eye.png')}
+                />
+                <Text
+                  style={{
+                    paddingLeft: 6,
+                    color: colors['purple-900'],
+                    fontWeight: '400',
+                    fontSize: 16,
+                    lineHeight: 22
+                  }}
+                >
+                  View on Oraiscan
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          <TouchableOpacity
+            style={{
+              marginTop: 32,
+              marginLeft: 25,
+              marginRight: 25,
+              backgroundColor: colors['purple-900'],
+              borderRadius: 8
+            }}
             onPress={() => {
               smartNavigation.navigateSmart('Home', {});
             }}
-          />
+          >
+            <Text
+              style={{
+                color: 'white',
+                textAlign: 'center',
+                fontWeight: '700',
+                fontSize: 16,
+                padding: 16
+              }}
+            >
+              Go Home
+            </Text>
+          </TouchableOpacity>
         </View>
-        {chainInfo.raw.txExplorer ? (
-          <Button
-            containerStyle={style.flatten(['margin-top-16'])}
-            size="default"
-            text={`View on ${chainInfo.raw.txExplorer.name}`}
-            mode="text"
-            rightIcon={
-              <View style={style.flatten(['margin-left-8'])}>
-                <RightArrowIcon
-                  color={style.get('color-primary').color}
-                  height={12}
-                />
-              </View>
-            }
-            onPress={() => {
-              if (chainInfo.raw.txExplorer) {
-                WebBrowser.openBrowserAsync(
-                  chainInfo.raw.txExplorer.txUrl.replace(
-                    '{txHash}',
-                    txHash.toUpperCase()
-                  )
-                );
-              }
-            }}
-          />
-        ) : null}
-      </View>
-      <View style={style.flatten(['flex-2'])} />
-    </PageWithView>
+      </Card>
+    </View>
   );
 });

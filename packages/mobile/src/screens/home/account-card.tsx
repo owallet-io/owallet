@@ -90,12 +90,11 @@ export const AccountCard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
   const stakable = queryStakable?.balance;
-
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
   );

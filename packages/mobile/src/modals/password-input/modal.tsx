@@ -77,7 +77,7 @@ export const PasswordInputModal: FunctionComponent<{
               fontWeight: '700',
               fontSize: 16,
               lineHeight: 22,
-              padding: 18
+              padding: 16
             }}
           >
             Approve

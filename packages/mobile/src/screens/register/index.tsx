@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../components/page';
-import { View, Dimensions  } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -27,13 +27,13 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView
       contentContainerStyle={{
-        display: 'flex',
+        display: 'flex'
       }}
       style={{
         paddingLeft: 42,
         paddingRight: 42,
         paddingTop: Dimensions.get('window').height * 0.18 - actualHeightHeight,
-        paddingBottom: Dimensions.get('window').height * 0.11,
+        paddingBottom: Dimensions.get('window').height * 0.11
       }}
     >
       <View
@@ -41,7 +41,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           display: 'flex',
           flexGrow: 1,
           alignItems: 'center',
-          padding: 18,
+          padding: 18
         }}
       >
         <View>
@@ -56,7 +56,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
             fontSize: 24,
             color: '#1C1C1E',
             lineHeight: 34,
-            paddingBottom: 8,
+            paddingBottom: 8
           }}
         >
           Sign in to OWallet
@@ -65,98 +65,84 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
       <TouchableOpacity
         onPress={() => {
           analyticsStore.logEvent('Create account started', {
-            registerType: 'seed',
+            registerType: 'seed'
           });
           smartNavigation.navigateSmart('Register.NewMnemonic', {
-            registerConfig,
+            registerConfig
           });
         }}
         style={{
           marginBottom: 16,
           width: metrics.screenWidth - 86,
           backgroundColor: colors['purple-900'],
-          borderRadius: 8,
+          borderRadius: 8
         }}
       >
-        <View
+        <Text
           style={{
-            padding: 18,
+            color: colors['white'],
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 16
           }}
         >
-          <Text
-            style={{
-              color: colors['white'],
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-            }}
-          >
-            Create a new wallet
-          </Text>
-        </View>
+          Create a new wallet
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
           smartNavigation.navigateSmart('Register.NewLedger', {
-            registerConfig,
+            registerConfig
           });
         }}
         style={{
           marginBottom: 16,
           width: metrics.screenWidth - 86,
           backgroundColor: colors['gray-10'],
-          borderRadius: 8,
+          borderRadius: 8
         }}
       >
-        <View
-          style={{
-            padding: 18,
-          }}
-        >
           <Text
             style={{
               color: colors['purple-900'],
               textAlign: 'center',
               fontWeight: '700',
               fontSize: 16,
+              padding: 16
             }}
           >
             Import Ledger Nano X
           </Text>
-        </View>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
           analyticsStore.logEvent('Import account started', {
-            registerType: 'seed',
+            registerType: 'seed'
           });
           smartNavigation.navigateSmart('Register.RecoverMnemonic', {
-            registerConfig,
+            registerConfig
           });
         }}
         style={{
           marginBottom: 16,
           width: metrics.screenWidth - 86,
           backgroundColor: colors['gray-10'],
-          borderRadius: 8,
+          borderRadius: 8
         }}
       >
-        <View
-          style={{
-            padding: 18,
-          }}
-        >
+       
           <Text
             style={{
               color: colors['purple-900'],
               textAlign: 'center',
               fontWeight: '700',
               fontSize: 16,
+              padding: 16
             }}
           >
             Import from Mnemonic
           </Text>
-        </View>
       </TouchableOpacity>
     </PageWithScrollView>
   );

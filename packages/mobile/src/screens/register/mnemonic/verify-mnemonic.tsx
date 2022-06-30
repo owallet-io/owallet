@@ -115,7 +115,8 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       <View
         style={{
           display: 'flex',
-          flexDirection: 'row'
+          flexDirection: 'row',
+          flexWrap: 1
         }}
       >
         {candidateWords.map(({ word, usedIndex }, i) => {
@@ -200,7 +201,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16,
-            padding: 18
+            padding: 16
           }}
         >
           Next
@@ -231,7 +232,7 @@ const WordButton: FunctionComponent<{
         paddingRight: 12,
         marginRight: 12,
         marginBottom: 12,
-        borderRadius: 8
+        borderRadius: 8,
       }}
       onPress={onPress}
     >
@@ -269,7 +270,7 @@ const WordsCard: FunctionComponent<{
         borderRadius: 8,
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: 1
+        flexWrap: 2,
       }}
     >
       {wordSet.map((word, i) => {
