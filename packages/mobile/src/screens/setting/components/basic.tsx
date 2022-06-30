@@ -47,7 +47,6 @@ export const SettingItem: FunctionComponent<{
   left,
   right,
   onPress,
-  topBorder
 }) => {
   const style = useStyle();
 
@@ -91,11 +90,11 @@ export const SettingItem: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      {topBorder ? (
+      {/* {topBorder ? (
         <View
           style={style.flatten(['height-1', 'background-color-border-white'])}
         />
-      ) : null}
+      ) : null} */}
       {onPress ? (
         <RectButton
           style={StyleSheet.flatten([
@@ -129,9 +128,9 @@ export const SettingItem: FunctionComponent<{
         </View>
       )}
 
-      <View
+      {/* <View
         style={style.flatten(['height-1', 'background-color-border-white'])}
-      />
+      /> */}
     </View>
   );
 };

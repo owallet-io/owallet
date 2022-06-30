@@ -1,13 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { useStyle } from '../../../styles';
-import {
-  Image,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { CText as Text} from "../../../components/text";
+import { Image, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { CText as Text } from '../../../components/text';
 import { RectButton } from '../../../components/rect-button';
 import Svg, { Path } from 'react-native-svg';
 import {
@@ -21,8 +15,10 @@ import {
   HKDIcon,
   CNYIcon,
   JPYIcon,
-  INRIcon,
+  INRIcon
 } from '../../../components/icon';
+import { colors, spacing, typography } from '../../../themes';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
@@ -31,30 +27,27 @@ export const KeyStoreSectionTitle: FunctionComponent<{
 
   return (
     <View
-      style={style.flatten([
-        'padding-x-20',
-        'padding-top-16',
-        'padding-bottom-12',
-        'margin-top-16',
-        'flex-row',
-        'items-center',
-      ])}
+      style={{
+        ...styles.containerSectionTitle
+      }}
     >
       <Image
         style={{
           width: 20,
           height: 20,
-          marginRight: 8,
+          marginRight: 8
         }}
-        // onLoadEnd={onImageLoaded}
         source={require('../../../assets/image/webpage/note-icon.png')}
         fadeDuration={0}
       />
-      <Text style={style.flatten(['color-text-black-low', 'subtitle1'])}>
+      <Text
+        style={{
+          ...typography['subtitle1'],
+          color: colors['text-black-low']
+        }}
+      >
         {title &&
-          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-            letter.toUpperCase()
-          )}
+          title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
       </Text>
     </View>
   );
@@ -70,7 +63,7 @@ export const WalletIcon: FunctionComponent<{
       viewBox="0 0 44 45"
       style={{
         height,
-        aspectRatio: 44 / 45,
+        aspectRatio: 44 / 45
       }}
     >
       <Path
@@ -118,149 +111,106 @@ export const renderFlag = (
 export const KeyStoreItem: FunctionComponent<{
   containerStyle?: ViewStyle;
   labelStyle?: TextStyle;
-  paragraphStyle?: TextStyle;
-  defaultRightWalletIconStyle?: ViewStyle;
-
   label: string;
-  paragraph?: string;
-  left?: React.ReactElement;
-  right?: React.ReactElement;
-
-  active?: React.ReactElement;
-  notActive?: React.ReactElement;
+  active?: boolean;
   onPress?: () => void;
-
-  topBorder?: boolean;
-  bottomBorder?: boolean;
-}> = ({
-  containerStyle,
-  labelStyle,
-  paragraphStyle,
-  defaultRightWalletIconStyle,
-  label,
-  paragraph,
-  left,
-  right,
-  onPress,
-  topBorder,
-  bottomBorder = true,
-}) => {
-  const style = useStyle();
-
+}> = ({ containerStyle, labelStyle, label, onPress, active }) => {
   const renderChildren = () => {
     return (
       <View
-        style={style.flatten([
-          'width-full',
-          'flex-row',
-          'justify-between',
-          'items-center',
-        ])}
+        style={{
+          ...styles.containerItem
+        }}
       >
-        <View style={style.flatten(['flex-row'])}>
-          {renderBall(!!right)}
-          <View />
-          {/* {left ? (
-            left
-          ) : (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            flex: 1
+          }}
+        >
+          {renderFlag(label)}
+          <Text
+            style={{
+              ...typography.h5,
+              color: colors['text-black-high'],
+              fontWeight: '700',
+              marginLeft: spacing['12'],
+              ...labelStyle
+            }}
+          >
+            {label}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            flex: 1,
+            justifyContent: 'flex-end'
+          }}
+        >
+          <View
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: spacing['32'],
+              backgroundColor: active
+                ? colors['purple-900']
+                : colors['gray-400'],
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
             <View
-              style={StyleSheet.flatten([
-                style.flatten(['margin-right-16']),
-                defaultRightWalletIconStyle,
-              ])}
-            >
-              <WalletIcon
-              color={style.get('color-text-black-medium').color}
-              height={45}
+              style={{
+                width: 12,
+                height: 12,
+                borderRadius: spacing['32'],
+                backgroundColor: colors['white']
+              }}
             />
-            </View>
-          )} */}
-          <View>
-            <Text
-              style={StyleSheet.flatten([
-                style.flatten(['h5', 'color-text-black-high', 'margin-x-10']),
-                labelStyle,
-              ])}
-            >
-              {label}
-            </Text>
-            {paragraph ? (
-              <Text
-                style={StyleSheet.flatten([
-                  style.flatten([
-                    'subtitle3',
-                    'color-text-black-low',
-                    'margin-top-4',
-                  ]),
-                  paragraphStyle,
-                ])}
-              >
-                {paragraph}
-              </Text>
-            ) : null}
           </View>
         </View>
-        <View>
-          {renderFlag(label)}
-          {/* <USAIcon height={30} /> */}
-        </View>
+        <View />
       </View>
     );
   };
 
   return (
-    <View style={style.flatten(['padding-x-20'])}>
-      {topBorder ? (
-        <View
-          style={style.flatten([
-            'height-1',
-            'margin-x-20',
-            'background-color-border-white',
-          ])}
-        />
-      ) : null}
-      {onPress ? (
-        <RectButton
-          style={StyleSheet.flatten([
-            style.flatten([
-              'height-87',
-              'flex-row',
-              'items-center',
-              'padding-x-20',
-              'background-color-white',
-              'margin-y-8',
-              'border-radius-12'
-            ]),
-            containerStyle,
-          ])}
-          onPress={onPress}
-        >
-          {renderChildren()}
-        </RectButton>
-      ) : (
-        <View
-          style={StyleSheet.flatten([
-            style.flatten([
-              'height-87',
-              'flex-row',
-              'items-center',
-              'padding-x-20',
-            ]),
-            containerStyle,
-          ])}
-        >
-          {renderChildren()}
-        </View>
-      )}
-      {bottomBorder ? (
-        <View
-          style={style.flatten([
-            'height-1',
-            'margin-x-20',
-            'background-color-border-white',
-          ])}
-        />
-      ) : null}
-    </View>
+    <TouchableOpacity
+      style={{
+        ...styles.containerItem
+      }}
+      onPress={onPress}
+    >
+      {renderChildren()}
+    </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  selectBtn: {
+    height: 54,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  containerItem: {
+    height: 54,
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors['gray-10'],
+    borderRadius: spacing['12'],
+    marginVertical: spacing['8'],
+    paddingHorizontal: spacing['8'],
+  },
+  containerSectionTitle: {
+    paddingHorizontal: spacing['20'],
+    paddingTop: spacing['16'],
+    paddingBottom: spacing['12'],
+    marginTop: spacing['16'],
+    flexDirection: 'row',
+    alignItems: 'center'
+  }
+});
