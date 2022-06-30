@@ -1,52 +1,55 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useEffect } from 'react'
-import { Alert, Image, Linking, View } from 'react-native'
-import { CText as Text } from './components/text'
-import { KeyRingStatus } from '@owallet/background'
+import React, { FunctionComponent, useEffect } from 'react';
+import { Alert, Image, Linking, View } from 'react-native';
+import { CText as Text } from './components/text';
+import { KeyRingStatus } from '@owallet/background';
 import {
   DrawerActions,
   NavigationContainer,
   useNavigation
-} from '@react-navigation/native'
-import { useStore } from './stores'
-import { observer } from 'mobx-react-lite'
-import { HomeScreen } from './screens/home'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+} from '@react-navigation/native';
+import { useStore } from './stores';
+import { observer } from 'mobx-react-lite';
+import { HomeScreen } from './screens/home';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
   createStackNavigator,
   TransitionPresets
-} from '@react-navigation/stack'
-import { SendScreen } from './screens/send'
-import { GovernanceDetailsScreen, GovernanceScreen } from './screens/governance'
+} from '@react-navigation/stack';
+import { SendScreen } from './screens/send';
+import {
+  GovernanceDetailsScreen,
+  GovernanceScreen
+} from './screens/governance';
 import {
   createDrawerNavigator,
   useIsDrawerOpen
-} from '@react-navigation/drawer'
-import { DrawerContent } from './components/drawer'
-import { useStyle } from './styles'
-import { BorderlessButton } from 'react-native-gesture-handler'
+} from '@react-navigation/drawer';
+import { DrawerContent } from './components/drawer';
+import { useStyle } from './styles';
+import { BorderlessButton } from 'react-native-gesture-handler';
 
-import { SettingScreen } from './screens/setting'
-import { SettingSelectAccountScreen } from './screens/setting/screens/select-account'
-import { SettingSelectLangScreen } from './screens/setting/screens/select-lang'
-import { ViewPrivateDataScreen } from './screens/setting/screens/view-private-data'
-import { WebScreen } from './screens/web'
-import { RegisterIntroScreen } from './screens/register'
+import { SettingScreen } from './screens/setting';
+import { SettingSelectAccountScreen } from './screens/setting/screens/select-account';
+import { SettingSelectLangScreen } from './screens/setting/screens/select-lang';
+import { ViewPrivateDataScreen } from './screens/setting/screens/view-private-data';
+import { WebScreen } from './screens/web';
+import { RegisterIntroScreen } from './screens/register';
 import {
   NewMnemonicScreen,
   RecoverMnemonicScreen,
   VerifyMnemonicScreen
-} from './screens/register/mnemonic'
-import { RegisterEndScreen } from './screens/register/end'
-import { RegisterNewUserScreen } from './screens/register/new-user'
-import { RegisterNotNewUserScreen } from './screens/register/not-new-user'
+} from './screens/register/mnemonic';
+import { RegisterEndScreen } from './screens/register/end';
+import { RegisterNewUserScreen } from './screens/register/new-user';
+import { RegisterNotNewUserScreen } from './screens/register/not-new-user';
 
 import {
   DelegateScreen,
   StakingDashboardScreen,
   ValidatorDetailsScreen,
   ValidatorListScreen
-} from './screens/stake'
+} from './screens/stake';
 import {
   SettingFillIcon,
   SettingOutLineIcon,
@@ -57,67 +60,67 @@ import {
   BrowserFillIcon,
   InvestOutlineIcon,
   InvestFillIcon
-} from './components/icon'
+} from './components/icon';
 import {
   AddAddressBookScreen,
   AddressBookScreen
-} from './screens/setting/screens/address-book'
-import { NewLedgerScreen } from './screens/register/ledger'
-import { PageScrollPositionProvider } from './providers/page-scroll-position'
+} from './screens/setting/screens/address-book';
+import { NewLedgerScreen } from './screens/register/ledger';
+import { PageScrollPositionProvider } from './providers/page-scroll-position';
 import {
   BlurredHeaderScreenOptionsPreset,
   getPlainHeaderScreenOptionsPresetWithBackgroundColor,
   HeaderLeftButton,
   HeaderRightButton,
   PlainHeaderScreenOptionsPreset
-} from './components/header'
-import { TokensScreen, TokenDetailScreen } from './screens/tokens'
-import { UndelegateScreen } from './screens/stake/undelegate'
-import { RedelegateScreen } from './screens/stake/redelegate'
-import { CameraScreen } from './screens/camera'
+} from './components/header';
+import { TokensScreen, TokenDetailScreen } from './screens/tokens';
+import { UndelegateScreen } from './screens/stake/undelegate';
+import { RedelegateScreen } from './screens/stake/redelegate';
+import { CameraScreen } from './screens/camera';
 import {
   FocusedScreenProvider,
   useFocusedScreen
-} from './providers/focused-screen'
+} from './providers/focused-screen';
 import {
   TxFailedResultScreen,
   TxPendingResultScreen,
   TxSuccessResultScreen
-} from './screens/tx-result'
-import { HeaderAddIcon, HeaderBackButtonIcon } from './components/header/icon'
-import { BlurredBottomTabBar } from './components/bottom-tabbar'
-import { UnlockScreen } from './screens/unlock'
-import { OWalletVersionScreen } from './screens/setting/screens/version'
-import { DAppWebpageScreen } from './screens/web/webpages'
-import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen'
-import { Browser } from './screens/web/browser'
-import { BookMarks } from './screens/web/bookmarks'
-import { Transactions, TransactionDetail } from './screens/transactions'
-import { navigate, navigationRef } from './router/root'
-import { handleDeepLink } from './utils/helper'
+} from './screens/tx-result';
+import { HeaderAddIcon, HeaderBackButtonIcon } from './components/header/icon';
+import { BlurredBottomTabBar } from './components/bottom-tabbar';
+import { UnlockScreen } from './screens/unlock';
+import { OWalletVersionScreen } from './screens/setting/screens/version';
+import { DAppWebpageScreen } from './screens/web/webpages';
+import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpage-screen';
+import { Browser } from './screens/web/browser';
+import { BookMarks } from './screens/web/bookmarks';
+import { Transactions, TransactionDetail } from './screens/transactions';
+import { navigate, navigationRef } from './router/root';
+import { handleDeepLink } from './utils/helper';
 import {
   SmartNavigatorProvider,
   useSmartNavigation
-} from './navigation.provider'
-import TransferTokensScreen from './screens/transfer-tokens/transfer-screen'
-import { OnboardingIntroScreen } from './screens/onboarding'
-import { NftsScreen, NftDetailScreen } from './screens/nfts'
+} from './navigation.provider';
+import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
+import { OnboardingIntroScreen } from './screens/onboarding';
+import { NftsScreen, NftDetailScreen } from './screens/nfts';
 
-const Stack = createStackNavigator()
-const Drawer = createDrawerNavigator()
-const Tab = createBottomTabNavigator()
+const Stack = createStackNavigator();
+const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
 
 const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
-  const { chainStore } = useStore()
+  const { chainStore } = useStore();
 
-  const style = useStyle()
+  const style = useStyle();
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   return (
     <HeaderLeftButton
       onPress={() => {
-        navigation.dispatch(DrawerActions.toggleDrawer())
+        navigation.dispatch(DrawerActions.toggleDrawer());
       }}
     >
       <View style={style.flatten(['flex-row', 'items-center'])}>
@@ -133,17 +136,17 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
         /> */}
       </View>
     </HeaderLeftButton>
-  )
-})
+  );
+});
 
 const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(({}) => {
-  const style = useStyle()
-  const smartNavigation = useSmartNavigation()
+  const style = useStyle();
+  const smartNavigation = useSmartNavigation();
   return (
     <HeaderLeftButton
       onPress={() => {
         // navigate(uri);
-        smartNavigation.goBack()
+        smartNavigation.goBack();
       }}
     >
       <View style={style.flatten(['flex-row', 'items-center'])}>
@@ -152,11 +155,11 @@ const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(({}) => {
         </Text>
       </View>
     </HeaderLeftButton>
-  )
-})
+  );
+});
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   return (
     <React.Fragment>
@@ -164,12 +167,12 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
         onPress={() => {
           navigation.navigate('Others', {
             screen: 'Camera'
-          })
+          });
         }}
       ></HeaderRightButton>
     </React.Fragment>
-  )
-})
+  );
+});
 
 export const MainNavigation: FunctionComponent = () => {
   return (
@@ -278,11 +281,11 @@ export const MainNavigation: FunctionComponent = () => {
         component={NftDetailScreen}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const RegisterNavigation: FunctionComponent = () => {
-  const style = useStyle()
+  const style = useStyle();
 
   return (
     <Stack.Navigator
@@ -352,11 +355,11 @@ export const RegisterNavigation: FunctionComponent = () => {
         component={RegisterEndScreen}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const OtherNavigation: FunctionComponent = () => {
-  const style = useStyle()
+  const style = useStyle();
 
   return (
     <Stack.Navigator
@@ -468,15 +471,15 @@ export const OtherNavigation: FunctionComponent = () => {
         component={TxFailedResultScreen}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const SettingStackScreen: FunctionComponent = () => {
-  const style = useStyle()
+  const style = useStyle();
 
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
-  const { analyticsStore } = useStore()
+  const { analyticsStore } = useStore();
 
   return (
     <Stack.Navigator
@@ -505,10 +508,10 @@ export const SettingStackScreen: FunctionComponent = () => {
           headerRight: () => (
             <HeaderRightButton
               onPress={() => {
-                analyticsStore.logEvent('Add additional account started')
+                analyticsStore.logEvent('Add additional account started');
                 navigation.navigate('Register', {
                   screen: 'Register.Intro'
-                })
+                });
               }}
             >
               <HeaderAddIcon />
@@ -538,11 +541,11 @@ export const SettingStackScreen: FunctionComponent = () => {
         component={OWalletVersionScreen}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const AddressBookStackScreen: FunctionComponent = () => {
-  const style = useStyle()
+  const style = useStyle();
 
   return (
     <Stack.Navigator
@@ -567,8 +570,8 @@ export const AddressBookStackScreen: FunctionComponent = () => {
         component={AddAddressBookScreen}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const WebNavigation: FunctionComponent = () => {
   return (
@@ -602,8 +605,8 @@ export const WebNavigation: FunctionComponent = () => {
       />
       <Stack.Screen name="Web.dApp" component={DAppWebpageScreen} />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const InvestNavigation: FunctionComponent = () => {
   return (
@@ -630,16 +633,16 @@ export const InvestNavigation: FunctionComponent = () => {
         component={ValidatorListScreen}
       />
     </Stack.Navigator>
-  )
-}
+  );
+};
 
 export const MainTabNavigation: FunctionComponent = () => {
-  const style = useStyle()
+  const style = useStyle();
 
-  const navigation = useNavigation()
-  const { chainStore } = useStore()
+  const navigation = useNavigation();
+  const { chainStore } = useStore();
 
-  const focusedScreen = useFocusedScreen()
+  const focusedScreen = useFocusedScreen();
 
   // useEffect(() => {
   //   Linking.addEventListener('url', handleDeepLink);
@@ -656,32 +659,32 @@ export const MainTabNavigation: FunctionComponent = () => {
     // if (focusedScreen.name !== 'Home' && isDrawerOpen) {
     //   navigation.dispatch(DrawerActions.toggleDrawer());
     // }
-  }, [focusedScreen.name, navigation])
+  }, [focusedScreen.name, navigation]);
 
   const checkActiveTabBottom = (color: string) => {
-    return color == '#C6C6CD'
-  }
+    return color == '#C6C6CD';
+  };
 
   const RenderTabsBarIcon = ({ color, name }) => {
-    let checkColor = checkActiveTabBottom(color)
-    let icon
-    let nameRoute = name
+    let checkColor = checkActiveTabBottom(color);
+    let icon;
+    let nameRoute = name;
     switch (name) {
       case 'Main':
-        icon = checkColor ? <HomeOutlineIcon /> : <HomeFillIcon />
-        break
+        icon = checkColor ? <HomeOutlineIcon /> : <HomeFillIcon />;
+        break;
       case 'Browser':
-        icon = checkColor ? <BrowserOutLineIcon /> : <BrowserFillIcon />
-        break
+        icon = checkColor ? <BrowserOutLineIcon /> : <BrowserFillIcon />;
+        break;
       case 'Invest':
-        icon = checkColor ? <InvestOutlineIcon /> : <InvestFillIcon />
-        break
+        icon = checkColor ? <InvestOutlineIcon /> : <InvestFillIcon />;
+        break;
       case 'Settings':
-        icon = checkColor ? <SettingOutLineIcon /> : <SettingFillIcon />
-        break
+        icon = checkColor ? <SettingOutLineIcon /> : <SettingFillIcon />;
+        break;
       default:
-        icon = checkColor ? <SettingOutLineIcon /> : <SettingFillIcon />
-        break
+        icon = checkColor ? <SettingOutLineIcon /> : <SettingFillIcon />;
+        break;
     }
     return (
       <View
@@ -710,8 +713,8 @@ export const MainTabNavigation: FunctionComponent = () => {
           </View>
         )}
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <Tab.Navigator
@@ -719,9 +722,9 @@ export const MainTabNavigation: FunctionComponent = () => {
         tabBarIcon: ({ color }) => {
           switch (route.name) {
             case 'Main':
-              return <RenderTabsBarIcon color={color} name={'Main'} />
+              return <RenderTabsBarIcon color={color} name={'Main'} />;
             case 'Browser':
-              return <RenderTabsBarIcon color={color} name={'Browser'} />
+              return <RenderTabsBarIcon color={color} name={'Browser'} />;
             case 'Send':
               return (
                 <View
@@ -746,14 +749,14 @@ export const MainTabNavigation: FunctionComponent = () => {
                     </View>
                   )}
                 </View>
-              )
+              );
             case 'Invest':
-              return <RenderTabsBarIcon color={color} name={'Invest'} />
+              return <RenderTabsBarIcon color={color} name={'Invest'} />;
             case 'Settings':
-              return <RenderTabsBarIcon color={color} name={'Settings'} />
+              return <RenderTabsBarIcon color={color} name={'Settings'} />;
           }
         },
-        tabBarButton: props => (
+        tabBarButton: (props) => (
           <View
             style={{
               display: 'flex',
@@ -790,7 +793,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         },
         showLabel: false
       }}
-      tabBar={props => (
+      tabBar={(props) => (
         <BlurredBottomTabBar {...props} enabledScreens={['Home']} />
       )}
     >
@@ -816,16 +819,16 @@ export const MainTabNavigation: FunctionComponent = () => {
         }}
       />
     </Tab.Navigator>
-  )
-}
+  );
+};
 
 export const MainTabNavigationWithDrawer: FunctionComponent = () => {
-  const focused = useFocusedScreen()
+  const focused = useFocusedScreen();
 
   return (
     <Drawer.Navigator
       drawerType="slide"
-      drawerContent={props => <DrawerContent {...props} />}
+      drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={{
         // If the focused screen is not "Home" screen,
         // disable the gesture to open drawer.
@@ -838,30 +841,30 @@ export const MainTabNavigationWithDrawer: FunctionComponent = () => {
     >
       <Drawer.Screen name="MainTab" component={MainTabNavigation} />
     </Drawer.Navigator>
-  )
-}
+  );
+};
 
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, deepLinkUriStore } = useStore()
+  const { keyRingStore, deepLinkUriStore } = useStore();
   useEffect(() => {
-    Linking.getInitialURL()
-      .then(url => {
-        if (url) {
-          const SCHEME_IOS = 'owallet://open_url?url='
-          const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url='
-          deepLinkUriStore.updateDeepLink(
-            url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '')
-          )
-        }
-      })
-      .catch(err => {
-        console.warn('Deeplinking error', err)
-      })
-    Linking.addEventListener('url', handleDeepLink)
-    return () => {
-      Linking.removeEventListener('url', handleDeepLink)
-    }
-  }, [])
+    // Linking.getInitialURL()
+    //   .then(url => {
+    //     if (url) {
+    //       const SCHEME_IOS = 'owallet://open_url?url='
+    //       const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url='
+    //       deepLinkUriStore.updateDeepLink(
+    //         url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '')
+    //       )
+    //     }
+    //   })
+    //   .catch(err => {
+    //     console.warn('Deeplinking error', err)
+    //   })
+    // Linking.addEventListener('url', handleDeepLink)
+    // return () => {
+    //   Linking.removeEventListener('url', handleDeepLink)
+    // }
+  }, []);
 
   return (
     <PageScrollPositionProvider>
@@ -894,5 +897,5 @@ export const AppNavigation: FunctionComponent = observer(() => {
         </SmartNavigatorProvider>
       </FocusedScreenProvider>
     </PageScrollPositionProvider>
-  )
-})
+  );
+});
