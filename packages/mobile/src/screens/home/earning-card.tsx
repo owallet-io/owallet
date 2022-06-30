@@ -103,6 +103,8 @@ export const EarningCard: FunctionComponent<{
                   }
                 )
               } catch (e) {
+                console.log({ errorClaim: e });
+                
                 if (e?.message === 'Request rejected') {
                   return
                 }
