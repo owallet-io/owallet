@@ -33,6 +33,8 @@ export const Button: FunctionComponent<{
   containerStyle,
   style: buttonStyle,
   textStyle,
+  rippleColor: propRippleColor,
+  underlayColor: propUnderlayColor
 }) => {
   const style = useStyle();
 
@@ -50,7 +52,7 @@ export const Button: FunctionComponent<{
       case 'outline':
         return 'background-color-white';
       default:
-        return 'background-color-transparent';
+        return `background-color-button-${color}-light`;
     }
   })();
 
@@ -133,14 +135,14 @@ export const Button: FunctionComponent<{
             backgroundColorDefinition as any,
             `height-button-${size}` as any,
             'border-radius-8',
-            'overflow-hidden',
+            'overflow-hidden'
           ],
           [
             mode === 'outline' && 'border-width-1',
-            outlineBorderDefinition as any,
+            outlineBorderDefinition as any
           ]
         ),
-        containerStyle,
+        containerStyle
       ])}
     >
       <RectButton
@@ -150,9 +152,9 @@ export const Button: FunctionComponent<{
             'justify-center',
             'items-center',
             'height-full',
-            'padding-x-8',
+            'padding-x-8'
           ]),
-          buttonStyle,
+          buttonStyle
         ])}
         onPress={onPress}
         onActiveStateChange={(active) => setIsPressed(active)}
@@ -175,7 +177,7 @@ export const Button: FunctionComponent<{
               [textDefinition, 'text-center', textColorDefinition as any],
               [loading && 'opacity-transparent']
             ),
-            textStyle,
+            textStyle
           ])}
         >
           {text}
@@ -193,7 +195,7 @@ export const Button: FunctionComponent<{
             style={style.flatten([
               'absolute-fill',
               'justify-center',
-              'items-center',
+              'items-center'
             ])}
           >
             <LoadingSpinner

@@ -111,7 +111,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
   const navigation = useNavigation();
 
-  const [isSplashEnd, setIsSplashEnd] = useState(false);
+  // const [isSplashEnd, setIsSplashEnd] = useState(false);
 
   const [animatedContinuityEffectOpacity] = useState(
     () => new Animated.Value(1)
@@ -129,11 +129,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const autoBiometryStatus = useAutoBiomtric(
     keychainStore,
-    keyRingStore.status === KeyRingStatus.LOCKED && isSplashEnd
+    keyRingStore.status === KeyRingStatus.LOCKED // && isSplashEnd
   );
 
   useEffect(() => {
-    if (isSplashEnd && autoBiometryStatus === AutoBiomtricStatus.SUCCESS) {
+    // if (isSplashEnd && autoBiometryStatus === AutoBiomtricStatus.SUCCESS) {
+    if (autoBiometryStatus === AutoBiomtricStatus.SUCCESS) {
       (async () => {
         await hideSplashScreen();
 
@@ -142,29 +143,29 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         });
       })();
     }
-  }, [analyticsStore, autoBiometryStatus, isSplashEnd, navigation]);
+  }, [autoBiometryStatus, navigation]);
 
-  useEffect(() => {
-    if (
-      isSplashEnd &&
-      keyRingStore.status === KeyRingStatus.LOCKED &&
-      (autoBiometryStatus === AutoBiomtricStatus.NO_NEED ||
-        autoBiometryStatus === AutoBiomtricStatus.FAILED)
-    ) {
-      setTimeout(() => {
-        Animated.timing(animatedContinuityEffectOpacity, {
-          toValue: 0,
-          duration: 600,
-          easing: Easing.ease
-        }).start();
-      }, 700);
-    }
-  }, [
-    animatedContinuityEffectOpacity,
-    autoBiometryStatus,
-    isSplashEnd,
-    keyRingStore.status
-  ]);
+  // useEffect(() => {
+  //   if (
+  //     isSplashEnd &&
+  //     keyRingStore.status === KeyRingStatus.LOCKED &&
+  //     (autoBiometryStatus === AutoBiomtricStatus.NO_NEED ||
+  //       autoBiometryStatus === AutoBiomtricStatus.FAILED)
+  //   ) {
+  //     setTimeout(() => {
+  //       Animated.timing(animatedContinuityEffectOpacity, {
+  //         toValue: 0,
+  //         duration: 600,
+  //         easing: Easing.ease
+  //       }).start();
+  //     }, 700);
+  //   }
+  // }, [
+  //   animatedContinuityEffectOpacity,
+  //   autoBiometryStatus,
+  //   isSplashEnd,
+  //   keyRingStore.status
+  // ]);
 
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -194,7 +195,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     try {
       setIsLoading(true);
       // Decryption needs slightly huge computation.
-      // Because javascript is synchronous language, the loadnig state change would not delivered to the UI thread
+      // Because javascript is synchronous language, the loading state change would not delivered to the UI thread
       // before the actually decryption is complete.
       // So to make sure that the loading state changes, just wait very short time.
       await delay(10);
@@ -218,7 +219,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     // route to the register screen.
     if (
       !routeToRegisterOnce.current &&
-      isSplashEnd &&
+      // isSplashEnd &&
       keyRingStore.status === KeyRingStatus.EMPTY
     ) {
       (async () => {
@@ -231,7 +232,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         );
       })();
     }
-  }, [isSplashEnd, keyRingStore.status, navigation]);
+  }, [keyRingStore.status, navigation]);
 
   useEffect(() => {
     if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
@@ -244,7 +245,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      <View
+      {/* <View
         style={{
           position: 'absolute',
           left: 0,
@@ -253,7 +254,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           bottom: 0,
           backgroundColor: colors['splash-background']
         }}
-      />
+      /> */}
       <View
         style={{
           flex: 1,
@@ -362,7 +363,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           />
         </KeyboardAwareScrollView>
       </View>
-      <Animated.View
+      {/* <Animated.View
         style={{
           position: 'absolute',
           left: 0,
@@ -378,7 +379,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             setIsSplashEnd(true);
           }}
         />
-      </Animated.View>
+      </Animated.View> */}
     </React.Fragment>
   );
 });
@@ -597,7 +598,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
           backgroundColor: colors['splash-background']
         }}
       />
-      <View
+      {/* <View
         style={{
           ...styles['absolute-fill'],
           alignItems: 'center',
@@ -665,8 +666,8 @@ export const SplashContinuityEffectView: FunctionComponent<{
             }}
           />
         </Animated.View>
-      </View>
-      <View
+      </View> */}
+      {/* <View
         style={{
           ...styles['absolute-fill'],
           alignItems: 'center',
@@ -685,7 +686,7 @@ export const SplashContinuityEffectView: FunctionComponent<{
             setLogoSize(e.nativeEvent.source);
           }}
         />
-      </View>
+      </View> */}
     </React.Fragment>
   );
 };
