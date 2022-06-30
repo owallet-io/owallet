@@ -253,17 +253,11 @@ const ValidatorItem: FunctionComponent<{
   onSelectValidator?: (validatorAddress: string) => void
 }> = observer(({ validatorAddress, index, sort, onSelectValidator }) => {
   const { chainStore, queriesStore } = useStore()
-
   const queries = queriesStore.get(chainStore.current.chainId)
-
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   )
-
-  const style = useStyle()
-
   const validator = bondedValidators.getValidator(validatorAddress)
-
   const smartNavigation = useSmartNavigation()
 
   return validator ? (

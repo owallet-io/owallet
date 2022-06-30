@@ -82,6 +82,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Delegate: {
         upperScreenName: 'Invest'
       },
+      'Delegate.Detail': {
+        upperScreenName: 'Invest'
+      },
       Undelegate: {
         upperScreenName: 'Others'
       },

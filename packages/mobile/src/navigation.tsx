@@ -105,6 +105,7 @@ import {
 import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
 import { OnboardingIntroScreen } from './screens/onboarding';
 import { NftsScreen, NftDetailScreen } from './screens/nfts';
+import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -631,6 +632,13 @@ export const InvestNavigation: FunctionComponent = () => {
         }}
         name="Delegate"
         component={DelegateScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: 'Delegate Detail'
+        }}
+        name="Delegate.Detail"
+        component={DelegateDetailScreen}
       />
     </Stack.Navigator>
   );

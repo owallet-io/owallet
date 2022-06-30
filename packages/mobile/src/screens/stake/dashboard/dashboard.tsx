@@ -1,10 +1,5 @@
 import React, { FunctionComponent } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-// import { MyRewardCard } from './reward-card';
-// import { DelegationsCard } from './delegations-card';
-// import { UndelegationsCard } from './undelegations-card';
-import { useStyle } from '../../../styles';
-import { useStore } from '../../../stores';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { colors, typography, spacing, metrics } from '../../../themes';
 import { CText as Text } from '../../../components/text';
@@ -38,23 +33,8 @@ const validators = [
 ];
 
 export const StakingDashboardScreen: FunctionComponent = () => {
-  const { chainStore, accountStore, queriesStore } = useStore();
   const smartNavigation = useSmartNavigation();
-
   const safeAreaInsets = useSafeAreaInsets();
-
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const unbondings =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    ).unbondingBalances;
-
-  useLogScreenView("Staking dashboard", {
-    chainId: chainStore.current.chainId,
-    chainName: chainStore.current.chainName,
-  });
 
   return (
     <PageWithScrollView
@@ -148,7 +128,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
                 height: 40
               }}
               onPress={() => {
-                smartNavigation.navigate('Validator List', {});
+                smartNavigation.navigate('Validator.List', {});
               }}
             >
               <Text

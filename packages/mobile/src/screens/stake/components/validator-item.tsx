@@ -3,6 +3,7 @@ import { Image, StyleSheet, View, ViewStyle } from 'react-native'
 import { colors, spacing, typography } from '../../../themes'
 import { CText as Text } from '../../../components/text'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useSmartNavigation } from '../../../navigation.provider'
 
 interface Validator {
   imageUri?: string
@@ -21,8 +22,11 @@ export const ValidatorItem: FunctionComponent<ValidatorItemProps> = ({
   validator,
   containerStyle
 }) => {
+  const smartNavigation = useSmartNavigation()
   const _onPress = () => {
-
+    smartNavigation.navigate('Delegate.Detail', {
+      validator
+    })
   }
 
   return (
