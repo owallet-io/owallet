@@ -12,8 +12,7 @@ import TransferViewBtn from './transfer-view-btn';
 const styles = StyleSheet.create({
   sendTokenCard: {
     borderRadius: spacing['24'],
-    padding: spacing['12']
-  }
+  },
 });
 
 const TransferTokensScreen: FunctionComponent<{

@@ -95,7 +95,5 @@ export const colors = {
   'purple-400': '#AE94DE',
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
-
-  //splash-background
-  'splash-background': "#FBF8FF"
+  "purple-h1": "#7E58EA"
 }
