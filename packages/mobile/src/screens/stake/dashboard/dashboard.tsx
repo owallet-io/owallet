@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Image } from 'react-native';
 import { colors, typography, spacing, metrics } from '../../../themes';
 import { CText as Text } from '../../../components/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -143,11 +143,19 @@ export const StakingDashboardScreen: FunctionComponent = () => {
           <View
             style={{
               position: 'absolute',
-              right: 0,
-              bottom: 5
+              right: -10,
+              bottom: 0
             }}
           >
-            <GiftStakingLogo />
+            <Image
+              style={{
+                width: 148,
+                height: 148
+              }}
+              source={require('../../../assets/image/stake_gift.png')}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
           </View>
         </View>
 
