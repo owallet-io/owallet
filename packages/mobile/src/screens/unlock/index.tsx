@@ -397,8 +397,6 @@ const useAnimationState = () => {
 export const SplashContinuityEffectView: FunctionComponent<{
   onAnimationEnd: () => void;
 }> = ({ onAnimationEnd }) => {
-  const style = useStyle();
-
   const onAnimationEndRef = useRef(onAnimationEnd);
   onAnimationEndRef.current = onAnimationEnd;
 
