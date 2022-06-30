@@ -3,7 +3,6 @@ import { PageWithScrollView } from '../../../components/page';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';
-import { useStyle } from '../../../styles';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
@@ -19,7 +18,7 @@ import {
   navigate
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
-import { colors } from '../../../themes';
+import { colors, typography } from '../../../themes';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
@@ -67,8 +66,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-
-  const style = useStyle();
 
   const { analyticsStore } = useStore();
 
@@ -274,18 +271,17 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   />
                 </View>
               }
-              style={StyleSheet.flatten([
-                style.flatten(['h6', 'color-text-black-medium']),
-                {
-                  minHeight: 20 * 4,
-                  textAlignVertical: 'top'
-                }
-              ])}
+              style={{
+                minHeight: 20 * 4,
+                textAlignVertical: 'top',
+                ...typography['h6'],
+                color: colors['text-black-medium']
+              }}
               onSubmitEditing={() => {
                 setFocus('name');
               }}
               inputStyle={{
-                ...styles.borderInput,
+                ...styles.borderInput
               }}
               error={errors.mnemonic?.message}
               onBlur={onBlur}
@@ -307,7 +303,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           return (
             <TextInput
               label="Username"
-              containerStyle={style.flatten(['padding-bottom-6'])}
+              containerStyle={{
+                paddingBottom: 6
+              }}
               returnKeyType={mode === 'add' ? 'done' : 'next'}
               onSubmitEditing={() => {
                 if (mode === 'add') {
@@ -318,7 +316,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                 }
               }}
               inputStyle={{
-                ...styles.borderInput,
+                ...styles.borderInput
               }}
               error={errors.name?.message}
               onBlur={onBlur}
@@ -354,7 +352,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     setFocus('confirmPassword');
                   }}
                   inputStyle={{
-                    ...styles.borderInput,
+                    ...styles.borderInput
                   }}
                   error={errors.password?.message}
                   onBlur={onBlur}
@@ -391,7 +389,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                     submit();
                   }}
                   inputStyle={{
-                    ...styles.borderInput,
+                    ...styles.borderInput
                   }}
                   error={errors.confirmPassword?.message}
                   onBlur={onBlur}
@@ -412,26 +410,21 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         style={{
           marginBottom: 24,
           marginTop: 32,
-          backgroundColor: '#8B1BFB',
+          backgroundColor: colors['purple-900'],
           borderRadius: 8
         }}
       >
-        <View
+        <Text
           style={{
+            color: 'white',
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
             padding: 18
           }}
         >
-          <Text
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16
-            }}
-          >
-            Next
-          </Text>
-        </View>
+          Next
+        </Text>
       </TouchableOpacity>
       <View
         style={{
@@ -443,13 +436,19 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
       >
         <Text
           style={{
-            color: '#8B1BFB',
+            color: colors['purple-900'],
             textAlign: 'center',
             fontWeight: '700',
             fontSize: 16
           }}
           onPress={() => {
-            smartNavigation.navigateSmart('Register.Intro', {});
+            if (
+              checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')
+            ) {
+              smartNavigation.goBack();
+            } else {
+              smartNavigation.navigateSmart('Register.Intro', {});
+            }
           }}
         >
           Go back
@@ -465,7 +464,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   );
 });
 
-
 const styles = StyleSheet.create({
   borderInput: {
     borderColor: colors['purple-100'],
@@ -475,6 +473,6 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 4,
-  },
+    borderRadius: 4
+  }
 });

@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollView } from '../../../components/page';
 import { View } from 'react-native';
-import { CText as Text} from "../../../components/text";
+import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
@@ -16,9 +16,10 @@ import { useStore } from '../../../stores';
 import {
   navigate,
   checkRouter,
-  checkRouterPaddingBottomBar,
+  checkRouterPaddingBottomBar
 } from '../../../router/root';
-import { colors } from '../../../themes';
+import { colors, typography } from '../../../themes';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -83,17 +84,22 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get('flex-grow-1')}
-      style={style.flatten(['padding-x-page'])}
+      contentContainerStyle={{
+        display: 'flex'
+      }}
+      style={{
+        paddingLeft: 20,
+        paddingRight: 20
+      }}
     >
       <Text
-        style={style.flatten([
-          'h5',
-          'color-text-black-medium',
-          'margin-top-32',
-          'margin-bottom-4',
-          'text-center'
-        ])}
+        style={{
+          ...typography['h5'],
+          color: colors['text-black-medium'],
+          marginTop: 32,
+          marginBottom: 4,
+          textAlign: 'center'
+        }}
       >
         Backup your mnemonic seed securely.
       </Text>
@@ -106,7 +112,12 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           };
         })}
       />
-      <View style={style.flatten(['flex-row', 'flex-wrap'])}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row'
+        }}
+      >
         {candidateWords.map(({ word, usedIndex }, i) => {
           return (
             <WordButton
@@ -138,11 +149,13 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           );
         })}
       </View>
-      <View style={style.flatten(['flex-1'])} />
-      <Button
-        text="Next"
-        size="large"
-        loading={isCreating}
+      <View
+        style={{
+          flex: 1
+        }}
+      />
+      <TouchableOpacity
+        //  loading={isCreating}
         disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
         onPress={async () => {
           setIsCreating(true);
@@ -152,27 +165,53 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
             newMnemonicConfig.password,
             route.params.bip44HDPath
           );
-          analyticsStore.setUserId();
           analyticsStore.setUserProperties({
             registerType: 'seed',
             accountType: 'mnemonic'
           });
-
-          smartNavigation.reset({
-            index: 0,
-            routes: [
-              {
-                name: 'Register.End',
-                params: {
-                  password: newMnemonicConfig.password
+          if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
+            navigate('RegisterEnd', {
+              password: newMnemonicConfig.password
+            });
+          } else {
+            smartNavigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'Register.End',
+                  params: {
+                    password: newMnemonicConfig.password
+                  }
                 }
-              }
-            ]
-          });
+              ]
+            });
+          }
+        }}
+        style={{
+          marginBottom: 24,
+          marginTop: 32,
+          backgroundColor: colors['purple-900'],
+          borderRadius: 8
+        }}
+      >
+        <Text
+          style={{
+            color: colors['white'],
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 18
+          }}
+        >
+          Next
+        </Text>
+      </TouchableOpacity>
+      {/* Mock element for bottom padding */}
+      <View
+        style={{
+          height: 20
         }}
       />
-      {/* Mock element for bottom padding */}
-      <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );
 });
@@ -182,8 +221,6 @@ const WordButton: FunctionComponent<{
   used: boolean;
   onPress: () => void;
 }> = ({ word, used, onPress }) => {
-  const style = useStyle();
-
   return (
     <RectButton
       style={{
@@ -198,7 +235,14 @@ const WordButton: FunctionComponent<{
       }}
       onPress={onPress}
     >
-      <Text style={style.flatten(['subtitle2', 'color-white'])}>{word}</Text>
+      <Text
+        style={{
+          ...typography['subtitle2'],
+          color: colors['white']
+        }}
+      >
+        {word}
+      </Text>
     </RectButton>
   );
 };
@@ -214,16 +258,19 @@ const WordsCard: FunctionComponent<{
 
   return (
     <View
-      style={style.flatten([
-        'margin-top-14',
-        'margin-bottom-20',
-        'padding-y-24',
-        'padding-x-28',
-        'background-color-white',
-        'border-radius-8',
-        'flex-row',
-        'flex-wrap'
-      ])}
+      style={{
+        marginTop: 14,
+        marginBottom: 20,
+        paddingTop: 24,
+        paddingBottom: 24,
+        paddingLeft: 28,
+        paddingRight: 28,
+        backgroundColor: colors['white'],
+        borderRadius: 8,
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 1
+      }}
     >
       {wordSet.map((word, i) => {
         return (

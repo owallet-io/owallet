@@ -1,9 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithView } from '../../components/page';
-import { useStyle } from '../../styles';
-import { View } from 'react-native';
-import { CText as Text} from "../../components/text";
-import { Button } from '../../components/button';
+import { TouchableOpacity, View } from 'react-native';
+import { CText as Text } from '../../components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
@@ -12,11 +10,11 @@ import { Toggle } from '../../components/toggle';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import WelcomeRocket from '../../assets/svg/welcome-rocket.svg';
+import { OWalletLogo, OWalletStar } from './owallet-logo';
+import { colors, typography } from '../../themes';
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
-
-  const style = useStyle();
 
   const smartNavigation = useSmartNavigation();
 
@@ -45,50 +43,80 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <PageWithView style={style.flatten(['padding-x-42'])}>
-      <View style={style.get('flex-1')} />
-      <View style={style.flatten(['items-center'])}>
-        <WelcomeRocket width={358} height={254} />
-
+    <PageWithView
+      style={{
+        paddingLeft: 50,
+        paddingTop: 140,
+        paddingRight: 50,
+        backgroundColor: colors['white']
+      }}
+    >
+      <View />
+      <View
+        style={{
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        {/* <WelcomeRocket width={358} height={254} /> */}
+        <View>
+          <OWalletLogo size={120} />
+        </View>
+        <View style={{ paddingTop: 20 }}>
+          <OWalletStar />
+        </View>
         <Text
-          style={style.flatten([
-            'h2',
-            'color-text-black-medium',
-            'margin-top-18',
-          ])}
+          style={{
+            ...typography['h2'],
+            color: colors['text-black-medium'],
+            marginTop: 18,
+            fontWeight: '700'
+          }}
         >
-          You’re all set!
+          Create wallet success!
         </Text>
         <Text
-          style={style.flatten([
-            'subtitle1',
-            'color-text-black-low',
-            'text-center',
-            'margin-top-10',
-          ])}
+          style={{
+            ...typography['subtitle1'],
+            color: colors['text-black-low'],
+            textAlign: 'center',
+            paddingTop: 20,
+            paddingLeft: 8,
+            paddingRight: 8
+          }}
         >
-          Your cosmic interchain journey now begins.
+          Your new wallet has been succesfully created!
         </Text>
       </View>
       {password && keychainStore.isBiometrySupported ? (
         <View
-          style={style.flatten(['flex-row', 'margin-top-58', 'items-center'])}
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            marginTop: 58,
+            alignItems: 'center'
+          }}
         >
-          <Text style={style.flatten(['subtitle1', 'color-text-black-medium'])}>
+          <Text
+            style={{
+              ...typography['subtitle1'],
+              color: colors['text-black-medium']
+            }}
+          >
             Enable Biometric
           </Text>
-          <View style={style.get('flex-1')} />
+          <View
+            style={{
+              flex: 1
+            }}
+          />
           <Toggle
             on={isBiometricOn}
             onChange={(value) => setIsBiometricOn(value)}
           />
         </View>
       ) : null}
-      <Button
-        containerStyle={style.flatten(['margin-top-44'])}
-        size="large"
-        text="Done"
-        loading={isLoading}
+      <TouchableOpacity
         onPress={async () => {
           setIsLoading(true);
           try {
@@ -107,17 +135,40 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
               index: 0,
               routes: [
                 {
-                  name: 'MainTab',
-                },
-              ],
+                  name: 'MainTab'
+                }
+              ]
             });
           } catch (e) {
             console.log(e);
             setIsLoading(false);
           }
         }}
+        style={{
+          marginBottom: 24,
+          marginTop: 44,
+          backgroundColor: colors['purple-900'],
+          borderRadius: 8
+        }}
+      >
+        <Text
+          style={{
+            color: colors['white'],
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            lineHeight: 22,
+            padding: 18
+          }}
+        >
+          Done
+        </Text>
+      </TouchableOpacity>
+      <View
+        style={{
+          flex: 1
+        }}
       />
-      <View style={style.get('flex-1')} />
     </PageWithView>
   );
 });

@@ -18,7 +18,7 @@ import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import {
   navigate,
   checkRouter,
-  checkRouterPaddingBottomBar,
+  checkRouterPaddingBottomBar
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
 import { colors, typography } from '../../../themes';
@@ -63,18 +63,33 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   const submit = handleSubmit(() => {
     newMnemonicConfig.setName(getValues('name'));
     newMnemonicConfig.setPassword(getValues('password'));
-    smartNavigation.navigateSmart('Register.VerifyMnemonic', {
-      registerConfig,
-      newMnemonicConfig,
-      bip44HDPath: bip44Option.bip44HDPath
-    });
+
+    // smartNavigation.navigateSmart('Register.VerifyMnemonic', {
+    //   registerConfig,
+    //   newMnemonicConfig,
+    //   bip44HDPath: bip44Option.bip44HDPath,
+    // });
+
+    if (checkRouter(props?.route?.name, 'RegisterMain')) {
+      navigate('RegisterVerifyMnemonicMain', {
+        registerConfig,
+        newMnemonicConfig,
+        bip44HDPath: bip44Option.bip44HDPath
+      });
+    } else {
+      smartNavigation.navigateSmart('Register.VerifyMnemonic', {
+        registerConfig,
+        newMnemonicConfig,
+        bip44HDPath: bip44Option.bip44HDPath
+      });
+    }
   });
 
   return (
     <PageWithScrollView
       contentContainerStyle={{
         paddingLeft: 20,
-        paddingRight: 20,
+        paddingRight: 20
       }}
       backgroundColor={colors['white']}
     >
@@ -85,7 +100,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'space-between'
         }}
       >
         <Text
@@ -93,7 +108,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
             fontSize: 24,
             lineHeight: 34,
             fontWeight: '700',
-            color: colors['gray-900'],
+            color: colors['gray-900']
           }}
         >
           Create new wallet
@@ -113,10 +128,10 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
             <TextInput
               label="Username"
               containerStyle={{
-                paddingBottom: 6,
+                paddingBottom: 6
               }}
               inputStyle={{
-                ...styles.borderInput,
+                ...styles.borderInput
               }}
               returnKeyType={mode === 'add' ? 'done' : 'next'}
               onSubmitEditing={() => {
@@ -157,7 +172,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
                   label="Password"
                   returnKeyType="next"
                   inputStyle={{
-                    ...styles.borderInput,
+                    ...styles.borderInput
                   }}
                   secureTextEntry={true}
                   onSubmitEditing={() => {
@@ -198,7 +213,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
                     submit();
                   }}
                   inputStyle={{
-                    ...styles.borderInput,
+                    ...styles.borderInput
                   }}
                   error={errors.confirmPassword?.message}
                   onBlur={onBlur}
@@ -215,7 +230,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       ) : null}
       <View
         style={{
-          flex: 1,
+          flex: 1
         }}
       />
       <TouchableOpacity
@@ -223,41 +238,36 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
         style={{
           marginBottom: 24,
           marginTop: 32,
-          backgroundColor: '#8B1BFB',
-          borderRadius: 8,
+          backgroundColor: colors['purple-900'],
+          borderRadius: 8
         }}
       >
-        <View
+        <Text
           style={{
-            padding: 18,
+            color: 'white',
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 18
           }}
         >
-          <Text
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-            }}
-          >
-            Next
-          </Text>
-        </View>
+          Next
+        </Text>
       </TouchableOpacity>
       <View
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
             props?.route?.name,
             'RegisterMain'
-          ),
+          )
         }}
       >
         <Text
           style={{
-            color: '#8B1BFB',
+            color: colors['purple-900'],
             textAlign: 'center',
             fontWeight: '700',
-            fontSize: 16,
+            fontSize: 16
           }}
           onPress={() => {
             if (checkRouter(props?.route?.name, 'RegisterMain')) {
@@ -273,7 +283,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       {/* Mock element for bottom padding */}
       <View
         style={{
-          height: 20,
+          height: 20
         }}
       />
     </PageWithScrollView>
@@ -317,7 +327,7 @@ const WordsCard: FunctionComponent<{
         borderRadius: 8,
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: 1,
+        flexWrap: 1
       }}
     >
       {words.map((word, i) => {
@@ -335,7 +345,7 @@ const WordsCard: FunctionComponent<{
           width: '100%',
           borderBottomWidth: 1,
           padding: 10,
-          borderColor: colors['purple-50'],
+          borderColor: colors['purple-50']
         }}
       ></View>
       <View
@@ -344,17 +354,17 @@ const WordsCard: FunctionComponent<{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          alignItems: 'center',
+          alignItems: 'center'
         }}
       >
-        {!isTimedOut && <CopyFillIcon color={colors["purple-700"]} />}
+        {!isTimedOut && <CopyFillIcon color={colors['purple-700']} />}
         <Button
           textStyle={{
             ...typography['text-button2'],
-            color: isTimedOut ? colors['success'] : colors['purple-900'],
+            color: isTimedOut ? colors['success'] : colors['purple-900']
           }}
           style={{
-            backgroundColor: colors['white'],
+            backgroundColor: colors['white']
           }}
           mode="text"
           {...(isTimedOut && {
@@ -384,6 +394,6 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 4,
-  },
+    borderRadius: 4
+  }
 });

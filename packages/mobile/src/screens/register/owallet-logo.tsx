@@ -46,3 +46,26 @@ export const OWalletUnion: FunctionComponent = () => {
     </View>
   );
 };
+
+export const OWalletStar: FunctionComponent = () => {
+  return (
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Image
+        style={{
+          width: 20,
+          height: 20,
+        }}
+        source={require('../../assets/logo/splash-star.png')}
+        resizeMode="contain"
+        fadeDuration={0}
+      />
+    </View>
+  );
+};

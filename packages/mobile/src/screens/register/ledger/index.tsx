@@ -7,16 +7,18 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { CText as Text } from '../../../components/text'
 import { useStore } from '../../../stores';
 import { Button } from '../../../components/button';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import {
   checkRouter,
   checkRouterPaddingBottomBar,
-  navigate,
+  navigate
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
+import { colors } from '../../../themes';
 
 interface FormData {
   name: string;
@@ -72,17 +74,23 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
         accountType: 'ledger'
       });
 
-      smartNavigation.reset({
-        index: 0,
-        routes: [
-          {
-            name: 'Register.End',
-            params: {
-              password: getValues('password')
+      if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+        navigate('RegisterEnd', {
+          password: getValues('password')
+        });
+      } else {
+        smartNavigation.reset({
+          index: 0,
+          routes: [
+            {
+              name: 'Register.End',
+              params: {
+                password: getValues('password')
+              }
             }
-          }
-        ]
-      });
+          ]
+        });
+      }
     } catch (e) {
       // Definitely, the error can be thrown when the ledger connection failed
       console.log(e);
@@ -92,16 +100,22 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView
-      contentContainerStyle={style.get('flex-grow-1')}
-      style={style.flatten(['padding-x-page'])}
+      contentContainerStyle={{
+        flexGrow: 1
+      }}
+      style={{
+        paddingLeft: 20,
+        paddingRight: 20,
+      }}
+      backgroundColor={colors['white']}
     >
-       <View
+      <View
         style={{
           height: 72,
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'space-between'
         }}
       >
         <Text
@@ -109,7 +123,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
             fontSize: 24,
             lineHeight: 34,
             fontWeight: '700',
-            color: '#1C1C1E',
+            color: '#1C1C1E'
           }}
         >
           Import ledger Nano X
@@ -127,7 +141,9 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
           return (
             <TextInput
               label="Username"
-              containerStyle={style.flatten(['padding-bottom-6'])}
+              containerStyle={{
+                paddingBottom: 6
+              }}
               returnKeyType={mode === 'add' ? 'done' : 'next'}
               onSubmitEditing={() => {
                 if (mode === 'add') {
@@ -136,6 +152,9 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
                 if (mode === 'create') {
                   setFocus('password');
                 }
+              }}
+              inputStyle={{
+                ...styles.borderInput
               }}
               error={errors.name?.message}
               onBlur={onBlur}
@@ -169,6 +188,9 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
                   secureTextEntry={true}
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
+                  }}
+                  inputStyle={{
+                    ...styles.borderInput
                   }}
                   error={errors.password?.message}
                   onBlur={onBlur}
@@ -204,6 +226,9 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
                   onSubmitEditing={() => {
                     submit();
                   }}
+                  inputStyle={{
+                    ...styles.borderInput
+                  }}
                   error={errors.confirmPassword?.message}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -217,50 +242,49 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
           />
         </React.Fragment>
       ) : null}
-      <View style={style.flatten(['flex-1'])} />
+      <View style={{ height: 20 }} />
       <TouchableOpacity
         disabled={isCreating}
         onPress={submit}
         style={{
           marginBottom: 24,
-          backgroundColor: '#8B1BFB',
-          borderRadius: 8,
+          backgroundColor: colors['purple-900'],
+          borderRadius: 8
         }}
       >
-        <View
+        <Text
           style={{
-            padding: 18,
+            color: 'white',
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 18
           }}
         >
-          <Text
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '900',
-              fontSize: 16,
-            }}
-          >
-            Next
-          </Text>
-        </View>
+          Next
+        </Text>
       </TouchableOpacity>
       <View
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
             props?.route?.name,
             'RegisterNewLedgerMain'
-          ),
+          )
         }}
       >
         <Text
           style={{
-            color: '#8B1BFB',
+            color: colors['purple-900'],
             textAlign: 'center',
-            fontWeight: '900',
-            fontSize: 16,
+            fontWeight: '700',
+            fontSize: 16
           }}
           onPress={() => {
-            smartNavigation.navigateSmart('Register.Intro', {});
+            if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+              smartNavigation.goBack();
+            } else {
+              smartNavigation.navigateSmart('Register.Intro', {});
+            }
           }}
         >
           Go back
@@ -269,9 +293,22 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
       {/* Mock element for bottom padding */}
       <View
         style={{
-          height: 20,
+          height: 20
         }}
       />
     </PageWithScrollView>
   );
+});
+
+const styles = StyleSheet.create({
+  borderInput: {
+    borderColor: colors['purple-100'],
+    borderWidth: 1,
+    backgroundColor: colors['white'],
+    paddingLeft: 11,
+    paddingRight: 11,
+    paddingTop: 12,
+    paddingBottom: 12,
+    borderRadius: 4
+  }
 });
