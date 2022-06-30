@@ -1,10 +1,9 @@
-import React, { FunctionComponent } from "react";
-import { useStyle } from "../../../styles";
-import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
-import { CText as Text} from "../../../components/text";
-import { RightArrowIcon } from "../../../components/icon";
-import { RectButton } from "../../../components/rect-button";
-
+import React, { FunctionComponent } from 'react';
+import { useStyle } from '../../../styles';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { CText as Text } from '../../../components/text';
+import { RightArrowIcon } from '../../../components/icon';
+import { RectButton } from '../../../components/rect-button';
 
 export const SettingSectionTitle: FunctionComponent<{
   title: string;
@@ -14,12 +13,12 @@ export const SettingSectionTitle: FunctionComponent<{
   return (
     <View
       style={style.flatten([
-        "padding-x-20",
-        "padding-top-16",
-        "padding-bottom-4",
+        'padding-x-20',
+        'padding-top-16',
+        'padding-bottom-4'
       ])}
     >
-      <Text style={style.flatten(["h4"])}>{title}</Text>
+      <Text style={style.flatten(['h4'])}>{title}</Text>
     </View>
   );
 };
@@ -48,7 +47,7 @@ export const SettingItem: FunctionComponent<{
   left,
   right,
   onPress,
-  topBorder,
+  topBorder
 }) => {
   const style = useStyle();
 
@@ -58,13 +57,13 @@ export const SettingItem: FunctionComponent<{
         {left}
         <View
           style={StyleSheet.flatten([
-            style.flatten(["flex-row", "justify-between", "items-center","width-full"]),
+            style.flatten(['flex-row', 'justify-between', 'items-center'])
           ])}
         >
           <Text
             style={StyleSheet.flatten([
-              style.flatten(["body1", "color-text-black-medium"]),
-              labelStyle,
+              style.flatten(['body1', 'color-text-black-medium']),
+              labelStyle
             ])}
           >
             {label}
@@ -72,8 +71,8 @@ export const SettingItem: FunctionComponent<{
           {paragraph ? (
             <Text
               style={StyleSheet.flatten([
-                style.flatten(["subtitle3", "color-text-black-low"]),
-                paragraphStyle,
+                style.flatten(['body1', 'color-text-black-low']),
+                paragraphStyle
               ])}
             >
               {paragraph}
@@ -82,7 +81,7 @@ export const SettingItem: FunctionComponent<{
         </View>
         {right ? (
           <React.Fragment>
-            <View style={style.flatten(["flex-1"])} />
+            <View style={style.flatten(['flex-1'])} />
             {right}
           </React.Fragment>
         ) : null}
@@ -94,20 +93,20 @@ export const SettingItem: FunctionComponent<{
     <View style={containerStyle}>
       {topBorder ? (
         <View
-          style={style.flatten(["height-1", "background-color-border-white"])}
+          style={style.flatten(['height-1', 'background-color-border-white'])}
         />
       ) : null}
       {onPress ? (
         <RectButton
           style={StyleSheet.flatten([
             style.flatten([
-              "background-color-white",
-              "height-62",
-              "padding-x-20",
-              "flex-row",
-              "items-center",
+              'background-color-white',
+              'height-62',
+              'padding-x-20',
+              'flex-row',
+              'items-center'
             ]),
-            propStyle,
+            propStyle
           ])}
           onPress={onPress}
         >
@@ -117,13 +116,13 @@ export const SettingItem: FunctionComponent<{
         <View
           style={StyleSheet.flatten([
             style.flatten([
-              "background-color-white",
-              "height-62",
-              "padding-x-20",
-              "flex-row",
-              "items-center",
+              'background-color-white',
+              'height-62',
+              'padding-x-20',
+              'flex-row',
+              'items-center'
             ]),
-            propStyle,
+            propStyle
           ])}
         >
           {renderChildren()}
@@ -131,7 +130,7 @@ export const SettingItem: FunctionComponent<{
       )}
 
       <View
-        style={style.flatten(["height-1", "background-color-border-white"])}
+        style={style.flatten(['height-1', 'background-color-border-white'])}
       />
     </View>
   );
@@ -147,16 +146,16 @@ export const RightArrow: FunctionComponent<{
       {paragraph ? (
         <Text
           style={style.flatten([
-            "body1",
-            "color-text-black-low",
-            "margin-right-16",
+            'body1',
+            'color-text-black-low',
+            'margin-right-16'
           ])}
         >
           {paragraph}
         </Text>
       ) : null}
       <RightArrowIcon
-        color={style.get("color-text-black-low").color}
+        color={style.get('color-text-black-low').color}
         height={15}
       />
     </React.Fragment>
