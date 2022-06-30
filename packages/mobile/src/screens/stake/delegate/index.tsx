@@ -1,19 +1,21 @@
-import React, { FunctionComponent, useEffect } from 'react'
-import { observer } from 'mobx-react-lite'
-import { PageWithScrollView } from '../../../components/page'
-import { useStyle } from '../../../styles'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { StyleSheet, View } from 'react-native'
-import { useStore } from '../../../stores'
-import { useDelegateTxConfig } from '@owallet/hooks'
-import { EthereumEndpoint } from '@owallet/common'
-import { AmountInput, FeeButtons, MemoInput } from '../../../components/input'
-import { Button } from '../../../components/button'
-import { useSmartNavigation } from '../../../navigation.provider'
-import { BondStatus } from '@owallet/stores'
-import { colors, spacing, typography } from '../../../themes'
-import { CText as Text } from '../../../components/text'
-import { RectButton } from '../../../components/rect-button'
+import React, { FunctionComponent, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { PageWithScrollView } from '../../../components/page';
+import { useStyle } from '../../../styles';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
+import { useStore } from '../../../stores';
+import { useDelegateTxConfig } from '@owallet/hooks';
+import { EthereumEndpoint } from '@owallet/common';
+import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
+import { Button } from '../../../components/button';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { BondStatus } from '@owallet/stores';
+import { colors, spacing, typography } from '../../../themes';
+import { CText as Text } from '../../../components/text';
+import { RectButton } from '../../../components/rect-button';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { DownArrowIcon } from '../../../components/icon';
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -21,22 +23,22 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          validatorAddress: string
+          validatorAddress: string;
         }
       >,
       string
     >
-  >()
+  >();
 
-  const validatorAddress = route.params.validatorAddress
+  const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore()
+  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
 
-  const style = useStyle()
-  const smartNavigation = useSmartNavigation()
+  const style = useStyle();
+  const smartNavigation = useSmartNavigation();
 
-  const account = accountStore.getAccount(chainStore.current.chainId)
-  const queries = queriesStore.get(chainStore.current.chainId)
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
 
   const sendConfigs = useDelegateTxConfig(
     chainStore,
@@ -45,25 +47,25 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     account.bech32Address,
     queries.queryBalances,
     EthereumEndpoint
-  )
+  );
 
   useEffect(() => {
-    sendConfigs.recipientConfig.setRawRecipient(validatorAddress)
-  }, [sendConfigs.recipientConfig, validatorAddress])
+    sendConfigs.recipientConfig.setRawRecipient(validatorAddress);
+  }, [sendConfigs.recipientConfig, validatorAddress]);
 
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
-    sendConfigs.feeConfig.getError()
-  const txStateIsValid = sendConfigError == null
+    sendConfigs.feeConfig.getError();
+  const txStateIsValid = sendConfigError == null;
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
-  )
+  );
 
-  const validator = bondedValidators.getValidator(validatorAddress)
+  const validator = bondedValidators.getValidator(validatorAddress);
 
   return (
     <PageWithScrollView
@@ -76,24 +78,24 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     >
       <Text
         style={{
-          ...typography.h3,
-          fontWeight: '700',
-          textAlign: 'center',
-          color: colors['gray-900'],
-          marginTop: spacing['12'],
-          marginBottom: spacing['12']
+          ...styles.title,
         }}
       >
         Staking
       </Text>
 
-      <View style={{
-        ...styles.containerStaking,
-        padding: spacing['24']
-      }}>
-        <AmountInput labels={["Amount", "Total: 250 ORAI"]} amountConfig={sendConfigs.amountConfig} />
+      <View
+        style={{
+          ...styles.containerStaking,
+          padding: spacing['24']
+        }}
+      >
+        <AmountInput
+          label={'Amount'}
+          amountConfig={sendConfigs.amountConfig}
+        />
         <MemoInput
-          label={"Memo (Optional)"}
+          label={'Memo (Optional)'}
           memoConfig={sendConfigs.memoConfig}
         />
         <FeeButtons
@@ -102,6 +104,49 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           feeConfig={sendConfigs.feeConfig}
           gasConfig={sendConfigs.gasConfig}
         />
+
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}
+        >
+          <Text
+            style={{
+              ...typography.h7,
+              color: colors['purple-900'],
+              marginRight: 4
+            }}
+          >{`Advance options`}</Text>
+          <DownArrowIcon color={colors['purple-900']} height={10} />
+        </TouchableOpacity>
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            marginTop: spacing['16'],
+            paddingTop: spacing['4']
+          }}
+        >
+          <View>
+            <Text
+              style={{ ...styles.textNormal, marginBottom: spacing['4'] }}
+            >{`Estimated gas fee`}</Text>
+            <Text style={{ ...styles.textNormal }}>{`0.00004 ORAI`}</Text>
+          </View>
+          <View
+            style={{
+              alignItems: 'flex-end'
+            }}
+          >
+            <Text
+              style={{ ...styles.textNormal, marginBottom: spacing['4'] }}
+            >{`Total amount`}</Text>
+            <Text style={{ ...styles.textNormal }}>{`0`}</Text>
+          </View>
+        </View>
+
         {/* <Button
           text="Stake"
           size="large"
@@ -149,7 +194,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         onPress={() => {
           smartNavigation.navigateSmart('Delegate', {
             validatorAddress: validatorAddress
-          })
+          });
         }}
       >
         <Text
@@ -157,8 +202,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         >{`Submit`}</Text>
       </RectButton>
     </PageWithScrollView>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   page: {
@@ -166,7 +211,7 @@ const styles = StyleSheet.create({
   },
   containerStaking: {
     borderRadius: spacing['24'],
-    backgroundColor: colors['white'],
+    backgroundColor: colors['white']
   },
   containerBtn: {
     backgroundColor: colors['purple-900'],
@@ -181,4 +226,16 @@ const styles = StyleSheet.create({
     color: colors['white'],
     fontWeight: '700'
   },
-})
+  textNormal: {
+    ...typography.h7,
+    color: colors['gray-600']
+  },
+  title: {
+    ...typography.h3,
+    fontWeight: '700',
+    textAlign: 'center',
+    color: colors['gray-900'],
+    marginTop: spacing['12'],
+    marginBottom: spacing['12']
+  }
+});

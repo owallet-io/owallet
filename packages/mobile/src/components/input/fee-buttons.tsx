@@ -142,12 +142,12 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             ...(selected
               ? {
                   borderColor: colors['primary'],
-                  borderWidth: 1,
+                  borderWidth: 1
                 }
               : {
-                borderColor: colors['gray-10'],
-                  borderWidth: 1,
-              })
+                  borderColor: colors['gray-10'],
+                  borderWidth: 1
+                })
           }}
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
@@ -302,6 +302,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors['white'],
     borderColor: colors['white'],
     borderRadius: spacing['12'],
-    marginRight: 10 
+    marginLeft: 5,
+    marginRight: 5
   }
 });

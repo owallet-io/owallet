@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import {
   Platform,
   StyleSheet,
@@ -6,36 +6,36 @@ import {
   TextStyle,
   View,
   ViewStyle
-} from 'react-native'
-import { CText as Text } from '../text'
-import { useStyle } from '../../styles'
-import { colors, spacing, typography } from '../../themes'
+} from 'react-native';
+import { CText as Text } from '../text';
+import { useStyle } from '../../styles';
+import { colors, spacing, typography } from '../../themes';
 
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<
   NativeTextInput,
   React.ComponentProps<typeof NativeTextInput> & {
-    labelStyle?: TextStyle
-    containerStyle?: ViewStyle
-    inputContainerStyle?: ViewStyle
-    errorLabelStyle?: TextStyle
-    inputStyle?: TextStyle
+    labelStyle?: TextStyle;
+    containerStyle?: ViewStyle;
+    inputContainerStyle?: ViewStyle;
+    errorLabelStyle?: TextStyle;
+    inputStyle?: TextStyle;
 
-    labels?: string[]
-    error?: string
+    label?: string;
+    error?: string;
 
-    paragraph?: React.ReactNode
+    paragraph?: React.ReactNode;
 
-    topInInputContainer?: React.ReactNode
-    bottomInInputContainer?: React.ReactNode
+    topInInputContainer?: React.ReactNode;
+    bottomInInputContainer?: React.ReactNode;
 
-    inputLeft?: React.ReactNode
-    inputRight?: React.ReactNode
+    inputLeft?: React.ReactNode;
+    inputRight?: React.ReactNode;
   }
 >((props, ref) => {
-  const { style: propsStyle, ...restProps } = props
+  const { style: propsStyle, ...restProps } = props;
 
-  const style = useStyle()
+  const style = useStyle();
 
   return (
     <View
@@ -50,21 +50,18 @@ export const TextInput = React.forwardRef<
           justifyContent: 'space-between'
         }}
       >
-        {props.labels ? (
+        {props.label ? (
           <>
-            {props.labels.map((label, index) => (
-              <Text
-                key={index}
-                style={{
-                  ...typography.h7,
-                  color: colors['gray-900'],
-                  marginBottom: spacing['3'],
-                  ...props.labelStyle
-                }}
-              >
-                {label}
-              </Text>
-            ))}
+            <Text
+              style={{
+                ...typography.h7,
+                color: colors['gray-900'],
+                marginBottom: spacing['3'],
+                ...props.labelStyle
+              }}
+            >
+              {props.label}
+            </Text>
           </>
         ) : null}
       </View>
@@ -164,5 +161,5 @@ export const TextInput = React.forwardRef<
         </View>
       ) : null}
     </View>
-  )
-})
+  );
+});

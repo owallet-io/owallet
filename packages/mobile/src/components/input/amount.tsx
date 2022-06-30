@@ -21,7 +21,7 @@ export const AmountInput: FunctionComponent<{
   errorLabelStyle?: TextStyle
   placeholder?: string
   placeholderTextColor?: string
-  labels: string[]
+  label: string
 
   amountConfig: IAmountConfig
 }> = observer(
@@ -30,7 +30,7 @@ export const AmountInput: FunctionComponent<{
     containerStyle,
     inputContainerStyle,
     errorLabelStyle,
-    labels,
+    label,
     amountConfig,
     placeholder,
     placeholderTextColor
@@ -57,7 +57,7 @@ export const AmountInput: FunctionComponent<{
 
     return (
       <TextInput
-        labels={labels}
+        label={label}
         labelStyle={labelStyle}
         containerStyle={containerStyle}
         inputContainerStyle={inputContainerStyle}
