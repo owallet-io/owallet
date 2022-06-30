@@ -1,79 +1,95 @@
-import React from "react";
+import React from 'react'
 import {
   Platform,
   StyleSheet,
   TextInput as NativeTextInput,
   TextStyle,
   View,
-  ViewStyle,
-} from 'react-native';
-import { CText as Text} from "../text";
-import { useStyle } from '../../styles';
+  ViewStyle
+} from 'react-native'
+import { CText as Text } from '../text'
+import { useStyle } from '../../styles'
+import { colors, spacing, typography } from '../../themes'
 
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<
   NativeTextInput,
   React.ComponentProps<typeof NativeTextInput> & {
-    labelStyle?: TextStyle;
-    containerStyle?: ViewStyle;
-    inputContainerStyle?: ViewStyle;
-    errorLabelStyle?: TextStyle;
+    labelStyle?: TextStyle
+    containerStyle?: ViewStyle
+    inputContainerStyle?: ViewStyle
+    errorLabelStyle?: TextStyle
+    inputStyle?: TextStyle
 
-    label?: string;
-    error?: string;
+    labels?: string[]
+    error?: string
 
-    paragraph?: React.ReactNode;
+    paragraph?: React.ReactNode
 
-    topInInputContainer?: React.ReactNode;
-    bottomInInputContainer?: React.ReactNode;
+    topInInputContainer?: React.ReactNode
+    bottomInInputContainer?: React.ReactNode
 
-    inputLeft?: React.ReactNode;
-    inputRight?: React.ReactNode;
+    inputLeft?: React.ReactNode
+    inputRight?: React.ReactNode
   }
 >((props, ref) => {
-  const { style: propsStyle, ...restProps } = props;
+  const { style: propsStyle, ...restProps } = props
 
-  const style = useStyle();
+  const style = useStyle()
 
   return (
     <View
       style={StyleSheet.flatten([
-        style.flatten(["padding-bottom-28"]),
-        props.containerStyle,
+        style.flatten(['padding-bottom-28']),
+        props.containerStyle
       ])}
     >
-      {props.label ? (
-        <Text
-          style={StyleSheet.flatten([
-            style.flatten([
-              "subtitle3",
-              "color-text-black-medium",
-              "margin-bottom-3",
-            ]),
-            props.labelStyle,
-          ])}
-        >
-          {props.label}
-        </Text>
-      ) : null}
       <View
-        style={StyleSheet.flatten([
-          style.flatten(
-            [
-              "background-color-white",
-              "padding-x-11",
-              "padding-y-12",
-              "border-radius-4",
-              "border-width-1",
-              "border-color-border-white",
-            ],
-            [
-              props.error ? "border-color-error" : undefined,
-              !(props.editable ?? true) && "background-color-disabled",
-            ]
-          ),
-          props.inputContainerStyle,
-        ])}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between'
+        }}
+      >
+        {props.labels ? (
+          <>
+            {props.labels.map((label, index) => (
+              <Text
+                key={index}
+                style={{
+                  ...typography.h7,
+                  color: colors['gray-900'],
+                  marginBottom: spacing['3'],
+                  ...props.labelStyle
+                }}
+              >
+                {label}
+              </Text>
+            ))}
+          </>
+        ) : null}
+      </View>
+      <View
+        style={StyleSheet.flatten(
+          props.inputStyle
+            ? [props.inputStyle, props.inputContainerStyle]
+            : [
+                style.flatten(
+                  [
+                    'background-color-white',
+                    'padding-x-11',
+                    'padding-y-12',
+                    'border-radius-4',
+                    'border-width-1',
+                    'border-color-border-white'
+                  ],
+                  [
+                    props.error ? 'border-color-error' : undefined,
+                    !(props.editable ?? true) && 'background-color-disabled'
+                  ]
+                ),
+                props.inputContainerStyle
+              ]
+        )}
       >
         {props.topInInputContainer}
         <View style={style.flatten(["flex-row", "items-center"])}>
@@ -85,20 +101,20 @@ export const TextInput = React.forwardRef<
             }
             style={StyleSheet.flatten([
               style.flatten([
-                "padding-0",
-                "body2-in-text-input",
-                "color-text-black-medium",
-                "flex-1",
+                'padding-0',
+                'body2-in-text-input',
+                'color-text-black-medium',
+                'flex-1'
               ]),
               Platform.select({
                 ios: {},
                 android: {
                   // On android, the text input's height does not equals to the line height by strange.
                   // To fix this problem, set the height explicitly.
-                  height: style.get("body2-in-text-input")?.lineHeight,
-                },
+                  height: style.get('body2-in-text-input')?.lineHeight
+                }
               }),
-              propsStyle,
+              propsStyle
             ])}
             {...restProps}
             ref={ref}
@@ -113,13 +129,13 @@ export const TextInput = React.forwardRef<
             <Text
               style={StyleSheet.flatten([
                 style.flatten([
-                  "absolute",
-                  "text-caption2",
-                  "color-primary",
-                  "margin-top-2",
-                  "margin-left-4",
+                  'absolute',
+                  'text-caption2',
+                  'color-primary',
+                  'margin-top-2',
+                  'margin-left-4'
                 ]),
-                props.errorLabelStyle,
+                props.errorLabelStyle
               ])}
             >
               {props.paragraph}
@@ -134,13 +150,13 @@ export const TextInput = React.forwardRef<
           <Text
             style={StyleSheet.flatten([
               style.flatten([
-                "absolute",
-                "text-caption2",
-                "color-error",
-                "margin-top-2",
-                "margin-left-4",
+                'absolute',
+                'text-caption2',
+                'color-error',
+                'margin-top-2',
+                'margin-left-4'
               ]),
-              props.errorLabelStyle,
+              props.errorLabelStyle
             ])}
           >
             {props.error}
@@ -148,5 +164,5 @@ export const TextInput = React.forwardRef<
         </View>
       ) : null}
     </View>
-  );
-});
+  )
+})

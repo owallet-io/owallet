@@ -1,87 +1,102 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
-import { TextInput } from './input';
-import { TextStyle, View, ViewStyle } from 'react-native';
+import React, { FunctionComponent, useMemo } from 'react'
+import { observer } from 'mobx-react-lite'
+import { TextInput } from './input'
+import { TextStyle, View, ViewStyle } from 'react-native'
 import {
   EmptyAmountError,
   IAmountConfig,
   InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
-  ZeroAmountError,
-} from '@owallet/hooks';
-import { Button } from '../button';
-import { useStyle } from '../../styles';
+  ZeroAmountError
+} from '@owallet/hooks'
+import { Button } from '../button'
+import { useStyle } from '../../styles'
+import { colors, spacing } from '../../themes'
 
 export const AmountInput: FunctionComponent<{
-  labelStyle?: TextStyle;
-  containerStyle?: ViewStyle;
-  inputContainerStyle?: ViewStyle;
-  errorLabelStyle?: TextStyle;
+  labelStyle?: TextStyle
+  containerStyle?: ViewStyle
+  inputContainerStyle?: ViewStyle
+  errorLabelStyle?: TextStyle
+  placeholder?: string
+  placeholderTextColor?: string
+  labels: string[]
 
-  label: string;
-
-  amountConfig: IAmountConfig;
+  amountConfig: IAmountConfig
 }> = observer(
   ({
     labelStyle,
     containerStyle,
     inputContainerStyle,
     errorLabelStyle,
-    label,
-    amountConfig
+    labels,
+    amountConfig,
+    placeholder,
+    placeholderTextColor
   }) => {
-    const style = useStyle();
-
-    const error = amountConfig.getError();
+    const error = amountConfig.getError()
     const errorText: string | undefined = useMemo(() => {
       if (error) {
         switch (error.constructor) {
           case EmptyAmountError:
-            // No need to show the error to user.
-            return;
+            return
           case InvalidNumberAmountError:
-            return 'Invalid number';
+            return 'Invalid number'
           case ZeroAmountError:
-            return 'Amount is zero';
+            return 'Amount is zero'
           case NegativeAmountError:
-            return 'Amount is negative';
+            return 'Amount is negative'
           case InsufficientAmountError:
-            return 'Insufficient fund';
+            return 'Insufficient fund'
           default:
-            return 'Unknown error';
+            return 'Unknown error'
         }
       }
-    }, [error]);
+    }, [error])
 
     return (
       <TextInput
-        label={label}
+        labels={labels}
         labelStyle={labelStyle}
         containerStyle={containerStyle}
         inputContainerStyle={inputContainerStyle}
         errorLabelStyle={errorLabelStyle}
         value={amountConfig.amount}
-        onChangeText={(text) => {
-          amountConfig.setAmount(text.replace(/,/g, '.'));
+        onChangeText={text => {
+          amountConfig.setAmount(text.replace(/,/g, '.'))
         }}
         inputRight={
           <View
-            style={style.flatten([
-              'height-1',
-              'overflow-visible',
-              'justify-center',
-            ])}
+            style={{
+              height: 1,
+              overflow: 'visible',
+              justifyContent: 'center'
+            }}
           >
             <Button
               text="MAX"
-              mode={amountConfig.isMax ? 'light' : 'fill'}
+              mode={'light'}
               size="small"
-              style={style.flatten(['padding-x-5', 'padding-y-3'])}
-              containerStyle={style.flatten(['height-24', 'border-radius-4'])}
-              textStyle={style.flatten(['normal-case', 'text-caption2'])}
+              style={{
+                paddingHorizontal: spacing['5'],
+                paddingVertical: spacing['3']
+              }}
+              containerStyle={{
+                height: 24,
+                borderRadius: spacing['4'],
+                backgroundColor: colors['white'],
+                borderColor: colors['purple-900'],
+                borderWidth: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              textStyle={{
+                color: colors['purple-900'],
+                textTransform: 'uppercase'
+              }}
               onPress={() => {
-                amountConfig.setIsMax(!amountConfig.isMax);
+                amountConfig.setIsMax(!amountConfig.isMax)
               }}
             />
           </View>
@@ -89,6 +104,6 @@ export const AmountInput: FunctionComponent<{
         error={errorText}
         keyboardType="numeric"
       />
-    );
+    )
   }
-);
+)

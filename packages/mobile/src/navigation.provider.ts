@@ -74,13 +74,13 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         upperScreenName: 'Others'
       },
       'Validator.Details': {
-        upperScreenName: 'Others'
+        upperScreenName: 'Invest'
       },
       'Validator.List': {
-        upperScreenName: 'Others'
+        upperScreenName: 'Invest'
       },
       Delegate: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Invest'
       },
       Undelegate: {
         upperScreenName: 'Others'

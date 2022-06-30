@@ -149,7 +149,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
                 height: 40
               }}
               onPress={() => {
-                smartNavigation.navigate('Validator List', {})
+                smartNavigation.navigate('Validator.List', {})
               }}
             >
               <Text

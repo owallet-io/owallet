@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from 'react'
-import { StyleSheet, View, ViewStyle } from 'react-native'
+import { View, ViewStyle } from 'react-native'
 import FastImage from 'react-native-fast-image'
-import { useStyle } from '../../styles'
-import { colors, spacing } from '../../themes'
+import {  spacing } from '../../themes'
 import { PersonIcon } from '../icon'
 
 export const ValidatorThumbnail: FunctionComponent<{
@@ -10,8 +9,6 @@ export const ValidatorThumbnail: FunctionComponent<{
   url?: string
   size: number
 }> = ({ style: propStyle, url, size }) => {
-  const style = useStyle()
-
   return (
     <View
       style={{
