@@ -1,20 +1,20 @@
-import React, { FunctionComponent } from 'react'
-import { PageWithScrollViewInBottomTabView } from '../../../components/page'
-import { MyRewardCard } from './reward-card'
-import { DelegationsCard } from './delegations-card'
-import { UndelegationsCard } from './undelegations-card'
-import { useStyle } from '../../../styles'
-import { useStore } from '../../../stores'
-import { StyleSheet, View, FlatList } from 'react-native'
-import { colors, typography, spacing, metrics } from '../../../themes'
-import { CText as Text } from '../../../components/text'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { ArrowOpsiteUpDownIcon, DownArrowIcon } from '../../../components/icon'
-import { _keyExtract } from '../../../utils/helper'
-import { ValidatorItem } from '../components/validator-item'
-import { GiftStakingLogo } from '../../../components/svg'
-import { useSmartNavigation } from '../../../navigation.provider'
+import React, { FunctionComponent } from 'react';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+// import { MyRewardCard } from './reward-card';
+// import { DelegationsCard } from './delegations-card';
+// import { UndelegationsCard } from './undelegations-card';
+import { useStyle } from '../../../styles';
+import { useStore } from '../../../stores';
+import { StyleSheet, View, FlatList } from 'react-native';
+import { colors, typography, spacing, metrics } from '../../../themes';
+import { CText as Text } from '../../../components/text';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ArrowOpsiteUpDownIcon, DownArrowIcon } from '../../../components/icon';
+import { _keyExtract } from '../../../utils/helper';
+import { ValidatorItem } from '../components/validator-item';
+import { GiftStakingLogo } from '../../../components/svg';
+import { useSmartNavigation } from '../../../navigation.provider';
 
 const validators = [
   {
@@ -35,22 +35,21 @@ const validators = [
     amount: '12.01',
     denom: 'ORAI'
   }
-]
+];
 
 export const StakingDashboardScreen: FunctionComponent = () => {
-  const { chainStore, accountStore, queriesStore } = useStore()
-  const smartNavigation = useSmartNavigation()
+  const { chainStore, accountStore, queriesStore } = useStore();
+  const smartNavigation = useSmartNavigation();
 
-  const style = useStyle()
-  const safeAreaInsets = useSafeAreaInsets()
+  const safeAreaInsets = useSafeAreaInsets();
 
-  const account = accountStore.getAccount(chainStore.current.chainId)
-  const queries = queriesStore.get(chainStore.current.chainId)
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
 
   const unbondings =
     queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       account.bech32Address
-    ).unbondingBalances
+    ).unbondingBalances;
 
   useLogScreenView("Staking dashboard", {
     chainId: chainStore.current.chainId,
@@ -149,7 +148,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
                 height: 40
               }}
               onPress={() => {
-                smartNavigation.navigate('Validator.List', {})
+                smartNavigation.navigate('Validator List', {});
               }}
             >
               <Text
@@ -226,8 +225,8 @@ export const StakingDashboardScreen: FunctionComponent = () => {
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {},
@@ -254,4 +253,4 @@ const styles = StyleSheet.create({
     borderRadius: spacing['8'],
     backgroundColor: colors['purple-900']
   }
-})
+});

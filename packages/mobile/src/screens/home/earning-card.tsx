@@ -1,42 +1,43 @@
-import React, { FunctionComponent } from 'react'
-import { Card } from '../../components/card'
+import React, { FunctionComponent } from 'react';
+import { Card } from '../../components/card';
 import {
   Image,
   StyleSheet,
   TouchableOpacity,
   View,
   ViewStyle
-} from 'react-native'
-import { CText as Text} from "../../components/text";
-import { observer } from 'mobx-react-lite'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { AddIcon, GiftIcon } from '../../components/icon'
-import { useSmartNavigation } from '../../navigation.provider'
-import { useStore } from '../../stores'
-import { Dec } from '@owallet/unit'
-import { LoadingSpinner } from '../../components/spinner'
-import LinearGradient from 'react-native-linear-gradient'
+} from 'react-native';
+import { CText as Text } from '../../components/text';
+import { observer } from 'mobx-react-lite';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { AddIcon, GiftIcon } from '../../components/icon';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { Dec } from '@owallet/unit';
+import { LoadingSpinner } from '../../components/spinner';
+import LinearGradient from 'react-native-linear-gradient';
+import { navigate } from '../../router/root';
 
 export const EarningCard: FunctionComponent<{
-  containerStyle?: ViewStyle
+  containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const smartNavigation = useSmartNavigation()
+  const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
-    useStore()
-  const queries = queriesStore.get(chainStore.current.chainId)
-  const account = accountStore.getAccount(chainStore.current.chainId)
+    useStore();
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
-  )
-  const delegated = queryDelegated.total
+  );
+  const delegated = queryDelegated.total;
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
-  )
+  );
 
-  const totalPrice = priceStore.calculatePrice(delegated)
+  const totalPrice = priceStore.calculatePrice(delegated);
 
-  const stakingReward = queryReward.stakableReward
-  const totalStakingReward = priceStore.calculatePrice(stakingReward)
+  const stakingReward = queryReward.stakableReward;
+  const totalStakingReward = priceStore.calculatePrice(stakingReward);
   return (
     <View style={containerStyle}>
       <Card style={styles.card}>
@@ -91,25 +92,25 @@ export const EarningCard: FunctionComponent<{
                   {},
                   {},
                   {
-                    onBroadcasted: txHash => {
+                    onBroadcasted: (txHash) => {
                       analyticsStore.logEvent('Claim reward tx broadcasted', {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName
-                      })
+                      });
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: Buffer.from(txHash).toString('hex')
-                      })
+                      });
                     }
                   }
-                )
+                );
               } catch (e) {
                 console.log({ errorClaim: e });
-                
+
                 if (e?.message === 'Request rejected') {
-                  return
+                  return;
                 }
                 // console.log(e);
-                smartNavigation.navigateSmart('Home', {})
+                smartNavigation.navigateSmart('Home', {});
               }
             }}
           >
@@ -195,7 +196,7 @@ export const EarningCard: FunctionComponent<{
               </View>
               <AddIcon
                 onPress={() => {
-                  smartNavigation.navigateSmart('Staking.Dashboard', {})
+                  smartNavigation.navigateSmart('Staking.Dashboard', {});
                 }}
                 color={colors['black']}
                 size={24}
@@ -205,7 +206,10 @@ export const EarningCard: FunctionComponent<{
               <TouchableOpacity
                 style={styles['btn-manage']}
                 onPress={() => {
-                  smartNavigation.navigateSmart('Staking.Dashboard', {})
+                  console.log('push StackActions');
+
+                  navigate('MainTab', { screen: 'Invest' });
+                  // smartNavigation.navigateSmart('Staking.Dashboard', {});
                 }}
               >
                 <Text
@@ -219,8 +223,8 @@ export const EarningCard: FunctionComponent<{
         </LinearGradient>
       </Card>
     </View>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -289,4 +293,4 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'space-around'
   }
-})
+});

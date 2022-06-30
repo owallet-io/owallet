@@ -397,13 +397,13 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Governance Details"
         component={GovernanceDetailsScreen}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         options={{
           title: 'Staking Dashboard'
         }}
         name="Staking.Dashboard"
         component={StakingDashboardScreen}
-      />
+      /> */}
       <Stack.Screen
         options={{
           title: 'Validator Details'
