@@ -16,6 +16,7 @@ import { CText as Text } from '../../../components/text';
 import { RectButton } from '../../../components/rect-button';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DownArrowIcon } from '../../../components/icon';
+import { StakeAdvanceModal } from '../components/stake-advance';
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -32,7 +33,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { modalStore, chainStore, accountStore, queriesStore, analyticsStore } = useStore();
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -66,6 +67,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 
   const validator = bondedValidators.getValidator(validatorAddress);
+  
+  const _onOpenStakeModal = () => {
+    modalStore.setOpen()
+    modalStore.setChildren(
+      StakeAdvanceModal({
+        config: sendConfigs
+      })
+    )    
+  }
 
   return (
     <PageWithScrollView
@@ -110,6 +120,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             flexDirection: 'row',
             alignItems: 'center'
           }}
+          onPress={_onOpenStakeModal}
         >
           <Text
             style={{
