@@ -16,7 +16,13 @@ import { SettingRemoveAccountItem } from './items/remove-account';
 import { canShowPrivateData } from './screens/view-private-data';
 import { SettingViewPrivateDataItem } from './items/view-private-data';
 import { useStyle } from '../../styles';
-import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  ImageBackground
+} from 'react-native';
 import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
@@ -54,10 +60,12 @@ export const SettingScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView>
-      <View
+      <ImageBackground
         style={{
           ...styles.containerScreen
         }}
+        resizeMode="cover"
+        source={require('../../assets/image/bg_gradient.png')}
       >
         <Text
           style={{
@@ -145,7 +153,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
             <DownArrowIcon color={colors['black']} height={12} />
           </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
       {/* <SettingSelectAccountItem /> */}
       {/* <SettingFiatCurrencyItem topBorder={true} /> */}
       {/* <SettingSectionTitle title="General" /> */}
@@ -196,7 +204,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 1.0
   },
   containerScreen: {
-    backgroundColor: colors['purple-900'],
     padding: 24,
     paddingTop: 76,
     paddingBottom: 101,
