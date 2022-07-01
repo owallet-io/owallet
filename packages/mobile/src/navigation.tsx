@@ -1,7 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect } from 'react';
 import {
-  Alert,
   Image,
   Linking,
   TouchableOpacity,
@@ -10,11 +9,7 @@ import {
 } from 'react-native';
 import { CText as Text } from './components/text';
 import { KeyRingStatus } from '@owallet/background';
-import {
-  DrawerActions,
-  NavigationContainer,
-  useNavigation
-} from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { useStore } from './stores';
 import { observer } from 'mobx-react-lite';
 import { HomeScreen } from './screens/home';
@@ -28,11 +23,8 @@ import {
   GovernanceDetailsScreen,
   GovernanceScreen
 } from './screens/governance';
-import {
-  createDrawerNavigator,
-  useIsDrawerOpen
-} from '@react-navigation/drawer';
-import { DrawerContent } from './components/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+// import { DrawerContent } from './components/drawer';
 import { useStyle } from './styles';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
@@ -105,14 +97,14 @@ import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpa
 import { Browser } from './screens/web/browser';
 import { BookMarks } from './screens/web/bookmarks';
 import { Transactions, TransactionDetail } from './screens/transactions';
-import { navigate, navigationRef } from './router/root';
+import { navigationRef } from './router/root';
 import { handleDeepLink } from './utils/helper';
 import {
   SmartNavigatorProvider,
   useSmartNavigation
 } from './navigation.provider';
 import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
-import { OnboardingIntroScreen } from './screens/onboarding';
+// import { OnboardingIntroScreen } from './screens/onboarding';
 import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
@@ -952,27 +944,27 @@ export const MainTabNavigation: FunctionComponent = () => {
   );
 };
 
-export const MainTabNavigationWithDrawer: FunctionComponent = () => {
-  const focused = useFocusedScreen();
+// export const MainTabNavigationWithDrawer: FunctionComponent = () => {
+//   const focused = useFocusedScreen();
 
-  return (
-    <Drawer.Navigator
-      drawerType="slide"
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={{
-        // If the focused screen is not "Home" screen,
-        // disable the gesture to open drawer.
-        swipeEnabled: focused.name === 'Home',
-        gestureEnabled: focused.name === 'Home'
-      }}
-      gestureHandlerProps={{
-        hitSlop: {}
-      }}
-    >
-      <Drawer.Screen name="MainTab" component={MainTabNavigation} />
-    </Drawer.Navigator>
-  );
-};
+//   return (
+//     <Drawer.Navigator
+//       drawerType="slide"
+//       drawerContent={(props) => <DrawerContent {...props} />}
+//       screenOptions={{
+//         // If the focused screen is not "Home" screen,
+//         // disable the gesture to open drawer.
+//         swipeEnabled: focused.name === 'Home',
+//         gestureEnabled: focused.name === 'Home'
+//       }}
+//       gestureHandlerProps={{
+//         hitSlop: {}
+//       }}
+//     >
+//       <Drawer.Screen name="MainTab" component={MainTabNavigation} />
+//     </Drawer.Navigator>
+//   );
+// };
 
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
