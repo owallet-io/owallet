@@ -61,7 +61,6 @@ export const PasswordInputModal: FunctionComponent<{
           onSubmitEditing={submitPassword}
         />
         <TouchableOpacity
-        // loading={isLoading}
           onPress={submitPassword}
           style={{
             marginBottom: 24,

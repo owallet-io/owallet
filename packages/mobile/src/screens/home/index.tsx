@@ -14,11 +14,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useStore } from '../../stores';
-import { StakingInfoCard } from './staking-info-card';
 import { EarningCard } from './earning-card';
-import { GovernanceCard } from './governance-card';
 import { observer } from 'mobx-react-lite';
-import { MyRewardCard } from './my-reward-card';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';

@@ -81,9 +81,7 @@ export const OWalletVersionScreen: FunctionComponent = () => {
           marginTop: spacing['32'],
           marginBottom: spacing['12']
         }}
-      >
-        <SettingSectionTitle title="Application" />
-      </View>
+      />
       <TouchableWithoutFeedback
         style={{
           backgroundColor: colors['white'],
@@ -125,9 +123,7 @@ export const OWalletVersionScreen: FunctionComponent = () => {
           marginTop: spacing['32'],
           marginBottom: spacing['12']
         }}
-      >
-        <SettingSectionTitle title="Remote" />
-      </View>
+      />
       <TouchableWithoutFeedback
         style={{
           backgroundColor: colors['white'],
@@ -213,7 +209,7 @@ const SettingItem: FunctionComponent<{
 
   return (
     <View>
-      <RectButton
+      <TouchableWithoutFeedback
         style={{
           height: 80,
           paddingHorizontal: spacing['20'],
@@ -222,7 +218,7 @@ const SettingItem: FunctionComponent<{
         }}
       >
         {renderChildren()}
-      </RectButton>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
