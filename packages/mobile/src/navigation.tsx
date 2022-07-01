@@ -117,14 +117,13 @@ import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
 import { colors, spacing, typography } from './themes';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
-  const { chainStore } = useStore();
-
   const style = useStyle();
 
   const navigation = useNavigation();
@@ -154,14 +153,13 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingBottom: spacing['26']
+        alignItems: 'center'
       }}
     >
       <View style={{ display: 'flex', flexDirection: 'row' }}>
         <TouchableOpacity
           onPress={() => {
-            smartNavigation.navigateSmart('Transactions', {});
+            navigation.navigate('Transactions', {});
           }}
           style={{ paddingRight: 15 }}
         >
@@ -199,7 +197,6 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
         style={{
           display: 'flex',
           flexDirection: 'row',
-          paddingBottom: spacing['26'],
           alignItems: 'center'
         }}
       >
@@ -229,6 +226,31 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
   );
 });
 
+const CustomHeader: FunctionComponent = observer(() => {
+  const { top } = useSafeAreaInsets();
+
+  return (
+    <React.Fragment>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          paddingTop: top,
+          paddingBottom: spacing['26']
+        }}
+      >
+        <View />
+        <View>
+          <HomeScreenHeaderTitle />
+        </View>
+        <View>
+          <HomeScreenHeaderRight />
+        </View>
+      </View>
+    </React.Fragment>
+  );
+});
 const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(({}) => {
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -260,10 +282,8 @@ export const MainNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          // headerShown: false
-          headerLeft: () => <HomeScreenHeaderLeft />,
-          headerTitle: () => <HomeScreenHeaderTitle />,
-          headerRight: () => <HomeScreenHeaderRight />
+          // headerShown: false,
+          header: () => <CustomHeader />
         }}
         name="Home"
         component={HomeScreen}
@@ -360,6 +380,28 @@ export const MainNavigation: FunctionComponent = () => {
         }}
         name="Nfts.Detail"
         component={NftDetailScreen}
+      />
+    </Stack.Navigator>
+  );
+};
+
+export const SendNavigation: FunctionComponent = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        ...BlurredHeaderScreenOptionsPreset,
+        headerTitle: ''
+      }}
+      initialRouteName="TransferTokensScreen"
+      headerMode="screen"
+    >
+      <Stack.Screen
+        options={{
+          // headerShown: false,
+          header: () => <CustomHeader />
+        }}
+        name="TransferTokensScreen"
+        component={TransferTokensScreen}
       />
     </Stack.Navigator>
   );
@@ -892,7 +934,7 @@ export const MainTabNavigation: FunctionComponent = () => {
           title: 'Send'
         }}
         name="Send"
-        component={TransferTokensScreen}
+        component={SendNavigation}
         initialParams={{
           currency: chainStore.current.stakeCurrency.coinMinimalDenom,
           chainId: chainStore.current.chainId

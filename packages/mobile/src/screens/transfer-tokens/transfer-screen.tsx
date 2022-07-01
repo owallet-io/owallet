@@ -20,7 +20,7 @@ const TransferTokensScreen: FunctionComponent<{
 }> = observer(({ containerStyle }) => {
   return (
     <SafeAreaView style={[containerStyle]}>
-      <TransferTokensHeader />
+      {/* <TransferTokensHeader /> */}
       <View style={{ alignItems: 'center' }}>
         <Text
           style={{
