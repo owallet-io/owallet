@@ -132,7 +132,15 @@ export const EarningCard: FunctionComponent<{
                   <LoadingSpinner color={colors['gray-150']} size={22} />
                 </View>
               ) : null}
-              <GiftIcon color={colors['white']} />
+              <Image
+                    style={{
+                      width: 20,
+                      height: 20
+                    }}
+                    source={require('../../assets/image/rewards.png')}
+                    resizeMode="contain"
+                    fadeDuration={0}
+                  />
               <Text style={styles['text-rewards']}>Claim Rewards</Text>
             </View>
           </TouchableOpacity>

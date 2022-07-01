@@ -40,18 +40,6 @@ const MyWalletModal = () => {
           My Wallet
         </Text>
       </View>
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'flex-start',
-          width: '100%'
-        }}
-      >
-        <BookMnemonicSeedIcon color="none" size={16} />
-        <Text style={{ marginLeft: spacing['8'] }}>Mnemonic seed</Text>
-      </View>
       <MnemonicSeed styles={styles} />
       <WalletBtnList styles={styles} />
     </View>

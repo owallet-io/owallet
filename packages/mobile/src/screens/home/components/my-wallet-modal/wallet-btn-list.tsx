@@ -68,7 +68,7 @@ const WalletBtnList = ({ styles }) => {
   return (
     <>
       <View>
-        <Text style={{ color: colors["gray-700"] }}>
+        <Text style={{ color: colors['gray-700'],paddingTop: 10 }}>
           Don’t see your wallet on the list?
         </Text>
       </View>
