@@ -1,10 +1,11 @@
-import React, { ReactElement, useState } from 'react';
+import React, { FunctionComponent, ReactElement, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import { CText as Text} from "../../../components/text";
 import { RectButton } from '../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../themes';
-import { ScanIcon } from '../../../components/icon';
 import { _keyExtract } from '../../../utils/helper';
+import FastImage from 'react-native-fast-image';
+import { VectorCharacter } from '../../../components/vector-character';
+import { CText as Text } from '../../../components/text';
 
 const networkSupports = [
   {
@@ -53,22 +54,30 @@ const _renderItem = ({ item }) => {
     >
       <View
         style={{
-          justifyContent: 'flex-start',
-          flexDirection: 'row',
-          alignItems: 'center',
+          ...styles.containerBtn
+        }}
+        onPress={() => {
+          chainStore.selectChain(item.chainId);
+          chainStore.saveLastViewChainId();
+          modalStore.close();
         }}
       >
         <View
           style={{
-            justifyContent: 'space-between',
-            marginLeft: spacing['12'],
+            justifyContent: 'flex-start',
+            flexDirection: 'row',
+            alignItems: 'center'
           }}
         >
           <View
             style={{
-              ...typography.h6,
-              color: colors['gray-900'],
-              fontWeight: '900',
+              height: 38,
+              width: 38,
+              padding: spacing['2'],
+              borderRadius: spacing['12'],
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: profileColor?.(item) ?? 'purple'
             }}
           >
             {item.raw.chainSymbolImageUrl ? (
@@ -149,31 +158,27 @@ const _renderItem = ({ item }) => {
             />
           </View>
         </View>
-      </View>
-    </RectButton>
-  );
-};
-
-export const NetworkModal = (account): ReactElement => {
-  // const [selected, isSelected] = useState<boolean>(false)
+      </RectButton>
+    );
+  };
 
   return (
     // container
     <View
       style={{
-        alignItems: 'center',
+        alignItems: 'center'
       }}
     >
       <View
         style={{
-          justifyContent: 'flex-start',
+          justifyContent: 'flex-start'
         }}
       >
         <Text
           style={{
             ...typography.h6,
             fontWeight: '900',
-            color: colors['gray-900'],
+            color: colors['gray-900']
           }}
         >
           {`Select networks`}
@@ -185,7 +190,7 @@ export const NetworkModal = (account): ReactElement => {
           marginTop: spacing['12'],
           width: metrics.screenWidth - 48,
           justifyContent: 'space-between',
-          height: metrics.screenHeight / 2,
+          height: metrics.screenHeight / 2
         }}
       >
         <FlatList
@@ -196,7 +201,7 @@ export const NetworkModal = (account): ReactElement => {
           ListFooterComponent={() => (
             <View
               style={{
-                height: spacing['10'],
+                height: spacing['10']
               }}
             />
           )}
@@ -215,6 +220,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: spacing['16'],
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
+    justifyContent: 'space-between'
+  }
 });

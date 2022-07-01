@@ -1,6 +1,13 @@
 /* eslint-disable react/display-name */
 import React, { FunctionComponent, useEffect } from 'react';
-import { Alert, Image, Linking, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Linking,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
 import { CText as Text } from './components/text';
 import { KeyRingStatus } from '@owallet/background';
 import {
@@ -59,7 +66,9 @@ import {
   BrowserOutLineIcon,
   BrowserFillIcon,
   InvestOutlineIcon,
-  InvestFillIcon
+  InvestFillIcon,
+  HistoryIcon,
+  Scanner
 } from './components/icon';
 import {
   AddAddressBookScreen,
@@ -106,6 +115,8 @@ import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
 import { OnboardingIntroScreen } from './screens/onboarding';
 import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
+import { NetworkModal } from './screens/home/components';
+import { colors, spacing, typography } from './themes';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -121,22 +132,100 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
   return (
     <HeaderLeftButton
       onPress={() => {
-        navigation.dispatch(DrawerActions.toggleDrawer());
+        if (navigation.canGoBack) navigation.goBack();
       }}
     >
       <View style={style.flatten(['flex-row', 'items-center'])}>
-        <DotsIcon />
-        <Text
-          style={style.flatten(['h5', 'color-text-black-low', 'margin-left-4'])}
-        >
-          {chainStore.current.chainName + ' '}
+        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
+          <HeaderBackButtonIcon />
         </Text>
-        {/* <DownArrowIcon
-          height={12}
-          color={style.get('color-text-black-low').color}
-        /> */}
       </View>
     </HeaderLeftButton>
+  );
+});
+
+const HomeScreenHeaderRight: FunctionComponent = observer(() => {
+  const navigation = useNavigation();
+  const smartNavigation = useSmartNavigation();
+
+  return (
+    <View
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: spacing['26']
+      }}
+    >
+      <View style={{ display: 'flex', flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={() => {
+            smartNavigation.navigateSmart('Transactions', {});
+          }}
+          style={{ paddingRight: 15 }}
+        >
+          <HistoryIcon size={28} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Others', {
+              screen: 'Camera'
+            });
+          }}
+        >
+          <Scanner size={28} color={'#5064fb'} />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+});
+
+const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
+  const { chainStore, modalStore } = useStore();
+  const _onPressNetworkModal = () => {
+    modalStore.setOpen();
+    modalStore.setChildren(
+      NetworkModal({
+        profileColor: null,
+        chainStore,
+        modalStore
+      })
+    );
+  };
+  return (
+    <React.Fragment>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          paddingBottom: spacing['26'],
+          alignItems: 'center'
+        }}
+      >
+        <TouchableWithoutFeedback onPress={_onPressNetworkModal}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingLeft: 50
+            }}
+          >
+            <DotsIcon />
+            <Text
+              style={{
+                ...typography['h5'],
+                ...colors['color-text-black-low'],
+                marginLeft: spacing['8']
+              }}
+            >
+              {chainStore.current.chainName + ' Network'}
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    </React.Fragment>
   );
 });
 
@@ -159,22 +248,6 @@ const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(({}) => {
   );
 });
 
-const HomeScreenHeaderRight: FunctionComponent = observer(() => {
-  const navigation = useNavigation();
-
-  return (
-    <React.Fragment>
-      <HeaderRightButton
-        onPress={() => {
-          navigation.navigate('Others', {
-            screen: 'Camera'
-          });
-        }}
-      ></HeaderRightButton>
-    </React.Fragment>
-  );
-});
-
 export const MainNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
@@ -187,9 +260,10 @@ export const MainNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          headerShown: false
-          // headerLeft: () => <HomeScreenHeaderLeft />,
-          // headerRight: () => <HomeScreenHeaderRight />,
+          // headerShown: false
+          headerLeft: () => <HomeScreenHeaderLeft />,
+          headerTitle: () => <HomeScreenHeaderTitle />,
+          headerRight: () => <HomeScreenHeaderRight />
         }}
         name="Home"
         component={HomeScreen}

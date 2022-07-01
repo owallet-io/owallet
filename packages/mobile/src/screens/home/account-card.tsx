@@ -81,7 +81,7 @@ export const AccountCard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  
+
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
@@ -121,7 +121,7 @@ export const AccountCard: FunctionComponent<{
     }
   };
 
-  // open model
+  // open modal
   const _onPressNetworkModal = () => {
     modalStore.setOpen();
     modalStore.setChildren(
