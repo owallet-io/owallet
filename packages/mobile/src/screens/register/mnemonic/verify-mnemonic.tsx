@@ -20,6 +20,7 @@ import {
 } from '../../../router/root';
 import { colors, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { LoadingSpinner } from '../../../components/spinner';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -159,6 +160,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
         //  loading={isCreating}
         disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
         onPress={async () => {
+          if (isCreating) return;
           setIsCreating(true);
           await registerConfig.createMnemonic(
             newMnemonicConfig.name,
@@ -195,17 +197,23 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           borderRadius: 8
         }}
       >
-        <Text
-          style={{
-            color: colors['white'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Next
-        </Text>
+        {isCreating ? (
+          <View style={{ padding: 16, alignItems: 'center' }}>
+            <LoadingSpinner color={colors['white']} size={20} />
+          </View>
+        ) : (
+          <Text
+            style={{
+              color: colors['white'],
+              textAlign: 'center',
+              fontWeight: '700',
+              fontSize: 16,
+              padding: 16
+            }}
+          >
+            Next
+          </Text>
+        )}
       </TouchableOpacity>
       {/* Mock element for bottom padding */}
       <View
@@ -232,7 +240,7 @@ const WordButton: FunctionComponent<{
         paddingRight: 12,
         marginRight: 12,
         marginBottom: 12,
-        borderRadius: 8,
+        borderRadius: 8
       }}
       onPress={onPress}
     >
@@ -261,16 +269,16 @@ const WordsCard: FunctionComponent<{
     <View
       style={{
         marginTop: 14,
-        marginBottom: 20,
+        marginBottom: 16,
         paddingTop: 24,
-        paddingBottom: 24,
         paddingLeft: 28,
         paddingRight: 28,
-        backgroundColor: colors['white'],
+        borderColor: colors['purple-100'],
+        borderWidth: 1,
         borderRadius: 8,
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: 2,
+        flexWrap: 1
       }}
     >
       {wordSet.map((word, i) => {

@@ -313,6 +313,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               onSubmitEditing={tryUnlock}
             />
             <TouchableOpacity
+              disabled={isLoading}
               onPress={tryUnlock}
               style={{
                 marginBottom: 24,

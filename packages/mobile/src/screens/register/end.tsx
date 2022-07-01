@@ -12,6 +12,7 @@ import { Toggle } from '../../components/toggle';
 import WelcomeRocket from '../../assets/svg/welcome-rocket.svg';
 import { OWalletLogo, OWalletStar } from './owallet-logo';
 import { colors, typography } from '../../themes';
+import { LoadingSpinner } from '../../components/spinner';
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
@@ -117,6 +118,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
         </View>
       ) : null}
       <TouchableOpacity
+        disabled={isLoading}
         onPress={async () => {
           setIsLoading(true);
           try {
@@ -151,18 +153,24 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           borderRadius: 8
         }}
       >
-        <Text
-          style={{
-            color: colors['white'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            lineHeight: 22,
-            padding: 16
-          }}
-        >
-          Done
-        </Text>
+        {isLoading ? (
+          <View style={{ padding: 16, alignItems: 'center' }}>
+            <LoadingSpinner color={colors['white']} size={20} />
+          </View>
+        ) : (
+          <Text
+            style={{
+              color: colors['white'],
+              textAlign: 'center',
+              fontWeight: '700',
+              fontSize: 16,
+              lineHeight: 22,
+              padding: 16
+            }}
+          >
+            Done
+          </Text>
+        )}
       </TouchableOpacity>
       <View
         style={{

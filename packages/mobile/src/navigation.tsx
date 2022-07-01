@@ -192,7 +192,6 @@ export const MainNavigation: FunctionComponent = () => {
           // headerRight: () => <HomeScreenHeaderRight />,
         }}
         name="Home"
-        initialParams={useSmartNavigation}
         component={HomeScreen}
       />
       {/* <Stack.Screen

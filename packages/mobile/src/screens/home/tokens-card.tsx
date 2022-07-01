@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Card, CardBody } from '../../components/card';
 import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
 import { Image, Tab } from '@rneui/base';
@@ -16,6 +16,7 @@ import {
   _keyExtract
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
+import { API } from '../../common/api';
 
 // hard code data to test UI
 const nftsData = [
@@ -68,7 +69,7 @@ export const TokensCard: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
-
+  const [price, setPrice] = useState<object>({});
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
@@ -78,6 +79,28 @@ export const TokensCard: FunctionComponent<{
   const tokens = queryBalances.positiveNativeUnstakables.concat(
     queryBalances.nonNativeBalances
   );
+
+  const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
+
+  const config = {
+    customDomain: 'https://api.coingecko.com/'
+  };
+  const getPriceCoinGecko = async () => {
+    console.log({ test: listTokens.join(',') });
+    
+    return await API.get(
+      `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
+      config
+    );
+  };
+
+  useEffect(() => {
+    (async function get() {
+      const price = await getPriceCoinGecko();
+      console.log({ price });
+      setPrice(price);
+    })();
+  }, [index]);
 
   const _renderFlatlistItem = ({ item }) => (
     <TouchableOpacity
@@ -185,7 +208,7 @@ export const TokensCard: FunctionComponent<{
             </TouchableOpacity>
           ))}
         </View>
-        
+
         {index === 0 ? (
           <CardBody>
             {tokens.slice(0, 3).map((token) => {
