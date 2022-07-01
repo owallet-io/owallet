@@ -13,8 +13,16 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -l phutx $SERVER_IP -p 22129 <<EOF
                             cd /home/orai/owallet
                             sudo git pull origin feat/refactor-theme
+                            echo "DONE pull source code"
+                    '''
+                }
+
+                sshagent(['phu-cloud']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -l orai $SERVER_IP -p 22129 <<EOF
+                            cd /home/orai/owallet
                             pm2 restart owallet
-                            echo "DONE"
+                            echo "DONE restart process owallet"
                     '''
                 }
             }
