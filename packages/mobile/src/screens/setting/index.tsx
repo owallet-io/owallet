@@ -27,7 +27,6 @@ import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';
-import LinearGradient from 'react-native-linear-gradient';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();

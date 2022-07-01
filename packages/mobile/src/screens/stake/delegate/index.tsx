@@ -115,7 +115,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           gasConfig={sendConfigs.gasConfig}
         />
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
             flexDirection: 'row',
             alignItems: 'center'
@@ -130,7 +130,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             }}
           >{`Advance options`}</Text>
           <DownArrowIcon color={colors['purple-900']} height={10} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View
           style={{
