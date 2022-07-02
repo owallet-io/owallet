@@ -1,16 +1,16 @@
-import React, { FunctionComponent, useMemo } from 'react'
-import { PageWithScrollView } from '../../../components/page'
-import { RouteProp, useRoute } from '@react-navigation/native'
-import { observer } from 'mobx-react-lite'
-import { useStore } from '../../../stores'
-import { CoinPretty, Dec, IntPretty } from '@owallet/unit'
-import {  StyleSheet, View } from 'react-native'
-import { CText as Text } from '../../../components/text'
-import { colors, spacing, typography } from '../../../themes'
-import { RectButton } from '../../../components/rect-button'
-import { BondStatus } from '@owallet/stores'
-import { ValidatorThumbnail } from '../../../components/thumbnail'
-import { useSmartNavigation } from '../../../navigation.provider'
+import React, { FunctionComponent, useMemo } from 'react';
+import { PageWithScrollView } from '../../../components/page';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
+import { StyleSheet, View } from 'react-native';
+import { CText as Text } from '../../../components/text';
+import { colors, spacing, typography } from '../../../themes';
+import { RectButton } from '../../../components/rect-button';
+import { BondStatus } from '@owallet/stores';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
 
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -18,58 +18,58 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
       Record<
         string,
         {
-          validatorAddress: string
+          validatorAddress: string;
         }
       >,
       string
     >
-  >()
+  >();
 
-  const validatorAddress = route.params.validatorAddress
+  const validatorAddress = route.params.validatorAddress;
 
-  const { chainStore, queriesStore, accountStore } = useStore()
+  const { chainStore, queriesStore, accountStore } = useStore();
 
-  const account = accountStore.getAccount(chainStore.current.chainId)
-  const queries = queriesStore.get(chainStore.current.chainId)
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
 
-  const smartNavigation = useSmartNavigation()
+  const smartNavigation = useSmartNavigation();
 
   const staked = queries.cosmos.queryDelegations
     .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(validatorAddress)
+    .getDelegationTo(validatorAddress);
 
   const unbondings = queries.cosmos.queryUnbondingDelegations
     .getQueryBech32Address(account.bech32Address)
     .unbondingBalances.find(
-      unbonding => unbonding.validatorAddress === validatorAddress
-    )
+      (unbonding) => unbonding.validatorAddress === validatorAddress
+    );
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
-  )
+  );
   const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonding
-  )
+  );
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
-  )
+  );
 
   const validator = useMemo(() => {
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
       .concat(unbondedValidators.validators)
-      .find(val => val.operator_address === validatorAddress)
+      .find((val) => val.operator_address === validatorAddress);
   }, [
     bondedValidators.validators,
     unbondingValidators.validators,
     unbondedValidators.validators,
     validatorAddress
-  ])
+  ]);
 
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondedValidators.getValidatorThumbnail(validatorAddress)
+    unbondedValidators.getValidatorThumbnail(validatorAddress);
 
   useLogScreenView("Validator detail", {
     chainId: chainStore.current.chainId,
@@ -185,7 +185,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
               {new IntPretty(
                 new Dec(validator.commission.commission_rates.rate)
               )
-                .decreasePrecision(2)
+                .moveDecimalPointRight(2)
                 .maxDecimals(2)
                 .trim(true)
                 .toString() + '%'}
@@ -229,7 +229,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         onPress={() => {
           smartNavigation.navigateSmart('Delegate', {
             validatorAddress: validatorAddress
-          })
+          });
         }}
       >
         <Text
@@ -237,8 +237,8 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         >{`Stake now`}</Text>
       </RectButton>
     </PageWithScrollView>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   title: {
@@ -276,4 +276,4 @@ const styles = StyleSheet.create({
   validatorThumbnail: {
     borderRadius: spacing['6']
   }
-})
+});

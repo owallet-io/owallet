@@ -3,8 +3,8 @@ import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../../components/card';
 import { useStore } from '../../../stores';
 import { BondStatus } from '@owallet/stores';
-import {  View, ViewStyle } from 'react-native';
-import { CText as Text} from "../../../components/text";
+import { View, ViewStyle } from 'react-native';
+import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
 import { Button } from '../../../components/button';
@@ -85,7 +85,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 {new IntPretty(
                   new Dec(validator.commission.commission_rates.rate)
                 )
-                  .decreasePrecision(2)
+                  .moveDecimalPointRight(2)
                   .maxDecimals(2)
                   .trim(true)
                   .toString() + '%'}

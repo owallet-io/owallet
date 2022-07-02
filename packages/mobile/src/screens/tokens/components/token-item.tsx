@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
 import { Text } from '@rneui/base';
-import { CoinPretty } from '@owallet/unit';
+import { CoinPretty, Dec, IntPretty, PricePretty } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Currency } from '@owallet/types';
 import { TokenSymbol } from '../../../components/token-symbol';
@@ -11,6 +11,7 @@ import { colors, spacing, typography } from '../../../themes';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../../utils/helper';
+import { CoinGeckoPriceStore } from '@owallet/stores';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
@@ -18,18 +19,16 @@ interface TokenItemProps {
     stakeCurrency: Currency;
   };
   balance: CoinPretty;
-  balanceUsd?: number;
   totalBalance?: number;
-  priceToken?: Object;
+  priceBalance: PricePretty;
 }
 
 export const TokenItem: FunctionComponent<TokenItemProps> = ({
   containerStyle,
   chainInfo,
   balance,
-  balanceUsd = 0, // defautl value to test use
-  totalBalance = 100,
-  priceToken
+  priceBalance,
+  totalBalance = 1000
 }) => {
   const smartNavigation = useSmartNavigation();
 
@@ -37,7 +36,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
   let name = balance.currency.coinDenom;
-  let priceCoin = priceToken?.[balance.currency.coinGeckoId] || { usd: 0 };
 
   if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
     balanceCoinDenom = balance.currency.originCurrency.coinDenom;
@@ -59,6 +57,16 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
     .upperCase(true)
     .hideDenom(true)
     .toString();
+
+  const balanceUsdInPercent = priceBalance
+    ? new IntPretty(
+        priceBalance.toDec().mul(new Dec(100)).quo(new Dec(totalBalance))
+      )
+        .moveDecimalPointRight(2)
+        .maxDecimals(3)
+        .trim(true)
+        .toString() + '%'
+    : '';
 
   return (
     <TouchableOpacity
@@ -107,7 +115,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
               marginBottom: spacing['4']
             }}
           >
-            {`$ ${+amountBalance.split(',').join('') * priceCoin['usd']} `}
+            {priceBalance?.toString()}
           </Text>
         </View>
       </View>
@@ -136,7 +144,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
                 fontSize: 11
               }}
             >
-              {`${((balanceUsd / totalBalance) * 100).toFixed(2)}%`}
+              {balanceUsdInPercent}
             </Text>
           )}
         </AnimatedCircularProgress>

@@ -87,7 +87,7 @@ export const TokensCard: FunctionComponent<{
   };
   const getPriceCoinGecko = async () => {
     console.log({ test: listTokens.join(',') });
-    
+
     return await API.get(
       `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
       config
@@ -212,6 +212,7 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens.slice(0, 3).map((token) => {
+              const priceBalance = priceStore.calculatePrice(token.balance);
               return (
                 <TokenItem
                   key={token.currency.coinMinimalDenom}
@@ -219,14 +220,7 @@ export const TokensCard: FunctionComponent<{
                     stakeCurrency: chainStore.current.stakeCurrency
                   }}
                   balance={token.balance}
-                  priceToken={{
-                    airight: {
-                      usd: 0.00080235
-                    },
-                    tether: {
-                      usd: 1.001
-                    }
-                  }}
+                  priceBalance={priceBalance}
                 />
               );
             })}
