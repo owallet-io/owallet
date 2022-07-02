@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';
@@ -49,7 +49,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
 
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
   const [mode] = useState(registerConfig.mode);
-
+  const [statusPass, setStatusPass] = useState(false);
   const words = newMnemonicConfig.mnemonic.split(' ');
 
   const {
@@ -127,9 +127,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           return (
             <TextInput
               label="Username"
-              containerStyle={{
-                paddingBottom: 6
-              }}
               inputStyle={{
                 ...styles.borderInput
               }}
@@ -153,7 +150,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
         name="name"
         defaultValue=""
       />
-      <BIP44AdvancedButton bip44Option={bip44Option} />
       {mode === 'create' ? (
         <React.Fragment>
           <Controller
@@ -178,6 +174,22 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
                   }}
+                  inputRight={
+                    <TouchableOpacity
+                      onPress={() => setStatusPass(!statusPass)}
+                    >
+                      <Image
+                        style={{
+                          width: 22,
+                          height: 22
+                        }}
+                        source={require('../../../assets/image/transactions/eye.png')}
+                        resizeMode="contain"
+                        fadeDuration={0}
+                      />
+                    </TouchableOpacity>
+                  }
+                  secureTextEntry={!statusPass}
                   error={errors.password?.message}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -228,6 +240,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           />
         </React.Fragment>
       ) : null}
+      <View style={{ alignItems: 'flex-start' }}>
+        <BIP44AdvancedButton bip44Option={bip44Option} />
+      </View>
       <View
         style={{
           flex: 1
@@ -394,6 +409,6 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 4
+    borderRadius: 8
   }
 });

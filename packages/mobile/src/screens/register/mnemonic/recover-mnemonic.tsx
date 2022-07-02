@@ -6,7 +6,7 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../../components/button';
 import Clipboard from 'expo-clipboard';
 import { useStore } from '../../../stores';
@@ -86,7 +86,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
   } = useForm<FormData>();
 
   const [isCreating, setIsCreating] = useState(false);
-
+  const [statusPass, setStatusPass] = useState(false);
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
@@ -303,9 +303,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           return (
             <TextInput
               label="Username"
-              containerStyle={{
-                paddingBottom: 6
-              }}
               returnKeyType={mode === 'add' ? 'done' : 'next'}
               onSubmitEditing={() => {
                 if (mode === 'add') {
@@ -329,7 +326,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
         name="name"
         defaultValue=""
       />
-      <BIP44AdvancedButton bip44Option={bip44Option} />
+
       {mode === 'create' ? (
         <React.Fragment>
           <Controller
@@ -354,6 +351,22 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
                   inputStyle={{
                     ...styles.borderInput
                   }}
+                  inputRight={
+                    <TouchableOpacity
+                      onPress={() => setStatusPass(!statusPass)}
+                    >
+                      <Image
+                        style={{
+                          width: 22,
+                          height: 22
+                        }}
+                        source={require('../../../assets/image/transactions/eye.png')}
+                        resizeMode="contain"
+                        fadeDuration={0}
+                      />
+                    </TouchableOpacity>
+                  }
+                  secureTextEntry={!statusPass}
                   error={errors.password?.message}
                   onBlur={onBlur}
                   onChangeText={onChange}
@@ -404,6 +417,9 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           />
         </React.Fragment>
       ) : null}
+      <View style={{ alignItems: 'flex-start' }}>
+        <BIP44AdvancedButton bip44Option={bip44Option} />
+      </View>
       <TouchableOpacity
         disabled={isCreating}
         onPress={submit}
@@ -432,6 +448,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           </Text>
         )}
       </TouchableOpacity>
+
       <View
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
@@ -479,6 +496,6 @@ const styles = StyleSheet.create({
     paddingRight: 11,
     paddingTop: 12,
     paddingBottom: 12,
-    borderRadius: 4
+    borderRadius: 8
   }
 });

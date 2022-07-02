@@ -171,7 +171,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/process_pending.png')}
+              source={require('../../assets/image/transactions/process_pedding.gif')}
             />
             <View
               style={{

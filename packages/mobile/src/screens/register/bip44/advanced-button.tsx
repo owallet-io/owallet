@@ -28,12 +28,12 @@ export const BIP44AdvancedButton: FunctionComponent<{
       <Text
         style={{
           textAlign: 'center',
-          marginBottom: 16,
+          // marginBottom: 16,
           color: colors['purple-900'],
         }}
         onPress={() => setIsModalOpen(true)}
       >
-        Advanced
+        Advanced Option
       </Text>
     </React.Fragment>
   );

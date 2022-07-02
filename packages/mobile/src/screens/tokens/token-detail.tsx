@@ -1,30 +1,31 @@
-import React, { FunctionComponent, ReactElement } from 'react'
-import { observer } from 'mobx-react-lite'
-import { useStore } from '../../stores'
-import { StyleSheet, View, ViewStyle, Image } from 'react-native'
-import { Text } from '@rneui/base'
-import { CoinPretty } from '@owallet/unit'
-import { useSmartNavigation } from '../../navigation.provider'
-import { Currency } from '@owallet/types'
-import { TokenSymbol } from '../../components/token-symbol'
-import { DenomHelper } from '@owallet/common'
-import { Bech32Address } from '@owallet/cosmos'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { AnimatedCircularProgress } from 'react-native-circular-progress'
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
-import { _keyExtract } from '../../utils/helper'
-import { TransactionMinusIcon } from '../../components/icon'
-import LinearGradient from 'react-native-linear-gradient'
+import React, { FunctionComponent, ReactElement } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { StyleSheet, View, ViewStyle, Image } from 'react-native';
+import { Text } from '@rneui/base';
+import { CoinPretty } from '@owallet/unit';
+import { useSmartNavigation } from '../../navigation.provider';
+import { Currency } from '@owallet/types';
+import { TokenSymbol } from '../../components/token-symbol';
+import { DenomHelper } from '@owallet/common';
+import { Bech32Address } from '@owallet/cosmos';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { _keyExtract } from '../../utils/helper';
+import { TransactionMinusIcon } from '../../components/icon';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   BuyIcon,
   DepositIcon,
   SendDashboardIcon
-} from '../../components/icon/button'
+} from '../../components/icon/button';
 import {
   TransactionItem,
   TransactionSectionTitle
-} from '../transactions/components'
-import { PageWithScrollViewInBottomTabView } from '../../components/page'
+} from '../transactions/components';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { navigate } from '../../router/root';
 
 // hardcode data to test UI.
 const txsReceiver = [
@@ -52,54 +53,65 @@ const txsReceiver = [
     amount: '-100.02',
     denom: 'ORAI'
   }
-]
+];
 
 export const TokenDetailScreen: FunctionComponent = observer(() => {
-  const { chainStore, queriesStore, accountStore } = useStore()
-  const smartNavigation = useSmartNavigation()
+  const { chainStore, queriesStore, accountStore } = useStore();
+  const smartNavigation = useSmartNavigation();
 
-  const account = accountStore.getAccount(chainStore.current.chainId)
-  const queries = queriesStore.get(chainStore.current.chainId)
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
 
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
-  ).stakable
-  const stakable = queryStakable.balance
+  ).stakable;
+  const stakable = queryStakable.balance;
 
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
-  )
-  const delegated = queryDelegated.total
+  );
+  const delegated = queryDelegated.total;
 
   const queryUnbonding =
     queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       account.bech32Address
-    )
-  const unbonding = queryUnbonding.total
-  const stakedSum = delegated.add(unbonding)
-  const total = stakable.add(stakedSum)
+    );
+  const unbonding = queryUnbonding.total;
+  const stakedSum = delegated.add(unbonding);
+  const total = stakable.add(stakedSum);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
-    )
+    );
   const tokens = queryBalances.positiveNativeUnstakables
     .concat(queryBalances.nonNativeBalances)
-    .slice(0, 2)
+    .slice(0, 2);
 
-  const _onPressBtnMain = () => {}
+  const _onPressBtnMain = (name) => {
+    if (name === 'Buy') {
+      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
+    }
+    if (name === 'Deposit') {
+    }
+    if (name === 'Send') {
+      smartNavigation.navigateSmart('Send', {
+        currency: chainStore.current.stakeCurrency.coinMinimalDenom
+      });
+    }
+  };
   const RenderBtnMain = ({ name }) => {
-    let icon: ReactElement
+    let icon: ReactElement;
     switch (name) {
       case 'Buy':
-        icon = <BuyIcon />
-        break
+        icon = <BuyIcon />;
+        break;
       case 'Deposit':
-        icon = <DepositIcon />
-        break
+        icon = <DepositIcon />;
+        break;
       case 'Send':
-        icon = <SendDashboardIcon />
-        break
+        icon = <SendDashboardIcon />;
+        break;
     }
     return (
       <TouchableOpacity
@@ -107,11 +119,11 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
           backgroundColor: colors['purple-900'],
           borderWidth: 0.5,
           borderRadius: spacing['8'],
-          borderColor: colors['transparent'],
+          borderColor: colors['purple-900'],
           marginLeft: 10,
           marginRight: 10
         }}
-        onPress={() => _onPressBtnMain()}
+        onPress={() => _onPressBtnMain(name)}
       >
         <View
           style={{
@@ -137,8 +149,8 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
           </Text>
         </View>
       </TouchableOpacity>
-    )
-  }
+    );
+  };
   return (
     <PageWithScrollViewInBottomTabView>
       <View
@@ -242,7 +254,7 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
           backgroundColor: colors['white'],
           borderRadius: spacing['24'],
           paddingBottom: spacing['24'],
-          height: metrics.screenHeight /2
+          height: metrics.screenHeight / 2
         }}
       >
         <TransactionSectionTitle title={'Transaction list'} />
@@ -252,14 +264,20 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
             <TransactionItem
               item={item}
               key={index}
-              onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
+              onPress={() =>
+                smartNavigation.navigateSmart('Transactions.Detail', {})
+              }
             />
           )}
           keyExtractor={_keyExtract}
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (<View style={{
-            height: 12
-          }} />)}
+          ListFooterComponent={() => (
+            <View
+              style={{
+                height: 12
+              }}
+            />
+          )}
           ListEmptyComponent={
             <View style={styles.transactionListEmpty}>
               <Image
@@ -291,6 +309,7 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
             alignItems: 'center',
             marginTop: spacing['12']
           }}
+          onPress={() => smartNavigation.navigateSmart('Transactions', {})}
         >
           <View
             style={{
@@ -314,9 +333,8 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
         </TouchableOpacity>
       </View>
     </PageWithScrollViewInBottomTabView>
-  )
-})
-
+  );
+});
 
 const styles = StyleSheet.create({
   containerToken: {
@@ -331,4 +349,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   }
-})
+});
