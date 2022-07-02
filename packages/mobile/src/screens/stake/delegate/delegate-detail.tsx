@@ -19,7 +19,7 @@ export const DelegateDetailScreen: FunctionComponent<
             ...styles.title,
             marginVertical: spacing['16']
           }}
-        >{`Validator details`}</Text>
+        >{`Staking details`}</Text>
       </View>
 
       <View

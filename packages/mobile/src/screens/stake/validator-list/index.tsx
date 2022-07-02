@@ -5,7 +5,6 @@ import { PageWithSectionList } from '../../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { BondStatus, Validator } from '@owallet/stores';
-import { useStyle } from '../../../styles';
 import { SelectorModal, TextInput } from '../../../components/input';
 import { CardDivider } from '../../../components/card';
 import { useSmartNavigation } from '../../../navigation.provider';

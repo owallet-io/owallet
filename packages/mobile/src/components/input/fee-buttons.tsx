@@ -1,5 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { StyleSheet, TextStyle, View, ViewProps, ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewProps,
+  ViewStyle
+} from 'react-native';
 import { CText as Text } from '../text';
 import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
@@ -208,9 +214,11 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
         >
-          <View style={{
-            alignItems: 'center'
-          }}>
+          <View
+            style={{
+              alignItems: 'center'
+            }}
+          >
             {renderIconTypeFee(label, 20)}
             <Text
               style={{
@@ -339,17 +347,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
 );
 
 const styles = StyleSheet.create({
-  // style={style.flatten(
-  //   [
-  //     'flex-1',
-  //     'justify-between',
-  //     'padding-12',
-  //     'background-color-white',
-  //     'border-color-border-white',
-  //     'border-radius-12',
-  //   ],
-  //   [selected && 'border-color-button-primary', 'border-width-1']
-  // )}
   containerBtnFee: {
     flex: 1,
     justifyContent: 'center',
@@ -363,6 +360,6 @@ const styles = StyleSheet.create({
   containerIcon: {
     borderRadius: spacing['8'],
     padding: spacing['10'],
-    alignItems: 'center',
+    alignItems: 'center'
   }
 });

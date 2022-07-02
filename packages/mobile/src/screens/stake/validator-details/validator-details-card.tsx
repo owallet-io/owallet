@@ -3,13 +3,65 @@ import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../../components/card';
 import { useStore } from '../../../stores';
 import { BondStatus } from '@owallet/stores';
-import { View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { colors, metrics, spacing, typography } from '../../../themes';
+import {
+  ValidatorAPYIcon,
+  ValidatorBlockIcon,
+  ValidatorCommissionIcon,
+  ValidatorVotingIcon
+} from '../../../components/icon';
+
+const renderIconValidator = (label: string, size?: number) => {
+  switch (label) {
+    case 'Blocks':
+      return (
+        <View
+          style={{
+            ...styles.containerIcon
+          }}
+        >
+          <ValidatorBlockIcon color={'#1E1E1E'} size={size} />
+        </View>
+      );
+    case 'APY':
+      return (
+        <View
+          style={{
+            ...styles.containerIcon
+          }}
+        >
+          <ValidatorAPYIcon color={'#1E1E1E'} size={size} />
+        </View>
+      );
+    case 'Commission':
+      return (
+        <View
+          style={{
+            ...styles.containerIcon
+          }}
+        >
+          <ValidatorCommissionIcon color={'#1E1E1E'} size={size} />
+        </View>
+      );
+    case 'Voting power':
+      return (
+        <View
+          style={{
+            ...styles.containerIcon
+          }}
+        >
+          <ValidatorVotingIcon color={'#1E1E1E'} size={size} />
+        </View>
+      );
+  }
+};
 
 export const ValidatorDetailsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -33,7 +85,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
       .concat(unbondedValidators.validators)
-      .find((val) => val.operator_address === validatorAddress);
+      .find(val => val.operator_address === validatorAddress);
   }, [
     bondedValidators.validators,
     unbondingValidators.validators,
@@ -50,94 +102,170 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
     unbondedValidators.getValidatorThumbnail(validatorAddress);
 
+  const renderTextDetail = (label: string) => {
+    switch (label) {
+      case 'Blocks':
+        return (
+          <Text style={{ ...styles.textDetail }}>{`${115.002} blocks`}</Text>
+        );
+      case 'APY':
+        return <Text style={{ ...styles.textDetail }}>{`${24.5}%`}</Text>;
+      case 'Commission':
+        return (
+          <Text style={{ ...styles.textDetail }}>
+            {new IntPretty(new Dec(validator.commission.commission_rates.rate))
+              .moveDecimalPointRight(2)
+              .maxDecimals(2)
+              .trim(true)
+              .toString() + '%'}
+          </Text>
+        );
+      case 'Voting power':
+        return (
+          <Text style={{ ...styles.textDetail }}>
+            {new CoinPretty(
+              chainStore.current.stakeCurrency,
+              new Dec(validator.tokens)
+            )
+              .maxDecimals(0)
+              .toString()}
+          </Text>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <Card style={containerStyle}>
+    <View>
+      <Text
+        style={{
+          ...typography.h3,
+          fontWeight: '700',
+          color: colors['gray-900'],
+          textAlign: 'center',
+          marginTop: spacing['16']
+        }}
+      >
+        Validator details
+      </Text>
       {validator ? (
-        <CardBody>
+        <View style={containerStyle}>
           <View
-            style={style.flatten([
-              'flex-row',
-              'items-center',
-              'margin-bottom-16'
-            ])}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: spacing['16']
+            }}
           >
-            <ValidatorThumbnail
-              style={style.flatten(['margin-right-12'])}
-              size={44}
-              url={thumbnail}
-            />
-            <Text style={style.flatten(['h4', 'color-text-black-medium'])}>
+            <ValidatorThumbnail size={44} url={thumbnail} />
+            <Text
+              style={{
+                ...styles.textInfo,
+                fontWeight: '700'
+              }}
+            >
               {validator.description.moniker}
             </Text>
           </View>
-          <View style={style.flatten(['flex-row', 'margin-bottom-12'])}>
-            <View style={style.flatten(['flex-1'])}>
-              <Text
-                style={style.flatten([
-                  'h6',
-                  'color-text-black-medium',
-                  'margin-bottom-4'
-                ])}
-              >
-                Commission
-              </Text>
-              <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
-                {new IntPretty(
-                  new Dec(validator.commission.commission_rates.rate)
-                )
-                  .moveDecimalPointRight(2)
-                  .maxDecimals(2)
-                  .trim(true)
-                  .toString() + '%'}
-              </Text>
-            </View>
-            <View style={style.flatten(['flex-1'])}>
-              <Text
-                style={style.flatten([
-                  'h6',
-                  'color-text-black-medium',
-                  'margin-bottom-4'
-                ])}
-              >
-                Voting Power
-              </Text>
-              <Text style={style.flatten(['body3', 'color-text-black-medium'])}>
-                {new CoinPretty(
-                  chainStore.current.stakeCurrency,
-                  new Dec(validator.tokens)
-                )
-                  .maxDecimals(0)
-                  .toString()}
-              </Text>
-            </View>
+
+          <View
+            style={{
+              flexWrap: 'wrap',
+              flexDirection: 'row',
+              justifyContent: 'space-between'
+            }}
+          >
+            {['Blocks', 'APY', 'Commission', 'Voting power'].map(
+              (label: string, index: number) => (
+                <View
+                  style={{
+                    ...styles.containerItem
+                  }}
+                >
+                  {renderIconValidator(label, 24)}
+                  <Text
+                    style={{
+                      ...typography.h7,
+                      fontWeight: '700',
+                      textAlign: 'center',
+                      marginTop: spacing['6']
+                    }}
+                  >
+                    {label}
+                  </Text>
+                  {renderTextDetail(label)}
+                </View>
+              )
+            )}
           </View>
           <View style={style.flatten(['margin-bottom-14'])}>
             <Text
-              style={style.flatten([
-                'h6',
-                'color-text-black-medium',
-                'margin-bottom-4'
-              ])}
+              style={{
+                ...typography.h7,
+                color: colors['gray-900'],
+                fontWeight: '700',
+                marginTop: spacing['24'],
+                marginBottom: spacing['4']
+              }}
             >
               Description
             </Text>
             <Text
-              style={style.flatten(['body3', 'color-text-black-medium'])}
+              style={{
+                ...styles.textDetail,
+                textAlign: 'left',
+                fontWeight: '400',
+                marginBottom: spacing['28']
+              }}
               selectable={true}
             >
               {validator.description.details}
             </Text>
           </View>
           <Button
-            text="Stake"
+            text="Stake now"
+            containerStyle={{
+              backgroundColor: colors['purple-900']
+            }}
             onPress={() => {
               smartNavigation.navigateSmart('Delegate', {
                 validatorAddress
               });
             }}
           />
-        </CardBody>
+        </View>
       ) : null}
-    </Card>
+    </View>
   );
+});
+
+const styles = StyleSheet.create({
+  containerIcon: {
+    borderRadius: spacing['8'],
+    padding: spacing['10'],
+    alignItems: 'center',
+    backgroundColor: colors['gray-10']
+  },
+  textInfo: {
+    ...typography.h5,
+    fontWeight: '400',
+    marginLeft: spacing['12']
+  },
+  containerItem: {
+    borderWidth: 1,
+    borderColor: colors['purple-50'],
+    borderRadius: spacing['8'],
+    width: (metrics.screenWidth - 60) / 2,
+    marginVertical: spacing['6'],
+    paddingVertical: spacing['16'],
+    paddingHorizontal: spacing['16'],
+    alignItems: 'center'
+  },
+  textDetail: {
+    ...typography.h7,
+    fontWeight: '700',
+    color: colors['gray-300'],
+    textAlign: 'center'
+  }
 });
