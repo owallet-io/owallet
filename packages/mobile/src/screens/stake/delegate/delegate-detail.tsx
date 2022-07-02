@@ -1,161 +1,238 @@
-import { IntPretty, Dec, CoinPretty } from '@owallet/unit';
-import React, { FunctionComponent } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { BondStatus } from '@owallet/stores';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { CText as Text } from '../../../components/text';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
 import { typography, colors, spacing } from '../../../themes';
 
 interface DelegateDetailProps {}
 
-export const DelegateDetailScreen: FunctionComponent<
-  DelegateDetailProps
-> = ({}) => {
-  return (
-    <View>
-      <View>
-        <Text
-          style={{
-            ...styles.title,
-            marginVertical: spacing['16']
-          }}
-        >{`Staking details`}</Text>
-      </View>
-
-      <View
-        style={{
-          ...styles.containerInfo
-        }}
+export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
+  observer(({}) => {
+    const route = useRoute<
+      RouteProp<
+        Record<
+          string,
+          {
+            validatorAddress: string;
+          }
+        >,
+        string
       >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center'
-          }}
-        >
-          <ValidatorThumbnail
-            style={styles.validatorThumbnail}
-            size={38}
-            url={''}
-          />
+    >();
+    const { chainStore, queriesStore, accountStore } = useStore();
+    const validatorAddress = route?.params?.validatorAddress;
+
+    const account = accountStore.getAccount(chainStore.current.chainId);
+    const queries = queriesStore.get(chainStore.current.chainId);
+
+    const smartNavigation = useSmartNavigation();
+    const staked = queries.cosmos.queryDelegations
+      .getQueryBech32Address(account.bech32Address)
+      .getDelegationTo(validatorAddress);
+
+    const rewards = queries.cosmos.queryRewards
+      .getQueryBech32Address(account.bech32Address)
+      .getStakableRewardOf(validatorAddress);
+
+    const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+      BondStatus.Bonded
+    );
+    const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
+      BondStatus.Unbonding
+    );
+    const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
+      BondStatus.Unbonded
+    );
+    const thumbnail =
+      bondedValidators.getValidatorThumbnail(validatorAddress) ||
+      unbondingValidators.getValidatorThumbnail(validatorAddress) ||
+      unbondedValidators.getValidatorThumbnail(validatorAddress);
+    const validator = useMemo(() => {
+      return bondedValidators.validators
+        .concat(unbondingValidators.validators)
+        .concat(unbondedValidators.validators)
+        .find(val => val.operator_address === validatorAddress);
+    }, [
+      bondedValidators.validators,
+      unbondingValidators.validators,
+      unbondedValidators.validators,
+      validatorAddress
+    ]);
+
+    return (
+      <View>
+        <View>
           <Text
             style={{
-              ...styles.textInfo,
-              marginLeft: spacing['12'],
-              flexShrink: 1
+              ...styles.title,
+              marginVertical: spacing['16']
             }}
-          >
-            {`uwunode01_moniker`}
-          </Text>
+          >{`Staking details`}</Text>
         </View>
 
         <View
           style={{
-            marginTop: spacing['20'],
-            flexDirection: 'row'
+            ...styles.containerInfo
           }}
         >
           <View
             style={{
-              flex: 1
+              flexDirection: 'row',
+              alignItems: 'center'
             }}
           >
+            <ValidatorThumbnail
+              style={styles.validatorThumbnail}
+              size={38}
+              url={thumbnail}
+            />
             <Text
               style={{
                 ...styles.textInfo,
-                marginBottom: spacing['4']
+                marginLeft: spacing['12'],
+                flexShrink: 1
               }}
             >
-              Staking
+              {validator.description.moniker}
             </Text>
-            <Text style={{ ...styles.textBlock }}>{`${115.002} ORAI`}</Text>
           </View>
-          <View
-            style={{
-              flex: 1,
-              alignItems: 'flex-end'
-            }}
-          >
-            <Text style={{ ...styles.textInfo, marginBottom: spacing['4'] }}>
-              APY
-            </Text>
-            <Text style={{ ...styles.textBlock }}>{`${24.5}%`}</Text>
-          </View>
-        </View>
 
-        <View
-          style={{
-            marginTop: spacing['20'],
-            flexDirection: 'row'
-          }}
-        >
           <View
             style={{
-              flex: 1
+              marginTop: spacing['20'],
+              flexDirection: 'row'
             }}
           >
-            <Text
+            <View
               style={{
-                ...styles.textInfo,
-                marginBottom: spacing['4']
+                flex: 1
               }}
             >
-              Rewards
-            </Text>
-            <Text style={{ ...styles.textBlock }}>{`122.48 ORAI`}</Text>
+              <Text
+                style={{
+                  ...styles.textInfo,
+                  marginBottom: spacing['4']
+                }}
+              >
+                Staking
+              </Text>
+              <Text style={{ ...styles.textBlock }}>
+                {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'flex-end'
+              }}
+            >
+              <Text style={{ ...styles.textInfo, marginBottom: spacing['4'] }}>
+                APY
+              </Text>
+              <Text style={{ ...styles.textBlock }}>{`${24.5}%`}</Text>
+            </View>
           </View>
+
           <View
             style={{
-              flex: 1,
-              alignItems: 'flex-end',
-              justifyContent: 'center'
+              marginTop: spacing['20'],
+              flexDirection: 'row'
             }}
           >
-            <Text
+            <View
               style={{
-                ...typography.h7,
-                color: colors['purple-900']
+                flex: 1
               }}
-            >{`Validator details`}</Text>
+            >
+              <Text
+                style={{
+                  ...styles.textInfo,
+                  marginBottom: spacing['4']
+                }}
+              >
+                Rewards
+              </Text>
+              <Text style={{ ...styles.textBlock }}>
+                {rewards.trim(true).shrink(true).maxDecimals(6).toString()}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={{
+                flex: 1,
+                alignItems: 'flex-end',
+                justifyContent: 'center'
+              }}
+              onPress={() => {
+                smartNavigation.navigateSmart('Validator.Details', {
+                  validatorAddress
+                });
+              }}
+            >
+              <Text
+                style={{
+                  ...typography.h7,
+                  color: colors['purple-900']
+                }}
+              >{`Validator details`}</Text>
+            </TouchableOpacity>
           </View>
         </View>
+        <RectButton
+          style={{ ...styles.containerBtn }}
+          onPress={() => {
+            smartNavigation.navigateSmart('Delegate', {
+              validatorAddress
+            });
+          }}
+        >
+          <Text
+            style={{
+              ...styles.textBtn,
+              textAlign: 'center',
+              color: colors['white']
+            }}
+          >{`Stake more`}</Text>
+        </RectButton>
+        <RectButton
+          style={{
+            ...styles.containerBtn,
+            backgroundColor: colors['purple-50']
+          }}
+          onPress={() => {
+            smartNavigation.navigateSmart('Redelegate', { validatorAddress });
+          }}
+        >
+          <Text
+            style={{
+              ...styles.textBtn,
+              textAlign: 'center',
+              color: colors['purple-900']
+            }}
+          >{`Switch validator`}</Text>
+        </RectButton>
+        <RectButton
+          style={{ ...styles.containerBtn, backgroundColor: colors['gray-10'] }}
+          onPress={() => {
+            smartNavigation.navigateSmart('Undelegate', { validatorAddress });
+          }}
+        >
+          <Text
+            style={{
+              ...styles.textBtn,
+              textAlign: 'center',
+              color: colors['red-500']
+            }}
+          >{`Unstake`}</Text>
+        </RectButton>
       </View>
-      <RectButton style={{ ...styles.containerBtn }} onPress={() => {}}>
-        <Text
-          style={{
-            ...styles.textBtn,
-            textAlign: 'center',
-            color: colors['white']
-          }}
-        >{`Stake more`}</Text>
-      </RectButton>
-      <RectButton
-        style={{ ...styles.containerBtn, backgroundColor: colors['purple-50'] }}
-        onPress={() => {}}
-      >
-        <Text
-          style={{
-            ...styles.textBtn,
-            textAlign: 'center',
-            color: colors['purple-900']
-          }}
-        >{`Switch validator`}</Text>
-      </RectButton>
-      <RectButton
-        style={{ ...styles.containerBtn, backgroundColor: colors['gray-10'] }}
-        onPress={() => {}}
-      >
-        <Text
-          style={{
-            ...styles.textBtn,
-            textAlign: 'center',
-            color: colors['red-500']
-          }}
-        >{`Unstake`}</Text>
-      </RectButton>
-    </View>
-  );
-};
+    );
+  });
 
 const styles = StyleSheet.create({
   title: {

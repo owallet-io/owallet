@@ -18,6 +18,7 @@ import {
 } from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
+import { colors, spacing } from '../../../themes';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -111,7 +112,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       contentContainerStyle={style.get('flex-grow-1')}
     >
       <View style={style.flatten(['height-page-pad'])} />
-      <Card style={style.flatten(['margin-bottom-12', 'border-radius-8'])}>
+      <View style={{
+        marginBottom: spacing['12'],
+        borderRadius: spacing['8'],
+        backgroundColor: colors['white']
+      }}>
         <CardBody>
           <View style={style.flatten(['flex-row', 'items-center'])}>
             <ValidatorThumbnail
@@ -142,7 +147,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             </Text>
           </View>
         </CardBody>
-      </Card>
+      </View>
       {/*
         // The recipient validator is selected by the route params, so no need to show the address input.
         <AddressInput
