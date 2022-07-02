@@ -68,6 +68,7 @@ export const colors = {
   'camera-loading-background': '#fff', // rgba(255,255,255,0.95)
   'big-image-placeholder': '#E7E4EF',
   // red
+  'red-10': '#F8EFFF',
   'red-50': '#F3F1F5',
   'red-500': '#E63A3A',
   'red-700': '#FF0000',
@@ -95,5 +96,10 @@ export const colors = {
   'purple-400': '#AE94DE',
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
-  "purple-h1": "#7E58EA"
-}
+
+  // yellow
+  'yellow-10': '#FFF6E9',
+
+  //splash-background
+  'splash-background': '#FBF8FF'
+};

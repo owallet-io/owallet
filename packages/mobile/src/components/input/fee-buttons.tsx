@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { StyleSheet, TextStyle, View, ViewProps } from 'react-native';
+import { StyleSheet, TextStyle, View, ViewProps, ViewStyle } from 'react-native';
 import { CText as Text } from '../text';
 import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
@@ -15,11 +15,18 @@ import { useStore } from '../../stores';
 import { CoinPretty, PricePretty } from '@owallet/unit';
 import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
-import { FastIcon, LowIcon, AverageIcon } from '../icon';
-import { colors, spacing } from '../../themes';
+import {
+  FastIcon,
+  LowIcon,
+  AverageIcon,
+  LowIconFill,
+  AverageIconFill,
+  FastIconFill
+} from '../icon';
+import { colors, spacing, typography } from '../../themes';
 export interface FeeButtonsProps {
   labelStyle?: TextStyle;
-  containerStyle?: ViewProps;
+  containerStyle?: ViewStyle;
   buttonsContainerStyle?: ViewProps;
   errorLabelStyle?: TextStyle;
 
@@ -128,6 +135,54 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       }
     })();
 
+    const renderIconTypeFee = (label: string, size?: number) => {
+      switch (label) {
+        case 'Low':
+          return (
+            <View
+              style={{
+                ...styles.containerIcon,
+                backgroundColor: colors['gray-10']
+              }}
+            >
+              <LowIconFill color={'#1E1E1E'} size={size} />
+            </View>
+          );
+        case 'Average':
+          return (
+            <View
+              style={{
+                ...styles.containerIcon,
+                backgroundColor: colors['yellow-10']
+              }}
+            >
+              <AverageIconFill color={'#1E1E1E'} size={size} />
+            </View>
+          );
+        case 'Fast':
+          return (
+            <View
+              style={{
+                ...styles.containerIcon,
+                backgroundColor: colors['red-10']
+              }}
+            >
+              <FastIconFill color={'#1E1E1E'} size={size} />
+            </View>
+          );
+        default:
+          return (
+            <View
+              style={{
+                ...styles.containerIcon
+              }}
+            >
+              <LowIconFill color={'#1E1E1E'} size={size} />
+            </View>
+          );
+      }
+    };
+
     const renderButton: (
       label: string,
       price: PricePretty | undefined,
@@ -139,6 +194,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         <RectButton
           style={{
             ...styles.containerBtnFee,
+            alignItems: 'center',
             ...(selected
               ? {
                   borderColor: colors['primary'],
@@ -152,9 +208,18 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
         >
-          <View style={style.flatten(['flex-row', 'justify-between'])}>
-            <Text style={style.flatten(['body3'])}>{label}</Text>
-            {renderIconTypeFee(label)}
+          <View style={{
+            alignItems: 'center'
+          }}>
+            {renderIconTypeFee(label, 20)}
+            <Text
+              style={{
+                ...typography.h7,
+                fontWeight: '700'
+              }}
+            >
+              {label}
+            </Text>
           </View>
           {price ? (
             <Text
@@ -182,10 +247,10 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
 
     return (
       <View
-        style={StyleSheet.flatten([
-          style.flatten(['padding-bottom-28']),
-          containerStyle
-        ])}
+        style={{
+          paddingBottom: spacing['28'],
+          ...containerStyle
+        }}
       >
         <Text
           style={StyleSheet.flatten([
@@ -200,16 +265,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           {label}
         </Text>
         <View
-          // style={StyleSheet.flatten([
-          //   style.flatten([
-          //     'flex-row',
-          //     'border-radius-4',
-          //     'border-width-1',
-          //     'border-color-border-white',
-          //     'overflow-hidden'
-          //   ]),
-          //   buttonsContainerStyle
-          // ])}
           style={{
             flexDirection: 'row'
           }}
@@ -304,5 +359,10 @@ const styles = StyleSheet.create({
     borderRadius: spacing['12'],
     marginLeft: 5,
     marginRight: 5
+  },
+  containerIcon: {
+    borderRadius: spacing['8'],
+    padding: spacing['10'],
+    alignItems: 'center',
   }
 });

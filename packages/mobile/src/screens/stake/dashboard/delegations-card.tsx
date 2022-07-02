@@ -2,7 +2,7 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { Card, CardBody, CardDivider } from '../../../components/card';
-import { View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { StakedTokenSymbol } from '../../../components/token-symbol';
@@ -12,7 +12,8 @@ import { RightArrowIcon } from '../../../components/icon';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { RectButton } from '../../../components/rect-button';
-import { colors } from '../../../themes';
+import { colors, spacing, typography } from '../../../themes';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -67,58 +68,14 @@ export const DelegationsCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   return (
-    <Card style={{
-      ...containerStyle,
-      backgroundColor: colors['white']
-    }}>
-      <CardBody
-        style={{
-          backgroundColor: 'white',
-          paddingBottom: 28
-        }}
-      >
-        <Text
-          style={style.flatten([
-            'h4',
-            'color-text-black-very-high',
-            'margin-bottom-28'
-          ])}
-        >
-          My Staking
-        </Text>
-        <View style={style.flatten(['flex-row', 'items-center'])}>
-          <StakedTokenSymbol size={44} />
-          <View style={style.flatten(['margin-left-16'])}>
-            <Text
-              style={style.flatten([
-                'subtitle3',
-                'color-primary',
-                'margin-bottom-4'
-              ])}
-            >
-              Staked
-            </Text>
-            <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
-              {staked.maxDecimals(6).trim(true).shrink(true).toString()}
-            </Text>
-          </View>
-          <View style={style.flatten(['flex-1'])} />
-          <Button
-            text="Stake"
-            size="small"
-            containerStyle={style.flatten(['min-width-72'])}
-            onPress={() => {
-              smartNavigation.navigateSmart('Validator.List', {});
-            }}
-          />
-        </View>
-      </CardBody>
-      {delegations && delegations.length > 0 && <CardDivider />}
+    <View>
       {delegations && delegations.length > 0 && (
-        <CardBody style={{
-        backgroundColor: colors['white']
-        }}>
-          {delegations.map((del) => {
+        <View
+          style={{
+            ...containerStyle
+          }}
+        >
+          {delegations.map(del => {
             const val = validatorsMap.get(del.validator_address);
             if (!val) {
               return null;
@@ -134,55 +91,67 @@ export const DelegationsCard: FunctionComponent<{
             );
 
             return (
-              <RectButton
+              <TouchableOpacity
                 key={del.validator_address}
-                style={style.flatten([
-                  'flex-row',
-                  'items-center',
-                  'padding-x-20',
-                  'padding-y-14'
-                ])}
+                style={{
+                  ...styles.containerItem,
+                  marginTop: 8,
+                  marginBottom: 8
+                }}
                 onPress={() => {
-                  smartNavigation.navigateSmart('Validator.Details', {
+                  smartNavigation.navigate('Delegate.Detail', {
                     validatorAddress: del.validator_address
                   });
                 }}
               >
                 <ValidatorThumbnail
-                  style={style.flatten(['margin-right-16'])}
+                  style={{
+                    marginRight: spacing['12']
+                  }}
                   size={40}
                   url={thumbnail}
                 />
                 <Text
-                  style={style.flatten([
-                    'h6',
-                    'color-text-black-medium',
-                    'max-width-160'
-                  ])}
+                   style={{
+                    ...styles.textInfo,
+                    fontWeight: '700',
+                    fontSize: 16
+                  }}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
                   {val.description.moniker}
                 </Text>
-                <View style={style.flatten(['flex-1'])} />
+                <View style={{flex: 1}} />
                 <Text
-                  style={style.flatten([
-                    'body1',
-                    'color-text-black-low',
-                    'margin-right-12'
-                  ])}
+                  style={{
+                    ...styles.textInfo
+                  }}
                 >
                   {amount.maxDecimals(4).trim(true).shrink(true).toString()}
                 </Text>
-                <RightArrowIcon
-                  height={12}
-                  color={style.get('color-text-black-low').color}
-                />
-              </RectButton>
+              </TouchableOpacity>
             );
           })}
-        </CardBody>
+        </View>
       )}
-    </Card>
+    </View>
   );
+});
+
+const styles = StyleSheet.create({
+  containerItem: {
+    backgroundColor: colors['white'],
+    borderRadius: spacing['8'],
+    flexDirection: 'row',
+    marginHorizontal: spacing['24'],
+    padding: spacing['8'],
+    alignItems: 'center',
+    justifyContent: 'flex-start'
+  },
+  textInfo: {
+    ...typography.h5,
+    fontWeight: '400',
+    color: colors['gray-900']
+  }
 });

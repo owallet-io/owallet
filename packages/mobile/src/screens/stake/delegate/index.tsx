@@ -33,7 +33,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { modalStore, chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { modalStore, chainStore, accountStore, queriesStore, analyticsStore } =
+    useStore();
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -67,15 +68,15 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 
   const validator = bondedValidators.getValidator(validatorAddress);
-  
+
   const _onOpenStakeModal = () => {
-    modalStore.setOpen()
+    modalStore.setOpen();
     modalStore.setChildren(
       StakeAdvanceModal({
         config: sendConfigs
       })
-    )    
-  }
+    );
+  };
 
   return (
     <PageWithScrollView
@@ -88,7 +89,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     >
       <Text
         style={{
-          ...styles.title,
+          ...styles.title
         }}
       >
         Staking
@@ -100,10 +101,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           padding: spacing['24']
         }}
       >
-        <AmountInput
-          label={'Amount'}
-          amountConfig={sendConfigs.amountConfig}
-        />
+        <AmountInput label={'Amount'} amountConfig={sendConfigs.amountConfig} />
         <MemoInput
           label={'Memo (Optional)'}
           memoConfig={sendConfigs.memoConfig}
@@ -157,61 +155,52 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             <Text style={{ ...styles.textNormal }}>{`0`}</Text>
           </View>
         </View>
-
-        {/* <Button
-          text="Stake"
-          size="large"
-          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-          loading={account.isSendingMsg === 'delegate'}
-          onPress={async () => {
-            if (account.isReadyToSendMsgs && txStateIsValid) {
-              try {
-                await account.cosmos.sendDelegateMsg(
-                  sendConfigs.amountConfig.amount,
-                  sendConfigs.recipientConfig.recipient,
-                  sendConfigs.memoConfig.memo,
-                  sendConfigs.feeConfig.toStdFee(),
-                  {
-                    preferNoSetMemo: true,
-                    preferNoSetFee: true
-                  },
-                  {
-                    onBroadcasted: txHash => {
-                      analyticsStore.logEvent('Delegate tx broadcasted', {
-                        chainId: chainStore.current.chainId,
-                        chainName: chainStore.current.chainName,
-                        validatorName: validator?.description.moniker,
-                        feeType: sendConfigs.feeConfig.feeType
-                      })
-                      smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: Buffer.from(txHash).toString('hex')
-                      })
-                    }
-                  }
-                )
-              } catch (e) {
-                if (e?.message === 'Request rejected') {
-                  return
-                }
-                console.log(e)
-                smartNavigation.navigateSmart('Home', {})
-              }
-            }
-          }}
-        /> */}
       </View>
-      <RectButton
-        style={{ ...styles.containerBtn }}
-        onPress={() => {
-          smartNavigation.navigateSmart('Delegate', {
-            validatorAddress: validatorAddress
-          });
+      <Button
+        containerStyle={{
+          marginHorizontal: spacing['20'],
+          backgroundColor: colors['purple-900']
         }}
-      >
-        <Text
-          style={{ ...styles.textBtn, textAlign: 'center' }}
-        >{`Submit`}</Text>
-      </RectButton>
+        text="Stake"
+        size="large"
+        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+        loading={account.isSendingMsg === 'delegate'}
+        onPress={async () => {
+          if (account.isReadyToSendMsgs && txStateIsValid) {
+            try {
+              await account.cosmos.sendDelegateMsg(
+                sendConfigs.amountConfig.amount,
+                sendConfigs.recipientConfig.recipient,
+                sendConfigs.memoConfig.memo,
+                sendConfigs.feeConfig.toStdFee(),
+                {
+                  preferNoSetMemo: true,
+                  preferNoSetFee: true
+                },
+                {
+                  onBroadcasted: txHash => {
+                    analyticsStore.logEvent('Delegate tx broadcasted', {
+                      chainId: chainStore.current.chainId,
+                      chainName: chainStore.current.chainName,
+                      validatorName: validator?.description.moniker,
+                      feeType: sendConfigs.feeConfig.feeType
+                    });
+                    smartNavigation.pushSmart('TxPendingResult', {
+                      txHash: Buffer.from(txHash).toString('hex')
+                    });
+                  }
+                }
+              );
+            } catch (e) {
+              if (e?.message === 'Request rejected') {
+                return;
+              }
+              console.log(e);
+              smartNavigation.navigateSmart('Home', {});
+            }
+          }
+        }}
+      />
     </PageWithScrollView>
   );
 });

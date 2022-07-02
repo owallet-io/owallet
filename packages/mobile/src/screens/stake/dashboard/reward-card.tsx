@@ -2,13 +2,14 @@ import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { Card, CardBody } from '../../../components/card';
-import { View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
 import { Dec } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation.provider';
-import { colors } from '../../../themes';
+import { colors, spacing, typography } from '../../../themes';
+import { DownArrowIcon } from '../../../components/icon';
 
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -33,88 +34,123 @@ export const MyRewardCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   return (
-    <Card style={containerStyle}>
-      <CardBody
+    <View style={containerStyle}>
+      <View
         style={{
           backgroundColor: colors['white']
         }}
       >
         <Text
-          style={style.flatten([
-            'body3',
-            'color-text-black-medium',
-            'margin-bottom-12'
-          ])}
+          style={{
+            ...styles.textInfo,
+            fontWeight: '700'
+          }}
         >
-          My Pending Rewards
+          My Pending Rewards (
+          <Text style={style.flatten(['h7', 'color-primary'])}>
+            {`${apy.maxDecimals(2).trim(true).toString()}% per year`}
+          </Text>
+          )
         </Text>
-        <View style={style.flatten(['flex-row', 'items-end'])}>
-          <View>
-            <Text
-              style={style.flatten([
-                'h3',
-                'color-text-black-medium',
-                'margin-bottom-20'
-              ])}
-            >
-              {pendingStakableReward
-                .shrink(true)
-                .maxDecimals(6)
-                .trim(true)
-                .upperCase(true)
-                .toString()}
-            </Text>
-            <Text style={style.flatten(['h7', 'color-primary'])}>
-              {`${apy.maxDecimals(2).trim(true).toString()}% per year`}
-            </Text>
-          </View>
-          <View style={style.flatten(['flex-1'])} />
-          <Button
-            size="small"
-            text="Claim"
-            mode="light"
-            containerStyle={style.flatten(['min-width-72'])}
-            onPress={async () => {
-              try {
-                analyticsStore.logEvent("Claim reward started", {
-                  chainId: chainStore.current.chainId,
-                  chainName: chainStore.current.chainName,
-                });
 
-                await account.cosmos.sendWithdrawDelegationRewardMsgs(
-                  queryReward.getDescendingPendingRewardValidatorAddresses(8),
-                  '',
-                  {},
-                  {},
-                  {
-                    onBroadcasted: (txHash) => {
-                      analyticsStore.logEvent('Claim reward tx broadcasted', {
-                        chainId: chainStore.current.chainId,
-                        chainName: chainStore.current.chainName
-                      });
-                      smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: Buffer.from(txHash).toString('hex')
-                      });
-                    }
-                  }
-                );
-              } catch (e) {
-                if (e?.message === 'Request rejected') {
-                  return;
-                }
-                console.log(e);
-                smartNavigation.navigateSmart('Home', {});
-              }
+        <View>
+          <Text
+            style={{
+              ...styles.textInfo,
+              marginTop: spacing['4'],
+              fontWeight: '400',
+              fontSize: 20
             }}
-            disabled={
-              !account.isReadyToSendMsgs ||
-              pendingStakableReward.toDec().equals(new Dec(0)) ||
-              queryReward.pendingRewardValidatorAddresses.length === 0
-            }
-            loading={account.isSendingMsg === 'withdrawRewards'}
-          />
+          >
+            {pendingStakableReward
+              .shrink(true)
+              .maxDecimals(6)
+              .trim(true)
+              .upperCase(true)
+              .toString()}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: spacing['8']
+            }}
+          >
+            <Button
+              size="small"
+              text="Claim"
+              mode="light"
+              containerStyle={{
+                ...styles.containerBtn,
+              }}
+              style ={{
+                ...styles.btn
+              }}
+              textStyle={{
+                ...styles.textInfo,
+                fontWeight: '400',
+                color: colors['purple-900'],
+                marginLeft: 0,
+              }}
+              onPress={async () => {
+                try {
+                  await account.cosmos.sendWithdrawDelegationRewardMsgs(
+                    queryReward.getDescendingPendingRewardValidatorAddresses(8),
+                    '',
+                    {},
+                    {},
+                    {
+                      onBroadcasted: txHash => {
+                        analyticsStore.logEvent('Claim reward tx broadcasted', {
+                          chainId: chainStore.current.chainId,
+                          chainName: chainStore.current.chainName
+                        });
+                        smartNavigation.pushSmart('TxPendingResult', {
+                          txHash: Buffer.from(txHash).toString('hex')
+                        });
+                      }
+                    }
+                  );
+                } catch (e) {
+                  if (e?.message === 'Request rejected') {
+                    return;
+                  }
+                  console.log(e);
+                  smartNavigation.navigateSmart('Home', {});
+                }
+              }}
+              disabled={
+                !account.isReadyToSendMsgs ||
+                pendingStakableReward.toDec().equals(new Dec(0)) ||
+                queryReward.pendingRewardValidatorAddresses.length === 0
+              }
+              loading={account.isSendingMsg === 'withdrawRewards'}
+            />
+            <DownArrowIcon color={colors['purple-900']} height={18} />
+          </View>
         </View>
-      </CardBody>
-    </Card>
+      </View>
+    </View>
   );
+});
+
+const styles = StyleSheet.create({
+  textInfo: {
+    ...typography.h6,
+    color: colors['text-black-medium']
+  },
+  containerBtn: {
+    borderWidth: 0,
+    backgroundColor: colors['transparent'],
+    paddingLeft: 0,
+    marginLeft: 0,
+    marginTop: 0,
+    paddingTop: 0
+  },
+  btn: {
+    flexDirection: 'row',
+    paddingHorizontal: 0,
+    justifyContent: 'flex-start',
+    paddingVertical: 0,
+  }
 });
