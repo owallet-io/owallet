@@ -101,7 +101,9 @@ export const Transactions: FunctionComponent = () => {
         item={item}
         key={index}
         onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
-        containerStyle={{}} // customize item transaction
+        containerStyle={{
+          backgroundColor: colors['gray-10']
+        }} // customize item transaction
       />
     );
   };
@@ -112,11 +114,16 @@ export const Transactions: FunctionComponent = () => {
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'space-around',
-          marginTop: spacing['12']
+          justifyContent: 'center',
+          backgroundColor: colors['white'],
+          borderRadius: spacing['12'],
+          height: 56,
+          marginVertical: spacing['12'],
+          marginHorizontal: spacing['24'],
+          paddingHorizontal: spacing['8']
         }}
       >
-        {['Transfer', 'Receiver'].map((title: string, i: number) => (
+        {['Transactions', 'News'].map((title: string, i: number) => (
           <TouchableOpacity
             key={i}
             style={{
@@ -124,9 +131,9 @@ export const Transactions: FunctionComponent = () => {
               width: (metrics.screenWidth - 60) / 2,
               alignItems: 'center',
               paddingVertical: spacing['12'],
-              borderRadius: spacing['12'],
               backgroundColor:
-                index === i ? colors['primary'] : colors['transparent']
+                index === i ? colors['purple-900'] : colors['transparent'],
+              borderRadius: spacing['12']
             }}
             onPress={() => {
               setIndex(i);
@@ -145,8 +152,52 @@ export const Transactions: FunctionComponent = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <View style={{ flex: 1 }}>
-        <TransactionSectionTitle title={'Transfer list'} />
+      <View
+        style={{
+          backgroundColor: colors['white'],
+          borderRadius: spacing['24']
+        }}
+      >
+        <View
+          style={{
+            marginTop: spacing['12'],
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          {['All', 'Transfer', 'Receive'].map((title: string, i: number) => (
+            <TouchableOpacity
+              key={i}
+              style={{
+                ...styles.tabSelected,
+                width: (metrics.screenWidth - 60) / 3,
+                alignItems: 'center',
+                paddingVertical: spacing['12']
+              }}
+              onPress={() => {
+                setIndex(i);
+                setTxs(i === 0 ? txsTransfer : txsReceiver);
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: index === i ? colors['gray-900'] : colors['gray-300']
+                }}
+              >
+                {title}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <TransactionSectionTitle
+          title={'Transfer list'}
+          containerStyle={{
+            paddingTop: spacing['4']
+          }}
+        />
         <FlatList
           showsVerticalScrollIndicator={false}
           keyExtractor={_keyExtract}
@@ -174,7 +225,6 @@ export const Transactions: FunctionComponent = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: colors['gray-50']
   },
   tabBarHeader: {
@@ -184,21 +234,12 @@ const styles = StyleSheet.create({
     width: metrics.screenWidth,
     justifyContent: 'space-around',
     height: spacing['44']
-    // paddingVertical: spacing['20'],
-    // paddingHorizontal: spacing['16']
   },
   tabText: {
     ...typography.body2,
     fontWeight: 'normal'
   },
-  tabSelected: {
-    // width: metrics.screenWidth - 40,
-    // marginVertical: spacing['6'],
-    // marginHorizontal: spacing['8'],
-    // borderRadius: spacing['12'],
-    // backgroundColor: colors['gray-50'],
-    // borderColor: colors['border-gray']
-  },
+  tabSelected: {},
   transactionList: {
     paddingBottom: spacing['12']
   },
