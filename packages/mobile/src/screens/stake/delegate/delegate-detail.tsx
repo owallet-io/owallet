@@ -1,4 +1,5 @@
 import { BondStatus } from '@owallet/stores';
+import { Dec } from '@owallet/unit';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useMemo } from 'react';
@@ -135,7 +136,17 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               <Text style={{ ...styles.textInfo, marginBottom: spacing['4'] }}>
                 APY
               </Text>
-              <Text style={{ ...styles.textBlock }}>{`${24.5}%`}</Text>
+              <Text style={{ ...styles.textBlock }}>
+                {queries.cosmos.queryInflation.inflation
+                  .mul(
+                    new Dec(1).sub(
+                      new Dec(validator.commission.commission_rates.rate)
+                    )
+                  )
+                  .maxDecimals(2)
+                  .trim(true)
+                  .toString() + '%'}
+              </Text>
             </View>
           </View>
 

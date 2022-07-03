@@ -1,11 +1,9 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card, CardBody } from '../../../components/card';
 import { useStore } from '../../../stores';
 import { BondStatus } from '@owallet/stores';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../components/text';
-import { useStyle } from '../../../styles';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
@@ -67,10 +65,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
 }> = observer(({ containerStyle, validatorAddress }) => {
-  const { chainStore, queriesStore, analyticsStore } = useStore();
-
+  const { chainStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
-
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   );
@@ -80,7 +76,6 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
   );
-
   const validator = useMemo(() => {
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
@@ -92,11 +87,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     unbondedValidators.validators,
     validatorAddress
   ]);
-
   const smartNavigation = useSmartNavigation();
-
-  const style = useStyle();
-
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
@@ -109,7 +100,19 @@ export const ValidatorDetailsCard: FunctionComponent<{
           <Text style={{ ...styles.textDetail }}>{`${115.002} blocks`}</Text>
         );
       case 'APY':
-        return <Text style={{ ...styles.textDetail }}>{`${24.5}%`}</Text>;
+        return (
+          <Text style={{ ...styles.textDetail }}>
+            {queries.cosmos.queryInflation.inflation
+              .mul(
+                new Dec(1).sub(
+                  new Dec(validator.commission.commission_rates.rate)
+                )
+              )
+              .maxDecimals(2)
+              .trim(true)
+              .toString() + '%'}
+          </Text>
+        );
       case 'Commission':
         return (
           <Text style={{ ...styles.textDetail }}>
@@ -199,7 +202,11 @@ export const ValidatorDetailsCard: FunctionComponent<{
               )
             )}
           </View>
-          <View style={style.flatten(['margin-bottom-14'])}>
+          <View
+            style={{
+              marginBottom: spacing['14']
+            }}
+          >
             <Text
               style={{
                 ...typography.h7,
