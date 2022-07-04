@@ -8,6 +8,7 @@ import { colors, spacing } from '../../themes';
 import TransferTokensHeader from './transfer-header';
 import TransferTokensOptions from './transfer-options';
 import TransferViewBtn from './transfer-view-btn';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
 
 const styles = StyleSheet.create({
   sendTokenCard: {
@@ -19,7 +20,7 @@ const TransferTokensScreen: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   return (
-    <SafeAreaView style={[containerStyle]}>
+    <PageWithScrollViewInBottomTabView style={[containerStyle]}>
       {/* <TransferTokensHeader /> */}
       <View style={{ alignItems: 'center' }}>
         <Text
@@ -43,7 +44,7 @@ const TransferTokensScreen: FunctionComponent<{
           <TransferViewBtn />
         </CardBody>
       </Card>
-    </SafeAreaView>
+    </PageWithScrollViewInBottomTabView>
   );
 });
 

@@ -8,7 +8,9 @@ import {
   SendQRCodeIcon,
   SendWithinNetworkIcon,
 } from '../../components/icon';
-import { colors, metrics, spacing } from '../../themes';
+import { colors, spacing } from '../../themes';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
 
 const styles = StyleSheet.create({
   sendTokenCard: {
@@ -54,38 +56,60 @@ const tokenTransferInfo = [
   {
     icon: <SendWithinNetworkIcon />,
     titleLine1: 'Send',
-    titleLine2: 'within network',
+    type: 'send',
+    titleLine2: 'within network'
   },
   {
     icon: <SendCrossChainIcon />,
     titleLine1: 'Send cross-chain',
-    titleLine2: '(IBC Transfer)',
+    type: 'send_cross',
+    titleLine2: '(IBC Transfer)'
   },
   {
     icon: <SendBridgeIcon />,
     titleLine1: 'Bridge',
-    titleLine2: '',
+    type: 'bridge',
+    titleLine2: ''
   },
   {
     icon: <SendQRCodeIcon />,
     titleLine1: 'Send',
-    titleLine2: 'via QR code',
-  },
+    type: 'send_qr',
+    titleLine2: 'via QR code'
+  }
 ];
 
 const TransferTokensOptions: FunctionComponent = () => {
+  const smartNavigation = useSmartNavigation();
+  const { chainStore } = useStore();
+
+  const onPress = (type) => {
+    switch (type) {
+      case 'send':
+        smartNavigation.navigateSmart('Send', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+        break;
+
+      default:
+        alert('Coming soon!');
+        break;
+    }
+  };
+
   return (
     <>
       <View style={styles.sendTokenCardbody}>
         {tokenTransferInfo.map((val, i) => (
-          <View style={styles.sendTokenCardContent} key={i}>
-            <View style={styles.sendTokenCardMain}>
-              <TouchableOpacity style={{ alignItems: 'center'}}>
-                <View style={styles.iconSendToken} >{val.icon}</View>
-                <Text style={styles.textSendToken}>{val.titleLine1}</Text>
-                <Text style={styles.textSendToken}>{val.titleLine2}</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={{ width: '48%' }} key={i}>
+            <TouchableOpacity
+              style={styles.sendTokenCardContent}
+              onPress={() => onPress(val.type)}
+            >
+              <View style={styles.iconSendToken}>{val.icon}</View>
+              <Text style={styles.textSendToken}>{val.titleLine1}</Text>
+              <Text style={styles.textSendToken}>{val.titleLine2}</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </View>

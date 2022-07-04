@@ -1,14 +1,14 @@
-import { BIP44HDPath, ExportKeyRingData } from '@owallet/background'
-import { NewMnemonicConfig } from './screens/register/mnemonic'
+import { BIP44HDPath, ExportKeyRingData } from '@owallet/background';
+import { NewMnemonicConfig } from './screens/register/mnemonic';
 import {
   AddressBookConfig,
   AddressBookData,
   IMemoConfig,
   IRecipientConfig,
   RegisterConfig
-} from '@owallet/hooks'
+} from '@owallet/hooks';
 
-import { createSmartNavigatorProvider, SmartNavigator } from './hooks'
+import { createSmartNavigatorProvider, SmartNavigator } from './hooks';
 
 const { SmartNavigatorProvider, useSmartNavigation } =
   createSmartNavigatorProvider(
@@ -136,90 +136,92 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       'Web.dApp': {
         upperScreenName: 'Web'
       },
-
       Transactions: {
         upperScreenName: 'Main'
+      },
+      TransferTokensScreen: {
+        upperScreenName: 'SendNavigation'
       },
       'Transactions.Detail': {
         upperScreenName: 'Main'
       }
     }).withParams<{
       'Register.NewMnemonic': {
-        registerConfig: RegisterConfig
-      }
+        registerConfig: RegisterConfig;
+      };
       'Register.VerifyMnemonic': {
-        registerConfig: RegisterConfig
-        newMnemonicConfig: NewMnemonicConfig
-        bip44HDPath: BIP44HDPath
-      }
+        registerConfig: RegisterConfig;
+        newMnemonicConfig: NewMnemonicConfig;
+        bip44HDPath: BIP44HDPath;
+      };
       'Register.RecoverMnemonic': {
-        registerConfig: RegisterConfig
-      }
+        registerConfig: RegisterConfig;
+      };
       'Register.NewLedger': {
-        registerConfig: RegisterConfig
-      }
+        registerConfig: RegisterConfig;
+      };
       'Register.ImportFromExtension.Intro': {
-        registerConfig: RegisterConfig
-      }
+        registerConfig: RegisterConfig;
+      };
       'Register.ImportFromExtension': {
-        registerConfig: RegisterConfig
-      }
+        registerConfig: RegisterConfig;
+      };
       'Register.ImportFromExtension.SetPassword': {
-        registerConfig: RegisterConfig
-        exportKeyRingDatas: ExportKeyRingData[]
-        addressBooks: { [chainId: string]: AddressBookData[] | undefined }
-      }
+        registerConfig: RegisterConfig;
+        exportKeyRingDatas: ExportKeyRingData[];
+        addressBooks: { [chainId: string]: AddressBookData[] | undefined };
+      };
       'Register.End': {
-        password?: string
-      }
+        password?: string;
+      };
       Send: {
-        chainId?: string
-        currency?: string
-        recipient?: string
-      }
+        chainId?: string;
+        currency?: string;
+        recipient?: string;
+      };
       'Validator.Details': {
-        validatorAddress: string
-      }
+        validatorAddress: string;
+      };
       'Validator.List': {
-        validatorSelector?: (validatorAddress: string) => void
-      }
+        validatorSelector?: (validatorAddress: string) => void;
+      };
       Delegate: {
-        validatorAddress: string
-      }
+        validatorAddress: string;
+      };
       Undelegate: {
-        validatorAddress: string
-      }
+        validatorAddress: string;
+      };
       Redelegate: {
-        validatorAddress: string
-      }
+        validatorAddress: string;
+      };
       'Governance Details': {
-        proposalId: string
-      }
+        proposalId: string;
+      };
       'Setting.ViewPrivateData': {
-        privateData: string
-        privateDataType: string
-      }
+        privateData: string;
+        privateDataType: string;
+      };
       AddressBook: {
-        recipientConfig?: IRecipientConfig
-        memoConfig?: IMemoConfig
-      }
+        recipientConfig?: IRecipientConfig;
+        memoConfig?: IMemoConfig;
+      };
       AddAddressBook: {
-        chainId: string
-        addressBookConfig: AddressBookConfig
-      }
+        chainId: string;
+        addressBookConfig: AddressBookConfig;
+      };
       TxPendingResult: {
-        chainId?: string
-        txHash: string
-      }
+        chainId?: string;
+        txHash: string;
+      };
       TxSuccessResult: {
-        chainId?: string
-        txHash: string
-      }
+        chainId?: string;
+        txHash: string;
+      };
       TxFailedResult: {
-        chainId?: string
-        txHash: string
-      }
+        chainId?: string;
+        txHash: string;
+      };
     }>()
-  )
+  );
 
-export { SmartNavigatorProvider, useSmartNavigation }
+export { SmartNavigatorProvider, useSmartNavigation };
