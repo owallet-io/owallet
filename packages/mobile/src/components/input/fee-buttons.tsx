@@ -330,7 +330,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                   'absolute',
                   'text-caption1',
                   'color-error',
-                  'margin-top-2',
+                  'margin-top-6',
                   'margin-left-4'
                 ]),
                 errorLabelStyle

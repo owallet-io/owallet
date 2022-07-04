@@ -1,162 +1,173 @@
-import React, { FunctionComponent, useMemo, useRef, useState } from "react";
+import React, { FunctionComponent, useMemo, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
   TextStyle,
   View,
-  ViewStyle,
-} from "react-native";
-import { CText as Text} from "../text";
-import { useStyle } from "../../styles";
-import { registerModal } from "../../modals/base";
-import { RectButton } from "../rect-button";
+  ViewStyle
+} from 'react-native';
+import { CText as Text } from '../text';
+import { useStyle } from '../../styles';
+import { registerModal } from '../../modals/base';
+import { RectButton } from '../rect-button';
+import { DownArrowIcon } from '../icon';
+import { colors, spacing } from '../../themes';
+import { useStore } from '../../stores';
 
 export const SelectorModal: FunctionComponent<{
-  isOpen: boolean;
-  close: () => void;
   items: {
     label: string;
     key: string;
   }[];
   maxItemsToShow?: number;
   selectedKey: string | undefined;
-  setSelectedKey: (key: string | undefined) => void;
   modalPersistent?: boolean;
-}> = registerModal(
-  ({
-    close,
-    items,
-    selectedKey,
-    setSelectedKey,
-    maxItemsToShow,
-    modalPersistent,
-  }) => {
-    const style = useStyle();
+  setSelectedKey: (key: string | undefined) => void;
+  closeModal: () => void;
+}> = ({ items, selectedKey, setSelectedKey, maxItemsToShow, closeModal }) => {
+  const style = useStyle();
 
-    const renderBall = (selected: boolean) => {
-      if (selected) {
-        return (
+  const renderBall = (selected: boolean) => {
+    if (selected) {
+      return (
+        <View
+          style={{
+            ...style.flatten([
+              'width-24',
+              'height-24',
+              'border-radius-32',
+              'background-color-primary',
+              'items-center',
+              'justify-center'
+            ]),
+            backgroundColor: colors['purple-900']
+          }}
+        >
           <View
             style={style.flatten([
-              "width-24",
-              "height-24",
-              "border-radius-32",
-              "background-color-primary",
-              "items-center",
-              "justify-center",
-            ])}
-          >
-            <View
-              style={style.flatten([
-                "width-12",
-                "height-12",
-                "border-radius-32",
-                "background-color-white",
-              ])}
-            />
-          </View>
-        );
-      } else {
-        return (
-          <View
-            style={style.flatten([
-              "width-24",
-              "height-24",
-              "border-radius-32",
-              "background-color-white",
-              "border-width-1",
-              "border-color-text-black-very-low",
+              'width-12',
+              'height-12',
+              'border-radius-32',
+              'background-color-white'
             ])}
           />
-        );
-      }
-    };
-
-    const scrollViewRef = useRef<ScrollView | null>(null);
-    const initOnce = useRef<boolean>(false);
-
-    const onInit = () => {
-      if (!initOnce.current) {
-        if (scrollViewRef.current) {
-          scrollViewRef.current.flashScrollIndicators();
-
-          if (maxItemsToShow) {
-            const selectedIndex = items.findIndex(
-              (item) => item.key === selectedKey
-            );
-
-            if (selectedIndex) {
-              const scrollViewHeight = maxItemsToShow * 64;
-
-              scrollViewRef.current.scrollTo({
-                y: selectedIndex * 64 - scrollViewHeight / 2 + 32,
-                animated: false,
-              });
-            }
-          }
-
-          initOnce.current = true;
-        }
-      }
-    };
-
-    return (
-      <View style={style.flatten(["padding-page"])}>
-        <View
-          style={style.flatten([
-            "border-radius-8",
-            "overflow-hidden",
-            "background-color-white",
-          ])}
-        >
-          <ScrollView
-            style={{
-              maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
-            }}
-            ref={scrollViewRef}
-            persistentScrollbar={true}
-            onLayout={onInit}
-          >
-            {items.map((item) => {
-              return (
-                <RectButton
-                  key={item.key}
-                  style={style.flatten(
-                    [
-                      "height-64",
-                      "padding-left-36",
-                      "padding-right-28",
-                      "flex-row",
-                      "items-center",
-                      "justify-between",
-                    ],
-                    [item.key === selectedKey && "background-color-primary-10"]
-                  )}
-                  onPress={() => {
-                    setSelectedKey(item.key);
-                    if (!modalPersistent) {
-                      close();
-                    }
-                  }}
-                >
-                  <Text
-                    style={style.flatten([
-                      "subtitle1",
-                      "color-text-black-medium",
-                    ])}
-                  >
-                    {item.label}
-                  </Text>
-                  {renderBall(item.key === selectedKey)}
-                </RectButton>
-              );
-            })}
-          </ScrollView>
         </View>
-      </View>
-    );
-  }
-);
+      );
+    } else {
+      return (
+        <View
+          style={{
+            ...style.flatten([
+              'width-24',
+              'height-24',
+              'border-radius-32',
+              'items-center',
+              'justify-center'
+            ]),
+            backgroundColor: colors['purple-100']
+          }}
+        >
+          <View
+            style={style.flatten([
+              'width-12',
+              'height-12',
+              'border-radius-32',
+              'background-color-white'
+            ])}
+          />
+        </View>
+      );
+    }
+  };
+
+  const scrollViewRef = useRef<ScrollView | null>(null);
+  const initOnce = useRef<boolean>(false);
+
+  const onInit = () => {
+    if (!initOnce.current) {
+      if (scrollViewRef.current) {
+        scrollViewRef.current.flashScrollIndicators();
+
+        if (maxItemsToShow) {
+          const selectedIndex = items.findIndex(
+            (item) => item.key === selectedKey
+          );
+
+          if (selectedIndex) {
+            const scrollViewHeight = maxItemsToShow * 64;
+
+            scrollViewRef.current.scrollTo({
+              y: selectedIndex * 64 - scrollViewHeight / 2 + 32,
+              animated: false
+            });
+          }
+        }
+
+        initOnce.current = true;
+      }
+    }
+  };
+
+  return (
+    <View
+      style={{
+        ...style.flatten(['border-radius-8']),
+        backgroundColor: colors['white'],
+        borderRadius: 24,
+        alignItems: 'center',
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: '700',
+          color: colors['gray-900'],
+          marginBottom: spacing['12'],
+        }}
+      >
+        Select a token
+      </Text>
+      <ScrollView
+        style={{
+          maxHeight: maxItemsToShow ? 99 * maxItemsToShow : undefined,
+          width: '100%'
+        }}
+        ref={scrollViewRef}
+        persistentScrollbar={true}
+        onLayout={onInit}
+      >
+        {items.map((item) => {
+          return (
+            <RectButton
+              key={item.key}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 16,
+                backgroundColor: colors['gray-10'],
+                borderRadius: 12,
+                marginBottom: 16,
+                width: '100%',
+              }}
+              onPress={async () => {
+                setSelectedKey(item.key);
+                await closeModal();
+              }}
+            >
+              <Text
+                style={style.flatten(['subtitle1', 'color-text-black-medium'])}
+              >
+                {item.label}
+              </Text>
+              {renderBall(item.key === selectedKey)}
+            </RectButton>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+};
 
 export const Selector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -193,20 +204,24 @@ export const Selector: FunctionComponent<{
   const selected = useMemo(() => {
     return items.find((item) => item.key === selectedKey);
   }, [items, selectedKey]);
+  const { modalStore } = useStore();
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  return (
-    <React.Fragment>
+  const onPressTokenModal = () => {
+    modalStore.setOpen();
+    modalStore.setChildren(
       <SelectorModal
-        isOpen={isModalOpen}
-        close={() => setIsModalOpen(false)}
         items={items}
         selectedKey={selectedKey}
         setSelectedKey={setSelectedKey}
         maxItemsToShow={maxItemsToShow}
         modalPersistent={modalPersistent}
+        closeModal={() => modalStore.close()}
       />
+    );
+  };
+
+  return (
+    <React.Fragment>
       <SelectorButtonWithoutModal
         labelStyle={labelStyle}
         containerStyle={containerStyle}
@@ -215,7 +230,7 @@ export const Selector: FunctionComponent<{
         label={label}
         placeHolder={placeHolder}
         selected={selected}
-        onPress={() => setIsModalOpen(true)}
+        onPressTokenModal={onPressTokenModal}
       />
     </React.Fragment>
   );
@@ -237,7 +252,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
       }
     | undefined;
 
-  onPress: () => void;
+  onPressTokenModal: () => void;
 }> = ({
   containerStyle,
   labelStyle,
@@ -246,7 +261,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   label,
   placeHolder,
   selected,
-  onPress,
+  onPressTokenModal
 }) => {
   const style = useStyle();
 
@@ -279,9 +294,11 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
             "border-width-1",
             "border-color-border-white",
           ]),
-          selectorContainerStyle,
-        ])}
-        onPress={onPress}
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+        onPress={onPressTokenModal}
       >
         <Text
           style={StyleSheet.flatten([
