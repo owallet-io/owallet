@@ -185,27 +185,38 @@ export const TokensCard: FunctionComponent<{
           }}
         >
           {['Tokens', 'NFTs'].map((title: string, i: number) => (
-            <TouchableOpacity
-              key={i}
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: spacing['12']
-              }}
-              onPress={() => {
-                setIndex(i);
-              }}
-            >
-              <Text
+            <View>
+              <TouchableOpacity
+                key={i}
                 style={{
-                  fontSize: 14,
-                  fontWeight: '700',
-                  color: index === i ? colors['gray-900'] : colors['gray-300']
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: spacing['12']
+                }}
+                onPress={() => {
+                  setIndex(i);
                 }}
               >
-                {title}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '700',
+                    color: index === i ? colors['gray-900'] : colors['gray-300']
+                  }}
+                >
+                  {title}
+                </Text>
+              </TouchableOpacity>
+              <View
+                style={{
+                  width: 100,
+                  height: 2,
+                  marginTop: 8,
+                  backgroundColor:
+                    index === i ? colors['black'] : colors['white']
+                }}
+              />
+            </View>
           ))}
         </View>
 
