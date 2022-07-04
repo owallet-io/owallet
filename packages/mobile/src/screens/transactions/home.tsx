@@ -6,6 +6,7 @@ import { TransactionSectionTitle, TransactionItem } from './components';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
+import { PageWithScrollView } from '../../components/page';
 
 // hard code data to test UI
 const txsTransfer = [
@@ -197,26 +198,28 @@ export const Transactions: FunctionComponent = () => {
             paddingTop: spacing['4']
           }}
         />
-        <FlatList
-          showsVerticalScrollIndicator={false}
-          keyExtractor={_keyExtract}
-          data={txs}
-          renderItem={_renderItem}
-          style={styles.transactionList}
-          ListFooterComponent={<View style={{ height: spacing['120'] }} />}
-          ListEmptyComponent={
-            <View style={styles.transactionListEmpty}>
-              <Text
-                style={{
-                  ...typography.h4,
-                  color: colors['gray-400']
-                }}
-              >
-                {'Not found transaction'}
-              </Text>
-            </View>
-          }
-        />
+        <View style={styles.transactionList}>
+          <FlatList
+            contentContainerStyle={{ flexGrow: 1 }}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={_keyExtract}
+            data={[...txsTransfer, ...txsReceiver]}
+            renderItem={_renderItem}
+            ListFooterComponent={<View style={{ height: spacing['12'] }} />}
+            ListEmptyComponent={
+              <View style={styles.transactionListEmpty}>
+                <Text
+                  style={{
+                    ...typography.h4,
+                    color: colors['gray-400']
+                  }}
+                >
+                  {'Not found transaction'}
+                </Text>
+              </View>
+            }
+          />
+        </View>
       </View>
     </View>
   );
@@ -224,7 +227,8 @@ export const Transactions: FunctionComponent = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors['gray-50']
+    backgroundColor: colors['gray-50'],
+    marginBottom: spacing['20']
   },
   tabBarHeader: {
     backgroundColor: colors['white'],
@@ -240,7 +244,7 @@ const styles = StyleSheet.create({
   },
   tabSelected: {},
   transactionList: {
-    paddingBottom: spacing['12']
+    height: metrics.screenHeight / 1.5
   },
   transactionListEmpty: {
     justifyContent: 'center',
