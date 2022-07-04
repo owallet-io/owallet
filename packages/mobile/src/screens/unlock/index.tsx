@@ -136,6 +136,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     // if (isSplashEnd && autoBiometryStatus === AutoBiomtricStatus.SUCCESS) {
     // if (autoBiometryStatus === AutoBiomtricStatus.SUCCESS) {
     (async () => {
+      delay(10);
       await hideSplashScreen();
     })();
     // }
