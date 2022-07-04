@@ -232,7 +232,9 @@ const CustomHeader: FunctionComponent = observer(() => {
           paddingBottom: spacing['26']
         }}
       >
-        <View />
+        <View>
+          <HeaderBackButtonIcon />
+        </View>
         <View>
           <HomeScreenHeaderTitle />
         </View>
