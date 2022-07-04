@@ -62,7 +62,7 @@ class FeeButtonState {
 }
 
 export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  props => {
+  (props) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
@@ -141,9 +141,13 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       }
     })();
 
-    const renderIconTypeFee = (label: string, size?: number) => {
+    const renderIconTypeFee = (
+      label: string,
+      selected?: boolean,
+      size = 16
+    ) => {
       switch (label) {
-        case 'Low':
+        case 'Slow':
           return (
             <View
               style={{
@@ -159,7 +163,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <View
               style={{
                 ...styles.containerIcon,
-                backgroundColor: colors['yellow-10']
+                backgroundColor: colors['yellow-10'],
               }}
             >
               <AverageIconFill color={'#1E1E1E'} size={size} />
@@ -200,7 +204,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         <RectButton
           style={{
             ...styles.containerBtnFee,
-            alignItems: 'center',
             ...(selected
               ? {
                   borderColor: colors['primary'],
@@ -215,9 +218,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           onPress={onPress}
         >
           <View
-            style={{
-              alignItems: 'center'
-            }}
           >
             {renderIconTypeFee(label, 20)}
             <Text
@@ -229,26 +229,25 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               {label}
             </Text>
           </View>
-          {price ? (
-            <Text
-              style={style.flatten([
-                'padding-top-8',
-                'padding-bottom-8',
-                'text-caption2'
-              ])}
-            >
-              {price.toString()}
-            </Text>
-          ) : null}
           <Text
             style={{
-              fontSize: 10.5,
-              color: '#636366',
-              lineHeight: 16
+              fontSize: 10,
+              fontWeight: '700'
             }}
           >
             {amount.maxDecimals(6).trim(true).separator('').toString()}
           </Text>
+          {price ? (
+            <Text
+              style={{
+                fontSize: 10.5,
+                color: '#636366',
+                lineHeight: 16
+              }}
+            >
+              {price.toString()}
+            </Text>
+          ) : null}
         </RectButton>
       );
     };
@@ -278,7 +277,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           }}
         >
           {renderButton(
-            'Low',
+            'Slow',
             lowFeePrice,
             lowFee,
             feeConfig.feeType === 'low',
@@ -360,6 +359,7 @@ const styles = StyleSheet.create({
   containerIcon: {
     borderRadius: spacing['8'],
     padding: spacing['10'],
+    width: 44,
     alignItems: 'center'
   }
 });

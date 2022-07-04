@@ -101,9 +101,9 @@ const TransferTokensOptions: FunctionComponent = () => {
     <>
       <View style={styles.sendTokenCardbody}>
         {tokenTransferInfo.map((val, i) => (
-          <View style={{ width: '48%' }} key={i}>
+          <View style={styles.sendTokenCardContent} key={i}>
             <TouchableOpacity
-              style={styles.sendTokenCardContent}
+              style={styles.sendTokenCardText}
               onPress={() => onPress(val.type)}
             >
               <View style={styles.iconSendToken}>{val.icon}</View>

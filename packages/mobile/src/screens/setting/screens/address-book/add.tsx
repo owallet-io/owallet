@@ -1,14 +1,14 @@
 import React, { FunctionComponent, useState } from 'react';
 import { PageWithScrollView } from '../../../../components/page';
 import { useStyle } from '../../../../styles';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {
   AddressBookConfig,
   useMemoConfig,
   useRecipientConfig
 } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useStore } from '../../../../stores';
 import { EthereumEndpoint } from '@owallet/common';
 import {
@@ -18,6 +18,31 @@ import {
 } from '../../../../components/input';
 import { Button } from '../../../../components/button';
 import { useSmartNavigation } from '../../../../navigation.provider';
+import { colors, spacing } from '../../../../themes';
+import { Scanner } from '../../../../components/icon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
+const styles = StyleSheet.create({
+  addNewBookRoot: {
+    backgroundColor: colors['white'],
+    marginTop: spacing['24'],
+    paddingHorizontal: spacing['20'],
+    paddingVertical: spacing['24'],
+    borderRadius: spacing['24']
+  },
+  addNewBookLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors['gray-900'],
+    lineHeight: 22
+  },
+  addNewBookInput: {
+    borderTopLeftRadius: spacing['8'],
+    borderTopRightRadius: spacing['8'],
+    borderBottomLeftRadius: spacing['8'],
+    borderBottomRightRadius: spacing['8']
+  }
+});
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -35,6 +60,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   const { chainStore, analyticsStore } = useStore();
 
+  const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
   const addressBookConfig = route.params.addressBookConfig;
 
@@ -49,27 +75,53 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const memoConfig = useMemoConfig(chainStore, route.params.chainId);
 
   return (
-    <PageWithScrollView
-      contentContainerStyle={style.get('flex-grow-1')}
-      style={style.flatten(['padding-x-page'])}
-    >
+    <View style={styles.addNewBookRoot}>
       <View style={style.flatten(['height-page-pad'])} />
       <TextInput
-        label="Nickname"
+        label="User name"
         value={name}
         onChangeText={(text) => setName(text)}
+        labelStyle={styles.addNewBookLabel}
+        inputContainerStyle={styles.addNewBookInput}
+        placeholder="Type your user name"
       />
       <AddressInput
-        label="Address"
+        label="Wallet address"
         recipientConfig={recipientConfig}
         memoConfig={memoConfig}
-        disableAddressBook={true}
+        disableAddressBook={false}
+        labelStyle={styles.addNewBookLabel}
+        inputContainerStyle={styles.addNewBookInput}
+        placeholder="Tap to paste"
+        inputRight={ <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Others', {
+              screen: 'Camera'
+            });
+          }}
+        >
+          <Scanner color={colors['purple-900']} />
+        </TouchableOpacity>}
       />
-      <MemoInput label="Default memo (optional)" memoConfig={memoConfig} />
-      <View style={style.flatten(['flex-1'])} />
+      <MemoInput
+        label="Memo (optional)"
+        memoConfig={memoConfig}
+        labelStyle={styles.addNewBookLabel}
+        inputContainerStyle={{
+          ...styles.addNewBookInput,
+          height: 190
+        }}
+        multiline={false}
+        placeholder="Type memo here"
+      />
       <Button
         text="Save"
         size="large"
+        style={
+          (name) && {
+            backgroundColor: colors['purple-900']
+          }
+        }
         disabled={
           !name ||
           recipientConfig.getError() != null ||
@@ -95,7 +147,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           }
         }}
       />
-      <View style={style.flatten(['height-page-pad'])} />
-    </PageWithScrollView>
+    </View>
   );
 });

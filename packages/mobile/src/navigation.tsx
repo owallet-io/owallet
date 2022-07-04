@@ -157,7 +157,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           }}
           style={{ paddingRight: 15 }}
         >
-          <HistoryIcon size={28} color={colors['purple-700']} />
+          <HistoryIcon size={24} color={colors['purple-700']} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -166,7 +166,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
             });
           }}
         >
-          <Scanner size={28} color={colors['purple-700']} />
+          <Scanner size={24} color={colors['purple-700']} />
         </TouchableOpacity>
       </View>
     </View>
@@ -239,7 +239,7 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
   );
 });
 
-const CustomHeader: FunctionComponent = observer(() => {
+export const CustomHeader: FunctionComponent = observer(() => {
   const { top } = useSafeAreaInsets();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
@@ -697,7 +697,7 @@ export const AddressBookStackScreen: FunctionComponent = () => {
     <Stack.Navigator
       screenOptions={{
         ...BlurredHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(['h5', 'color-text-black-high'])
+        headerTitleStyle: style.flatten(['h5', 'color-text-black-high']),
       }}
       headerMode="screen"
     >
@@ -710,7 +710,11 @@ export const AddressBookStackScreen: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: 'New Address Book'
+          title: 'Add new contact',
+          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
+            style.get('color-setting-screen-background-transparent').color
+          ),
+          headerTitleStyle: style.flatten(['h3', 'color-text-black-high'])
         }}
         name="AddAddressBook"
         component={AddAddressBookScreen}

@@ -5,8 +5,6 @@ import { RectButton } from '../../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../../themes';
 import { _keyExtract } from '../../../../utils/helper';
 
-
-
 const MnemonicSeed = ({ styles }) => {
   const { keyRingStore, analyticsStore, modalStore } = useStore();
   const mnemonicKeyStores = useMemo(() => {
@@ -45,7 +43,6 @@ const MnemonicSeed = ({ styles }) => {
       >
         <View
           style={{
-            justifyContent: 'flex-start',
             flexDirection: 'row',
             alignItems: 'center'
           }}
@@ -60,7 +57,6 @@ const MnemonicSeed = ({ styles }) => {
           />
           <View
             style={{
-              justifyContent: 'space-between',
               marginLeft: spacing['12']
             }}
           >
@@ -74,16 +70,18 @@ const MnemonicSeed = ({ styles }) => {
             >
               {item.name}
             </Text>
-            <Text
-              style={{
-                ...typography.h7,
-                color: colors['gray-300'],
-                fontWeight: '800',
-                fontSize: 12
-              }}
-            >
-              {item.address}
-            </Text>
+            {item.address && (
+              <Text
+                style={{
+                  ...typography.h7,
+                  color: colors['gray-300'],
+                  fontWeight: '800',
+                  fontSize: 12
+                }}
+              >
+                {item.address}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -120,7 +118,7 @@ const MnemonicSeed = ({ styles }) => {
       }}
     >
       <FlatList
-        data={[...mnemonicKeyStores,...privateKeyStores,...ledgerKeyStores]}
+        data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
         keyExtractor={_keyExtract}

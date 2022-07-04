@@ -80,6 +80,11 @@ export const ConfirmModalProvider: FunctionComponent = ({ children }) => {
             paragraph={confirm.paragraph}
             yesButtonText={confirm.yesButtonText}
             noButtonText={confirm.noButtonText}
+            modalRootCustom={confirm.modalRootCustom}
+            titleStyleCustom={confirm.titleStyleCustom}
+            contentStyleCustom={confirm.contentStyleCustom}
+            noBtnStyleCustom={confirm.noBtnStyleCustom}
+            yesBtnStyleCustom={confirm.yesBtnStyleCustom}
           />
         );
       })}

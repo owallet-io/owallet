@@ -58,6 +58,8 @@ export const Colors = {
   "text-black-very-low": "#899BB6",
   "text-black-very-very-low": "#C6C6CD",
   "text-black-very-very-very-low": "#DCDCE3",
+  "text-gray-300": "#8C93A7",
+  "text-primary": "#4334F1",
   "border-gray": "#C6C6CD",
   "border-white": "#F5F5F5",
   white: "#fff",
@@ -68,6 +70,7 @@ export const Colors = {
   "modal-backdrop": "#000",
   "card-modal-handle": "#DCDCE3",
   "setting-screen-background": "#FAFBFD",
+  "setting-screen-background-transparent": "transparent",
   "camera-loading-background": "#000",
   "big-image-placeholder": "#E7E4EF",
 };

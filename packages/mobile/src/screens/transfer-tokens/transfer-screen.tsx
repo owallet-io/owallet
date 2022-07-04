@@ -22,12 +22,12 @@ const TransferTokensScreen: FunctionComponent<{
   return (
     <PageWithScrollViewInBottomTabView style={[containerStyle]}>
       {/* <TransferTokensHeader /> */}
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center',   marginTop: 17 }}>
         <Text
           style={{
             fontWeight: '800',
             fontSize: 24,
-            marginBottom: 16
+            marginBottom: 16,
           }}
         >
           Transfer

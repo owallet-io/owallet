@@ -101,5 +101,8 @@ export const colors = {
   'yellow-10': '#FFF6E9',
 
   //splash-background
-  'splash-background': '#FBF8FF'
-};
+  'splash-background': "#FBF8FF",
+
+  //orange
+  'orange-800': '#EF6363'
+}
