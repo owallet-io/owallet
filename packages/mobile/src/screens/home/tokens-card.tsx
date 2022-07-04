@@ -76,8 +76,9 @@ export const TokensCard: FunctionComponent<{
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
 
-  const tokens = queryBalances.positiveNativeUnstakables.concat(
-    queryBalances.nonNativeBalances
+  const tokens = queryBalances.balances.concat(
+    queryBalances.nonNativeBalances,
+    queryBalances.positiveNativeUnstakables
   );
 
   // const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);

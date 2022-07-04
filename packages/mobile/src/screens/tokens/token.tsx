@@ -46,10 +46,10 @@ export const TokensScreen: FunctionComponent = observer(() => {
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
 
-  const tokens = queryBalances.positiveNativeUnstakables.concat(
-    queryBalances.nonNativeBalances
+  const tokens = queryBalances.balances.concat(
+    queryBalances.nonNativeBalances,
+    queryBalances.positiveNativeUnstakables
   );
-
   return (
     <PageWithScrollViewInBottomTabView>
       <View
