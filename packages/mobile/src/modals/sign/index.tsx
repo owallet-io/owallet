@@ -21,7 +21,7 @@ import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
-import { colors } from '../../themes';
+import { colors, spacing, typography } from '../../themes';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -108,72 +108,72 @@ export const SignModal: FunctionComponent<{
       : [];
 
     const renderedMsgs = (() => {
+      console.log('mode', mode);
       if (mode === 'amino') {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
-          const account = accountStore.getAccount(chainId);
-          const chainInfo = chainStore.getChain(chainId);
-          const { title, content, scrollViewHorizontal } = renderAminoMessage(
-            account.msgOpts,
-            msg,
-            chainInfo.currencies
-          );
+          // const account = accountStore.getAccount(chainId);
+          // const chainInfo = chainStore.getChain(chainId);
+          // const { title, content, scrollViewHorizontal } = renderAminoMessage(
+          //   account.msgOpts,
+          //   msg,
+          //   chainInfo.currencies
+          // );
 
           return (
-            <View key={i.toString()}>
-              <Msg title={title}>
-                {scrollViewHorizontal ? (
-                  <ScrollView horizontal={true}>
-                    <Text
-                      style={style.flatten(['body3', 'color-text-black-low'])}
-                    >
-                      {content}
-                    </Text>
-                  </ScrollView>
-                ) : (
-                  <Text
-                    style={style.flatten(['body3', 'color-text-black-low'])}
-                  >
-                    {content}
-                  </Text>
-                )}
-              </Msg>
-              {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null}
-            </View>
+            <Text
+              key={i}
+              style={{
+                ...typography.h6,
+                color: colors['text-black-medium']
+              }}
+            >
+              {msg.value.to_address}
+            </Text>
+            // <View key={i.toString()}>
+            //   <Msg title={title}>
+            //     {scrollViewHorizontal ? (
+            //       <ScrollView horizontal={true}>
+            //         <Text
+            //           style={style.flatten(['body3', 'color-text-black-low'])}
+            //         >
+            //           {content}
+            //         </Text>
+            //       </ScrollView>
+            //     ) : (
+            //       <Text
+            //         style={style.flatten(['body3', 'color-text-black-low'])}
+            //       >
+            //         {content}
+            //       </Text>
+            //     )}
+            //   </Msg>
+            //   {msgs.length - 1 !== i ? (
+            //     <View
+            //       style={style.flatten([
+            //         'height-1',
+            //         'background-color-border-white',
+            //         'margin-x-16'
+            //       ])}
+            //     />
+            //   ) : null}
+            // </View>
           );
         });
       } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
-          const chainInfo = chainStore.getChain(chainId);
-          const { title, content } = renderDirectMessage(
-            msg,
-            chainInfo.currencies
-          );
+          // const chainInfo = chainStore.getChain(chainId);
+          // const { content } = renderDirectMessage(msg, chainInfo.currencies);
 
           return (
-            <View key={i.toString()}>
-              <Msg title={title}>
-                <Text style={style.flatten(['body3', 'color-text-black-low'])}>
-                  {content}
-                </Text>
-              </Msg>
-              {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null}
-            </View>
+            <Text
+              key={i}
+              style={{
+                ...typography.h6,
+                color: colors['text-black-medium']
+              }}
+            >
+              {msg.toAddress}
+            </Text>
           );
         });
       } else {
@@ -183,8 +183,35 @@ export const SignModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Transaction">
-        <View style={style.flatten(['margin-bottom-16'])}>
-          <Text style={style.flatten(['margin-bottom-3'])}>
+        <View
+          //  style={style.flatten(['margin-bottom-16'])}
+          style={{
+            marginBottom: spacing['16']
+          }}
+        >
+          {/* <View>
+            <Text
+              style={{
+                ...typography.h6,
+                color: colors['gray-900'],
+                marginBottom: spacing['16']
+              }}
+            >
+              To
+            </Text>
+          </View> */}
+          <Text
+            style={{
+              ...typography.h6,
+              color: colors['gray-900'],
+              marginBottom: spacing['16']
+            }}
+          >
+            To:{` `} 
+            {renderedMsgs}
+          </Text>
+        </View>
+        {/* <Text style={style.flatten(['margin-bottom-3'])}>
             <Text style={style.flatten(['subtitle3', 'color-primary'])}>
               {`${msgs.length.toString()} `}
             </Text>
@@ -193,24 +220,10 @@ export const SignModal: FunctionComponent<{
             >
               Messages
             </Text>
-          </Text>
-          <View
-            style={style.flatten([
-              'border-radius-8',
-              'border-width-1',
-              'border-color-border-white',
-              'overflow-hidden'
-            ])}
-          >
-            <ScrollView
-              style={style.flatten(['max-height-214'])}
-              persistentScrollbar={true}
-            >
-              {renderedMsgs}
-            </ScrollView>
-          </View>
-        </View>
-        <MemoInput label="Memo" memoConfig={memoConfig} />
+          </Text> */}
+        {/* <View 
+          {/* </View> */}
+        {/* <MemoInput label="Memo" memoConfig={memoConfig} /> */}
         <FeeInSign
           feeConfig={feeConfig}
           gasConfig={gasConfig}
