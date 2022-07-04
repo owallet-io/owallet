@@ -517,7 +517,8 @@ export const OtherNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          title: 'Send'
+          title: 'Send',
+          header: () => <CustomHeader />
         }}
         name="Send"
         component={sendScreen}
