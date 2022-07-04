@@ -140,7 +140,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
   };
 
   return (
-    <View>
+    <>
       <Text
         style={{
           ...typography.h3,
@@ -243,7 +243,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
           />
         </View>
       ) : null}
-    </View>
+    </>
   );
 });
 

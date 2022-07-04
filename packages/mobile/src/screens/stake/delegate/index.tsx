@@ -1,6 +1,9 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { PageWithScrollView } from '../../../components/page';
+import {
+  PageWithScrollView,
+  PageWithScrollViewInBottomTabView
+} from '../../../components/page';
 import { useStyle } from '../../../styles';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
@@ -79,14 +82,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollView
-      style={{
-        ...styles.page
-      }}
-      contentContainerStyle={{
-        flexGrow: 1
-      }}
-    >
+    <PageWithScrollViewInBottomTabView>
       <Text
         style={{
           ...styles.title
@@ -159,7 +155,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <Button
         containerStyle={{
           marginHorizontal: spacing['20'],
-          backgroundColor: colors['purple-900']
+          backgroundColor: colors['purple-900'],
+          marginBottom: 20
         }}
         text="Stake"
         size="large"
@@ -201,7 +198,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           }
         }}
       />
-    </PageWithScrollView>
+    </PageWithScrollViewInBottomTabView>
   );
 });
 

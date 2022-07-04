@@ -32,6 +32,38 @@ export const MyRewardCard: FunctionComponent<{
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
+  const _onPressClaim = async () => {
+    try {
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        queryReward.getDescendingPendingRewardValidatorAddresses(8),
+        '',
+        {},
+        {},
+        {
+          onBroadcasted: txHash => {
+            analyticsStore.logEvent('Claim reward tx broadcasted', {
+              chainId: chainStore.current.chainId,
+              chainName: chainStore.current.chainName
+            });
+            smartNavigation.pushSmart('TxPendingResult', {
+              txHash: Buffer.from(txHash).toString('hex')
+            });
+          }
+        }
+      );
+    } catch (e) {
+      if (e?.message === 'Request rejected') {
+        return;
+      }
+      console.log(e);
+      smartNavigation.navigateSmart('Home', {});
+    }
+  };
+
+  const isDisable =
+    !account.isReadyToSendMsgs ||
+    pendingStakableReward.toDec().equals(new Dec(0)) ||
+    queryReward.pendingRewardValidatorAddresses.length === 0;
 
   return (
     <View style={containerStyle}>
@@ -79,54 +111,29 @@ export const MyRewardCard: FunctionComponent<{
             <Button
               size="small"
               text="Claim"
-              mode="light"
+              mode="outline"
+              rightIcon={
+                <DownArrowIcon
+                  color={isDisable ? colors['gray-300'] : colors['purple-900']}
+                  height={18}
+                />
+              }
               containerStyle={{
-                ...styles.containerBtn,
+                ...styles.containerBtn
               }}
-              style ={{
+              style={{
                 ...styles.btn
               }}
               textStyle={{
                 ...styles.textInfo,
                 fontWeight: '400',
-                color: colors['purple-900'],
-                marginLeft: 0,
+                color: isDisable ? colors['gray-300'] : colors['purple-900'],
+                marginRight: 10
               }}
-              onPress={async () => {
-                try {
-                  await account.cosmos.sendWithdrawDelegationRewardMsgs(
-                    queryReward.getDescendingPendingRewardValidatorAddresses(8),
-                    '',
-                    {},
-                    {},
-                    {
-                      onBroadcasted: txHash => {
-                        analyticsStore.logEvent('Claim reward tx broadcasted', {
-                          chainId: chainStore.current.chainId,
-                          chainName: chainStore.current.chainName
-                        });
-                        smartNavigation.pushSmart('TxPendingResult', {
-                          txHash: Buffer.from(txHash).toString('hex')
-                        });
-                      }
-                    }
-                  );
-                } catch (e) {
-                  if (e?.message === 'Request rejected') {
-                    return;
-                  }
-                  console.log(e);
-                  smartNavigation.navigateSmart('Home', {});
-                }
-              }}
-              disabled={
-                !account.isReadyToSendMsgs ||
-                pendingStakableReward.toDec().equals(new Dec(0)) ||
-                queryReward.pendingRewardValidatorAddresses.length === 0
-              }
+              onPress={_onPressClaim}
+              disabled={isDisable}
               loading={account.isSendingMsg === 'withdrawRewards'}
             />
-            <DownArrowIcon color={colors['purple-900']} height={18} />
           </View>
         </View>
       </View>
@@ -151,6 +158,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 0,
     justifyContent: 'flex-start',
-    paddingVertical: 0,
+    paddingVertical: 0
   }
 });

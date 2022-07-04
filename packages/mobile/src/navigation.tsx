@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useCallback, useEffect } from 'react';
 import {
   Image,
   Linking,
@@ -111,7 +111,7 @@ import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
 import { colors, spacing, typography } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRoute } from '@react-navigation/core';
+import { Hash } from '@owallet/crypto';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -175,11 +175,30 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
 
 const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
   const { chainStore, modalStore } = useStore();
+
+  const deterministicNumber = useCallback(chainInfo => {
+    const bytes = Hash.sha256(
+      Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
+    );
+    return (
+      (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
+    );
+  }, []);
+
+  const profileColor = useCallback(
+    chainInfo => {
+      const colors = ['red', 'green', 'orange', 'yellow'];
+
+      return colors[deterministicNumber(chainInfo) % colors.length];
+    },
+    [deterministicNumber]
+  );
+
   const _onPressNetworkModal = () => {
     modalStore.setOpen();
     modalStore.setChildren(
       NetworkModal({
-        profileColor: null,
+        profileColor,
         chainStore,
         modalStore
       })
@@ -904,7 +923,7 @@ export const MainTabNavigation: FunctionComponent = () => {
               return <RenderTabsBarIcon color={color} name={'Settings'} />;
           }
         },
-        tabBarButton: (props) => (
+        tabBarButton: props => (
           <View
             style={{
               display: 'flex',
@@ -941,7 +960,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         },
         showLabel: false
       }}
-      tabBar={(props) => (
+      tabBar={props => (
         <BlurredBottomTabBar {...props} enabledScreens={['Home']} />
       )}
     >
@@ -996,7 +1015,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
   useEffect(() => {
     Linking.getInitialURL()
-      .then((url) => {
+      .then(url => {
         if (url) {
           const SCHEME_IOS = 'owallet://open_url?url=';
           const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -1005,7 +1024,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           );
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.warn('Deeplinking error', err);
       });
     Linking.addEventListener('url', handleDeepLink);

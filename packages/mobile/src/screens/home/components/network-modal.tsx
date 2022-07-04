@@ -7,52 +7,10 @@ import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { CText as Text } from '../../../components/text';
 
-const networkSupports = [
-  {
-    title: 'Oraichain network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-  {
-    title: 'OraiBridge Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-  {
-    title: 'Kawaiiverse Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-  {
-    title: 'Balcony Subnet Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-  {
-    title: 'Cosmos Hub Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-  {
-    title: 'Osmosis Network',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-  {
-    title: 'BNB Chain',
-    icon: <ScanIcon color="black" size={38} />,
-    price: '$312.24',
-  },
-];
-
-const _renderItem = ({ item }) => {
-  return (
-    <RectButton
-      style={{
-        ...styles.containerBtn,
-      }}
-    >
-      <View
+export const NetworkModal = ({ profileColor, chainStore, modalStore }) => { 
+  const _renderItem = ({ item }) => {
+    return (
+      <RectButton
         style={{
           ...styles.containerBtn
         }}

@@ -4,6 +4,7 @@ import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { RightArrowIcon } from '../../../components/icon';
 import { RectButton } from '../../../components/rect-button';
+import { colors, spacing, typography } from '../../../themes';
 
 export const SettingSectionTitle: FunctionComponent<{
   title: string;
@@ -12,13 +13,19 @@ export const SettingSectionTitle: FunctionComponent<{
 
   return (
     <View
-      style={style.flatten([
-        'padding-x-20',
-        'padding-top-16',
-        'padding-bottom-4'
-      ])}
+      style={{
+        paddingHorizontal: spacing['20'],
+        paddingTop: spacing['16'],
+        paddingBottom: spacing['4']
+      }}
     >
-      <Text style={style.flatten(['h4'])}>{title}</Text>
+      <Text
+        style={{
+          ...typography.h6
+        }}
+      >
+        {title}
+      </Text>
     </View>
   );
 };
@@ -46,7 +53,7 @@ export const SettingItem: FunctionComponent<{
   paragraph,
   left,
   right,
-  onPress,
+  onPress
 }) => {
   const style = useStyle();
 
@@ -55,24 +62,26 @@ export const SettingItem: FunctionComponent<{
       <React.Fragment>
         {left}
         <View
-          style={StyleSheet.flatten([
-            style.flatten(['flex-row', 'justify-between', 'items-center'])
-          ])}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
         >
           <Text
-            style={StyleSheet.flatten([
-              style.flatten(['body1', 'color-text-black-medium']),
-              labelStyle
-            ])}
+            style={{
+              ...styles.defaultLabel,
+              ...labelStyle
+            }}
           >
             {label}
           </Text>
           {paragraph ? (
             <Text
-              style={StyleSheet.flatten([
-                style.flatten(['body1', 'color-text-black-low']),
-                paragraphStyle
-              ])}
+              style={{
+                ...styles.defaultLabel,
+                ...paragraphStyle
+              }}
             >
               {paragraph}
             </Text>
@@ -80,7 +89,7 @@ export const SettingItem: FunctionComponent<{
         </View>
         {right ? (
           <React.Fragment>
-            <View style={style.flatten(['flex-1'])} />
+            <View style={{ flex: 1 }} />
             {right}
           </React.Fragment>
         ) : null}
@@ -97,32 +106,26 @@ export const SettingItem: FunctionComponent<{
       ) : null} */}
       {onPress ? (
         <RectButton
-          style={StyleSheet.flatten([
-            style.flatten([
-              'background-color-white',
-              'height-62',
-              'padding-x-20',
-              'flex-row',
-              'items-center'
-            ]),
-            propStyle
-          ])}
+          style={{
+            ...styles.defaultBtn,
+            ...propStyle
+          }}
           onPress={onPress}
         >
           {renderChildren()}
         </RectButton>
       ) : (
         <View
-          style={StyleSheet.flatten([
-            style.flatten([
-              'background-color-white',
-              'height-62',
-              'padding-x-20',
-              'flex-row',
-              'items-center'
-            ]),
-            propStyle
-          ])}
+          style={{
+            ...styles.defaultBtn,
+            ...propStyle
+          }}
+          // style={StyleSheet.flatten([
+          //   style.flatten([
+
+          //   ]),
+          //   propStyle
+          // ])}
         >
           {renderChildren()}
         </View>
@@ -160,3 +163,17 @@ export const RightArrow: FunctionComponent<{
     </React.Fragment>
   );
 };
+
+const styles = StyleSheet.create({
+  defaultLabel: {
+    ...typography.h6,
+    color: colors['gray-900']
+  },
+  defaultBtn: {
+    backgroundColor: colors['white'],
+    height: 62,
+    paddingHorizontal: spacing['20'],
+    flexDirection: 'row',
+    alignItems: 'center'
+  }
+});

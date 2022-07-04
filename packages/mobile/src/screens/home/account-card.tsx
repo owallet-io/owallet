@@ -1,39 +1,16 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useCallback,
-  useEffect
-} from 'react';
+import React, { FunctionComponent, ReactElement, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  Image,
-  Touchable,
-  TouchableWithoutFeedback,
-  LogBox
-} from 'react-native';
+import { View, ViewStyle, Image } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
-import { Button } from '../../components/button';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
-import { ProgressBar } from '../../components/progress-bar';
-import {
-  DotsIcon,
-  DownArrowIcon,
-  HistoryIcon,
-  Scanner,
-  SendIcon,
-  SettingDashboardIcon
-} from '../../components/icon';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { DownArrowIcon, SettingDashboardIcon } from '../../components/icon';
+import { useNavigation } from '@react-navigation/native';
 import {
   BuyIcon,
   DepositIcon,
@@ -42,7 +19,7 @@ import {
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NamespaceModal, NetworkModal } from './components';
+import { NamespaceModal, AddressQRCodeModal } from './components';
 import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
@@ -53,7 +30,7 @@ export const AccountCard: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
     useStore();
 
-  const deterministicNumber = useCallback((chainInfo) => {
+  const deterministicNumber = useCallback(chainInfo => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
     );
@@ -63,13 +40,8 @@ export const AccountCard: FunctionComponent<{
   }, []);
 
   const profileColor = useCallback(
-    (chainInfo) => {
-      const colors = [
-        'red',
-        'green',
-        'purple',
-        'orange',
-      ];
+    chainInfo => {
+      const colors = ['red', 'green', 'purple', 'orange'];
 
       return colors[deterministicNumber(chainInfo) % colors.length];
     },
@@ -108,11 +80,12 @@ export const AccountCard: FunctionComponent<{
     parseFloat(stakedSum.toDec().toString())
   ];
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
-    if (name === 'Deposit') {
+    if (name === 'Receive') {
+      _onPressReceiveModal()
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
@@ -121,21 +94,21 @@ export const AccountCard: FunctionComponent<{
     }
   };
 
-  // open modal
-  const _onPressNetworkModal = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      NetworkModal({
-        profileColor,
-        chainStore,
-        modalStore
-      })
-    );
-  };
-
   const _onPressNamespace = () => {
     modalStore.setOpen();
     modalStore.setChildren(NamespaceModal(account));
+  };
+  const _onPressMyWallet = () => {
+    modalStore.setOpen();
+    modalStore.setChildren(MyWalletModal());
+  };
+  const _onPressReceiveModal = () => {
+    modalStore.setOpen();
+    modalStore.setChildren(
+      AddressQRCodeModal({
+        account
+      })
+    );
   };
 
   const RenderBtnMain = ({ name }) => {
@@ -144,7 +117,7 @@ export const AccountCard: FunctionComponent<{
       case 'Buy':
         icon = <BuyIcon />;
         break;
-      case 'Deposit':
+      case 'Receive':
         icon = <DepositIcon />;
         break;
       case 'Send':
@@ -257,7 +230,7 @@ export const AccountCard: FunctionComponent<{
                 justifyContent: 'center'
               }}
             >
-              {['Buy', 'Deposit', 'Send'].map((e, i) => (
+              {['Buy', 'Receive', 'Send'].map((e, i) => (
                 <RenderBtnMain key={i} name={e} />
               ))}
             </View>
