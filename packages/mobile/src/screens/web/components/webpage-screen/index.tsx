@@ -27,6 +27,7 @@ import DeviceInfo from 'react-native-device-info';
 import { InjectedProviderUrl } from '../../config';
 import { BrowserFooterSection } from '../footer-section';
 import { SwtichTab } from '../switch-tabs';
+import { version } from '../../../../../package.json';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -65,7 +66,7 @@ export const WebpageScreen: FunctionComponent<
   const [owallet] = useState(
     () =>
       new OWallet(
-        DeviceInfo.getVersion(),
+        version,
         'core',
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {

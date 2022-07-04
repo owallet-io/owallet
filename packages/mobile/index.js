@@ -11,9 +11,9 @@ import { AppRegistry } from 'react-native';
 import './init';
 
 import CodePush from 'react-native-code-push';
-
-import { App } from './src/app';
 import { name as appName } from './app.json';
+
+const { App } = require('./src/app');
 
 // not using CodePush for development
 const CodePushApp = __DEV__
