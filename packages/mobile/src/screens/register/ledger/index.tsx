@@ -59,6 +59,8 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
 
   const [isCreating, setIsCreating] = useState(false);
   const [statusPass, setStatusPass] = useState(false);
+  const [statusConfirmPass, setStatusConfirmPass] = useState(false);
+  
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
@@ -235,7 +237,22 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
                 <TextInput
                   label="Confirm password"
                   returnKeyType="done"
-                  secureTextEntry={true}
+                  inputRight={
+                    <TouchableOpacity
+                      onPress={() => setStatusConfirmPass(!statusConfirmPass)}
+                    >
+                      <Image
+                        style={{
+                          width: 22,
+                          height: 22
+                        }}
+                        source={require('../../../assets/image/transactions/eye.png')}
+                        resizeMode="contain"
+                        fadeDuration={0}
+                      />
+                    </TouchableOpacity>
+                  }
+                  secureTextEntry={!statusConfirmPass}
                   onSubmitEditing={() => {
                     submit();
                   }}
@@ -255,9 +272,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
           />
         </React.Fragment>
       ) : null}
-       <View style={{ alignItems: 'flex-start' }}>
         <BIP44AdvancedButton bip44Option={bip44Option} />
-      </View>
       <View style={{ height: 20 }} />
       <TouchableOpacity
         disabled={isCreating}

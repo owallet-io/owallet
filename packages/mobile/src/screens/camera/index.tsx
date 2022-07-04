@@ -108,22 +108,22 @@ export const CameraScreen: FunctionComponent = observer(() => {
             }
           }
         }}
-        containerBottom={
-          <Button
-            text="Show my QR code"
-            mode="light"
-            size="large"
-            containerStyle={style.flatten([
-              'margin-top-64',
-              'border-radius-64',
-              'opacity-90'
-            ])}
-            style={style.flatten(['padding-x-52'])}
-            onPress={() => {
-              setIsSelectChainModalOpen(true);
-            }}
-          />
-        }
+        // containerBottom={
+        //   <Button
+        //     text="Show my QR code"
+        //     mode="light"
+        //     size="large"
+        //     containerStyle={style.flatten([
+        //       'margin-top-64',
+        //       'border-radius-64',
+        //       'opacity-90'
+        //     ])}
+        //     style={style.flatten(['padding-x-52'])}
+        //     onPress={() => {
+        //       setIsSelectChainModalOpen(true);
+        //     }}
+        //   />
+        // }
       />
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}

@@ -50,6 +50,8 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
   const newMnemonicConfig = useNewMnemonicConfig(registerConfig);
   const [mode] = useState(registerConfig.mode);
   const [statusPass, setStatusPass] = useState(false);
+  const [statusConfirmPass, setStatusConfirmPass] = useState(false);
+
   const words = newMnemonicConfig.mnemonic.split(' ');
 
   const {
@@ -220,7 +222,22 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
                 <TextInput
                   label="Confirm password"
                   returnKeyType="done"
-                  secureTextEntry={true}
+                  inputRight={
+                    <TouchableOpacity
+                      onPress={() => setStatusConfirmPass(!statusConfirmPass)}
+                    >
+                      <Image
+                        style={{
+                          width: 22,
+                          height: 22
+                        }}
+                        source={require('../../../assets/image/transactions/eye.png')}
+                        resizeMode="contain"
+                        fadeDuration={0}
+                      />
+                    </TouchableOpacity>
+                  }
+                  secureTextEntry={!statusConfirmPass}
                   onSubmitEditing={() => {
                     submit();
                   }}
@@ -240,9 +257,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
           />
         </React.Fragment>
       ) : null}
-      <View style={{ alignItems: 'flex-start' }}>
-        <BIP44AdvancedButton bip44Option={bip44Option} />
-      </View>
+      <BIP44AdvancedButton bip44Option={bip44Option} />
       <View
         style={{
           flex: 1
@@ -334,9 +349,10 @@ const WordsCard: FunctionComponent<{
       style={{
         marginTop: 14,
         marginBottom: 16,
-        paddingTop: 24,
-        paddingLeft: 28,
-        paddingRight: 28,
+        paddingTop: 16,
+        paddingLeft: 16,
+        paddingRight: 16,
+        paddingBottom: 10,
         borderColor: colors['purple-100'],
         borderWidth: 1,
         borderRadius: 8,
@@ -355,46 +371,24 @@ const WordsCard: FunctionComponent<{
           />
         );
       })}
-      <View
-        style={{
-          width: '100%',
-          borderBottomWidth: 1,
-          padding: 10,
-          borderColor: colors['purple-50']
-        }}
-      ></View>
+      
       <View
         style={{
           width: '100%',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
-        {!isTimedOut && <CopyFillIcon color={colors['purple-700']} />}
-        <Button
-          textStyle={{
-            ...typography['text-button2'],
-            color: isTimedOut ? colors['success'] : colors['purple-900']
-          }}
-          style={{
-            backgroundColor: colors['white']
-          }}
-          mode="text"
-          {...(isTimedOut && {
-            rightIcon: (
-              <View style={{ paddingLeft: 10 }}>
-                <CheckIcon />
-              </View>
-            )
-          })}
-          text="Copy to clipboard"
-          onPress={() => {
-            Clipboard.setString(words.join(' '));
-            setTimer(3000);
-          }}
-        />
+        <TouchableOpacity onPress={() => {
+          Clipboard.setString(words.join(' '));
+          setTimer(3000);
+        }}>
+        <View style={{ height: 20 }}>
+           {isTimedOut ?  <CheckIcon /> : <CopyFillIcon color={colors['purple-700']} size={20}/>}
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );

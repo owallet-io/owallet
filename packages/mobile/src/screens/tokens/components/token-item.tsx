@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
-import { Text } from '@rneui/base';
+import { CText as Text } from '../../../components/text';
 import { CoinPretty, Dec, IntPretty, PricePretty } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Currency } from '@owallet/types';
@@ -12,6 +12,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../../utils/helper';
 import { CoinGeckoPriceStore } from '@owallet/stores';
+import { RightArrowIcon } from '../../../components/icon';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
@@ -36,7 +37,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
   let name = balance.currency.coinDenom;
-
+  
   if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
     balanceCoinDenom = balance.currency.originCurrency.coinDenom;
   } else {
@@ -49,7 +50,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       )})`;
     }
   }
-
   const amountBalance = balance
     .trim(true)
     .shrink(true)
@@ -100,19 +100,9 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         >
           <Text
             style={{
-              ...typography.subtitle2,
-              color: colors['gray-900'],
-              marginBottom: spacing['4'],
+              fontSize: 13,
+              color: colors['gray-300'],
               fontWeight: '700'
-            }}
-          >
-            {`${amountBalance} ${balanceCoinDenom}`}
-          </Text>
-          <Text
-            style={{
-              ...typography.subtitle2,
-              color: colors['text-black-low'],
-              marginBottom: spacing['4']
             }}
           >
             {name}
@@ -120,15 +110,24 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           <Text
             style={{
               ...typography.subtitle2,
+              color: colors['gray-900'],
+              fontWeight: '700'
+            }}
+          >
+            {`${amountBalance} ${balanceCoinDenom}`}
+          </Text>
+
+          <Text
+            style={{
+              ...typography.subtitle3,
               color: colors['text-black-low'],
               marginBottom: spacing['4']
             }}
           >
-            {priceBalance?.toString()}
+            {priceBalance?.toString() || "$0"}
           </Text>
         </View>
       </View>
-
       <View
         style={{
           flex: 0.5,
@@ -136,7 +135,15 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           alignItems: 'flex-end'
         }}
       >
-        {/* (balanceUsd / totalBalance) * 100 */}
+        <RightArrowIcon height={10} color={colors['gray-150']} />
+      </View>
+      {/* <View
+        style={{
+          flex: 0.5,
+          justifyContent: 'center',
+          alignItems: 'flex-end'
+        }}
+      >
         <AnimatedCircularProgress
           size={56}
           width={6}
@@ -157,7 +164,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
             </Text>
           )}
         </AnimatedCircularProgress>
-      </View>
+      </View> */}
     </TouchableOpacity>
   );
 };
@@ -168,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: spacing['4'],
     marginVertical: spacing['8'],
-    paddingTop: spacing['18'],
-    paddingBottom: spacing['18']
+    paddingTop: spacing['10'],
+    paddingBottom: spacing['10']
   }
 });

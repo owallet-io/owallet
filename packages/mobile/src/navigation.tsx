@@ -155,7 +155,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           }}
           style={{ paddingRight: 15 }}
         >
-          <HistoryIcon size={28} />
+          <HistoryIcon size={28} color={colors['purple-700']}  />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -164,7 +164,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
             });
           }}
         >
-          <Scanner size={28} color={'#5064fb'} />
+          <Scanner size={28} color={colors['purple-700']} />
         </TouchableOpacity>
       </View>
     </View>
@@ -716,14 +716,15 @@ export const InvestNavigation: FunctionComponent = () => {
     <Stack.Navigator
       screenOptions={{
         ...BlurredHeaderScreenOptionsPreset,
-        headerTitle: ''
+        headerTitle: '',
       }}
       initialRouteName="Invest"
       headerMode="screen"
     >
       <Stack.Screen
         options={{
-          title: ''
+          title: '',
+
         }}
         name="Invest"
         component={StakingDashboardScreen}

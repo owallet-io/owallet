@@ -149,8 +149,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 color: colors['gray-150']
               }}
             >
-              Transaction has been broadcasted to the blockchain and pending
-              confirmation.
+              The transaction has been broadcasted to the blockchain and is pending confirmation.
             </Text>
             <Text
               style={{

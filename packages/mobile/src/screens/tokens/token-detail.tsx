@@ -224,9 +224,9 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
               display: 'flex',
               flexDirection: 'row',
               paddingTop: spacing['6'],
-              paddingLeft: spacing[22],
-              paddingRight: spacing['22'],
-              justifyContent: 'center',
+              // paddingLeft: spacing['22'],
+              // paddingRight: spacing['22'],
+              justifyContent: 'space-around',
               paddingBottom: spacing['24']
             }}
           >

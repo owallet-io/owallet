@@ -251,10 +251,10 @@ export const AccountCard: FunctionComponent<{
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingTop: 6,
-                paddingLeft: 20,
-                paddingRight: 20,
+                paddingTop: spacing['6'],
+                paddingLeft: spacing['22'],
+                paddingRight: spacing['22'],
+                justifyContent: 'center'
               }}
             >
               {['Buy', 'Deposit', 'Send'].map((e, i) => (

@@ -135,7 +135,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                 paddingTop: 6
               }}
             >
-              Your transaction fail to be written to the blockchain.
+              The transaction cannot be completed.
             </Text>
             {chainInfo.raw.txExplorer ? (
               <TouchableOpacity

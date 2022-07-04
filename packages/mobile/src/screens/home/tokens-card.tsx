@@ -85,8 +85,9 @@ export const TokensCard: FunctionComponent<{
   // const config = {
   //   customDomain: 'https://api.coingecko.com/'
   // };
-
   // const getPriceCoinGecko = async () => {
+  //   console.log({ test: listTokens.join(',') });
+
   //   return await API.get(
   //     `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
   //     config
@@ -94,8 +95,9 @@ export const TokensCard: FunctionComponent<{
   // };
 
   // useEffect(() => {
-  //   (async () => {
+  //   (async function get() {
   //     const price = await getPriceCoinGecko();
+  //     console.log({ price });
   //     setPrice(price);
   //   })();
   // }, [index]);

@@ -137,8 +137,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 paddingTop: 6
               }}
             >
-              Your transaction has been completed and confirmed by the
-              blockchain.
+              The transaction is completed.
             </Text>
             {chainInfo.raw.txExplorer ? (
               <TouchableOpacity
