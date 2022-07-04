@@ -62,8 +62,8 @@ export const BIP44AdvancedButton: FunctionComponent<{
           inputStyle={styles.borderInput}
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
-          onChangeText={() => {
-            account.setValue;
+          onChangeText={(text) => {
+            account.setValue(text);
             bip44Option.setAccount(account.number);
           }}
         />
@@ -77,8 +77,8 @@ export const BIP44AdvancedButton: FunctionComponent<{
           }}
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
-          onChangeText={() => {
-            change.setValue;
+          onChangeText={(text) => {
+            change.setValue(text);
             bip44Option.setChange(change.number);
           }}
         />
@@ -92,8 +92,8 @@ export const BIP44AdvancedButton: FunctionComponent<{
           }}
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
-          onChangeText={() => {
-            index.setValue;
+          onChangeText={(text) => {
+            index.setValue(text);
             bip44Option.setIndex(index.number);
           }}
         />
