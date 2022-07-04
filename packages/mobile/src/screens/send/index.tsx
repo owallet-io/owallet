@@ -103,7 +103,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginBottom: spacing['16'] }}>
+        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
           <Text
             style={{
               fontWeight: '700',
