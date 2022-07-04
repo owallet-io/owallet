@@ -1,15 +1,14 @@
 import { TransportIniter } from './options';
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const CosmosApp: any = require('ledger-cosmos-js').default;
+import CosmosApp from '@ledgerhq/hw-app-cosmos';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { signatureImport } from 'secp256k1';
+import { Buffer } from 'buffer';
 
 export enum LedgerInitErrorOn {
   Transport,
   App,
-  Unknown,
+  Unknown
 }
 
 export const LedgerWebUSBIniter: TransportIniter = async () => {
@@ -65,27 +64,21 @@ export class Ledger {
   async getVersion(): Promise<{
     deviceLocked: boolean;
     major: number;
-    minor: number;
-    patch: number;
-    targetId: string;
+    version: string;
     testMode: boolean;
   }> {
     if (!this.cosmosApp) {
       throw new Error('Comsos App not initialized');
     }
 
-    const result = await this.cosmosApp.getVersion();
-    if (result.error_message !== 'No errors') {
-      throw new Error(result.error_message);
-    }
+    const { version, device_locked, major, test_mode } =
+      await this.cosmosApp.getAppConfiguration();
 
     return {
-      deviceLocked: result.device_locked,
-      major: result.major,
-      minor: result.minor,
-      patch: result.patch,
-      targetId: result.target_id,
-      testMode: result.test_mode,
+      deviceLocked: device_locked,
+      major,
+      version,
+      testMode: test_mode
     };
   }
 
@@ -94,12 +87,8 @@ export class Ledger {
       throw new Error('Comsos App not initialized');
     }
 
-    const result = await this.cosmosApp.publicKey(path);
-    if (result.error_message !== 'No errors') {
-      throw new Error(result.error_message);
-    }
-
-    return result.compressed_pk;
+    const { publicKey } = await this.cosmosApp.getAddress(path, 'cosmos');
+    return Buffer.from(publicKey, 'hex');
   }
 
   async sign(path: number[], message: Uint8Array): Promise<Uint8Array> {
@@ -107,15 +96,10 @@ export class Ledger {
       throw new Error('Comsos App not initialized');
     }
 
-    const result = await this.cosmosApp.sign(path, message);
-    console.log('result sign ledger', result);
-
-    if (result.error_message !== 'No errors') {
-      throw new Error(result.error_message);
-    }
+    const { signature } = await this.cosmosApp.sign(path, message);
 
     // Parse a DER ECDSA signature
-    return signatureImport(result.signature);
+    return signatureImport(signature);
   }
 
   async close(): Promise<void> {
