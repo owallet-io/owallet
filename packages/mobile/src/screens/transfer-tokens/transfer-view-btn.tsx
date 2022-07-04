@@ -29,7 +29,6 @@ const styles = StyleSheet.create({
 });
 
 const TransferViewBtn = () => {
-  const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
   return (
     <>
@@ -37,7 +36,7 @@ const TransferViewBtn = () => {
         <RectButton
           style={styles.viewBtn}
           onPress={() => {
-            navigation.navigate('Transactions', {});
+            smartNavigation.navigateSmart('Transactions', {});
           }}
         >
           <TransactionMinusIcon />

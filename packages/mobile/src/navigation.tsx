@@ -60,7 +60,8 @@ import {
   InvestOutlineIcon,
   InvestFillIcon,
   HistoryIcon,
-  Scanner
+  Scanner,
+  GoBack
 } from './components/icon';
 import {
   AddAddressBookScreen,
@@ -97,7 +98,7 @@ import { WebpageScreenScreenOptionsPreset } from './screens/web/components/webpa
 import { Browser } from './screens/web/browser';
 import { BookMarks } from './screens/web/bookmarks';
 import { Transactions, TransactionDetail } from './screens/transactions';
-import { navigationRef } from './router/root';
+import { navigate, navigationRef } from './router/root';
 import { handleDeepLink } from './utils/helper';
 import {
   SmartNavigatorProvider,
@@ -151,7 +152,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
       <View style={{ display: 'flex', flexDirection: 'row' }}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('Transactions', {});
+            smartNavigation.navigateSmart('Transactions', {});
           }}
           style={{ paddingRight: 15 }}
         >
@@ -221,6 +222,19 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
 const CustomHeader: FunctionComponent = observer(() => {
   const { top } = useSafeAreaInsets();
   const navigation = useNavigation();
+  const smartNavigation = useSmartNavigation();
+
+  const onPressBack = () => {
+    if (navigation.canGoBack) {
+      navigation.goBack();
+      return;
+    }
+    if (smartNavigation.canGoBack) {
+      smartNavigation.goBack();
+      return;
+    }
+    navigate('MainTab');
+  };
 
   return (
     <React.Fragment>
@@ -234,15 +248,11 @@ const CustomHeader: FunctionComponent = observer(() => {
           paddingBottom: spacing['26']
         }}
       >
-        <View>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              if (navigation.canGoBack) navigation.goBack();
-            }}
-          >
-            <HeaderBackButtonIcon />
-          </TouchableWithoutFeedback>
-        </View>
+        <TouchableWithoutFeedback onPress={onPressBack}>
+          <View>
+            <GoBack />
+          </View>
+        </TouchableWithoutFeedback>
         <View>
           <HomeScreenHeaderTitle />
         </View>
@@ -284,27 +294,12 @@ export const MainNavigation: FunctionComponent = () => {
     >
       <Stack.Screen
         options={{
-          // headerShown: false,
           header: () => <CustomHeader />
         }}
         name="Home"
         component={HomeScreen}
       />
-      {/* <Stack.Screen
-        options={{
-          title: 'Browser'
-        }}
-        name="BrowserMain"
-        component={Browser}
-      /> */}
-      <Stack.Screen
-        name="Transactions"
-        component={Transactions}
-        options={{
-          title: 'Transactions',
-          headerLeft: () => <ScreenHeaderLeft />
-        }}
-      />
+
       <Stack.Screen
         options={{
           title: '',
@@ -499,6 +494,20 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Send"
         component={sendScreen}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
+        name="Transactions"
+        component={Transactions}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
+        name="Transactions.Detail"
+        component={TransactionDetail}
       />
       <Stack.Screen
         options={{

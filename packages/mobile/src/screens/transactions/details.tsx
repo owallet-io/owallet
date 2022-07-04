@@ -1,27 +1,27 @@
-import Clipboard from 'expo-clipboard'
-import React, { FunctionComponent, useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
-import { Divider } from '@rneui/base'
-import { CText as Text} from "../../components/text";
-import { RectButton } from 'react-native-gesture-handler'
-import { CopyFillIcon, CopyIcon } from '../../components/icon'
-import { PageWithScrollViewInBottomTabView } from '../../components/page'
-import { useStyle } from '../../styles'
-import { TransactionSectionTitle } from './components'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { formatContractAddress } from '../../utils/helper'
+import Clipboard from 'expo-clipboard';
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Divider } from '@rneui/base';
+import { CText as Text } from '../../components/text';
+import { RectButton } from 'react-native-gesture-handler';
+import { CopyFillIcon, CopyIcon } from '../../components/icon';
+import { PageWithScrollView } from '../../components/page';
+import { useStyle } from '../../styles';
+import { TransactionSectionTitle } from './components';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { formatContractAddress } from '../../utils/helper';
 
 interface TransactionInfo {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 interface TransactionDetail {
-  amount: string
-  result: 'Success' | 'Fail'
-  height: number | string
-  size: number | string
-  gas: number | string
-  time: string
+  amount: string;
+  result: 'Success' | 'Fail';
+  height: number | string;
+  size: number | string;
+  gas: number | string;
+  time: string;
 }
 
 const txInfo: TransactionInfo[] = [
@@ -41,7 +41,7 @@ const txInfo: TransactionInfo[] = [
     label: 'Amount',
     value: '+125,000 ORAI'
   }
-]
+];
 
 const txDetail: TransactionInfo[] = [
   {
@@ -72,7 +72,7 @@ const txDetail: TransactionInfo[] = [
     label: 'Time',
     value: 'Apr 25, 2022 at 06:20'
   }
-]
+];
 
 const bindStyleTxInfo = (
   label: string,
@@ -80,31 +80,31 @@ const bindStyleTxInfo = (
 ): { color?: string; textTransform?: string; fontWeight?: string } => {
   switch (label) {
     case 'Transaction hash':
-      return { color: colors['primary'], textTransform: 'uppercase' }
+      return { color: colors['primary'], textTransform: 'uppercase' };
     case 'Amount':
       return value.includes('-')
         ? { color: colors['red-500'], fontWeight: '800' }
-        : { color: colors['green-500'], fontWeight: '800' }
+        : { color: colors['green-500'], fontWeight: '800' };
     default:
-      return { color: colors['gray-900'] }
+      return { color: colors['gray-900'] };
   }
-}
+};
 
 const bindValueTxInfo = (label: string, value: string) => {
   switch (label) {
     case 'Transaction hash':
     case 'From':
     case 'To':
-      return formatContractAddress(value)
+      return formatContractAddress(value);
 
     default:
-      return value
+      return value;
   }
-}
+};
 
 export const CopyIc: FunctionComponent<{
-  paragraph?: string
-  onPress?: () => void
+  paragraph?: string;
+  onPress?: () => void;
 }> = ({ paragraph, onPress }) => {
   return (
     <>
@@ -114,16 +114,16 @@ export const CopyIc: FunctionComponent<{
         size={24}
       />
     </>
-  )
-}
+  );
+};
 
 const InfoItems: FunctionComponent<{
-  label: string
-  value: string
-  topBorder?: boolean
-  onPress?: () => void
+  label: string;
+  value: string;
+  topBorder?: boolean;
+  onPress?: () => void;
 }> = ({ label, onPress, value, topBorder }) => {
-  const style = useStyle()
+  const style = useStyle();
   const renderChildren = () => {
     return (
       <>
@@ -166,8 +166,8 @@ const InfoItems: FunctionComponent<{
           <View />
         </View>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <View
@@ -191,16 +191,16 @@ const InfoItems: FunctionComponent<{
       </RectButton>
       <Divider />
     </View>
-  )
-}
+  );
+};
 
 const DetailItems: FunctionComponent<{
-  label: string
-  value: string
-  topBorder?: boolean
-  onPress?: () => void
+  label: string;
+  value: string;
+  topBorder?: boolean;
+  onPress?: () => void;
 }> = ({ label, onPress, value, topBorder }) => {
-  const style = useStyle()
+  const style = useStyle();
   const renderChildren = () => {
     return (
       <>
@@ -236,8 +236,8 @@ const DetailItems: FunctionComponent<{
           <View />
         </View>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <View
@@ -261,14 +261,14 @@ const DetailItems: FunctionComponent<{
       </RectButton>
       <Divider />
     </View>
-  )
-}
+  );
+};
 
 export const TransactionDetail: FunctionComponent<any> = () => {
-  const style = useStyle()
+  const style = useStyle();
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollView>
       <View style={styles.containerTitle}>
         <Text style={styles.textTitle}>Transaction Detail</Text>
       </View>
@@ -297,9 +297,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       </View>
 
       <View style={style.flatten(['height-1', 'margin-y-20'])} />
-    </PageWithScrollViewInBottomTabView>
-  )
-}
+    </PageWithScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {},
@@ -329,4 +329,4 @@ const styles = StyleSheet.create({
     width: metrics.screenWidth - 40
   },
   textParagraph: {}
-})
+});

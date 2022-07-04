@@ -84,7 +84,6 @@ export const Transactions: FunctionComponent = () => {
   const [index, setIndex] = useState<number>(0);
   const [txs, setTxs] = useState(txsTransfer);
   const tabBarTitle = ['Transfer', 'Receiver'];
-  const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
   const fetchTxs = () => {
     //TODO: fetch tx with type: transfer and receiver

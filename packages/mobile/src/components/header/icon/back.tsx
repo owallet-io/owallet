@@ -9,7 +9,7 @@ export const HeaderBackButtonIcon: FunctionComponent<{
   const style = useStyle();
 
   if (!color) {
-    color = style.get('color-text-black-very-low').color;
+    color = style.get('color-text-black-low').color;
   }
 
   return (

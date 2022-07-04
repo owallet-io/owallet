@@ -130,20 +130,20 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       TxFailedResult: {
         upperScreenName: 'Others'
       },
+      Transactions: {
+        upperScreenName: 'Others'
+      },
+      'Transactions.Detail': {
+        upperScreenName: 'Others'
+      },
       'Web.Intro': {
         upperScreenName: 'Web'
       },
       'Web.dApp': {
         upperScreenName: 'Web'
       },
-      Transactions: {
-        upperScreenName: 'Main'
-      },
       TransferTokensScreen: {
         upperScreenName: 'SendNavigation'
-      },
-      'Transactions.Detail': {
-        upperScreenName: 'Main'
       }
     }).withParams<{
       'Register.NewMnemonic': {
