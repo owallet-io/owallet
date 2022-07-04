@@ -4,6 +4,7 @@ import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { signatureImport } from 'secp256k1';
 import { Buffer } from 'buffer';
+import { fromPathArray } from 'bip32-path';
 
 export enum LedgerInitErrorOn {
   Transport,
@@ -68,7 +69,7 @@ export class Ledger {
     testMode: boolean;
   }> {
     if (!this.cosmosApp) {
-      throw new Error('Comsos App not initialized');
+      throw new Error('Cosmos App not initialized');
     }
 
     const { version, device_locked, major, test_mode } =
@@ -84,16 +85,21 @@ export class Ledger {
 
   async getPublicKey(path: number[]): Promise<Uint8Array> {
     if (!this.cosmosApp) {
-      throw new Error('Comsos App not initialized');
+      throw new Error('Cosmos App not initialized');
     }
 
-    const { publicKey } = await this.cosmosApp.getAddress(path, 'cosmos');
+    // make compartible with ledger-cosmos-js
+    const { publicKey } = await this.cosmosApp.getAddress(
+      fromPathArray(path).toString(),
+      'cosmos'
+    );
+
     return Buffer.from(publicKey, 'hex');
   }
 
   async sign(path: number[], message: Uint8Array): Promise<Uint8Array> {
     if (!this.cosmosApp) {
-      throw new Error('Comsos App not initialized');
+      throw new Error('Cosmos App not initialized');
     }
 
     const { signature } = await this.cosmosApp.sign(path, message);
