@@ -97,7 +97,6 @@ export const TokensCard: FunctionComponent<{
   useEffect(() => {
     (async function get() {
       const price = await getPriceCoinGecko();
-      console.log({ price });
       setPrice(price);
     })();
   }, [index]);
