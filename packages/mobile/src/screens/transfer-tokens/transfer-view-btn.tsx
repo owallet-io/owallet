@@ -4,7 +4,6 @@ import { CText as Text } from '../../components/text';
 import { NoteIcon, TransactionMinusIcon } from '../../components/icon';
 import { RectButton } from '../../components/rect-button';
 import { colors, spacing } from '../../themes';
-import { useNavigation } from '@react-navigation/core';
 import { useSmartNavigation } from '../../navigation.provider';
 
 const styles = StyleSheet.create({

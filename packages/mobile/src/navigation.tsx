@@ -111,6 +111,7 @@ import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
 import { colors, spacing, typography } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRoute } from '@react-navigation/core';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -223,6 +224,7 @@ const CustomHeader: FunctionComponent = observer(() => {
   const { top } = useSafeAreaInsets();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
+  const route = useRoute();
 
   const onPressBack = () => {
     if (navigation.canGoBack) {
@@ -248,11 +250,16 @@ const CustomHeader: FunctionComponent = observer(() => {
           paddingBottom: spacing['26']
         }}
       >
-        <TouchableWithoutFeedback onPress={onPressBack}>
-          <View>
-            <GoBack />
-          </View>
-        </TouchableWithoutFeedback>
+        {route.name === 'Home' ? (
+          <View />
+        ) : (
+          <TouchableWithoutFeedback onPress={onPressBack}>
+            <View>
+              <HeaderBackButtonIcon />
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+
         <View>
           <HomeScreenHeaderTitle />
         </View>
