@@ -579,20 +579,7 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Validator.List"
         component={ValidatorListScreen}
       />
-      <Stack.Screen
-        options={{
-          title: 'Unstake'
-        }}
-        name="Undelegate"
-        component={UndelegateScreen}
-      />
-      <Stack.Screen
-        options={{
-          title: 'Switch Validator'
-        }}
-        name="Redelegate"
-        component={RedelegateScreen}
-      />
+
       <Stack.Screen
         options={{
           gestureEnabled: false,
@@ -698,7 +685,7 @@ export const AddressBookStackScreen: FunctionComponent = () => {
     <Stack.Navigator
       screenOptions={{
         ...BlurredHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(['h5', 'color-text-black-high']),
+        headerTitleStyle: style.flatten(['h5', 'color-text-black-high'])
       }}
       headerMode="screen"
     >
@@ -803,6 +790,20 @@ export const InvestNavigation: FunctionComponent = () => {
         }}
         name="Delegate.Detail"
         component={DelegateDetailScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: 'Switch Validator'
+        }}
+        name="Redelegate"
+        component={RedelegateScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: 'Unstake'
+        }}
+        name="Undelegate"
+        component={UndelegateScreen}
       />
     </Stack.Navigator>
   );

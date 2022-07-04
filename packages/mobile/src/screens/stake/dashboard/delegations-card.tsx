@@ -1,19 +1,14 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useMemo, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
-import { Card, CardBody, CardDivider } from '../../../components/card';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../components/text';
-import { useStyle } from '../../../styles';
-import { StakedTokenSymbol } from '../../../components/token-symbol';
-import { Button } from '../../../components/button';
 import { BondStatus, Validator } from '@owallet/stores';
-import { RightArrowIcon } from '../../../components/icon';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { RectButton } from '../../../components/rect-button';
 import { colors, spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ValidatorThumbnails } from '@owallet/common';
 
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -22,10 +17,6 @@ export const DelegationsCard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const staked = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  ).total;
 
   const queryDelegations =
     queries.cosmos.queryDelegations.getQueryBech32Address(
@@ -63,9 +54,8 @@ export const DelegationsCard: FunctionComponent<{
     return map;
   }, [validators]);
 
-  const style = useStyle();
-
   const smartNavigation = useSmartNavigation();
+  useEffect(() => {}, []);
 
   return (
     <View>
@@ -82,6 +72,7 @@ export const DelegationsCard: FunctionComponent<{
             }
 
             const thumbnail =
+              ValidatorThumbnails[val.operator_address] ||
               bondedValidators.getValidatorThumbnail(val.operator_address) ||
               unbondingValidators.getValidatorThumbnail(val.operator_address) ||
               unbondedValidators.getValidatorThumbnail(val.operator_address);
@@ -112,7 +103,7 @@ export const DelegationsCard: FunctionComponent<{
                   url={thumbnail}
                 />
                 <Text
-                   style={{
+                  style={{
                     ...styles.textInfo,
                     fontWeight: '700',
                     fontSize: 16
@@ -122,7 +113,7 @@ export const DelegationsCard: FunctionComponent<{
                 >
                   {val.description.moniker}
                 </Text>
-                <View style={{flex: 1}} />
+                <View style={{ flex: 1 }} />
                 <Text
                   style={{
                     ...styles.textInfo

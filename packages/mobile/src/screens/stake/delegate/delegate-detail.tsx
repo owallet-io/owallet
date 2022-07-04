@@ -1,3 +1,4 @@
+import { ValidatorThumbnails } from '@owallet/common';
 import { BondStatus } from '@owallet/stores';
 import { Dec } from '@owallet/unit';
 import { useRoute, RouteProp } from '@react-navigation/native';
@@ -50,7 +51,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
       BondStatus.Unbonded
     );
-    const thumbnail =
+    const thumbnail = ValidatorThumbnails[validatorAddress] ||
       bondedValidators.getValidatorThumbnail(validatorAddress) ||
       unbondingValidators.getValidatorThumbnail(validatorAddress) ||
       unbondedValidators.getValidatorThumbnail(validatorAddress);

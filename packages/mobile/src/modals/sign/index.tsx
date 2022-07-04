@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
@@ -21,7 +21,6 @@ import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
-import { colors, spacing, typography } from '../../themes';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -108,72 +107,72 @@ export const SignModal: FunctionComponent<{
       : [];
 
     const renderedMsgs = (() => {
-      console.log('mode', mode);
       if (mode === 'amino') {
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
-          // const account = accountStore.getAccount(chainId);
-          // const chainInfo = chainStore.getChain(chainId);
-          // const { title, content, scrollViewHorizontal } = renderAminoMessage(
-          //   account.msgOpts,
-          //   msg,
-          //   chainInfo.currencies
-          // );
+          const account = accountStore.getAccount(chainId);
+          const chainInfo = chainStore.getChain(chainId);
+          const { title, content, scrollViewHorizontal } = renderAminoMessage(
+            account.msgOpts,
+            msg,
+            chainInfo.currencies
+          );
 
           return (
-            <Text
-              key={i}
-              style={{
-                ...typography.h6,
-                color: colors['text-black-medium']
-              }}
-            >
-              {msg.value.to_address}
-            </Text>
-            // <View key={i.toString()}>
-            //   <Msg title={title}>
-            //     {scrollViewHorizontal ? (
-            //       <ScrollView horizontal={true}>
-            //         <Text
-            //           style={style.flatten(['body3', 'color-text-black-low'])}
-            //         >
-            //           {content}
-            //         </Text>
-            //       </ScrollView>
-            //     ) : (
-            //       <Text
-            //         style={style.flatten(['body3', 'color-text-black-low'])}
-            //       >
-            //         {content}
-            //       </Text>
-            //     )}
-            //   </Msg>
-            //   {msgs.length - 1 !== i ? (
-            //     <View
-            //       style={style.flatten([
-            //         'height-1',
-            //         'background-color-border-white',
-            //         'margin-x-16'
-            //       ])}
-            //     />
-            //   ) : null}
-            // </View>
+            <View key={i.toString()}>
+              <Msg title={title}>
+                {scrollViewHorizontal ? (
+                  <ScrollView horizontal={true}>
+                    <Text
+                      style={style.flatten(['body3', 'color-text-black-low'])}
+                    >
+                      {content}
+                    </Text>
+                  </ScrollView>
+                ) : (
+                  <Text
+                    style={style.flatten(['body3', 'color-text-black-low'])}
+                  >
+                    {content}
+                  </Text>
+                )}
+              </Msg>
+              {msgs.length - 1 !== i ? (
+                <View
+                  style={style.flatten([
+                    'height-1',
+                    'background-color-border-white',
+                    'margin-x-16'
+                  ])}
+                />
+              ) : null}
+            </View>
           );
         });
       } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
-          // const chainInfo = chainStore.getChain(chainId);
-          // const { content } = renderDirectMessage(msg, chainInfo.currencies);
+          const chainInfo = chainStore.getChain(chainId);
+          const { title, content } = renderDirectMessage(
+            msg,
+            chainInfo.currencies
+          );
 
           return (
-            <Text
-              key={i}
-              style={{
-                ...typography.h6,
-                color: colors['text-black-medium']
-              }}
-            >
-              {msg.toAddress}
-            </Text>
+            <View key={i.toString()}>
+              <Msg title={title}>
+                <Text style={style.flatten(['body3', 'color-text-black-low'])}>
+                  {content}
+                </Text>
+              </Msg>
+              {msgs.length - 1 !== i ? (
+                <View
+                  style={style.flatten([
+                    'height-1',
+                    'background-color-border-white',
+                    'margin-x-16'
+                  ])}
+                />
+              ) : null}
+            </View>
           );
         });
       } else {
@@ -183,35 +182,8 @@ export const SignModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Transaction">
-        <View
-          //  style={style.flatten(['margin-bottom-16'])}
-          style={{
-            marginBottom: spacing['16']
-          }}
-        >
-          {/* <View>
-            <Text
-              style={{
-                ...typography.h6,
-                color: colors['gray-900'],
-                marginBottom: spacing['16']
-              }}
-            >
-              To
-            </Text>
-          </View> */}
-          <Text
-            style={{
-              ...typography.h6,
-              color: colors['gray-900'],
-              marginBottom: spacing['16']
-            }}
-          >
-            To:{` `} 
-            {renderedMsgs}
-          </Text>
-        </View>
-        {/* <Text style={style.flatten(['margin-bottom-3'])}>
+        {/* <View style={style.flatten(['margin-bottom-16'])}>
+          <Text style={style.flatten(['margin-bottom-3'])}>
             <Text style={style.flatten(['subtitle3', 'color-primary'])}>
               {`${msgs.length.toString()} `}
             </Text>
@@ -220,23 +192,40 @@ export const SignModal: FunctionComponent<{
             >
               Messages
             </Text>
-          </Text> */}
-        {/* <View 
-          {/* </View> */}
-        {/* <MemoInput label="Memo" memoConfig={memoConfig} /> */}
+          </Text>
+          <View
+            style={style.flatten([
+              'border-radius-8',
+              'border-width-1',
+              'border-color-border-white',
+              'overflow-hidden'
+            ])}
+          >
+            <ScrollView
+              style={style.flatten(['max-height-214'])}
+              persistentScrollbar={true}
+            >
+              {renderedMsgs}
+            </ScrollView>
+          </View>
+        </View> */}
+        <MemoInput label="To" memoConfig={memoConfig} />
         <FeeInSign
           feeConfig={feeConfig}
           gasConfig={gasConfig}
           signOptions={signInteractionStore.waitingData?.data.signOptions}
           isInternal={isInternal}
         />
-        <TouchableOpacity
+        <Button
+          text="Approve"
+          size="large"
           disabled={
             signDocWapper == null ||
             signDocHelper.signDocWrapper == null ||
             memoConfig.getError() != null ||
             feeConfig.getError() != null
           }
+          loading={signInteractionStore.isLoading}
           onPress={async () => {
             console.log('on press sign');
             try {
@@ -249,25 +238,7 @@ export const SignModal: FunctionComponent<{
               console.log(error);
             }
           }}
-          style={{
-            marginTop: 32,
-            backgroundColor: colors['purple-900'],
-            borderRadius: 8
-          }}
-        >
-          <Text
-            style={{
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              padding: 16
-            }}
-          >
-            Approve
-          </Text>
-        </TouchableOpacity>
-        {/* loading={signInteractionStore.isLoading} */}
+        />
       </CardModal>
     );
   }),

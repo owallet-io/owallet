@@ -193,7 +193,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                 return;
               }
               console.log(e);
-              smartNavigation.navigateSmart('Home', {});
+              smartNavigation.navigate('Home', {});
             }
           }
         }}

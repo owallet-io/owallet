@@ -86,10 +86,10 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         upperScreenName: 'Invest'
       },
       Undelegate: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Invest'
       },
       Redelegate: {
-        upperScreenName: 'Others'
+        upperScreenName: 'Invest'
       },
       Governance: {
         upperScreenName: 'Others'

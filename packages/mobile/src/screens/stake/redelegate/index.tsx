@@ -8,7 +8,7 @@ import { useRedelegateTxConfig } from '@owallet/hooks';
 import { PageWithScrollView } from '../../../components/page';
 import { Card, CardBody, CardDivider } from '../../../components/card';
 import { View } from 'react-native';
-import { CText as Text} from "../../../components/text";
+import { CText as Text } from '../../../components/text';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import {
   AmountInput,
@@ -19,6 +19,7 @@ import {
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { colors, spacing } from '../../../themes';
+import { ValidatorThumbnails } from '@owallet/common';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -64,7 +65,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
         .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
+        .getValidatorThumbnail(validatorAddress) ||
+      ValidatorThumbnails[validatorAddress]
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -104,7 +106,47 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
-  const txStateIsValid = sendConfigError == null;
+  const txStateIsValid = sendConfigError === null;
+
+  const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
+
+  const _onPressSwitchValidator = async () => {
+    if (account.isReadyToSendMsgs && txStateIsValid) {
+      try {
+        await account.cosmos.sendBeginRedelegateMsg(
+          sendConfigs.amountConfig.amount,
+          sendConfigs.srcValidatorAddress,
+          sendConfigs.dstValidatorAddress,
+          sendConfigs.memoConfig.memo,
+          sendConfigs.feeConfig.toStdFee(),
+          {
+            preferNoSetMemo: true,
+            preferNoSetFee: true
+          },
+          {
+            onBroadcasted: txHash => {
+              analyticsStore.logEvent('Redelgate tx broadcasted', {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName,
+                validatorName: srcValidator?.description.moniker,
+                toValidatorName: dstValidator?.description.moniker,
+                feeType: sendConfigs.feeConfig.feeType
+              });
+              smartNavigation.pushSmart('TxPendingResult', {
+                txHash: Buffer.from(txHash).toString('hex')
+              });
+            }
+          }
+        );
+      } catch (e) {
+        if (e?.message === 'Request rejected') {
+          return;
+        }
+        console.log(e);
+        smartNavigation.navigateSmart('Home', {});
+      }
+    }
+  };
 
   return (
     <PageWithScrollView
@@ -112,11 +154,13 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       contentContainerStyle={style.get('flex-grow-1')}
     >
       <View style={style.flatten(['height-page-pad'])} />
-      <View style={{
-        marginBottom: spacing['12'],
-        borderRadius: spacing['8'],
-        backgroundColor: colors['white']
-      }}>
+      <View
+        style={{
+          marginBottom: spacing['12'],
+          borderRadius: spacing['8'],
+          backgroundColor: colors['white']
+        }}
+      >
         <CardBody>
           <View style={style.flatten(['flex-row', 'items-center'])}>
             <ValidatorThumbnail
@@ -192,47 +236,14 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       />
       <View style={style.flatten(['flex-1'])} />
       <Button
+        style={{
+          backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
+        }}
         text="Switch Validator"
         size="large"
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+        disabled={isDisable}
         loading={account.isSendingMsg === 'redelegate'}
-        onPress={async () => {
-          if (account.isReadyToSendMsgs && txStateIsValid) {
-            try {
-              await account.cosmos.sendBeginRedelegateMsg(
-                sendConfigs.amountConfig.amount,
-                sendConfigs.srcValidatorAddress,
-                sendConfigs.dstValidatorAddress,
-                sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
-                {
-                  preferNoSetMemo: true,
-                  preferNoSetFee: true
-                },
-                {
-                  onBroadcasted: (txHash) => {
-                    analyticsStore.logEvent('Redelgate tx broadcasted', {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      validatorName: srcValidator?.description.moniker,
-                      toValidatorName: dstValidator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType
-                    });
-                    smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: Buffer.from(txHash).toString('hex')
-                    });
-                  }
-                }
-              );
-            } catch (e) {
-              if (e?.message === 'Request rejected') {
-                return;
-              }
-              console.log(e);
-              smartNavigation.navigateSmart('Home', {});
-            }
-          }
-        }}
+        onPress={_onPressSwitchValidator}
       />
       <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>

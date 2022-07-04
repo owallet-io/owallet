@@ -15,6 +15,7 @@ import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { Buffer } from 'buffer';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { colors, spacing } from '../../../themes';
+import { ValidatorThumbnails } from '@owallet/common';
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -59,7 +60,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         .getValidatorThumbnail(validatorAddress) ||
       queries.cosmos.queryValidators
         .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress)
+        .getValidatorThumbnail(validatorAddress) ||
+      ValidatorThumbnails[validatorAddress]
     : undefined;
 
   const staked = queries.cosmos.queryDelegations
@@ -87,6 +89,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+
+  const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
 
   return (
     <PageWithScrollView
@@ -155,11 +159,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(['flex-1'])} />
       <Button
         text="Unstake"
         size="large"
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+        style={{
+          backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
+        }}
+        disabled={isDisable}
         loading={account.isSendingMsg === 'undelegate'}
         onPress={async () => {
           if (account.isReadyToSendMsgs && txStateIsValid) {

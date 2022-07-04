@@ -21,11 +21,18 @@ export const AddressQRCodeModal: FunctionComponent<{
         style={{
           ...typography.h6,
           color: colors['gray-900'],
-          fontWeight: '900',
-          marginBottom: spacing['8']
+          fontWeight: '900'
         }}
-      >{`Scan QR code`}</Text>
+      >{`Receive`}</Text>
       <View style={{ alignItems: 'center' }}>
+        <Text
+          style={{
+            ...typography.h6,
+            color: colors['gray-400'],
+            fontWeight: '900',
+            marginVertical: spacing['16']
+          }}
+        >{`Scan QR Code or copy below address`}</Text>
         <AddressCopyable address={account.bech32Address} maxCharacters={22} />
         <View style={{ marginVertical: spacing['32'] }}>
           {account.bech32Address ? (
@@ -42,7 +49,10 @@ export const AddressQRCodeModal: FunctionComponent<{
         </View>
         <View style={{ flexDirection: 'row' }}>
           <Button
-            containerStyle={{ flex: 1 }}
+            containerStyle={{ flex: 1, backgroundColor: colors['purple-900'] }}
+            textStyle={{
+              color: colors['white']
+            }}
             text="Share Address"
             mode="light"
             size="large"

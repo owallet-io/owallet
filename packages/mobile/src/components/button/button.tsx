@@ -6,7 +6,7 @@ import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
 
 export const Button: FunctionComponent<{
-  color?: 'primary' | 'secondary' | 'danger';
+  color?: 'primary' | 'secondary' | 'danger' ;
   mode?: 'fill' | 'light' | 'outline' | 'text';
   size?: 'default' | 'small' | 'large';
   text: string;
