@@ -14,18 +14,18 @@ import { useStore } from '../../stores';
 
 const styles = StyleSheet.create({
   sendTokenCard: {
-    borderRadius: spacing['24'],
+    borderRadius: spacing['24']
   },
   sendTokenCardbody: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginHorizontal: spacing['-6'],
-    justifyContent: 'space-between',
+    justifyContent: 'space-between'
   },
   sendTokenCardContent: {
     paddingHorizontal: spacing['6'],
-    width: '50%',
+    width: '50%'
   },
   sendTokenCardMain: {
     marginBottom: spacing['12'],
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
       height: 12,
     },
     shadowOpacity: 1,
-    shadowRadius: 16.0,
+    shadowRadius: 16.0
   },
   iconSendToken: {
     marginBottom: spacing['6'],
@@ -113,9 +113,9 @@ const TransferTokensOptions: FunctionComponent = () => {
           </View>
         ))}
       </View>
-      <View style={{ marginTop: spacing['20'], alignItems: 'center' }}>
+      {/* <View style={{ marginTop: spacing['20'], alignItems: 'center' }}>
         <Text style={{ color: colors['gray-150'] }}>View lists</Text>
-      </View>
+      </View> */}
     </>
   );
 };
