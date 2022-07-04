@@ -115,6 +115,15 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
               marginBottom: spacing['4']
             }}
           >
+            {name}
+          </Text>
+          <Text
+            style={{
+              ...typography.subtitle2,
+              color: colors['text-black-low'],
+              marginBottom: spacing['4']
+            }}
+          >
             {priceBalance?.toString()}
           </Text>
         </View>

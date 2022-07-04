@@ -1,14 +1,14 @@
-import React, { FunctionComponent, ReactElement } from 'react'
-import { observer } from 'mobx-react-lite'
-import { useStore } from '../../stores'
-import { StyleSheet, View } from 'react-native'
-import { Text } from '@rneui/base'
-import { useSmartNavigation } from '../../navigation.provider'
-import { colors, spacing, typography } from '../../themes'
-import { FlatList } from 'react-native-gesture-handler'
-import { _keyExtract } from '../../utils/helper'
-import { PageWithScrollViewInBottomTabView } from '../../components/page'
-import { TokenItem } from './components/token-item'
+import React, { FunctionComponent, ReactElement } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { StyleSheet, View } from 'react-native';
+import { Text } from '@rneui/base';
+import { useSmartNavigation } from '../../navigation.provider';
+import { colors, spacing, typography } from '../../themes';
+import { FlatList } from 'react-native-gesture-handler';
+import { _keyExtract } from '../../utils/helper';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { TokenItem } from './components/token-item';
 
 // hardcode data to test UI.
 const tokens = [
@@ -36,20 +36,19 @@ const tokens = [
     amount: '-100.02',
     denom: 'ORAI'
   }
-]
+];
 
 export const TokensScreen: FunctionComponent = observer(() => {
-  const { chainStore, queriesStore, accountStore } = useStore()
-  const smartNavigation = useSmartNavigation()
+  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
-    )
+    );
 
   const tokens = queryBalances.positiveNativeUnstakables.concat(
     queryBalances.nonNativeBalances
-  )
+  );
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -74,6 +73,8 @@ export const TokensScreen: FunctionComponent = observer(() => {
           <FlatList
             data={tokens}
             renderItem={({ item }) => {
+              const priceBalance = priceStore.calculatePrice(item.balance);
+
               return (
                 <TokenItem
                   key={item.currency.coinMinimalDenom}
@@ -81,16 +82,17 @@ export const TokensScreen: FunctionComponent = observer(() => {
                     stakeCurrency: chainStore.current.stakeCurrency
                   }}
                   balance={item.balance}
+                  priceBalance={priceBalance}
                 />
-              )
+              );
             }}
             keyExtractor={_keyExtract}
           />
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -128,4 +130,4 @@ const styles = StyleSheet.create({
     paddingVertical: spacing['8'],
     marginVertical: spacing['4']
   }
-})
+});

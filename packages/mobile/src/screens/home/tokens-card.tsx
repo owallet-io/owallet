@@ -69,7 +69,7 @@ export const TokensCard: FunctionComponent<{
 
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
-  const [price, setPrice] = useState<object>({});
+  // const [price, setPrice] = useState<object>({});
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
@@ -80,26 +80,25 @@ export const TokensCard: FunctionComponent<{
     queryBalances.nonNativeBalances
   );
 
-  const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
+  // const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
 
-  const config = {
-    customDomain: 'https://api.coingecko.com/'
-  };
-  const getPriceCoinGecko = async () => {
-    console.log({ test: listTokens.join(',') });
+  // const config = {
+  //   customDomain: 'https://api.coingecko.com/'
+  // };
 
-    return await API.get(
-      `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
-      config
-    );
-  };
+  // const getPriceCoinGecko = async () => {
+  //   return await API.get(
+  //     `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
+  //     config
+  //   );
+  // };
 
-  useEffect(() => {
-    (async function get() {
-      const price = await getPriceCoinGecko();
-      setPrice(price);
-    })();
-  }, [index]);
+  // useEffect(() => {
+  //   (async () => {
+  //     const price = await getPriceCoinGecko();
+  //     setPrice(price);
+  //   })();
+  // }, [index]);
 
   const _renderFlatlistItem = ({ item }) => (
     <TouchableOpacity
