@@ -21,7 +21,7 @@ import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
-import { colors, spacing } from '../../themes';
+import { colors, metrics, spacing } from '../../themes';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
@@ -219,56 +219,68 @@ export const SignModal: FunctionComponent<{
           signOptions={signInteractionStore.waitingData?.data.signOptions}
           isInternal={isInternal}
         />
-        <Button
-          text="Approve"
+        <View
           style={{
-            backgroundColor: isDisable
-              ? colors['gray-400']
-              : colors['purple-900']
+            flexDirection: 'row',
+            justifyContent: 'space-evenly'
           }}
-          textStyle={{
-            color: isDisable ? colors['gray-400'] : colors['white']
-          }}
-          size="large"
-          disabled={isDisable}
-          loading={signInteractionStore.isLoading}
-          onPress={async () => {
-            console.log('on press sign');
-            try {
-              if (signDocHelper.signDocWrapper) {
-                await signInteractionStore.approveAndWaitEnd(
-                  signDocHelper.signDocWrapper
-                );
+        >
+          <Button
+            text="Approve"
+            containerStyle={{
+              width: '40%'
+            }}
+            style={{
+              backgroundColor: isDisable
+                ? colors['gray-400']
+                : colors['purple-900']
+            }}
+            textStyle={{
+              color: isDisable ? colors['gray-400'] : colors['white']
+            }}
+            size="large"
+            disabled={isDisable}
+            loading={signInteractionStore.isLoading}
+            onPress={async () => {
+              console.log('on press sign');
+              try {
+                if (signDocHelper.signDocWrapper) {
+                  //
+                  await signInteractionStore.approveAndWaitEnd(
+                    signDocHelper.signDocWrapper
+                  );
+                }
+              } catch (error) {
+                console.log(error);
               }
-            } catch (error) {
-              console.log(error);
-            }
-          }}
-        />
-
-        <View style={{ height: 8 }} />
-        <Button
-          text="Reject"
-          size="large"
-          style={{
-            backgroundColor: colors['disabled']
-          }}
-          textStyle={{
-            color: colors['red-500']
-          }}
-          loading={signInteractionStore.isLoading}
-          onPress={() => {
-            console.log('on press sign');
-            try {
-              if (signDocHelper.signDocWrapper) {
-                //
-                signInteractionStore.reject();
+            }}
+          />
+          <Button
+            text="Reject"
+            size="large"
+            containerStyle={{
+              width: '40%'
+            }}
+            style={{
+              backgroundColor: colors['red-500']
+            }}
+            textStyle={{
+              color: colors['white']
+            }}
+            loading={signInteractionStore.isLoading}
+            onPress={() => {
+              console.log('on press sign');
+              try {
+                if (signDocHelper.signDocWrapper) {
+                  //
+                  signInteractionStore.reject();
+                }
+              } catch (error) {
+                console.log(error);
               }
-            } catch (error) {
-              console.log(error);
-            }
-          }}
-        />
+            }}
+          />
+        </View>
       </CardModal>
     );
   }),
