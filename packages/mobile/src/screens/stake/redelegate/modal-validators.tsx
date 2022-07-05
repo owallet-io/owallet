@@ -8,6 +8,7 @@ import { _keyExtract } from '../../../utils/helper';
 import { BondStatus } from '@owallet/stores';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { ValidatorThumbnails } from '@owallet/common';
+import { CoinPretty, Dec } from '@owallet/unit';
 
 const Validators = ({
   onPressSelectValidator,
@@ -27,8 +28,8 @@ const Validators = ({
   const dataAll = bondedValidators.validators;
   const data = [...dataAll];
   const renderItem = ({ item }) => {
-    let validatorsAddress = item.operator_address || item?.validator_address
-    const amount = queryDelegations.getDelegationTo(validatorsAddress);
+    let validatorsAddress = item.operator_address || item?.validator_address;
+    // const amount = queryDelegations.getDelegationTo(validatorsAddress);
     return (
       <RectButton
         style={{
@@ -72,11 +73,18 @@ const Validators = ({
                 style={{
                   ...typography.h7,
                   color: colors['gray-300'],
-                  fontWeight: '800',
-                  fontSize: 12
+                  fontWeight: '900',
+                  fontSize: 13
                 }}
               >
-               Stake {amount.maxDecimals(4).trim(true).shrink(true).toString()}
+                {/* Stake {amount.maxDecimals(4).trim(true).shrink(true).toString()} */}
+                {new CoinPretty(
+                  chainStore.current.stakeCurrency,
+                  new Dec(item.tokens)
+                )
+                  .maxDecimals(0)
+                  .hideDenom(true)
+                  .toString() + ' staked'}
               </Text>
             )}
           </View>
