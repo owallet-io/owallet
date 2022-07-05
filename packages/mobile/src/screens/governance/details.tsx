@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
 import { Platform, StyleSheet, View, ViewStyle } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { CText as Text } from '../../components/text';
 import { Card, CardBody, CardDivider } from '../../components/card';
 import { useStyle } from '../../styles';
 import { Button } from '../../components/button';
@@ -456,7 +456,11 @@ export const GovernanceVoteModal: FunctionComponent<{
                   return;
                 }
                 console.log(e);
-                smartNavigation.navigateSmart('Home', {});
+                if (smartNavigation.canGoBack) {
+                  smartNavigation.goBack();
+                } else {
+                  smartNavigation.navigateSmart('Home', {});
+                }
               }
             }
           }}

@@ -40,7 +40,7 @@ export const MyRewardCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: txHash => {
+          onBroadcasted: (txHash) => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
               chainId: chainStore.current.chainId,
               chainName: chainStore.current.chainName
@@ -56,7 +56,11 @@ export const MyRewardCard: FunctionComponent<{
         return;
       }
       console.log(e);
-      smartNavigation.navigateSmart('Home', {});
+      if (smartNavigation.canGoBack) {
+        smartNavigation.goBack();
+      } else {
+        smartNavigation.navigateSmart('Home', {});
+      }
     }
   };
 

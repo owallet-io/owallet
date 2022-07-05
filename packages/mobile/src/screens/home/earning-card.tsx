@@ -109,8 +109,11 @@ export const EarningCard: FunctionComponent<{
                 if (e?.message === 'Request rejected') {
                   return;
                 }
-                // console.log(e);
-                smartNavigation.navigateSmart('Home', {});
+                if (smartNavigation.canGoBack) {
+                  smartNavigation.goBack();
+                } else {
+                  smartNavigation.navigateSmart('Home', {});
+                }
               }
             }}
           >
@@ -133,14 +136,14 @@ export const EarningCard: FunctionComponent<{
                 </View>
               ) : null}
               <Image
-                    style={{
-                      width: 20,
-                      height: 20
-                    }}
-                    source={require('../../assets/image/rewards.png')}
-                    resizeMode="contain"
-                    fadeDuration={0}
-                  />
+                style={{
+                  width: 20,
+                  height: 20
+                }}
+                source={require('../../assets/image/rewards.png')}
+                resizeMode="contain"
+                fadeDuration={0}
+              />
               <Text style={styles['text-rewards']}>Claim Rewards</Text>
             </View>
           </TouchableOpacity>

@@ -124,7 +124,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             preferNoSetFee: true
           },
           {
-            onBroadcasted: txHash => {
+            onBroadcasted: (txHash) => {
               analyticsStore.logEvent('Redelgate tx broadcasted', {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
@@ -143,7 +143,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           return;
         }
         console.log(e);
-        smartNavigation.navigateSmart('Home', {});
+        if (smartNavigation.canGoBack) {
+          smartNavigation.goBack();
+        } else {
+          smartNavigation.navigateSmart('Home', {});
+        }
       }
     }
   };
