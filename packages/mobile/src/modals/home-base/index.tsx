@@ -20,7 +20,7 @@ export const HomeBaseModal: FunctionComponent<{
   observer(({ children }) => {
     const style = useStyle();
     const { modalStore } = useStore();
-    const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
+    const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0;
 
     return (
       <KeyboardAvoidingView

@@ -111,7 +111,8 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
-        currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        currency:
+          balanceCoinDenom ?? chainStore.current.stakeCurrency.coinMinimalDenom
       });
     }
   };

@@ -33,7 +33,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
         : uniqTokens.push(token)
     );
     return uniqTokens;
-  }, []);
+  }, [chainStore.current.chainId]);
 
   return (
     <PageWithScrollViewInBottomTabView>

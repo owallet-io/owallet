@@ -110,7 +110,10 @@ export const EarningCard: FunctionComponent<{
                   return;
                 }
                 if (
-                  e?.message.includes('Cannot read properties of undefined')
+                  e?.message.includes(
+                    'Cannot read properties of undefined' ||
+                      'undefined is not an object'
+                  )
                 ) {
                   return;
                 }
