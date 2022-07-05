@@ -20,6 +20,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { Card } from '../../components/card';
 import { colors, metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CommonActions } from '@react-navigation/native';
 
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
@@ -58,7 +59,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
       >
         <View
           style={{
-            height: metrics.screenHeight  - bottom - 74,
+            height: metrics.screenHeight - bottom - 74,
             paddingTop: 80
           }}
         >
@@ -188,7 +189,12 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               borderRadius: 8
             }}
             onPress={() => {
-              smartNavigation.navigateSmart('Home', {});
+              smartNavigation.dispatch(
+                CommonActions.reset({
+                  index: 1,
+                  routes: [{ name: 'MainTab' }]
+                })
+              );
             }}
           >
             <Text
