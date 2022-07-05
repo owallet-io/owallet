@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { CText as Text } from '../../components/text';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { StackActions, useNavigation } from '@react-navigation/native';
@@ -7,97 +7,50 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
 import { PageWithScrollView } from '../../components/page';
-
-// hard code data to test UI
-const txsTransfer = [
-  {
-    label: 'Send token',
-    date: 'Apr 25, 2022',
-    amount: '-80.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token to adfjlajdlfjwlelnkn',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token 3',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token',
-    date: 'Apr 25, 2022',
-    amount: '-12.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Send token',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  }
-];
-
-const txsReceiver = [
-  {
-    label: 'Recevier token 3',
-    date: 'Apr 25, 2022',
-    amount: '+100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Recevier token',
-    date: 'Apr 25, 2022',
-    amount: '+12.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Recevier token',
-    date: 'Apr 25, 2022',
-    amount: '+100.02',
-    denom: 'ORAI'
-  }
-];
+import { useStore } from '../../stores';
+import { API } from '../../common/api';
 
 export const Transactions: FunctionComponent = () => {
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const [index, setIndex] = useState<number>(0);
-  const [txs, setTxs] = useState(txsTransfer);
+  const [data, setData] = useState([]);
   const tabBarTitle = ['Transfer', 'Receiver'];
   const smartNavigation = useSmartNavigation();
-  const fetchTxs = () => {
-    //TODO: fetch tx with type: transfer and receiver
+  const offset = useRef(0);
+  const hasMore = useRef(true);
+  const fetchData = async (isLoadMore = false) => {
+    const isRecipient = index === 2;
+
+    const res = await API.getHistory(
+      {
+        address: account.bech32Address,
+        offset: 0,
+        isRecipient
+      },
+      { baseURL: chainStore.current.rest }
+    );
+
+    const value = res.data?.tx_responses || [];
+    const total = res?.data?.pagination?.total;
+    let newData = isLoadMore ? [...data, ...value] : value;
+    hasMore.current = value?.length === 10;
+    offset.current = newData.length;
+    if (total && offset.current === Number(total)) {
+      hasMore.current = false;
+    }
+    setData(newData);
   };
 
   useEffect(() => {
-    try {
-    } catch (err) {}
-  }, [txs]);
+    offset.current = 0;
+    fetchData();
+  }, [account.bech32Address, index]);
 
   const _renderItem = ({ item, index }) => {
     return (
       <TransactionItem
+        address={account.bech32Address}
         item={item}
         key={index}
         onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
@@ -137,7 +90,6 @@ export const Transactions: FunctionComponent = () => {
             }}
             onPress={() => {
               setIndex(i);
-              setTxs(i === 0 ? txsTransfer : txsReceiver);
             }}
           >
             <Text
@@ -177,7 +129,6 @@ export const Transactions: FunctionComponent = () => {
               }}
               onPress={() => {
                 setIndex(i);
-                setTxs(i === 0 ? txsTransfer : txsReceiver);
               }}
             >
               <Text
@@ -203,7 +154,7 @@ export const Transactions: FunctionComponent = () => {
             contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
             keyExtractor={_keyExtract}
-            data={[...txsTransfer, ...txsReceiver]}
+            data={data}
             renderItem={_renderItem}
             ListFooterComponent={<View style={{ height: spacing['12'] }} />}
             ListEmptyComponent={
