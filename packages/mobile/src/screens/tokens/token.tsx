@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { StyleSheet, View } from 'react-native';
@@ -22,15 +22,18 @@ export const TokensScreen: FunctionComponent = observer(() => {
     queryBalances.positiveNativeUnstakables
   );
 
-  const unique = [];
-
-  tokens.map((x) =>
-    unique.filter(
-      (a) => a.balance.currency.coinDenom == x.balance.currency.coinDenom
-    ).length > 0
-      ? null
-      : unique.push(x)
-  );
+  const unique = useMemo(() => {
+    const uniqTokens = [];
+    tokens.map((token) =>
+      uniqTokens.filter(
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+      ).length > 0
+        ? null
+        : uniqTokens.push(token)
+    );
+    return uniqTokens;
+  }, []);
 
   return (
     <PageWithScrollViewInBottomTabView>
