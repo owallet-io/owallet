@@ -1,11 +1,11 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { StyleSheet, View,  Image } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 import { colors, typography, spacing, metrics } from '../../../themes';
 import { CText as Text } from '../../../components/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ArrowOpsiteUpDownIcon,  } from '../../../components/icon';
+import { ArrowOpsiteUpDownIcon } from '../../../components/icon';
 import { _keyExtract } from '../../../utils/helper';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { MyRewardCard } from './reward-card';
@@ -44,7 +44,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
             ...styles.containerMyStaking
           }}
         >
-          <MyRewardCard containerStyle={{}} />
+          <MyRewardCard />
           <View
             style={{
               alignItems: 'flex-start',
