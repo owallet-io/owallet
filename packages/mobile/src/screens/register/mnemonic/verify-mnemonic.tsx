@@ -35,7 +35,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  
+
   const { analyticsStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
@@ -91,10 +91,9 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           color: colors['text-black-medium'],
           marginTop: 32,
           marginBottom: 4,
-          textAlign: 'center'
         }}
       >
-        Backup your mnemonic seed securely.
+        Confirm your mnemonic
       </Text>
       <WordsCard
         wordSet={wordSet.map((word, i) => {
@@ -227,24 +226,28 @@ const WordButton: FunctionComponent<{
   return (
     <RectButton
       style={{
-        backgroundColor: used ? colors['primary-100'] : colors['purple-700'],
+        backgroundColor: used ? colors['gray-10'] : colors['white'],
         paddingTop: 4,
         paddingBottom: 4,
         paddingLeft: 12,
         paddingRight: 12,
         marginRight: 12,
         marginBottom: 12,
-        borderRadius: 8
+        borderRadius: 8,
+        borderWidth: used ? 0 : 1,
+        borderColor: used ? colors['gray-10'] : colors['purple-900']
       }}
       onPress={onPress}
     >
       <Text
         style={{
           ...typography['subtitle2'],
-          color: colors['white']
+          color: colors['purple-900'],
+          fontSize: 14,
+          fontWeight: '700',
         }}
       >
-        {word} 
+        {word}
       </Text>
     </RectButton>
   );
@@ -265,8 +268,8 @@ const WordsCard: FunctionComponent<{
         marginBottom: 16,
         paddingTop: 10,
         paddingBottom: 10,
-        paddingLeft: 28,
-        paddingRight: 28,
+        paddingLeft: 24,
+        paddingRight: 24,
         borderColor: colors['purple-100'],
         borderWidth: 1,
         borderRadius: 8,

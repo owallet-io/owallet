@@ -282,8 +282,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             {keychainStore.isBiometryOn ? (
               <Button
                 containerStyle={{
-                  marginTop: 40
+                  backgroundColor: colors['gray-10']
                 }}
+                textStyle={{ color: colors['purple-900']}}
                 text="Use Biometric Authentication"
                 mode="text"
                 loading={isBiometricLoading}

@@ -127,7 +127,7 @@ export const AccountCard: FunctionComponent<{
     return (
       <TouchableOpacity
         style={{
-          backgroundColor: colors['purple-900'],
+          backgroundColor: colors['purple-700'],
           borderRadius: spacing['8'],
           marginLeft: 8,
           marginRight: 8
@@ -180,7 +180,7 @@ export const AccountCard: FunctionComponent<{
           }}
         >
           <LinearGradient
-            colors={['#161532', '#5E499A']}
+            colors={['#3B2368', '#7D52D1']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{
@@ -199,7 +199,7 @@ export const AccountCard: FunctionComponent<{
               <Text
                 style={{
                   textAlign: 'center',
-                  color: '#AEAEB2',
+                  color: colors['purple-400'],
                   fontSize: 14,
                   lineHeight: 20
                 }}

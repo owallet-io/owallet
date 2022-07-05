@@ -161,7 +161,7 @@ export const Button: FunctionComponent<{
         enabled={!loading && !disabled}
         rippleColor={rippleColor}
         underlayColor={underlayColor}
-        activeOpacity={1}
+        activeOpacity={0.1}
       >
         <View
           style={style.flatten(

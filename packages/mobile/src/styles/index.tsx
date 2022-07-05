@@ -73,6 +73,7 @@ export const Colors = {
   "setting-screen-background-transparent": "transparent",
   "camera-loading-background": "#000",
   "big-image-placeholder": "#E7E4EF",
+  'purple-10': '#F3F1F5',
 };
 
 export const { StyleProvider, useStyle } = createStyleProvider({

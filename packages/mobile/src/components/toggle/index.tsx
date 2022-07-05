@@ -20,8 +20,8 @@ export const Toggle: FunctionComponent<{
   const offBackgroundColor = style.get(
     'color-text-black-very-very-very-low'
   ).color
-  const onColor = style.get('color-primary').color
-  const onBackgroundColor = style.get('color-primary-50').color
+  const onColor = style.get('color-border-purple').color
+  const onBackgroundColor = style.get('color-purple-10').color
 
   const [animatedOnValue] = useState(() => new Animated.Value(on ? 1 : 0))
 
@@ -144,6 +144,6 @@ const styles = StyleSheet.create({
   containerAnimated: {
     borderRadius: spacing['64'],
     width: spacing['24'],
-    height: spacing['24']
+    height: spacing['24'],
   }
 })
