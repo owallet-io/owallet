@@ -32,37 +32,6 @@ export const MyRewardCard: FunctionComponent<{
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
-  const _onPressClaim = async () => {
-    try {
-      await account.cosmos.sendWithdrawDelegationRewardMsgs(
-        queryReward.getDescendingPendingRewardValidatorAddresses(8),
-        '',
-        {},
-        {},
-        {
-          onBroadcasted: (txHash) => {
-            analyticsStore.logEvent('Claim reward tx broadcasted', {
-              chainId: chainStore.current.chainId,
-              chainName: chainStore.current.chainName
-            });
-            smartNavigation.pushSmart('TxPendingResult', {
-              txHash: Buffer.from(txHash).toString('hex')
-            });
-          }
-        }
-      );
-    } catch (e) {
-      if (e?.message === 'Request rejected') {
-        return;
-      }
-      console.log(e);
-      if (smartNavigation.canGoBack) {
-        smartNavigation.goBack();
-      } else {
-        smartNavigation.navigateSmart('Home', {});
-      }
-    }
-  };
 
   const isDisable =
     !account.isReadyToSendMsgs ||
@@ -134,7 +103,38 @@ export const MyRewardCard: FunctionComponent<{
                 color: isDisable ? colors['gray-300'] : colors['purple-900'],
                 marginRight: 10
               }}
-              onPress={_onPressClaim}
+              onPress={async () => {
+                try {
+                  await account.cosmos.sendWithdrawDelegationRewardMsgs(
+                    queryReward.getDescendingPendingRewardValidatorAddresses(8),
+                    '',
+                    {},
+                    {},
+                    {
+                      onBroadcasted: (txHash) => {
+                        analyticsStore.logEvent('Claim reward tx broadcasted', {
+                          chainId: chainStore.current.chainId,
+                          chainName: chainStore.current.chainName
+                        });
+                        smartNavigation.pushSmart('TxPendingResult', {
+                          txHash: Buffer.from(txHash).toString('hex')
+                        });
+                      }
+                    }
+                  );
+                } catch (e) {
+                  console.log({ errorClaim: e });
+
+                  if (e?.message === 'Request rejected') {
+                    return;
+                  }
+                  if (smartNavigation.canGoBack) {
+                    smartNavigation.goBack();
+                  } else {
+                    smartNavigation.navigateSmart('Home', {});
+                  }
+                }
+              }}
               disabled={isDisable}
               loading={account.isSendingMsg === 'withdrawRewards'}
             />

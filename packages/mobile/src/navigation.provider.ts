@@ -100,6 +100,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Setting: {
         upperScreenName: 'Settings'
       },
+      Invest: {
+        upperScreenName: 'Invest'
+      },
       SettingSelectAccount: {
         upperScreenName: 'Settings'
       },
