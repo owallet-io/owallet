@@ -147,7 +147,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       },
       TransferTokensScreen: {
         upperScreenName: 'SendNavigation'
-      },
+      }
     }).withParams<{
       'Register.NewMnemonic': {
         registerConfig: RegisterConfig;
@@ -209,9 +209,8 @@ const { SmartNavigatorProvider, useSmartNavigation } =
         memoConfig?: IMemoConfig;
       };
       AddAddressBook: {
-        chainId?: string;
-        addressBookConfig?: AddressBookConfig;
-        recipient?: Object;
+        chainId: string;
+        addressBookConfig: AddressBookConfig;
       };
       TxPendingResult: {
         chainId?: string;

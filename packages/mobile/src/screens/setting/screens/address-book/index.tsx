@@ -1,13 +1,8 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { PageWithScrollView } from '../../../../components/page';
 import { useStyle } from '../../../../styles';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import {
@@ -21,7 +16,7 @@ import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
 import { Bech32Address } from '@owallet/cosmos';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RectButton } from '../../../../components/rect-button';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   HeaderLeftButton,
   HeaderRightButton
@@ -36,8 +31,6 @@ import { colors, metrics, spacing, typography } from '../../../../themes';
 import { TextInput } from '../../../../components/input';
 import { CustomHeader } from '../../../../navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/stack';
-import { PageWithScrollView } from '../../../../components/page';
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -69,7 +62,7 @@ const debounce = (fn, delay) => {
   return (...args) => {
     clearTimeout(timerId);
     timerId = setTimeout(() => fn(...args), delay);
-  };
+  }
 };
 
 export const AddressBookScreen: FunctionComponent = observer(() => {
@@ -153,7 +146,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
     addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
   const onNameSearch = (txt) => {
-    const searchWord = txt ?? nameSearch;
+    const searchWord = txt ?? nameSearch
     if (searchWord) {
       const addressList = addressBookConfig.addressBookDatas;
       if (addressList.length > 0) {
@@ -168,16 +161,10 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   const debouncedHandler = useCallback(debounce(onNameSearch, 300), []);
 
-  const contractData =
-    contractList.length > 0
-      ? contractList
-      : nameSearch !== '' && contractList.length === 0
-      ? []
-      : addressBookConfig.addressBookDatas;
+  const contractData = contractList.length > 0 ? contractList :nameSearch !=='' && contractList.length === 0 ? [] :  addressBookConfig.addressBookDatas;
 
   return (
-    <PageWithScrollView
-    >
+    <>
       <View style={{ alignItems: 'center', marginTop: spacing['16'] }}>
         <Text style={{ ...typography.h3, fontWeight: '700' }}>
           Address book
@@ -186,6 +173,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       <View
         style={{
           ...styles.addressBookRoot,
+          height: metrics.screenHeight - bottom - 220
         }}
       >
         <View>
@@ -206,7 +194,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
             value={nameSearch}
             onChangeText={(text) => {
               setNameSearch(text);
-              debouncedHandler(text);
+              debouncedHandler(text)
             }}
           />
         </View>
@@ -224,8 +212,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
             onPress={() => {
               smartNavigation.navigateSmart('AddAddressBook', {
                 chainId,
-                addressBookConfig,
-                recipient: ''
+                addressBookConfig
               });
             }}
           >
@@ -247,116 +234,112 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           </RectButton>
         </View>
 
-        <View>
-          {contractData.map((data, i) => {
-            return (
-              <React.Fragment key={i.toString()}>
-                <AddressBookItem
-                  style={styles.addressBookItem}
-                  enabled={isInTransaction}
-                  onPress={() => {
-                    if (isInTransaction) {
-                      addressBookConfig.selectAddressAt(i);
-                      smartNavigation.goBack();
-                    }
-                  }}
+        {contractData.map((data, i) => {
+          return (
+            <React.Fragment key={i.toString()}>
+              <AddressBookItem
+                style={styles.addressBookItem}
+                enabled={isInTransaction}
+                onPress={() => {
+                  if (isInTransaction) {
+                    addressBookConfig.selectAddressAt(i);
+                    smartNavigation.goBack();
+                  }
+                }}
+              >
+                <View
+                  style={style.flatten([
+                    'flex-row',
+                    'justify-between',
+                    'items-center'
+                  ])}
                 >
-                  <View
-                    style={style.flatten([
-                      'flex-row',
-                      'justify-between',
-                      'items-center'
-                    ])}
-                  >
-                    <View>
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          fontWeight: '700',
-                          color: colors['gray-900']
-                        }}
-                      >
-                        {data.name}
-                      </Text>
-                      {data.memo ? (
-                        <Text
-                          style={style.flatten([
-                            'body3',
-                            'color-text-black-low',
-                            'margin-bottom-4'
-                          ])}
-                        >
-                          {data.memo}
-                        </Text>
-                      ) : null}
-                      <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: '700',
-                          color: colors['gray-300']
-                        }}
-                      >
-                        {Bech32Address.shortenAddress(data.address, 30)}
-                      </Text>
-                    </View>
-                    <TouchableOpacity
+                  <View>
+                    <Text
                       style={{
-                        alignItems: 'flex-start'
-                      }}
-                      onPress={async () => {
-                        if (
-                          await confirmModal.confirm({
-                            title: 'Remove contact',
-                            paragraph:
-                              'Are you sure you want to remove this address?',
-                            yesButtonText: 'Remove',
-                            noButtonText: 'Cancel',
-                            titleStyleCustom: {
-                              color: colors['orange-800']
-                            },
-                            modalRootCustom: {
-                              alignItems: 'flex-start'
-                            },
-                            contentStyleCustom: {
-                              textAlign: 'left'
-                            },
-                            noBtnStyleCustom: {
-                              backgroundColor: colors['gray-10'],
-                              color: colors['purple-900'],
-                              borderColor: 'transparent'
-                            },
-                            yesBtnStyleCustom: {
-                              backgroundColor: colors['orange-800']
-                            }
-                          })
-                        ) {
-                          await addressBookConfig.removeAddressBook(i);
-                        }
+                        fontSize: 16,
+                        fontWeight: '700',
+                        color: colors['gray-900']
                       }}
                     >
-                      <TrashCanIcon
-                        color={
-                          style.get('color-text-black-very-very-low').color
-                        }
-                        size={24}
-                      />
-                    </TouchableOpacity>
+                      {data.name}
+                    </Text>
+                    {data.memo ? (
+                      <Text
+                        style={style.flatten([
+                          'body3',
+                          'color-text-black-low',
+                          'margin-bottom-4'
+                        ])}
+                      >
+                        {data.memo}
+                      </Text>
+                    ) : null}
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: '700',
+                        color: colors['gray-300']
+                      }}
+                    >
+                      {Bech32Address.shortenAddress(data.address, 30)}
+                    </Text>
                   </View>
-                </AddressBookItem>
-                {addressBookConfig.addressBookDatas.length - 1 !== i ? (
-                  <View
-                    style={style.flatten([
-                      'height-1',
-                      'background-color-border-white'
-                    ])}
-                  />
-                ) : null}
-              </React.Fragment>
-            );
-          })}
-        </View>
+                  <TouchableOpacity
+                    style={{
+                      alignItems: 'flex-start'
+                    }}
+                    onPress={async () => {
+                      if (
+                        await confirmModal.confirm({
+                          title: 'Remove contact',
+                          paragraph:
+                            'Are you sure you want to remove this address?',
+                          yesButtonText: 'Remove',
+                          noButtonText: 'Cancel',
+                          titleStyleCustom: {
+                            color: colors['orange-800']
+                          },
+                          modalRootCustom: {
+                            alignItems: 'flex-start'
+                          },
+                          contentStyleCustom: {
+                            textAlign: 'left'
+                          },
+                          noBtnStyleCustom: {
+                            backgroundColor: colors['gray-10'],
+                            color: colors['purple-900'],
+                            borderColor: 'transparent'
+                          },
+                          yesBtnStyleCustom: {
+                            backgroundColor: colors['orange-800']
+                          }
+                        })
+                      ) {
+                        await addressBookConfig.removeAddressBook(i);
+                      }
+                    }}
+                  >
+                    <TrashCanIcon
+                      color={style.get('color-text-black-very-very-low').color}
+                      size={24}
+                    />
+                  </TouchableOpacity>
+                </View>
+              </AddressBookItem>
+              {addressBookConfig.addressBookDatas.length - 1 !== i ? (
+                <View
+                  style={style.flatten([
+                    'height-1',
+                    'background-color-border-white'
+                  ])}
+                />
+              ) : null}
+            </React.Fragment>
+          );
+        })}
       </View>
-    </PageWithScrollView>
+    </>
   );
 });
 

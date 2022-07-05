@@ -21,9 +21,7 @@ export const SettingSectionTitle: FunctionComponent<{
     >
       <Text
         style={{
-          ...typography.h4,
-          color: colors["gray-900"],
-          fontWeight: '700'
+          ...typography.h6
         }}
       >
         {title}

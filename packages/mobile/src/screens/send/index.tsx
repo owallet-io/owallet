@@ -128,14 +128,14 @@ export const SendScreen: FunctionComponent = observer(() => {
             labelStyle={styles.sendlabelInput}
           />
           <AddressInput
-            placeholder="Enter receiving address"
+            placeholder="Type the receiver"
             label="Send to"
             recipientConfig={sendConfigs.recipientConfig}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
           <AmountInput
-            placeholder="ex. 1000 ORAI"
+            placeholder="Type the receiver"
             label="Amount"
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
