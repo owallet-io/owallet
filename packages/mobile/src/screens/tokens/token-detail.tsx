@@ -1,4 +1,10 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
@@ -26,34 +32,7 @@ import {
 } from '../transactions/components';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { navigate } from '../../router/root';
-
-// hardcode data to test UI.
-const txsReceiver = [
-  {
-    label: 'Recevier token 3',
-    date: 'Apr 25, 2022',
-    amount: '+100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Recevier token',
-    date: 'Apr 25, 2022',
-    amount: '+12.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Recevier token',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  },
-  {
-    label: 'Recevier token',
-    date: 'Apr 25, 2022',
-    amount: '-100.02',
-    denom: 'ORAI'
-  }
-];
+import { API } from '../../common/api';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore } = useStore();
@@ -94,6 +73,36 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       queryBalances.positiveNativeUnstakables
     )
     .slice(0, 2);
+
+  const [data, setData] = useState([]);
+  const offset = useRef(0);
+  const hasMore = useRef(true);
+  const fetchData = async (isLoadMore = false) => {
+    const res = await API.getHistory(
+      {
+        address: account.bech32Address,
+        offset: 0,
+        isRecipient: false
+      },
+      { baseURL: chainStore.current.rest }
+    );
+
+    const value = res.data?.tx_responses || [];
+    const total = res?.data?.pagination?.total;
+    let newData = isLoadMore ? [...data, ...value] : value;
+    hasMore.current = value?.length === 10;
+    offset.current = newData.length;
+    if (total && offset.current === Number(total)) {
+      hasMore.current = false;
+    }
+    setData(newData);
+  };
+
+  useEffect(() => {
+    offset.current = 0;
+    fetchData();
+  }, [account.bech32Address]);
+  console.log(data);
 
   const _onPressBtnMain = (name) => {
     if (name === 'Buy') {
@@ -266,10 +275,11 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       >
         <TransactionSectionTitle title={'Transaction list'} />
         <FlatList
-          data={txsReceiver}
+          data={data}
           renderItem={({ item, index }) => (
             <TransactionItem
               item={item}
+              address={account.bech32Address}
               key={index}
               onPress={() =>
                 smartNavigation.navigateSmart('Transactions.Detail', {})

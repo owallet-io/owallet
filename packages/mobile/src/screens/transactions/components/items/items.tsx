@@ -1,28 +1,37 @@
-import React from 'react'
-import { FunctionComponent } from 'react'
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
-import { CText as Text} from "../../../../components/text";
-import { RectButton } from '../../../../components/rect-button'
-import { colors, metrics, spacing, typography } from '../../../../themes'
-
-interface Item {
-  label?: string
-  date?: string
-  amount?: string
-  denom?: string
-}
+import React from 'react';
+import { FunctionComponent } from 'react';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { CText as Text } from '../../../../components/text';
+import { RectButton } from '../../../../components/rect-button';
+import { colors, metrics, spacing, typography } from '../../../../themes';
+import { getTransactionValue } from '../../../../utils/helper';
+import moment from 'moment';
 
 interface TransactionItemProps {
-  item: Item
-  onPress?: () => void
-  containerStyle?: ViewStyle
+  item: any;
+  address: string;
+  onPress?: () => void;
+  containerStyle?: ViewStyle;
 }
 
 export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
   item,
+  address,
   onPress,
   containerStyle
 }) => {
+  const { txhash, tx, timestamp } = item || {};
+  const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
+  const { messages } = tx?.body || {};
+  const { title, isPlus, amount, denom, unbond } = getTransactionValue({
+    data: [
+      {
+        type: messages?.[0]?.['@type']
+      }
+    ],
+    address,
+    logs: item.logs
+  });
   const renderChildren = () => {
     return (
       <View
@@ -37,7 +46,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
               ...styles.textInfo
             }}
           >
-            {item?.label || 'Send token'}
+            {title}
           </Text>
         </View>
 
@@ -54,23 +63,23 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
               color: colors['gray-300']
             }}
           >
-            {item?.date || 'Apr 25, 2022'}
+            {date}
           </Text>
           <Text
             style={{
               ...styles.textAmount,
               marginTop: spacing['8'],
-              color: item?.amount.includes('-')
+              color: amount.includes('-')
                 ? colors['red-500']
                 : colors['green-500']
             }}
           >
-            {item?.amount || '-100.02'} {item?.denom || 'ORAI'}
+            {amount} {denom}
           </Text>
         </View>
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <RectButton
@@ -82,8 +91,8 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
     >
       {renderChildren()}
     </RectButton>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -110,4 +119,4 @@ const styles = StyleSheet.create({
     marginVertical: spacing['8'],
     marginHorizontal: spacing['16']
   }
-})
+});
