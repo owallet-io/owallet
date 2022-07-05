@@ -183,6 +183,11 @@ export const SendScreen: FunctionComponent = observer(() => {
                   if (e?.message === 'Request rejected') {
                     return;
                   }
+                  if (
+                    e?.message.includes('Cannot read properties of undefined')
+                  ) {
+                    return;
+                  }
                   console.log('send error', e);
                   if (smartNavigation.canGoBack) {
                     smartNavigation.goBack();

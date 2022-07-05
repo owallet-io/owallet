@@ -137,19 +137,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           <View>
             <Text
               style={{ ...styles.textNormal, marginBottom: spacing['4'] }}
-            >{`Estimated gas fee`}</Text>
+            >{`Gas limit`}</Text>
+            {/* Gas limit now fixed at 0.00004 ORAI for every transactions */}
             <Text style={{ ...styles.textNormal }}>{`0.00004 ORAI`}</Text>
           </View>
-          <View
-            style={{
-              alignItems: 'flex-end'
-            }}
-          >
-            <Text
-              style={{ ...styles.textNormal, marginBottom: spacing['4'] }}
-            >{`Total amount`}</Text>
-            <Text style={{ ...styles.textNormal }}>{`0`}</Text>
-          </View>
+          <View />
         </View>
       </View>
       <Button
@@ -175,7 +167,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   preferNoSetFee: true
                 },
                 {
-                  onBroadcasted: txHash => {
+                  onBroadcasted: (txHash) => {
                     analyticsStore.logEvent('Delegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
@@ -190,6 +182,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               );
             } catch (e) {
               if (e?.message === 'Request rejected') {
+                return;
+              }
+              if (e?.message.includes('Cannot read properties of undefined')) {
                 return;
               }
               console.log(e);

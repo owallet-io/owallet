@@ -455,6 +455,11 @@ export const GovernanceVoteModal: FunctionComponent<{
                 if (e?.message === 'Request rejected') {
                   return;
                 }
+                if (
+                  e?.message.includes('Cannot read properties of undefined')
+                ) {
+                  return;
+                }
                 console.log(e);
                 if (smartNavigation.canGoBack) {
                   smartNavigation.goBack();

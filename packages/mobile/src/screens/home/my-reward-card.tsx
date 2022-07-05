@@ -63,7 +63,9 @@ export const MyRewardCard: FunctionComponent<{
             if (e?.message === 'Request rejected') {
               return;
             }
-            // console.log(e);
+            if (e?.message.includes('Cannot read properties of undefined')) {
+              return;
+            }
             if (smartNavigation.canGoBack) {
               smartNavigation.goBack();
             } else {
