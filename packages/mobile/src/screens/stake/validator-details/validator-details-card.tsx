@@ -231,6 +231,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
             </Text>
           </View>
           <Button
+            underlayColor={colors['purple-400']}
             text="Stake now"
             containerStyle={{
               backgroundColor: colors['purple-900']

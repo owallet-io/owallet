@@ -114,7 +114,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
-
   const txStateIsValid = sendConfigError == null;
 
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
@@ -415,41 +414,29 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           //   }
           // });
         }}
-      /> */}
-      {dstValidatorAddress ? (
-        <View
-          style={{
-            marginTop: 20,
-            padding: 20,
-            backgroundColor: colors['white'],
-            borderRadius: 24
-          }}
-        >
-          <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-          <MemoInput
-            label="Memo (Optional)"
-            memoConfig={sendConfigs.memoConfig}
-          />
-          <FeeButtons
-            label="Fee"
-            gasLabel="gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-          />
-          <Button
-            style={{
-              backgroundColor: isDisable
-                ? colors['disabled']
-                : colors['purple-900']
-            }}
-            text="Switch"
-            size="large"
-            disabled={isDisable}
-            loading={account.isSendingMsg === 'redelegate'}
-            onPress={_onPressSwitchValidator}
-          />
-        </View>
-      ) : null}
+      />
+      <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
+      <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
+      <FeeButtons
+        label="Fee"
+        gasLabel="gas"
+        feeConfig={sendConfigs.feeConfig}
+        gasConfig={sendConfigs.gasConfig}
+      />
+      <Button
+        style={{
+          backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
+        }}
+        textStyle={{
+          color: colors['white']
+        }}
+        text="Switch Validator"
+        size="large"
+        underlayColor={colors['purple-400']}
+        disabled={isDisable}
+        loading={account.isSendingMsg === 'redelegate'}
+        onPress={_onPressSwitchValidator}
+      />
       <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );

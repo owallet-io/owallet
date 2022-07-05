@@ -150,6 +150,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           backgroundColor: colors['purple-900'],
           marginBottom: 20
         }}
+        underlayColor={colors['purple-400']}
         text="Stake"
         size="large"
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}

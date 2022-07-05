@@ -165,6 +165,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         style={{
           backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
         }}
+        underlayColor={colors['purple-400']}
         disabled={isDisable}
         loading={account.isSendingMsg === 'undelegate'}
         onPress={async () => {
