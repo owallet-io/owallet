@@ -76,7 +76,8 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
             backgroundColor: colors['gray-10'],
             borderRadius: spacing['24'],
             padding: spacing['20'],
-            marginBottom: spacing['20']
+            marginBottom: spacing['20'],
+            flexWrap: 'wrap'
           }}
         >
           {privateDataType === 'mnemonic' ? (
@@ -102,11 +103,15 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
           <RectButton
             style={{ ...styles.containerBtn }}
             onPress={() => {
-              Clipboard.setString(words.join(" ").trim())
-              setTimer(2000)
+              Clipboard.setString(words.join(' ').trim());
+              setTimer(2000);
             }}
           >
-            <CopyFillIcon color={colors['white']} />
+            {isTimedOut ? (
+              <CheckIcon />
+            ) : (
+              <CopyFillIcon color={colors['white']} />
+            )}
             <Text
               style={{ ...styles.textBtn, textAlign: 'center' }}
             >{`Copy to Clipboard`}</Text>
