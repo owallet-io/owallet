@@ -102,7 +102,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     offset.current = 0;
     fetchData();
   }, [account.bech32Address]);
-  console.log(data);
 
   const _onPressBtnMain = (name) => {
     if (name === 'Buy') {
