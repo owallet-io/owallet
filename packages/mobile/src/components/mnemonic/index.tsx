@@ -18,11 +18,11 @@ export const WordChip: FunctionComponent<{
         // paddingLeft: 2,
         // paddingRight: 2,
         borderRadius: 8,
-        // backgroundColor: 'white',
-        // borderWidth: 1,
-        // margin: 5,
-        // borderColor: empty ? colors['primary-100'] : colors['purple-700'],
-        // borderStyle: dashedBorder ? 'dashed' : 'dotted'
+        backgroundColor: 'white',
+        borderWidth: 1,
+        margin: 5,
+        borderColor: empty ? colors['primary-100'] : colors['purple-700'],
+        borderStyle: dashedBorder ? 'dashed' : 'dotted'
       }}
     >
       <Text

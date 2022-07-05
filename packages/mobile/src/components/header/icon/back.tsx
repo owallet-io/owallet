@@ -24,3 +24,35 @@ export const HeaderBackButtonIcon: FunctionComponent<{
     </Svg>
   );
 };
+
+export const HeaderBackDownButtonIcon: FunctionComponent<{
+  color?: string;
+  size?: number;
+}> = ({ color, size = 28 }) => {
+  const style = useStyle();
+
+  if (!color) {
+    color = style.get('color-text-black-low').color;
+  }
+
+  return (
+    <Svg width={size} height={size} fill="none" viewBox="0 0 28 28">
+      <path
+        d="M18.0703 14.43L12.0003 20.5L5.93031 14.43"
+        stroke="#8C93A7"
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M12 3.50008L12 20.3301"
+        stroke="#8C93A7"
+        stroke-width="1.5"
+        stroke-miterlimit="10"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </Svg>
+  );
+};

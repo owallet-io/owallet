@@ -104,5 +104,8 @@ export const colors = {
   'splash-background': "#FBF8FF",
 
   //orange
-  'orange-800': '#EF6363'
+  'orange-800': '#EF6363',
+
+  //blue
+  'blue-300': '#8C93A7',
 }

@@ -7,7 +7,7 @@ import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
 import { PageWithScrollView } from '../../../components/page';
 import { Card, CardBody, CardDivider } from '../../../components/card';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import {
@@ -18,9 +18,12 @@ import {
 } from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
-import { colors, spacing } from '../../../themes';
+import { colors, spacing, typography } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
 import ValidatorsList from './validators-list';
+import { HeaderBackDownButtonIcon } from '../../../components/header/icon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { DownArrowIcon } from '../../../components/icon';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -86,7 +89,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   );
 
   const [dstValidatorAddress, setDstValidatorAddress] = useState('');
-
+  const [switchValidator, setSwitchValidator] = useState({
+    avatar: '',
+    moniker: ''
+  });
   const dstValidator =
     queries.cosmos.queryValidators
       .getQueryStatus(BondStatus.Bonded)
@@ -108,7 +114,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError() ??
     sendConfigs.feeConfig.getError();
-  const txStateIsValid = sendConfigError === null;
+
+  const txStateIsValid = sendConfigError == null;
 
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
 
@@ -157,53 +164,83 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const onPressSelectValidator = (address) => {
-    setDstValidatorAddress(address)
+  const onPressSelectValidator = (address, avatar, moniker) => {
+    setDstValidatorAddress(address);
+    setSwitchValidator({
+      avatar,
+      moniker
+    });
     modalStore.close();
   };
   return (
     <PageWithScrollView
-      style={style.flatten(['padding-x-page'])}
-      contentContainerStyle={style.get('flex-grow-1')}
+      contentContainerStyle={{
+        flexGrow: 1
+      }}
     >
       <View style={style.flatten(['height-page-pad'])} />
-      <View
+      <Text
         style={{
-          marginBottom: spacing['12'],
-          borderRadius: spacing['8'],
-          backgroundColor: colors['white']
+          fontSize: 24,
+          lineHeight: 34,
+          fontWeight: '700',
+          textAlign: 'center'
         }}
       >
-        <CardBody>
-          <View style={style.flatten(['flex-row', 'items-center'])}>
-            <ValidatorThumbnail
-              style={style.flatten(['margin-right-12'])}
-              size={36}
-              url={srcValidatorThumbnail}
-            />
-            <Text style={style.flatten(['h6', 'color-text-black-high'])}>
-              {srcValidator ? srcValidator.description.moniker : '...'}
-            </Text>
+        Switch validator
+      </Text>
+      <View
+        style={{
+          borderRadius: spacing['8'],
+          marginTop: 24,
+          backgroundColor: colors['white'],
+          marginLeft: 20,
+          marginRight: 20
+        }}
+      >
+        <View
+          style={{
+            backgroundColor: 'inherit',
+            borderRadius: 8,
+            padding: 10,
+            borderWidth: 1,
+            borderColor: colors['purple-400'],
+            borderStyle: 'dashed'
+          }}
+        >
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <View style={{ width: 40, height: 40 }}>
+              <ValidatorThumbnail
+                style={style.flatten(['margin-right-12'])}
+                size={36}
+                url={srcValidatorThumbnail}
+              />
+            </View>
+            <View style={{ paddingLeft: 12 }}>
+              <Text
+                style={{
+                  color: colors['gray-900'],
+                  fontSize: 18,
+                  lineHeight: 22,
+                  fontWeight: '700'
+                }}
+              >
+                {srcValidator ? srcValidator.description.moniker : '...'}
+              </Text>
+              <Text
+                style={{
+                  color: colors['blue-300'],
+                  fontWeight: '700',
+                  fontSize: 14,
+                  lineHeight: 16
+                }}
+              >
+                Staked{' '}
+                {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+              </Text>
+            </View>
           </View>
-          <CardDivider
-            style={style.flatten([
-              'margin-x-0',
-              'margin-top-8',
-              'margin-bottom-15'
-            ])}
-          />
-          <View style={style.flatten(['flex-row', 'items-center'])}>
-            <Text
-              style={style.flatten(['subtitle2', 'color-text-black-medium'])}
-            >
-              Staked
-            </Text>
-            <View style={style.get('flex-1')} />
-            <Text style={style.flatten(['body2', 'color-text-black-medium'])}>
-              {staked.trim(true).shrink(true).maxDecimals(6).toString()}
-            </Text>
-          </View>
-        </CardBody>
+        </View>
       </View>
       {/*
         // The recipient validator is selected by the route params, so no need to show the address input.
@@ -220,7 +257,140 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         amountConfig={sendConfigs.amountConfig}
       />
       */}
-      <SelectorButtonWithoutModal
+      <View
+        style={{
+          paddingTop: 5,
+          paddingBottom: 5,
+          alignItems: 'center'
+        }}
+      >
+        <Image
+          style={{
+            width: spacing['24'],
+            height: spacing['24']
+          }}
+          source={require('../../../assets/image/back.png')}
+          fadeDuration={0}
+        />
+      </View>
+      <View
+        style={{
+          marginBottom: spacing['12'],
+          borderRadius: spacing['8'],
+          backgroundColor: colors['white'],
+          marginLeft: 20,
+          marginRight: 20
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            borderRadius: 8,
+            padding: 10,
+            borderWidth: 0.5,
+            borderColor: colors['white']
+          }}
+          onPress={() => {
+            modalStore.setOpen();
+            modalStore.setChildren(
+              <ValidatorsList
+                onPressSelectValidator={onPressSelectValidator}
+                dstValidatorAddress={dstValidatorAddress}
+              />
+            );
+          }}
+        >
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+            >
+              {dstValidatorAddress ? (
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                  }}
+                >
+                  <ValidatorThumbnail
+                    style={{
+                      marginRight: spacing['8']
+                    }}
+                    size={38}
+                    url={switchValidator.avatar}
+                  />
+                </View>
+              ) : (
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: '#F3F1F5',
+                    borderRadius: 8
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: spacing['24'],
+                      height: spacing['24']
+                    }}
+                    source={require('../../../assets/image/user-square.png')}
+                    fadeDuration={0}
+                  />
+                </View>
+              )}
+              {dstValidatorAddress ? (
+                <View style={{ display: 'flex', paddingLeft: 12 }}>
+                  <Text
+                    style={{
+                      color: colors['gray-900'],
+                      fontSize: 18,
+                      lineHeight: 22,
+                      fontWeight: '700'
+                    }}
+                  >
+                    {switchValidator ? switchValidator.moniker : '...'}
+                  </Text>
+                  <Text
+                    style={{
+                      color: colors['blue-300'],
+                      fontWeight: '700',
+                      fontSize: 14,
+                      lineHeight: 16
+                    }}
+                  >
+                    Staked 0 ORAI
+                  </Text>
+                </View>
+              ) : (
+                <Text
+                  style={{
+                    fontWeight: '700',
+                    fontSize: 16,
+                    lineHeight: 22,
+                    paddingLeft: 12
+                  }}
+                >
+                  Select validator
+                </Text>
+              )}
+            </View>
+            <DownArrowIcon height={15} color={colors['gray-150']} />
+          </View>
+        </TouchableOpacity>
+      </View>
+      {/* <SelectorButtonWithoutModal
         label="Redelegate to"
         placeHolder="Select Validator"
         selected={
@@ -233,33 +403,53 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         }
         onPress={() => {
           modalStore.setOpen();
-          modalStore.setChildren( <ValidatorsList onPressSelectValidator={onPressSelectValidator} dstValidatorAddress={dstValidatorAddress} />);
+          modalStore.setChildren(
+            <ValidatorsList
+              onPressSelectValidator={onPressSelectValidator}
+              dstValidatorAddress={dstValidatorAddress}
+            />
+          );
           // smartNavigation.pushSmart('Validator.List', {
           //   validatorSelector: (validatorAddress: string) => {
-          //     console.log({ validatorAddress });
           //     setDstValidatorAddress(validatorAddress);
           //   }
           // });
         }}
-      />
-      <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-      <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <FeeButtons
-        label="Fee"
-        gasLabel="gas"
-        feeConfig={sendConfigs.feeConfig}
-        gasConfig={sendConfigs.gasConfig}
-      />
-      <Button
-        style={{
-          backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
-        }}
-        text="Switch Validator"
-        size="large"
-        disabled={isDisable}
-        loading={account.isSendingMsg === 'redelegate'}
-        onPress={_onPressSwitchValidator}
-      />
+      /> */}
+      {dstValidatorAddress ? (
+        <View
+          style={{
+            marginTop: 20,
+            padding: 20,
+            backgroundColor: colors['white'],
+            borderRadius: 24
+          }}
+        >
+          <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
+          <MemoInput
+            label="Memo (Optional)"
+            memoConfig={sendConfigs.memoConfig}
+          />
+          <FeeButtons
+            label="Fee"
+            gasLabel="gas"
+            feeConfig={sendConfigs.feeConfig}
+            gasConfig={sendConfigs.gasConfig}
+          />
+          <Button
+            style={{
+              backgroundColor: isDisable
+                ? colors['disabled']
+                : colors['purple-900']
+            }}
+            text="Switch"
+            size="large"
+            disabled={isDisable}
+            loading={account.isSendingMsg === 'redelegate'}
+            onPress={_onPressSwitchValidator}
+          />
+        </View>
+      ) : null}
       <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollView>
   );

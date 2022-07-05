@@ -358,7 +358,7 @@ const WordsCard: FunctionComponent<{
         borderRadius: 8,
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: 1
+        flexWrap: "wrap",
       }}
     >
       {words.map((word, i) => {

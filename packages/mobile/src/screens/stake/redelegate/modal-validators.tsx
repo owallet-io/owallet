@@ -20,11 +20,11 @@ const Validators = ({
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   );
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queryDelegations =
-    queries.cosmos.queryDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
+  // const account = accountStore.getAccount(chainStore.current.chainId);
+  // const queryDelegations =
+  //   queries.cosmos.queryDelegations.getQueryBech32Address(
+  //     account.bech32Address
+  //   );
   const dataAll = bondedValidators.validators;
   const data = [...dataAll];
   const renderItem = ({ item }) => {
@@ -35,7 +35,14 @@ const Validators = ({
         style={{
           ...styles.containerAccount
         }}
-        onPress={() => onPressSelectValidator(validatorsAddress)}
+        onPress={() =>
+          onPressSelectValidator(
+            validatorsAddress,
+            ValidatorThumbnails[validatorsAddress] ??
+              bondedValidators.getValidatorThumbnail(validatorsAddress),
+            item.description?.moniker
+          )
+        }
       >
         <View
           style={{
@@ -68,7 +75,7 @@ const Validators = ({
             >
               {item.description?.moniker}
             </Text>
-            {!item.address && (
+            {item.tokens && (
               <Text
                 style={{
                   ...typography.h7,
