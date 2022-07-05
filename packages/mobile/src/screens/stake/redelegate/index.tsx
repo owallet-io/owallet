@@ -234,7 +234,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         feeConfig={sendConfigs.feeConfig}
         gasConfig={sendConfigs.gasConfig}
       />
-      <View style={style.flatten(['flex-1'])} />
       <Button
         style={{
           backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
