@@ -14,7 +14,7 @@ import { OWalletLogo, OWalletStar } from './owallet-logo';
 import { colors, typography } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
 
-export const RegisterEndScreen: FunctionComponent = observer((props) => {
+export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
@@ -25,6 +25,7 @@ export const RegisterEndScreen: FunctionComponent = observer((props) => {
         string,
         {
           password?: string;
+          type?: string;
         }
       >,
       string
@@ -85,8 +86,8 @@ export const RegisterEndScreen: FunctionComponent = observer((props) => {
             paddingRight: 8
           }}
         >
-          Your new wallet has been successfully 
-          {props?.route?.params?.name ? ' imported' : ' created'}!
+          Your new wallet has been successfully
+          {route?.params?.type === 'recover' ? ' imported' : ' created'}!
         </Text>
       </View>
       {password && keychainStore.isBiometrySupported ? (

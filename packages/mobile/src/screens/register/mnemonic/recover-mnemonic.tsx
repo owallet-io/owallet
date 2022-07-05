@@ -118,7 +118,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     }
     if (checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')) {
       navigate('RegisterEnd', {
-        password: getValues('password')
+        password: getValues('password'),
+        type: 'recover'
       });
     } else {
       smartNavigation.reset({
@@ -127,7 +128,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
           {
             name: 'Register.End',
             params: {
-              password: getValues('password')
+              password: getValues('password'),
+              type: 'recover'
             }
           }
         ]

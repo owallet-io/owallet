@@ -82,7 +82,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       smartNavigation.navigateSmart('Register.VerifyMnemonic', {
         registerConfig,
         newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath
+        bip44HDPath: bip44Option.bip44HDPath,
       });
     }
   });
@@ -371,22 +371,28 @@ const WordsCard: FunctionComponent<{
           />
         );
       })}
-      
+
       <View
         style={{
           width: '100%',
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          alignItems: 'center',
+          alignItems: 'center'
         }}
       >
-        <TouchableOpacity onPress={() => {
-          Clipboard.setString(words.join(' '));
-          setTimer(3000);
-        }}>
-        <View style={{ height: 20 }}>
-           {isTimedOut ?  <CheckIcon /> : <CopyFillIcon color={colors['purple-700']} size={20}/>}
+        <TouchableOpacity
+          onPress={() => {
+            Clipboard.setString(words.join(' '));
+            setTimer(3000);
+          }}
+        >
+          <View style={{ height: 20 }}>
+            {isTimedOut ? (
+              <CheckIcon />
+            ) : (
+              <CopyFillIcon color={colors['purple-700']} size={20} />
+            )}
           </View>
         </TouchableOpacity>
       </View>

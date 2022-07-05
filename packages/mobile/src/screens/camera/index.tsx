@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useCallback, useState } from 'react';
 import { RNCamera } from 'react-native-camera';
-import { useStyle } from '../../styles';
 import { PageWithView } from '../../components/page';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
@@ -23,8 +22,6 @@ import { checkValidDomain } from '../../utils/helper';
 
 export const CameraScreen: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore } = useStore();
-
-  const style = useStyle();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
 
@@ -108,22 +105,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
             }
           }
         }}
-        // containerBottom={
-        //   <Button
-        //     text="Show my QR code"
-        //     mode="light"
-        //     size="large"
-        //     containerStyle={style.flatten([
-        //       'margin-top-64',
-        //       'border-radius-64',
-        //       'opacity-90'
-        //     ])}
-        //     style={style.flatten(['padding-x-52'])}
-        //     onPress={() => {
-        //       setIsSelectChainModalOpen(true);
-        //     }}
-        //   />
-        // }
+     
       />
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}
@@ -156,13 +138,16 @@ export const AddressQRCodeModal: FunctionComponent<{
 
     const account = accountStore.getAccount(chainId);
 
-    const style = useStyle();
-
     return (
       <CardModal title="Scan QR code">
-        <View style={style.flatten(['items-center'])}>
+        <View style={{
+          alignItems: 'center'
+        }}>
           <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-          <View style={style.flatten(['margin-y-32'])}>
+          <View style={{
+            marginTop: 32,
+            marginBottom: 32,
+          }}>
             {account.bech32Address ? (
               <QRCode size={200} value={account.bech32Address} />
             ) : (
@@ -170,16 +155,21 @@ export const AddressQRCodeModal: FunctionComponent<{
                 style={StyleSheet.flatten([
                   {
                     width: 200,
-                    height: 200
+                    height: 200,
+                    backgroundColor: '#EEEEF3'
                   },
-                  style.flatten(['background-color-disabled'])
                 ])}
               />
             )}
           </View>
-          <View style={style.flatten(['flex-row'])}>
+          <View style={{
+            display: 'flex',
+            flexDirection: 'row'
+          }}>
             <Button
-              containerStyle={style.flatten(['flex-1'])}
+              containerStyle={{
+                flex: 1
+              }}
               text="Share Address"
               mode="light"
               size="large"
