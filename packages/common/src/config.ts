@@ -250,8 +250,24 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
         },
         {
+          coinDenom: 'BEP20 KWT',
+          coinMinimalDenom: 'oraib0x257a8d1E03D17B8535a182301f15290F11674b53',
+          coinDecimals: 18,
+          coinGeckoId: 'kawaii-islands',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+        },
+        {
           coinDenom: 'BEP20 USDT',
           coinMinimalDenom: 'oraib0x55d398326f99059fF775485246999027B3197955',
+          coinDecimals: 18,
+          coinGeckoId: 'tether',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        },
+        {
+          coinDenom: 'BEP20 USDT',
+          coinMinimalDenom: 'gravity0x55d398326f99059fF775485246999027B3197955',
           coinDecimals: 18,
           coinGeckoId: 'tether',
           coinImageUrl:

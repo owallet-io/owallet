@@ -21,8 +21,6 @@ import { keccak256 } from '@ethersproject/keccak256';
 import Common from '@ethereumjs/common';
 import { TransactionOptions, Transaction } from 'ethereumjs-tx';
 import { request } from '../tx';
-import { ETHEREUM_BASE_FEE } from './constants';
-import { Big as BigInt } from 'big.js';
 
 export enum KeyRingStatus {
   NOTLOADED,
