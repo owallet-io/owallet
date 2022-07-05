@@ -155,7 +155,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           onPress={() => {
             smartNavigation.navigateSmart('Transactions', {});
           }}
-          style={{ paddingRight: 15 }}
+          style={{ paddingRight: 8 }}
         >
           <HistoryIcon size={24} color={colors['purple-700']} />
         </TouchableOpacity>
@@ -266,7 +266,8 @@ export const CustomHeader: FunctionComponent = observer(() => {
           alignItems: 'center',
           justifyContent: 'space-around',
           paddingTop: top,
-          paddingBottom: spacing['26']
+          paddingBottom: spacing['20'],
+          paddingHorizontal: spacing['12']
         }}
       >
         {route.name === 'Home' ? (
