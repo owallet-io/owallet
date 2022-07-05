@@ -117,17 +117,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 paddingBottom: 16
               }}
             >
-              Transaction successful
-            </Text>
-            <Text
-              style={{
-                fontWeight: '400',
-                fontSize: 14,
-                lineHeight: 20,
-                color: colors['gray-150']
-              }}
-            >
-              Congratulation!
+              Transaction Completed!
             </Text>
             <Text
               style={{
@@ -138,7 +128,8 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 paddingTop: 6
               }}
             >
-              The transaction is completed.
+              Your transaction has been confirmed by the blockchain.
+              Congratulations!
             </Text>
             {chainInfo.raw.txExplorer ? (
               <TouchableOpacity
@@ -177,7 +168,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                     lineHeight: 22
                   }}
                 >
-                  View on Oraiscan
+                  View on Explorer
                 </Text>
               </TouchableOpacity>
             ) : null}
@@ -208,7 +199,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 padding: 16
               }}
             >
-              Go Home
+              Go Back
             </Text>
           </TouchableOpacity>
         </View>

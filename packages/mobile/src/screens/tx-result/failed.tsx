@@ -175,7 +175,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                     lineHeight: 22
                   }}
                 >
-                  View on Oraiscan
+                  View on Explorer
                 </Text>
               </TouchableOpacity>
             ) : null}

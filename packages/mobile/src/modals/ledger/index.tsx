@@ -7,15 +7,15 @@ import {
   Linking,
   PermissionsAndroid,
   Platform,
-  View,
+  View
 } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { State } from 'react-native-ble-plx';
 import TransportBLE, {
-  bleManager,
+  bleManager
 } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
 import { Ledger, LedgerInitErrorOn } from '@owallet/background';
@@ -58,7 +58,7 @@ enum BLEPermissionGrantStatus {
   // When it failed but need to try again.
   // For example, when the bluetooth permission is turned off, but user allows the permission in the app setting page and return to the app.
   FailedAndRetry = 'failed-and-retry',
-  Granted = 'granted',
+  Granted = 'granted'
 }
 
 export const LedgerGranterModal: FunctionComponent<{
@@ -216,8 +216,8 @@ export const LedgerGranterModal: FunctionComponent<{
                     ..._devices,
                     {
                       id: device.id,
-                      name: device.name,
-                    },
+                      name: device.name
+                    }
                   ];
                   setDevices(_devices);
                 }
@@ -236,7 +236,7 @@ export const LedgerGranterModal: FunctionComponent<{
                 }
               }
               setIsFinding(false);
-            },
+            }
           }).unsubscribe;
         })();
       } else {
@@ -254,7 +254,7 @@ export const LedgerGranterModal: FunctionComponent<{
 
     return (
       <CardModal
-        title="Pair Hardware Wallet"
+        title="Connecting your Ledger Nano X"
         right={
           isFinding ? (
             <View style={style.flatten(['margin-left-8'])}>
@@ -264,7 +264,7 @@ export const LedgerGranterModal: FunctionComponent<{
                   'absolute',
                   'height-1',
                   'flex-row',
-                  'items-center',
+                  'items-center'
                 ])}
               >
                 <LoadingSpinner
@@ -285,12 +285,12 @@ export const LedgerGranterModal: FunctionComponent<{
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
                 >
-                  1. Open the Cosmos app on your Ledger device
+                  1. Open Cosmos app on Ledger Nano X.
                 </Text>
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
                 >
-                  2. Select the hardware wallet you’d like to pair
+                  2. Select the hardware wallet you'd like to pair.
                 </Text>
               </React.Fragment>
             )}
@@ -331,7 +331,7 @@ export const LedgerGranterModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: true
   }
 );
 
@@ -348,7 +348,7 @@ const LedgerErrorView: FunctionComponent<{
         style={style.flatten([
           'subtitle3',
           'color-text-black-medium',
-          'margin-top-16',
+          'margin-top-16'
         ])}
       >
         {text}

@@ -144,7 +144,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 paddingBottom: 16
               }}
             >
-              Transaction pending
+              Transaction Processing...
             </Text>
             <Text
               style={{
@@ -154,20 +154,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 color: colors['gray-150']
               }}
             >
-              The transaction has been broadcasted to the blockchain and is
-              pending confirmation.
-            </Text>
-            <Text
-              style={{
-                fontWeight: '400',
-                fontSize: 14,
-                lineHeight: 20,
-                color: colors['gray-150'],
-                paddingBottom: 20,
-                paddingTop: 6
-              }}
-            >
-              Wait a little bit for processing...
+              Hang on as the process might take some time to complete.
             </Text>
             <Image
               style={{
@@ -204,7 +191,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                   );
                 }}
               >
-                Go to home screen
+                Return to home screen
               </Text>
             </View>
           </View>
