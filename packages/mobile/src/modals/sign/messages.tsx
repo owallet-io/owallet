@@ -5,7 +5,7 @@ import { CoinUtils, Coin } from '@owallet/unit';
 import { AppCurrency, Currency } from '@owallet/types';
 import yaml from 'js-yaml';
 import { CoinPrimitive } from '@owallet/stores';
-import { CText as Text} from "../../components/text";
+import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { Bech32Address } from '@owallet/cosmos';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -19,6 +19,8 @@ import { Buffer } from 'buffer';
 import { observer } from 'mobx-react-lite';
 import { FormattedMessage } from 'react-intl';
 import { Badge } from '../../components/badge';
+import { StyleSheet, View } from 'react-native';
+import { colors, typography } from '../../themes';
 
 const h = new Hypher(english);
 
@@ -198,21 +200,37 @@ export function renderMsgSend(
   return {
     title: 'Send',
     content: (
-      <Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(Bech32Address.shortenAddress(toAddress, 20))}
-        </Text>
-        <Text>{' will receive '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(
-            receives
-              .map((coin) => {
-                return `${coin.amount} ${coin.denom}`;
-              })
-              .join(',')
-          )}
-        </Text>
-      </Text>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(Bech32Address.shortenAddress(toAddress, 20))}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Amount </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(
+              receives
+                .map(coin => {
+                  return `${coin.amount} ${coin.denom}`;
+                })
+                .join(',')
+            )}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
     )
   };
 }
@@ -233,23 +251,50 @@ export function renderMsgTransfer(
 
   return {
     title: 'IBC Transfer',
+    // content: (
+    //   <Text>
+    //     <Text>{'Send '}</Text>
+    //     <Text
+    //       style={{
+    //         fontWeight: 'bold'
+    //       }}
+    //     >
+    //       {hyphen(`${amount.amount} ${amount.denom}`)}
+    //     </Text>
+    //     <Text>{' to '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(Bech32Address.shortenAddress(receiver, 20))}
+    //     </Text>
+    //     <Text>{' on '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>{channelId}</Text>
+    //   </Text>
+    // )
     content: (
-      <Text>
-        <Text>{'Send '}</Text>
-        <Text
+      <View style={{}}>
+        <View
           style={{
-            fontWeight: 'bold'
+            flexDirection: 'row',
+            justifyContent: 'space-between'
           }}
         >
-          {hyphen(`${amount.amount} ${amount.denom}`)}
-        </Text>
-        <Text>{' to '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(Bech32Address.shortenAddress(receiver, 20))}
-        </Text>
-        <Text>{' on '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>{channelId}</Text>
-      </Text>
+          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(Bech32Address.shortenAddress(receiver, 20))}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Amount </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(`${amount.amount} ${amount.denom}`)}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
     )
   };
 }
@@ -309,20 +354,47 @@ export function renderMsgUndelegate(
   return {
     title: 'Unstake',
     content: (
-      <Text>
-        <Text>{'Unstake '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(`${amount.amount} ${amount.denom}`)}
-        </Text>
-        <Text>{' from '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
-        </Text>
-        <Text>{`\n${hyphen(
-          'Asset will be liquid after unbonding period'
-        )}`}</Text>
-      </Text>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Amount </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(`${amount.amount} ${amount.denom}`)}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
     )
+    // content: (
+    //   <Text>
+    //     <Text>{'Unstake '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(`${amount.amount} ${amount.denom}`)}
+    //     </Text>
+    //     <Text>{' from '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
+    //     </Text>
+    //     <Text>{`\n${hyphen(
+    //       'Asset will be liquid after unbonding period'
+    //     )}`}</Text>
+    //   </Text>
+    // )
   };
 }
 
@@ -346,17 +418,44 @@ export function renderMsgDelegate(
   return {
     title: 'Stake',
     content: (
-      <Text>
-        <Text>{'Stake '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(`${amount.amount} ${amount.denom}`)}
-        </Text>
-        <Text>{' to '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
-        </Text>
-      </Text>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Amount </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(`${amount.amount} ${amount.denom}`)}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
     )
+    // content: (
+    //   <Text>
+    //     <Text>{'Stake '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(`${amount.amount} ${amount.denom}`)}
+    //     </Text>
+    //     <Text>{' to '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
+    //     </Text>
+    //   </Text>
+    // )
   };
 }
 
@@ -364,13 +463,29 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
   return {
     title: 'Claim Staking Reward',
     content: (
-      <Text>
-        <Text>{'Claim pending staking reward from '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(Bech32Address.shortenAddress(validatorAddress, 34))}
-        </Text>
-      </Text>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
     )
+    // content: (
+    //   <Text>
+    //     <Text>{'Claim pending staking reward from '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 34))}
+    //     </Text>
+    //   </Text>
+    // )
   };
 }
 
@@ -401,13 +516,36 @@ export function renderMsgVote(proposalId: string, option: string | number) {
   return {
     title: 'Vote',
     content: (
-      <Text>
-        <Text>{'Vote '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>{textualOption}</Text>
-        <Text>{' on '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>{`Proposal ${proposalId}`}</Text>
-      </Text>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Vote </Text>
+          <Text style={{ fontWeight: 'bold' }}>{textualOption}</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Proposal </Text>
+          <Text style={{ fontWeight: 'bold' }}>{proposalId}</Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
     )
+    // content: (
+    //   <Text>
+    //     <Text>{'Vote '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>{textualOption}</Text>
+    //     <Text>{' on '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>{`Proposal ${proposalId}`}</Text>
+    //   </Text>
+    // )
   };
 }
 
@@ -447,7 +585,7 @@ export function renderMsgExecuteContract(
               <Text> by sending </Text>
               <Text style={{ fontWeight: 'bold' }}>
                 {sent
-                  .map((coin) => {
+                  .map(coin => {
                     return `${coin.amount} ${coin.denom}`;
                   })
                   .join(',')}
@@ -576,3 +714,11 @@ export function clearDecimals(dec: string): string {
 
   return dec;
 }
+
+const styles = StyleSheet.create({
+  textInfo: {
+    ...typography.h6,
+    fontWeight: '400',
+    color: colors['text-black-medium']
+  }
+});
