@@ -37,7 +37,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
   let name = balance.currency.coinDenom;
-  
+
   if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
     balanceCoinDenom = balance.currency.originCurrency.coinDenom;
   } else {
@@ -73,7 +73,11 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
-        smartNavigation.navigateSmart('Tokens.Detail', {});
+        smartNavigation.navigateSmart('Tokens.Detail', {
+          balanceCoinDenom,
+          amountBalance,
+          priceBalance
+        });
       }}
     >
       <View
@@ -124,7 +128,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
               marginBottom: spacing['4']
             }}
           >
-            {priceBalance?.toString() || "$0"}
+            {priceBalance?.toString() || '$0'}
           </Text>
         </View>
       </View>

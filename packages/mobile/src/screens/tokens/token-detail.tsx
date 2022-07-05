@@ -55,10 +55,12 @@ const txsReceiver = [
   }
 ];
 
-export const TokenDetailScreen: FunctionComponent = observer(() => {
+export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
+  const { amountBalance, balanceCoinDenom, priceBalance } =
+    props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -76,6 +78,7 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
     queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       account.bech32Address
     );
+
   const unbonding = queryUnbonding.total;
   const stakedSum = delegated.add(unbonding);
   const total = stakable.add(stakedSum);
@@ -84,8 +87,12 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
     .queryBalances.getQueryBech32Address(
       accountStore.getAccount(chainStore.current.chainId).bech32Address
     );
-  const tokens = queryBalances.positiveNativeUnstakables
-    .concat(queryBalances.nonNativeBalances)
+
+  const tokens = queryBalances.balances
+    .concat(
+      queryBalances.nonNativeBalances,
+      queryBalances.positiveNativeUnstakables
+    )
     .slice(0, 2);
 
   const _onPressBtnMain = (name) => {
@@ -188,7 +195,7 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
               chainInfo={{
                 stakeCurrency: chainStore.current.stakeCurrency
               }}
-              currency={tokens[0].balance.currency}
+              currency={tokens?.[0]?.balance?.currency}
               imageScale={0.54}
             />
             <View
@@ -205,7 +212,7 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
                   textAlign: 'center'
                 }}
               >
-                {`${0} ORAI`}
+                {`${amountBalance} ${balanceCoinDenom}`}
               </Text>
               <Text
                 style={{
@@ -214,7 +221,7 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
                   textAlign: 'center'
                 }}
               >
-                {`$${0}`}
+                {`${priceBalance?.toString() ?? '$0'}`}
               </Text>
             </View>
           </View>
