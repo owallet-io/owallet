@@ -61,7 +61,7 @@ export const CameraScreen: FunctionComponent = observer(() => {
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
             setIsLoading(true);
-
+            
             try {
               if (checkValidDomain(data.toLowerCase())) {
                 console.log('data', data);

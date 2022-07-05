@@ -20,6 +20,7 @@ import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { colors, spacing } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
+import ValidatorsList from './validators-list';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -38,7 +39,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, modalStore } =
+    useStore();
 
   const style = useStyle();
 
@@ -155,6 +157,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const onPressSelectValidator = (address) => {
+    setDstValidatorAddress(address)
+    modalStore.close();
+  };
   return (
     <PageWithScrollView
       style={style.flatten(['padding-x-page'])}
@@ -226,11 +232,14 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             : undefined
         }
         onPress={() => {
-          smartNavigation.pushSmart('Validator.List', {
-            validatorSelector: (validatorAddress: string) => {
-              setDstValidatorAddress(validatorAddress);
-            }
-          });
+          modalStore.setOpen();
+          modalStore.setChildren( <ValidatorsList onPressSelectValidator={onPressSelectValidator} dstValidatorAddress={dstValidatorAddress} />);
+          // smartNavigation.pushSmart('Validator.List', {
+          //   validatorSelector: (validatorAddress: string) => {
+          //     console.log({ validatorAddress });
+          //     setDstValidatorAddress(validatorAddress);
+          //   }
+          // });
         }}
       />
       <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />

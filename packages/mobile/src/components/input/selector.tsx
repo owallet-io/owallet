@@ -206,7 +206,7 @@ export const Selector: FunctionComponent<{
   }, [items, selectedKey]);
   const { modalStore } = useStore();
 
-  const onPressTokenModal = () => {
+  const onPress = () => {
     modalStore.setOpen();
     modalStore.setChildren(
       <SelectorModal
@@ -230,7 +230,7 @@ export const Selector: FunctionComponent<{
         label={label}
         placeHolder={placeHolder}
         selected={selected}
-        onPressTokenModal={onPressTokenModal}
+        onPress={onPress}
       />
     </React.Fragment>
   );
@@ -252,7 +252,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
       }
     | undefined;
 
-  onPressTokenModal: () => void;
+  onPress: () => void;
 }> = ({
   containerStyle,
   labelStyle,
@@ -261,7 +261,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   label,
   placeHolder,
   selected,
-  onPressTokenModal
+  onPress
 }) => {
   const style = useStyle();
 
@@ -298,7 +298,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
           justifyContent: 'space-between',
           alignItems: 'center'
         }}
-        onPress={onPressTokenModal}
+        onPress={onPress}
       >
         <Text
           style={StyleSheet.flatten([
