@@ -20,7 +20,11 @@ import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
 import { checkValidDomain } from '../../utils/helper';
 
-export const CameraScreen: FunctionComponent = observer(() => {
+interface keyable {
+  [key: string]: any;
+}
+
+export const CameraScreen: FunctionComponent = observer((props) => {
   const { chainStore, keyRingStore } = useStore();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
@@ -64,7 +68,6 @@ export const CameraScreen: FunctionComponent = observer(() => {
             
             try {
               if (checkValidDomain(data.toLowerCase())) {
-                console.log('data', data);
                 navigation.navigate('Browser', { url: data.toLowerCase() });
 
                 return;
@@ -88,10 +91,19 @@ export const CameraScreen: FunctionComponent = observer(() => {
                     chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                 );
                 if (chainInfo) {
-                  smartNavigation.pushSmart('Send', {
-                    chainId: chainInfo.chainId,
-                    recipient: data
-                  });
+                  const routerParamKey: keyable =
+                    smartNavigation?.getState()?.routes[0]?.params;
+                  if (routerParamKey?.screenCurrent === 'addressbook') {
+                    smartNavigation.navigateSmart('AddAddressBook', {
+                      chainId: chainInfo.chainId,
+                      recipient: data
+                    });
+                  } else {
+                    smartNavigation.pushSmart('Send', {
+                      chainId: chainInfo.chainId,
+                      recipient: data
+                    });
+                  }
                 } else {
                   smartNavigation.navigateSmart('Home', {});
                 }
