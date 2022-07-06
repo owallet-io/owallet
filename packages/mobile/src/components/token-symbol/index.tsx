@@ -82,7 +82,8 @@ export const TokenSymbol: FunctionComponent<{
         <FastImage
           style={{
             width: size * imageScale,
-            height: size * imageScale
+            height: size * imageScale,
+            backgroundColor: colors['gray-10']
           }}
           resizeMode={FastImage.resizeMode.contain}
           source={{
@@ -93,7 +94,7 @@ export const TokenSymbol: FunctionComponent<{
         <VectorCharacter
           char={currency.coinDenom[0]}
           height={Math.floor(size * 0.35)}
-          color="white"
+          color="black"
         />
       )}
     </View>

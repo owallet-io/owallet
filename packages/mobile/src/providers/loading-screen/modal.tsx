@@ -28,7 +28,7 @@ export const LoadingScreenModal: FunctionComponent<{
       <View
         style={{
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <LoadingSpinner size={30} color="white" />
@@ -37,6 +37,7 @@ export const LoadingScreenModal: FunctionComponent<{
   },
   {
     align: 'center',
-    transitionVelocity: 0
+    transitionVelocity: 0,
+    backdropMaxOpacity: 1
   }
 );

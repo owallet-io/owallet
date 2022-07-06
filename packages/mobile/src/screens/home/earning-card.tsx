@@ -41,9 +41,7 @@ export const EarningCard: FunctionComponent<{
   return (
     <View style={containerStyle}>
       <Card style={styles.card}>
-        <View
-          style={styles.cardBody}
-        >
+        <View style={styles.cardBody}>
           <Text style={{ ...styles['text-earn'] }}>Earnings</Text>
           <Image
             style={{
@@ -76,6 +74,12 @@ export const EarningCard: FunctionComponent<{
           <TouchableOpacity
             style={{
               ...styles['btn-claim'],
+              borderColor:
+                !account.isReadyToSendMsgs ||
+                stakingReward.toDec().equals(new Dec(0)) ||
+                queryReward.pendingRewardValidatorAddresses.length === 0
+                  ? colors['gray-300']
+                  : colors['purple-700'],
               backgroundColor:
                 !account.isReadyToSendMsgs ||
                 stakingReward.toDec().equals(new Dec(0)) ||
@@ -161,7 +165,9 @@ export const EarningCard: FunctionComponent<{
           </TouchableOpacity>
 
           <View style={styles['view-box-staking']}>
-            <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>Total staked</Text>
+            <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>
+              Total staked
+            </Text>
             <View
               style={{
                 marginBottom: 20,
@@ -291,15 +297,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
     lineHeight: 22,
-    color: colors['gray-300'],
+    color: colors['gray-300']
   },
   'btn-claim': {
     backgroundColor: colors['purple-900'],
     borderWidth: 0.5,
     marginTop: 16,
     width: metrics.screenWidth - 48,
-    borderRadius: spacing['12'],
-    borderColor: colors['purple-900']
+    borderRadius: spacing['12']
   },
   'btn-manage': {
     backgroundColor: '#F3F1F5',

@@ -33,11 +33,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
         close={() => setIsModalOpen(false)}
         bip44Option={bip44Option}
       />
-      <Text
-      onPress={() => setIsModalOpen(true)}
-      >
-        Advanced Option
-      </Text>
+      <Text>Advanced Option</Text>
       <View
         style={{
           marginBottom: 16,

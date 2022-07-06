@@ -141,7 +141,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
               padding: 16
             }}
           >
-            Import from Mnemonic
+            Import from Mnemonic / Private key 
           </Text>
       </TouchableOpacity>
     </PageWithScrollView>
