@@ -35,7 +35,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
               borderRadius: spacing['12'],
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: profileColor?.(item) ?? 'purple'
+              backgroundColor: profileColor?.(item) ?? colors['purple-400']
             }}
           >
             {item.raw.chainSymbolImageUrl ? (
@@ -53,7 +53,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
               <VectorCharacter
                 char={item.chainName[0]}
                 height={15}
-                color={colors['black']}
+                color={colors['white']}
               />
             )}
           </View>
