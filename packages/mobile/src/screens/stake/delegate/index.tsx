@@ -139,7 +139,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               style={{ ...styles.textNormal, marginBottom: spacing['4'] }}
             >{`Gas limit`}</Text>
             {/* Gas limit now fixed at 0.00004 ORAI for every transactions */}
-            <Text style={{ ...styles.textNormal }}>{`0.00004 ORAI`}</Text>
+            <Text style={{ ...styles.textNormal }}>{`200000`}</Text>
           </View>
           <View />
         </View>
