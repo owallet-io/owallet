@@ -5,7 +5,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  TouchableNativeFeedback,
+  TouchableWithoutFeedback,
   View
 } from 'react-native';
 import { useStyle } from '../../styles';
@@ -27,14 +27,18 @@ export const HomeBaseModal: FunctionComponent<{
         behavior="position"
         keyboardVerticalOffset={keyboardVerticalOffset}
       >
-        <CardModal title={''}>
-          <TouchableNativeFeedback onPress={() => Keyboard.dismiss()}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss();
+          }}
+        >
+          <CardModal title={''}>
             <View style={style.flatten(['margin-bottom-16'])}>
               {children}
               {modalStore.getChildren()}
             </View>
-          </TouchableNativeFeedback>
-        </CardModal>
+          </CardModal>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
     );
   }),
