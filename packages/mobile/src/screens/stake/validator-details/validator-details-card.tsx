@@ -15,6 +15,7 @@ import {
   ValidatorCommissionIcon,
   ValidatorVotingIcon
 } from '../../../components/icon';
+import { ValidatorThumbnails } from '@owallet/common';
 
 const renderIconValidator = (label: string, size?: number) => {
   switch (label) {
@@ -91,7 +92,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
     unbondingValidators.getValidatorThumbnail(validatorAddress) ||
-    unbondedValidators.getValidatorThumbnail(validatorAddress);
+    unbondedValidators.getValidatorThumbnail(validatorAddress) || 
+    ValidatorThumbnails[validatorAddress]
 
   const renderTextDetail = (label: string) => {
     switch (label) {
