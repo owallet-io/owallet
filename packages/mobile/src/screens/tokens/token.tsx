@@ -37,43 +37,37 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView>
-      <View
+      <Text
         style={{
-          ...styles.container
+          ...styles.title
         }}
       >
-        <Text
-          style={{
-            ...styles.title
-          }}
-        >
-          {`My Tokens`}
-        </Text>
+        {`My Tokens`}
+      </Text>
 
-        <View
-          style={{
-            ...styles.containerTokens
-          }}
-        >
-          <FlatList
-            data={unique}
-            renderItem={({ item }) => {
-              const priceBalance = priceStore.calculatePrice(item.balance);
+      <View
+        style={{
+          ...styles.containerTokens
+        }}
+      >
+        <FlatList
+          data={unique}
+          renderItem={({ item }) => {
+            const priceBalance = priceStore.calculatePrice(item.balance);
 
-              return (
-                <TokenItem
-                  key={item.currency.coinMinimalDenom}
-                  chainInfo={{
-                    stakeCurrency: chainStore.current.stakeCurrency
-                  }}
-                  balance={item.balance}
-                  priceBalance={priceBalance}
-                />
-              );
-            }}
-            keyExtractor={_keyExtract}
-          />
-        </View>
+            return (
+              <TokenItem
+                key={item.currency.coinMinimalDenom}
+                chainInfo={{
+                  stakeCurrency: chainStore.current.stakeCurrency
+                }}
+                balance={item.balance}
+                priceBalance={priceBalance}
+              />
+            );
+          }}
+          keyExtractor={_keyExtract}
+        />
       </View>
     </PageWithScrollViewInBottomTabView>
   );
