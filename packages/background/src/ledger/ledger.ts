@@ -4,7 +4,7 @@ import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { signatureImport } from 'secp256k1';
 import { Buffer } from 'buffer';
-import { fromPathArray } from 'bip32-path';
+import { fromString } from 'bip32-path';
 
 export enum LedgerInitErrorOn {
   Transport,
@@ -90,7 +90,7 @@ export class Ledger {
 
     // make compartible with ledger-cosmos-js
     const { publicKey } = await this.cosmosApp.getAddress(
-      typeof path === 'string' ? path : fromPathArray(path).toString(),
+      typeof path === 'string' ? fromString(path).toPathArray() : path,
       'cosmos'
     );
 
@@ -106,7 +106,7 @@ export class Ledger {
     }
 
     const { signature } = await this.cosmosApp.sign(
-      typeof path === 'string' ? path : fromPathArray(path).toString(),
+      typeof path === 'string' ? fromString(path).toPathArray() : path,
       message
     );
 
