@@ -38,7 +38,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
-  const { amountBalance, balanceCoinDenom, priceBalance } =
+  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
     props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -112,7 +112,9 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
         currency:
-          balanceCoinDenom ?? chainStore.current.stakeCurrency.coinMinimalDenom
+          balanceCoinFull ??
+          balanceCoinDenom ??
+          chainStore.current.stakeCurrency.coinMinimalDenom
       });
     }
   };

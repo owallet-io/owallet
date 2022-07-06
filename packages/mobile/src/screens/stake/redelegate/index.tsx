@@ -24,6 +24,8 @@ import ValidatorsList from './validators-list';
 import { HeaderBackDownButtonIcon } from '../../../components/header/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DownArrowIcon } from '../../../components/icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -46,7 +48,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     useStore();
 
   const style = useStyle();
-
+  const bottomTabBarHeight = useBottomTabBarHeight();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -414,29 +416,41 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           //   }
           // });
         }}
-      />
-      <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-      <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <FeeButtons
-        label="Fee"
-        gasLabel="gas"
-        feeConfig={sendConfigs.feeConfig}
-        gasConfig={sendConfigs.gasConfig}
-      />
-      <Button
-        style={{
-          backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
-        }}
-        textStyle={{
-          color: colors['white']
-        }}
-        text="Switch Validator"
-        size="large"
-        underlayColor={colors['purple-400']}
-        disabled={isDisable}
-        loading={account.isSendingMsg === 'redelegate'}
-        onPress={_onPressSwitchValidator}
-      />
+      /> */}
+      {dstValidatorAddress ? (
+        <View
+          style={{
+            marginTop: 20,
+            padding: 20,
+            backgroundColor: colors['white'],
+            borderRadius: 24,
+          }}
+        >
+          <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
+          <MemoInput
+            label="Memo (Optional)"
+            memoConfig={sendConfigs.memoConfig}
+          />
+          <FeeButtons
+            label="Fee"
+            gasLabel="gas"
+            feeConfig={sendConfigs.feeConfig}
+            gasConfig={sendConfigs.gasConfig}
+          />
+          <Button
+            style={{
+              backgroundColor: isDisable
+                ? colors['disabled']
+                : colors['purple-900']
+            }}
+            text="Switch"
+            size="large"
+            disabled={isDisable}
+            loading={account.isSendingMsg === 'redelegate'}
+            onPress={_onPressSwitchValidator}
+          />
+        </View>
+      ) : null}
       <View style={style.flatten(['height-page-pad'])} />
     </PageWithScrollViewInBottomTabView>
   );

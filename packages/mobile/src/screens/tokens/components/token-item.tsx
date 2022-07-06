@@ -67,7 +67,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         .trim(true)
         .toString() + '%'
     : '';
-
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -76,7 +75,10 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         smartNavigation.navigateSmart('Tokens.Detail', {
           balanceCoinDenom,
           amountBalance,
-          priceBalance
+          priceBalance,
+          balanceCoinFull:
+            balance.currency.coinDenom ??
+            balance.currency.originCurrency.coinDenom
         });
       }}
     >
