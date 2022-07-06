@@ -98,10 +98,10 @@ export const StakingDashboardScreen: FunctionComponent = () => {
             <Text
               style={{
                 ...typography.h6,
-                fontWeight: '400'
+                fontWeight: '600',
               }}
             >
-              {`Total: ${staked
+              {`Total stake: ${staked
                 .maxDecimals(6)
                 .trim(true)
                 .shrink(true)

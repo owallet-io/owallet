@@ -103,7 +103,12 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
               width: 24,
               height: 24,
               borderRadius: spacing['32'],
-              backgroundColor: colors['white'],
+              backgroundColor:
+                item.chainId === chainStore.current.chainId
+                  ? colors['purple-900']
+                  : colors['gray-100'],
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
           >
             <View

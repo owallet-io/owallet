@@ -157,7 +157,7 @@ export const KeyStoreItem: FunctionComponent<{
               borderRadius: spacing['32'],
               backgroundColor: active
                 ? colors['purple-900']
-                : colors['gray-400'],
+                : colors['gray-100'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
