@@ -105,8 +105,6 @@ export class LedgerService {
         }
         return signature;
       } catch (e) {
-        console.log('e ledger', e.message);
-
         // Notify UI Ledger signing failed only when Ledger initialization is tried again.
         if (retryCount > 0) {
           this.interactionService.dispatchEvent(APP_PORT, 'ledger-init', {

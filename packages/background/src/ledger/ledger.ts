@@ -83,26 +83,32 @@ export class Ledger {
     };
   }
 
-  async getPublicKey(path: number[]): Promise<Uint8Array> {
+  async getPublicKey(path: number[] | string): Promise<Uint8Array> {
     if (!this.cosmosApp) {
       throw new Error('Cosmos App not initialized');
     }
 
     // make compartible with ledger-cosmos-js
     const { publicKey } = await this.cosmosApp.getAddress(
-      fromPathArray(path).toString(),
+      typeof path === 'string' ? path : fromPathArray(path).toString(),
       'cosmos'
     );
 
     return Buffer.from(publicKey, 'hex');
   }
 
-  async sign(path: number[], message: Uint8Array): Promise<Uint8Array> {
+  async sign(
+    path: number[] | string,
+    message: Uint8Array
+  ): Promise<Uint8Array> {
     if (!this.cosmosApp) {
       throw new Error('Cosmos App not initialized');
     }
 
-    const { signature } = await this.cosmosApp.sign(path, message);
+    const { signature } = await this.cosmosApp.sign(
+      typeof path === 'string' ? path : fromPathArray(path).toString(),
+      message
+    );
 
     // Parse a DER ECDSA signature
     return signatureImport(signature);
