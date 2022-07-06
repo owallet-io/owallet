@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useEffect, useRef } from "react";
-import { registerModal, useModalState } from "../../modals/base";
-import { LoadingSpinner } from "../../components/spinner";
-import { View } from "react-native";
-import { useStyle } from "../../styles";
+import React, { FunctionComponent, useEffect, useRef } from 'react';
+import { registerModal, useModalState } from '../../modals/base';
+import { LoadingSpinner } from '../../components/spinner';
+import { View } from 'react-native';
+import { useStyle } from '../../styles';
 
 export const LoadingScreenModal: FunctionComponent<{
   isOpen: boolean;
@@ -25,13 +25,18 @@ export const LoadingScreenModal: FunctionComponent<{
     }, [modal.isTransitionOpening]);
 
     return (
-      <View style={style.flatten(["items-center", "justify-center"])}>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
         <LoadingSpinner size={30} color="white" />
       </View>
     );
   },
   {
-    align: "center",
-    transitionVelocity: 0,
+    align: 'center',
+    transitionVelocity: 0
   }
 );

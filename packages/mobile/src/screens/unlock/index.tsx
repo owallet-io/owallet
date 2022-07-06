@@ -121,9 +121,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const tryBiometric = useCallback(async () => {
     try {
       setIsBiometricLoading(true);
+      setIsLoading(true);
       await delay(10);
       await keychainStore.tryUnlockWithBiometry();
-
+      setIsLoading(false);
       await hideSplashScreen();
 
       analyticsStore.logEvent("Account unlocked", {
@@ -131,6 +132,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       });
     } catch (e) {
       console.log(e);
+      setIsLoading(false);
       setIsBiometricLoading(false);
     }
   }, [analyticsStore, keychainStore]);
@@ -261,7 +263,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                   alignItems: 'center'
                 }}
               >
-                {isLoading ? (
+                {isLoading || isBiometricLoading ? (
                   <LoadingSpinner color={colors['white']} size={20} />
                 ) : (
                   <Text
