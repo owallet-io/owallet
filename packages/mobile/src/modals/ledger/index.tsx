@@ -289,7 +289,7 @@ export const LedgerGranterModal: FunctionComponent<{
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
                 >
-                  2. Select the hardware wallet you'd like to pair.
+                  2. Choose your hardware wallet to connect.
                 </Text>
               </React.Fragment>
             )}

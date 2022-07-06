@@ -74,7 +74,15 @@ export const EarningCard: FunctionComponent<{
           </Text>
 
           <TouchableOpacity
-            style={styles['btn-claim']}
+            style={{
+              ...styles['btn-claim'],
+              backgroundColor:
+                !account.isReadyToSendMsgs ||
+                stakingReward.toDec().equals(new Dec(0)) ||
+                queryReward.pendingRewardValidatorAddresses.length === 0
+                  ? colors['gray-300']
+                  : colors['purple-700']
+            }}
             disabled={
               !account.isReadyToSendMsgs ||
               stakingReward.toDec().equals(new Dec(0)) ||

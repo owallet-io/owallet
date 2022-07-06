@@ -55,19 +55,14 @@ export const TokenSymbol: FunctionComponent<{
 
   const profileColor = useMemo(() => {
     const colors = [
-      'sky-blue',
-      'mint',
-      'green',
-      'yellow-green',
-      'purple',
-      'red',
-      'orange',
-      'yellow'
+      'red-10',
+      'yellow-10',
+      'gray-10',
     ]
 
     return colors[deterministicNumber % colors.length]
   }, [deterministicNumber])
-
+  
   return (
     <View
       style={{
@@ -78,8 +73,8 @@ export const TokenSymbol: FunctionComponent<{
         justifyContent: 'center',
         overflow: 'hidden',
         backgroundColor: isStakeCurrency
-          ? colors['primary']
-          : colors[`profile-${profileColor}`],
+          ? colors['red-10']
+          : colors[`${profileColor}`],
         ...propStyle
       }}
     >

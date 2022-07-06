@@ -90,7 +90,11 @@ const TransferTokensOptions: FunctionComponent = () => {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
         break;
-
+      case 'send_qr':
+        smartNavigation.navigateSmart('Camera', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+        break;
       default:
         alert('Coming soon!');
         break;

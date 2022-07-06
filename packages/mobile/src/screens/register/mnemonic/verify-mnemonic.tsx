@@ -20,6 +20,7 @@ import {
 import { colors, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoadingSpinner } from '../../../components/spinner';
+import { OWalletLogo } from '../owallet-logo';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -56,12 +57,14 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
     const randomSortedWords = words.slice().sort(() => {
       return Math.random() > 0.5 ? 1 : -1;
     });
-    setCandidateWords(randomSortedWords.map(word => {
-      return {
-        word,
-        usedIndex: -1
-      }
-    }))
+    setCandidateWords(
+      randomSortedWords.map((word) => {
+        return {
+          word,
+          usedIndex: -1
+        };
+      })
+    );
     setWordSet(
       newMnemonicConfig.mnemonic.split(' ').map(() => {
         return undefined;
@@ -80,17 +83,41 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{
         display: 'flex'
       }}
+      backgroundColor={colors['white']}
       style={{
         paddingLeft: 20,
         paddingRight: 20
       }}
     >
+      <View
+        style={{
+          height: 72,
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 24,
+            lineHeight: 34,
+            fontWeight: '700',
+            color: colors['gray-900']
+          }}
+        >
+          Create new wallet
+        </Text>
+        <View>
+          <OWalletLogo size={72} />
+        </View>
+      </View>
       <Text
         style={{
-          ...typography['h5'],
+          ...typography['h7'],
           color: colors['text-black-medium'],
           marginTop: 32,
-          marginBottom: 4,
+          marginBottom: 4
         }}
       >
         Confirm your mnemonic
@@ -108,7 +135,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
         style={{
           display: 'flex',
           flexDirection: 'row',
-          flexWrap: "wrap",
+          flexWrap: 'wrap'
         }}
       >
         {candidateWords.map(({ word, usedIndex }, i) => {
@@ -148,10 +175,12 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
         }}
       />
       <TouchableOpacity
-        //  loading={isCreating}
         disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
         onPress={async () => {
+          console.log('1');
           if (isCreating) return;
+          console.log('2');
+
           setIsCreating(true);
           await registerConfig.createMnemonic(
             newMnemonicConfig.name,
@@ -186,7 +215,10 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
         style={{
           marginBottom: 24,
           marginTop: 32,
-          backgroundColor: colors['purple-900'],
+          backgroundColor:
+            wordSet.join(' ') !== newMnemonicConfig.mnemonic
+              ? colors['gray-301']
+              : colors['purple-700'],
           borderRadius: 8
         }}
       >
@@ -244,7 +276,7 @@ const WordButton: FunctionComponent<{
           ...typography['subtitle2'],
           color: colors['purple-900'],
           fontSize: 14,
-          fontWeight: '700',
+          fontWeight: '700'
         }}
       >
         {word}
@@ -260,7 +292,6 @@ const WordsCard: FunctionComponent<{
     dashed: boolean;
   }[];
 }> = ({ wordSet }) => {
-
   return (
     <View
       style={{
@@ -275,7 +306,7 @@ const WordsCard: FunctionComponent<{
         borderRadius: 8,
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: "wrap",
+        flexWrap: 'wrap'
       }}
     >
       {wordSet.map((word, i) => {

@@ -36,7 +36,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
   }, [chainStore.current.chainId]);
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView style={{flex: 1, marginBottom: 70}}>
       <Text
         style={{
           ...styles.title

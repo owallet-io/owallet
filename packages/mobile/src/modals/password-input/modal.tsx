@@ -47,13 +47,22 @@ export const PasswordInputModal: FunctionComponent<{
             color: colors['text-black-medium']
           }}
         >
-          {paragraph || 'Enter your password to continue'}
+          {paragraph || 'Do not reveal your mnemonic to anyone'}
         </Text>
         <TextInput
-          label="Password"
+          label="Enter your password"
           error={isInvalidPassword ? 'Invalid password' : undefined}
           onChangeText={(text) => {
             setPassword(text);
+          }}
+          inputStyle={{
+            borderColor: colors['purple-100'],
+            borderWidth: 1,
+            backgroundColor: colors['white'],
+            paddingLeft: 11,
+            paddingRight: 11,
+            paddingTop: 12,
+            borderRadius: 8
           }}
           value={password}
           returnKeyType="done"

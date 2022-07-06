@@ -280,17 +280,38 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               </View>
             </TouchableOpacity>
             {keychainStore.isBiometryOn ? (
-              <Button
-                containerStyle={{
-                  backgroundColor: colors['gray-10']
-                }}
-                textStyle={{ color: colors['purple-900']}}
-                text="Use Biometric Authentication"
-                mode="text"
-                loading={isBiometricLoading}
+              <TouchableOpacity
                 onPress={tryBiometric}
-              />
-            ) : null}
+                style={{
+                  marginBottom: 24,
+                  marginTop: 44,
+                  backgroundColor: colors['purple-900'],
+                  borderRadius: 8
+                }}
+              >
+                <Text
+                  style={{
+                    color: colors['white'],
+                    textAlign: 'center',
+                    fontWeight: '700',
+                    fontSize: 16,
+                    lineHeight: 22,
+                    padding: 16
+                  }}
+                >
+                  Use Biometric Authentication
+                </Text>
+              </TouchableOpacity>
+            ) : // <Button
+            //   containerStyle={{
+            //     marginTop: 40
+            //   }}
+            //   text="Use Biometric Authentication"
+            //   mode="text"
+            //   loading={isBiometricLoading}
+            //   onPress={tryBiometric}
+            // />
+            null}
           </View>
           <View
             style={{
