@@ -5,7 +5,7 @@ import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
-import { PageWithScrollView } from '../../../components/page';
+import { PageWithScrollView, PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { Card, CardBody, CardDivider } from '../../../components/card';
 import { Image, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
@@ -172,7 +172,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     modalStore.close();
   };
   return (
-    <PageWithScrollView
+    <PageWithScrollViewInBottomTabView
       contentContainerStyle={{
         flexGrow: 1
       }}
@@ -438,6 +438,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         onPress={_onPressSwitchValidator}
       />
       <View style={style.flatten(['height-page-pad'])} />
-    </PageWithScrollView>
+    </PageWithScrollViewInBottomTabView>
   );
 });
