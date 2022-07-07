@@ -243,7 +243,7 @@ export class LedgerService {
           promises.push(aborter.wait());
 
           // Check that the Ledger Popup is opened only if the environment is extension.
-          if (typeof browser !== 'undefined') {
+          if (typeof browser !== 'undefined' && browser.extension.getViews) {
             promises.push(this.testLedgerGrantUIOpened());
           }
 
