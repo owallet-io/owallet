@@ -81,27 +81,27 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   );
 
   const smartNavigation = useSmartNavigation();
-  const addressBookConfig = route.params.addressBookConfig;
+  // const addressBookConfig = route.params.addressBookConfig;
 
-  // const addressBookConfig = route.params.addressBookConfig
-  //   ? route.params.addressBookConfig
-  //   : useAddressBookConfig(
-  //       new AsyncKVStore('address_book'),
-  //       chainStore,
-  //       chainStore.current.chainId,
-  //       {
-  //         setRecipient: (recipient: string) => {
-  //           if (recipientConfig) {
-  //             recipientConfig.setRawRecipient(recipient);
-  //           }
-  //         },
-  //         setMemo: (memo: string) => {
-  //           if (memoConfig) {
-  //             memoConfig.setMemo(memo);
-  //           }
-  //         }
-  //       }
-  //     );
+  const addressBookConfig = route.params.addressBookConfig
+    ? route.params.addressBookConfig
+    : useAddressBookConfig(
+        new AsyncKVStore('address_book'),
+        chainStore,
+        chainStore.current.chainId,
+        {
+          setRecipient: (recipient: string) => {
+            if (recipientConfig) {
+              recipientConfig.setRawRecipient(recipient);
+            }
+          },
+          setMemo: (memo: string) => {
+            if (memoConfig) {
+              memoConfig.setMemo(memo);
+            }
+          }
+        }
+      );
 
   const [name, setName] = useState('');
   useEffect(() => {
@@ -185,7 +185,8 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                   address: recipientConfig.rawRecipient,
                   memo: memoConfig.memo
                 });
-                smartNavigation.goBack();
+                // smartNavigation.goBack();
+                smartNavigation.navigateSmart('AddressBook', {});
               }
             }}
           />
