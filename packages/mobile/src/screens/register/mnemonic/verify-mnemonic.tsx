@@ -177,10 +177,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
       <TouchableOpacity
         disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
         onPress={async () => {
-          console.log('1');
           if (isCreating) return;
-          console.log('2');
-
           setIsCreating(true);
           await registerConfig.createMnemonic(
             newMnemonicConfig.name,
@@ -240,6 +237,19 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
           </Text>
         )}
       </TouchableOpacity>
+      <Text
+        style={{
+          color: colors['purple-900'],
+          textAlign: 'center',
+          fontWeight: '700',
+          fontSize: 16
+        }}
+        onPress={() => {
+          smartNavigation.goBack();
+        }}
+      >
+        Go back
+      </Text>
       {/* Mock element for bottom padding */}
       <View
         style={{

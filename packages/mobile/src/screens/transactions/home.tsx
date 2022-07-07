@@ -13,14 +13,15 @@ import { API } from '../../common/api';
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const [index, setIndex] = useState<number>(0);
+  const [indexParent, setIndexParent] = useState<number>(0);
+  const [indexChildren, setIndexChildren] = useState<number>(0);
   const [data, setData] = useState([]);
   const tabBarTitle = ['Transfer', 'Receiver'];
   const smartNavigation = useSmartNavigation();
   const offset = useRef(0);
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
-    const isRecipient = index === 2;
+    const isRecipient = indexChildren === 2;
 
     const res = await API.getHistory(
       {
@@ -45,7 +46,7 @@ export const Transactions: FunctionComponent = () => {
   useEffect(() => {
     offset.current = 0;
     fetchData();
-  }, [account.bech32Address, index]);
+  }, [account.bech32Address, indexChildren]);
 
   const _renderItem = ({ item, index }) => {
     return (
@@ -85,18 +86,18 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center',
               paddingVertical: spacing['12'],
               backgroundColor:
-                index === i ? colors['purple-900'] : colors['transparent'],
+                indexParent === i ? colors['purple-900'] : colors['transparent'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
-              setIndex(i);
+              setIndexParent(i);
             }}
           >
             <Text
               style={{
                 fontSize: 16,
                 fontWeight: '700',
-                color: index === i ? colors['white'] : colors['gray-300']
+                color: indexParent === i ? colors['white'] : colors['gray-300']
               }}
             >
               {title}
@@ -128,14 +129,14 @@ export const Transactions: FunctionComponent = () => {
                 paddingVertical: spacing['12']
               }}
               onPress={() => {
-                setIndex(i);
+                setIndexChildren(i);
               }}
             >
               <Text
                 style={{
                   fontSize: 16,
                   fontWeight: '700',
-                  color: index === i ? colors['gray-900'] : colors['gray-300']
+                  color: indexChildren === i ? colors['gray-900'] : colors['gray-300']
                 }}
               >
                 {title}
@@ -161,8 +162,9 @@ export const Transactions: FunctionComponent = () => {
               <View style={styles.transactionListEmpty}>
                 <Text
                   style={{
-                    ...typography.h4,
-                    color: colors['gray-400']
+                    ...typography.subtitle1,
+                    color: colors['gray-300'],
+                    marginTop: spacing['8']
                   }}
                 >
                   {'Not found transaction'}
