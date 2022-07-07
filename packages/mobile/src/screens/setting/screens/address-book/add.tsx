@@ -26,7 +26,7 @@ import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture
 const styles = StyleSheet.create({
   addNewBookRoot: {
     backgroundColor: colors['white'],
-    marginTop: spacing['24'],
+    // marginTop: spacing['24'],
     paddingHorizontal: spacing['20'],
     paddingVertical: spacing['24'],
     borderRadius: spacing['24']
@@ -85,10 +85,12 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   }, [route?.params?.recipient, recipientConfig]);
 
   const memoConfig = useMemoConfig(chainStore, route.params.chainId);
-  const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0;
+  
 
   return (
-    <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
+    // <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
+    <PageWithScrollView>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.addNewBookRoot}>
         <View style={style.flatten(['height-page-pad'])} />
@@ -161,6 +163,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         />
       </View>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </PageWithScrollView>
   );
 });
