@@ -12,7 +12,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import java.util.Arrays;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -39,8 +38,9 @@ public class MainApplication extends Application implements ReactApplication {
 
           // Add unimodules
           List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-            new ModuleRegistryAdapter(mModuleRegistryProvider),
-            new ReactNativeFirebaseMessagingPackage()
+            new ModuleRegistryAdapter(mModuleRegistryProvider)
+            //remove ReactNativeFirebaseMessagingPackage with rn > 0.60 https://github.com/invertase/react-native-firebase/issues/2417
+           // new ReactNativeFirebaseMessagingPackage()
           );
           packages.addAll(unimodules);
           return packages;
