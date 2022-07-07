@@ -241,7 +241,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   color: colors['purple-900']
                 }}
               >
-                Add new contact
+                Add new contract
               </Text>
             </View>
           </RectButton>

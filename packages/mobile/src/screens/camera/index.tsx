@@ -65,7 +65,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
         onBarCodeRead={async ({ data }) => {
           if (!isLoading && !isCompleted) {
             setIsLoading(true);
-            
+
             try {
               if (checkValidDomain(data.toLowerCase())) {
                 navigation.navigate('Browser', { url: data.toLowerCase() });
@@ -91,9 +91,10 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                     chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                 );
                 if (chainInfo) {
-                  const routerParamKey: keyable =
-                    smartNavigation?.getState()?.routes[0]?.params;
-                  if (routerParamKey?.screenCurrent === 'addressbook') {
+                  const routersParam: keyable =
+                    smartNavigation?.getState()?.routes
+                  const isParamAddressBook =  !!routersParam.find(route => route?.params?.screenCurrent === 'addressbook')
+                  if (isParamAddressBook) {
                     smartNavigation.navigateSmart('AddAddressBook', {
                       chainId: chainInfo.chainId,
                       recipient: data
@@ -117,7 +118,7 @@ export const CameraScreen: FunctionComponent = observer((props) => {
             }
           }
         }}
-     
+
       />
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}
