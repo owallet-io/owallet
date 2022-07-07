@@ -6,6 +6,7 @@ platform :ios, '13.0'
 
 target 'mobile' do
   use_unimodules!
+  use_modular_headers!
   config = use_native_modules!
 
   use_react_native!(
