@@ -5,6 +5,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import {
   AddressBookConfig,
   RecipientConfig,
+  useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig
 } from '@owallet/hooks';
@@ -31,6 +32,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback
 } from 'react-native-gesture-handler';
+import { AsyncKVStore } from '../../../../common';
 
 const styles = StyleSheet.create({
   addNewBookRoot: {
@@ -63,6 +65,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           chainId: string;
           addressBookConfig: AddressBookConfig;
           recipient: string;
+          addressBookObj: Object;
         }
       >,
       string
@@ -79,20 +82,43 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
   const addressBookConfig = route.params.addressBookConfig;
-  const [name, setName] = useState('');
 
+  // const addressBookConfig = route.params.addressBookConfig
+  //   ? route.params.addressBookConfig
+  //   : useAddressBookConfig(
+  //       new AsyncKVStore('address_book'),
+  //       chainStore,
+  //       chainStore.current.chainId,
+  //       {
+  //         setRecipient: (recipient: string) => {
+  //           if (recipientConfig) {
+  //             recipientConfig.setRawRecipient(recipient);
+  //           }
+  //         },
+  //         setMemo: (memo: string) => {
+  //           if (memoConfig) {
+  //             memoConfig.setMemo(memo);
+  //           }
+  //         }
+  //       }
+  //     );
+
+  const [name, setName] = useState('');
   useEffect(() => {
     if (route?.params?.recipient) {
       recipientConfig.setRawRecipient(route?.params?.recipient);
     }
-  }, [route?.params?.recipient]);
+    if (route?.params?.addressBookObj) {
+      setName(route?.params?.addressBookObj?.name);
+    }
+  }, [route?.params?.recipient, route?.params?.addressBookObj]);
 
   const memoConfig = useMemoConfig(chainStore, route.params.chainId);
   // const keyboardVerticalOffset = Platform.OS === 'ios' ? -50 : 0;
 
   return (
     // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-    <PageWithScrollView style={{ marginTop: spacing['24']}}>
+    <PageWithScrollView style={{ marginTop: spacing['24'] }}>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.addNewBookRoot}>
           <TextInput
@@ -115,7 +141,8 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
               <TouchableOpacity
                 onPress={() => {
                   smartNavigation.navigateSmart('Camera', {
-                    screenCurrent: 'addressbook'
+                    screenCurrent: 'addressbook',
+                    name
                   });
                 }}
               >

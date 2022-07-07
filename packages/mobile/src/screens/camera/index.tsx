@@ -92,12 +92,17 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                 );
                 if (chainInfo) {
                   const routersParam: keyable =
-                    smartNavigation?.getState()?.routes
-                  const isParamAddressBook =  !!routersParam.find(route => route?.params?.screenCurrent === 'addressbook')
+                    smartNavigation?.getState()?.routes;
+                  const isParamAddressBook = routersParam.find(
+                    (route) => route?.params?.screenCurrent === 'addressbook'
+                  );
                   if (isParamAddressBook) {
                     smartNavigation.navigateSmart('AddAddressBook', {
                       chainId: chainInfo.chainId,
-                      recipient: data
+                      recipient: data,
+                      addressBookObj: {
+                        name: isParamAddressBook.params.name
+                      }
                     });
                   } else {
                     smartNavigation.pushSmart('Send', {
@@ -118,7 +123,6 @@ export const CameraScreen: FunctionComponent = observer((props) => {
             }
           }
         }}
-
       />
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}
@@ -153,14 +157,18 @@ export const AddressQRCodeModal: FunctionComponent<{
 
     return (
       <CardModal title="Scan QR code">
-        <View style={{
-          alignItems: 'center'
-        }}>
+        <View
+          style={{
+            alignItems: 'center'
+          }}
+        >
           <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-          <View style={{
-            marginTop: 32,
-            marginBottom: 32,
-          }}>
+          <View
+            style={{
+              marginTop: 32,
+              marginBottom: 32
+            }}
+          >
             {account.bech32Address ? (
               <QRCode size={200} value={account.bech32Address} />
             ) : (
@@ -170,15 +178,17 @@ export const AddressQRCodeModal: FunctionComponent<{
                     width: 200,
                     height: 200,
                     backgroundColor: '#EEEEF3'
-                  },
+                  }
                 ])}
               />
             )}
           </View>
-          <View style={{
-            display: 'flex',
-            flexDirection: 'row'
-          }}>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row'
+            }}
+          >
             <Button
               containerStyle={{
                 flex: 1

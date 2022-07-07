@@ -33,9 +33,11 @@ import {
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { navigate } from '../../router/root';
 import { API } from '../../common/api';
+import { useLoadingScreen } from '../../providers/loading-screen';
+import { AddressQRCodeModal } from '../home/components';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const { chainStore, queriesStore, accountStore } = useStore();
+  const { chainStore, queriesStore, accountStore , modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
@@ -108,6 +110,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
     if (name === 'Deposit') {
+      _onPressReceiveModal()
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
@@ -118,6 +121,17 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       });
     }
   };
+
+  const _onPressReceiveModal = () => {
+    modalStore.setOpen();
+    modalStore.setChildren(
+      AddressQRCodeModal({
+        account
+      })
+    );
+  };
+
+
   const RenderBtnMain = ({ name }) => {
     let icon: ReactElement;
     switch (name) {
