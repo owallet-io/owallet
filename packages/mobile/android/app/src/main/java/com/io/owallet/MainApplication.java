@@ -12,7 +12,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import java.util.Arrays;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
@@ -39,7 +39,8 @@ public class MainApplication extends Application implements ReactApplication {
 
           // Add unimodules
           List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
-            new ModuleRegistryAdapter(mModuleRegistryProvider)
+            new ModuleRegistryAdapter(mModuleRegistryProvider),
+            new ReactNativeFirebaseMessagingPackage()
           );
           packages.addAll(unimodules);
           return packages;
