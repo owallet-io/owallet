@@ -135,9 +135,9 @@ export const SignModal: FunctionComponent<{
                   </Text>
                 </ScrollView>
               ) : (
-                <Text style={style.flatten(['body3', 'color-text-black-low'])}>
+                <View>
                   {content}
-                </Text>
+                </View>
               )}
               {/* </Msg> */}
               {/* {msgs.length - 1 !== i ? (

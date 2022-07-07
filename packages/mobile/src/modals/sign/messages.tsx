@@ -207,7 +207,7 @@ export function renderMsgSend(
             justifyContent: 'space-between'
           }}
         >
-          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ ...styles.textInfo }}>Send to </Text>
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(Bech32Address.shortenAddress(toAddress, 20))}
           </Text>
@@ -277,7 +277,7 @@ export function renderMsgTransfer(
             justifyContent: 'space-between'
           }}
         >
-          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ ...styles.textInfo }}>Transfer IBC to </Text>
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(Bech32Address.shortenAddress(receiver, 20))}
           </Text>
@@ -318,20 +318,56 @@ export function renderMsgBeginRedelegate(
   return {
     title: 'Switch Validator',
     content: (
-      <Text>
-        <Text>{'Switch validator '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
-          {hyphen(`${amount.amount} ${amount.denom}`)}
-        </Text>
-        <Text>{' from '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>From </Text>
+          <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorSrcAddress, 24))}
-        </Text>
-        <Text>{' to '}</Text>
-        <Text style={{ fontWeight: 'bold' }}>
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ fontWeight: 'bold' }}>
           {hyphen(Bech32Address.shortenAddress(validatorDstAddress, 24))}
-        </Text>
-      </Text>
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>Amount </Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {hyphen(`${amount.amount} ${amount.denom}`)}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
+      // <Text>
+      //   <Text>{'Switch validator '}</Text>
+      //   <Text style={{ fontWeight: 'bold' }}>
+      //     {hyphen(`${amount.amount} ${amount.denom}`)}
+      //   </Text>
+      //   <Text>{' from '}</Text>
+      //   <Text style={{ fontWeight: 'bold' }}>
+      //     {hyphen(Bech32Address.shortenAddress(validatorSrcAddress, 24))}
+      //   </Text>
+      //   <Text>{' to '}</Text>
+      //   <Text style={{ fontWeight: 'bold' }}>
+      //     {hyphen(Bech32Address.shortenAddress(validatorDstAddress, 24))}
+      //   </Text>
+      // </Text>
     )
   };
 }
@@ -361,7 +397,7 @@ export function renderMsgUndelegate(
             justifyContent: 'space-between'
           }}
         >
-          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ ...styles.textInfo }}>Unstake </Text>
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
           </Text>
@@ -425,7 +461,7 @@ export function renderMsgDelegate(
             justifyContent: 'space-between'
           }}
         >
-          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ ...styles.textInfo }}>Stake to</Text>
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
           </Text>
@@ -470,7 +506,7 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
             justifyContent: 'space-between'
           }}
         >
-          <Text style={{ ...styles.textInfo }}>To </Text>
+          <Text style={{ ...styles.textInfo }}>Claim From </Text>
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))}
           </Text>
@@ -717,7 +753,7 @@ export function clearDecimals(dec: string): string {
 
 const styles = StyleSheet.create({
   textInfo: {
-    ...typography.h6,
+    ...typography.h5,
     fontWeight: '400',
     color: colors['text-black-medium']
   }

@@ -5,5 +5,8 @@
       "public": "build/injected",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"]
     }
-  ]
+  ],
+  "react-native": {
+    "crashlytics_debug_enabled": true
+  }
 }
