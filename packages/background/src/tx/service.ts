@@ -164,7 +164,7 @@ export class BackgroundTxService {
       case 'eth_accounts':
       case 'eth_requestAccounts':
         chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (chainInfo.bip44.coinType !== 60) return undefined;
+        if (chainInfo.bip44.algo !== 'ethsecp256k1') return undefined;
         const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
         const key = await this.keyRingService.getKey(chainIdOrCoinType);
         return [`0x${Buffer.from(key.address).toString('hex')}`];

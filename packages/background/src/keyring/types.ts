@@ -21,7 +21,7 @@ export interface ScryptParams {
 }
 
 export interface ExportKeyRingData {
-  type: "mnemonic" | "privateKey";
+  type: 'mnemonic' | 'privateKey';
   // If the type is private key, the key is encoded as hex.
   key: string;
   coinTypeForChain: CoinTypeForChain;
