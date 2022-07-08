@@ -15,8 +15,8 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { Dec } from '@owallet/unit';
 import { LoadingSpinner } from '../../components/spinner';
-import LinearGradient from 'react-native-linear-gradient';
 import { navigate } from '../../router/root';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -38,6 +38,49 @@ export const EarningCard: FunctionComponent<{
 
   const stakingReward = queryReward.stakableReward;
   const totalStakingReward = priceStore.calculatePrice(stakingReward);
+
+  const _onPressClaim = async () => {
+    crashlytics().log('earning_card _onPressClaim');
+    try {
+      await account.cosmos.sendWithdrawDelegationRewardMsgs(
+        queryReward.getDescendingPendingRewardValidatorAddresses(8),
+        '',
+        {},
+        {},
+        {
+          onBroadcasted: txHash => {
+            analyticsStore.logEvent('Claim reward tx broadcasted', {
+              chainId: chainStore.current.chainId,
+              chainName: chainStore.current.chainName
+            });
+            smartNavigation.pushSmart('TxPendingResult', {
+              txHash: Buffer.from(txHash).toString('hex')
+            });
+          }
+        }
+      );
+    } catch (e) {
+      crashlytics().recordError(e);
+      console.error({ errorClaim: e });
+
+      if (e?.message === 'Request rejected') {
+        return;
+      }
+      if (
+        e?.message.includes(
+          'Cannot read properties of undefined' || 'undefined is not an object'
+        )
+      ) {
+        return;
+      }
+      if (smartNavigation.canGoBack) {
+        smartNavigation.goBack();
+      } else {
+        smartNavigation.navigateSmart('Home', {});
+      }
+    }
+  };
+
   return (
     <View style={containerStyle}>
       <Card style={styles.card}>
@@ -92,46 +135,7 @@ export const EarningCard: FunctionComponent<{
               stakingReward.toDec().equals(new Dec(0)) ||
               queryReward.pendingRewardValidatorAddresses.length === 0
             }
-            onPress={async () => {
-              try {
-                await account.cosmos.sendWithdrawDelegationRewardMsgs(
-                  queryReward.getDescendingPendingRewardValidatorAddresses(8),
-                  '',
-                  {},
-                  {},
-                  {
-                    onBroadcasted: (txHash) => {
-                      analyticsStore.logEvent('Claim reward tx broadcasted', {
-                        chainId: chainStore.current.chainId,
-                        chainName: chainStore.current.chainName
-                      });
-                      smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: Buffer.from(txHash).toString('hex')
-                      });
-                    }
-                  }
-                );
-              } catch (e) {
-                console.log({ errorClaim: e });
-
-                if (e?.message === 'Request rejected') {
-                  return;
-                }
-                if (
-                  e?.message.includes(
-                    'Cannot read properties of undefined' ||
-                      'undefined is not an object'
-                  )
-                ) {
-                  return;
-                }
-                if (smartNavigation.canGoBack) {
-                  smartNavigation.goBack();
-                } else {
-                  smartNavigation.navigateSmart('Home', {});
-                }
-              }
-            }}
+            onPress={_onPressClaim}
           >
             <View
               style={{
