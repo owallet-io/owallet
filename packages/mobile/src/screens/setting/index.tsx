@@ -21,7 +21,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  ImageBackground
+  ImageBackground,
+  StatusBar
 } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
@@ -31,7 +32,7 @@ import { CountryModal } from './components/country-modal';
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
+    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
         label: key.toUpperCase()
@@ -39,7 +40,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
     });
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
-    keyStore => keyStore.selected
+    (keyStore) => keyStore.selected
   );
 
   const smartNavigation = useSmartNavigation();
@@ -59,6 +60,13 @@ export const SettingScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView>
+      <StatusBar
+        animated={true}
+        backgroundColor="white"
+        barStyle={'light-content'}
+        showHideTransition={'fade'}
+        hidden={false}
+      />
       <ImageBackground
         style={{
           ...styles.containerScreen
