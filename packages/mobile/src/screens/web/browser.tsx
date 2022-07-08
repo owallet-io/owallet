@@ -180,35 +180,56 @@ export const Browser: FunctionComponent<any> = observer((props) => {
     };
   }, []);
 
-  return (
-    <TouchableWithoutFeedback
-      style={style.flatten(['flex-column', 'justify-between', 'height-full'])}
-      onPress={() => {
-        if (isKeyboardVisible) Keyboard.dismiss();
-      }}
-    >
-      <View>
-        <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
-          <BrowserSectionTitle title="Browser" />
-          <View style={{ height: 260 }}>
-            <Image
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-              fadeDuration={0}
-              resizeMode="stretch"
-              source={require('../../assets/image/background.png')}
-            />
-            <TextInput
-              containerStyle={{
-                width: '100%',
-                padding: 20,
-                marginTop: -50,
-              }}
-              inputStyle={style.flatten([
-                'flex-row',
-                'items-center',
+  const renderBrowser = () => {
+    return (
+      <TouchableWithoutFeedback
+        onPress={() => {
+          if (isKeyboardVisible) Keyboard.dismiss();
+        }}
+      >
+        <View style={[style.flatten(['height-full', 'justify-between'])]}>
+          <View>
+            <BrowserSectionTitle title="Browser" />
+            <View style={{ height: 260 }}>
+              <Image
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                fadeDuration={0}
+                resizeMode="stretch"
+                source={require('../../assets/image/background.png')}
+              />
+              <TextInput
+                containerStyle={{
+                  width: '100%',
+                  padding: 20,
+                  marginTop: -50,
+                }}
+                inputStyle={style.flatten([
+                  'flex-row',
+                  'items-center',
+                  'background-color-white',
+                  'padding-20',
+                  'border-radius-16',
+                  'border-width-4',
+                  'border-color-border-pink',
+                ])}
+                returnKeyType={'next'}
+                placeholder={'Search website'}
+                placeholderTextColor={'#AEAEB2'}
+                onSubmitEditing={onHandleUrl}
+                value={url}
+                onChangeText={(txt) => setUrl(txt.toLowerCase())}
+                inputRight={
+                  <TouchableOpacity onPress={onHandleUrl}>
+                    <SearchIcon color={'gray'} size={20} />
+                  </TouchableOpacity>
+                }
+              />
+            </View>
+            {/* <View
+              style={style.flatten([
                 'background-color-white',
                 'padding-20',
                 'border-radius-16',
@@ -257,7 +278,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
                   </TouchableOpacity>
                 ))}
               </View>
-            </View>
+            </View> */}
           </View>
         </View>
         {isOpenSetting && (
