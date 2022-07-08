@@ -224,7 +224,10 @@ export const WebpageScreen: FunctionComponent<
 
   return (
     <PageWithView
-      style={style.flatten(['padding-0', 'padding-bottom-0'])}
+      style={{
+        padding: 0,
+        paddingBottom: 80
+      }}
       disableSafeArea
     >
       {isSwitchTab ? (

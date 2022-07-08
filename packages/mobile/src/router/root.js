@@ -42,7 +42,7 @@ export const checkRouter = (uri, route) => {
 function BottomTabBar() {
   // const bottomTabBarHeight = useBottomTabBarHeight();
   const { bottom } = useSafeAreaInsets();
-  return bottom + 20;
+  return bottom + 100;
 }
 
 export const checkRouterPaddingBottomBar = (uri, route) => {

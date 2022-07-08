@@ -30,7 +30,7 @@ export const AccountCard: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
     useStore();
 
-  const deterministicNumber = useCallback(chainInfo => {
+  const deterministicNumber = useCallback((chainInfo) => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
     );
@@ -40,7 +40,7 @@ export const AccountCard: FunctionComponent<{
   }, []);
 
   const profileColor = useCallback(
-    chainInfo => {
+    (chainInfo) => {
       const colors = ['red', 'green', 'purple', 'orange'];
 
       return colors[deterministicNumber(chainInfo) % colors.length];
@@ -80,12 +80,12 @@ export const AccountCard: FunctionComponent<{
     parseFloat(stakedSum.toDec().toString())
   ];
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
     if (name === 'Receive') {
-      _onPressReceiveModal()
+      _onPressReceiveModal();
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
@@ -308,8 +308,8 @@ export const AccountCard: FunctionComponent<{
       </CardBody>
 
       <NetworkErrorView />
-
-      <CardBody>
+      <View style={{ height: 20 }} />
+      {/* <CardBody>
         <View
           style={{
             height: 75,
@@ -381,7 +381,7 @@ export const AccountCard: FunctionComponent<{
             </TouchableOpacity>
           </View>
         </View>
-      </CardBody>
+      </CardBody> */}
     </Card>
   );
 });

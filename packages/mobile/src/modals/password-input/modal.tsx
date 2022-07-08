@@ -44,8 +44,7 @@ export const PasswordInputModal: FunctionComponent<{
         setIsLoading(false);
       }
     };
-
-    const keyboardVerticalOffset = Platform.OS === 'ios' ? 360 : 0;
+    const keyboardVerticalOffset = Platform.OS === 'ios' ? 320 : 0;
 
     return (
       <CardModal title={title}>
@@ -53,7 +52,11 @@ export const PasswordInputModal: FunctionComponent<{
           behavior="padding"
           keyboardVerticalOffset={keyboardVerticalOffset}
         >
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              Keyboard.dismiss();
+            }}
+          >
             <Text
               style={{
                 ...typography['body2'],
@@ -61,7 +64,7 @@ export const PasswordInputModal: FunctionComponent<{
                 color: colors['text-black-medium']
               }}
             >
-              {paragraph || 'Do not reveal your mnemonic to anyone'}
+              {paragraph || 'Do not reveal your mnemonic to anyone'} 
             </Text>
             <TextInput
               label="Enter your password"
@@ -83,29 +86,29 @@ export const PasswordInputModal: FunctionComponent<{
               secureTextEntry={true}
               onSubmitEditing={submitPassword}
             />
-            <TouchableOpacity
-              onPress={submitPassword}
+          </TouchableWithoutFeedback>
+          <TouchableOpacity
+            onPress={submitPassword}
+            style={{
+              marginBottom: 24,
+              marginTop: 44,
+              backgroundColor: colors['purple-900'],
+              borderRadius: 8
+            }}
+          >
+            <Text
               style={{
-                marginBottom: 24,
-                marginTop: 44,
-                backgroundColor: colors['purple-900'],
-                borderRadius: 8
+                color: colors['white'],
+                textAlign: 'center',
+                fontWeight: '700',
+                fontSize: 16,
+                lineHeight: 22,
+                padding: 16
               }}
             >
-              <Text
-                style={{
-                  color: colors['white'],
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 16,
-                  lineHeight: 22,
-                  padding: 16
-                }}
-              >
-                Approve
-              </Text>
-            </TouchableOpacity>
-          </TouchableWithoutFeedback>
+              Approve
+            </Text>
+          </TouchableOpacity>
         </KeyboardAvoidingView>
       </CardModal>
     );

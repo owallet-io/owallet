@@ -378,7 +378,7 @@ const WordsCard: FunctionComponent<{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <TouchableOpacity

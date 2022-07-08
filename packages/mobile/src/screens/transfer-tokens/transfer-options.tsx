@@ -59,18 +59,18 @@ const tokenTransferInfo = [
     type: 'send',
     titleLine2: 'within network'
   },
-  {
-    icon: <SendCrossChainIcon />,
-    titleLine1: 'Send cross-chain',
-    type: 'send_cross',
-    titleLine2: '(IBC Transfer)'
-  },
-  {
-    icon: <SendBridgeIcon />,
-    titleLine1: 'Bridge',
-    type: 'bridge',
-    titleLine2: ''
-  },
+  // {
+  //   icon: <SendCrossChainIcon />,
+  //   titleLine1: 'Send cross-chain',
+  //   type: 'send_cross',
+  //   titleLine2: '(IBC Transfer)'
+  // },
+  // {
+  //   icon: <SendBridgeIcon />,
+  //   titleLine1: 'Bridge',
+  //   type: 'bridge',
+  //   titleLine2: ''
+  // },
   {
     icon: <SendQRCodeIcon />,
     titleLine1: 'Send',
