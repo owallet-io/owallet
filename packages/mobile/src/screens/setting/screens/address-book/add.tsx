@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: spacing['8'],
     borderTopRightRadius: spacing['8'],
     borderBottomLeftRadius: spacing['8'],
-    borderBottomRightRadius: spacing['8']
+    borderBottomRightRadius: spacing['8'],
   }
 });
 
@@ -149,6 +149,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 <Scanner color={colors['purple-900']} />
               </TouchableOpacity>
             }
+            placeholderTextColor={colors['gray-300']}
           />
           <MemoInput
             label="Memo (optional)"
@@ -160,6 +161,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             }}
             multiline={false}
             placeholder="Type memo here"
+            placeholderTextColor={colors['gray-300']}
           />
           <Button
             text="Save"

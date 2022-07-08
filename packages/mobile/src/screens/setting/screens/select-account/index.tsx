@@ -132,14 +132,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
                   paragraph={getKeyStoreParagraph(keyStore)}
                   topBorder={i === 0}
                   bottomBorder={keyStores.length - 1 !== i}
-                  right={
-                    keyStore.selected ? (
-                      <CheckIcon
-                        color={style.get('color-primary').color}
-                        height={16}
-                      />
-                    ) : undefined
-                  }
+                  active={keyStore.selected}
                   onPress={async () => {
                     analyticsStore.logEvent('Account changed');
                     await selectKeyStore(keyStore);

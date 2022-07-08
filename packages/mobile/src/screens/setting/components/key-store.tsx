@@ -15,7 +15,8 @@ import {
   HKDIcon,
   CNYIcon,
   JPYIcon,
-  INRIcon
+  INRIcon,
+  NoteIcon
 } from '../../../components/icon';
 import { colors, spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -31,7 +32,7 @@ export const KeyStoreSectionTitle: FunctionComponent<{
         ...styles.containerSectionTitle
       }}
     >
-      <Image
+      {/* <Image
         style={{
           width: 20,
           height: 20,
@@ -39,11 +40,13 @@ export const KeyStoreSectionTitle: FunctionComponent<{
         }}
         source={require('../../../assets/image/webpage/note-icon.png')}
         fadeDuration={0}
-      />
+      /> */}
+      <NoteIcon color={colors['purple-900']} height={20}/>
       <Text
         style={{
           ...typography['subtitle1'],
-          color: colors['text-black-low']
+          color: colors['text-black-low'],
+          marginLeft: spacing['6']
         }}
       >
         {title &&
@@ -196,21 +199,21 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   containerItem: {
-    height: 54,
-    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: colors['gray-10'],
     borderRadius: spacing['12'],
     marginVertical: spacing['8'],
-    paddingHorizontal: spacing['8'],
+    marginHorizontal: spacing['20'],
+    paddingVertical: spacing['4']
   },
   containerSectionTitle: {
-    paddingHorizontal: spacing['20'],
+    marginHorizontal: spacing['20'],
     paddingTop: spacing['16'],
     paddingBottom: spacing['12'],
     marginTop: spacing['16'],
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   }
 });

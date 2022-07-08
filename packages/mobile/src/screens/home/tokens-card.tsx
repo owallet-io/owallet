@@ -126,40 +126,21 @@ export const TokensCard: FunctionComponent<{
         }}
       >
         <Text
-          style={{
-            ...typography.h7,
-            color: colors['gray-900'],
-            fontWeight: '700'
-          }}
+          style={styles.itemText}
         >
           {formatContractAddress(item.title)}
         </Text>
 
         <Text
-          style={{
-            ...typography.h5,
-            color: colors['gray-900'],
-            fontWeight: '700'
-          }}
-        >
-          {formatContractAddress(item.title)}
-        </Text>
-
-        <Text
-          style={{
-            ...typography.h5,
-            color: colors['gray-900'],
-            fontWeight: '700'
-          }}
+           style={styles.itemText}
         >
           {item.oraiPrice}
         </Text>
 
         <Text
           style={{
-            ...typography.h5,
-            color: colors['gray-900'],
-            fontWeight: '700'
+            ...styles.itemText,
+            color: colors['gray-300'],
           }}
         >{`$ ${58.23}`}</Text>
       </View>
@@ -323,11 +304,15 @@ const styles = StyleSheet.create({
     padding: spacing['12']
   },
   itemPhoto: {
-    width: (metrics.screenWidth - 84) / 2,
+    // width: (metrics.screenWidth - 84) / 2,
     height: (metrics.screenWidth - 84) / 2,
-    borderRadius: spacing['6']
+    borderRadius: 10,
+    marginHorizontal: 'auto',
+    width: '100%'
   },
   itemText: {
-    color: colors['gray-800']
+    ...typography.h7,
+    color: colors['gray-900'],
+    fontWeight: '700'
   }
 });

@@ -235,7 +235,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               fontWeight: '700'
             }}
           >
-            {amount.maxDecimals(6).trim(true).separator('').toString()}
+            {amount.maxDecimals(6).trim(true).separator(' ').toString()}
           </Text>
           {price ? (
             <Text
