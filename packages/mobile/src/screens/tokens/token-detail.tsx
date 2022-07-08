@@ -7,17 +7,17 @@ import React, {
 } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { StyleSheet, View, ViewStyle, Image } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList
+} from 'react-native';
 import { Text } from '@rneui/base';
-import { CoinPretty } from '@owallet/unit';
 import { useSmartNavigation } from '../../navigation.provider';
-import { Currency } from '@owallet/types';
 import { TokenSymbol } from '../../components/token-symbol';
-import { DenomHelper } from '@owallet/common';
-import { Bech32Address } from '@owallet/cosmos';
 import { colors, metrics, spacing, typography } from '../../themes';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../utils/helper';
 import { TransactionMinusIcon } from '../../components/icon';
 import LinearGradient from 'react-native-linear-gradient';
@@ -36,19 +36,14 @@ import { API } from '../../common/api';
 import { useLoadingScreen } from '../../providers/loading-screen';
 import { AddressQRCodeModal } from '../home/components';
 
-export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const { chainStore, queriesStore, accountStore , modalStore } = useStore();
+export const TokenDetailScreen: FunctionComponent = observer(props => {
+  const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
 
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
     props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
-  const stakable = queryStakable.balance;
 
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
@@ -62,7 +57,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
 
   const unbonding = queryUnbonding.total;
   const stakedSum = delegated.add(unbonding);
-  const total = stakable.add(stakedSum);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
@@ -103,14 +97,24 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     offset.current = 0;
     fetchData();
-  }, [account.bech32Address]);
+  }, [account.bech32Address, chainStore.current.chainId]);
+  const loadingScreen = useLoadingScreen();
 
-  const _onPressBtnMain = (name) => {
+  const _onPressReceiveModal = () => {
+    modalStore.setOpen();
+    modalStore.setChildren(
+      AddressQRCodeModal({
+        account
+      })
+    );
+  };
+
+  const _onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
-    if (name === 'Deposit') {
-      _onPressReceiveModal()
+    if (name === 'Receive') {
+      _onPressReceiveModal();
     }
     if (name === 'Send') {
       smartNavigation.navigateSmart('Send', {
@@ -122,23 +126,13 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     }
   };
 
-  const _onPressReceiveModal = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      AddressQRCodeModal({
-        account
-      })
-    );
-  };
-
-
   const RenderBtnMain = ({ name }) => {
     let icon: ReactElement;
     switch (name) {
       case 'Buy':
         icon = <BuyIcon />;
         break;
-      case 'Deposit':
+      case 'Receive':
         icon = <DepositIcon />;
         break;
       case 'Send':
@@ -262,7 +256,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
               paddingBottom: spacing['24']
             }}
           >
-            {['Buy', 'Deposit', 'Send'].map((e, i) => (
+            {['Buy', 'Receive', 'Send'].map((e, i) => (
               <RenderBtnMain key={i} name={e} />
             ))}
           </View>

@@ -32,6 +32,17 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
     address,
     logs: item.logs
   });
+
+  const convertAmount = (amount: any) => {
+    switch (typeof amount) {
+      case 'string':
+      case 'number':
+        return Number(amount) / Math.pow(10, 6);
+      default:
+        return 0;
+    }
+  };
+
   const renderChildren = () => {
     return (
       <View
@@ -74,7 +85,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
                 : colors['green-500']
             }}
           >
-            {amount} {denom}
+            {convertAmount(amount)} {denom}
           </Text>
         </View>
       </View>

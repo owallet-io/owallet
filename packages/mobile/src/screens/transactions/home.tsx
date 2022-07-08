@@ -1,14 +1,13 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { CText as Text } from '../../components/text';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { StackActions, useNavigation } from '@react-navigation/native';
 import { TransactionSectionTitle, TransactionItem } from './components';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
-import { PageWithScrollView } from '../../components/page';
 import { useStore } from '../../stores';
 import { API } from '../../common/api';
+import crashlytics from '@react-native-firebase/crashlytics';
 
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
@@ -16,31 +15,35 @@ export const Transactions: FunctionComponent = () => {
   const [indexParent, setIndexParent] = useState<number>(0);
   const [indexChildren, setIndexChildren] = useState<number>(0);
   const [data, setData] = useState([]);
-  const tabBarTitle = ['Transfer', 'Receiver'];
   const smartNavigation = useSmartNavigation();
   const offset = useRef(0);
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
+    crashlytics().log('transactions - home - fetchData');
     const isRecipient = indexChildren === 2;
+    try {
+      const res = await API.getHistory(
+        {
+          address: account.bech32Address,
+          offset: 0,
+          isRecipient
+        },
+        { baseURL: chainStore.current.rest }
+      );
 
-    const res = await API.getHistory(
-      {
-        address: account.bech32Address,
-        offset: 0,
-        isRecipient
-      },
-      { baseURL: chainStore.current.rest }
-    );
-
-    const value = res.data?.tx_responses || [];
-    const total = res?.data?.pagination?.total;
-    let newData = isLoadMore ? [...data, ...value] : value;
-    hasMore.current = value?.length === 10;
-    offset.current = newData.length;
-    if (total && offset.current === Number(total)) {
-      hasMore.current = false;
+      const value = res.data?.tx_responses || [];
+      const total = res?.data?.pagination?.total;
+      let newData = isLoadMore ? [...data, ...value] : value;
+      hasMore.current = value?.length === 10;
+      offset.current = newData.length;
+      if (total && offset.current === Number(total)) {
+        hasMore.current = false;
+      }
+      setData(newData);
+    } catch (error) {
+      crashlytics().recordError(error);
+      console.error(error);
     }
-    setData(newData);
   };
 
   useEffect(() => {
@@ -86,7 +89,9 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center',
               paddingVertical: spacing['12'],
               backgroundColor:
-                indexParent === i ? colors['purple-900'] : colors['transparent'],
+                indexParent === i
+                  ? colors['purple-900']
+                  : colors['transparent'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
@@ -136,7 +141,10 @@ export const Transactions: FunctionComponent = () => {
                 style={{
                   fontSize: 16,
                   fontWeight: '700',
-                  color: indexChildren === i ? colors['gray-900'] : colors['gray-300']
+                  color:
+                    indexChildren === i
+                      ? colors['gray-900']
+                      : colors['gray-300']
                 }}
               >
                 {title}
