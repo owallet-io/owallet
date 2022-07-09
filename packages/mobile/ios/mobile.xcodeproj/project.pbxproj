@@ -17,7 +17,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		C15FB49F265238C1007E541F /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = C15FB49E265238C1007E541F /* AppCenter-Config.plist */; };
 		CD8B717B5514409193CA73BC /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2CF665D5547487780303769 /* DMSans-Italic.ttf */; };
-		CEB254582876A76800498CE3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CEB254572876A76800498CE3 /* GoogleService-Info.plist */; };
+		CE96058C2879A4890016578A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE96058B2879A4890016578A /* GoogleService-Info.plist */; };
 		DF167C604450012C42667FC8 /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E9A0AB940E05C4C2A083923 /* libPods-mobile.a */; };
 		E9C355A07F424AD5B375EC16 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D55C11E0150498CBC775A92 /* DMSans-Regular.ttf */; };
 		F440259FD5AC4BC59C04EFD2 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28CAF3B0E76A4F7AACA3C6A1 /* SplashScreen.storyboard */; };
@@ -41,7 +41,7 @@
 		ADF704E5FCAF48A797B503DF /* DMSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Bold.ttf"; path = "../src/assets/fonts/DMSans-Bold.ttf"; sourceTree = "<group>"; };
 		C15FB49E265238C1007E541F /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
 		CE259BE22844D3820001E907 /* mobileRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mobileRelease.entitlements; path = mobile/mobileRelease.entitlements; sourceTree = "<group>"; };
-		CEB254572876A76800498CE3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CE96058B2879A4890016578A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D1C09889289846B3B41F90AB /* DMSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Medium.ttf"; path = "../src/assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; };
 		D4DA0B277421464391FCCA1C /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-MediumItalic.ttf"; path = "../src/assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		E1F47D6A8FFF41C59EE7A2F0 /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-BoldItalic.ttf"; path = "../src/assets/fonts/DMSans-BoldItalic.ttf"; sourceTree = "<group>"; };
@@ -65,7 +65,7 @@
 		13B07FAE1A68108700A75B9A /* mobile */ = {
 			isa = PBXGroup;
 			children = (
-				CEB254572876A76800498CE3 /* GoogleService-Info.plist */,
+				CE96058B2879A4890016578A /* GoogleService-Info.plist */,
 				CE259BE22844D3820001E907 /* mobileRelease.entitlements */,
 				25B024E8270DB0C70003A5AF /* mobile.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -221,7 +221,7 @@
 				7D281474169F483DB16CDAE2 /* DMSans-BoldItalic.ttf in Resources */,
 				CD8B717B5514409193CA73BC /* DMSans-Italic.ttf in Resources */,
 				02ACF504CF6B4448A3E9B1DA /* DMSans-Medium.ttf in Resources */,
-				CEB254582876A76800498CE3 /* GoogleService-Info.plist in Resources */,
+				CE96058C2879A4890016578A /* GoogleService-Info.plist in Resources */,
 				2A4693F4094C410AA8B1BC4B /* DMSans-MediumItalic.ttf in Resources */,
 				E9C355A07F424AD5B375EC16 /* DMSans-Regular.ttf in Resources */,
 			);
@@ -388,7 +388,7 @@
 				CODE_SIGN_ENTITLEMENTS = mobile/mobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 46P8362P8Z;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = mobile/Info.plist;
@@ -456,7 +456,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-safe-area-context\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-webview\"",
 				);
-				MARKETING_VERSION = 0.0.5;
+				MARKETING_VERSION = 0.0.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -480,7 +480,7 @@
 				CODE_SIGN_ENTITLEMENTS = mobile/mobileRelease.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 46P8362P8Z;
 				INFOPLIST_FILE = mobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
@@ -547,7 +547,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-safe-area-context\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-webview\"",
 				);
-				MARKETING_VERSION = 0.0.5;
+				MARKETING_VERSION = 0.0.6;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
