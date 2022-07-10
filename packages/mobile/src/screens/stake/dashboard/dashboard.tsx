@@ -98,40 +98,18 @@ export const StakingDashboardScreen: FunctionComponent = () => {
             <Text
               style={{
                 ...typography.h6,
-                fontWeight: '600',
-              }}
-            >
-              {`Total stake: ${staked
-                .maxDecimals(6)
-                .trim(true)
-                .shrink(true)
-                .toString()}`}
-            </Text>
-
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row'
+                fontWeight: '600'
               }}
             >
               <Text
                 style={{
-                  ...typography.h6,
-                  fontWeight: '400',
-                  marginRight: spacing['10']
+                  fontWeight: '400'
                 }}
               >
-                Amount
+                Total stake:{' '}
               </Text>
-              <View
-                style={{
-                  marginTop: spacing['5']
-                }}
-              >
-                <ArrowOpsiteUpDownIcon size={24} color={colors['gray-900']} />
-              </View>
-            </View>
+              {`${staked.maxDecimals(6).trim(true).shrink(true).toString()}`}
+            </Text>
           </View>
           <DelegationsCard />
         </View>
@@ -170,7 +148,7 @@ const styles = StyleSheet.create({
     marginTop: spacing['32'],
     marginBottom: spacing['16'],
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center'
   }
 });

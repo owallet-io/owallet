@@ -110,13 +110,21 @@ export const TokensCard: FunctionComponent<{
         smartNavigation.navigateSmart('Nfts.Detail', {});
       }}
     >
-      <Image
-        source={{
-          uri: item.uri
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
-        style={styles.itemPhoto}
-        resizeMode="cover"
-      />
+      >
+        <Image
+          source={{
+            uri: item.uri
+          }}
+          style={styles.itemPhoto}
+          resizeMode="cover"
+        />
+      </View>
+
       <View
         style={{
           flexDirection: 'column',
@@ -204,7 +212,7 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {tokens.slice(0, 3).map((token) => {
+            {tokens.slice(0, 3).map(token => {
               const priceBalance = priceStore.calculatePrice(token.balance);
               return (
                 <TokenItem
@@ -304,11 +312,9 @@ const styles = StyleSheet.create({
     padding: spacing['12']
   },
   itemPhoto: {
-    // width: (metrics.screenWidth - 84) / 2,
-    height: (metrics.screenWidth - 84) / 2,
-    borderRadius: 10,
-    marginHorizontal: 'auto',
-    width: '100%'
+    width: (metrics.screenWidth - 120) / 2,
+    height: (metrics.screenWidth - 120) / 2,
+    borderRadius: spacing['6']
   },
   itemText: {
     ...typography.h7,

@@ -1,37 +1,37 @@
-import React, { FunctionComponent, ReactElement } from 'react'
-import { observer } from 'mobx-react-lite'
-import { useStore } from '../../stores'
-import { StyleSheet, View, ViewStyle, Image } from 'react-native'
-import { Text } from '@rneui/base'
-import { CoinPretty } from '@owallet/unit'
-import { useSmartNavigation } from '../../navigation.provider'
-import { Currency } from '@owallet/types'
-import { TokenSymbol } from '../../components/token-symbol'
-import { DenomHelper } from '@owallet/common'
-import { Bech32Address } from '@owallet/cosmos'
-import { colors, metrics, spacing, typography } from '../../themes'
-import { AnimatedCircularProgress } from 'react-native-circular-progress'
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler'
-import { formatContractAddress, _keyExtract } from '../../utils/helper'
+import React, { FunctionComponent, ReactElement } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { StyleSheet, View, ViewStyle, Image } from 'react-native';
+import { Text } from '@rneui/base';
+import { CoinPretty } from '@owallet/unit';
+import { useSmartNavigation } from '../../navigation.provider';
+import { Currency } from '@owallet/types';
+import { TokenSymbol } from '../../components/token-symbol';
+import { DenomHelper } from '@owallet/common';
+import { Bech32Address } from '@owallet/cosmos';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { formatContractAddress, _keyExtract } from '../../utils/helper';
 import {
   QuantityIcon,
   SendIcon,
   TransactionMinusIcon
-} from '../../components/icon'
-import LinearGradient from 'react-native-linear-gradient'
+} from '../../components/icon';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   BuyIcon,
   DepositIcon,
   SendDashboardIcon
-} from '../../components/icon/button'
+} from '../../components/icon/button';
 import {
   TransactionItem,
   TransactionSectionTitle
-} from '../transactions/components'
-import { PageWithScrollViewInBottomTabView } from '../../components/page'
+} from '../transactions/components';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
 
 export const NftDetailScreen: FunctionComponent = observer(() => {
-  const _onPressBtnMain = () => {}
+  const _onPressBtnMain = () => {};
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -143,7 +143,7 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
                 }}
                 onPress={() => _onPressBtnMain()}
               >
-                <View style={{...styles.btnTransfer}}>
+                <View style={{ ...styles.btnTransfer }}>
                   <SendDashboardIcon />
                   <Text
                     style={{
@@ -175,10 +175,7 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
         <FlatList
           data={[]}
           renderItem={({ item, index }) => (
-            <TransactionItem
-              item={item}
-              key={index}
-            />
+            <TransactionItem item={item} key={index} address={''} />
           )}
           keyExtractor={_keyExtract}
           showsVerticalScrollIndicator={false}
@@ -243,8 +240,8 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
         </TouchableOpacity>
       </View>
     </PageWithScrollViewInBottomTabView>
-  )
-})
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
@@ -301,4 +298,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   }
-})
+});
