@@ -5,7 +5,7 @@ import { View, ViewStyle, Image } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
-import { AddressCopyable } from '../../components/address-copyable';
+import { Copyable } from '../../components/copyable';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
@@ -23,6 +23,7 @@ import { NamespaceModal, AddressQRCodeModal } from './components';
 import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
+import { Bech32Address } from '@owallet/cosmos';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -283,9 +284,8 @@ export const AccountCard: FunctionComponent<{
                 </Text>
               </View>
 
-              <AddressCopyable
-                address={account.bech32Address}
-                maxCharacters={22}
+              <Copyable
+                text={Bech32Address.shortenAddress(account.bech32Address, 22)}
               />
             </View>
             <View>

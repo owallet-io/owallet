@@ -9,7 +9,7 @@ import { Share, StyleSheet, View } from 'react-native';
 import { ChainSelectorModal } from '../../components/chain-selector';
 import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
-import { AddressCopyable } from '../../components/address-copyable';
+import { Copyable } from '../../components/copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { useNavigation } from '@react-navigation/native';
 
@@ -162,7 +162,9 @@ export const AddressQRCodeModal: FunctionComponent<{
             alignItems: 'center'
           }}
         >
-          <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+          <Copyable
+            text={Bech32Address.shortenAddress(account.bech32Address, 22)}
+          />
           <View
             style={{
               marginTop: 32,
