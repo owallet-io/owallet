@@ -16,8 +16,6 @@ export * from './close';
 export * from './alert';
 export * from './refresh';
 export * from './unconnect';
-export * from './google';
-export * from './apple';
 export * from './go-back';
 export * from './wallet';
 export * from './setting';
