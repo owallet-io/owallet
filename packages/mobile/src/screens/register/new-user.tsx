@@ -1,7 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../components/page';
-import { GoogleIcon, AppleIcon } from '../../components/icon';
 import { useStyle } from '../../styles';
 import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native';
 import { Button } from '../../components/button';
