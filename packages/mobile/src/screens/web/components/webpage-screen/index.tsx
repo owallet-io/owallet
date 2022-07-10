@@ -15,7 +15,6 @@ import {
   RNInjectedOWallet
 } from '../../../../injected/injected-provider';
 import EventEmitter from 'eventemitter3';
-// import { PageWithViewInBottomTabView } from "../../../../components/page";
 import { PageWithView } from '../../../../components/page';
 import { OnScreenWebpageScreenHeader } from '../header';
 import { useIsFocused, useNavigation } from '@react-navigation/native';

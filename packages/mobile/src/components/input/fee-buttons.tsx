@@ -84,7 +84,7 @@ export const getFeeErrorText = (error: Error): string | undefined => {
     case NotLoadedFeeError:
       return undefined;
     default:
-      return error.message || 'Unknown error';
+      return error.message ?? 'Unknown error';
   }
 };
 
@@ -163,7 +163,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <View
               style={{
                 ...styles.containerIcon,
-                backgroundColor: colors['yellow-10'],
+                backgroundColor: colors['yellow-10']
               }}
             >
               <AverageIconFill color={'#1E1E1E'} size={size} />
@@ -217,9 +217,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
         >
-          <View
-          >
-            {renderIconTypeFee(label, 20)}
+          <View>
+            {renderIconTypeFee(label)}
             <Text
               style={{
                 ...typography.h7,
