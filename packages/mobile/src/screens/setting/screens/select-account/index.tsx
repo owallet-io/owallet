@@ -58,7 +58,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
+      (keyStore) => keyStore.type === 'privateKey'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -90,7 +90,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
               return (
                 <KeyStoreItem
                   key={i.toString()}
-                  label={keyStore.meta?.name || 'OWallet Account'}
+                  label="OWallet Account"
                   onPress={async () => {
                     analyticsStore.logEvent('Account changed');
                     await selectKeyStore(keyStore);

@@ -113,9 +113,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
                   fontWeight: 'bold'
                 }}
               >
-                {selected
-                  ? selected.meta?.name || 'Keplr Account'
-                  : 'No Account'}
+                {selected ? 'OWallet Account' : 'No Account'}
               </Text>
             </View>
             <DownArrowIcon color={colors['black']} height={12} />

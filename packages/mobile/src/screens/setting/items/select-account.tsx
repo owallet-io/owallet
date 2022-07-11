@@ -24,9 +24,7 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
       />
       <KeyStoreItem
         containerStyle={style.flatten(['padding-left-10'])}
-        label={
-          selected ? selected.meta?.name || 'OWallet Account' : 'No Account'
-        }
+        label={selected ? 'OWallet Account' : 'No Account'}
         onPress={() => {
           smartNavigation.navigateSmart('SettingSelectAccount', {});
         }}
