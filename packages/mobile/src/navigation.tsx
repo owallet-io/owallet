@@ -114,28 +114,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
 
 const Stack = createStackNavigator();
-const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
-
-const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
-  const style = useStyle();
-
-  const navigation = useNavigation();
-
-  return (
-    <HeaderLeftButton
-      onPress={() => {
-        if (navigation.canGoBack) navigation.goBack();
-      }}
-    >
-      <View style={style.flatten(['flex-row', 'items-center'])}>
-        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
-          <HeaderBackButtonIcon />
-        </Text>
-      </View>
-    </HeaderLeftButton>
-  );
-});
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
