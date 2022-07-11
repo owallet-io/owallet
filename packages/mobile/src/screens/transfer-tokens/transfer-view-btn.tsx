@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     marginLeft: spacing['10'],
-    width: '55%'
   }
 });
 

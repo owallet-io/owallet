@@ -1,1 +1,1 @@
-import * from "./transfer-screen"
+export * from "./transfer-screen";

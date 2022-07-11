@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 import { colors, metrics, spacing, typography } from '../../themes'
-
+import { CText as Text } from '../../components/text';
 const styles = StyleSheet.create({
   boardingRoot: {
     padding: spacing['32'],

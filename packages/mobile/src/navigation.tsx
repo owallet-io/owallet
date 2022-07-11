@@ -104,6 +104,7 @@ import {
   useSmartNavigation
 } from './navigation.provider';
 import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
+import { OnboardingIntroScreen } from './screens/onboarding';
 import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
@@ -153,7 +154,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
 const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
   const { chainStore, modalStore } = useStore();
 
-  const deterministicNumber = useCallback(chainInfo => {
+  const deterministicNumber = useCallback((chainInfo) => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
     );
@@ -163,7 +164,7 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
   }, []);
 
   const profileColor = useCallback(
-    chainInfo => {
+    (chainInfo) => {
       const random = [colors['purple-400']];
 
       return random[deterministicNumber(chainInfo) % random.length];
@@ -410,6 +411,7 @@ export const SendNavigation: FunctionComponent = () => {
 
 export const RegisterNavigation: FunctionComponent = () => {
   const style = useStyle();
+  const { appInitStore } = useStore();
 
   return (
     <Stack.Navigator
@@ -426,8 +428,9 @@ export const RegisterNavigation: FunctionComponent = () => {
           title: ''
         }}
         name="Register.Intro"
-        component={RegisterIntroScreen}
+        component={appInitStore.initApp.status ? OnboardingIntroScreen : RegisterIntroScreen}
       />
+
       <Stack.Screen
         options={{
           title: 'Create a New Wallet'
@@ -887,7 +890,7 @@ export const MainTabNavigation: FunctionComponent = () => {
               return <RenderTabsBarIcon color={color} name={'Settings'} />;
           }
         },
-        tabBarButton: props => (
+        tabBarButton: (props) => (
           <View
             style={{
               display: 'flex',
@@ -924,7 +927,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         },
         showLabel: false
       }}
-      tabBar={props => (
+      tabBar={(props) => (
         <BlurredBottomTabBar {...props} enabledScreens={['Home']} />
       )}
     >
@@ -957,7 +960,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
   useEffect(() => {
     Linking.getInitialURL()
-      .then(url => {
+      .then((url) => {
         if (url) {
           const SCHEME_IOS = 'owallet://open_url?url=';
           const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -966,7 +969,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn('Deeplinking error', err);
       });
     Linking.addEventListener('url', handleDeepLink);

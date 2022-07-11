@@ -1,8 +1,9 @@
 
 import React, { FunctionComponent } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { ShootingStarIcon } from '../../components/icon/shooting-star';
 import { colors, metrics, spacing, typography } from '../../themes';
+import { CText as Text } from '../../components/text';
 
 const styles = StyleSheet.create({
   boardingRoot: {
@@ -34,7 +35,6 @@ const styles = StyleSheet.create({
 
 const WelcomeIntroScreen: FunctionComponent = () => {
   return (
-    <>
       <View style={styles.boardingRoot}>
         <View style={styles.boardingTitleContainer}>
           <View>
@@ -71,7 +71,6 @@ const WelcomeIntroScreen: FunctionComponent = () => {
           />
         </View>
       </View>
-    </>
   );
 };
 

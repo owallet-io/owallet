@@ -1,8 +1,11 @@
-import React, { FunctionComponent } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
-import { RectButton } from '../../components/rect-button'
-import { colors, metrics, spacing, typography } from '../../themes'
-
+import React, { FunctionComponent } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { RectButton } from '../../components/rect-button';
+import { colors, metrics, spacing, typography } from '../../themes';
+import { CText as Text } from '../../components/text';
+import { useStore } from '../../stores';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useSmartNavigation } from '../../navigation.provider';
 const styles = StyleSheet.create({
   boardingRoot: {
     padding: spacing['32'],
@@ -27,66 +30,69 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: spacing['20']
   }
-})
+});
 
 const GatewayIntroScreen: FunctionComponent = () => {
+  const { appInitStore } = useStore();
+  const smartNavigation = useSmartNavigation();
+
   return (
-    <>
-      <View style={styles.boardingRoot}>
-        <View style={styles.boardingTitleContainer}>
-          <View>
-            <Text style={styles.boardingTitle}>Gateway to</Text>
-            <Text
-              style={{
-                ...styles.boardingTitle,
-                color: colors['black']
-              }}
-            >
-              Oraichain Ecosystem
-            </Text>
-          </View>
-        </View>
-
+    <View style={styles.boardingRoot}>
+      <View style={styles.boardingTitleContainer}>
         <View>
-          <Text style={styles.boardingContent}>
-            OWallet brings the richness of Oraichain to your hand.
-          </Text>
-        </View>
-
-        <View>
-          <Image
-            source={require('../../assets/image/onboarding-gateway.png')}
-            fadeDuration={0}
-            resizeMode="contain"
+          <Text style={styles.boardingTitle}>Gateway to</Text>
+          <Text
             style={{
-              width: '100%',
-            }}
-          />
-        </View>
-        <View style={{ marginTop: spacing['25'] }}>
-          <RectButton
-            style={{
-              backgroundColor: colors['purple-900'],
-              paddingHorizontal: spacing['8'],
-              paddingVertical: spacing['16'],
-              borderRadius: spacing['8'],
-              alignItems: 'center'
+              ...styles.boardingTitle,
+              color: colors['black']
             }}
           >
-            <Text
-              style={{
-                color: colors['white'],
-                fontWeight: '700',
-                fontSize: 16
-              }}
-            >
-              Get started!
-            </Text>
-          </RectButton>
+            Oraichain Ecosystem
+          </Text>
         </View>
       </View>
-    </>
-  )
-}
 
-export default GatewayIntroScreen
+      <View>
+        <Text style={styles.boardingContent}>
+          OWallet brings the richness of Oraichain to your hand.
+        </Text>
+      </View>
+
+      <View>
+        <Image
+          source={require('../../assets/image/onboarding-gateway.png')}
+          fadeDuration={0}
+          resizeMode="contain"
+          style={{
+            width: '100%'
+          }}
+        />
+      </View>
+      <TouchableOpacity
+        style={{
+          backgroundColor: colors['purple-900'],
+          paddingHorizontal: spacing['8'],
+          paddingVertical: spacing['16'],
+          borderRadius: spacing['8'],
+          alignItems: 'center'
+        }}
+        onPress={() => {
+          appInitStore.updateInitApp();
+          smartNavigation.navigateSmart('Register.Intro', {});
+        }}
+      >
+        <Text
+          style={{
+            color: colors['white'],
+            fontWeight: '700',
+            fontSize: 16
+          }}
+        >
+          Get started!
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default GatewayIntroScreen;

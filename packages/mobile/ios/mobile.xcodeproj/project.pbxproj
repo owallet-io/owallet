@@ -14,10 +14,10 @@
 		2A4693F4094C410AA8B1BC4B /* DMSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4DA0B277421464391FCCA1C /* DMSans-MediumItalic.ttf */; };
 		56844AF9C32A46268AD228EF /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = ADF704E5FCAF48A797B503DF /* DMSans-Bold.ttf */; };
 		7D281474169F483DB16CDAE2 /* DMSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E1F47D6A8FFF41C59EE7A2F0 /* DMSans-BoldItalic.ttf */; };
+		805753E1287C1A7800F6079A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 805753E0287C1A7800F6079A /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		C15FB49F265238C1007E541F /* AppCenter-Config.plist in Resources */ = {isa = PBXBuildFile; fileRef = C15FB49E265238C1007E541F /* AppCenter-Config.plist */; };
 		CD8B717B5514409193CA73BC /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A2CF665D5547487780303769 /* DMSans-Italic.ttf */; };
-		CE96058C2879A4890016578A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE96058B2879A4890016578A /* GoogleService-Info.plist */; };
 		DF167C604450012C42667FC8 /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E9A0AB940E05C4C2A083923 /* libPods-mobile.a */; };
 		E9C355A07F424AD5B375EC16 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2D55C11E0150498CBC775A92 /* DMSans-Regular.ttf */; };
 		F440259FD5AC4BC59C04EFD2 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 28CAF3B0E76A4F7AACA3C6A1 /* SplashScreen.storyboard */; };
@@ -36,12 +36,12 @@
 		2D55C11E0150498CBC775A92 /* DMSans-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Regular.ttf"; path = "../src/assets/fonts/DMSans-Regular.ttf"; sourceTree = "<group>"; };
 		2ED5A421BAEC5B1963482A4B /* Pods-mobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.debug.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.debug.xcconfig"; sourceTree = "<group>"; };
 		6E9A0AB940E05C4C2A083923 /* libPods-mobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		805753E0287C1A7800F6079A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A2CF665D5547487780303769 /* DMSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Italic.ttf"; path = "../src/assets/fonts/DMSans-Italic.ttf"; sourceTree = "<group>"; };
 		ADF704E5FCAF48A797B503DF /* DMSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Bold.ttf"; path = "../src/assets/fonts/DMSans-Bold.ttf"; sourceTree = "<group>"; };
 		C15FB49E265238C1007E541F /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
 		CE259BE22844D3820001E907 /* mobileRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mobileRelease.entitlements; path = mobile/mobileRelease.entitlements; sourceTree = "<group>"; };
-		CE96058B2879A4890016578A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D1C09889289846B3B41F90AB /* DMSans-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-Medium.ttf"; path = "../src/assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; };
 		D4DA0B277421464391FCCA1C /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-MediumItalic.ttf"; path = "../src/assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		E1F47D6A8FFF41C59EE7A2F0 /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "DMSans-BoldItalic.ttf"; path = "../src/assets/fonts/DMSans-BoldItalic.ttf"; sourceTree = "<group>"; };
@@ -65,7 +65,7 @@
 		13B07FAE1A68108700A75B9A /* mobile */ = {
 			isa = PBXGroup;
 			children = (
-				CE96058B2879A4890016578A /* GoogleService-Info.plist */,
+				805753E0287C1A7800F6079A /* GoogleService-Info.plist */,
 				CE259BE22844D3820001E907 /* mobileRelease.entitlements */,
 				25B024E8270DB0C70003A5AF /* mobile.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -218,10 +218,10 @@
 				C17473BB2641389E00D47EE5 /* GoogleService-Info.plist in Resources */,
 				F440259FD5AC4BC59C04EFD2 /* SplashScreen.storyboard in Resources */,
 				56844AF9C32A46268AD228EF /* DMSans-Bold.ttf in Resources */,
+				805753E1287C1A7800F6079A /* GoogleService-Info.plist in Resources */,
 				7D281474169F483DB16CDAE2 /* DMSans-BoldItalic.ttf in Resources */,
 				CD8B717B5514409193CA73BC /* DMSans-Italic.ttf in Resources */,
 				02ACF504CF6B4448A3E9B1DA /* DMSans-Medium.ttf in Resources */,
-				CE96058C2879A4890016578A /* GoogleService-Info.plist in Resources */,
 				2A4693F4094C410AA8B1BC4B /* DMSans-MediumItalic.ttf in Resources */,
 				E9C355A07F424AD5B375EC16 /* DMSans-Regular.ttf in Resources */,
 			);
