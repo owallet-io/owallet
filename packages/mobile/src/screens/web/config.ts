@@ -10,7 +10,7 @@ export type DAppInfo = {
   logo?: ImageSourcePropType;
 };
 
-const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
+export const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
 const balconyLogo = require('../../assets/image/webpage/balcony.png');
 
 export const DAppInfos: DAppInfo[] = [

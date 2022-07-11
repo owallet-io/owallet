@@ -5,14 +5,13 @@ import {
   StyleSheet,
   ScrollView,
   Dimensions,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback
 } from 'react-native';
-import { CText as Text} from "../../../../components/text";
+import { CText as Text } from '../../../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
-
-const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
+import { oraiLogo } from '../../config';
 
 const COLOR_PRIMARY = '#39A0FF';
 const COLOR_WHITE = '#fff';
@@ -59,8 +58,8 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
               style={[
                 styles.wrapContent,
                 {
-                  borderColor: isSelect ? COLOR_PRIMARY : COLOR_WHITE,
-                },
+                  borderColor: isSelect ? COLOR_PRIMARY : COLOR_WHITE
+                }
               ]}
             >
               <View
@@ -70,8 +69,8 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
                     flexDirection: 'row',
                     width: '100%',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
-                  },
+                    alignItems: 'center'
+                  }
                 ]}
               >
                 <Text
@@ -87,7 +86,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
               <View
                 style={[
                   styles.webview,
-                  { justifyContent: 'center', alignItems: 'center' },
+                  { justifyContent: 'center', alignItems: 'center' }
                 ]}
               >
                 <TouchableWithoutFeedback
@@ -98,7 +97,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
                     source={oraiLogo}
                     style={{
                       width: DEVICE_WIDTH / 5,
-                      height: DEVICE_WIDTH / 5,
+                      height: DEVICE_WIDTH / 5
                     }}
                   />
                 </TouchableWithoutFeedback>
@@ -119,7 +118,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
               height: '100%',
               justifyContent: 'center',
               alignItems: 'center',
-              paddingTop: 40,
+              paddingTop: 40
             }}
           >
             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
@@ -135,7 +134,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
         <ScrollView
           contentContainerStyle={{
             padding: DIMENSION_PADDING_MEDIUM,
-            paddingBottom: 100,
+            paddingBottom: 100
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -149,7 +148,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
         style={{
           paddingTop: 40,
           width: '100%',
-          height: '100%',
+          height: '100%'
         }}
       >
         {renderContent()}
@@ -167,25 +166,25 @@ const styles = StyleSheet.create({
     borderRadius: DIMENSION_RADIUS_LARGE,
     transform: [
       {
-        perspective,
+        perspective
       },
       {
-        rotateX: `${rotateX}rad`,
+        rotateX: `${rotateX}rad`
       },
       {
-        scale: perspective / (perspective - z),
-      },
-    ],
+        scale: perspective / (perspective - z)
+      }
+    ]
   },
   wrapTitle: {
     paddingHorizontal: DIMENSION_PADDING_MEDIUM,
     paddingVertical: DIMENSION_PADDING_SMALL,
-    backgroundColor: COLOR_PRIMARY,
+    backgroundColor: COLOR_PRIMARY
   },
   wrapContent: {
     borderRadius: DIMENSION_RADIUS_LARGE,
     overflow: 'hidden',
     marginHorizontal: DIMENSION_PADDING_MEDIUM,
-    borderWidth: 3,
-  },
+    borderWidth: 3
+  }
 });

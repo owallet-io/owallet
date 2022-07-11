@@ -9,12 +9,12 @@ import {
   RightArrowIcon,
   HomeIcon,
   ThreeDotsIcon,
-  TabIcon,
-  BrowserIcon
+  TabIcon
 } from '../../../../components/icon';
 import { BrowserSectionModal } from '../section-title';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
+import { oraiLogo } from '../../config';
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
@@ -26,8 +26,6 @@ export const BrowserFooterSection: FunctionComponent<{
   const [isOpenSetting, setIsOpenSetting] = useState(false);
   const navigation = useNavigation();
   const webViewState = useWebViewState();
-
-  const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
 
   const onPressBookmark = () => {
     setIsOpenSetting(false);
