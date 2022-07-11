@@ -24,30 +24,13 @@ import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { Bech32Address } from '@owallet/cosmos';
+import { Dec } from '@owallet/unit';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
     useStore();
-
-  const deterministicNumber = useCallback((chainInfo) => {
-    const bytes = Hash.sha256(
-      Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
-    );
-    return (
-      (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
-    );
-  }, []);
-
-  const profileColor = useCallback(
-    (chainInfo) => {
-      const colors = ['red', 'green', 'purple', 'orange'];
-
-      return colors[deterministicNumber(chainInfo) % colors.length];
-    },
-    [deterministicNumber]
-  );
 
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
@@ -288,9 +271,12 @@ export const AccountCard: FunctionComponent<{
                 text={Bech32Address.shortenAddress(account.bech32Address, 22)}
               />
             </View>
-            <View>
-              <DownArrowIcon height={30} color={colors['gray-150']} />
-            </View>
+            <TouchableOpacity
+              onPress={_onPressMyWallet}
+              disabled={stakable.toDec().lte(new Dec(0))}
+            >
+              <DownArrowIcon height={28} color={colors['gray-150']} />
+            </TouchableOpacity>
           </View>
 
           {queryStakable.isFetching ? (
