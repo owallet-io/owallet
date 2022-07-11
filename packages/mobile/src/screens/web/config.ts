@@ -54,7 +54,13 @@ export const DAppInfos: DAppInfo[] = [
     name: 'Balcony Subnet',
     uri: 'https://re.bignft.app',
     logo: balconyLogo
-  }
+  },
+  {
+    id: 7,
+    name: 'Info Oraidex',
+    uri: 'https://info.oraidex.io',
+    logo: oraiLogo
+  },
 ];
 
 if (__DEV__) {
