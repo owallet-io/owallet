@@ -53,11 +53,6 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
               <KeyStoreItem
                 key={i.toString()}
                 label={cur.label || 'USD'}
-                topBorder={i === 0}
-                bottomBorder={currencyItems.length - 1 !== i}
-                right={
-                  priceStore.defaultVsCurrency == cur.key ? <></> : undefined
-                }
                 onPress={async () => {
                   priceStore.setDefaultVsCurrency(cur.key || 'usd');
                   smartNavigation.navigateSmart('Setting', {});
