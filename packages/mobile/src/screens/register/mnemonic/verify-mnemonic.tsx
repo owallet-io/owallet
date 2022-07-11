@@ -189,7 +189,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
             registerType: 'seed',
             accountType: 'mnemonic'
           });
-          if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
+          if (checkRouter(route.name, 'RegisterVerifyMnemonicMain')) {
             navigate('RegisterEnd', {
               password: newMnemonicConfig.password,
               type: 'new'

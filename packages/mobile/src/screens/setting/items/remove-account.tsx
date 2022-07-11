@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
-import { observer } from "mobx-react-lite";
-import { SettingItem } from "../components";
-import { useStyle } from "../../../styles";
-import { PasswordInputModal } from "../../../modals/password-input/modal";
-import { useStore } from "../../../stores";
-import { useNavigation } from "@react-navigation/native";
+import React, { FunctionComponent, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { SettingItem } from '../components';
+import { useStyle } from '../../../styles';
+import { PasswordInputModal } from '../../../modals/password-input/modal';
+import { useStore } from '../../../stores';
+import { useNavigation } from '@react-navigation/native';
 
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
@@ -18,14 +18,14 @@ export const SettingRemoveAccountItem: FunctionComponent<{
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <SettingItem
         label="Remove current wallet"
         onPress={() => {
           setIsOpenModal(true);
         }}
-        containerStyle={style.flatten(["margin-top-16"])}
-        labelStyle={style.flatten(["subtitle1", "color-danger"])}
+        containerStyle={style.flatten(['margin-top-16'])}
+        labelStyle={style.flatten(['subtitle1', 'color-danger'])}
         // style={style.flatten(["justify-center"])}
         topBorder={topBorder}
       />
@@ -41,7 +41,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
 
           if (index >= 0) {
             await keyRingStore.deleteKeyRing(index, password);
-            analyticsStore.logEvent("Account removed");
+            analyticsStore.logEvent('Account removed');
 
             if (keyRingStore.multiKeyStoreInfo.length === 0) {
               await keychainStore.reset();
@@ -50,14 +50,14 @@ export const SettingRemoveAccountItem: FunctionComponent<{
                 index: 0,
                 routes: [
                   {
-                    name: "Unlock",
-                  },
-                ],
+                    name: 'Unlock'
+                  }
+                ]
               });
             }
           }
         }}
       />
-    </React.Fragment>
+    </>
   );
 });

@@ -222,7 +222,7 @@ export function renderMsgSend(
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(
               receives
-                .map(coin => {
+                .map((coin) => {
                   return `${coin.amount} ${coin.denom}`;
                 })
                 .join(',')
@@ -621,7 +621,7 @@ export function renderMsgExecuteContract(
               <Text> by sending </Text>
               <Text style={{ fontWeight: 'bold' }}>
                 {sent
-                  .map(coin => {
+                  .map((coin) => {
                     return `${coin.amount} ${coin.denom}`;
                   })
                   .join(',')}
@@ -630,14 +630,14 @@ export function renderMsgExecuteContract(
           ) : undefined}
         </Text>
         {isSecretWasm && (
-          <React.Fragment>
+          <>
             <Badge
               color="primary"
               style={{ marginTop: '6px', marginBottom: '6px' }}
             >
               <FormattedMessage id="sign.list.message.wasm/MsgExecuteContract.content.badge.secret-wasm" />
             </Badge>
-          </React.Fragment>
+          </>
         )}
         <WasmExecutionMsgView msg={msg} />
       </Text>

@@ -1,10 +1,10 @@
-import { View } from 'react-native'
-import React, { FunctionComponent } from 'react'
-import { colors, spacing } from '../../themes'
+import { View } from 'react-native';
+import React, { FunctionComponent } from 'react';
+import { colors, spacing } from '../../themes';
 
 export const ProgressBar: FunctionComponent<{
-  progress: number
-  styles: Array<string>
+  progress: number;
+  styles?: Array<string>;
 }> = ({ progress = 0, styles = [] }) => {
   return (
     <View
@@ -25,5 +25,5 @@ export const ProgressBar: FunctionComponent<{
         }}
       />
     </View>
-  )
-}
+  );
+};

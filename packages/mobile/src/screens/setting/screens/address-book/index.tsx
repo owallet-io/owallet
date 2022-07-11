@@ -2,7 +2,6 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useMemo,
   useState
 } from 'react';
 import { observer } from 'mobx-react-lite';
@@ -21,16 +20,7 @@ import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
 import { Bech32Address } from '@owallet/cosmos';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RectButton } from '../../../../components/rect-button';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  HeaderLeftButton,
-  HeaderRightButton
-} from '../../../../components/header';
-import {
-  HeaderAddIcon,
-  HeaderBackButtonIcon
-} from '../../../../components/header/icon';
-import { AddressBookIcon } from '../../../../components/icon';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useConfirmModal } from '../../../../providers/confirm-modal';
 import { colors, metrics, spacing, typography } from '../../../../themes';
 import { TextInput } from '../../../../components/input';

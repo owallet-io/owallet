@@ -23,7 +23,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();

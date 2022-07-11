@@ -8,9 +8,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { CText as Text } from '../../../components/text'
+import { CText as Text } from '../../../components/text';
 import { useStore } from '../../../stores';
-import { Button } from '../../../components/button';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import {
   checkRouter,
@@ -60,7 +59,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
   const [isCreating, setIsCreating] = useState(false);
   const [statusPass, setStatusPass] = useState(false);
   const [statusConfirmPass, setStatusConfirmPass] = useState(false);
-  
+
   const submit = handleSubmit(async () => {
     setIsCreating(true);
 
@@ -76,7 +75,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
         accountType: 'ledger'
       });
 
-      if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+      if (checkRouter(route.name, 'RegisterNewLedgerMain')) {
         navigate('RegisterEnd', {
           password: getValues('password')
         });
@@ -107,7 +106,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
       }}
       style={{
         paddingLeft: 20,
-        paddingRight: 20,
+        paddingRight: 20
       }}
       backgroundColor={colors['white']}
     >
@@ -168,7 +167,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
       />
       {/* <BIP44AdvancedButton bip44Option={bip44Option} /> */}
       {mode === 'create' ? (
-        <React.Fragment>
+        <>
           <Controller
             control={control}
             rules={{
@@ -184,7 +183,6 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
                 <TextInput
                   label="Password"
                   returnKeyType="next"
-                  secureTextEntry={true}
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
                   }}
@@ -270,9 +268,9 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
             name="confirmPassword"
             defaultValue=""
           />
-        </React.Fragment>
+        </>
       ) : null}
-        <BIP44AdvancedButton bip44Option={bip44Option} />
+      <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={{ height: 20 }} />
       <TouchableOpacity
         disabled={isCreating}
@@ -298,7 +296,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
       <View
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
-            props?.route?.name,
+            route.name,
             'RegisterNewLedgerMain'
           )
         }}
@@ -311,7 +309,7 @@ export const NewLedgerScreen: FunctionComponent = observer(() => {
             fontSize: 16
           }}
           onPress={() => {
-            if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+            if (checkRouter(route.name, 'RegisterNewLedgerMain')) {
               smartNavigation.goBack();
             } else {
               smartNavigation.navigateSmart('Register.Intro', {});

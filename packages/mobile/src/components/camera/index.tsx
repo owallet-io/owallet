@@ -29,7 +29,7 @@ export const FullScreenCameraView: FunctionComponent<
   } = props;
 
   return (
-    <React.Fragment>
+    <>
       {isFocused ? (
         <RNCamera
           style={StyleSheet.flatten([
@@ -90,9 +90,11 @@ export const FullScreenCameraView: FunctionComponent<
             </TouchableOpacity>
           ) : null}
         </View>
-        <View style={{
-          flex: 1
-        }} />
+        <View
+          style={{
+            flex: 1
+          }}
+        />
         <View>
           <Svg width="217" height="217" fill="none" viewBox="0 0 217 217">
             <Path
@@ -140,11 +142,13 @@ export const FullScreenCameraView: FunctionComponent<
           ) : null}
         </View>
         {containerBottom}
-        <View style={{
-          flex:1
-        }} />
+        <View
+          style={{
+            flex: 1
+          }}
+        />
       </SafeAreaView>
       {children}
-    </React.Fragment>
+    </>
   );
 };

@@ -105,7 +105,7 @@ export const FeeInSign: FunctionComponent<{
   const [isSetFeeModalOpen, setIsSetFeeModalOpen] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <FeeButtonsModal
         isOpen={isSetFeeModalOpen}
         close={() => setIsSetFeeModalOpen(false)}
@@ -185,6 +185,6 @@ export const FeeInSign: FunctionComponent<{
           </View>
         ) : null}
       </View>
-    </React.Fragment>
+    </>
   );
 });

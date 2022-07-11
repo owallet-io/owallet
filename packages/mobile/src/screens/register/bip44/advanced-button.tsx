@@ -27,13 +27,13 @@ export const BIP44AdvancedButton: FunctionComponent<{
   //   change.isValid && (change.number === 0 || change.number === 1);
 
   return (
-    <React.Fragment>
+    <>
       <BIP44SelectModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
         bip44Option={bip44Option}
       />
-      <Text>Advanced Option</Text>
+      <Text onPress={() => setIsModalOpen(true)}>Advanced Option</Text>
       <View
         style={{
           marginBottom: 16,
@@ -94,7 +94,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
           }}
         />
       </View>
-    </React.Fragment>
+    </>
   );
 });
 

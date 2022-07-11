@@ -19,7 +19,7 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   return (
-    <React.Fragment>
+    <>
       <View
         style={style.flatten(['height-1', 'background-color-border-white'])}
       />
@@ -40,6 +40,6 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
       <View
         style={style.flatten(['height-1', 'background-color-border-white'])}
       />
-    </React.Fragment>
+    </>
   );
 });

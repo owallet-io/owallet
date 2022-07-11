@@ -102,67 +102,66 @@ export const SelectorModal: FunctionComponent<{
       }
     };
 
-    return (
-      <View>
-        <View
-          style={{
-            borderRadius: spacing['8'],
-            overflow: 'hidden',
-            backgroundColor: colors['white'],
-            paddingVertical: spacing['16']
-          }}
-        >
-          <ScrollView
-            style={{
-              maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
-              paddingHorizontal: spacing['24']
-            }}
-            ref={scrollViewRef}
-            persistentScrollbar={true}
-            onLayout={onInit}
-          >
-            {items.map(item => {
-              return (
-                <View
-                  style={{
-                    backgroundColor: colors['gray-100'],
-                    borderRadius: spacing['12'],
-                    marginTop: spacing['8'],
-                    marginBottom: spacing['8'],
-                    paddingHorizontal: spacing['18']
-                  }}
-                >
-                  <RectButton
-                    key={item.key}
-                    style={{
-                      height: 64,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                    onPress={() => {
-                      setSelectedKey(item.key);
-                      if (!modalPersistent) {
-                        close();
-                      }
-                    }}
-                  >
-                    <Text
-                      style={{...styles.label}}
-                    >
-                      {item.label}
-                    </Text>
-                    {renderBall(item.key === selectedKey)}
-                  </RectButton>
-                </View>
-              );
-            })}
-          </ScrollView>
-        </View>
-      </View>
-    );
-  }
-);
+  return (
+    <View
+      style={{
+        ...style.flatten(['border-radius-8']),
+        backgroundColor: colors['white'],
+        borderRadius: 24,
+        alignItems: 'center'
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 16,
+          fontWeight: '700',
+          color: colors['gray-900'],
+          marginBottom: spacing['12']
+        }}
+      >
+        Select a token
+      </Text>
+      <ScrollView
+        style={{
+          maxHeight: maxItemsToShow ? 99 * maxItemsToShow : undefined,
+          width: '100%'
+        }}
+        ref={scrollViewRef}
+        persistentScrollbar={true}
+        onLayout={onInit}
+      >
+        {items.map((item) => {
+          return (
+            <RectButton
+              key={item.key}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: 16,
+                backgroundColor: colors['gray-10'],
+                borderRadius: 12,
+                marginBottom: 16,
+                width: '100%'
+              }}
+              onPress={async () => {
+                setSelectedKey(item.key);
+                await closeModal();
+              }}
+            >
+              <Text
+                style={style.flatten(['subtitle1', 'color-text-black-medium'])}
+              >
+                {item.label}
+              </Text>
+              {renderBall(item.key === selectedKey)}
+            </RectButton>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
+};
 
 export const Selector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -213,6 +212,11 @@ export const Selector: FunctionComponent<{
         maxItemsToShow={maxItemsToShow}
         modalPersistent={modalPersistent}
       />
+    );
+  };
+
+  return (
+    <>
       <SelectorButtonWithoutModal
         labelStyle={labelStyle}
         containerStyle={containerStyle}
@@ -223,7 +227,7 @@ export const Selector: FunctionComponent<{
         selected={selected}
         onPress={() => setIsModalOpen(true)}
       />
-    </React.Fragment>
+    </>
   );
 };
 

@@ -28,7 +28,7 @@ export const OWalletVersionScreen: FunctionComponent = () => {
   >(undefined);
 
   useEffect(() => {
-    codePush.getUpdateMetadata(codePush.UpdateState.RUNNING).then(update => {
+    codePush.getUpdateMetadata(codePush.UpdateState.RUNNING).then((update) => {
       if (update) {
         setCurrentCodeVersion(update.label);
       } else {
@@ -36,7 +36,7 @@ export const OWalletVersionScreen: FunctionComponent = () => {
       }
     });
 
-    codePush.getUpdateMetadata(codePush.UpdateState.LATEST).then(update => {
+    codePush.getUpdateMetadata(codePush.UpdateState.LATEST).then((update) => {
       if (update) {
         setLatestCodeVersion(update.label);
       } else {
@@ -44,7 +44,7 @@ export const OWalletVersionScreen: FunctionComponent = () => {
       }
     });
 
-    codePush.getUpdateMetadata(codePush.UpdateState.PENDING).then(update => {
+    codePush.getUpdateMetadata(codePush.UpdateState.PENDING).then((update) => {
       if (update) {
         setPendingCodeVersion(update.label);
       } else {
@@ -154,10 +154,10 @@ const SettingItem: FunctionComponent<{
 
   const renderChildren = () => {
     return (
-      <React.Fragment>
+      <>
         <View
           style={{
-            width: '100%',
+            width: '100%'
           }}
         >
           <View
@@ -201,9 +201,9 @@ const SettingItem: FunctionComponent<{
                 marginTop: spacing['24']
               }}
             />
-          ): null}
+          ) : null}
         </View>
-      </React.Fragment>
+      </>
     );
   };
 

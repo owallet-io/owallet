@@ -1,17 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  Image,
-  View,
-  Keyboard,
-  TouchableWithoutFeedback,
-} from 'react-native';
-import { CText as Text} from "../../components/text";
+import { Image, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
 import { PageWithScrollView } from '../../components/page';
-import { useNavigation } from '@react-navigation/core';
+import { useNavigation, useRoute } from '@react-navigation/core';
 import {
-  BrowserSectionTitle,
+  BrowserSectionTitle
   // BrowserSectionModal,
 } from './components/section-title';
 import {
@@ -34,7 +29,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
   const navigation = useNavigation();
   return (
-    <React.Fragment>
+    <>
       <View
         style={style.flatten([
           'width-full',
@@ -42,14 +37,14 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
           'flex-row',
           'justify-between',
           'items-center',
-          'padding-20',
+          'padding-20'
         ])}
       >
         <Text
           style={{
             fontSize: 18,
             fontWeight: '500',
-            color: '#1C1C1E',
+            color: '#1C1C1E'
           }}
         >
           Bookmarks
@@ -58,7 +53,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
           style={{
             fontSize: 14,
             fontWeight: '400',
-            color: '#4334F1',
+            color: '#4334F1'
           }}
         >
           {/* View all */}
@@ -68,14 +63,15 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
         style={style.flatten([
           'height-1',
           'margin-x-20',
-          'background-color-border-white',
+          'background-color-border-white'
         ])}
       />
-    </React.Fragment>
+    </>
   );
 };
 
-export const Browser: FunctionComponent<any> = observer((props) => {
+export const Browser: FunctionComponent<any> = observer(() => {
+  const route = useRoute();
   const style = useStyle();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const navigation = useNavigation();
@@ -95,18 +91,18 @@ export const Browser: FunctionComponent<any> = observer((props) => {
 
   useEffect(() => {
     setTimeout(function () {
-      if (checkValidDomain(props?.route?.params?.url?.toLowerCase())) {
+      if (checkValidDomain(route.params?.url?.toLowerCase())) {
         const tabUri =
-          props.route.params.url?.toLowerCase().indexOf('http') >= 0
-            ? props.route.params.url?.toLowerCase()
-            : 'https://' + props.route.params?.url?.toLowerCase();
+          route.params.url?.toLowerCase().indexOf('http') >= 0
+            ? route.params.url?.toLowerCase()
+            : 'https://' + route.params?.url?.toLowerCase();
         navigation.navigate('Web.dApp', {
           name: tabUri,
-          uri: tabUri,
+          uri: tabUri
         });
       }
     }, 1000);
-  }, [props?.route?.params?.url]);
+  }, [route.params?.url]);
 
   useEffect(() => {
     setTimeout(function () {
@@ -118,7 +114,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
             : 'https://' + deepLinkUriStore.link?.toLowerCase();
         navigation.navigate('Web.dApp', {
           name: tabUri,
-          uri: tabUri,
+          uri: tabUri
         });
       }
     }, 1000);
@@ -133,7 +129,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
         uri:
           url?.toLowerCase().indexOf('http') >= 0
             ? url?.toLowerCase()
-            : 'https://' + url?.toLowerCase(),
+            : 'https://' + url?.toLowerCase()
       };
       browserStore.addTab(tab);
       browserStore.updateSelectedTab(tab);
@@ -143,7 +139,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
       if (InjectedProviderUrl) uri = InjectedProviderUrl;
       navigation.navigate('Web.dApp', {
         name: 'Google',
-        uri,
+        uri
       });
     }
   };
@@ -151,7 +147,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
   const handleClickUri = (uri: string, name: string) => {
     navigation.navigate('Web.dApp', {
       name,
-      uri,
+      uri
     });
   };
 
@@ -194,7 +190,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
               <Image
                 style={{
                   width: '100%',
-                  height: '100%',
+                  height: '100%'
                 }}
                 fadeDuration={0}
                 resizeMode="stretch"
@@ -204,7 +200,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
                 containerStyle={{
                   width: '100%',
                   padding: 20,
-                  marginTop: -50,
+                  marginTop: -50
                 }}
                 inputStyle={style.flatten([
                   'flex-row',
@@ -213,7 +209,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
                   'padding-20',
                   'border-radius-16',
                   'border-width-4',
-                  'border-color-border-pink',
+                  'border-color-border-pink'
                 ])}
                 returnKeyType={'next'}
                 placeholder={'Search website'}
@@ -231,10 +227,9 @@ export const Browser: FunctionComponent<any> = observer((props) => {
             {/* <View
               style={style.flatten([
                 'background-color-white',
-                'padding-20',
-                'border-radius-16',
-                'border-width-4',
-                'border-color-border-pink',
+                'height-full',
+                'margin-top-64',
+                'padding-bottom-64'
               ])}
             >
               <BrowserBookmark />
@@ -245,14 +240,14 @@ export const Browser: FunctionComponent<any> = observer((props) => {
                     style={style.flatten([
                       'height-44',
                       'margin-bottom-15',
-                      'flex-row',
+                      'flex-row'
                     ])}
                     onPress={() => {
                       handleClickUri(e.uri, e.name);
                       const tab = {
                         id: Date.now(),
                         name: e.name,
-                        uri: e.uri?.toLowerCase(),
+                        uri: e.uri?.toLowerCase()
                       };
                       browserStore.addTab(tab);
                       browserStore.updateSelectedTab(tab);
@@ -263,7 +258,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
                       <Image
                         style={{
                           width: 20,
-                          height: 22,
+                          height: 22
                         }}
                         source={e.logo}
                         fadeDuration={0}
@@ -317,7 +312,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
           name: 'Browser',
           url: url,
           canGoBack: false,
-          canGoForward: false,
+          canGoForward: false
         }}
       >
         <BrowserFooterSection

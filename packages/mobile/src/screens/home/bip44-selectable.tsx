@@ -5,7 +5,7 @@ import { KeyRingStatus } from '@owallet/background';
 import { LoadingScreenModal } from '../../providers/loading-screen/modal';
 import { Dec } from '@owallet/unit';
 import { View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { CText as Text } from '../../components/text';
 import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
 import { useStyle } from '../../styles';
@@ -112,7 +112,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
   ]);
 
   return (
-    <React.Fragment>
+    <>
       <LoadingScreenModal
         isOpen={needSelectBIP44 && !isSelectorModalShow}
         close={() => {
@@ -125,7 +125,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
           // noop
         }}
       />
-    </React.Fragment>
+    </>
   );
 });
 

@@ -10,37 +10,12 @@ import useForm from 'react-hook-form';
 import { observer } from 'mobx-react-lite';
 import { RegisterConfig } from '@owallet/hooks';
 import { AdvancedBIP44Option, useBIP44Option } from '../advanced-bip44';
-
+import { isPrivateKey, trimWordsStr } from '@owallet/common';
 import { Buffer } from 'buffer';
 import { useStore } from '../../../stores';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
-
-function isPrivateKey(str: string): boolean {
-  if (str.startsWith('0x')) {
-    return true;
-  }
-
-  if (str.length === 64) {
-    try {
-      return Buffer.from(str, 'hex').length === 32;
-    } catch {
-      return false;
-    }
-  }
-  return false;
-}
-
-function trimWordsStr(str: string): string {
-  str = str.trim();
-  // Split on the whitespace or new line.
-  const splited = str.split(/\s+/);
-  const words = splited
-    .map((word) => word.trim())
-    .filter((word) => word.trim().length > 0);
-  return words.join(' ');
-}
 
 interface FormData {
   name: string;

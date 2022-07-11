@@ -120,9 +120,9 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     keyStores: MultiKeyStoreInfoWithSelectedElem[]
   ) => {
     return (
-      <React.Fragment>
+      <>
         {keyStores.length > 0 ? (
-          <React.Fragment>
+          <>
             <KeyStoreSectionTitle title={title} />
             {keyStores.map((keyStore, i) => {
               return (
@@ -140,9 +140,9 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
                 />
               );
             })}
-          </React.Fragment>
+          </>
         ) : null}
-      </React.Fragment>
+      </>
     );
   };
 

@@ -67,12 +67,12 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
     return (
-      <React.Fragment>
+      <>
         {props.feeConfig.feeCurrency ? <FeeButtonsInner {...props} /> : null}
         {feeButtonState.isGasInputOpen || !props.feeConfig.feeCurrency ? (
           <GasInput label={props.gasLabel} gasConfig={props.gasConfig} />
         ) : null}
-      </React.Fragment>
+      </>
     );
   }
 );
@@ -116,7 +116,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     // But because this component uses hooks, using a hook in the line below can cause an error.
     // Note that hooks should be used above this line, and only rendering-related logic should exist below this line.
     if (!feeConfig.feeCurrency) {
-      return <React.Fragment />;
+      return null;
     }
 
     const lowFee = feeConfig.getFeeTypePretty('low');

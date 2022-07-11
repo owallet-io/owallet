@@ -72,7 +72,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
     //   bip44HDPath: bip44Option.bip44HDPath,
     // });
 
-    if (checkRouter(props?.route?.name, 'RegisterMain')) {
+    if (checkRouter(route.name, 'RegisterMain')) {
       navigate('RegisterVerifyMnemonicMain', {
         registerConfig,
         newMnemonicConfig,
@@ -82,7 +82,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       smartNavigation.navigateSmart('Register.VerifyMnemonic', {
         registerConfig,
         newMnemonicConfig,
-        bip44HDPath: bip44Option.bip44HDPath,
+        bip44HDPath: bip44Option.bip44HDPath
       });
     }
   });
@@ -153,7 +153,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
         defaultValue=""
       />
       {mode === 'create' ? (
-        <React.Fragment>
+        <>
           <Controller
             control={control}
             rules={{
@@ -172,7 +172,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
                   inputStyle={{
                     ...styles.borderInput
                   }}
-                  secureTextEntry={true}
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
                   }}
@@ -255,7 +254,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
             name="confirmPassword"
             defaultValue=""
           />
-        </React.Fragment>
+        </>
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View
@@ -286,10 +285,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
       </TouchableOpacity>
       <View
         style={{
-          paddingBottom: checkRouterPaddingBottomBar(
-            props?.route?.name,
-            'RegisterMain'
-          )
+          paddingBottom: checkRouterPaddingBottomBar(route.name, 'RegisterMain')
         }}
       >
         <Text
@@ -300,7 +296,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(() => {
             fontSize: 16
           }}
           onPress={() => {
-            if (checkRouter(props?.route?.name, 'RegisterMain')) {
+            if (checkRouter(route.name, 'RegisterMain')) {
               smartNavigation.goBack();
             } else {
               smartNavigation.navigateSmart('Register.Intro', {});
@@ -358,7 +354,7 @@ const WordsCard: FunctionComponent<{
         borderRadius: 8,
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: "wrap",
+        flexWrap: 'wrap'
       }}
     >
       {words.map((word, i) => {

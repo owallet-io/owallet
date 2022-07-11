@@ -1,10 +1,10 @@
-import React, { FunctionComponent, useState } from "react";
-import { SettingItem } from "../components";
-import { Toggle } from "../../../components/toggle";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import delay from "delay";
-import { PasswordInputModal } from "../../../modals/password-input/modal";
+import React, { FunctionComponent, useState } from 'react';
+import { SettingItem } from '../components';
+import { Toggle } from '../../../components/toggle';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import delay from 'delay';
+import { PasswordInputModal } from '../../../modals/password-input/modal';
 
 export const SettingBiometricLockItem: FunctionComponent<{
   topBorder?: boolean;
@@ -14,9 +14,13 @@ export const SettingBiometricLockItem: FunctionComponent<{
   const [isOpenModal, setIsOpenModal] = useState(false);
 
   return (
-    <React.Fragment>
+    <>
       <PasswordInputModal
-        title="Enable Biometric Authentication"
+        title={
+          !isTurnOffBiometryFallback
+            ? 'Enable Biometric Authentication'
+            : 'Disable Biometric Authentication'
+        }
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
         onEnterPassword={async (password) => {
@@ -42,6 +46,6 @@ export const SettingBiometricLockItem: FunctionComponent<{
         }
         topBorder={topBorder}
       />
-    </React.Fragment>
+    </>
   );
 });

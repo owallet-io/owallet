@@ -1,6 +1,6 @@
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
-import { find } from 'lodash';
+import find from 'lodash/find';
 import moment from 'moment';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Image, View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { BrowserSectionTitle } from './components/section-title';
 import { RemoveIcon } from '../../components/icon';
@@ -12,7 +12,7 @@ import { PageWithScrollView } from '../../components/page';
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
   return (
-    <React.Fragment>
+    <>
       <View
         style={style.flatten([
           'width-full',
@@ -20,14 +20,14 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
           'flex-row',
           'justify-between',
           'items-center',
-          'padding-20',
+          'padding-20'
         ])}
       >
         <Text
           style={{
             fontSize: 18,
             fontWeight: '500',
-            color: '#1C1C1E',
+            color: '#1C1C1E'
           }}
         >
           Bookmarks
@@ -37,10 +37,10 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
         style={style.flatten([
           'height-1',
           'margin-x-20',
-          'background-color-border-white',
+          'background-color-border-white'
         ])}
       />
-    </React.Fragment>
+    </>
   );
 };
 
@@ -61,7 +61,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
           style={style.flatten([
             'height-full',
             'background-color-white',
-            'margin-y-24',
+            'margin-y-24'
           ])}
         >
           <BrowserSection />
@@ -73,7 +73,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
                   'margin-bottom-20',
                   'flex-row',
                   'items-center',
-                  'justify-between',
+                  'justify-between'
                 ])}
               >
                 <View style={style.flatten(['flex-row'])}>
@@ -81,7 +81,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
                     <Image
                       style={{
                         width: 20,
-                        height: 22,
+                        height: 22
                       }}
                       source={e.logo}
                       fadeDuration={0}

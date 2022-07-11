@@ -12,11 +12,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       permissionStore,
       signInteractionStore,
       modalStore
-    } = useStore()
-
-    // Example usage
-    // modalStore.setOpen()
-    // modalStore.setChildren(<Text>33333</Text>)
+    } = useStore();
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
@@ -29,7 +25,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       }
     }, [permissionStore, permissionStore.waitingDatas])
     return (
-      <React.Fragment>
+      <>
         {ledgerInitStore.isInitNeeded ? (
           <LedgerGranterModal
             isOpen={true}
@@ -47,7 +43,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         ) : null}
 
         {children}
-      </React.Fragment>
-    )
+      </>
+    );
   }
 )
