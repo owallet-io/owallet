@@ -9,7 +9,6 @@ export * from './reward';
 export * from './scan';
 export * from './scanner';
 export * from './send';
-export * from './drawer';
 export * from './trash-can';
 export * from './check';
 export * from './close';

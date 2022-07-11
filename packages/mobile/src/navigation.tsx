@@ -23,8 +23,7 @@ import {
   GovernanceDetailsScreen,
   GovernanceScreen
 } from './screens/governance';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-// import { DrawerContent } from './components/drawer';
+
 import { useStyle } from './styles';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
@@ -105,7 +104,6 @@ import {
   useSmartNavigation
 } from './navigation.provider';
 import TransferTokensScreen from './screens/transfer-tokens/transfer-screen';
-// import { OnboardingIntroScreen } from './screens/onboarding';
 import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
@@ -792,28 +790,7 @@ export const InvestNavigation: FunctionComponent = () => {
 
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
-
-  const navigation = useNavigation();
   const { chainStore } = useStore();
-
-  const focusedScreen = useFocusedScreen();
-
-  // useEffect(() => {
-  //   Linking.addEventListener('url', handleDeepLink);
-  //   // NotificationUtils.getInstance().initListener();
-  //   return () => {
-  //     Linking.removeEventListener('url', handleDeepLink);
-  //   };
-  // }, []);
-
-  useEffect(() => {
-    // When the focused screen is not "Home" screen and the drawer is open,
-    // try to close the drawer forcely.
-    // navigate("Browser")
-    // if (focusedScreen.name !== 'Home' && isDrawerOpen) {
-    //   navigation.dispatch(DrawerActions.toggleDrawer());
-    // }
-  }, [focusedScreen.name, navigation]);
 
   const checkActiveTabBottom = (color: string) => {
     return color == '#C6C6CD';
@@ -975,28 +952,6 @@ export const MainTabNavigation: FunctionComponent = () => {
     </Tab.Navigator>
   );
 };
-
-// export const MainTabNavigationWithDrawer: FunctionComponent = () => {
-//   const focused = useFocusedScreen();
-
-//   return (
-//     <Drawer.Navigator
-//       drawerType="slide"
-//       drawerContent={(props) => <DrawerContent {...props} />}
-//       screenOptions={{
-//         // If the focused screen is not "Home" screen,
-//         // disable the gesture to open drawer.
-//         swipeEnabled: focused.name === 'Home',
-//         gestureEnabled: focused.name === 'Home'
-//       }}
-//       gestureHandlerProps={{
-//         hitSlop: {}
-//       }}
-//     >
-//       <Drawer.Screen name="MainTab" component={MainTabNavigation} />
-//     </Drawer.Navigator>
-//   );
-// };
 
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
