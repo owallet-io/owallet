@@ -68,4 +68,12 @@ jobs:
             webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
             webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
             username: "GitBot"
-            message: Deployed! comment=${{ github.event.head_commit.message }}
+            message: Success! comment=${{ github.event.head_commit.message }}
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+            webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+            webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+            username: "GitBot"
+            message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
