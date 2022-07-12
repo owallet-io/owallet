@@ -19,48 +19,48 @@ import { DownArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 
 // hard code data to test UI
-const nftsData = [
-  {
-    title: 'ERC-721',
-    data: [
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      }
-    ]
-  },
-  {
-    title: 'ERC-1155',
-    data: [
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      }
-    ]
-  }
-];
+// const nftsData = [
+//   {
+//     title: 'ERC-721',
+//     data: [
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       }
+//     ]
+//   },
+//   {
+//     title: 'ERC-1155',
+//     data: [
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       }
+//     ]
+//   }
+// ];
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -96,27 +96,22 @@ export const TokensCard: FunctionComponent<{
   //     config
   //   );
   // };
-
   useEffect(() => {
     (async function get() {
       try {
         const res = await API.getNFTs(
           {
-            address: 'orai1rfk0sqlddjsvcu5xn7ygpvgdfq3m0x80zuhdqy' //account.bech32Address
+            address: account.bech32Address
           },
           {
             baseURL: 'https://api.airight.io/'
           }
         );
-        console.log(
-          'get here account.bech32Address',
-          account.bech32Address,
-          res.data.items
-        );
+
         setNFTs(res.data.items);
       } catch (error) {}
     })();
-  }, [account]);
+  }, [account.bech32Address]);
 
   const _renderFlatlistItem = ({ item }) => {
     return (
@@ -134,7 +129,7 @@ export const TokensCard: FunctionComponent<{
         >
           <Image
             source={{
-              uri: item.picture
+              uri: item.url
             }}
             style={styles.itemPhoto}
             resizeMode="cover"
