@@ -54,7 +54,9 @@ jobs:
           CI: false      
       - name: Deploy Firebase
         working-directory: ./packages/mobile
-        run: yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
+        run: |
+          yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}          
+          yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
       - name: deploy on AppCenter
         working-directory: ./packages/mobile
         run: |
