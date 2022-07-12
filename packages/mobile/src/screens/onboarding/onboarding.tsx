@@ -27,15 +27,16 @@ const slides = [
 const styles = StyleSheet.create({
   onBoardingRoot: {
     position: 'relative',
-    height: metrics.screenHeight
+    height: metrics.screenHeight - 120,
   },
   onBoardingImgFooter: {
-    content: '',
     position: 'absolute',
     bottom: -50,
-    zIndex: -1
+    zIndex: -1,
+    alignItems: 'flex-end'
   }
 });
+
 
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
   // const [showRealApp, setShowRealApp] = useState(false)
@@ -49,24 +50,26 @@ export const OnboardingIntroScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollView backgroundColor='white'>
-      <AppIntroSlider
-        renderItem={renderItem}
-        data={slides}
-        showNextButton={false}
-        dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
-        activeDotStyle={{
-          backgroundColor: colors['purple-900'],
-          marginTop: 60
-        }}
-        showDoneButton={false}
-      />
-      <Image
-        source={require('../../assets/image/onboarding-footer-img.png')}
-        fadeDuration={0}
-        style={styles.onBoardingImgFooter}
-        width={metrics.screenWidth}
-      />
+    <PageWithScrollView backgroundColor="white">
+      <View style={{ ...styles.onBoardingRoot }}>
+        <AppIntroSlider
+          renderItem={renderItem}
+          data={slides}
+          showNextButton={false}
+          dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
+          activeDotStyle={{
+            backgroundColor: colors['purple-900'],
+            marginTop: 60
+          }}
+          showDoneButton={false}
+        />
+        <Image
+          source={require('../../assets/image/onboarding-footer-img.png')}
+          fadeDuration={0}
+          style={styles.onBoardingImgFooter}
+          width={metrics.screenWidth}
+        />
+      </View>
     </PageWithScrollView>
   );
 });

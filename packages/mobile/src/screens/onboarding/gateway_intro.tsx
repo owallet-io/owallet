@@ -37,14 +37,25 @@ const GatewayIntroScreen: FunctionComponent = () => {
   const smartNavigation = useSmartNavigation();
 
   return (
-    <View style={styles.boardingRoot}>
+    <View
+      style={{
+        paddingHorizontal: spacing['32'],
+      }}
+    >
       <View style={styles.boardingTitleContainer}>
         <View>
-          <Text style={styles.boardingTitle}>Gateway to</Text>
           <Text
             style={{
               ...styles.boardingTitle,
-              color: colors['black']
+              fontSize: 34
+            }}
+          >
+            Gateway to
+          </Text>
+          <Text
+            style={{
+              ...styles.boardingTitle,
+              color: colors['black'],
             }}
           >
             Oraichain Ecosystem

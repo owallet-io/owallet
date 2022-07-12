@@ -1,6 +1,6 @@
-import React, { FunctionComponent } from 'react'
-import { Image, StyleSheet, View } from 'react-native'
-import { colors, metrics, spacing, typography } from '../../themes'
+import React, { FunctionComponent } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { colors, metrics, spacing, typography } from '../../themes';
 import { CText as Text } from '../../components/text';
 const styles = StyleSheet.create({
   boardingRoot: {
@@ -24,56 +24,65 @@ const styles = StyleSheet.create({
     color: colors['gray-150'],
     fontWeight: '400',
     fontSize: 14,
-    lineHeight: spacing['20'],
+    lineHeight: spacing['20']
   }
-})
+});
 
 const ManageIntroScreen: FunctionComponent = () => {
   return (
-    <>
-      <View style={styles.boardingRoot}>
-        <View style={styles.boardingTitleContainer}>
-          <View>
-            <Text style={styles.boardingTitle}>Manage both</Text>
-            <Text
-              style={{
-                ...styles.boardingTitle,
-                color: colors['black']
-              }}
-            >
-              fugible
-            </Text>
-            <Text
-              style={{
-                ...styles.boardingTitle,
-                color: colors['black']
-              }}
-            >
-              {`& non-fugible tokens`}
-            </Text>
-          </View>
-        </View>
-
+    <View
+      style={{
+        paddingHorizontal: spacing['32'],
+      }}
+    >
+      <View style={styles.boardingTitleContainer}>
         <View>
-          <Text style={styles.boardingContent}>
-            Store, send, receive, stake, and bridge your digital assets across
-            chains.
+          <Text
+            style={{
+              ...styles.boardingTitle,
+              fontSize: 34
+            }}
+          >
+            Manage both
+          </Text>
+          <Text
+            style={{
+              ...styles.boardingTitle,
+              color: colors['black']
+            }}
+          >
+            fugible
+          </Text>
+          <Text
+            style={{
+              ...styles.boardingTitle,
+              color: colors['black']
+            }}
+          >
+            {`& non-fugible tokens`}
           </Text>
         </View>
-
-        <View style={{  alignItems: 'center' }}>
-          <Image
-            source={require('../../assets/image/onboarding-manage.png')}
-            fadeDuration={0}
-            resizeMode="contain"
-            style={{
-              width: '100%',
-            }}
-          />
-        </View>
       </View>
-    </>
-  )
-}
 
-export default ManageIntroScreen
+      <View>
+        <Text style={styles.boardingContent}>
+          Store, send, receive, stake, and bridge your digital assets across
+          chains.
+        </Text>
+      </View>
+
+      <View style={{ alignItems: 'center' }}>
+        <Image
+          source={require('../../assets/image/onboarding-manage.png')}
+          fadeDuration={0}
+          resizeMode="contain"
+          style={{
+            width: '100%'
+          }}
+        />
+      </View>
+    </View>
+  );
+};
+
+export default ManageIntroScreen;
