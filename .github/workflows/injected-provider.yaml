@@ -62,3 +62,10 @@ jobs:
         run: |
           yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }}
           yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }}
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+            webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+            webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+            username: "GitBot"
+            message: Deployed! comment=${{ github.event.head_commit.message }}
