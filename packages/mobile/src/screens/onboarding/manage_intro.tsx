@@ -59,7 +59,7 @@ const ManageIntroScreen: FunctionComponent = () => {
               color: colors['black']
             }}
           >
-            {`& non-fugible tokens`}
+            {`& non-fungible tokens`}
           </Text>
         </View>
       </View>

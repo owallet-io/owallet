@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
       width: 0,
       height: 12
     },
-    shadowOpacity: 1,
+    shadowOpacity: 0.12,
     shadowRadius: 16.0
   }
 });

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { StyleSheet, View, Image } from 'react-native';
 import { colors, typography, spacing, metrics } from '../../../themes';
@@ -11,8 +11,9 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { MyRewardCard } from './reward-card';
 import { DelegationsCard } from './delegations-card';
 import { useStore } from '../../../stores';
+import { observer } from 'mobx-react-lite';
 
-export const StakingDashboardScreen: FunctionComponent = () => {
+export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();
   const { chainStore, accountStore, queriesStore } = useStore();
@@ -116,7 +117,7 @@ export const StakingDashboardScreen: FunctionComponent = () => {
       </View>
     </PageWithScrollViewInBottomTabView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {},
