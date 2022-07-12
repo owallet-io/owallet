@@ -41,10 +41,9 @@ jobs:
             ./node_modules/
           key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Install Yarn
-        run: npm install -g yarn
+            ${{ runner.os }}-yarn-      
       - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform
       - name: Build Libs
         run: yarn build:libs      
@@ -55,7 +54,9 @@ jobs:
           CI: false      
       - name: Deploy Firebase
         working-directory: ./packages/mobile
+        run: yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
+      - name: deploy on AppCenter
+        working-directory: ./packages/mobile
         run: |
-          yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}
-          yarn firebase target:apply hosting owallet-provider owallet-provider --token ${{ secrets.FIREBASE_TOKEN }}
-          yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
+          yarn code-push-android --token ${{ secrets.FIREBASE_TOKEN }}
+          yarn code-push-ios --token ${{ secrets.FIREBASE_TOKEN }}
