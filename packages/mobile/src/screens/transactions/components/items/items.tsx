@@ -4,7 +4,7 @@ import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../../themes';
-import { getTransactionValue } from '../../../../utils/helper';
+import { convertAmount, getTransactionValue } from '../../../../utils/helper';
 import moment from 'moment';
 
 interface TransactionItemProps {
@@ -32,16 +32,6 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
     address,
     logs: item.logs
   });
-
-  const convertAmount = (amount: any) => {
-    switch (typeof amount) {
-      case 'string':
-      case 'number':
-        return Number(amount) / Math.pow(10, 6);
-      default:
-        return 0;
-    }
-  };
 
   const renderChildren = () => {
     return (

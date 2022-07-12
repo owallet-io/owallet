@@ -171,3 +171,13 @@ export const getUnbondInfo = (events = []) => {
     value: unbondValue?.value
   };
 };
+
+export const convertAmount = (amount: any) => {
+  switch (typeof amount) {
+    case 'string':
+    case 'number':
+      return Number(amount) / Math.pow(10, 6);
+    default:
+      return 0;
+  }
+};

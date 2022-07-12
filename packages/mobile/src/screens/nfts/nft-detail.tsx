@@ -1,4 +1,9 @@
-import React, { FunctionComponent, ReactElement } from 'react';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useEffect,
+  useState
+} from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
@@ -12,7 +17,11 @@ import { Bech32Address } from '@owallet/cosmos';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { formatContractAddress, _keyExtract } from '../../utils/helper';
+import {
+  convertAmount,
+  formatContractAddress,
+  _keyExtract
+} from '../../utils/helper';
 import {
   QuantityIcon,
   SendIcon,
@@ -29,9 +38,35 @@ import {
   TransactionSectionTitle
 } from '../transactions/components';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { API } from '../../common/api';
 
-export const NftDetailScreen: FunctionComponent = observer(() => {
+const ORAI = 'oraichain-token';
+const AIRI = 'airight';
+
+const commonDenom = { ORAI, AIRI };
+
+export const NftDetailScreen: FunctionComponent = observer(props => {
   const _onPressBtnMain = () => {};
+
+  const [prices, setPrices] = useState({});
+
+  const { item } = props.route?.params;
+
+  console.log(' item', item);
+
+  useEffect(() => {
+    (async function get() {
+      try {
+        const res = await API.get(
+          `api/v3/simple/price?ids=${[ORAI, AIRI].join(',')}&vs_currencies=usd`,
+          {
+            baseURL: 'https://api.coingecko.com/'
+          }
+        );
+        setPrices(res.data);
+      } catch (error) {}
+    })();
+  }, []);
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -62,7 +97,7 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
               }}
               numberOfLines={1}
             >
-              {'The Empire State Building'}
+              {item.name}
             </Text>
 
             <Text
@@ -72,14 +107,14 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
                 fontWeight: '700'
               }}
             >
-              {`#8281`}
+              {`#${item.id}`}
             </Text>
           </View>
 
           <View style={styles.containerImage}>
             <Image
               source={{
-                uri: 'https://picsum.photos/id/1002/200'
+                uri: item.model?.picture
               }}
               style={{
                 width: metrics.screenWidth - 110,
@@ -104,7 +139,13 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
                     fontWeight: '700'
                   }}
                 >
-                  {`49.14 ORAI`}
+                  {item.version === 1
+                    ? `${convertAmount(item.offer?.amount)} ${
+                        item.offer?.denom ?? ''
+                      }`
+                    : `${convertAmount(item.offer?.lowestPrice)} ${
+                        item.offer?.denom ?? ''
+                      }`}
                 </Text>
 
                 <Text
@@ -113,7 +154,13 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
                     color: colors['gray-500'],
                     fontWeight: '700'
                   }}
-                >{`$ ${58.23}`}</Text>
+                >{`$ ${
+                  item.offer?.amount
+                    ? item.offer.amount *
+                      10 ** -6 *
+                      prices[commonDenom[item.offer.denom]]?.usd
+                    : 0
+                }`}</Text>
               </View>
 
               <View style={styles.containerQuantity}>
@@ -129,14 +176,14 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
                     color: colors['gray-150']
                   }}
                 >
-                  {`10`}
+                  {item.totalQuantity - item.availableQuantity}
                 </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.containerBtn}>
-            {['Transfer'].map((e, i) => (
+            {/* {['Transfer'].map((e, i) => (
               <TouchableOpacity
                 style={{
                   ...styles.btn
@@ -158,7 +205,7 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
                   </Text>
                 </View>
               </TouchableOpacity>
-            ))}
+            ))} */}
           </View>
         </LinearGradient>
       </View>
@@ -207,7 +254,7 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
           }
         />
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
             backgroundColor: colors['purple-900'],
             borderRadius: spacing['8'],
@@ -237,7 +284,7 @@ export const NftDetailScreen: FunctionComponent = observer(() => {
               View all transactions
             </Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </PageWithScrollViewInBottomTabView>
   );

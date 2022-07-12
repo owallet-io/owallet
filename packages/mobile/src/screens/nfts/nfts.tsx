@@ -4,60 +4,66 @@ import { FlatList, Image, StyleSheet, View, Animated } from 'react-native';
 import { Text, Tab } from '@rneui/base';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { formatContractAddress, _keyExtract } from '../../utils/helper';
+import {
+  convertAmount,
+  formatContractAddress,
+  _keyExtract
+} from '../../utils/helper';
 import { AddIcon, DownArrowIcon } from '../../components/icon';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 
 // hard code data to test UI
-const nftsData = [
-  {
-    title: 'SamORAI Collections',
-    data: [
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      }
-    ]
-  },
-  {
-    title: 'Kawaii Island',
-    data: [
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      },
-      {
-        uri: 'https://picsum.photos/id/1002/200',
-        title: 'The Empire State Building',
-        oraiPrice: '49.14 ORAI'
-      }
-    ]
-  }
-];
+// const nftsData = [
+//   {
+//     title: 'SamORAI Collections',
+//     data: [
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       }
+//     ]
+//   },
+//   {
+//     title: 'Kawaii Island',
+//     data: [
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       },
+//       {
+//         uri: 'https://picsum.photos/id/1002/200',
+//         title: 'The Empire State Building',
+//         oraiPrice: '49.14 ORAI'
+//       }
+//     ]
+//   }
+// ];
 
-export const NftsScreen: FunctionComponent = observer(() => {
+export const NftsScreen: FunctionComponent = observer(props => {
   const [index, setIndex] = useState<number>(0);
-  const [activeSection, setActiveSection] = useState([]);
+  const [activeSection, setActiveSection] = useState([0]);
   const smartNavigation = useSmartNavigation();
+
+  const { nfts } = props.route?.params;
 
   //function shadow
   const _renderSectionTitle = section => {};
@@ -112,12 +118,12 @@ export const NftsScreen: FunctionComponent = observer(() => {
     <TouchableOpacity
       style={styles.flatListItem}
       onPress={() => {
-        smartNavigation.navigateSmart('Nfts.Detail', {});
+        smartNavigation.navigateSmart('Nfts.Detail', { item });
       }}
     >
       <Image
         source={{
-          uri: item.uri
+          uri: item.model?.picture
         }}
         style={styles.itemPhoto}
         resizeMode="cover"
@@ -137,7 +143,7 @@ export const NftsScreen: FunctionComponent = observer(() => {
             fontWeight: '700'
           }}
         >
-          {formatContractAddress(item.title)}
+          {formatContractAddress(item.name)}
         </Text>
 
         <Text
@@ -147,16 +153,20 @@ export const NftsScreen: FunctionComponent = observer(() => {
             fontWeight: '500'
           }}
         >
-          {item.oraiPrice}
+          {item.offer
+            ? item.version === 1
+              ? `${convertAmount(item.offer.amount)} ${item.offer.denom}`
+              : `${convertAmount(item.offer.lowestPrice)} ${item.offer.denom}`
+            : ''}
         </Text>
 
-        <Text
+        {/* <Text
           style={{
             ...typography.h7,
             color: colors['gray-300'],
             fontWeight: '500'
           }}
-        >{`$ ${58.23}`}</Text>
+        >{`$ ${58.23}`}</Text> */}
       </View>
     </TouchableOpacity>
   );
@@ -182,10 +192,10 @@ export const NftsScreen: FunctionComponent = observer(() => {
               marginTop: spacing['12'],
               flexDirection: 'row',
               justifyContent: 'space-around',
-              marginHorizontal: spacing['32'],
+              marginHorizontal: spacing['32']
             }}
           >
-            {['ERC-721', 'ERC-1155'].map((title: string, i: number) => (
+            {['NFTs'].map((title: string, i: number) => (
               <TouchableOpacity
                 key={i}
                 style={{ ...styles.containerTab }}
@@ -202,14 +212,19 @@ export const NftsScreen: FunctionComponent = observer(() => {
                 </Text>
               </TouchableOpacity>
             ))}
-          </View> 
+          </View>
           <View
             style={{
               ...styles.containerCollection
             }}
           >
             <Accordion
-              sections={nftsData}
+              sections={[
+                {
+                  title: 'NFTs',
+                  data: nfts
+                }
+              ]}
               activeSections={activeSection}
               renderHeader={_renderHeader}
               renderContent={_renderContent}
@@ -218,7 +233,7 @@ export const NftsScreen: FunctionComponent = observer(() => {
             />
           </View>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               ...styles.containerBtn
             }}
@@ -248,7 +263,7 @@ export const NftsScreen: FunctionComponent = observer(() => {
                 {`Add NFT`}
               </Text>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
@@ -260,8 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors['white'],
     borderRadius: spacing['24']
   },
-  containerTab: {
-  },
+  containerTab: {},
   title: {
     ...typography.h3,
     fontWeight: '700',

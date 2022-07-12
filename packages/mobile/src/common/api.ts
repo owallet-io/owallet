@@ -13,30 +13,26 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
+
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient },
     config: AxiosRequestConfig
   ) => {
-    // new version to show other token transactions
-    // let url = `cosmos/tx/v1beta1/txs?events=wasm.from%3D'${address}'&pagination.offset=${offset}&pagination.limit=${limit}&orderBy=2`;
-    // old version that show all transactions
     let url = `cosmos/tx/v1beta1/txs?events=message.sender%3D%27${address}%27&pagination.offset=${offset}&pagination.limit=${limit}&orderBy=2`;
 
     if (isRecipient) {
       url = url.replace(
-        // new version
-        // 'events=wasm.from',
-        // `events=wasm.to`,
-        // old version
         `events=message.sender`,
         `events=message.action%3D'send'&events=transfer.recipient`
       );
     } else {
-      // new version
-      // url += `&events=wasm.action%3D%27transfer%27`;
-      // old version
       url += `&events=message.action%3D%27send%27`;
     }
+    return API.get(url, config);
+  },
+
+  getNFTs: ({ address }, config: AxiosRequestConfig) => {
+    let url = `assets?size=12&offset=0&filter=%7B%22accountAddress%22:%22${address}%22,%22nftStatuses%22:[2]%7D&sort=%7B%22updatedAt%22:%22DESC%22%7D`;
     return API.get(url, config);
   }
 };
