@@ -4,6 +4,7 @@ import {
   KeyboardEvent,
   Platform,
   StyleSheet,
+  TextStyle,
   View,
   ViewStyle
 } from 'react-native';
@@ -40,12 +41,14 @@ export const CardModal: FunctionComponent<{
   childrenContainerStyle?: ViewStyle;
 
   disableGesture?: boolean;
+  labelStyle?: TextStyle;
 }> = ({
   title,
   right,
   children,
   childrenContainerStyle,
-  disableGesture = false
+  disableGesture = false,
+  labelStyle
 }) => {
   const style = useStyle();
   const safeAreaInsets = useSafeAreaInsets();
@@ -420,7 +423,12 @@ export const CardModal: FunctionComponent<{
                   'margin-bottom-16'
                 ])}
               >
-                <Text style={style.flatten(['h4', 'color-text-black-high'])}>
+                <Text
+                  style={{
+                    ...style.flatten(['h4', 'color-text-black-high']),
+                    ...labelStyle
+                  }}
+                >
                   {title}
                 </Text>
                 {right}

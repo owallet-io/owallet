@@ -8,10 +8,11 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  TextStyle,
   TouchableOpacity,
   View
 } from 'react-native';
-import { colors, typography } from '../../themes';
+import { colors, metrics, typography } from '../../themes';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export const PasswordInputModal: FunctionComponent<{
@@ -19,13 +20,26 @@ export const PasswordInputModal: FunctionComponent<{
   close: () => void;
   title: string;
   paragraph?: string;
+  labelStyle?: TextStyle;
+  textButtonLeft?: string;
+  textButtonRight?: string;
+  buttonRightStyle?: TextStyle;
   /**
    * If any error thrown in the `onEnterPassword`, the password considered as invalid password.
    * @param password
    */
   onEnterPassword: (password: string) => Promise<void>;
 }> = registerModal(
-  ({ close, title, paragraph, onEnterPassword }) => {
+  ({
+    close,
+    title,
+    paragraph,
+    onEnterPassword,
+    labelStyle,
+    textButtonLeft = 'Cancel',
+    textButtonRight = 'Approve',
+    buttonRightStyle
+  }) => {
     const [password, setPassword] = useState('');
     const [isInvalidPassword, setIsInvalidPassword] = useState(false);
 
@@ -44,30 +58,35 @@ export const PasswordInputModal: FunctionComponent<{
         setIsLoading(false);
       }
     };
-    const keyboardVerticalOffset = Platform.OS === 'ios' ? 320 : 0;
+    const keyboardVerticalOffset =
+      Platform.OS === 'ios' ? metrics.screenHeight / 2.1 : 0;
 
     return (
-      <CardModal title={title}>
-        <KeyboardAvoidingView
-          behavior="padding"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
+      <KeyboardAvoidingView
+        behavior="position"
+        keyboardVerticalOffset={keyboardVerticalOffset}
+      >
+        <CardModal title={title} labelStyle={labelStyle}>
           <TouchableWithoutFeedback
             onPress={() => {
               Keyboard.dismiss();
             }}
           >
-            <Text
-              style={{
-                ...typography['body2'],
-                marginBottom: 32,
-                color: colors['text-black-medium']
-              }}
-            >
-              {paragraph || 'Do not reveal your mnemonic to anyone'} 
-            </Text>
+            {paragraph ? (
+              <Text
+                style={{
+                  ...typography['body2'],
+                  marginBottom: 32,
+                  color: colors['text-black-medium']
+                }}
+              >
+                {paragraph || 'Do not reveal your mnemonic to anyone'}
+              </Text>
+            ) : (
+              <Text />
+            )}
             <TextInput
-              label="Enter your password"
+              label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
               onChangeText={(text) => {
                 setPassword(text);
@@ -87,30 +106,65 @@ export const PasswordInputModal: FunctionComponent<{
               onSubmitEditing={submitPassword}
             />
           </TouchableWithoutFeedback>
-          <TouchableOpacity
-            onPress={submitPassword}
+          <View
             style={{
-              marginBottom: 24,
-              marginTop: 44,
-              backgroundColor: colors['purple-900'],
-              borderRadius: 8
+              flexDirection: 'row',
+              justifyContent: 'space-between'
             }}
           >
-            <Text
+            <TouchableOpacity
+              onPress={() => close()}
               style={{
-                color: colors['white'],
-                textAlign: 'center',
-                fontWeight: '700',
-                fontSize: 16,
-                lineHeight: 22,
-                padding: 16
+                backgroundColor: colors['purple-900'],
+                borderRadius: 8,
+                width: '48%'
               }}
             >
-              Approve
-            </Text>
-          </TouchableOpacity>
-        </KeyboardAvoidingView>
-      </CardModal>
+              <Text
+                style={{
+                  color: colors['white'],
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: 16,
+                  lineHeight: 22,
+                  padding: 16
+                }}
+              >
+                {textButtonLeft}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={submitPassword}
+              style={{
+                borderRadius: 8,
+                width: '48%',
+                ...buttonRightStyle,
+                backgroundColor: !password
+                  ? colors['gray-10']
+                  : buttonRightStyle
+                  ? buttonRightStyle?.backgroundColor
+                  : buttonRightStyle?.backgroundColor
+                  ? colors['purple-900']
+                  : colors['purple-900']
+              }}
+              disabled={!password}
+            >
+              <Text
+                style={{
+                  color: colors['white'],
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  fontSize: 16,
+                  lineHeight: 22,
+                  padding: 16
+                }}
+              >
+                {textButtonRight}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </CardModal>
+      </KeyboardAvoidingView>
     );
   },
   {
