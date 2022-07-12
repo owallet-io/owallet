@@ -1,11 +1,14 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FlatList, Image, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../../themes';
 import { _keyExtract } from '../../../../utils/helper';
+import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
+import { LoadingSpinner } from '../../../../components/spinner';
 
 const MnemonicSeed = ({ styles }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const { keyRingStore, analyticsStore, modalStore } = useStore();
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
@@ -36,90 +39,114 @@ const MnemonicSeed = ({ styles }) => {
 
   const renderItem = ({ item }) => {
     return (
-      <RectButton
-        style={{
-          ...styles.containerAccount
-        }}
-      >
-        <View
+      <>
+        <RectButton
           style={{
-            flexDirection: 'row',
-            alignItems: 'center'
+            ...styles.containerAccount
+          }}
+          onPress={async () => {
+            setIsLoading(true);
+            analyticsStore.logEvent('Account changed');
+            await selectKeyStore(item);
+            await modalStore.close();
+            setIsLoading(false);
           }}
         >
-          <Image
-            style={{
-              width: spacing['38'],
-              height: spacing['38']
-            }}
-            source={require("../../../../assets/image/address_default.png")}
-            fadeDuration={0}
-          />
           <View
             style={{
-              marginLeft: spacing['12']
-            }}
-          >
-            {item.address && (
-              <Text
-                style={{
-                  ...typography.h7,
-                  color: colors['gray-300'],
-                  fontWeight: '800',
-                  fontSize: 12
-                }}
-              >
-                {item.address}
-              </Text>
-            )}
-          </View>
-        </View>
-
-        <View>
-          <View
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: spacing['32'],
-              backgroundColor:
-                colors[`${item.selected ? 'purple-700' : 'gray-100'}`],
-              justifyContent: 'center',
+              flexDirection: 'row',
               alignItems: 'center'
             }}
           >
+            <Image
+              style={{
+                width: spacing['38'],
+                height: spacing['38']
+              }}
+              source={require('../../../../assets/image/address_default.png')}
+              fadeDuration={0}
+            />
             <View
               style={{
-                width: 12,
-                height: 12,
-                borderRadius: spacing['32'],
-                backgroundColor: colors['white']
+                marginLeft: spacing['12']
               }}
-            />
+            >
+              <Text
+                style={{
+                  ...typography.h6,
+                  color: colors['gray-900'],
+                  fontWeight: '900'
+                }}
+                numberOfLines={1}
+              >
+                {item.meta?.name}
+              </Text>
+              {item.address && (
+                <Text
+                  style={{
+                    ...typography.h7,
+                    color: colors['gray-300'],
+                    fontWeight: '800',
+                    fontSize: 12
+                  }}
+                >
+                  {item.address}
+                </Text>
+              )}
+            </View>
           </View>
-        </View>
-      </RectButton>
+
+          <View>
+            <View
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: spacing['32'],
+                backgroundColor:
+                  colors[`${item.selected ? 'purple-700' : 'gray-100'}`],
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+            >
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: spacing['32'],
+                  backgroundColor: colors['white']
+                }}
+              />
+            </View>
+          </View>
+        </RectButton>
+      </>
     );
   };
   return (
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height: metrics.screenHeight / 4
+        height: metrics.screenHeight / 4,
       }}
     >
-      <FlatList
-        data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
-        showsVerticalScrollIndicator={false}
-        renderItem={renderItem}
-        keyExtractor={_keyExtract}
-        ListFooterComponent={() => (
-          <View
-            style={{
-              height: spacing['16']
-            }}
-          />
-        )}
-      />
+      <View style={{  position: 'relative' }}>
+        <FlatList
+          data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
+          showsVerticalScrollIndicator={false}
+          renderItem={renderItem}
+          keyExtractor={_keyExtract}
+        />
+         <View
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            zIndex: 1,
+        }}
+      >
+        {isLoading && <LoadingSpinner size={24} color={colors['purple-700']} />}
+      </View>
+      </View>
     </View>
   );
 };

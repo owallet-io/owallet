@@ -57,7 +57,7 @@ export const DAppInfos: DAppInfo[] = [
   },
   {
     id: 7,
-    name: 'Info Oraidex',
+    name: 'OraiDEX Info',
     uri: 'https://info.oraidex.io',
     logo: oraiLogo
   },
