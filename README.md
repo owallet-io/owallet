@@ -27,3 +27,4 @@ OWallet is developed based on Keplr extension and currently maintained by Oraich
 ## License
 - Apache 2.0
 - Forked from the latest Keplr's commit [0e1373](https://github.com/chainapsis/keplr-wallet/tree/0e137373ac4f526caf97b4694de47fe1ba543bd8)
+- Note that after [0e1373](https://github.com/chainapsis/keplr-wallet/tree/0e137373ac4f526caf97b4694de47fe1ba543bd8) commit, Keplr mobile is being licensed by Chainapsis Inc.
