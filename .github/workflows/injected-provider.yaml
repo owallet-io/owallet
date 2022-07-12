@@ -60,5 +60,5 @@ jobs:
       - name: deploy on AppCenter
         working-directory: ./packages/mobile
         run: |
-          yarn code-push-android --token ${{ secrets.FIREBASE_TOKEN }}
-          yarn code-push-ios --token ${{ secrets.FIREBASE_TOKEN }}
+          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }}
+          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }}
