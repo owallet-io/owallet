@@ -102,17 +102,21 @@ export const TokensCard: FunctionComponent<{
       try {
         const res = await API.getNFTs(
           {
-            address: account.bech32Address
+            address: 'orai1rfk0sqlddjsvcu5xn7ygpvgdfq3m0x80zuhdqy' //account.bech32Address
           },
           {
             baseURL: 'https://api.airight.io/'
           }
         );
-
+        console.log(
+          'get here account.bech32Address',
+          account.bech32Address,
+          res.data.items
+        );
         setNFTs(res.data.items);
       } catch (error) {}
     })();
-  }, []);
+  }, [account]);
 
   const _renderFlatlistItem = ({ item }) => {
     return (
@@ -130,7 +134,7 @@ export const TokensCard: FunctionComponent<{
         >
           <Image
             source={{
-              uri: item.model?.picture
+              uri: item.picture
             }}
             style={styles.itemPhoto}
             resizeMode="cover"

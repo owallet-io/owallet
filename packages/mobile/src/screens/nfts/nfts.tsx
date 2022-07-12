@@ -123,7 +123,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
     >
       <Image
         source={{
-          uri: item.model?.picture
+          uri: item.picture
         }}
         style={styles.itemPhoto}
         resizeMode="cover"

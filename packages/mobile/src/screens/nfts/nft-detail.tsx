@@ -114,7 +114,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
           <View style={styles.containerImage}>
             <Image
               source={{
-                uri: item.model?.picture
+                uri: item.picture
               }}
               style={{
                 width: metrics.screenWidth - 110,
