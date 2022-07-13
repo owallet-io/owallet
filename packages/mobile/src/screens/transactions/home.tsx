@@ -21,12 +21,14 @@ export const Transactions: FunctionComponent = () => {
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
     const isRecipient = indexChildren === 2;
+    const isAll = indexChildren === 0;
     try {
       const res = await API.getHistory(
         {
           address: account.bech32Address,
           offset: 0,
-          isRecipient
+          isRecipient,
+          isAll
         },
         { baseURL: chainStore.current.rest }
       );

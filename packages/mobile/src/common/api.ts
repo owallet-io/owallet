@@ -15,11 +15,13 @@ export const API = {
   },
 
   getHistory: (
-    { address, offset = 0, limit = 10, isRecipient },
+    { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig
   ) => {
     let url = `cosmos/tx/v1beta1/txs?events=message.sender%3D%27${address}%27&pagination.offset=${offset}&pagination.limit=${limit}&orderBy=2`;
-
+    if (isAll) {
+      return API.get(url, config);
+    }
     if (isRecipient) {
       url = url.replace(
         `events=message.sender`,
