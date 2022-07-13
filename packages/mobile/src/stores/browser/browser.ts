@@ -31,6 +31,12 @@ export const DAppInfos = [
     name: 'Balcony Subnet',
     uri: 'https://re.bignft.app',
     logo: balconyLogo
+  },
+  {
+    id: 7,
+    name: 'OraiDEX Info',
+    uri: 'https://scan.info.io',
+    logo: oraiLogo
   }
 ];
 
