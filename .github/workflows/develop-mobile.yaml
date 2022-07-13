@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - uses: bahmutov/npm-install@v1
-        with: |
+        with: 
           useLockFile: false
           install-command: yarn --frozen-lockfile --ignore-platform --ignore-scripts --silent
       - name: Build Libs
