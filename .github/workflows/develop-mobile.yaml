@@ -32,25 +32,26 @@ jobs:
       - uses: bahmutov/npm-install@v1
         with: 
           useLockFile: false
-          install-command: yarn --frozen-lockfile --ignore-platform --ignore-scripts --silent
+          install-command: yarn --ignore-platform --ignore-scripts --silent
       - name: Build Libs
         run: yarn build:libs      
       - uses: bahmutov/npm-install@v1        
         with:
-          working-directory: ./packages/mobile
-          install-command: yarn --frozen-lockfile --silent
+          useLockFile: false
+          working-directory: packages/mobile
+          install-command: yarn --silent
       - name: Build provider
-        working-directory: ./packages/mobile
+        working-directory: packages/mobile
         run: yarn build:provider
         env:
           CI: false      
       - name: Deploy Firebase
-        working-directory: ./packages/mobile
+        working-directory: packages/mobile
         run: |
           yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}          
           yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
       - name: deploy on AppCenter
-        working-directory: ./packages/mobile
+        working-directory: packages/mobile
         run: |
           yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }}
           yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }}
