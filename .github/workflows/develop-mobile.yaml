@@ -35,9 +35,9 @@ jobs:
           install-command: yarn --frozen-lockfile --ignore-platform --ignore-scripts --silent
       - name: Build Libs
         run: yarn build:libs      
-      - uses: bahmutov/npm-install@v1
-        working-directory: ./packages/mobile
+      - uses: bahmutov/npm-install@v1        
         with:
+          working-directory: ./packages/mobile
           install-command: yarn --frozen-lockfile --silent
       - name: Build provider
         working-directory: ./packages/mobile
