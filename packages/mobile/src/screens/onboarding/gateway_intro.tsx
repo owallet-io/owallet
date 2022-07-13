@@ -6,6 +6,8 @@ import { CText as Text } from '../../components/text';
 import { useStore } from '../../stores';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
+import { useSimpleTimer } from '../../hooks';
+import { LoadingSpinner } from '../../components/spinner';
 const styles = StyleSheet.create({
   boardingRoot: {
     padding: spacing['32'],
@@ -35,11 +37,11 @@ const styles = StyleSheet.create({
 const GatewayIntroScreen: FunctionComponent = () => {
   const { appInitStore } = useStore();
   const smartNavigation = useSmartNavigation();
-
+  const { isTimedOut, setTimer } = useSimpleTimer();
   return (
     <View
       style={{
-        paddingHorizontal: spacing['32'],
+        paddingHorizontal: spacing['32']
       }}
     >
       <View style={styles.boardingTitleContainer}>
@@ -55,7 +57,7 @@ const GatewayIntroScreen: FunctionComponent = () => {
           <Text
             style={{
               ...styles.boardingTitle,
-              color: colors['black'],
+              color: colors['black']
             }}
           >
             Oraichain Ecosystem
@@ -87,20 +89,26 @@ const GatewayIntroScreen: FunctionComponent = () => {
           borderRadius: spacing['8'],
           alignItems: 'center'
         }}
+        disabled={isTimedOut}
         onPress={() => {
+          setTimer(2000);
           appInitStore.updateInitApp();
           smartNavigation.navigateSmart('Register.Intro', {});
         }}
       >
-        <Text
-          style={{
-            color: colors['white'],
-            fontWeight: '700',
-            fontSize: 16
-          }}
-        >
-          Get started!
-        </Text>
+        {isTimedOut ? (
+          <LoadingSpinner color={colors['white']} size={20} />
+        ) : (
+          <Text
+            style={{
+              color: colors['white'],
+              fontWeight: '700',
+              fontSize: 16
+            }}
+          >
+            Get started!
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );
