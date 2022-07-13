@@ -47,8 +47,7 @@ jobs:
       - name: Build Libs
         run: yarn build:libs      
       - uses: bahmutov/npm-install@v1        
-        with:
-          useLockFile: false
+        with:          
           working-directory: packages/mobile
           install-command: yarn --silent
       - name: Build provider
