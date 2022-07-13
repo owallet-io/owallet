@@ -44,7 +44,7 @@ jobs:
             ${{ runner.os }}-yarn-      
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform
+        run: yarn --ignore-platform --ignore-scripts
       - name: Build Libs
         run: yarn build:libs      
       - name: Build Production
