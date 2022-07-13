@@ -181,3 +181,15 @@ export const convertAmount = (amount: any) => {
       return 0;
   }
 };
+
+export const getDomainFromUrl = url => {
+  if (!url) {
+    return '';
+  }
+  return `${url?.match?.(
+    // eslint-disable-next-line no-useless-escape
+    /^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/?\n]+)/gim
+  )}`
+    .replace('https://', '')
+    .replace('http://', '');
+};

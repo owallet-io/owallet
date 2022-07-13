@@ -70,8 +70,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   );
 };
 
-export const Browser: FunctionComponent<any> = observer(() => {
-  const route = useRoute();
+export const Browser: FunctionComponent<any> = observer(props => {
   const style = useStyle();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const navigation = useNavigation();
@@ -136,7 +135,7 @@ export const Browser: FunctionComponent<any> = observer(() => {
       navigation.navigate('Web.dApp', tab);
     } else {
       let uri = `https://www.google.com/search?q=${url ?? ''}`;
-      if (InjectedProviderUrl) uri = InjectedProviderUrl;
+      // if (InjectedProviderUrl) uri = InjectedProviderUrl;
       navigation.navigate('Web.dApp', {
         name: 'Google',
         uri
@@ -216,7 +215,7 @@ export const Browser: FunctionComponent<any> = observer(() => {
                 placeholderTextColor={'#AEAEB2'}
                 onSubmitEditing={onHandleUrl}
                 value={url}
-                onChangeText={(txt) => setUrl(txt.toLowerCase())}
+                onChangeText={txt => setUrl(txt.toLowerCase())}
                 inputRight={
                   <TouchableOpacity onPress={onHandleUrl}>
                     <SearchIcon color={'gray'} size={20} />
@@ -234,7 +233,7 @@ export const Browser: FunctionComponent<any> = observer(() => {
             >
               <BrowserBookmark />
               <View style={style.flatten(['padding-20'])}>
-                {browserStore.getBookmarks?.map((e) => (
+                {browserStore.getBookmarks?.map(e => (
                   <TouchableOpacity
                     key={e.id ?? e.uri}
                     style={style.flatten([
@@ -319,6 +318,7 @@ export const Browser: FunctionComponent<any> = observer(() => {
           isSwitchTab={isSwitchTab}
           setIsSwitchTab={setIsSwitchTab}
           onHandleUrl={onHandleUrl}
+          typeOf={'browser'}
         />
       </WebViewStateContext.Provider>
     </>

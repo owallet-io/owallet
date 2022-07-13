@@ -3,44 +3,39 @@ import {
   View,
   Image,
   StyleSheet,
-  ScrollView,
   Dimensions,
   TouchableWithoutFeedback
 } from 'react-native';
 import { CText as Text } from '../../../../components/text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
-import { oraiLogo } from '../../config';
+import { getDomainFromUrl, _keyExtract } from '../../../../utils/helper';
+import { colors, spacing } from '../../../../themes';
 
-const COLOR_PRIMARY = '#39A0FF';
-const COLOR_WHITE = '#fff';
+const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
+const COLOR_PRIMARY = colors['purple-700'];
+const COLOR_PRIMARY_LIGHT = colors['primary-100'];
 const DEVICE_WIDTH = Dimensions.get('window').width;
-
 const DIMENSION_PADDING_MEDIUM = 16;
 const DIMENSION_PADDING_SMALL = 8;
-const DIMENSION_RADIUS_LARGE = 12;
-
-const perspective = 1000;
-const rotateX = -Math.PI / 6;
-const z = 150 * Math.sin(Math.abs(rotateX));
 
 export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
   ({ onPressItem }) => {
     const { browserStore } = useStore();
     const [tabs, setTabs] = useState([]);
 
-    const onPressDelete = (item) => () => {
+    const onPressDelete = item => () => {
       browserStore.removeTab(item);
       const tmpTabs = [...tabs];
-      const rTabIndex = tabs.findIndex((t) => t.id === item.id);
+      const rTabIndex = tabs.findIndex(t => t.id === item.id);
       if (rTabIndex > -1) {
         tmpTabs.splice(rTabIndex, 1);
       }
       setTabs(tmpTabs);
     };
 
-    const onPress = (item) => () => {
+    const onPress = item => () => {
       onPressItem(item);
       browserStore.updateSelectedTab(item);
     };
@@ -49,60 +44,55 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
       setTabs(browserStore.getTabs);
     }, []);
 
-    const renderItem = (item, index) => {
+    const renderItem = ({ item, index }) => {
       const isSelect = item.id === browserStore.getSelectedTab?.id;
+
       return (
-        <View style={{ padding: DIMENSION_PADDING_MEDIUM }}>
-          <View key={index} style={styles.wrapItem}>
+        <View style={styles.wrapContent}>
+          <View
+            key={index}
+            style={[
+              styles.wrapItem,
+              {
+                borderColor: isSelect ? COLOR_PRIMARY : COLOR_PRIMARY_LIGHT
+              }
+            ]}
+          >
             <View
               style={[
-                styles.wrapContent,
+                styles.wrapTitle,
                 {
-                  borderColor: isSelect ? COLOR_PRIMARY : COLOR_WHITE
+                  backgroundColor: isSelect
+                    ? COLOR_PRIMARY
+                    : COLOR_PRIMARY_LIGHT
                 }
               ]}
             >
-              <View
-                style={[
-                  styles.wrapTitle,
-                  {
-                    flexDirection: 'row',
-                    width: '100%',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }
-                ]}
+              <Text
+                style={{ flex: 1, fontWeight: 'bold', color: '#fff' }}
+                numberOfLines={1}
               >
-                <Text
-                  style={{ flex: 1, fontWeight: 'bold', color: '#fff' }}
-                  numberOfLines={1}
-                >
-                  {item?.name ?? (item?.uri || 'New tab')}
-                </Text>
-                <TouchableOpacity onPress={onPressDelete(item)}>
-                  <Text>X</Text>
-                </TouchableOpacity>
-              </View>
-              <View
-                style={[
-                  styles.webview,
-                  { justifyContent: 'center', alignItems: 'center' }
-                ]}
-              >
-                <TouchableWithoutFeedback
-                  style={[styles.webview]}
-                  onPress={onPress(item)}
-                >
-                  <Image
-                    source={oraiLogo}
-                    style={{
-                      width: DEVICE_WIDTH / 5,
-                      height: DEVICE_WIDTH / 5
-                    }}
-                  />
-                </TouchableWithoutFeedback>
-              </View>
+                {item?.name ?? (item?.uri || 'New tab')}
+              </Text>
+              <TouchableOpacity onPress={onPressDelete(item)}>
+                <Text style={{ fontSize: 20 }}>x</Text>
+              </TouchableOpacity>
             </View>
+            <TouchableWithoutFeedback onPress={onPress(item)}>
+              <View style={[styles.webview]}>
+                <Image
+                  source={{
+                    uri: `https://www.google.com/s2/favicons?sz=64&domain_url=${getDomainFromUrl(
+                      item.uri
+                    )}`
+                  }}
+                  style={{
+                    width: DEVICE_WIDTH / 5,
+                    height: DEVICE_WIDTH / 5
+                  }}
+                />
+              </View>
+            </TouchableWithoutFeedback>
           </View>
         </View>
       );
@@ -111,16 +101,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
     const renderContent = () => {
       if (tabs.length < 1) {
         return (
-          <View
-            style={{
-              paddingHorizontal: DIMENSION_PADDING_MEDIUM,
-              width: '100%',
-              height: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-              paddingTop: 40
-            }}
-          >
+          <View style={styles.emptyTab}>
             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
               No Open Tabs
             </Text>
@@ -131,24 +112,24 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
         );
       }
       return (
-        <ScrollView
+        <FlatList
+          data={tabs}
+          numColumns={2}
+          keyExtractor={_keyExtract}
+          renderItem={renderItem}
           contentContainerStyle={{
             padding: DIMENSION_PADDING_MEDIUM,
             paddingBottom: 100
           }}
-          showsVerticalScrollIndicator={false}
-        >
-          {tabs.map(renderItem)}
-        </ScrollView>
+          horizontal={false}
+        />
       );
     };
 
     return (
       <View
         style={{
-          paddingTop: 40,
-          width: '100%',
-          height: '100%'
+          paddingTop: 40
         }}
       >
         {renderContent()}
@@ -158,33 +139,33 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
 );
 
 const styles = StyleSheet.create({
-  webview: { width: '100%', height: 100 },
+  webview: { height: 165, justifyContent: 'center', alignItems: 'center' },
   wrapItem: {
-    marginTop: -DIMENSION_PADDING_MEDIUM,
-    overflow: 'hidden',
-    padding: 4,
-    borderRadius: DIMENSION_RADIUS_LARGE,
-    transform: [
-      {
-        perspective
-      },
-      {
-        rotateX: `${rotateX}rad`
-      },
-      {
-        scale: perspective / (perspective - z)
-      }
-    ]
+    borderRadius: 8,
+    borderWidth: 1
   },
   wrapTitle: {
     paddingHorizontal: DIMENSION_PADDING_MEDIUM,
     paddingVertical: DIMENSION_PADDING_SMALL,
-    backgroundColor: COLOR_PRIMARY
+    borderTopLeftRadius: 7,
+    borderTopRightRadius: 7,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   wrapContent: {
-    borderRadius: DIMENSION_RADIUS_LARGE,
-    overflow: 'hidden',
-    marginHorizontal: DIMENSION_PADDING_MEDIUM,
-    borderWidth: 3
+    width: '46%',
+    height: 210,
+    marginHorizontal: spacing['8'],
+    marginVertical: spacing['8'],
+    borderRadius: spacing['8']
+  },
+  emptyTab: {
+    paddingHorizontal: DIMENSION_PADDING_MEDIUM,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 40
   }
 });

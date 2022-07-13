@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { CText as Text} from "../../../../components/text";
+import { CText as Text } from '../../../../components/text';
 import { HeaderBackButtonIcon } from '../../../../components/header/icon';
 import { useStyle } from '../../../../styles';
 
@@ -18,7 +18,7 @@ export const BrowserSectionTitle: FunctionComponent<{
         'padding-top-16',
         'padding-bottom-16',
         'background-color-white',
-        'flex-row',
+        'flex-row'
       ])}
     >
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -40,15 +40,12 @@ export const BrowserSectionModal: FunctionComponent<{
         'padding-x-20',
         'padding-top-16',
         'padding-bottom-16',
-        'background-color-text-black-high',
         'flex-row',
-        'justify-between',
+        'justify-between'
       ])}
     >
       <TouchableOpacity onPress={onPress}>
-        <Text style={style.flatten(['text-button2', 'color-white'])}>
-          Bookmark
-        </Text>
+        <Text style={style.flatten(['text-button1'])}>Bookmark</Text>
       </TouchableOpacity>
     </View>
   );

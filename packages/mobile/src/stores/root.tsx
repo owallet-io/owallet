@@ -126,8 +126,7 @@ export class RootStore {
     this.queriesStore = new QueriesStore(
       // Fix prefix key because there was a problem with storage being corrupted.
       // In the case of storage where the prefix key is "store_queries" or "store_queries_fix", we should not use it because it is already corrupted in some users.
-      // https://github.com/chainapsis/owallet-wallet/issues/275
-      // https://github.com/chainapsis/owallet-wallet/issues/278
+
       new AsyncKVStore('store_queries_fix2'),
       this.chainStore,
       async () => {
@@ -161,7 +160,7 @@ export class RootStore {
             );
           }
         },
-        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
+        chainOpts: this.chainStore.chainInfos.map(chainInfo => {
           if (chainInfo.chainId.startsWith('osmosis')) {
             return {
               chainId: chainInfo.chainId,

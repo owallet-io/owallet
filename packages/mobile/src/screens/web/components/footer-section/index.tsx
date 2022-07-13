@@ -20,15 +20,17 @@ export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
   setIsSwitchTab: Function;
   onHandleUrl?: Function;
-}> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl }) => {
+  typeOf: string;
+}> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl, typeOf }) => {
   const style = useStyle();
-  const { browserStore } = useStore();
-  const [isOpenSetting, setIsOpenSetting] = useState(false);
+  const { browserStore, modalStore } = useStore();
+  // const [isOpenSetting, setIsOpenSetting] = useState(false);
   const navigation = useNavigation();
   const webViewState = useWebViewState();
 
   const onPressBookmark = () => {
-    setIsOpenSetting(false);
+    // setIsOpenSetting(false);
+    modalStore.close();
     if (webViewState.webView) {
       browserStore.addBoorkmark({
         id: Date.now(),
@@ -43,8 +45,22 @@ export const BrowserFooterSection: FunctionComponent<{
     try {
       switch (type) {
         case 'settings':
-          return setIsOpenSetting(!isOpenSetting);
+          if (typeOf === 'webview') {
+            modalStore.setOpen();
+            modalStore.setChildren(
+              <BrowserSectionModal
+                onPress={onPressBookmark}
+                // onClose={() => setIsOpenSetting(false)}
+              />
+            );
+          }
+
+          return;
+        // return setIsOpenSetting(!isOpenSetting);
         case 'back':
+          if (typeOf === 'browser') {
+            return navigation.navigate('Home', {});
+          }
           if (!webViewState.canGoBack) {
             webViewState.clearWebViewContext();
             navigation.goBack();
@@ -63,8 +79,7 @@ export const BrowserFooterSection: FunctionComponent<{
           setIsSwitchTab(!isSwitchTab);
           return;
         case 'home':
-          if (webViewState.webView === null) {
-            // return setIsSwitchTab(false);
+          if (typeOf === 'browser') {
             return navigation.navigate('Home', {});
           }
           return navigation.navigate('Browser', {});
@@ -113,7 +128,11 @@ export const BrowserFooterSection: FunctionComponent<{
       case 'home':
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
-            <BrowserIcon color={'white'} size={22} />
+            {typeOf === 'browser' ? (
+              <HomeIcon color={'white'} size={22} />
+            ) : (
+              <BrowserIcon color={'white'} size={22} />
+            )}
           </TouchableOpacity>
         );
       case 'settings':
@@ -142,7 +161,7 @@ export const BrowserFooterSection: FunctionComponent<{
         ])
       ]}
     >
-      {isOpenSetting && (
+      {/* {isOpenSetting && (
         <View
           style={{
             backgroundColor: '#132340',
@@ -162,7 +181,7 @@ export const BrowserFooterSection: FunctionComponent<{
             onClose={() => setIsOpenSetting(false)}
           />
         </View>
-      )}
+      )} */}
 
       <View
         style={style.flatten([

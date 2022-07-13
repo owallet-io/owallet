@@ -37,7 +37,7 @@ export const useInjectedSourceCode = () => {
       `${InjectedProviderUrl}/injected-provider.bundle.js`
     );
     fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
-      .then((res) => res.text())
+      .then(res => res.text())
       .then(setCode);
   }, []);
 
@@ -48,7 +48,7 @@ export const WebpageScreen: FunctionComponent<
   React.ComponentProps<typeof WebView> & {
     name: string;
   }
-> = observer((props) => {
+> = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const style = useStyle();
@@ -251,7 +251,7 @@ export const WebpageScreen: FunctionComponent<
               incognito={true}
               injectedJavaScriptBeforeContentLoaded={sourceCode}
               onMessage={onMessage}
-              onNavigationStateChange={(e) => {
+              onNavigationStateChange={e => {
                 // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
                 // Use two handlers to measure simultaneously in ios and android.
                 setCanGoBack(e.canGoBack);
@@ -259,7 +259,7 @@ export const WebpageScreen: FunctionComponent<
 
                 setCurrentURL(e.url);
               }}
-              onLoadProgress={(e) => {
+              onLoadProgress={e => {
                 // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
                 // Use two handlers to measure simultaneously in ios and android.
                 setCanGoBack(e.nativeEvent.canGoBack);
@@ -292,6 +292,7 @@ export const WebpageScreen: FunctionComponent<
         <BrowserFooterSection
           isSwitchTab={isSwitchTab}
           setIsSwitchTab={setIsSwitchTab}
+          typeOf={'webview'}
         />
       </WebViewStateContext.Provider>
     </PageWithView>
