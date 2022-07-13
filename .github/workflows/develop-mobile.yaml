@@ -1,0 +1,71 @@
+# This is a basic workflow to help you get started with Actions
+
+name: injected-provider
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [develop]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-20.04 #orai-self-hosted
+    strategy:
+      matrix:
+        node-version: [16.14.0]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - uses: bahmutov/npm-install@v1
+        with: |
+          useLockFile: false
+          install-command: yarn --frozen-lockfile --ignore-platform --ignore-scripts --silent
+      - name: Build Libs
+        run: yarn build:libs      
+      - uses: bahmutov/npm-install@v1
+        working-directory: ./packages/mobile
+        with:
+          install-command: yarn --frozen-lockfile --silent
+      - name: Build provider
+        working-directory: ./packages/mobile
+        run: yarn build:provider
+        env:
+          CI: false      
+      - name: Deploy Firebase
+        working-directory: ./packages/mobile
+        run: |
+          yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}          
+          yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
+      - name: deploy on AppCenter
+        working-directory: ./packages/mobile
+        run: |
+          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }}
+          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }}
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+            webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+            webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+            username: "GitBot"
+            message: Success! comment=${{ github.event.head_commit.message }}
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+            webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+            webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+            username: "GitBot"
+            message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
