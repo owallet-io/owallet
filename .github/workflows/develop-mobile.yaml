@@ -46,10 +46,9 @@ jobs:
         run: yarn --ignore-platform --ignore-scripts
       - name: Build Libs
         run: yarn build:libs      
-      - uses: bahmutov/npm-install@v1        
-        with:          
-          working-directory: packages/mobile
-          install-command: yarn --silent
+      - name: Install mobile packages
+        working-directory: packages/mobile
+        run: yarn --silent
       - name: Build provider
         working-directory: packages/mobile
         run: yarn build:provider
