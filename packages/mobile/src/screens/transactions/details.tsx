@@ -4,13 +4,19 @@ import { StyleSheet, View } from 'react-native';
 import { Divider } from '@rneui/base';
 import { CText as Text } from '../../components/text';
 import { RectButton } from 'react-native-gesture-handler';
-import { CopyFillIcon, CopyIcon } from '../../components/icon';
+import { CheckIcon, CopyTransactionIcon } from '../../components/icon';
 import { PageWithScrollView } from '../../components/page';
 import { useStyle } from '../../styles';
 import { TransactionSectionTitle } from './components';
 import { colors, metrics, spacing, typography } from '../../themes';
-import { formatContractAddress } from '../../utils/helper';
-
+import {
+  convertAmount,
+  formatContractAddress,
+  getTransactionValue
+} from '../../utils/helper';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import moment from 'moment';
+import { useSimpleTimer } from '../../hooks';
 interface TransactionInfo {
   label: string;
   value: string;
@@ -24,67 +30,25 @@ interface TransactionDetail {
   time: string;
 }
 
-const txInfo: TransactionInfo[] = [
-  {
-    label: 'From',
-    value: 'orai1nc752...74u9uylc'
-  },
-  {
-    label: 'To',
-    value: 'orai1nc752...74u9uylc'
-  },
-  {
-    label: 'Transaction hash',
-    value: 'orai1nc752...74u9uylc'
-  },
-  {
-    label: 'Amount',
-    value: '+125,000 ORAI'
-  }
-];
-
-const txDetail: TransactionInfo[] = [
-  {
-    label: 'Result',
-    value: 'Failed'
-  },
-  {
-    label: 'Block height',
-    value: '2464586'
-  },
-  {
-    label: 'Message size',
-    value: '01'
-  },
-  {
-    label: 'Gas (used/ wanted)',
-    value: '44,840/200,000'
-  },
-  {
-    label: 'Fee',
-    value: '0.1 ORAI'
-  },
-  {
-    label: 'Amount',
-    value: '125,000 ORAI'
-  },
-  {
-    label: 'Time',
-    value: 'Apr 25, 2022 at 06:20'
-  }
-];
-
 const bindStyleTxInfo = (
   label: string,
   value: string
 ): { color?: string; textTransform?: string; fontWeight?: string } => {
   switch (label) {
     case 'Transaction hash':
-      return { color: colors['primary'], textTransform: 'uppercase' };
+      return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Amount':
       return value.includes('-')
-        ? { color: colors['red-500'], fontWeight: '800' }
-        : { color: colors['green-500'], fontWeight: '800' };
+        ? {
+            color: colors['red-500'],
+            fontWeight: '800',
+            textTransform: 'uppercase'
+          }
+        : {
+            color: colors['green-500'],
+            fontWeight: '800',
+            textTransform: 'uppercase'
+          };
     default:
       return { color: colors['gray-900'] };
   }
@@ -102,70 +66,62 @@ const bindValueTxInfo = (label: string, value: string) => {
   }
 };
 
-export const CopyIc: FunctionComponent<{
-  paragraph?: string;
-  onPress?: () => void;
-}> = ({ paragraph, onPress }) => {
-  return (
-    <>
-      <CopyFillIcon
-        onPress={onPress}
-        color={colors['color-primary']}
-        size={24}
-      />
-    </>
-  );
-};
-
 const InfoItems: FunctionComponent<{
   label: string;
   value: string;
   topBorder?: boolean;
   onPress?: () => void;
-}> = ({ label, onPress, value, topBorder }) => {
+}> = ({ label, value, topBorder }) => {
   const style = useStyle();
+  const { isTimedOut, setTimer } = useSimpleTimer();
   const renderChildren = () => {
     return (
-      <>
-        <View style={styles.containerDetailVertical}>
-          <View
+      <View style={styles.containerDetailVertical}>
+        <View
+          style={{
+            flex: 1
+          }}
+        >
+          <Text
             style={{
-              flex: 1
+              color: colors['gray-600'],
+              ...typography.h7
             }}
           >
-            <Text
-              h4
-              h4Style={{
-                color: colors['gray-600'],
-                ...typography.h7
-              }}
-            >
-              {label}
-            </Text>
-            <Text
-              h4
-              h4Style={{
-                ...bindStyleTxInfo(label, value),
-                marginTop: spacing['2'],
-                ...typography.body2
-              }}
-            >
-              {bindValueTxInfo(label, value)}
-            </Text>
-          </View>
-          {label !== 'Amount' && (
-            <View
-              style={{
-                flex: 1,
-                alignItems: 'flex-end'
-              }}
-            >
-              <CopyIc />
-            </View>
-          )}
-          <View />
+            {label}
+          </Text>
+          <Text
+            style={{
+              ...bindStyleTxInfo(label, value),
+              marginTop: spacing['2'],
+              ...typography.body2
+            }}
+          >
+            {bindValueTxInfo(label, value)}
+          </Text>
         </View>
-      </>
+        {label !== 'Amount' && (
+          <View
+            style={{
+              flex: 1,
+              alignItems: 'flex-end'
+            }}
+          >
+            {isTimedOut ? (
+              <CheckIcon />
+            ) : (
+              <CopyTransactionIcon
+                size={20}
+                onPress={() => {
+                  Clipboard.setString(value.trim());
+                  setTimer(2000);
+                }}
+              />
+            )}
+          </View>
+        )}
+        <View />
+      </View>
     );
   };
 
@@ -175,7 +131,7 @@ const InfoItems: FunctionComponent<{
         paddingHorizontal: spacing['20']
       }}
     >
-      <RectButton
+      <View
         style={StyleSheet.flatten([
           style.flatten([
             'height-62',
@@ -185,10 +141,9 @@ const InfoItems: FunctionComponent<{
             'background-color-white'
           ])
         ])}
-        onPress={onPress}
       >
         {renderChildren()}
-      </RectButton>
+      </View>
       <Divider />
     </View>
   );
@@ -207,8 +162,7 @@ const DetailItems: FunctionComponent<{
         <View style={styles.containerDetailHorizontal}>
           <View style={{ flex: 1 }}>
             <Text
-              h4
-              h4Style={{
+              style={{
                 color: colors['gray-600'],
                 ...typography.h7
               }}
@@ -219,8 +173,8 @@ const DetailItems: FunctionComponent<{
 
           <View style={{ flex: 1, alignItems: 'flex-end' }}>
             <Text
-              h4
-              h4Style={{
+              style={{
+                ...bindStyleTxInfo(label, value),
                 ...typography.body2,
                 color:
                   value === 'Success'
@@ -266,15 +220,88 @@ const DetailItems: FunctionComponent<{
 
 export const TransactionDetail: FunctionComponent<any> = () => {
   const style = useStyle();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          item: object;
+        }
+      >,
+      string
+    >
+  >();
+
+  const { txhash, tx, timestamp, gas_used, gas_wanted, height, code }: any =
+    route.params?.item || {};
+  const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
+  const { messages } = tx?.body || {};
+  const { title, isPlus, amount, denom, unbond } = getTransactionValue({
+    data: [
+      {
+        type: messages?.[0]?.['@type']
+      }
+    ],
+    address: route.params?.item?.address,
+    logs: route.params?.item?.logs
+  });
+
+  const txInfos: TransactionInfo[] = [
+    {
+      label: 'From',
+      value: tx?.body?.messages?.[0]?.from_address
+    },
+    {
+      label: 'To',
+      value: tx?.body?.messages?.[0]?.to_address
+    },
+    {
+      label: 'Transaction hash',
+      value: txhash
+    },
+    {
+      label: 'Amount',
+      value: `${convertAmount(amount)} ${denom.toUpperCase()}`
+    }
+  ];
+
+  const txDetail: TransactionInfo[] = [
+    {
+      label: 'Result',
+      value: code === 0 ? 'Success' : 'Failed'
+    },
+    {
+      label: 'Block height',
+      value: height
+    },
+    {
+      label: 'Gas (used/ wanted)',
+      value: `${gas_used} / ${gas_wanted}`
+    },
+    {
+      label: 'Fee',
+      value: `${tx?.auth_info?.fee?.amount?.[0]?.amount * Math.pow(10, -6)} ${
+        tx?.auth_info?.fee?.amount?.[0]?.denom
+      }`
+    },
+    {
+      label: 'Amount',
+      value: `${convertAmount(amount)} ${denom}`
+    },
+    {
+      label: 'Time',
+      value: date
+    }
+  ];
 
   return (
     <PageWithScrollView>
       <View style={styles.containerTitle}>
         <Text style={styles.textTitle}>Transaction Detail</Text>
       </View>
-      <TransactionSectionTitle title={'Received token'} right={<></>} />
+      <TransactionSectionTitle title={title} right={<></>} />
       <View>
-        {txInfo.map((item, index) => (
+        {txInfos.map((item, index) => (
           <InfoItems
             key={index}
             label={item.label}
@@ -283,7 +310,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
           />
         ))}
       </View>
-      <TransactionSectionTitle title={'Detail'} />
+      <TransactionSectionTitle title={'Detail'} right={<></>} />
 
       <View>
         {txDetail.map(({ label, value }: TransactionInfo, index: number) => (

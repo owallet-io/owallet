@@ -22,7 +22,7 @@ export const TransactionSectionTitle: FunctionComponent<{
         {title &&
           title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
       </Text>
-      <RefreshIcon onPress={onPress} color={'#4334F1'} size={24} />
+      {right ?? <RefreshIcon onPress={onPress} color={colors['purple-700']} size={24} />}
     </View>
   );
 };

@@ -35,7 +35,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         close={() => setIsOpenModal(false)}
         title="Remove wallet"
         labelStyle={{ color: colors['orange-800'], fontWeight: '700' }}
-        paragraph=""
+        paragraph="Please make sure you have saved the correct mnemonic before logging out"
         textButtonRight="Remove"
         buttonRightStyle={{ backgroundColor: colors['orange-800'] }}
         onEnterPassword={async (password) => {
