@@ -100,6 +100,7 @@ export class RegisterConfig {
     meta: Record<string, string> = {}
   ) {
     this._isLoading = true;
+    //
     try {
       if (this.mode === 'create') {
         yield this.keyRingStore.createMnemonicKey(

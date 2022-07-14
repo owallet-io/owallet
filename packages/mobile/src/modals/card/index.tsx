@@ -1,8 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import {
-  Keyboard,
   KeyboardEvent,
-  Platform,
   StyleSheet,
   TextStyle,
   View,

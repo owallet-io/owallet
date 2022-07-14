@@ -172,6 +172,7 @@ export class KeyRingStore {
       meta,
       bip44HDPath
     );
+    //
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );

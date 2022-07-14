@@ -316,37 +316,36 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['ibc-transfer', 'ibc-go', 'stargate']
   },
-  // {
-  //   rpc: 'https://tendermint-testnet.bignft.app/',
-  //   evmRpc: 'https://endpoint-testnet.bignft.app/',
-  //   rest: 'https://cosmos-testnet.bignft.app/',
-  //   // chainId: '888888',
-  //   chainId: 'balcony_888888-1',
-  //   chainName: 'Balcony Subnet\n(Testnet)',
-  //   stakeCurrency: {
-  //     coinDenom: 'ORAIN',
-  //     coinMinimalDenom: 'orain',
-  //     coinDecimals: 18,
-  //     coinGeckoId: 'orain'
-  //   },
-  //   bip44: {
-  //     coinType: 60,
-  //     algo: 'ethsecp256k1'
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('orain'),
-  //   get currencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   get feeCurrencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   gasPriceStep: {
-  //     low: 0,
-  //     average: 0.000025,
-  //     high: 0.00004
-  //   },
-  //   features: ['ibc-transfer', 'ibc-go', 'stargate']
-  // },
+  {
+    rpc: 'https://tendermint-testnet.bignft.app/',
+    evmRpc: 'https://endpoint-testnet.bignft.app/',
+    rest: 'https://cosmos-testnet.bignft.app/',
+    // chainId: '888888',
+    chainId: 'balcony_888888-1',
+    chainName: 'Balcony Subnet\n(Testnet)',
+    stakeCurrency: {
+      coinDenom: 'ORAIN',
+      coinMinimalDenom: 'orain',
+      coinDecimals: 18,
+      coinGeckoId: 'orain'
+    },
+    bip44: {
+      coinType: 60
+    },
+    bech32Config: Bech32Address.defaultBech32Config('orain'),
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004
+    },
+    features: ['ibc-transfer', 'ibc-go', 'stargate']
+  },
   {
     rpc: 'https://rpc-cosmoshub.keplr.app',
     rest: 'https://lcd-cosmoshub.keplr.app',
