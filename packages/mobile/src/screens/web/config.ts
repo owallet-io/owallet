@@ -60,7 +60,7 @@ export const DAppInfos: DAppInfo[] = [
     name: 'OraiDEX Info',
     uri: 'https://info.oraidex.io',
     logo: oraiLogo
-  },
+  }
 ];
 
 if (__DEV__) {

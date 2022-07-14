@@ -20,6 +20,10 @@ export const BIP44AdvancedButton: FunctionComponent<{
   const account = useZeroOrPositiveIntegerString(
     bip44Option.account.toString()
   );
+
+  const coinType = useZeroOrPositiveIntegerString(
+    bip44Option.coinType ? bip44Option.coinType.toString() : '-'
+  );
   const change = useZeroOrPositiveIntegerString(bip44Option.change.toString());
   const index = useZeroOrPositiveIntegerString(bip44Option.index.toString());
 
@@ -48,7 +52,22 @@ export const BIP44AdvancedButton: FunctionComponent<{
             ...typography['body2'],
             color: colors['text-black-medium']
           }}
-        >{`m/44’/${bip44Option.coinType ?? '-'}’`}</Text>
+        >{`m/44’/’`}</Text>
+        <TextInput
+          value={coinType.value}
+          containerStyle={{
+            minWidth: 58,
+            paddingBottom: 0
+          }}
+          inputStyle={styles.borderInput}
+          style={{ textAlign: 'right' }}
+          keyboardType="number-pad"
+          onChangeText={text => {
+            coinType.setValue(text);
+            bip44Option.setCoinType(coinType.number);
+          }}
+        />
+        <Text>’/</Text>
         <TextInput
           value={account.value}
           containerStyle={{
@@ -58,7 +77,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
           inputStyle={styles.borderInput}
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
-          onChangeText={(text) => {
+          onChangeText={text => {
             account.setValue(text);
             bip44Option.setAccount(account.number);
           }}
@@ -73,7 +92,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
           }}
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
-          onChangeText={(text) => {
+          onChangeText={text => {
             change.setValue(text);
             bip44Option.setChange(change.number);
           }}
@@ -88,7 +107,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
           }}
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
-          onChangeText={(text) => {
+          onChangeText={text => {
             index.setValue(text);
             bip44Option.setIndex(index.number);
           }}
