@@ -17,7 +17,6 @@ export class BIP44Option {
 
   constructor(coinType?: number) {
     this._coinType = coinType;
-
     makeObservable(this);
   }
 
@@ -39,6 +38,14 @@ export class BIP44Option {
 
   @computed
   get bip44HDPath(): BIP44HDPath {
+    if (this.coinType) {
+      return {
+        coinType: this.coinType,
+        account: this.account,
+        change: this.change,
+        addressIndex: this.index
+      };
+    }
     return {
       account: this.account,
       change: this.change,

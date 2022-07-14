@@ -192,7 +192,7 @@ export class RegisterConfig {
     return (
       <div>
         {this.isIntro
-          ? this.options.map((option) => {
+          ? this.options.map(option => {
               return (
                 <React.Fragment key={option.type}>
                   <option.intro registerConfig={this} />
@@ -200,7 +200,7 @@ export class RegisterConfig {
               );
             })
           : !this.isFinalized
-          ? this.options.map((option) => {
+          ? this.options.map(option => {
               if (option.type === this.type) {
                 return (
                   <React.Fragment key={option.type}>
@@ -219,7 +219,7 @@ export class RegisterConfig {
 export const useRegisterConfig = (
   keyRingStore: KeyRingStore,
   initialOptions: RegisterOption[],
-  rng: RNG = (array) => {
+  rng: RNG = array => {
     return Promise.resolve(crypto.getRandomValues(array));
   }
 ) => {

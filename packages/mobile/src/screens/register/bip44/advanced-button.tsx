@@ -52,7 +52,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
             ...typography['body2'],
             color: colors['text-black-medium']
           }}
-        >{`m/44’/’`}</Text>
+        >{`m/44’/`}</Text>
         <TextInput
           value={coinType.value}
           containerStyle={{
@@ -63,8 +63,9 @@ export const BIP44AdvancedButton: FunctionComponent<{
           style={{ textAlign: 'right' }}
           keyboardType="number-pad"
           onChangeText={text => {
-            coinType.setValue(text);
             bip44Option.setCoinType(coinType.number);
+
+            coinType.setValue(text);
           }}
         />
         <Text>’/</Text>

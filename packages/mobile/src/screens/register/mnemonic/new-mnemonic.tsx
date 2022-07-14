@@ -21,7 +21,7 @@ import {
   checkRouterPaddingBottomBar
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
-import { colors, typography } from '../../../themes';
+import { colors } from '../../../themes';
 
 interface FormData {
   name: string;
@@ -29,7 +29,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer(() => {
+export const NewMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -374,7 +374,7 @@ const WordsCard: FunctionComponent<{
           display: 'flex',
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          alignItems: 'center',
+          alignItems: 'center'
         }}
       >
         <TouchableOpacity

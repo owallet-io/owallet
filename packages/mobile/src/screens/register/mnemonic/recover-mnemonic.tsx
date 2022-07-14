@@ -21,7 +21,33 @@ import {
 import { OWalletLogo } from '../owallet-logo';
 import { colors, typography } from '../../../themes';
 import { LoadingSpinner } from '../../../components/spinner';
-import * as bip39 from 'bip39';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const bip39 = require('bip39');
+
+function isPrivateKey(str: string): boolean {
+  if (str.startsWith('0x')) {
+    return true;
+  }
+
+  if (str.length === 64) {
+    try {
+      return Buffer.from(str, 'hex').length === 32;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+function trimWordsStr(str: string): string {
+  str = str.trim();
+  // Split on the whitespace or new line.
+  const splited = str.split(/\s+/);
+  const words = splited
+    .map(word => word.trim())
+    .filter(word => word.trim().length > 0);
+  return words.join(' ');
+}
 
 interface FormData {
   mnemonic: string;
@@ -30,7 +56,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
+export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -67,7 +93,6 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(() => {
     setIsCreating(true);
 
     const mnemonic = trimWordsStr(getValues('mnemonic'));
-
     if (!isPrivateKey(mnemonic)) {
       await registerConfig.createMnemonic(
         getValues('name'),
