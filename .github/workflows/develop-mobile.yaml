@@ -43,12 +43,13 @@ jobs:
             ${{ runner.os }}-yarn-      
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform --ignore-scripts
-      - name: Build Libs
-        run: yarn build:libs      
+        run: yarn --ignore-platform --ignore-scripts      
       - name: Install mobile packages
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         working-directory: packages/mobile
         run: yarn --silent
+      - name: Build Libs
+        run: yarn build:libs      
       - name: Build provider
         working-directory: packages/mobile
         run: yarn build:provider
