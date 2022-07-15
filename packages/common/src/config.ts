@@ -298,10 +298,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'oraie'
     },
     bip44: {
-      coinType: 60,
-      algo: 'ethsecp256k1'
+      coinType: 60
     },
-    coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
       return [this.stakeCurrency];
@@ -330,8 +328,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   //     coinGeckoId: 'orain'
   //   },
   //   bip44: {
-  //     coinType: 60,
-  //     algo: 'ethsecp256k1'
+  //     coinType: 60
   //   },
   //   bech32Config: Bech32Address.defaultBech32Config('orain'),
   //   get currencies() {
@@ -509,8 +506,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   //   chainId: '56',
   //   chainName: 'BNB Chain\n(Coming soon)',
   //   bip44: {
-  //     coinType: 60,
-  //     algo: 'ethsecp256k1'
+  //     coinType: 60
   //   },
   //   stakeCurrency: {
   //     coinDenom: 'BNB',
