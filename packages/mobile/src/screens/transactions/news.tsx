@@ -23,22 +23,26 @@ export const NewsTab: FunctionComponent<{}> = () => {
     <View style={{ height: metrics.screenHeight }}>
       <View>
         <FlatList
-          contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
           keyExtractor={_keyExtract}
-          data={data}
+          data={[]}
           renderItem={_renderItem}
           ListFooterComponent={<View style={{ height: spacing['12'] }} />}
           ListEmptyComponent={
-            <View>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginTop: metrics.screenHeight / 4
+              }}
+            >
               <Text
                 style={{
                   ...typography.subtitle1,
-                  color: colors['gray-300'],
-                  marginTop: spacing['8']
+                  color: colors['gray-300']
                 }}
               >
-                {'Not found news'}
+                {'Comming Soon!'}
               </Text>
             </View>
           }

@@ -20,7 +20,7 @@ export const Transactions: FunctionComponent = () => {
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
-    const isRecipient = indexChildren === 2;
+    const isRecipient = indexChildren === 1;
     const isAll = indexChildren === 0;
     try {
       const res = await API.getHistory(
@@ -126,27 +126,25 @@ export const Transactions: FunctionComponent = () => {
             alignItems: 'center'
           }}
         >
-          {['All', 'Transfer', 'Receive'].map((title: string, i: number) => (
-            <TouchableOpacity
-              key={i}
-              style={{
-                ...styles.tabSelected,
-                width: (metrics.screenWidth - 60) / 3,
-                alignItems: 'center',
-                paddingVertical: spacing['12']
-              }}
-              onPress={() => {
-                setIndexChildren(i);
-              }}
-            >
-              <Text
+          <View
+            style={{
+              marginTop: spacing['12'],
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          >
+            {['Send', 'Receive'].map((title: string, i: number) => (
+              <TouchableOpacity
+                key={i}
                 style={{
-                  fontSize: 16,
-                  fontWeight: '700',
-                  color:
-                    indexChildren === i
-                      ? colors['gray-900']
-                      : colors['gray-300']
+                  ...styles.tabSelected,
+                  width: (metrics.screenWidth - 60) / 2,
+                  alignItems: 'center',
+                  paddingVertical: spacing['12']
+                }}
+                onPress={() => {
+                  setIndexChildren(i);
                 }}
               >
                 {title}
