@@ -202,10 +202,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
     beta: true // use v1beta1
   },
   {
-    chainId: 'oraibridge-subnet',
+    chainId: 'oraibridge-subnet-2',
     chainName: 'OraiBridge',
-    rpc: 'https://bridge.rpc.orai.io',
-    rest: 'https://bridge.lcd.orai.io',
+    rpc: 'https://bridge-v2.rpc.orai.io',
+    rest: 'https://bridge-v2.lcd.orai.io',
     stakeCurrency: {
       coinDenom: 'ORAIB',
       coinMinimalDenom: 'uoraib',
