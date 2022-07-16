@@ -34,9 +34,8 @@
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
     "lint-test": "lerna run lint-test",
     "lint-fix": "lerna run lint-fix",
-    "ci": "yarn install --frozen-lockfile && yarn build && yarn test",
-    "ci-lint": "yarn install --frozen-lockfile && yarn lint-test",
-    "version": "npx zx ./scripts/lerna-lifecyle-check-version.mjs"
+    "ci": "yarn install --frozen-lockfile && yarn build && yarn workspace mobile typecheck && yarn test",
+    "ci-lint": "yarn install --frozen-lockfile && yarn lint-test"
   },
   "keywords": [],
   "author": "Oraichain",
@@ -75,5 +74,6 @@
     "libsodium": "file:./etc/noop",
     "libsodium-wrappers": "file:./etc/noop",
     "node-sass": "file:./etc/noop"
-  }
+  },
+  "version": "0.0.0"
 }
