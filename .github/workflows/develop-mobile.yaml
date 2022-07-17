@@ -44,8 +44,7 @@ jobs:
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts      
-      - name: Install mobile packages
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
+      - name: Install mobile packages        
         working-directory: packages/mobile
         run: yarn --silent
       - name: Build Libs
