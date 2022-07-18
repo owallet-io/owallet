@@ -62,8 +62,8 @@ jobs:
       - name: deploy on AppCenter
         working-directory: packages/mobile
         run: |
-          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --des "${{ github.event.head_commit.message }}"
-          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --des "${{ github.event.head_commit.message }}"
+          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
