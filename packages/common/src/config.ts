@@ -221,21 +221,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         this.stakeCurrency,
         {
           coinDenom: 'BEP20 ORAI',
-          coinMinimalDenom: 'gravity0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0',
-          coinDecimals: 18,
-          coinGeckoId: 'oraichain-token',
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-        },
-        {
-          coinDenom: 'BEP20 AIRI',
-          coinMinimalDenom: 'gravity0x7e2A35C746F2f7C240B664F1Da4DD100141AE71F',
-          coinDecimals: 18,
-          coinGeckoId: 'airight',
-          coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
-        },
-        {
-          coinDenom: 'BEP20 ORAI',
           coinMinimalDenom: 'oraib0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0',
           coinDecimals: 18,
           coinGeckoId: 'oraichain-token',
@@ -265,14 +250,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
         },
-        {
-          coinDenom: 'BEP20 USDT',
-          coinMinimalDenom: 'gravity0x55d398326f99059fF775485246999027B3197955',
-          coinDecimals: 18,
-          coinGeckoId: 'tether',
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
-        }
       ];
     },
     get feeCurrencies() {
