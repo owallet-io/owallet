@@ -1,5 +1,10 @@
 /* eslint-disable react/display-name */
-import React, { FunctionComponent, useCallback, useEffect } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import {
   Image,
   Linking,
@@ -112,7 +117,6 @@ import { colors, spacing, typography } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
 import { useRoute } from '@react-navigation/core';
-import CodePush from 'react-native-code-push';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -982,42 +986,6 @@ export const AppNavigation: FunctionComponent = observer(() => {
       Linking.removeEventListener('url', handleDeepLink);
     };
   }, []);
-
-  // useEffect(() => {
-  //   CodePush.sync(
-  //     {
-  //       updateDialog: {
-  //         appendReleaseDescription: true,
-  //         title: 'Update available'
-  //       },
-  //       installMode: CodePush.InstallMode.IMMEDIATE
-  //     },
-  //     status => {
-  //       switch (status) {
-  //         case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
-  //           console.log('DOWNLOADING_PACKAGE');
-  //           // Show "downloading" modal
-  //           // modal.open();
-  //           break;
-  //         case CodePush.SyncStatus.INSTALLING_UPDATE:
-  //           console.log('INSTALLING_UPDATE');
-  //           // show installing
-  //           // setState({ showInstalling: true });
-  //           break;
-  //         case CodePush.SyncStatus.UPDATE_INSTALLED:
-  //           console.log('UPDATE_INSTALLED');
-  //           // Hide loading modal
-  //           // modal.close();
-  //           // setState({ showDownloadingModal: false });
-  //           break;
-  //       }
-  //     },
-  //     ({ receivedBytes, totalBytes }) => {
-  //       /* Update download modal progress */
-  //       // setState({ downloadProgress: (receivedBytes / totalBytes) * 100 });
-  //     }
-  //   );
-  // }, []);
 
   return (
     <PageScrollPositionProvider>

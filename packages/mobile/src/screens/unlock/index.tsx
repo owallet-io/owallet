@@ -18,8 +18,9 @@ import { KeyRingStatus } from '@owallet/background';
 import { KeychainStore } from '../../stores/keychain';
 import { AccountStore } from '@owallet/stores';
 import { autorun } from 'mobx';
-import { colors } from '../../themes';
+import { colors, spacing } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
+import CodePush from 'react-native-code-push';
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -76,6 +77,7 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
       tryBiometricAutoOnce.current = true;
       (async () => {
         try {
+          await delay(20);
           await keychainStore.tryUnlockWithBiometry();
           setStatus(AutoBiomtricStatus.SUCCESS);
         } catch (e) {
@@ -93,6 +95,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
   const navigation = useNavigation();
 
+  const [downloading, setDownloading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
     if (!navigateToHomeOnce.current) {
@@ -104,7 +109,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const autoBiometryStatus = useAutoBiomtric(
     keychainStore,
-    keyRingStore.status === KeyRingStatus.LOCKED
+    keyRingStore.status === KeyRingStatus.LOCKED && loaded
   );
 
   useEffect(() => {
@@ -112,6 +117,55 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await hideSplashScreen();
     })();
   }, [autoBiometryStatus, navigation]);
+
+  useEffect(() => {
+    (async () => {
+      await hideSplashScreen();
+    })();
+  }, [autoBiometryStatus, navigation]);
+
+  useEffect(() => {
+    CodePush.sync(
+      {
+        // updateDialog: {
+        //   appendReleaseDescription: true,
+        //   title: 'Update available'
+        // },
+        installMode: CodePush.InstallMode.IMMEDIATE
+      },
+      status => {
+        switch (status) {
+          case CodePush.SyncStatus.UP_TO_DATE:
+            console.log('UP_TO_DATE');
+            // Show "downloading" modal
+            // modal.open();
+            setLoaded(true);
+            break;
+          case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+            console.log('DOWNLOADING_PACKAGE');
+            // Show "downloading" modal
+            // modal.open();
+            setDownloading(true);
+            break;
+          case CodePush.SyncStatus.INSTALLING_UPDATE:
+            console.log('INSTALLING_UPDATE');
+            // show installing
+            // setState({ showInstalling: true });
+            break;
+          case CodePush.SyncStatus.UPDATE_INSTALLED:
+            console.log('UPDATE_INSTALLED');
+            setDownloading(false);
+            // Hide loading modal
+            // setState({ showDownloadingModal: false });
+            break;
+        }
+      },
+      ({ receivedBytes, totalBytes }) => {
+        /* Update download modal progress */
+        // setState({ downloadProgress: (receivedBytes / totalBytes) * 100 });
+      }
+    );
+  }, []);
 
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -177,14 +231,62 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
       (async () => {
         await hideSplashScreen();
-        navigateToHome();
+        if (!downloading) {
+          navigateToHome();
+        }
       })();
     }
-  }, [keyRingStore.status, navigateToHome]);
+  }, [keyRingStore.status, navigateToHome, downloading]);
 
   return !routeToRegisterOnce.current &&
     keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
+  ) : downloading ? (
+    <View
+      style={{
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}
+    >
+      <View
+        style={{
+          marginBottom: spacing['24']
+        }}
+      >
+        <Image
+          style={{
+            height: 70,
+            width: 70
+          }}
+          fadeDuration={0}
+          resizeMode="contain"
+          source={require('../../assets/logo/splash-image.png')}
+        />
+      </View>
+      <Text
+        style={{
+          color: colors['purple-700'],
+          textAlign: 'center',
+          fontWeight: '600',
+          fontSize: 16,
+          lineHeight: 22,
+          opacity: isLoading ? 0.5 : 1
+        }}
+      >
+        Checking for update
+      </Text>
+      <Image
+        style={{
+          width: 300,
+          height: 8
+        }}
+        fadeDuration={0}
+        resizeMode="stretch"
+        source={require('../../assets/image/transactions/process_pedding.gif')}
+      />
+    </View>
   ) : (
     <>
       <View
@@ -304,16 +406,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                   Use Biometric Authentication
                 </Text>
               </TouchableOpacity>
-            ) : // <Button
-            //   containerStyle={{
-            //     marginTop: 40
-            //   }}
-            //   text="Use Biometric Authentication"
-            //   mode="text"
-            //   loading={isBiometricLoading}
-            //   onPress={tryBiometric}
-            // />
-            null}
+            ) : null}
           </View>
           <View
             style={{
