@@ -38,7 +38,7 @@ async function waitAccountLoad(
     return;
   }
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();

@@ -13,6 +13,7 @@ import { TextInput } from '../../../components/input';
 import { colors, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { CText as Text } from '../../../components/text';
+import { useStore } from '../../../stores';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
 
 export const BIP44AdvancedButton: FunctionComponent<{
@@ -151,12 +152,16 @@ export const BIP44SelectModal: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {
+    const { chainStore } = useStore();
+
     const account = useZeroOrPositiveIntegerString(
       bip44Option.account.toString()
     );
 
     const coinType = useZeroOrPositiveIntegerString(
-      bip44Option.coinType ? bip44Option.coinType.toString() : '-'
+      bip44Option.coinType
+        ? bip44Option.coinType.toString()
+        : chainStore.current.bip44.coinType.toString() ?? ''
     );
     const change = useZeroOrPositiveIntegerString(
       bip44Option.change.toString()
