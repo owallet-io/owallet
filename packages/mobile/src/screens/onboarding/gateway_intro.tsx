@@ -90,10 +90,12 @@ const GatewayIntroScreen: FunctionComponent = () => {
           alignItems: 'center'
         }}
         disabled={isTimedOut}
-        onPress={() => {
+        onPress={async () => {
+          await appInitStore.updateInitApp();
           setTimer(2000);
-          appInitStore.updateInitApp();
-          smartNavigation.navigateSmart('Register.Intro', {});
+          setTimeout(() => {
+            smartNavigation.navigateSmart('Register.Intro', {});
+          }, 1000);
         }}
       >
         {isTimedOut ? (
