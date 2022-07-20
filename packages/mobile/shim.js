@@ -34,7 +34,7 @@ if (!global.atob || !global.btoa) {
 
 const isDev = typeof __DEV__ === 'boolean' && __DEV__;
 env = process.env ?? {};
-import { INJECTED_PROVIDER_URL } from '@env';
+import { INJECTED_PROVIDER_URL } from 'react-native-dotenv';
 env['NODE_ENV'] = isDev ? 'development' : 'production';
 env['INJECTED_PROVIDER_URL'] = INJECTED_PROVIDER_URL;
 process.env = env;
