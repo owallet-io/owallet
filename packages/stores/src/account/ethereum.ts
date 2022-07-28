@@ -1,0 +1,191 @@
+import { MsgOpt } from './base';
+import { AccountSetBase, AccountSetOpts } from './base';
+import { AppCurrency, OWalletSignOptions } from '@owallet/types';
+import { StdFee } from '@cosmjs/launchpad';
+import { DenomHelper } from '@owallet/common';
+import { Dec, DecUtils, Int } from '@owallet/unit';
+import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
+import { BondStatus } from '../query/cosmos/staking/types';
+import { HasCosmosQueries, HasEvmQueries, QueriesSetBase, QueriesStore } from '../query';
+import { DeepReadonly } from 'utility-types';
+import { ChainGetter, StdFeeEthereum } from '../common';
+
+export interface HasEthereumAccount {
+  ethereum: DeepReadonly<EthereumAccount>;
+}
+
+export interface EthereumMsgOpts {
+  readonly send: {
+    readonly native: MsgOpt;
+  };
+}
+
+export class AccountWithEthereum
+  extends AccountSetBase<EthereumMsgOpts, HasEvmQueries>
+  implements HasEthereumAccount
+{
+  public readonly ethereum: DeepReadonly<EthereumAccount>;
+
+  static readonly defaultMsgOpts: EthereumMsgOpts = {
+    send: {
+      native: {
+        type: 'send',
+        gas: 80000,
+      },
+    },
+  };
+
+  constructor(
+    protected readonly eventListener: {
+      addEventListener: (type: string, fn: () => unknown) => void;
+      removeEventListener: (type: string, fn: () => unknown) => void;
+    },
+    protected readonly chainGetter: ChainGetter,
+    protected readonly chainId: string,
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasEvmQueries
+    >,
+    protected readonly opts: AccountSetOpts<EthereumMsgOpts>
+  ) {
+    super(eventListener, chainGetter, chainId, queriesStore, opts);
+
+    this.ethereum = new EthereumAccount(this, chainGetter, chainId, queriesStore);
+  }
+}
+
+export class EthereumAccount {
+  constructor(
+    protected readonly base: AccountSetBase<EthereumMsgOpts, HasEvmQueries>,
+    protected readonly chainGetter: ChainGetter,
+    protected readonly chainId: string,
+    protected readonly queriesStore: QueriesStore<
+      QueriesSetBase & HasEvmQueries
+    >
+  ) {
+    this.base.registerSendTokenFn(this.processSendToken.bind(this));
+  }
+
+  //send token
+  protected async processSendToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    memo: string,
+    stdFee: Partial<StdFeeEthereum>,
+    signOptions?: OWalletSignOptions,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ): Promise<boolean> {
+    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+    console.log(stdFee, "STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!")
+
+    if (signOptions.networkType === "evm") {
+
+      switch (denomHelper.type) {
+        case 'native':
+          const actualAmount = (() => {
+            let dec = new Dec(amount);
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
+            return dec.truncate().toString();
+          })();
+  
+          const msg = {
+            type: this.base.msgOpts.send.native.type,
+            value: {
+              from_address: this.base.bech32Address,
+              to_address: recipient,
+              amount: [
+                {
+                  denom: currency.coinMinimalDenom,
+                  amount: actualAmount,
+                },
+              ],
+            },
+          };
+    
+          await this.base.sendEvmMsgs(
+            'send',
+            msg,
+            memo,
+            {
+              gas: stdFee.gas,
+              gasPrice: stdFee.gasPrice,
+            },
+            signOptions,
+            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
+              console.log("Tx on fullfill: ", tx)
+              if (tx) {
+                // After succeeding to send token, refresh the balance.
+                const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress)
+  
+                if (queryEvmBalance) {
+                  queryEvmBalance.fetch();
+                }
+              }
+            })
+          );
+          return true;
+      }
+    }
+    return false;
+  }
+
+  protected txEventsWithPreOnFulfill(
+    onTxEvents:
+      | ((tx: any) => void)
+      | {
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+      | undefined,
+    preOnFulfill?: (tx: any) => void
+  ):
+    | {
+        onBroadcasted?: (txHash: Uint8Array) => void;
+        onFulfill?: (tx: any) => void;
+      }
+    | undefined {
+    if (!onTxEvents) {
+      return;
+    }
+
+    const onBroadcasted =
+      typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
+    const onFulfill =
+      typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
+
+    return {
+      onBroadcasted,
+      onFulfill:
+        onFulfill || preOnFulfill
+          ? (tx: any) => {
+              if (preOnFulfill) {
+                preOnFulfill(tx);
+              }
+
+              if (onFulfill) {
+                onFulfill(tx);
+              }
+            }
+          : undefined,
+    };
+  }
+
+  protected get queries(): DeepReadonly<QueriesSetBase & HasEvmQueries> {
+    return this.queriesStore.get(this.chainId);
+  }
+
+  protected hasNoLegacyStdFeature(): boolean {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    return (
+      chainInfo.features != null &&
+      chainInfo.features.includes('no-legacy-stdTx')
+    );
+  }
+}

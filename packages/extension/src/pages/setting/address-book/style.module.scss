@@ -15,9 +15,32 @@
   border: 0;
   margin: 0;
   padding: 0;
-  color:$color;
+  color: $color;
   background-color: $background-color;
   &:global(.modal-content) {
     box-shadow: none;
+  }
+}
+
+.chain-item {
+  &:hover {
+    background-color: $color-gray-70;
+    color: $color !important;
+  }
+}
+
+.address-btn-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .address-btn {
+    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: $color-darker;
+    }
   }
 }

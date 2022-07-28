@@ -16,3 +16,8 @@ export type CoinPrimitive = {
   denom: string;
   amount: string;
 };
+
+export type StdFeeEthereum = {
+  gas: string;
+  gasPrice: string;
+};

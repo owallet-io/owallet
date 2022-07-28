@@ -32,7 +32,7 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: '100%', paddingTop: '80px' }}>
       <div className={style.container}>
         <img
-          src={require('../../../public/assets/orai_wallet_logo.png')}
+          src={require('../../../public/assets/svg/oraichain-pro-logo.svg')}
           alt="logo"
           style={{ height: '92px', maxWidth: 92, margin: '0 auto' }}
         />

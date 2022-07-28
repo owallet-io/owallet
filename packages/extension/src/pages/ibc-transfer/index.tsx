@@ -174,7 +174,7 @@ export const IBCTransferPageChannel: FunctionComponent<{
         </Alert>
         <Button
           type="submit"
-          color="primary"
+          color=""
           block
           disabled={!isValid}
           onClick={(e) => {
@@ -182,6 +182,7 @@ export const IBCTransferPageChannel: FunctionComponent<{
 
             onNext();
           }}
+          className={style.nextBtn}
         >
           <FormattedMessage id="ibc.transfer.next" />
         </Button>

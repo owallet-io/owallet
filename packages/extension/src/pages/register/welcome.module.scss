@@ -1,3 +1,5 @@
+@import "../../styles/var";
+
 .title {
   font-size: 24px;
   letter-spacing: -1.07px;
@@ -7,4 +9,14 @@
   font-size: 16px;
   letter-spacing: -0.71px;
   color: #6b6b6b;
+}
+
+.done-btn {
+  background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  color: $color-darker;
+  margin-top: 60px;
+
+  &:hover {
+    color: $color-darker;
+  }
 }

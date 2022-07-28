@@ -1,6 +1,7 @@
 import { IRecipientConfig } from './types';
 import { TxChainSetter } from './chain';
 import { ChainGetter } from '@owallet/stores';
+import Web3 from 'web3';
 import {
   action,
   computed,
@@ -13,7 +14,8 @@ import {
   ENSFailedToFetchError,
   ENSIsFetchingError,
   ENSNotSupportedError,
-  InvalidBech32Error
+  InvalidBech32Error,
+  InvalidEvmAddressError
 } from './errors';
 import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
@@ -136,7 +138,12 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
     }
 
     try {
-      Bech32Address.validate(this.recipient, this.bech32Prefix);
+      if (this.chainInfo.networkType === "evm") {
+        if (!Web3.utils.isAddress(this.recipient)) return new InvalidEvmAddressError(
+          `Invalid evm address`
+        );
+      }
+      else Bech32Address.validate(this.recipient, this.bech32Prefix);
     } catch (e) {
       return new InvalidBech32Error(
         `Invalid bech32: ${e.message || e.toString()}`

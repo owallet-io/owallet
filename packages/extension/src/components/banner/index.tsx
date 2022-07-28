@@ -1,7 +1,7 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent } from 'react';
 
-import classmames from "classnames";
-import style from "./style.module.scss";
+import classmames from 'classnames';
+import style from './style.module.scss';
 
 interface Props {
   icon: string;
@@ -16,8 +16,8 @@ export const Banner: FunctionComponent<Props> = ({ icon, logo, subtitle }) => {
       <div className={style.flexHorizontal}>
         <div className={style.empty} />
         <div className={style.flexVertical}>
-          <img className={style.icon} src={icon} />
-          <img className={style.logo} src={logo} />
+          <img className={style.icon} src={icon} width="100%" />
+          <img className={style.logo} src={logo} width="100%" />
           <div className={style.subtitle}>{subtitle}</div>
         </div>
         <div className={style.empty} />

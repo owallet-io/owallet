@@ -34,15 +34,9 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
       <div className={style.container}>
         <div className={style.innerTopContainer}>
           <div style={{ flex: 1 }} />
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center'
-            }}
-          >
+          <div className={style.addBtnWrap}>
             <Button
-              color="primary"
+              color=""
               size="sm"
               onClick={(e) => {
                 e.preventDefault();
@@ -52,12 +46,16 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
                   url: '/popup.html#/register'
                 });
               }}
+              className={style.addBtn}
             >
-              <i
-                className="fas fa-plus"
-                style={{ marginRight: '4px', fontSize: '8px' }}
+              <img
+                src={require('../../../public/assets/svg/add-account.svg')}
+                alt=""
+                style={{ marginRight: '4px', width: 16, height: 16 }}
               />
-              <FormattedMessage id="setting.keyring.button.add" />
+              <span>
+                <FormattedMessage id="setting.keyring.button.add" />
+              </span>
             </Button>
           </div>
         </div>
@@ -118,6 +116,10 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
               icons={[
                 <KeyRingToolsIcon key="tools" index={i} keyStore={keyStore} />
               ]}
+              styleTitle={{
+                fontWeight: 400,
+                fontSize: 14
+              }}
             />
           );
         })}
@@ -148,6 +150,8 @@ const KeyRingToolsIcon: FunctionComponent<{
         isOpen={isOpen}
         toggle={toggleOpen}
         placement="bottom"
+        className={style.popoverContainer}
+        hideArrow
       >
         <PopoverBody
           onClick={(e) => {
@@ -156,6 +160,7 @@ const KeyRingToolsIcon: FunctionComponent<{
 
             history.push('');
           }}
+          className={style.popoverContainer}
         >
           {keyStore.type === 'mnemonic' || keyStore.type === 'privateKey' ? (
             <div

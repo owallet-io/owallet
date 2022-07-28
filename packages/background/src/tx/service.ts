@@ -36,31 +36,30 @@ export async function request(
     adapter: fetchAdapter
   });
 
-  try {
-    const response = await restInstance.post(
-      '/',
-      {
-        jsonrpc: '2.0',
-        id: 1,
-        method,
-        params
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }
+  const response = await restInstance.post(
+    '/',
+    {
+      jsonrpc: '2.0',
+      id: 1,
+      method,
+      params
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }
-    );
-    if (response.data.result) return response.data.result;
-    if (response.data.error)
-      throw new Error(JSON.stringify(response.data.error));
-    throw new Error(
-      `Unexpected error from the network: ${JSON.stringify(response.data)}`
-    );
-  } catch (error) {
-    console.error('error calling request from ethereum provider: ', error);
-  }
+    }
+  );
+  console.log("🚀 ~ file: service.ts ~ line 48 ~ params", params)
+  console.log("🚀 ~ file: service.ts ~ line 48 ~ method", method)
+  console.log("🚀 ~ file: service.ts ~ line 55 ~ response", response)
+  if (response.data.result) return response.data.result;
+  if (response.data.error)
+    throw new Error(JSON.stringify(response.data.error));
+  throw new Error(
+    `Unexpected error from the network: ${JSON.stringify(response.data)}`
+  );
 }
 
 @singleton()
@@ -74,7 +73,7 @@ export class BackgroundTxService {
     public readonly permissionService: PermissionService,
     @inject(TYPES.Notification)
     protected readonly notification: Notification
-  ) {}
+  ) { }
 
   async sendTx(
     chainId: string,
@@ -100,24 +99,24 @@ export class BackgroundTxService {
 
     const params = isProtoTx
       ? {
-          tx_bytes: Buffer.from(tx as any).toString('base64'),
-          mode: (() => {
-            switch (mode) {
-              case 'async':
-                return 'BROADCAST_MODE_ASYNC';
-              case 'block':
-                return 'BROADCAST_MODE_BLOCK';
-              case 'sync':
-                return 'BROADCAST_MODE_SYNC';
-              default:
-                return 'BROADCAST_MODE_UNSPECIFIED';
-            }
-          })()
-        }
+        tx_bytes: Buffer.from(tx as any).toString('base64'),
+        mode: (() => {
+          switch (mode) {
+            case 'async':
+              return 'BROADCAST_MODE_ASYNC';
+            case 'block':
+              return 'BROADCAST_MODE_BLOCK';
+            case 'sync':
+              return 'BROADCAST_MODE_SYNC';
+            default:
+              return 'BROADCAST_MODE_UNSPECIFIED';
+          }
+        })()
+      }
       : {
-          tx,
-          mode: mode
-        };
+        tx,
+        mode: mode
+      };
 
     try {
       const result = await restInstance.post(
@@ -154,17 +153,18 @@ export class BackgroundTxService {
     if (!chainId)
       throw new Error('Invalid empty chain id when switching Ethereum chain');
     if (chainId.substring(0, 2) === '0x')
-      return { chainId: parseInt(chainId, 16).toString(), isEvm: true };
+      return { chainId: chainId, isEvm: true };
     return { chainId, isEvm: false };
   }
 
   async request(chainId: string, method: string, params: any[]): Promise<any> {
     let chainInfo: ChainInfoWithEmbed;
+    console.log('method in request: ', method)
     switch (method) {
       case 'eth_accounts':
       case 'eth_requestAccounts':
         chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (chainInfo.bip44.algo !== 'ethsecp256k1') return undefined;
+        if (chainInfo.coinType !== 60) return undefined;
         const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
         const key = await this.keyRingService.getKey(chainIdOrCoinType);
         return [`0x${Buffer.from(key.address).toString('hex')}`];
@@ -173,14 +173,15 @@ export class BackgroundTxService {
         chainInfo = isEvm
           ? await this.chainsService.getChainInfo(inputChainId, 'evm')
           : await this.chainsService.getChainInfo(inputChainId);
+
         return chainInfo.chainId;
       default:
         chainInfo = await this.chainsService.getChainInfo(chainId);
-        if (!chainInfo.evmRpc)
+        if (!chainInfo.rest)
           throw new Error(
             `The given chain ID: ${chainId} does not have a RPC endpoint to connect to`
           );
-        return await request(chainInfo.evmRpc, method, params);
+        return await request(chainInfo.rest, method, params);
     }
   }
 

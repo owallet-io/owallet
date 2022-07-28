@@ -7,7 +7,12 @@
 
   input:read-only {
     box-shadow: none !important;
-    background: transparent;    
-    color: $color-lighter;        
+    background: transparent;
+    color: $color-lighter;
+  }
+
+  .submit-btn {
+    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+    color: $color-darker;
   }
 }

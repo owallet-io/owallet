@@ -1,7 +1,7 @@
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
 @import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
-@import '../../styles/var';
+@import "../../styles/var";
 
 .modal {
   padding: 12px;
@@ -50,7 +50,8 @@
     justify-content: center;
 
     button {
-      width: 80px;
+      min-width: 120px;
+      max-width: 125px;
 
       &:global(.btn-outline-default):not(:hover) {
         color: $gray-600;

@@ -27,7 +27,16 @@
     word-break: break-all;
 
     &::before {
-      content: "0x";
+      content: "";
     }
+  }
+}
+
+.confirm-btn {
+  background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  color: $color-darker;
+
+  &:hover {
+    color: $color-darker;
   }
 }

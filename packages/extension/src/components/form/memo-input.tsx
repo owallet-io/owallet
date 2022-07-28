@@ -2,12 +2,15 @@ import React, { FunctionComponent, useState } from 'react';
 import { FormGroup, Input, Label } from 'reactstrap';
 import { IMemoConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
+import classNames from 'classnames';
+import styleMemo from './address-input.module.scss';
 
 export interface MemoInputProps {
   memoConfig: IMemoConfig;
 
   label?: string;
   className?: string;
+  placeholder?: string;
 
   rows?: number;
 
@@ -16,7 +19,7 @@ export interface MemoInputProps {
 
 // TODO: Handle the max memo bytes length for each chain.
 export const MemoInput: FunctionComponent<MemoInputProps> = observer(
-  ({ memoConfig, label, className, rows, disabled = false }) => {
+  ({ memoConfig, label, className, rows, disabled = false, placeholder }) => {
     const [inputId] = useState(() => {
       const bytes = new Uint8Array(4);
       crypto.getRandomValues(bytes);
@@ -32,7 +35,7 @@ export const MemoInput: FunctionComponent<MemoInputProps> = observer(
         ) : null}
         <Input
           id={inputId}
-          className="form-control-alternative"
+          className={classNames('form-control-alternative', styleMemo.input)}
           type="textarea"
           rows={rows ? rows : 2}
           style={{ resize: 'none' }}
@@ -43,6 +46,7 @@ export const MemoInput: FunctionComponent<MemoInputProps> = observer(
           }}
           autoComplete="off"
           disabled={disabled}
+          placeholder={placeholder}
         />
       </FormGroup>
     );

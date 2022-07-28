@@ -1,3 +1,5 @@
+@import "../../styles/var";
+
 .container {
   display: flex;
   flex-direction: column;
@@ -16,7 +18,7 @@
   .permission {
     margin-top: 30px;
     font-size: 14px;
-    color: #F6F7FB;
+    color: #f6f7fb;
     text-align: center;
   }
 
@@ -26,7 +28,7 @@
     padding: 0;
     width: fit-content;
     margin: auto;
-    color: #F6F7FB;
+    color: #f6f7fb;
 
     li:before {
       content: "- ";
@@ -35,9 +37,27 @@
 
   .buttons {
     display: flex;
+    margin-bottom: 36px;
   }
 
   .button {
     flex: 1;
+    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  }
+
+  .reject-btn {
+    background: transparent;
+    border: 1px solid $color-danger-90;
+    color: $color-danger-90;
+
+    &:hover {
+      color: $color-danger-90;
+    }
+  }
+
+  .approve-btn {
+    &:hover {
+      color: $color-darker;
+    }
   }
 }

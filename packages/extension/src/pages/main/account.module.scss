@@ -1,7 +1,10 @@
+@import "../../styles/var";
+
 .container-name {
   display: flex;
   flex-direction: row;
   align-items: center;
+  padding-top: 14px;
 }
 
 .name {
@@ -16,12 +19,16 @@
 }
 
 .address {
-  border: solid 1px #e6e6e6;
   border-radius: 100px;
   padding: 0 16px;
-
+  margin-top: 8px;
+  background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
   font-size: 12px;
-  color: #F6F7FB;
-
+  color: $color-darker;
   cursor: pointer;
+
+  .address-text {
+    color: $color-darker;
+    font-weight: 700;
+  }
 }

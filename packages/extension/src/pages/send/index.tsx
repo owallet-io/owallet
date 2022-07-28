@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   AddressInput,
   FeeButtons,
@@ -23,6 +23,7 @@ import queryString from 'querystring';
 import { useSendTxConfig } from '@owallet/hooks';
 import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
 import { EthereumEndpoint } from '@owallet/common';
+import classNames from 'classnames';
 
 export const SendPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -50,6 +51,7 @@ export const SendPage: FunctionComponent = observer(() => {
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);
+  const accountEthInfo = accountStore.getAccount(current.chainId);
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -57,7 +59,10 @@ export const SendPage: FunctionComponent = observer(() => {
     accountInfo.msgOpts.send,
     accountInfo.bech32Address,
     queriesStore.get(current.chainId).queryBalances,
-    EthereumEndpoint
+    EthereumEndpoint,
+    chainStore.current.networkType === 'evm' &&
+      queriesStore.get(current.chainId).evm.queryEvmBalance,
+    chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
   );
 
   useEffect(() => {
@@ -183,7 +188,8 @@ export const SendPage: FunctionComponent = observer(() => {
                 stdFee,
                 {
                   preferNoSetFee: true,
-                  preferNoSetMemo: true
+                  preferNoSetMemo: true,
+                  networkType: chainStore.current.networkType
                 },
                 {
                   onBroadcasted: () => {
@@ -192,16 +198,46 @@ export const SendPage: FunctionComponent = observer(() => {
                       chainName: chainStore.current.chainName,
                       feeType: sendConfigs.feeConfig.feeType
                     });
+                  },
+                  onFulfill: (tx) => {
+                    console.log(
+                      tx,
+                      'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
+                    );
+                    notification.push({
+                      placement: 'top-center',
+                      type: tx?.status === '0x1' ? 'success' : 'danger',
+                      duration: 5,
+                      content:
+                        tx?.status === '0x1'
+                          ? `Transaction successful with tx: ${tx?.transactionHash}`
+                          : `Transaction failed with tx: ${tx?.transactionHash}`,
+                      canDelete: true,
+                      transition: {
+                        duration: 0.25
+                      }
+                    });
                   }
                 }
               );
               if (!isDetachedPage) {
                 history.replace('/');
               }
+              notification.push({
+                placement: 'top-center',
+                type: 'success',
+                duration: 5,
+                content: 'Transaction submitted!',
+                canDelete: true,
+                transition: {
+                  duration: 0.25
+                }
+              });
             } catch (e: any) {
               if (!isDetachedPage) {
                 history.replace('/');
               }
+              console.log(e.message, 'Catch Error on send!!!');
               notification.push({
                 type: 'warning',
                 placement: 'top-center',
@@ -222,6 +258,7 @@ export const SendPage: FunctionComponent = observer(() => {
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               label={intl.formatMessage({ id: 'send.input.recipient' })}
+              placeholder="Enter recipient address"
             />
             <CoinInput
               amountConfig={sendConfigs.amountConfig}
@@ -229,10 +266,12 @@ export const SendPage: FunctionComponent = observer(() => {
               balanceText={intl.formatMessage({
                 id: 'send.input-button.balance'
               })}
+              placeholder="Enter your amount"
             />
             <MemoInput
               memoConfig={sendConfigs.memoConfig}
               label={intl.formatMessage({ id: 'send.input.memo' })}
+              placeholder="Enter your memo message"
             />
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
@@ -252,14 +291,22 @@ export const SendPage: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
           <Button
             type="submit"
-            color="primary"
             block
             data-loading={accountInfo.isSendingMsg === 'send'}
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
+            className={style.sendBtn}
+            style={{
+              cursor:
+                accountInfo.isReadyToSendMsgs || !txStateIsValid
+                  ? ''
+                  : 'pointer'
+            }}
           >
-            {intl.formatMessage({
-              id: 'send.button.send'
-            })}
+            <span className={style.sendBtnText}>
+              {intl.formatMessage({
+                id: 'send.button.send'
+              })}
+            </span>
           </Button>
         </div>
       </form>

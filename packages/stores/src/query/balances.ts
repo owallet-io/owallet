@@ -48,7 +48,8 @@ export interface BalanceRegistry {
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string,
-    minimalDenom: string
+    minimalDenom: string,
+    currency?: AppCurrency
   ): ObservableQueryBalanceInner | undefined;
 }
 
@@ -81,6 +82,8 @@ export class ObservableQueryBalancesInner {
     if ('type' in currency && currency.type === 'secret20') {
       key = currency.coinMinimalDenom + '/' + currency.viewingKey;
     }
+    
+    const chainInfo = this.chainGetter.getChain(this.chainId);
 
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
@@ -96,8 +99,11 @@ export class ObservableQueryBalancesInner {
             this.chainId,
             this.chainGetter,
             this.bech32Address,
-            currency.coinMinimalDenom
+            currency.coinMinimalDenom,
+            currency
           );
+
+          console.log(balanceInner)
 
           if (balanceInner) {
             break;

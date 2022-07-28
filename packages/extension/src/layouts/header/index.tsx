@@ -90,6 +90,7 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
           <ToolTip
             trigger={chainInfoChangable ? 'click' : 'static'}
             tooltip={<ChainList />}
+            theme="primary"
           >
             <div
               className={style.chainListContainer}

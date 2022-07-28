@@ -3,7 +3,7 @@
 $container-width: 420px;
 
 :global(body)[data-centered="true"] {
-  margin: auto;    
+  margin: auto;
   background-color: $background-color;
   height: 100%;
   overflow: visible !important;
@@ -15,7 +15,7 @@ $container-width: 420px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      background-color: transparent!important;
+      background-color: transparent !important;
     }
   }
 }
@@ -26,7 +26,6 @@ $container-width: 420px;
 
   display: flex;
   flex-direction: column;
-  
 
   :global(.btn) {
     margin-left: 0;
@@ -36,32 +35,31 @@ $container-width: 420px;
   .logo-container {
     margin-top: 40px;
     margin-bottom: 40px;
-
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
     .icon {
-      width: 80px;
-      height: 80px;
+      width: 120px;
+      height: 120px;
     }
 
     .logo-inner-container {
-      margin-top: 8px;
-      margin-left: 20px;
-
-      display: flex;
-      flex-direction: column;
-      justify-content: space-evenly;
-      align-items: start;
+      margin-top: 22px;
+      text-align: center;
 
       .logo {
         height: 50px;
         max-width: 100%;
-        margin-bottom: 5px;
+        margin-bottom: 22px;
       }
 
       .paragraph {
-        font-size: 16px;
+        font-size: 20px;
         line-height: 1;
+        color: $color-gray-50;
+        font-weight: 400;
       }
     }
   }
@@ -71,7 +69,7 @@ $container-width: 420px;
     letter-spacing: -1.07px;
     margin-bottom: 24px;
 
-    color: #F6F7FB;
+    color: #f6f7fb;
   }
 
   .mnemonic {
@@ -124,5 +122,35 @@ $container-width: 420px;
   button {
     margin-bottom: 8px;
     margin-left: 0 !important;
+  }
+}
+
+.new-wallet-btn,
+.next-btn {
+  background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  color: $color-darker !important;
+  border-radius: 4px;
+  &:hover {
+    color: $color-darker;
+  }
+  &:active {
+    color: $color-darker;
+    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  }
+}
+
+.import-wallet-btn {
+  background: $color-gray-80;
+  color: $color;
+  border-radius: 4px;
+  outline: none;
+  border: none;
+  &:hover {
+    color: $color;
+    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  }
+  &:active {
+    color: $color-darker;
+    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
   }
 }

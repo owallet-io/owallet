@@ -1,6 +1,9 @@
+@import "../../styles/var";
+
 $arrow-size: 6px;
 $dark: rgba(0, 0, 0, 0.95);
 $bright: rgba(255, 255, 255, 0.95);
+$primary: $background-color-lighter;
 
 :global {
   [x-arrow] {
@@ -48,6 +51,24 @@ $bright: rgba(255, 255, 255, 0.95);
 
     .popper[x-placement="top"] [x-arrow] {
       border-top: $arrow-size solid $bright;
+    }
+  }
+}
+
+.primary {
+  :global {
+    .popper {
+      background-color: $primary;
+      color: black;
+      border: 1px solid $color-gray-70;
+    }
+
+    .popper[x-placement="bottom"] [x-arrow] {
+      border-bottom: $arrow-size solid $color-gray-70;
+    }
+
+    .popper[x-placement="top"] [x-arrow] {
+      border-top: $arrow-size solid $primary;
     }
   }
 }

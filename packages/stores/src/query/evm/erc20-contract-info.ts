@@ -28,21 +28,28 @@ export class ObservableQueryErc20ContactInfoInner extends ObservableEvmContractC
 
   @computed
   get tokenInfo(): Erc20ContractTokenInfo | undefined {
-    if (!this.response?.data) {
-      return undefined;
+    const fetchData = this.response?.data;
+    const fetchInfo = this.response?.info;
+    try {
+      if (!fetchData) {
+        return undefined;
+      }
+
+      const chainInfo = this.chainGetter.getChain(this._chainId);
+      const currency = chainInfo.currencies.find((curency) =>
+        curency.coinMinimalDenom.startsWith(`erc20:${this.contractAddress}`)
+      );
+
+      return {
+        decimals: currency?.coinDecimals || fetchInfo.decimals,
+        name: currency?.coinMinimalDenom?.split(':')?.pop() || fetchInfo.name,
+        symbol: currency?.coinDenom || fetchInfo.symbol,
+        total_supply: BigInt(fetchData.result).toString()
+      };
     }
-
-    const chainInfo = this.chainGetter.getChain(this._chainId);
-    const currency = chainInfo.currencies.find((curency) =>
-      curency.coinMinimalDenom.startsWith(`erc20:${this.contractAddress}`)
-    );
-
-    return {
-      decimals: currency.coinDecimals,
-      name: currency.coinMinimalDenom.split(':').pop(),
-      symbol: currency.coinDenom,
-      total_supply: BigInt(this.response.data.result).toString()
-    };
+    catch (error) {
+      console.log("Error on getting token info: ", error);
+    }
   }
 }
 

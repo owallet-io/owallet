@@ -52,7 +52,7 @@ export const AccountView: FunctionComponent = observer(() => {
             : 'Loading...'}
         </div>
         <div style={{ flex: 1, textAlign: 'right' }}>
-          {chainStore.current.raw.txExplorer?.accountUrl && (
+          {/* {chainStore.current.raw.txExplorer?.accountUrl && (
             <a
               target="_blank"
               href={chainStore.current.raw.txExplorer.accountUrl.replace(
@@ -66,7 +66,7 @@ export const AccountView: FunctionComponent = observer(() => {
             >
               <i className="fas fa-external-link-alt"></i>
             </a>
-          )}
+          )} */}
         </div>
       </div>
       {chainStore.current.networkType === 'cosmos' && (
@@ -76,37 +76,66 @@ export const AccountView: FunctionComponent = observer(() => {
             className={styleAccount.address}
             onClick={() => copyAddress(accountInfo.bech32Address)}
           >
-            <Address maxCharacters={22} lineBreakBeforePrefix={false}>
-              {accountInfo.walletStatus === WalletStatus.Loaded &&
-              accountInfo.bech32Address
-                ? accountInfo.bech32Address
-                : '...'}
-            </Address>
+            <span className={styleAccount.addressText}>
+              <Address maxCharacters={22} lineBreakBeforePrefix={false}>
+                {accountInfo.walletStatus === WalletStatus.Loaded &&
+                accountInfo.bech32Address
+                  ? accountInfo.bech32Address
+                  : '...'}
+              </Address>
+            </span>
           </div>
           <div style={{ flex: 1 }} />
         </div>
       )}
-      {accountInfo.hasEvmosHexAddress && (
+      {(accountInfo.hasEvmosHexAddress ||
+        chainStore.current.networkType === 'evm') && (
         <div
           className={styleAccount.containerAccount}
-          style={{ marginTop: '2px' }}
+          style={{
+            marginTop: '2px',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
         >
           <div style={{ flex: 1 }} />
           <div
             className={styleAccount.address}
+            style={{ marginBottom: '6px' }}
             onClick={() => copyAddress(accountInfo.evmosHexAddress)}
           >
-            <Address isRaw={true} tooltipAddress={accountInfo.evmosHexAddress}>
-              {accountInfo.walletStatus === WalletStatus.Loaded &&
-              accountInfo.evmosHexAddress
-                ? accountInfo.evmosHexAddress.length === 42
-                  ? `${accountInfo.evmosHexAddress.slice(
+            <span className={styleAccount.addressText}>
+              <Address
+                isRaw={true}
+                tooltipAddress={accountInfo.evmosHexAddress}
+              >
+                {accountInfo.walletStatus === WalletStatus.Loaded &&
+                accountInfo.evmosHexAddress
+                  ? accountInfo.evmosHexAddress.length === 42
+                    ? `${accountInfo.evmosHexAddress.slice(
+                        0,
+                        10
+                      )}...${accountInfo.evmosHexAddress.slice(-8)}`
+                    : accountInfo.evmosHexAddress
+                  : '...'}
+              </Address>
+            </span>
+          </div>
+          <div
+            className={styleAccount.address}
+            onClick={() => copyAddress(accountInfo.evmosHexAddress)}
+          >
+            <span className={styleAccount.addressText}>
+              <Address isRaw={true} tooltipAddress={accountInfo.bech32Address}>
+                {accountInfo.walletStatus === WalletStatus.Loaded &&
+                accountInfo.bech32Address
+                  ? `${accountInfo.bech32Address.slice(
                       0,
-                      10
-                    )}...${accountInfo.evmosHexAddress.slice(-8)}`
-                  : accountInfo.evmosHexAddress
-                : '...'}
-            </Address>
+                      15
+                    )}...${accountInfo.bech32Address.slice(-10)}`
+                  : accountInfo.bech32Address}
+              </Address>
+            </span>
           </div>
           <div style={{ flex: 1 }} />
         </div>

@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useCallback } from "react";
-import { Button } from "reactstrap";
+import React, { CSSProperties, FunctionComponent, useCallback } from 'react';
+import { Button } from 'reactstrap';
 
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage } from 'react-intl';
 
-import style from "./style.module.scss";
+import style from './style.module.scss';
 
 export const ConfirmDialog: FunctionComponent<{
   img?: React.ReactElement;
@@ -13,9 +13,22 @@ export const ConfirmDialog: FunctionComponent<{
   yes?: string;
   no?: string;
 
+  styleYesBtn?: CSSProperties;
+  styleNoBtn?: CSSProperties;
+
   onConfirm?: () => void;
   onReject?: () => void;
-}> = ({ img: imgElement, title, paragraph, yes, no, onConfirm, onReject }) => {
+}> = ({
+  img: imgElement,
+  title,
+  paragraph,
+  yes,
+  no,
+  styleYesBtn,
+  styleNoBtn,
+  onConfirm,
+  onReject
+}) => {
   return (
     <div className={style.dialog}>
       <div className={style.bodyContainer}>
@@ -38,6 +51,7 @@ export const ConfirmDialog: FunctionComponent<{
             },
             [onReject]
           )}
+          style={styleNoBtn}
         >
           {no ? no : <FormattedMessage id="confirm.no" />}
         </Button>
@@ -54,6 +68,7 @@ export const ConfirmDialog: FunctionComponent<{
             },
             [onConfirm]
           )}
+          style={styleYesBtn}
         >
           {yes ? yes : <FormattedMessage id="confirm.yes" />}
         </Button>

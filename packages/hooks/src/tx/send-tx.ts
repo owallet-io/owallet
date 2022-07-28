@@ -4,7 +4,7 @@ import {
   CosmwasmMsgOpts,
   SecretMsgOpts
 } from '@owallet/stores';
-import { ObservableQueryBalances } from '@owallet/stores';
+import { ObservableQueryBalances, ObservableQueryEvmBalance } from '@owallet/stores';
 import { useFeeConfig } from './fee';
 import { useMemoConfig } from './memo';
 import { useRecipientConfig } from './recipient';
@@ -19,13 +19,18 @@ export const useSendTxConfig = (
   sendMsgOpts: MsgOpts['send'],
   sender: string,
   queryBalances: ObservableQueryBalances,
-  ensEndpoint?: string
+  ensEndpoint?: string,
+  queryEvmBalances?: ObservableQueryEvmBalance,
+  senderEvm?: string,
 ) => {
+  const chainInfo = chainGetter.getChain(chainId);
   const amountConfig = useAmountConfig(
     chainGetter,
     chainId,
     sender,
-    queryBalances
+    queryBalances,
+    chainInfo.networkType === "evm" && queryEvmBalances,
+    chainInfo.networkType === "evm" && senderEvm,
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
@@ -41,7 +46,10 @@ export const useSendTxConfig = (
     sender,
     queryBalances,
     amountConfig,
-    gasConfig
+    gasConfig,
+    true,
+    chainInfo.networkType === "evm" && queryEvmBalances,
+    chainInfo.networkType === "evm" && senderEvm,
   );
   // Due to the circular references between the amount config and gas/fee configs,
   // set the fee config of the amount config after initing the gas/fee configs.

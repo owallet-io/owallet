@@ -35,13 +35,21 @@ export const Menu: FunctionComponent = observer(() => {
         <FormattedMessage id="main.menu.settings" />
       </div>
       {(chainStore.current.features ?? []).find(
-        (feature) => feature === 'cosmwasm' || feature === 'secretwasm'
+        (feature) =>
+          feature === 'cosmwasm' ||
+          feature === 'secretwasm' ||
+          feature === 'isEvm'
       ) ? (
         <div
           className={styleMenu.item}
           onClick={() => {
             history.push({
-              pathname: '/setting/token/add'
+              pathname:
+                chainStore.current.features.includes('cosmwasm') ||
+                chainStore.current.features.includes('secretwasm')
+                  ? '/setting/token/add'
+                  : chainStore.current.features.includes('isEvm') &&
+                    'setting/token-evm/add'
             });
           }}
         >
@@ -65,7 +73,7 @@ export const Menu: FunctionComponent = observer(() => {
       {/* Empty div for separating last item */}
       <div style={{ flex: 1 }} />
       <div
-        className={styleMenu.item}
+        className={`${styleMenu.item} ${styleMenu.signOut}`}
         onClick={() => {
           keyRingStore.lock();
         }}

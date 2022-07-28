@@ -2,7 +2,7 @@
   "main.account.chart.total-balance": "Total Balance",
   "main.account.chart.available-balance": "Available",
   "main.account.chart.staked-balance": "Staked",
-  "main.account.button.deposit": "Deposit",
+  "main.account.button.receive": "Receive",
   "main.account.button.send": "Send",
   "main.account.tooltip.no-asset": "No token in your account. Deposit some tokens to send.",
 
@@ -269,6 +269,7 @@
   "fee-buttons.select.high": "High",
 
   "input.recipient.error.invalid-bech32": "Invalid address",
+  "input.recipient.error.invalid-evm-address": "Invalid EVM address",
   "input.recipient.error.ens-not-supported": "ENS not supported for this chain",
   "input.recipient.error.ens-failed-to-fetch": "Failed to get address from ENS",
   "input.amount.error.invalid-number": "Invalid number",

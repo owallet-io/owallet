@@ -36,7 +36,7 @@ export const BackButton: FunctionComponent<{ onClick: () => void }> = ({
 }) => {
   return (
     <div className={style.backButton}>
-      <Button color="link" onClick={onClick}>
+      <Button color="link" onClick={onClick} style={{ color: '#8f63ec' }}>
         <i className="fas fa-angle-left" style={{ marginRight: '8px' }} />
         <FormattedMessage id="register.button.back" />
       </Button>
@@ -77,18 +77,20 @@ export const RegisterPage: FunctionComponent = observer(() => {
   return (
     <EmptyLayout
       className={style.container}
-      style={{ height: '100%', padding: 0 }}
+      style={{ padding: 0, overflowY: 'auto', height: '100vh' }}
     >
       <div className={style.logoContainer}>
-        <img
-          className={style.icon}
-          src={require('../../public/assets/orai_wallet_logo.png')}
-          alt="logo"
-        />
+        <div>
+          <img
+            className={style.icon}
+            src={require('../../public/assets/svg/oraichain-pro-logo.svg')}
+            alt="logo"
+          />
+        </div>
         <div className={style.logoInnerContainer}>
           <img
             className={style.logo}
-            src={require('../../public/assets/logo-temp.png')}
+            src={require('../../public/assets/img/oraichain-pro.svg')}
             alt="logo"
           />
           <div className={style.paragraph}>Wallet for the Interchain</div>

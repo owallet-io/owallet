@@ -2,24 +2,24 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useState,
-} from "react";
-import { HeaderLayout } from "../../../layouts";
+  useState
+} from 'react';
+import { HeaderLayout } from '../../../layouts';
 
-import { useHistory, useLocation, useRouteMatch } from "react-router";
-import { FormattedMessage, useIntl } from "react-intl";
-import { Input } from "../../../components/form";
-import { Button, Form } from "reactstrap";
-import useForm from "react-hook-form";
-import { WarningView } from "./warning-view";
+import { useHistory, useLocation, useRouteMatch } from 'react-router';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { PasswordInput } from '../../../components/form';
+import { Button, Form } from 'reactstrap';
+import useForm from 'react-hook-form';
+import { WarningView } from './warning-view';
 
-import classnames from "classnames";
-import queryString from "query-string";
+import classnames from 'classnames';
+import queryString from 'query-string';
 
-import style from "./style.module.scss";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../../stores";
-import { flowResult } from "mobx";
+import style from './style.module.scss';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { flowResult } from 'mobx';
 
 interface FormData {
   password: string;
@@ -35,20 +35,20 @@ export const ExportPage: FunctionComponent = observer(() => {
 
   const query = queryString.parse(location.search);
 
-  const type = query.type ?? "mnemonic";
+  const type = query.type ?? 'mnemonic';
 
   const [loading, setLoading] = useState(false);
-  const [keyRing, setKeyRing] = useState("");
+  const [keyRing, setKeyRing] = useState('');
 
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
-      password: "",
-    },
+      password: ''
+    }
   });
 
   useEffect(() => {
     if (parseInt(match.params.index).toString() !== match.params.index) {
-      throw new Error("Invalid index");
+      throw new Error('Invalid index');
     }
   }, [match.params.index]);
 
@@ -58,7 +58,7 @@ export const ExportPage: FunctionComponent = observer(() => {
       canChangeChainInfo={false}
       alternativeTitle={intl.formatMessage({
         id:
-          type === "mnemonic" ? "setting.export" : "setting.export.private-key",
+          type === 'mnemonic' ? 'setting.export' : 'setting.export.private-key'
       })}
       onBackButton={useCallback(() => {
         history.goBack();
@@ -68,7 +68,7 @@ export const ExportPage: FunctionComponent = observer(() => {
         {keyRing ? (
           <div
             className={classnames(style.mnemonic, {
-              [style.altHex]: type !== "mnemonic",
+              [style.altHex]: type !== 'mnemonic'
             })}
           >
             {keyRing}
@@ -89,12 +89,12 @@ export const ExportPage: FunctionComponent = observer(() => {
                     )
                   );
                 } catch (e) {
-                  console.log("Fail to decrypt: " + e.message);
+                  console.log('Fail to decrypt: ' + e.message);
                   setError(
-                    "password",
-                    "invalid",
+                    'password',
+                    'invalid',
                     intl.formatMessage({
-                      id: "setting.export.input.password.error.invalid",
+                      id: 'setting.export.input.password.error.invalid'
                     })
                   );
                 } finally {
@@ -105,21 +105,22 @@ export const ExportPage: FunctionComponent = observer(() => {
               <Input
                 type="password"
                 label={intl.formatMessage({
-                  id: "setting.export.input.password",
+                  id: 'setting.export.input.password'
                 })}
                 name="password"
                 error={errors.password && errors.password.message}
                 ref={register({
                   required: intl.formatMessage({
-                    id: "setting.export.input.password.error.required",
-                  }),
+                    id: 'setting.export.input.password.error.required'
+                  })
                 })}
               />
               <Button
                 type="submit"
-                color="primary"
+                color=""
                 block
                 data-loading={loading}
+                className={style.confirmBtn}
               >
                 <FormattedMessage id="setting.export.button.confirm" />
               </Button>

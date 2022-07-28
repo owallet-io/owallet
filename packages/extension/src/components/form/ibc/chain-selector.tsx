@@ -89,8 +89,12 @@ export const DestinationChainSelector: FunctionComponent<{
                 setIsIBCregisterModalOpen(true);
               }}
             >
-              <i className="fas fa-plus-circle my-1 mr-1" />{' '}
-              <FormattedMessage id="component.ibc.channel-registrar.chain-selector.button.add" />
+              <div className={style.newIbcBtn}>
+                <i className="fas fa-plus-circle my-1 mr-1" />
+                <span>
+                  <FormattedMessage id="component.ibc.channel-registrar.chain-selector.button.add" />
+                </span>
+              </div>
             </DropdownItem>
           </DropdownMenu>
         </ButtonDropdown>

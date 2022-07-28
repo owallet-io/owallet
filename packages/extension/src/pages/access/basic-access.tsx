@@ -9,6 +9,7 @@ import { useStore } from '../../stores';
 import style from './style.module.scss';
 import { EmptyLayout } from '../../layouts/empty-layout';
 import { FormattedMessage } from 'react-intl';
+import classnames from 'classnames';
 
 export const AccessPage: FunctionComponent = observer(() => {
   const { chainStore, permissionStore } = useStore();
@@ -60,7 +61,7 @@ export const AccessPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: '100%', paddingTop: '80px' }}>
       <div className={style.container}>
         <img
-          src={require('../../public/assets/orai_wallet_logo.png')}
+          src={require('../../public/assets/svg/oraichain-pro-logo.svg')}
           alt="logo"
           style={{ height: '92px', maxWidth: 92, margin: '0 auto' }}
         />
@@ -97,8 +98,8 @@ export const AccessPage: FunctionComponent = observer(() => {
         <div style={{ flex: 1 }} />
         <div className={style.buttons}>
           <Button
-            className={style.button}
-            color="danger"
+            className={classnames(style.button, style.rejectBtn)}
+            color=""
             outline
             onClick={async (e) => {
               e.preventDefault();
@@ -117,13 +118,13 @@ export const AccessPage: FunctionComponent = observer(() => {
                 }
               }
             }}
-            data-loading={permissionStore.isLoading}
+            // data-loading={permissionStore.isLoading}
           >
             <FormattedMessage id="access.button.reject" />
           </Button>
           <Button
-            className={style.button}
-            color="primary"
+            className={classnames(style.button, style.approveBtn)}
+            color=""
             onClick={async (e) => {
               e.preventDefault();
 

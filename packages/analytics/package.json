@@ -2,7 +2,7 @@
   "name": "@owallet/analytics",
   "version": "0.9.14",
   "main": "build/index.js",
-  "author": "chainapsis",
+  "author": "oraichain labs",
   "license": "Apache-2.0",
   "private": false,
   "publishConfig": {

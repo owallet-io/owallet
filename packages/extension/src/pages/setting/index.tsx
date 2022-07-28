@@ -7,6 +7,16 @@ import { useLanguage } from '@owallet/common';
 import { useIntl } from 'react-intl';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
+import classNames from 'classnames';
+
+const styleTitle = {
+  fontWeight: '400',
+  fontSize: 14
+};
+
+const styleParagraph = {
+  color: '#A6A6B0'
+};
 
 export const SettingPage: FunctionComponent = observer(() => {
   const language = useLanguage();
@@ -65,6 +75,8 @@ export const SettingPage: FunctionComponent = observer(() => {
             () => [<i key="next" className="fas fa-chevron-right" />],
             []
           )}
+          styleTitle={styleTitle}
+          styleParagraph={styleParagraph}
         />
         <PageButton
           title={intl.formatMessage({
@@ -80,6 +92,8 @@ export const SettingPage: FunctionComponent = observer(() => {
             () => [<i key="next" className="fas fa-chevron-right" />],
             []
           )}
+          styleTitle={styleTitle}
+          styleParagraph={styleParagraph}
         />
         <PageButton
           title={intl.formatMessage({
@@ -97,6 +111,8 @@ export const SettingPage: FunctionComponent = observer(() => {
             () => [<i key="next" className="fas fa-chevron-right" />],
             []
           )}
+          styleTitle={styleTitle}
+          styleParagraph={styleParagraph}
         />
         <PageButton
           title={intl.formatMessage({
@@ -111,6 +127,7 @@ export const SettingPage: FunctionComponent = observer(() => {
             () => [<i key="next" className="fas fa-chevron-right" />],
             []
           )}
+          styleTitle={styleTitle}
         />
         <PageButton
           title="Show Advanced IBC Transfers"
@@ -122,8 +139,7 @@ export const SettingPage: FunctionComponent = observer(() => {
           icons={[
             <label
               key="toggle"
-              className="custom-toggle"
-              style={{ marginBottom: 0 }}
+              className={classNames('custom-toggle', style.toggleBtn)}
             >
               <input
                 type="checkbox"
@@ -134,9 +150,15 @@ export const SettingPage: FunctionComponent = observer(() => {
                   );
                 }}
               />
-              <span className="custom-toggle-slider rounded-circle" />
+              <span
+                className={classNames(
+                  'custom-toggle-slider rounded-circle',
+                  style.toggleSlider
+                )}
+              />
             </label>
           ]}
+          styleTitle={styleTitle}
         />
         <PageButton
           title={intl.formatMessage({
@@ -151,6 +173,7 @@ export const SettingPage: FunctionComponent = observer(() => {
             () => [<i key="next" className="fas fa-chevron-right" />],
             []
           )}
+          styleTitle={styleTitle}
         />
       </div>
     </HeaderLayout>

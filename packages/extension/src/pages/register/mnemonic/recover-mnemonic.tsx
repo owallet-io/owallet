@@ -10,12 +10,37 @@ import useForm from 'react-hook-form';
 import { observer } from 'mobx-react-lite';
 import { RegisterConfig } from '@owallet/hooks';
 import { AdvancedBIP44Option, useBIP44Option } from '../advanced-bip44';
-import { isPrivateKey, trimWordsStr } from '@owallet/common';
+
 import { Buffer } from 'buffer';
 import { useStore } from '../../../stores';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
+
+function isPrivateKey(str: string): boolean {
+  if (str.startsWith('0x')) {
+    return true;
+  }
+
+  if (str.length === 64) {
+    try {
+      return Buffer.from(str, 'hex').length === 32;
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+function trimWordsStr(str: string): string {
+  str = str.trim();
+  // Split on the whitespace or new line.
+  const splited = str.split(/\s+/);
+  const words = splited
+    .map((word) => word.trim())
+    .filter((word) => word.trim().length > 0);
+  return words.join(' ');
+}
 
 interface FormData {
   name: string;
@@ -31,8 +56,7 @@ export const RecoverMnemonicIntro: FunctionComponent<{
 }> = observer(({ registerConfig }) => {
   return (
     <Button
-      color="primary"
-      outline
+      color=""
       block
       onClick={(e) => {
         e.preventDefault();
@@ -42,6 +66,7 @@ export const RecoverMnemonicIntro: FunctionComponent<{
           registerType: 'seed'
         });
       }}
+      className={style.importWalletBtn}
     >
       <FormattedMessage id="register.intro.button.import-account.title" />
     </Button>
@@ -222,6 +247,7 @@ export const RecoverMnemonicPage: FunctionComponent<{
             type="submit"
             block
             data-loading={registerConfig.isLoading}
+            className={style.nextBtn}
           >
             <FormattedMessage id="register.create.button.next" />
           </Button>

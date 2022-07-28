@@ -4,6 +4,7 @@ import {
   ChainInfo,
   Currency,
   CW20Currency,
+  ERC20Currency,
   Secret20Currency
 } from '@owallet/types';
 
@@ -40,6 +41,15 @@ export const CW20CurrencyShema = (CurrencySchema as ObjectSchema<CW20Currency>)
           `${value.type}:${value.contractAddress}:` + value.coinMinimalDenom
       };
     }
+  });
+
+export const ERC20CurrencySchema = (CurrencySchema as ObjectSchema<ERC20Currency>)
+  .keys({
+    type: Joi.string().equal('erc20').required(),
+    contractAddress: Joi.string().required()
+  })
+  .custom((value: ERC20Currency) => {
+    return value;
   });
 
 export const Secret20CurrencySchema = (

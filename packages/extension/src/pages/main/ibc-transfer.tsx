@@ -50,7 +50,6 @@ export const IBCTransferView: FunctionComponent = observer(() => {
       <div style={{ flex: 1 }} />
       <Button
         className={styleTransfer.button}
-        color="primary"
         size="sm"
         disabled={!hasAssets}
         data-loading={accountInfo.isSendingMsg === 'ibcTransfer'}
@@ -60,7 +59,9 @@ export const IBCTransferView: FunctionComponent = observer(() => {
           history.push('/ibc-transfer');
         }}
       >
-        <FormattedMessage id="main.ibc.transfer.button" />
+        <span className={styleTransfer.buttonText}>
+          <FormattedMessage id="main.ibc.transfer.button" />
+        </span>
       </Button>
     </div>
   );

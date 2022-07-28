@@ -5,10 +5,29 @@ import {
   PubKeySecp256k1,
   RNG,
 } from '@owallet/crypto';
+import {
+  bufferToHex,
+  ecsign,
+  keccak,
+  publicToAddress,
+  toBuffer
+} from 'ethereumjs-util';
+import { rawEncode, soliditySHA3 } from 'ethereumjs-abi';
+import { intToHex, isHexString, stripHexPrefix } from 'ethjs-util';
 import { KVStore } from '@owallet/common';
 import { LedgerService } from '../ledger';
-import { BIP44HDPath, CommonCrypto, ExportKeyRingData } from './types';
-import { ChainInfo, AlgoType } from '@owallet/types';
+import {
+  BIP44HDPath,
+  CommonCrypto,
+  ExportKeyRingData,
+  MessageTypes,
+  SignTypedDataVersion,
+  TypedDataV1,
+  TypedMessage,
+  MessageTypeProperty,
+  ECDSASignature
+} from './types';
+import { ChainInfo } from '@owallet/types';
 import { Env, OWalletError } from '@owallet/router';
 
 import { Buffer } from 'buffer';
@@ -21,6 +40,7 @@ import { keccak256 } from '@ethersproject/keccak256';
 import Common from '@ethereumjs/common';
 import { TransactionOptions, Transaction } from 'ethereumjs-tx';
 import { request } from '../tx';
+import { TYPED_MESSAGE_SCHEMA } from './constants';
 
 export enum KeyRingStatus {
   NOTLOADED,
@@ -176,15 +196,8 @@ export class KeyRing {
     ];
   }
 
-  public getKey(
-    chainId: string,
-    defaultCoinType: number,
-    algo?: AlgoType
-  ): Key {
-    return this.loadKey(
-      this.computeKeyStoreCoinType(chainId, defaultCoinType),
-      algo
-    );
+  public getKey(chainId: string, defaultCoinType: number): Key {
+    return this.loadKey(this.computeKeyStoreCoinType(chainId, defaultCoinType));
   }
 
   public getKeyStoreMeta(key: string): string {
@@ -245,7 +258,7 @@ export class KeyRing {
 
     return {
       status: this.status,
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
+      multiKeyStoreInfo: await this.getMultiKeyStoreInfo()
     };
   }
 
@@ -278,7 +291,7 @@ export class KeyRing {
 
     return {
       status: this.status,
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
+      multiKeyStoreInfo: await this.getMultiKeyStoreInfo()
     };
   }
 
@@ -320,7 +333,7 @@ export class KeyRing {
 
     return {
       status: this.status,
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo()
+      multiKeyStoreInfo: await this.getMultiKeyStoreInfo()
     };
   }
 
@@ -476,7 +489,7 @@ export class KeyRing {
       [ChainIdHelper.parse(chainId).identifier]: coinType,
     };
 
-    const keyStoreInMulti = this.multiKeyStore.find(keyStore => {
+    const keyStoreInMulti = this.multiKeyStore.find((keyStore) => {
       return (
         KeyRing.getKeyStoreId(keyStore) ===
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -575,7 +588,7 @@ export class KeyRing {
     return this.getMultiKeyStoreInfo();
   }
 
-  private loadKey(coinType: number, algo?: AlgoType): Key {
+  private loadKey(coinType: number): Key {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error('Key ring is not unlocked');
     }
@@ -592,7 +605,7 @@ export class KeyRing {
       const pubKey = new PubKeySecp256k1(this.ledgerPublicKey);
 
       return {
-        algo: algo ?? 'secp256k1',
+        algo: 'secp256k1',
         pubKey: pubKey.toBytes(),
         address: pubKey.getAddress(),
         isNanoLedger: true,
@@ -601,13 +614,13 @@ export class KeyRing {
       const privKey = this.loadPrivKey(coinType);
       const pubKey = privKey.getPubKey();
 
-      if (algo === 'ethsecp256k1') {
+      if (coinType === 60) {
         // For Ethereum Key-Gen Only:
         const wallet = new Wallet(privKey.toBytes());
         const ethereumAddress = ETH.decoder(wallet.address);
 
         return {
-          algo,
+          algo: 'ethsecp256k1',
           pubKey: pubKey.toBytes(),
           address: ethereumAddress,
           isNanoLedger: false,
@@ -616,7 +629,7 @@ export class KeyRing {
 
       // Default
       return {
-        algo: algo ?? 'secp256k1',
+        algo: 'secp256k1',
         pubKey: pubKey.toBytes(),
         address: pubKey.getAddress(),
         isNanoLedger: false,
@@ -636,8 +649,7 @@ export class KeyRing {
     const bip44HDPath = KeyRing.getKeyStoreBIP44Path(this.keyStore);
 
     if (this.type === 'mnemonic') {
-      const coinTypeModified = bip44HDPath.coinType ?? coinType;
-      const path = `m/44'/${coinTypeModified}'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
+      const path = `m/44'/${coinType}'/${bip44HDPath.account}'/${bip44HDPath.change}/${bip44HDPath.addressIndex}`;
       const cachedKey = this.cached.get(path);
       if (cachedKey) {
         return new PrivKeySecp256k1(cachedKey);
@@ -672,8 +684,7 @@ export class KeyRing {
     env: Env,
     chainId: string,
     defaultCoinType: number,
-    message: Uint8Array,
-    algo?: AlgoType
+    message: Uint8Array
   ): Promise<Uint8Array> {
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new OWalletError('keyring', 143, 'Key ring is not unlocked');
@@ -685,7 +696,7 @@ export class KeyRing {
     // get here
     // Sign with Evmos/Ethereum
     const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-    if (algo === 'ethsecp256k1') {
+    if (coinType === 60) {
       return this.signEthereum(chainId, defaultCoinType, message);
     }
 
@@ -707,6 +718,8 @@ export class KeyRing {
         message
       );
     } else {
+      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+
       const privKey = this.loadPrivKey(coinType);
       return privKey.sign(message);
     }
@@ -731,7 +744,10 @@ export class KeyRing {
     rpc: string,
     message: object
   ): Promise<string> {
-    console.log('sign raw ethereum');
+    console.log(
+      '🚀 ~ file: keyring.ts ~ line 733 ~ KeyRing ~ message',
+      message
+    );
     if (this.status !== KeyRingStatus.UNLOCKED) {
       throw new Error('Key ring is not unlocked');
     }
@@ -740,11 +756,12 @@ export class KeyRing {
       throw new Error('Key Store is empty');
     }
 
-    // if (coinType !== 60) {
-    //   throw new Error(
-    //     'Invalid coin type passed in to Ethereum signing (expected 60)'
-    //   );
-    // }
+    const cType = this.computeKeyStoreCoinType(chainId, coinType);
+    if (cType !== 60) {
+      throw new Error(
+        'Invalid coin type passed in to Ethereum signing (expected 60)'
+      );
+    }
 
     if (this.keyStore.type === 'ledger') {
       // TODO: Ethereum Ledger Integration
@@ -764,20 +781,17 @@ export class KeyRing {
         'latest',
       ]);
 
-      // auto gas
-      // message now has gasPrice and memo in it
-      // TODO: Use gasPrice and memo
-      const estimatedGas = await request(rpc, 'eth_estimateGas', [message]);
-      const gasPrice = await request(rpc, 'eth_gasPrice', []);
+      let finalMessage: any = {
+        ...message,
+        gas: (message as any)?.gasLimit,
+        gasPrice: (message as any)?.gasPrice,
+        nonce
+      };
 
-      let finalMessage = { ...message };
-      if (!(message as any).gasPrice || !(message as any).gas) {
-        if (estimatedGas.substring(0, 2) === '0x') {
-          finalMessage = { ...message, gas: estimatedGas, gasPrice };
-        }
-      }
-
-      finalMessage = { ...finalMessage, nonce };
+      console.log(
+        '🚀 ~ file: keyring.ts ~ line 790 ~ KeyRing ~ finalMessage',
+        finalMessage
+      );
 
       const opts: TransactionOptions = { common: customCommon } as any;
       const tx = new Transaction(finalMessage, opts);
@@ -809,11 +823,11 @@ export class KeyRing {
       throw new Error('Ethereum signing with Ledger is not yet supported');
     } else {
       const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-      // if (coinType !== 60) {
-      //   throw new Error(
-      //     'Invalid coin type passed in to Ethereum signing (expected 60)'
-      //   );
-      // }
+      if (coinType !== 60) {
+        throw new Error(
+          'Invalid coin type passed in to Ethereum signing (expected 60)'
+        );
+      }
 
       const privKey = this.loadPrivKey(coinType);
 
@@ -824,6 +838,322 @@ export class KeyRing {
       const splitSignature = BytesUtils.splitSignature(signature);
       return BytesUtils.arrayify(
         BytesUtils.concat([splitSignature.r, splitSignature.s])
+      );
+    }
+  }
+
+  public signEthereumTypedData<
+    V extends SignTypedDataVersion,
+    T extends MessageTypes
+  >({
+    typedMessage,
+    version,
+    chainId,
+    defaultCoinType
+  }: {
+    typedMessage: V extends 'V1' ? TypedDataV1 : TypedMessage<T>;
+    version: V;
+    chainId: string;
+    defaultCoinType: number;
+  }): ECDSASignature {
+    this.validateVersion(version);
+    if (!typedMessage) {
+      throw new Error('Missing data parameter');
+    }
+
+    const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+    if (coinType !== 60) {
+      throw new Error(
+        'Invalid coin type passed in to Ethereum signing (expected 60)'
+      );
+    }
+
+    const privateKey = this.loadPrivKey(coinType).toBytes();
+
+    const messageHash =
+      version === SignTypedDataVersion.V1
+        ? this._typedSignatureHash(typedMessage as TypedDataV1)
+        : this.eip712Hash(
+            typedMessage as TypedMessage<T>,
+            version as SignTypedDataVersion.V3 | SignTypedDataVersion.V4
+          );
+    console.log(
+      '🚀 ~ file: keyring.ts ~ line 868 ~ KeyRing ~ messageHash',
+      messageHash
+    );
+    const sig = ecsign(messageHash, Buffer.from(privateKey));
+    console.log('🚀 ~ file: keyring.ts ~ line 876 ~ KeyRing ~ sig', sig);
+    return sig;
+  }
+
+  /**
+   * Generate the "V1" hash for the provided typed message.
+   *
+   * The hash will be generated in accordance with an earlier version of the EIP-712
+   * specification. This hash is used in `signTypedData_v1`.
+   *
+   * @param typedData - The typed message.
+   * @returns The hash representing the type of the provided message.
+   */
+
+  private _typedSignatureHash(typedData: TypedDataV1): Buffer {
+    const error = new Error('Expect argument to be non-empty array');
+    if (
+      typeof typedData !== 'object' ||
+      !('length' in typedData) ||
+      !typedData.length
+    ) {
+      throw error;
+    }
+
+    const data = typedData.map(function (e) {
+      if (e.type !== 'bytes') {
+        return e.value;
+      }
+
+      return typeof e.value === 'string' && !isHexString(e.value)
+        ? Buffer.from(e.value)
+        : toBuffer(e.value);
+    });
+    const types = typedData.map(function (e) {
+      return e.type;
+    });
+    const schema = typedData.map(function (e) {
+      if (!e.name) {
+        throw error;
+      }
+      return `${e.type} ${e.name}`;
+    });
+
+    return soliditySHA3(
+      ['bytes32', 'bytes32'],
+      [
+        soliditySHA3(new Array(typedData.length).fill('string'), schema),
+        soliditySHA3(types, data)
+      ]
+    );
+  }
+
+  private eip712Hash<T extends MessageTypes>(
+    typedData: TypedMessage<T>,
+    version: SignTypedDataVersion.V3 | SignTypedDataVersion.V4
+  ): Buffer {
+    this.validateVersion(version, [
+      SignTypedDataVersion.V3,
+      SignTypedDataVersion.V4
+    ]);
+
+    const sanitizedData = this.sanitizeData(typedData);
+    const parts = [Buffer.from('1901', 'hex')];
+    parts.push(
+      this.hashStruct(
+        'EIP712Domain',
+        sanitizedData.domain,
+        sanitizedData.types,
+        version
+      )
+    );
+
+    if (sanitizedData.primaryType !== 'EIP712Domain') {
+      parts.push(
+        this.hashStruct(
+          // TODO: Validate that this is a string, so this type cast can be removed.
+          sanitizedData.primaryType as string,
+          sanitizedData.message,
+          sanitizedData.types,
+          version
+        )
+      );
+    }
+    return keccak(Buffer.concat(parts));
+  }
+
+  private sanitizeData<T extends MessageTypes>(
+    data: TypedMessage<T>
+  ): TypedMessage<T> {
+    const sanitizedData: Partial<TypedMessage<T>> = {};
+    for (const key in TYPED_MESSAGE_SCHEMA.properties) {
+      if (data[key]) {
+        sanitizedData[key] = data[key];
+      }
+    }
+
+    if ('types' in sanitizedData) {
+      sanitizedData.types = { EIP712Domain: [], ...sanitizedData.types };
+    }
+    return sanitizedData as Required<TypedMessage<T>>;
+  }
+
+  private hashStruct(
+    primaryType: string,
+    data: Record<string, unknown>,
+    types: Record<string, MessageTypeProperty[]>,
+    version: SignTypedDataVersion.V3 | SignTypedDataVersion.V4
+  ): Buffer {
+    this.validateVersion(version, [
+      SignTypedDataVersion.V3,
+      SignTypedDataVersion.V4
+    ]);
+
+    return keccak(this.encodeData(primaryType, data, types, version));
+  }
+
+  private encodeData(
+    primaryType: string,
+    data: Record<string, unknown>,
+    types: Record<string, MessageTypeProperty[]>,
+    version: SignTypedDataVersion.V3 | SignTypedDataVersion.V4
+  ): Buffer {
+    this.validateVersion(version, [
+      SignTypedDataVersion.V3,
+      SignTypedDataVersion.V4
+    ]);
+
+    const encodedTypes = ['bytes32'];
+    const encodedValues: unknown[] = [this.hashType(primaryType, types)];
+
+    for (const field of types[primaryType]) {
+      if (
+        version === SignTypedDataVersion.V3 &&
+        data[field.name] === undefined
+      ) {
+        continue;
+      }
+      const [type, value] = this.encodeField(
+        types,
+        field.name,
+        field.type,
+        data[field.name],
+        version
+      );
+      encodedTypes.push(type);
+      encodedValues.push(value);
+    }
+
+    return rawEncode(encodedTypes, encodedValues);
+  }
+
+  private encodeField(
+    types: Record<string, MessageTypeProperty[]>,
+    name: string,
+    type: string,
+    value: any,
+    version: SignTypedDataVersion.V3 | SignTypedDataVersion.V4
+  ): [type: string, value: any] {
+    this.validateVersion(version, [
+      SignTypedDataVersion.V3,
+      SignTypedDataVersion.V4
+    ]);
+
+    if (types[type] !== undefined) {
+      return [
+        'bytes32',
+        version === SignTypedDataVersion.V4 && value == null // eslint-disable-line no-eq-null
+          ? '0x0000000000000000000000000000000000000000000000000000000000000000'
+          : keccak(this.encodeData(type, value, types, version))
+      ];
+    }
+
+    if (value === undefined) {
+      throw new Error(`missing value for field ${name} of type ${type}`);
+    }
+
+    if (type === 'bytes') {
+      return ['bytes32', keccak(value)];
+    }
+
+    if (type === 'string') {
+      // convert string to buffer - prevents ethUtil from interpreting strings like '0xabcd' as hex
+      if (typeof value === 'string') {
+        value = Buffer.from(value, 'utf8');
+      }
+      return ['bytes32', keccak(value)];
+    }
+
+    if (type.lastIndexOf(']') === type.length - 1) {
+      if (version === SignTypedDataVersion.V3) {
+        throw new Error(
+          'Arrays are unimplemented in encodeData; use V4 extension'
+        );
+      }
+      const parsedType = type.slice(0, type.lastIndexOf('['));
+      const typeValuePairs = value.map((item) =>
+        this.encodeField(types, name, parsedType, item, version)
+      );
+      return [
+        'bytes32',
+        keccak(
+          rawEncode(
+            typeValuePairs.map(([t]) => t),
+            typeValuePairs.map(([, v]) => v)
+          )
+        )
+      ];
+    }
+
+    return [type, value];
+  }
+
+  private hashType(
+    primaryType: string,
+    types: Record<string, MessageTypeProperty[]>
+  ): Buffer {
+    // @ts-ignore
+    return keccak(this.encodeType(primaryType, types));
+  }
+
+  private encodeType(
+    primaryType: string,
+    types: Record<string, MessageTypeProperty[]>
+  ): string {
+    let result = '';
+    const unsortedDeps = this.findTypeDependencies(primaryType, types);
+    unsortedDeps.delete(primaryType);
+
+    const deps = [primaryType, ...Array.from(unsortedDeps).sort()];
+    for (const type of deps) {
+      const children = types[type];
+      if (!children) {
+        throw new Error(`No type definition specified: ${type}`);
+      }
+
+      result += `${type}(${types[type]
+        .map(({ name, type: t }) => `${t} ${name}`)
+        .join(',')})`;
+    }
+
+    return result;
+  }
+
+  private findTypeDependencies(
+    primaryType: string,
+    types: Record<string, MessageTypeProperty[]>,
+    results: Set<string> = new Set()
+  ): Set<string> {
+    [primaryType] = primaryType.match(/^\w*/u);
+    if (results.has(primaryType) || types[primaryType] === undefined) {
+      return results;
+    }
+
+    results.add(primaryType);
+
+    for (const field of types[primaryType]) {
+      this.findTypeDependencies(field.type, types, results);
+    }
+    return results;
+  }
+
+  private validateVersion(
+    version: SignTypedDataVersion,
+    allowedVersions?: SignTypedDataVersion[]
+  ) {
+    if (!Object.keys(SignTypedDataVersion).includes(version)) {
+      throw new Error(`Invalid version: '${version}'`);
+    } else if (allowedVersions && !allowedVersions.includes(version)) {
+      throw new Error(
+        `SignTypedDataVersion not allowed: '${version}'. Allowed versions are: ${allowedVersions.join(
+          ', '
+        )}`
       );
     }
   }
@@ -870,7 +1200,11 @@ export class KeyRing {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
-      throw new Error('Key ring is locked or not initialized');
+      throw new OWalletError(
+        'keyring',
+        141,
+        'Key ring is locked or not initialized'
+      );
     }
 
     const keyStore = await KeyRing.CreateMnemonicKeyStore(
@@ -898,7 +1232,11 @@ export class KeyRing {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
-      throw new Error('Key ring is locked or not initialized');
+      throw new OWalletError(
+        'keyring',
+        141,
+        'Key ring is locked or not initialized'
+      );
     }
 
     const keyStore = await KeyRing.CreatePrivateKeyStore(
@@ -926,7 +1264,11 @@ export class KeyRing {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
-      throw new Error('Key ring is locked or not initialized');
+      throw new OWalletError(
+        'keyring',
+        141,
+        'Key ring is locked or not initialized'
+      );
     }
 
     // Get public key first
@@ -954,7 +1296,11 @@ export class KeyRing {
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
     if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
-      throw new Error('Key ring is locked or not initialized');
+      throw new OWalletError(
+        'keyring',
+        141,
+        'Key ring is locked or not initialized'
+      );
     }
 
     const keyStore = this.multiKeyStore[index];

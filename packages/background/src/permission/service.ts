@@ -17,14 +17,14 @@ import { ChainIdHelper } from '@owallet/cosmos';
 export class PermissionService {
   protected permissionMap: {
     [chainIdentifier: string]:
+    | {
+      [type: string]:
       | {
-          [type: string]:
-            | {
-                [origin: string]: true | undefined;
-              }
-            | undefined;
-        }
+        [origin: string]: true | undefined;
+      }
       | undefined;
+    }
+    | undefined;
   } = {};
 
   protected privilegedOrigins: Map<string, boolean> = new Map();
@@ -107,6 +107,17 @@ export class PermissionService {
     await this.addPermission(chainIds, type, origins);
   }
 
+  private parseChainId({ chainId }: { chainId: string }): {
+    chainId: string;
+    isEvm: boolean;
+  } {
+    if (!chainId)
+      throw new Error('Invalid empty chain id when switching Ethereum chain');
+    if (chainId.substring(0, 2) === '0x')
+      return { chainId: parseInt(chainId, 16).toString(), isEvm: true };
+    return { chainId, isEvm: false };
+  }
+
   async grantBasicAccessPermission(
     env: Env,
     chainIds: string[],
@@ -114,6 +125,7 @@ export class PermissionService {
   ) {
     for (const chainId of chainIds) {
       // Make sure that the chain info is registered.
+      // const parsedChainId = this.parseChainId({ chainId }).chainId
       await this.chainsService.getChainInfo(chainId);
     }
 
@@ -143,6 +155,7 @@ export class PermissionService {
   ) {
     for (const chainId of chainIds) {
       // Make sure that the chain info is registered.
+      // const parsedChainId = this.parseChainId({ chainId }).chainId
       await this.chainsService.getChainInfo(chainId);
 
       this.checkPermission(

@@ -37,6 +37,8 @@ import {
   RequestDecryptMsg,
   GetTxEncryptionKeyMsg,
   RequestVerifyADR36AminoSignDoc,
+  RequestSignEthereumTypedDataMsg,
+  SignEthereumTypedDataObject,
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -117,7 +119,6 @@ export class OWallet implements IOWallet {
     },
     signOptions: OWalletSignOptions = {}
   ): Promise<DirectSignResponse> {
-    console.log('ready to sign direcT!!!!!!!!!!!!!!!!');
     const msg = new RequestSignDirectMsg(
       chainId,
       signer,
@@ -315,6 +316,17 @@ export class Ethereum implements IEthereum {
   ): Promise<{ rawTxHex: string }> {
     const msg = new RequestSignEthereumMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
+    const msg = new SuggestChainInfoMsg(chainInfo);
+    console.log("🚀 ~ file: core.ts ~ line 313 ~ Ethereum ~ experimentalSuggestChain ~ chainInfo", chainInfo)
+    await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void> {
+    const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
+    await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   // async sign()

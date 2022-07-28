@@ -1,8 +1,23 @@
 @import "../../styles/var";
 
 .container {
-  margin: 0 calc(#{$layout-padding} * -1) calc(#{$layout-padding} * -1);  
+  margin: 0 calc(#{$layout-padding} * -1) calc(#{$layout-padding} * -1);
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.toggle-slider {
+  background-color: $color-gray-toggle;
+  border: 1px solid $color-gray-toggle;
+}
+
+.toggle-btn input:checked + .toggle-slider {
+  background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  border: 1px solid $primary-color;
+}
+
+.toggle-btn input:checked + .toggle-slider:before {
+  background: #ffffff;
+  transform: translateX(1.625rem);
 }

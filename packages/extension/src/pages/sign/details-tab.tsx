@@ -18,6 +18,7 @@ import {
 import { useLanguage } from '@owallet/common';
 import { Badge, Button, Label } from 'reactstrap';
 import { renderDirectMessage } from './direct';
+import classnames from 'classnames';
 
 export const DetailsTab: FunctionComponent<{
   signDocHelper: SignDocHelper;
@@ -99,7 +100,7 @@ export const DetailsTab: FunctionComponent<{
           style={{ display: 'flex' }}
         >
           <FormattedMessage id="sign.list.messages.label" />
-          <Badge className="ml-2" color="primary">
+          <Badge className={classnames('ml-2', styleDetailsTab.msgsBadge)}>
             {msgs.length}
           </Badge>
         </Label>

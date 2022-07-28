@@ -14,6 +14,14 @@ export class InvalidBech32Error extends Error {
   }
 }
 
+export class InvalidEvmAddressError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, InvalidEvmAddressError.prototype);
+  }
+}
+
 export class ENSNotSupportedError extends Error {
   constructor(m: string) {
     super(m);

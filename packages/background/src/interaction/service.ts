@@ -59,10 +59,14 @@ export class InteractionService {
       env.isInternalMsg,
       data
     );
+    console.log("🚀 ~ file: service.ts ~ line 62 ~ InteractionService ~ interactionWaitingData", interactionWaitingData)
+
+    // console.log('interactionWaitingData', interactionWaitingData);
 
     // console.log('interactionWaitingData', interactionWaitingData);
 
     const msg = new PushInteractionDataMsg(interactionWaitingData);
+    console.log("🚀 ~ file: service.ts ~ line 65 ~ InteractionService ~ msg", msg)
 
     return await this.wait(msg.data.id, () => {
       env.requestInteraction(url, msg, options);

@@ -10,6 +10,7 @@ import {
 import { Result } from './types';
 import { ObservableEvmContractChainQuery } from './contract-query';
 import { evmosToEth } from '@hanchon/ethermint-address-converter';
+import { AppCurrency, ERC20Currency } from '@owallet/types';
 
 export class ObservableQueryErc20Balance extends ObservableEvmContractChainQuery<Result> {
   constructor(
@@ -112,10 +113,11 @@ export class ObservableQueryErc20BalanceRegistry implements BalanceRegistry {
     chainId: string,
     chainGetter: ChainGetter,
     bech32Address: string,
-    minimalDenom: string
+    minimalDenom: string,
+    currency?: ERC20Currency
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    if (bech32Address && denomHelper.type === 'erc20') {
+    if (bech32Address && (denomHelper.type === 'erc20' || currency?.type === 'erc20')) {
       return new ObservableQueryErc20BalanceInner(
         this.kvStore,
         chainId,

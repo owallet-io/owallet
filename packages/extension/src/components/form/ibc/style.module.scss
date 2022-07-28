@@ -1,4 +1,4 @@
-@import '../../../styles/var';
+@import "../../../styles/var";
 
 .chain-selector {
   width: 100%;
@@ -6,7 +6,7 @@
   background-color: $background-color-lighter;
   border-radius: 8px;
   button {
-    width: 100%;    
+    width: 100%;
     text-align: left;
     font-weight: normal;
 
@@ -43,6 +43,34 @@
 
   :global(.dropdown-menu.show) {
     width: 100%;
-    top: $header-height!important;
+    top: $header-height !important;
+  }
+}
+
+.save-btn {
+  background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+  color: $color-darker;
+
+  &:hover {
+    color: $color-darker;
+  }
+}
+
+.new-ibc-btn {
+  display: flex;
+  align-items: center;
+}
+
+:global(.dropdown-menu .dropdown-item:hover) {
+  &:hover {
+    background-color: $color-gray-70;
+    color: $color;
+  }
+}
+
+:global(.dropdown-item:active) {
+  &:active {
+    background-color: $color-gray-70;
+    color: $color;
   }
 }

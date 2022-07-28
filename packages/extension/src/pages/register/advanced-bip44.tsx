@@ -118,6 +118,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
           e.preventDefault();
           toggleOpen();
         }}
+        style={{ color: '#8f63ec' }}
       >
         <FormattedMessage id="register.bip44.button.advanced" />
       </Button>

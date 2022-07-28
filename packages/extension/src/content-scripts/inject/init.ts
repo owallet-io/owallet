@@ -1,10 +1,12 @@
-import { OWallet } from '@owallet/types';
+// @ts-nocheck
+import { OWallet, Ethereum } from '@owallet/types';
 import { OfflineSigner } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 
 export function init(
   owallet: OWallet,
+  ethereum: Ethereum,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
   getOfflineSignerAuto: (
@@ -16,6 +18,10 @@ export function init(
   if (process.env.NODE_ENV !== 'production') {
     if (!window.owallet) {
       window.owallet = owallet;
+    }
+
+    if (!window.ethereum) {
+      window.ethereum = ethereum;
     }
 
     if (!window.getOfflineSigner) {
@@ -32,6 +38,7 @@ export function init(
     }
   } else {
     window.owallet = owallet;
+    window.ethereum = ethereum;
     window.getOfflineSigner = getOfflineSigner;
     window.getOfflineSignerOnlyAmino = getOfflineSignerOnlyAmino;
     window.getOfflineSignerAuto = getOfflineSignerAuto;

@@ -7,7 +7,7 @@ import { Card, CardBody } from 'reactstrap';
 import style from './style.module.scss';
 import { Menu } from './menu';
 import { AccountView } from './account';
-import { TxButtonView } from './tx-button';
+import { TxButtonEvmView, TxButtonView } from './tx-button';
 import { AssetView, AssetViewEvm } from './asset';
 import { StakeView } from './stake';
 
@@ -21,6 +21,7 @@ import { useIntl } from 'react-intl';
 import { useConfirm } from '../../components/confirm';
 import { ChainUpdaterService } from '@owallet/background';
 import { IBCTransferView } from './ibc-transfer';
+import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -108,23 +109,46 @@ export const MainPage: FunctionComponent = observer(() => {
       <Card className={classnames(style.card, 'shadow')}>
         <CardBody>
           <div className={style.containerAccountInner}>
-            <AccountView />
+            <div className={style.imageWrap}>
+              <AccountView />
+              {chainStore.current.networkType === 'evm' ? (
+                <>
+                  <AssetViewEvm />
+                </>
+              ) : (
+                <>
+                  <AssetView />
+                </>
+              )}
+            </div>
             {chainStore.current.networkType === 'evm' ? (
-              <AssetViewEvm />
+              <>
+                <AmountTokenEvm />
+              </>
             ) : (
-              <AssetView />
+              <>
+                <AmountTokenCosmos />
+              </>
             )}
-            <TxButtonView />
+            {chainStore.current.networkType === 'evm' ? (
+              <div style={{ marginTop: 24 }}>
+                <TxButtonEvmView />
+              </div>
+            ) : (
+              <>
+                <TxButtonView />
+              </>
+            )}
           </div>
         </CardBody>
       </Card>
-      {chainStore.current.networkType === 'cosmos' && (
+      {/* {chainStore.current.networkType === 'cosmos' && (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>
             <StakeView />
           </CardBody>
         </Card>
-      )}
+      )} */}
       {hasTokens ? (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>{<TokensView tokens={tokens} />}</CardBody>

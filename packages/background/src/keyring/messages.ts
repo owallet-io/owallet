@@ -3,14 +3,14 @@ import { ROUTE } from './constants';
 import {
   KeyRing,
   KeyRingStatus,
-  MultiKeyStoreInfoWithSelected
+  MultiKeyStoreInfoWithSelected,
 } from './keyring';
-import { BIP44HDPath, ExportKeyRingData } from './types';
+import { BIP44HDPath, ExportKeyRingData, SignEthereumTypedDataObject } from './types';
 
 import {
   Bech32Address,
   checkAndValidateADR36AminoSignDoc,
-  cosmos
+  cosmos,
 } from '@owallet/cosmos';
 import { BIP44, OWalletSignOptions, Key } from '@owallet/types';
 
@@ -595,7 +595,7 @@ export class RequestSignDirectMsg extends Message<{
       chainId: this.signDoc.chainId,
       accountNumber: this.signDoc.accountNumber
         ? Long.fromString(this.signDoc.accountNumber)
-        : undefined
+        : undefined,
     });
 
     if (signDoc.chainId !== this.chainId) {
@@ -634,14 +634,71 @@ export class RequestSignEthereumMsg extends Message<{
 
   constructor(
     public readonly chainId: string,
-    public readonly data: object // public readonly signOptions: OWalletSignOptions = {} // public readonly signer: string,
-  ) // public readonly signDoc: {
-  //   bodyBytes?: Uint8Array | null;
+    public readonly data: object // public readonly signOptions: OWalletSignOptions = {} // public readonly signer: string, // public readonly signDoc: {
+  ) //   bodyBytes?: Uint8Array | null;
   //   authInfoBytes?: Uint8Array | null;
   //   chainId?: string | null;
   //   accountNumber?: string | null;
   // }
   {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new OWalletError('keyring', 270, 'chain id not set');
+    }
+
+    if (!this.data) {
+      throw new OWalletError('keyring', 231, 'dât not set');
+    }
+
+    // const signDoc = cosmos.tx.v1beta1.SignDoc.create({
+    //   bodyBytes: this.signDoc.bodyBytes,
+    //   authInfoBytes: this.signDoc.authInfoBytes,
+    //   chainId: this.signDoc.chainId,
+    //   accountNumber: this.signDoc.accountNumber
+    //     ? Long.fromString(this.signDoc.accountNumber)
+    //     : undefined,
+    // });
+
+    // if (signDoc.chainId !== this.chainId) {
+    //   throw new OWalletError(
+    //     'keyring',
+    //     234,
+    //     'Chain id in the message is not matched with the requested chain id'
+    //   );
+    // }
+
+    // if (!this.signOptions) {
+    //   throw new Error('Sign options are null');
+    // }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return ROUTE;
+  }
+
+  type(): string {
+    return RequestSignEthereumMsg.type();
+  }
+}
+
+export class RequestSignEthereumTypedDataMsg extends Message<{
+  readonly result: string; // raw tx signature to broadcast
+}> {
+  public static type() {
+    return 'request-sign-ethereum-typed-data';
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly data: SignEthereumTypedDataObject // public readonly signOptions: OWalletSignOptions = {}
+  ) {
     super();
   }
 

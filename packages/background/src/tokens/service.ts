@@ -1,16 +1,19 @@
 import { delay, inject, singleton } from 'tsyringe';
 import { TYPES } from '../types';
+import Web3 from 'web3';
 
 import { Env } from '@owallet/router';
 import {
   ChainInfo,
   AppCurrency,
   CW20Currency,
-  Secret20Currency
+  Secret20Currency,
+  ERC20Currency
 } from '@owallet/types';
 import {
   CurrencySchema,
   CW20CurrencySchema,
+  ERC20CurrencySchema,
   Secret20CurrencySchema
 } from '../chains';
 import { Bech32Address, ChainIdHelper } from '@owallet/cosmos';
@@ -98,45 +101,54 @@ export class TokensService {
   }
 
   async addToken(chainId: string, currency: AppCurrency) {
-    const chainInfo = await this.chainsService.getChainInfo(chainId);
-
-    currency = await TokensService.validateCurrency(chainInfo, currency);
-
-    const chainCurrencies = await this.getTokens(chainId);
-
-    const isTokenForAccount =
-      'type' in currency && currency.type === 'secret20';
-    let isCurrencyUpdated = false;
-
-    for (const chainCurrency of chainCurrencies) {
-      if (currency.coinMinimalDenom === chainCurrency.coinMinimalDenom) {
-        if (!isTokenForAccount) {
-          // If currency is already registered, do nothing.
-          return;
+    try {
+      const chainInfo = await this.chainsService.getChainInfo(chainId);
+  
+      currency = await TokensService.validateCurrency(chainInfo, currency);
+  
+      const chainCurrencies = await this.getTokens(chainId);
+  
+      const isTokenForAccount =
+        'type' in currency && currency.type === 'secret20';
+      let isCurrencyUpdated = false;
+  
+      for (const chainCurrency of chainCurrencies) {
+        if (currency.coinMinimalDenom === chainCurrency.coinMinimalDenom) {
+          if (!isTokenForAccount) {
+            // If currency is already registered, do nothing.
+            return;
+          }
+  
+          isCurrencyUpdated = true;
         }
-
-        isCurrencyUpdated = true;
       }
-    }
-
-    if (!isTokenForAccount) {
-      const currencies = await this.getTokensFromChain(chainId);
-      currencies.push(currency);
-      await this.saveTokensToChain(chainId, currencies);
-    } else {
-      const currencies = await this.getTokensFromChainAndAccount(chainId);
-      if (!isCurrencyUpdated) {
-        currencies.push(currency);
-        await this.saveTokensToChainAndAccount(chainId, currencies);
+  
+      if (!isTokenForAccount) {
+        try {
+          const currencies = await this.getTokensFromChain(chainId);
+          currencies.push(currency);
+          await this.saveTokensToChain(chainId, currencies);
+          
+        } catch (error) {
+          console.log(error)
+        }
       } else {
-        const index = currencies.findIndex(
-          (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
-        );
-        if (index >= 0) {
-          currencies[index] = currency;
+        const currencies = await this.getTokensFromChainAndAccount(chainId);
+        if (!isCurrencyUpdated) {
+          currencies.push(currency);
           await this.saveTokensToChainAndAccount(chainId, currencies);
+        } else {
+          const index = currencies.findIndex(
+            (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
+          );
+          if (index >= 0) {
+            currencies[index] = currency;
+            await this.saveTokensToChainAndAccount(chainId, currencies);
+          }
         }
       }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -218,7 +230,6 @@ export class TokensService {
 
   private async saveTokensToChain(chainId: string, currencies: AppCurrency[]) {
     const chainIdHelper = ChainIdHelper.parse(chainId);
-
     await this.kvStore.set(chainIdHelper.identifier, currencies);
   }
 
@@ -338,6 +349,12 @@ export class TokensService {
             currency
           );
           break;
+        case 'erc20':
+          currency = await TokensService.validateERC20Currency(
+            chainInfo,
+            currency
+          );
+          break;
         default:
           throw new Error('Unknown type of currency');
       }
@@ -361,6 +378,18 @@ export class TokensService {
       chainInfo.bech32Config.bech32PrefixAccAddr
     );
 
+    return currency;
+  }
+
+  static async validateERC20Currency(
+    chainInfo: ChainInfo,
+    currency: ERC20Currency
+  ): Promise<ERC20Currency> {
+    // Validate the schema.
+    currency = await ERC20CurrencySchema.validateAsync(currency);
+
+    // Validate the contract address.
+    if (!Web3.utils.isAddress(currency.contractAddress)) throw new Error("Not a valid erc20 address");
     return currency;
   }
 

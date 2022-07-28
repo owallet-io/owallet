@@ -190,9 +190,6 @@ export class SignInteractionStore {
 
   @flow
   *approveAndWaitEnd(newSignDocWrapper: SignDocWrapper) {
-    console.log(
-      'approve and wait end!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-    );
 
     if (this.waitingDatas.length === 0) {
       return;
@@ -215,7 +212,7 @@ export class SignInteractionStore {
   }
 
   @flow
-  *approveEthereumAndWaitEnd({ gasPrice = '0x0', memo = '' }) {
+  *approveEthereumAndWaitEnd({ gasPrice = '0x0', memo = '', gasLimit = '0x0', fees = '0x0' }) {
     if (this.waitingEthereumDatas?.length === 0) {
       return;
     }
@@ -228,6 +225,8 @@ export class SignInteractionStore {
           ...this.waitingEthereumDatas[0].data,
           gasPrice,
           memo,
+          gasLimit,
+          fees
         });
       }
     } finally {

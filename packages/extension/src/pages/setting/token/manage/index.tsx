@@ -116,7 +116,18 @@ export const ManageTokenPage: FunctionComponent = observer(() => {
                   await confirm.confirm({
                     paragraph: intl.formatMessage({
                       id: 'setting.token.manage.confirm.remove-token'
-                    })
+                    }),
+                    yes: 'Disable token',
+                    no: 'Cancel',
+                    styleYesBtn: {
+                      background: 'transparent',
+                      border: '1px solid #FF424F',
+                      color: '#FF424F'
+                    },
+                    styleNoBtn: {
+                      background: '#3B3B45',
+                      color: '#F5F5FA'
+                    }
                   })
                 ) {
                   await tokensStore
@@ -139,6 +150,13 @@ export const ManageTokenPage: FunctionComponent = observer(() => {
                 30
               )}
               icons={icons}
+              styleTitle={{
+                fontWeight: '400',
+                fontSize: 14
+              }}
+              styleParagraph={{
+                color: '#A6A6B0'
+              }}
             />
           );
         })}

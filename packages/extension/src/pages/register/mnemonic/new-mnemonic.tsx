@@ -14,6 +14,7 @@ import { Input, PasswordInput, TextArea } from '../../../components/form';
 import { BackButton } from '../index';
 import { NewMnemonicConfig, useNewMnemonicConfig, NumWords } from './hook';
 import { useStore } from '../../../stores';
+import classNames from 'classnames';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
@@ -32,8 +33,6 @@ export const NewMnemonicIntro: FunctionComponent<{
 }> = observer(({ registerConfig }) => {
   return (
     <Button
-      color="primary"
-      outline
       block
       onClick={(e) => {
         e.preventDefault();
@@ -43,6 +42,7 @@ export const NewMnemonicIntro: FunctionComponent<{
           registerType: 'seed'
         });
       }}
+      className={style.newWalletBtn}
     >
       <FormattedMessage id="register.intro.button.new-account.title" />
     </Button>
@@ -229,7 +229,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           </React.Fragment>
         ) : null}
         <AdvancedBIP44Option bip44Option={bip44Option} />
-        <Button color="primary" type="submit" block>
+        <Button color="" type="submit" block className={style.nextBtn}>
           <FormattedMessage id="register.create.button.next" />
         </Button>
       </Form>

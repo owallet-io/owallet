@@ -166,7 +166,7 @@ export const AddressBookPage: FunctionComponent<{
             />
           </ModalBody>
         </Modal>
-        <div className={style.container}>
+        <div className={styleAddressBook.container}>
           <div className={styleAddressBook.innerTopContainer}>
             {hideChainDropdown ? null : (
               <ButtonDropdown isOpen={dropdownOpen} toggle={toggle}>
@@ -181,6 +181,7 @@ export const AddressBookPage: FunctionComponent<{
                         onClick={() => {
                           setSelectedChainId(chainInfo.chainId);
                         }}
+                        className={styleAddressBook.chainItem}
                       >
                         {chainInfo.chainName}
                       </DropdownItem>
@@ -190,15 +191,9 @@ export const AddressBookPage: FunctionComponent<{
               </ButtonDropdown>
             )}
             <div style={{ flex: 1 }} />
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center'
-              }}
-            >
+            <div className={styleAddressBook.addressBtnWrap}>
               <Button
-                color="primary"
+                color=""
                 size="sm"
                 onClick={(e) => {
                   e.preventDefault();
@@ -206,12 +201,16 @@ export const AddressBookPage: FunctionComponent<{
 
                   setAddAddressModalOpen(true);
                 }}
+                className={styleAddressBook.addressBtn}
               >
-                <i
-                  className="fas fa-plus"
-                  style={{ marginRight: '4px', fontSize: '8px' }}
+                <img
+                  src={require('../../../public/assets/svg/add-account.svg')}
+                  alt=""
+                  style={{ marginRight: 4 }}
                 />
-                <FormattedMessage id="setting.address-book.button.add" />
+                <span>
+                  <FormattedMessage id="setting.address-book.button.add" />
+                </span>
               </Button>
             </div>
           </div>

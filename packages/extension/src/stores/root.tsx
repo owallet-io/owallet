@@ -20,7 +20,8 @@ import {
   IBCCurrencyRegsitrar,
   QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
   AccountWithAll,
-  getOWalletFromWindow
+  getOWalletFromWindow,
+  getEthereumFromWindow
 } from '@owallet/stores';
 import {
   ExtensionRouter,
@@ -50,6 +51,7 @@ export class RootStore {
 
   public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
   public readonly accountStore: AccountStore<AccountWithAll>;
+  // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
 
@@ -248,11 +250,36 @@ export class RootStore {
           prefetching: !window.location.href.includes('#/unlock'),
           suggestChain: false,
           autoInit: true,
-          getOWallet: getOWalletFromWindow
+          getOWallet: getOWalletFromWindow,
+          getEthereum: getEthereumFromWindow
         },
         chainOpts
       }
     );
+
+    // this.accountEvmStore = new AccountEvmStore(
+    //   window,
+    //   AccountWithAll,
+    //   this.chainStore,
+    //   this.queriesStore,
+    //   {
+    //     defaultOpts: {
+    //       // When the unlock request sent from external webpage,
+    //       // it will open the extension popup below the uri "/unlock".
+    //       // But, in this case, if the prefetching option is true, it will redirect
+    //       // the page to the "/unlock" with **interactionInternal=true**
+    //       // because prefetching will request the unlock from the internal.
+    //       // To prevent this problem, just check the first uri is "#/unlcok" and
+    //       // if it is "#/unlock", don't use the prefetching option.
+    //       prefetching: !window.location.href.includes('#/unlock'),
+    //       suggestChain: false,
+    //       autoInit: true,
+    //       getOWallet: getOWalletFromWindow,
+    //       getEthereum: getEthereumFromWindow,
+    //     },
+    //     chainOpts
+    //   }
+    // );
 
     this.priceStore = new CoinGeckoPriceStore(
       new ExtensionKVStore('store_prices'),

@@ -93,53 +93,55 @@ export class CosmwasmAccount {
   ): Promise<boolean> {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
-    switch (denomHelper.type) {
-      case 'cw20':
-        const actualAmount = (() => {
-          let dec = new Dec(amount);
-          dec = dec.mul(
-            DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-          );
-          return dec.truncate().toString();
-        })();
-
-        if (!('type' in currency) || currency.type !== 'cw20') {
-          throw new Error('Currency is not cw20');
-        }
-        await this.sendExecuteContractMsg(
-          'send',
-          currency.contractAddress || denomHelper.contractAddress,
-          {
-            transfer: {
-              recipient: recipient,
-              amount: actualAmount
-            }
-          },
-          [],
-          memo,
-          {
-            amount: stdFee.amount ?? [],
-            gas: stdFee.gas ?? this.base.msgOpts.send.cw20.gas.toString()
-          },
-          signOptions,
-          this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-            if (tx.code == null || tx.code === 0) {
-              // After succeeding to send token, refresh the balance.
-              const queryBalance = this.queries.queryBalances
-                .getQueryBech32Address(this.base.bech32Address)
-                .balances.find((bal) => {
-                  return (
-                    bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
+    if (signOptions.networkType === "cosmos") {
+      switch (denomHelper.type) {
+        case 'cw20':
+          const actualAmount = (() => {
+            let dec = new Dec(amount);
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
+            return dec.truncate().toString();
+          })();
+  
+          if (!('type' in currency) || currency.type !== 'cw20') {
+            throw new Error('Currency is not cw20');
+          }
+          await this.sendExecuteContractMsg(
+            'send',
+            currency.contractAddress || denomHelper.contractAddress,
+            {
+              transfer: {
+                recipient: recipient,
+                amount: actualAmount
               }
-            }
-          })
-        );
-        return true;
+            },
+            [],
+            memo,
+            {
+              amount: stdFee.amount ?? [],
+              gas: stdFee.gas ?? this.base.msgOpts.send.cw20.gas.toString()
+            },
+            signOptions,
+            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
+              if (tx.code == null || tx.code === 0) {
+                // After succeeding to send token, refresh the balance.
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.bech32Address)
+                  .balances.find((bal) => {
+                    return (
+                      bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+                    );
+                  });
+  
+                if (queryBalance) {
+                  queryBalance.fetch();
+                }
+              }
+            })
+          );
+          return true;
+      }
     }
 
     return false;

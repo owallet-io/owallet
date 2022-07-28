@@ -22,6 +22,28 @@ export interface IGasConfig extends ITxChainSetter {
   getError(): Error | undefined;
 }
 
+export interface IGasEthereumConfig extends ITxChainSetter {
+  gas: number;
+  /*
+   The actual gas value from the input.
+   */
+  gasRaw: string;
+  setGas(gas: number | string): void;
+
+  getError(): Error | undefined;
+}
+
+export interface IFeeEthereumConfig extends ITxChainSetter {
+  fee: number;
+  /*
+   The actual gas value from the input.
+   */
+  feeRaw: string;
+  setFee(fee: number | string): void;
+
+  getError(): Error | undefined;
+}
+
 export interface IFeeConfig extends ITxChainSetter {
   feeType: FeeType | undefined;
   setFeeType(feeType: FeeType | undefined): void;

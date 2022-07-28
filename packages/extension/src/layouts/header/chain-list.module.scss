@@ -1,4 +1,4 @@
-@import '../../styles/var';
+@import "../../styles/var";
 
 .chain-list-container {
   padding: 12px 4px 12px 12px; // scrollbar is 8px
@@ -6,12 +6,15 @@
   text-align: center;
   max-height: 300px;
   overflow-y: auto;
+  background-color: $background-color-lighter;
 
   .chain-name {
     cursor: pointer;
-    font-size: 20px;
-    color: $color;
+    font-size: 16px;
+    font-weight: 200;
+    color: $color-gray-10;
     border-radius: 6px;
+    padding: 4px;
 
     position: relative;
     display: flex;
@@ -20,12 +23,11 @@
 
     &:global(.selected) {
       cursor: auto;
-      color: $color-darker;
+      background-color: $color-gray-60;
     }
 
     &:not(:global(.selected)):hover {
-      background: $background-color-lighter;
-      color: $color-darker;
+      background-color: $color-gray-60;
     }
 
     margin-top: 4px;

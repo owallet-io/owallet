@@ -1,8 +1,16 @@
+@import "../../styles/var";
+
 .container {
   width: 100%;
   max-height: 76px;
   padding: 16px;
   cursor: pointer;
+  background-color: $color-gray-80;
+  border-top: 1px solid $color-gray-70;
+
+  &:last-child {
+    border-bottom: 1px solid $color-gray-70;
+  }
 
   &.with-sub-paragraph {
     height: 84px;
@@ -34,7 +42,7 @@
 
     h1 {
       font-size: 14px;
-      color: #F6F7FB;
+      color: #f6f7fb;
       margin: 0;
 
       max-width: 240px;

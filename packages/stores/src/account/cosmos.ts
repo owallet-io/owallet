@@ -114,73 +114,75 @@ export class CosmosAccount {
   ): Promise<boolean> {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
-    switch (denomHelper.type) {
-      case 'native':
-        const actualAmount = (() => {
-          let dec = new Dec(amount);
-          dec = dec.mul(
-            DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-          );
-          return dec.truncate().toString();
-        })();
-
-        const msg = {
-          type: this.base.msgOpts.send.native.type,
-          value: {
-            from_address: this.base.bech32Address,
-            to_address: recipient,
-            amount: [
-              {
-                denom: currency.coinMinimalDenom,
-                amount: actualAmount,
-              },
-            ],
-          },
-        };
-
-        console.log('msg 1', msg);
-
-        await this.base.sendMsgs(
-          'send',
-          {
-            aminoMsgs: [msg],
-            protoMsgs: this.hasNoLegacyStdFeature()
-              ? [
-                  {
-                    type_url: '/cosmos.bank.v1beta1.MsgSend',
-                    value: cosmos.bank.v1beta1.MsgSend.encode({
-                      fromAddress: msg.value.from_address,
-                      toAddress: msg.value.to_address,
-                      amount: msg.value.amount,
-                    }).finish(),
-                  },
-                ]
-              : undefined,
-          },
-          memo,
-          {
-            amount: stdFee.amount ?? [],
-            gas: stdFee.gas ?? this.base.msgOpts.send.native.gas.toString(),
-          },
-          signOptions,
-          this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-            if (tx.code == null || tx.code === 0) {
-              // After succeeding to send token, refresh the balance.
-              const queryBalance = this.queries.queryBalances
-                .getQueryBech32Address(this.base.bech32Address)
-                .balances.find((bal) => {
-                  return (
-                    bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
+    if (signOptions.networkType === "cosmos") {
+      switch (denomHelper.type) {
+        case 'native':
+          const actualAmount = (() => {
+            let dec = new Dec(amount);
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
+            return dec.truncate().toString();
+          })();
+  
+          const msg = {
+            type: this.base.msgOpts.send.native.type,
+            value: {
+              from_address: this.base.bech32Address,
+              to_address: recipient,
+              amount: [
+                {
+                  denom: currency.coinMinimalDenom,
+                  amount: actualAmount,
+                },
+              ],
+            },
+          };
+  
+          console.log('msg 1', msg);
+  
+          await this.base.sendMsgs(
+            'send',
+            {
+              aminoMsgs: [msg],
+              protoMsgs: this.hasNoLegacyStdFeature()
+                ? [
+                    {
+                      type_url: '/cosmos.bank.v1beta1.MsgSend',
+                      value: cosmos.bank.v1beta1.MsgSend.encode({
+                        fromAddress: msg.value.from_address,
+                        toAddress: msg.value.to_address,
+                        amount: msg.value.amount,
+                      }).finish(),
+                    },
+                  ]
+                : undefined,
+            },
+            memo,
+            {
+              amount: stdFee.amount ?? [],
+              gas: stdFee.gas ?? this.base.msgOpts.send.native.gas.toString(),
+            },
+            signOptions,
+            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
+              if (tx.code == null || tx.code === 0) {
+                // After succeeding to send token, refresh the balance.
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.bech32Address)
+                  .balances.find((bal) => {
+                    return (
+                      bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+                    );
+                  });
+  
+                if (queryBalance) {
+                  queryBalance.fetch();
+                }
               }
-            }
-          })
-        );
-        return true;
+            })
+          );
+          return true;
+      }
     }
 
     return false;

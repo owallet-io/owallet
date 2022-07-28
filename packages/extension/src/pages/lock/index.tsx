@@ -17,6 +17,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useInteractionInfo } from '@owallet/hooks';
 import { useHistory } from 'react-router';
 import delay from 'delay';
+import { text } from 'stream/consumers';
 
 interface FormData {
   password: string;
@@ -85,9 +86,9 @@ export const LockPage: FunctionComponent = observer(() => {
         })}
       >
         <Banner
-          icon={require('../../public/assets/orai_wallet_logo.png')}
-          logo={require('../../public/assets/logo-temp.png')}
-          subtitle="Wallet for the Interchain"
+          icon={require('../../public/assets/svg/oraichain-pro-logo.svg')}
+          logo={require('../../public/assets/img/oraichain-pro.svg')}
+          subtitle="Cosmos x EVM in one Wallet"
         />
         <Input
           type="password"
@@ -105,8 +106,15 @@ export const LockPage: FunctionComponent = observer(() => {
               })
             })(ref);
           }}
+          placeholder="Enter your account password"
         />
-        <Button type="submit" color="primary" block data-loading={loading}>
+        <Button
+          type="submit"
+          color="primary"
+          block
+          data-loading={loading}
+          className={style.unlockBtn}
+        >
           <FormattedMessage id="lock.button.unlock" />
         </Button>
       </Form>

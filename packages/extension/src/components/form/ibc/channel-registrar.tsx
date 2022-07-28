@@ -103,7 +103,8 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
           <Button
             type="submit"
             block
-            color="primary"
+            color=""
+            className={style.saveBtn}
             disabled={
               selectedChainId === '' || channelId === '' || error !== ''
             }

@@ -81,39 +81,68 @@ export const ChainList: FunctionComponent = observer(() => {
 
   return (
     <div className={style.chainListContainer}>
-      {mainChainList.map((chainInfo) => (
-        <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
-      ))}
-      {betaChainList.length > 0 ? (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <hr
-            className="my-3"
-            style={{
-              flex: 1,
-              borderTop: '1px solid rgba(255, 255, 255)'
-            }}
-          />
-          <div
-            style={{
-              fontSize: '14px',
-              color: 'rgba(255, 255, 255)',
-              margin: '0 8px'
-            }}
-          >
-            Beta support
-          </div>
-          <hr
-            className="my-3"
-            style={{
-              flex: 1,
-              borderTop: '1px solid rgba(255, 255, 255)'
-            }}
-          />
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <hr
+          className="my-3"
+          style={{
+            flex: 1,
+            borderTop: '1px solid rgba(255, 255, 255)'
+          }}
+        />
+        <div
+          style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255)',
+            margin: '0 8px'
+          }}
+        >
+          EVM
         </div>
-      ) : null}
-      {betaChainList.map((chainInfo) => (
-        <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
-      ))}
+        <hr
+          className="my-3"
+          style={{
+            flex: 1,
+            borderTop: '1px solid rgba(255, 255, 255)'
+          }}
+        />
+      </div>
+      {mainChainList.map(
+        (chainInfo) =>
+          chainInfo.networkType === 'evm' && (
+            <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
+          )
+      )}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <hr
+          className="my-3"
+          style={{
+            flex: 1,
+            borderTop: '1px solid rgba(255, 255, 255)'
+          }}
+        />
+        <div
+          style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255)',
+            margin: '0 8px'
+          }}
+        >
+          Cosmos
+        </div>
+        <hr
+          className="my-3"
+          style={{
+            flex: 1,
+            borderTop: '1px solid rgba(255, 255, 255)'
+          }}
+        />
+      </div>
+      {mainChainList.map(
+        (chainInfo) =>
+          chainInfo.networkType !== 'evm' && (
+            <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
+          )
+      )}
     </div>
   );
 });
