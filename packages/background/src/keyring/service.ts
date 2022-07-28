@@ -274,6 +274,7 @@ export class KeyRingService {
       );
     }
 
+    console.log('sign amino =======');
     const newSignDoc = (await this.interactionService.waitApprove(
       env,
       '/sign',
@@ -429,20 +430,14 @@ export class KeyRingService {
         env,
         chainId,
         mode: 'direct',
-        data: {
-          ...data,
-          estimatedGasPrice: (data as any)?.gasPrice || estimatedGasPrice,
-          estimatedGasLimit: (data as any)?.gas || estimatedGasLimit,
-          decimals
-        }
+        data
       }
     )) as any;
 
     const { gasPrice, gasLimit, memo, fees } = {
       gasPrice: approveData.gasPrice ?? '0x0',
       memo: approveData.memo ?? '',
-      gasLimit: approveData.gasLimit,
-      fees: approveData.fees
+      gasLimit: 10000000
     };
 
     const newData = { ...data, gasPrice, gasLimit, memo, fees };
