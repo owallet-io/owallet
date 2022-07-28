@@ -344,6 +344,7 @@ export class KeyRingService {
     if (signer !== bech32Address) {
       throw new Error('Signer mismatched');
     }
+    console.log('message hereeeeeeee ==============', msgOrigin);
 
     const newSignDocBytes = (await this.interactionService.waitApprove(
       env,
@@ -362,6 +363,7 @@ export class KeyRingService {
     const newSignDoc = cosmos.tx.v1beta1.SignDoc.decode(newSignDocBytes);
 
     try {
+      // it stuck here in ledger
       const signature = await this.keyRing.sign(
         env,
         chainId,

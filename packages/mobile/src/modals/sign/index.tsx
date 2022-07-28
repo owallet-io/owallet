@@ -63,6 +63,8 @@ export const SignModal: FunctionComponent<{
     const memoConfig = useMemoConfig(chainStore, chainId);
 
     const signDocWapper = signInteractionStore.waitingData?.data.signDocWrapper;
+    console.log('.waitingData', signInteractionStore.waitingData);
+
     const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
     amountConfig.setSignDocHelper(signDocHelper);
 
