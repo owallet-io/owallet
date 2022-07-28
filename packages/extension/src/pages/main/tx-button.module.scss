@@ -1,4 +1,4 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 .container-tx-button {
   display: flex;
@@ -6,10 +6,12 @@
 
   .button {
     flex: 1;
-    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
-    box-shadow: inset 0px 1px 0px rgba(173, 144, 237, 0.7);
-    border-radius: 4px;
+    background-color: $color;
     margin-right: $layout-margin;
+    border-radius: 8px !important;
+    border-color: $color !important;
+    border-width: 1px;
+    box-shadow: none;
     &:last-child {
       margin-right: 0;
     }
@@ -18,6 +20,14 @@
     &:hover {
       color: $color-darker;
     }
+  }
+  .btnSend {
+    color: $color-white;
+    background-color: $color !important;
+  }
+  .btnReceive {
+    color: $color;
+    background-color: $color-white !important;
   }
 }
 

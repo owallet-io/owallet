@@ -10,6 +10,7 @@
 
   .paragraph-main {
     line-height: 1.35;
+    color: $color-black;
   }
 
   .paragraph-sub {
@@ -24,13 +25,10 @@
 
   .button {
     min-width: 76px;
-    .button-text {
-      padding: 6px 10px 4px;
-      color: $color-darker;
-      background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
-      box-shadow: inset 0px 1px 0px rgba(173, 144, 237, 0.7);
-      border-radius: 4px;
-      cursor: pointer;
-    }
+    padding: 6px 16px;
+    border-radius: 4px !important;
+    color: $color-white;
+    font-weight: 500;
+    background-color: $color !important;
   }
 }

@@ -9,7 +9,7 @@ import { Menu } from './menu';
 import { AccountView } from './account';
 import { TxButtonEvmView, TxButtonView } from './tx-button';
 import { AssetView, AssetViewEvm } from './asset';
-import { StakeView } from './stake';
+import { StakeView, LinkStakeView } from './stake';
 
 import classnames from 'classnames';
 import { useHistory } from 'react-router';
@@ -21,7 +21,7 @@ import { useIntl } from 'react-intl';
 import { useConfirm } from '../../components/confirm';
 import { ChainUpdaterService } from '@owallet/background';
 import { IBCTransferView } from './ibc-transfer';
-import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
+import { SelectChain } from '../../layouts/header';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -98,13 +98,14 @@ export const MainPage: FunctionComponent = observer(() => {
             }}
             onClick={(e) => {
               e.preventDefault();
-
               history.push('/setting/set-keyring');
             }}
           />
         </div>
       }
     >
+      <SelectChain showChainName canChangeChainInfo />
+      <div style={{ height: 10 }}/>
       <BIP44SelectModal />
       <Card className={classnames(style.card, 'shadow')}>
         <CardBody>
@@ -142,13 +143,20 @@ export const MainPage: FunctionComponent = observer(() => {
           </div>
         </CardBody>
       </Card>
-      {/* {chainStore.current.networkType === 'cosmos' && (
-        <Card className={classnames(style.card, 'shadow')}>
-          <CardBody>
-            <StakeView />
-          </CardBody>
-        </Card>
-      )} */}
+      {chainStore.current.networkType === 'cosmos' && (
+        <>
+          <Card className={classnames(style.card, 'shadow')}>
+            <CardBody>
+              <StakeView />
+            </CardBody>
+          </Card>
+          <Card className={classnames(style.card, 'shadow')}>
+            <CardBody>
+              <LinkStakeView />
+            </CardBody>
+          </Card>
+        </>
+      )}
       {hasTokens ? (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>{<TokensView tokens={tokens} />}</CardBody>

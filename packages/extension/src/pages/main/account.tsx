@@ -51,8 +51,9 @@ export const AccountView: FunctionComponent = observer(() => {
               })
             : 'Loading...'}
         </div>
-        <div style={{ flex: 1, textAlign: 'right' }}>
-          {/* {chainStore.current.raw.txExplorer?.accountUrl && (
+        <div style={{ flex: 1 }} />
+        {/* <div style={{ flex: 1, textAlign: 'right' }}>
+          {chainStore.current.raw.txExplorer?.accountUrl && (
             <a
               target="_blank"
               href={chainStore.current.raw.txExplorer.accountUrl.replace(
@@ -66,8 +67,8 @@ export const AccountView: FunctionComponent = observer(() => {
             >
               <i className="fas fa-external-link-alt"></i>
             </a>
-          )} */}
-        </div>
+          )}
+        </div> */}
       </div>
       {chainStore.current.networkType === 'cosmos' && (
         <div className={styleAccount.containerAccount}>
@@ -76,14 +77,19 @@ export const AccountView: FunctionComponent = observer(() => {
             className={styleAccount.address}
             onClick={() => copyAddress(accountInfo.bech32Address)}
           >
-            <span className={styleAccount.addressText}>
-              <Address maxCharacters={22} lineBreakBeforePrefix={false}>
-                {accountInfo.walletStatus === WalletStatus.Loaded &&
-                accountInfo.bech32Address
-                  ? accountInfo.bech32Address
-                  : '...'}
-              </Address>
-            </span>
+            <Address maxCharacters={22} lineBreakBeforePrefix={false}>
+              {accountInfo.walletStatus === WalletStatus.Loaded &&
+              accountInfo.bech32Address
+                ? accountInfo.bech32Address
+                : '...'}
+            </Address>
+            <div style={{ width: 6}}/>
+            <img
+              src={require('../../public/assets/img/filled.svg')}
+              alt="filled"
+              width={16}
+              height={16}
+            />
           </div>
           <div style={{ flex: 1 }} />
         </div>

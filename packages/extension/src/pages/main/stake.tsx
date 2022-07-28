@@ -24,20 +24,12 @@ export const StakeView: FunctionComponent = observer(() => {
 
   const notification = useNotification();
 
-  const inflation = queries.cosmos.queryInflation;
   const rewards = queries.cosmos.queryRewards.getQueryBech32Address(
     accountInfo.bech32Address
   );
   const stakableReward = rewards.stakableReward;
-  const stakable = queries.queryBalances.getQueryBech32Address(
-    accountInfo.bech32Address
-  ).stakable;
 
   const isRewardExist = rewards.rewards.length > 0;
-
-  const isStakableExist = useMemo(() => {
-    return stakable?.balance.toDec().gt(new Dec(0));
-  }, [stakable?.balance]);
 
   const withdrawAllRewards = async () => {
     if (accountInfo.isReadyToSendMsgs) {
@@ -77,11 +69,6 @@ export const StakeView: FunctionComponent = observer(() => {
     }
   };
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
-  const toogleTooltip = () => setTooltipOpen((value) => !value);
-
-  const stakeBtnRef = useRef<HTMLButtonElement>(null);
-
   return (
     <div>
       {isRewardExist ? (
@@ -120,7 +107,6 @@ export const StakeView: FunctionComponent = observer(() => {
             {
               <Button
                 className={styleStake.button}
-                color="primary"
                 size="sm"
                 disabled={!accountInfo.isReadyToSendMsgs}
                 onClick={withdrawAllRewards}
@@ -130,91 +116,100 @@ export const StakeView: FunctionComponent = observer(() => {
               </Button>
             }
           </div>
-          <hr className={styleStake.hr} />
         </>
       ) : null}
+    </div>
+  );
+});
 
-      <div className={classnames(styleStake.containerInner, styleStake.stake)}>
-        <div className={styleStake.vertical}>
+export const LinkStakeView: FunctionComponent = observer(() => {
+  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const inflation = queries.cosmos.queryInflation;
+  const stakable = queries.queryBalances.getQueryBech32Address(
+    accountInfo.bech32Address
+  ).stakable;
+  const stakeBtnRef = useRef<HTMLButtonElement>(null);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const toogleTooltip = () => setTooltipOpen((value) => !value);
+  const history = useHistory();
+  const isStakableExist = useMemo(() => {
+    return stakable?.balance.toDec().gt(new Dec(0));
+  }, [stakable?.balance]);
+
+  return (
+    <div className={classnames(styleStake.containerInner, styleStake.stake)}>
+      <div className={styleStake.vertical}>
+        <p
+          className={classnames(
+            'h2',
+            'my-0',
+            'font-weight-normal',
+            styleStake.paragraphMain
+          )}
+        >
+          <FormattedMessage id="main.stake.message.stake" />
+        </p>
+        {inflation.inflation.toDec().equals(new Dec(0)) ? null : (
           <p
             className={classnames(
-              'h2',
+              'h4',
               'my-0',
               'font-weight-normal',
-              styleStake.paragraphMain
+              styleStake.paragraphSub
             )}
           >
-            <FormattedMessage id="main.stake.message.stake" />
+            <FormattedMessage
+              id="main.stake.message.earning"
+              values={{
+                apr: (
+                  <React.Fragment>
+                    {inflation.inflation.trim(true).maxDecimals(2).toString()}
+                    {inflation.isFetching ? (
+                      <span>
+                        <i className="fas fa-spinner fa-spin" />
+                      </span>
+                    ) : null}
+                  </React.Fragment>
+                )
+              }}
+            />
           </p>
-          {inflation.inflation.toDec().equals(new Dec(0)) ? null : (
-            <p
-              className={classnames(
-                'h4',
-                'my-0',
-                'font-weight-normal',
-                styleStake.paragraphSub
-              )}
-            >
-              <FormattedMessage
-                id="main.stake.message.earning"
-                values={{
-                  apr: (
-                    <React.Fragment>
-                      {inflation.inflation.trim(true).maxDecimals(2).toString()}
-                      {inflation.isFetching ? (
-                        <span>
-                          <i className="fas fa-spinner fa-spin" />
-                        </span>
-                      ) : null}
-                    </React.Fragment>
-                  )
-                }}
-              />
-            </p>
-          )}
-        </div>
-        <div style={{ flex: 1 }} />
-        <div
-          onClick={(e) => {
-            if (!isStakableExist) {
-              e.preventDefault();
-            } else {
-              history.push('/stake/validator-list');
-              analyticsStore.logEvent('Stake button clicked', {
-                chainId: chainStore.current.chainId,
-                chainName: chainStore.current.chainName
-              });
-            }
-          }}
+        )}
+      </div>
+      <div style={{ flex: 1 }} />
+      <div
+        onClick={(e) => {
+          if (!isStakableExist) {
+            e.preventDefault();
+          } else {
+            history.push('/stake/validator-list');
+            analyticsStore.logEvent('Stake button clicked', {
+              chainId: chainStore.current.chainId,
+              chainName: chainStore.current.chainName
+            });
+          }
+        }}
+      >
+        <span
+          aria-disabled={!isStakableExist}
+          ref={stakeBtnRef}
+          style={{ cursor: 'pointer', textDecoration: 'underline' }}
         >
-          {/*
-            "Disabled" property in button tag will block the mouse enter/leave events.
-            So, tooltip will not work as expected.
-            To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
-          */}
-          <Button
-            innerRef={stakeBtnRef}
-            className={classnames(styleStake.button, {
-              disabled: !isStakableExist
-            })}
-            color="primary"
-            size="sm"
-            outline={isRewardExist}
+          <FormattedMessage id="main.stake.button.link-stake" />
+        </span>
+        {!isStakableExist ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipOpen}
+            target={stakeBtnRef}
+            toggle={toogleTooltip}
+            fade
           >
-            <FormattedMessage id="main.stake.button.stake" />
-          </Button>
-          {!isStakableExist ? (
-            <Tooltip
-              placement="bottom"
-              isOpen={tooltipOpen}
-              target={stakeBtnRef}
-              toggle={toogleTooltip}
-              fade
-            >
-              <FormattedMessage id="main.stake.tooltip.no-asset" />
-            </Tooltip>
-          ) : null}
-        </div>
+            <FormattedMessage id="main.stake.tooltip.no-asset" />
+          </Tooltip>
+        ) : null}
       </div>
     </div>
   );

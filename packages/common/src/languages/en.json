@@ -2,6 +2,7 @@
   "main.account.chart.total-balance": "Total Balance",
   "main.account.chart.available-balance": "Available",
   "main.account.chart.staked-balance": "Staked",
+  "main.account.button.deposit": "Deposit",
   "main.account.button.receive": "Receive",
   "main.account.button.send": "Send",
   "main.account.tooltip.no-asset": "No token in your account. Deposit some tokens to send.",
@@ -17,6 +18,7 @@
   "main.stake.message.earning": "Earn up to {apr}% per year",
   "main.stake.button.claim-rewards": "Claim",
   "main.stake.button.stake": "Stake",
+  "main.stake.button.link-stake": "Link Stake ",
   "main.stake.tooltip.no-asset": "No token in your account. Deposit some tokens to stake.",
 
   "main.ibc.transfer.title": "IBC Transfer",

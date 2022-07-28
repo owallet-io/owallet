@@ -189,8 +189,12 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
             </React.Fragment>
           </div> */}
         </div>
-        {/* <React.Suspense fallback={<div style={{ height: '150px' }} />}>
-          <LazyDoughnut
+        <React.Suspense fallback={<div style={{ height: '150px' }} />}>
+          <img
+            src={require('../../public/assets/img/total-balance.svg')}
+            alt="total-balance"
+          />
+          {/* <LazyDoughnut
             data={{
               datasets: [
                 {
@@ -263,8 +267,44 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                 }
               }
             }}
-          />
-        </React.Suspense> */}
+          /> */}
+        </React.Suspense>
+      </div>
+      <div style={{ marginTop: '12px', width: '100%' }}>
+        <div className={styleAsset.legend}>
+          <div className={styleAsset.label} style={{ color: '#777E90' }}>
+            <span className="badge-dot badge badge-secondary">
+              <i className="bg-gray" />
+            </span>
+            <FormattedMessage id="main.account.chart.available-balance" />
+          </div>
+          <div style={{ minWidth: '20px' }} />
+          <div
+            className={styleAsset.value}
+            style={{
+              color: '#353945E5'
+            }}
+          >
+            {stakable.shrink(true).maxDecimals(6).toString()}
+          </div>
+        </div>
+        <div className={styleAsset.legend}>
+          <div className={styleAsset.label} style={{ color: '#777E90' }}>
+            <span className="badge-dot badge badge-secondary">
+              <i className="bg-gray" />
+            </span>
+            <FormattedMessage id="main.account.chart.staked-balance" />
+          </div>
+          <div style={{ minWidth: '20px' }} />
+          <div
+            className={styleAsset.value}
+            style={{
+              color: '#353945E5'
+            }}
+          >
+            {stakedSum.shrink(true).maxDecimals(6).toString()}
+          </div>
+        </div>
       </div>
     </React.Fragment>
   );

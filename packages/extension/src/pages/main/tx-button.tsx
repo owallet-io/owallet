@@ -197,8 +197,7 @@ export const TxButtonEvmView: FunctionComponent = observer(() => {
         <DepositModal bech32Address={accountInfo.bech32Address} />
       </Modal>
       <Button
-        className={styleTxButton.button}
-        color="primary"
+        className={classnames(styleTxButton.button,styleTxButton.btnReceive)}
         outline
         onClick={(e) => {
           e.preventDefault();
@@ -217,9 +216,7 @@ export const TxButtonEvmView: FunctionComponent = observer(() => {
         innerRef={sendBtnRef}
         className={classnames(styleTxButton.button, {
           disabled: !hasAssets
-        })}
-        style={{ cursor: !hasAssets ? 'default' : 'pointer' }}
-        color="primary"
+        }, styleTxButton.btnSend)}
         data-loading={accountInfo.isSendingMsg === 'send'}
         onClick={(e) => {
           e.preventDefault();
