@@ -42,23 +42,19 @@
 }
 
 .container-chart {
-  // position: relative;
+  position: relative;
+
   .center-text {
-    // position: absolute;
-    // z-index: 1;
-    // text-align: center;
-    // top: 50%;
-    // left: 50%;
-    // transform: translate(-50%, -50%);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    position: absolute;
+    z-index: 1;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     .big {
-      font-size: 14px;
-      font-weight: 400;
-      color: $color-gray-30;
+      font-size: 13px;
+      color: #ffffff;
     }
 
     .small {
@@ -78,66 +74,26 @@
   }
 }
 
-.amount-orain-wrap {
-  margin: 16px auto;
+.legend {
+  display: flex;
+  width: 100%;
 
-  .legend {
+  .label {
+    letter-spacing: -0.3px;
+    flex: 1;
     display: flex;
-    width: 100%;
-    align-items: center;
+    justify-content: flex-end;
+  }
 
-    .label {
-      letter-spacing: -0.3px;
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      color: $color-gray-50;
-      font-size: 16px;
-    }
+  .value {
+    letter-spacing: -0.3px;
+    flex: 1;
+    display: flex;
+    font-weight: bold;
+  }
 
-    .value {
-      letter-spacing: -0.3px;
-      flex: 1;
-      display: flex;
-      font-weight: bold;
-    }
-
-    img {
-      width: 40px;
-      height: auto;
-    }
+  img {
+    width: 40px;
+    height: auto;
   }
 }
-
-.amount-evm-wrap {
-  margin: 16px auto;
-
-  .legend {
-    display: flex;
-    width: 100%;
-    align-items: center;
-
-    .label {
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
-      flex: 1;
-      display: flex;
-      justify-content: flex-end;
-      color: $color-gray-50;
-      font-size: 16px;
-    }
-
-    .value {
-      letter-spacing: -0.3px;
-      flex: 1;
-      display: flex;
-      font-weight: bold;
-    }
-
-    img {
-      width: 44px;
-      height: auto;
-    }
-  }
-}
-
