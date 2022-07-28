@@ -97,7 +97,7 @@ export class ObservableQueryDelegationsInner extends ObservableChainQuery<
     if (result.length > 0 && 'delegation' in result[0]) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      return result.map((r) => {
+      return result.map(r => {
         return {
           balance: r.balance,
           delegator_address: r.delegation.delegator_address,

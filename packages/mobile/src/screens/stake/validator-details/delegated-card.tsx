@@ -25,6 +25,11 @@ export const DelegatedCard: FunctionComponent<{
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
+  const unbonding =
+    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+      account.bech32Address
+    ).unbondings;
+
   const rewards = queries.cosmos.queryRewards
     .getQueryBech32Address(account.bech32Address)
     .getStakableRewardOf(validatorAddress);
@@ -57,6 +62,35 @@ export const DelegatedCard: FunctionComponent<{
           <Text style={style.flatten(['body2', 'color-text-black-very-low'])}>
             {staked.trim(true).shrink(true).maxDecimals(6).toString()}
           </Text>
+        </View>
+        <View
+          style={style.flatten([
+            'flex-row',
+            'items-center',
+            'margin-bottom-12'
+          ])}
+        >
+          <Text style={style.flatten(['h7', 'color-text-black-medium'])}>
+            Unbonding
+          </Text>
+          <View style={style.get('flex-1')} />
+          <View
+            style={{
+              flexDirection: 'column',
+              alignItems: 'flex-end'
+            }}
+          >
+            {unbonding?.[0].entries.map(ub => {
+              return (
+                <Text
+                  style={style.flatten(['body2', 'color-text-black-very-low'])}
+                >
+                  {(Number(ub.balance) * 10 ** -6).toFixed(6)}{' '}
+                  {chainStore.current.stakeCurrency.coinDenom}
+                </Text>
+              );
+            })}
+          </View>
         </View>
         <View
           style={style.flatten([
