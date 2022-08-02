@@ -79,19 +79,19 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
-        (cur) => {
-          if (cur.type === 'cw20') {
-            return cur.coinDenom == route.params.currency;
-          }
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
-          }
-          return cur.coinMinimalDenom == route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+        if (cur.type === 'cw20') {
+          return cur.coinDenom == route.params.currency;
         }
-      );
+        if (cur.coinDenom === route.params.currency) {
+          return cur.coinDenom === route.params.currency;
+        }
+        return cur.coinMinimalDenom == route.params.currency;
+      });
 
       if (currency) {
+        console.log('currency', currency);
+
         sendConfigs.amountConfig.setSendCurrency(currency);
       }
     }
@@ -178,7 +178,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                       preferNoSetMemo: true
                     },
                     {
-                      onBroadcasted: (txHash) => {
+                      onBroadcasted: txHash => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,

@@ -126,7 +126,15 @@ export class AccountSetBase<MsgOpts, Queries> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    nftOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ) => Promise<boolean>)[] = [];
 
   constructor(
@@ -293,7 +301,15 @@ export class AccountSetBase<MsgOpts, Queries> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    nftOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ) {
     runInAction(() => {
       this._isSendingMsg = type;
@@ -360,7 +376,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         wsObject: this.opts.wsObject
       }
     );
-    txTracer.traceTx(txHash).then((tx) => {
+    txTracer.traceTx(txHash).then(tx => {
       txTracer.close();
 
       runInAction(() => {
@@ -372,7 +388,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
           .balances.find(
-            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
+            bal => bal.currency.coinMinimalDenom === feeAmount.denom
           );
 
         if (bal) {
@@ -561,7 +577,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    nftOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ) {
     for (let i = 0; i < this.sendTokenFns.length; i++) {
       const fn = this.sendTokenFns[i];
@@ -574,7 +598,8 @@ export class AccountSetBase<MsgOpts, Queries> {
           memo,
           stdFee,
           signOptions,
-          onTxEvents
+          onTxEvents,
+          nftOptions
         )
       ) {
         return;

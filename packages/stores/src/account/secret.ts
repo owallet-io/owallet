@@ -86,31 +86,60 @@ export class SecretAccount {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    nftOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ): Promise<boolean> {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
-    if (signOptions.networkType === "cosmos") {
-      switch (denomHelper.type) {
-        case 'secret20':
-          const actualAmount = (() => {
-            let dec = new Dec(amount);
-            dec = dec.mul(
-              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-            );
-            return dec.truncate().toString();
-          })();
+    switch (denomHelper.type) {
+      case 'secret20':
+        const actualAmount = (() => {
+          let dec = new Dec(amount);
+          dec = dec.mul(
+            DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+          );
+          return dec.truncate().toString();
+        })();
 
-          if (!('type' in currency) || currency.type !== 'secret20') {
-            throw new Error('Currency is not secret20');
-          }
-          await this.sendExecuteSecretContractMsg(
-            'send',
-            currency.contractAddress || denomHelper.contractAddress,
-            {
-              transfer: {
-                recipient: recipient,
-                amount: actualAmount
+        if (!('type' in currency) || currency.type !== 'secret20') {
+          throw new Error('Currency is not secret20');
+        }
+        await this.sendExecuteSecretContractMsg(
+          'send',
+          currency.contractAddress || denomHelper.contractAddress,
+          {
+            transfer: {
+              recipient: recipient,
+              amount: actualAmount
+            }
+          },
+          [],
+          memo,
+          {
+            amount: stdFee.amount ?? [],
+            gas: stdFee.gas ?? this.base.msgOpts.send.secret20.gas.toString()
+          },
+          signOptions,
+          this.txEventsWithPreOnFulfill(onTxEvents, tx => {
+            if (tx.code == null || tx.code === 0) {
+              // After succeeding to send token, refresh the balance.
+              const queryBalance = this.queries.queryBalances
+                .getQueryBech32Address(this.base.bech32Address)
+                .balances.find(bal => {
+                  return (
+                    bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+                  );
+                });
+
+              if (queryBalance) {
+                queryBalance.fetch();
               }
             },
             [],
@@ -169,7 +198,7 @@ export class SecretAccount {
           this.base.msgOpts.createSecret20ViewingKey.gas.toString()
       },
       signOptions,
-      async (tx) => {
+      async tx => {
         let viewingKey = '';
         if (tx && 'data' in tx && tx.data) {
           const txData = Buffer.from(tx.data as any, 'base64');

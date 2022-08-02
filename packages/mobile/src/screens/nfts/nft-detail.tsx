@@ -6,13 +6,20 @@ import React, {
 } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { StyleSheet, View, ViewStyle, Image } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ViewStyle,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard
+} from 'react-native';
 import { Text } from '@rneui/base';
 import { CoinPretty } from '@owallet/unit';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Currency } from '@owallet/types';
 import { TokenSymbol } from '../../components/token-symbol';
-import { DenomHelper } from '@owallet/common';
+import { DenomHelper, EthereumEndpoint } from '@owallet/common';
 import { Bech32Address } from '@owallet/cosmos';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
@@ -39,6 +46,11 @@ import {
 } from '../transactions/components';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { API } from '../../common/api';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useSendTxConfig } from '@owallet/hooks';
+import { Button } from '../../components/button';
+import { TextInput } from '../../components/input';
+import delay from 'delay';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
@@ -46,13 +58,182 @@ const AIRI = 'airight';
 const commonDenom = { ORAI, AIRI };
 
 export const NftDetailScreen: FunctionComponent = observer(props => {
-  const _onPressBtnMain = () => {};
+  const smartNavigation = useSmartNavigation();
+  const { chainStore, accountStore, queriesStore, modalStore } = useStore();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          chainId?: string;
+          currency?: string;
+          recipient?: string;
+        }
+      >,
+      string
+    >
+  >();
+  const chainId = route?.params?.chainId
+    ? route?.params?.chainId
+    : chainStore?.current?.chainId;
 
-  const [prices, setPrices] = useState({});
+  const account = accountStore.getAccount(chainId);
+  const queries = queriesStore.get(chainId);
+
+  const [address, setAddress] = useState('');
+  const [quantity, setQuantity] = useState(1);
+
+  const sendConfigs = useSendTxConfig(
+    chainStore,
+    chainId,
+    account.msgOpts['send'],
+    account.bech32Address,
+    queries.queryBalances,
+    EthereumEndpoint
+  );
 
   const { item } = props.route?.params;
 
-  console.log(' item', item);
+  useEffect(() => {
+    // hard config to airight chain
+    sendConfigs.amountConfig.setSendCurrency({
+      coinDecimals: 6,
+      type: 'cw20',
+      coinMinimalDenom:
+        'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
+      coinDenom: 'AIRI',
+      coinGeckoId: 'airight',
+      contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
+      coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+    });
+  }, []);
+
+  const _onPressTransfer = async () => {
+    modalStore.setOpen();
+    modalStore.setChildren(
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{ paddingBottom: 70 }}>
+          <View>
+            <TextInput
+              label="Destination address"
+              onChange={({ nativeEvent: { eventCount, target, text } }) =>
+                setAddress(text)
+              }
+              defaultValue={address}
+            />
+            {item.version === 1 ? null : (
+              <TextInput
+                label="Quantity"
+                keyboardType="number-pad"
+                onChangeText={txt => {
+                  setQuantity(Number(txt));
+                }}
+                defaultValue={quantity.toString()}
+              />
+            )}
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly'
+            }}
+          >
+            <Button
+              text="Cancel"
+              size="large"
+              containerStyle={{
+                width: '40%'
+              }}
+              style={{
+                backgroundColor: colors['red-500']
+              }}
+              textStyle={{
+                color: colors['white']
+              }}
+              underlayColor={colors['danger-400']}
+              onPress={() => modalStore.close()}
+            />
+            <Button
+              text="Confirm"
+              containerStyle={{
+                width: '40%'
+              }}
+              style={{
+                backgroundColor: colors['purple-900']
+              }}
+              textStyle={{
+                color: colors['white']
+              }}
+              underlayColor={colors['purple-400']}
+              size="large"
+              disabled={
+                item.version === 1
+                  ? address == ''
+                  : address == '' || quantity == 0
+              }
+              // loading={signInteractionStore.isLoading}
+              onPress={async () => {
+                modalStore.close();
+                await delay(600);
+                _onPressBtnMain();
+              }}
+            />
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
+
+  const _onPressBtnMain = async () => {
+    if (account.isReadyToSendMsgs) {
+      try {
+        await account.sendToken(
+          '0.000001', // amount not in use, but must have to send token fn work normally 'cause we use the same fn with send cw20 token
+          sendConfigs.amountConfig.sendCurrency,
+          sendConfigs.recipientConfig.recipient,
+          sendConfigs.memoConfig.memo,
+          { gas: '186415', amount: [{ amount: '0', denom: 'orai' }] }, // default fee and gas
+          {
+            preferNoSetFee: true,
+            preferNoSetMemo: true
+          },
+          {
+            onBroadcasted: txHash => {
+              smartNavigation.pushSmart('TxPendingResult', {
+                txHash: Buffer.from(txHash).toString('hex')
+              });
+            }
+          },
+          {
+            contract_addr:
+              item.version === 1
+                ? 'orai1ase8wkkhczqdda83f0cd9lnuyvf47465j70hyk'
+                : 'orai1c3phe2dcu852ypgvt0peqj8f5kx4x0s4zqcky4',
+            recipient: address,
+            to: address,
+            token_id: item.id.toString(),
+            amount: quantity.toString(),
+            type: item.version === 1 ? '721' : '1155'
+          }
+        );
+      } catch (e) {
+        if (e?.message === 'Request rejected') {
+          return;
+        }
+        if (e?.message.includes('Cannot read properties of undefined')) {
+          return;
+        }
+        console.log('send error', e);
+        if (smartNavigation.canGoBack) {
+          smartNavigation.goBack();
+        } else {
+          smartNavigation.navigateSmart('Home', {});
+        }
+      }
+    }
+  };
+
+  const [prices, setPrices] = useState({});
 
   useEffect(() => {
     (async function get() {
@@ -183,29 +364,31 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
           </View>
 
           <View style={styles.containerBtn}>
-            {/* {['Transfer'].map((e, i) => (
-              <TouchableOpacity
-                style={{
-                  ...styles.btn
-                }}
-                onPress={() => _onPressBtnMain()}
-              >
-                <View style={{ ...styles.btnTransfer }}>
-                  <SendDashboardIcon />
-                  <Text
+            {item.offer != null
+              ? ['Transfer'].map((e, i) => (
+                  <TouchableOpacity
                     style={{
-                      ...typography['h7'],
-                      lineHeight: spacing['20'],
-                      color: colors['white'],
-                      paddingLeft: spacing['6'],
-                      fontWeight: '700'
+                      ...styles.btn
                     }}
+                    onPress={() => _onPressTransfer()}
                   >
-                    {`Transfer`}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))} */}
+                    <View style={{ ...styles.btnTransfer }}>
+                      <SendDashboardIcon />
+                      <Text
+                        style={{
+                          ...typography['h7'],
+                          lineHeight: spacing['20'],
+                          color: colors['white'],
+                          paddingLeft: spacing['6'],
+                          fontWeight: '700'
+                        }}
+                      >
+                        {`Transfer`}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              : null}
           </View>
         </LinearGradient>
       </View>
