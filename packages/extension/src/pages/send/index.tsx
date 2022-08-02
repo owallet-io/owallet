@@ -107,69 +107,70 @@ export const SendPage: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   return (
-    <HeaderLayout
-      showChainName
-      canChangeChainInfo={false}
-      onBackButton={
-        isDetachedPage
-          ? undefined
-          : () => {
-              history.goBack();
-            }
-      }
-      rightRenderer={
-        isDetachedPage ? undefined : (
-          <div
-            style={{
-              height: '64px',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingRight: '20px'
-            }}
-          >
-            <i
-              className="fas fa-external-link-alt"
-              style={{
-                cursor: 'pointer',
-                padding: '4px',
-                color: '#ffffff'
-              }}
-              onClick={async (e) => {
-                e.preventDefault();
+    // <HeaderLayout
+    //   showChainName={false}
+    //   canChangeChainInfo={false}
+    //   onBackButton={
+    //     isDetachedPage
+    //       ? undefined
+    //       : () => {
+    //           history.goBack();
+    //         }
+    //   }
+    //   rightRenderer={
+    //     isDetachedPage ? undefined : (
+    //       <div
+    //         style={{
+    //           height: '64px',
+    //           display: 'flex',
+    //           flexDirection: 'row',
+    //           alignItems: 'center',
+    //           paddingRight: '20px'
+    //         }}
+    //       >
+    //         <i
+    //           className="fas fa-external-link-alt"
+    //           style={{
+    //             cursor: 'pointer',
+    //             padding: '4px',
+    //             color: '#ffffff'
+    //           }}
+    //           onClick={async (e) => {
+    //             e.preventDefault();
 
-                const windowInfo = await browser.windows.getCurrent();
+    //             const windowInfo = await browser.windows.getCurrent();
 
-                let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
-                if (sendConfigs.recipientConfig.rawRecipient) {
-                  queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
-                }
-                if (sendConfigs.amountConfig.amount) {
-                  queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
-                }
-                if (sendConfigs.memoConfig.memo) {
-                  queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
-                }
+    //             let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
+    //             if (sendConfigs.recipientConfig.rawRecipient) {
+    //               queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
+    //             }
+    //             if (sendConfigs.amountConfig.amount) {
+    //               queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
+    //             }
+    //             if (sendConfigs.memoConfig.memo) {
+    //               queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
+    //             }
 
-                await openPopupWindow(
-                  browser.runtime.getURL(`/popup.html#/send${queryString}`),
-                  undefined,
-                  {
-                    top: (windowInfo.top || 0) + 80,
-                    left:
-                      (windowInfo.left || 0) +
-                      (windowInfo.width || 0) -
-                      PopupSize.width -
-                      20
-                  }
-                );
-                window.close();
-              }}
-            />
-          </div>
-        )
-      }
-    >
+    //             await openPopupWindow(
+    //               browser.runtime.getURL(`/popup.html#/send${queryString}`),
+    //               undefined,
+    //               {
+    //                 top: (windowInfo.top || 0) + 80,
+    //                 left:
+    //                   (windowInfo.left || 0) +
+    //                   (windowInfo.width || 0) -
+    //                   PopupSize.width -
+    //                   20
+    //               }
+    //             );
+    //             window.close();
+    //           }}
+    //         />
+    //       </div>
+    //     )
+    //   }
+    // >
+    <>
       <form
         className={style.formContainer}
         onSubmit={async (e: any) => {
@@ -279,11 +280,11 @@ export const SendPage: FunctionComponent = observer(() => {
               priceStore={priceStore}
               label={intl.formatMessage({ id: 'send.input.fee' })}
               feeSelectLabels={{
-                low: intl.formatMessage({ id: 'fee-buttons.select.low' }),
+                low: intl.formatMessage({ id: 'fee-buttons.select.slow' }),
                 average: intl.formatMessage({
                   id: 'fee-buttons.select.average'
                 }),
-                high: intl.formatMessage({ id: 'fee-buttons.select.high' })
+                high: intl.formatMessage({ id: 'fee-buttons.select.fast' })
               }}
               gasLabel={intl.formatMessage({ id: 'send.input.gas' })}
             />
@@ -310,6 +311,7 @@ export const SendPage: FunctionComponent = observer(() => {
           </Button>
         </div>
       </form>
-    </HeaderLayout>
+    </>
+    // {/* </HeaderLayout> */}
   );
 });

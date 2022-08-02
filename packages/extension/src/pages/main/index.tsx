@@ -22,13 +22,15 @@ import { useConfirm } from '../../components/confirm';
 import { ChainUpdaterService } from '@owallet/background';
 import { IBCTransferView } from './ibc-transfer';
 import { SelectChain } from '../../layouts/header';
+import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
+import { SendPage } from '../send';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
   const intl = useIntl();
 
-  const { chainStore, accountStore, queriesStore } = useStore();
-
+  const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
+  const [hasSend, setHasSend] = React.useState(false);
   const confirm = useConfirm();
 
   const currentChainId = chainStore.current.chainId;
@@ -105,7 +107,7 @@ export const MainPage: FunctionComponent = observer(() => {
       }
     >
       <SelectChain showChainName canChangeChainInfo />
-      <div style={{ height: 10 }}/>
+      <div style={{ height: 10 }} />
       <BIP44SelectModal />
       <Card className={classnames(style.card, 'shadow')}>
         <CardBody>
@@ -124,16 +126,30 @@ export const MainPage: FunctionComponent = observer(() => {
             </div>
             {chainStore.current.networkType === 'evm' ? (
               <div style={{ marginTop: 24 }}>
-                <TxButtonEvmView />
+                <TxButtonEvmView hasSend={hasSend} setHasSend={setHasSend} />
               </div>
             ) : (
               <>
-                <TxButtonView />
+                <TxButtonView hasSend={hasSend} setHasSend={setHasSend} />
               </>
             )}
+            {hasSend ? (
+              <>
+                <div style={{ height: 32 }} />
+                <hr
+                  className="my-3"
+                  style={{
+                    height: 1,
+                    borderTop: '1px solid #E6E8EC'
+                  }}
+                />
+                <SendPage />
+              </>
+            ) : null}
           </div>
         </CardBody>
       </Card>
+
       {chainStore.current.networkType === 'cosmos' && (
         <>
           <Card className={classnames(style.card, 'shadow')}>
@@ -148,19 +164,20 @@ export const MainPage: FunctionComponent = observer(() => {
           </Card>
         </>
       )}
-      {hasTokens ? (
+      {/* {hasTokens ? (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>{<TokensView tokens={tokens} />}</CardBody>
         </Card>
-      ) : null}
-      {uiConfigStore.showAdvancedIBCTransfer &&
+      ) : null} */}
+
+      {/* {uiConfigStore.showAdvancedIBCTransfer &&
       chainStore.current.features?.includes('ibc-transfer') ? (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>
             <IBCTransferView />
           </CardBody>
         </Card>
-      ) : null}
+      ) : null} */}
     </HeaderLayout>
   );
 });

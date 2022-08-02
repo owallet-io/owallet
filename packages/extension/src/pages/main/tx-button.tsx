@@ -54,107 +54,114 @@ const DepositModal: FunctionComponent<{
 
   return (
     <div className={styleTxButton.depositModal}>
-      <h1 className={styleTxButton.title}>Scan QR code</h1>
+      <h1 className={styleTxButton.title}>Scan to Receive </h1>
       <canvas className={styleTxButton.qrcode} id="qrcode" ref={qrCodeRef} />
     </div>
   );
 };
 
-export const TxButtonView: FunctionComponent = observer(() => {
-  const { accountStore, chainStore, queriesStore } = useStore();
+export interface TxButtonViewProps {
+  setHasSend?: any;
+  hasSend?: boolean;
+}
 
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const queryBalances = queries.queryBalances.getQueryBech32Address(
-    accountInfo.bech32Address
-  );
+export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
+  ({ setHasSend, hasSend }) => {
+    const { accountStore, chainStore, queriesStore } = useStore();
 
-  const hasAssets =
-    queryBalances.balances.find((bal) =>
-      bal?.balance?.toDec().gt(new Dec(0))
-    ) !== undefined;
+    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+    const queries = queriesStore.get(chainStore.current.chainId);
+    const queryBalances = queries.queryBalances.getQueryBech32Address(
+      accountInfo.bech32Address
+    );
 
-  const [isDepositOpen, setIsDepositOpen] = useState(false);
+    const hasAssets =
+      queryBalances.balances.find((bal) =>
+        bal?.balance?.toDec().gt(new Dec(0))
+      ) !== undefined;
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [isDepositOpen, setIsDepositOpen] = useState(false);
 
-  const history = useHistory();
+    const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const sendBtnRef = useRef<HTMLButtonElement>(null);
+    const history = useHistory();
 
-  return (
-    <div className={styleTxButton.containerTxButton}>
-      <Modal
-        style={{
-          content: {
-            width: '330px',
-            minWidth: '330px',
-            minHeight: 'unset',
-            maxHeight: 'unset',
-            backgroundColor: '#29292d',
-            border: '1px solid #68687A',
-            borderRadius: '8px'
-          }
-        }}
-        isOpen={isDepositOpen}
-        onRequestClose={() => {
-          setIsDepositOpen(false);
-        }}
-      >
-        <DepositModal bech32Address={accountInfo.bech32Address} />
-      </Modal>
-     <Button
-        className={classnames(styleTxButton.button,styleTxButton.btnReceive)}
-        outline
-        onClick={(e) => {
-          e.preventDefault();
+    const sendBtnRef = useRef<HTMLButtonElement>(null);
 
-          setIsDepositOpen(true);
-        }}
-      >
-        <FormattedMessage id="main.account.button.receive" />
-      </Button>
-      {/*
+    return (
+      <div className={styleTxButton.containerTxButton}>
+        <Modal
+          style={{
+            content: {
+              width: '330px',
+              minWidth: '330px',
+              minHeight: 'unset',
+              maxHeight: 'unset',
+              border: '1px solid #FCFCFD',
+              borderRadius: '8px'
+            }
+          }}
+          isOpen={isDepositOpen}
+          onRequestClose={() => {
+            setIsDepositOpen(false);
+          }}
+        >
+          <DepositModal bech32Address={accountInfo.bech32Address} />
+        </Modal>
+        <Button
+          className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
+          outline
+          onClick={(e) => {
+            e.preventDefault();
+
+            setIsDepositOpen(true);
+          }}
+        >
+          <FormattedMessage id="main.account.button.receive" />
+        </Button>
+        {/*
         "Disabled" property in button tag will block the mouse enter/leave events.
         So, tooltip will not work as expected.
         To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
        */}
-      <Button
-        innerRef={sendBtnRef}
-        className={classnames(
-          styleTxButton.button,
-          {
-            disabled: !hasAssets
-          },
-          styleTxButton.btnSend
-        )}
-        data-loading={accountInfo.isSendingMsg === 'send'}
-        onClick={(e) => {
-          e.preventDefault();
+        <Button
+          innerRef={sendBtnRef}
+          className={classnames(
+            styleTxButton.button,
+            {
+              disabled: !hasAssets
+            },
+            styleTxButton.btnSend
+          )}
+          data-loading={accountInfo.isSendingMsg === 'send'}
+          onClick={(e) => {
+            e.preventDefault();
 
-          if (hasAssets) {
-            history.push('/send');
-          }
-        }}
-      >
-        <FormattedMessage id="main.account.button.send" />
-      </Button>
-      {!hasAssets ? (
-        <Tooltip
-          placement="bottom"
-          isOpen={tooltipOpen}
-          target={sendBtnRef}
-          toggle={() => setTooltipOpen((value) => !value)}
-          fade
+            if (hasAssets) {
+              setHasSend(!hasSend);
+              // history.push('/send');
+            }
+          }}
         >
-          <FormattedMessage id="main.account.tooltip.no-asset" />
-        </Tooltip>
-      ) : null}
-    </div>
-  );
-});
+          <FormattedMessage id="main.account.button.send" />
+        </Button>
+        {!hasAssets ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipOpen}
+            target={sendBtnRef}
+            toggle={() => setTooltipOpen((value) => !value)}
+            fade
+          >
+            <FormattedMessage id="main.account.tooltip.no-asset" />
+          </Tooltip>
+        ) : null}
+      </div>
+    );
+  }
+);
 
-export const TxButtonEvmView: FunctionComponent = observer(() => {
+export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(() => {
   const { accountStore, chainStore, queriesStore } = useStore();
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);

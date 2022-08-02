@@ -253,6 +253,9 @@
   "fee-buttons.select.average": "평균",
   "fee-buttons.select.high": "빠름",
 
+  "fee-buttons.select.slow": "느린",
+  "fee-buttons.select.fast": "빠른",
+
   "input.recipient.error.invalid-bech32": "잘못된 주소입니다",
   "input.recipient.error.invalid-evm-address": "",
   "input.recipient.error.ens-not-supported": "이 체인에는 ENS가 지원되지 않습니다",

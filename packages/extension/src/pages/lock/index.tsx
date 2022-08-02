@@ -86,8 +86,8 @@ export const LockPage: FunctionComponent = observer(() => {
         })}
       >
         <Banner
-          icon={require('../../public/assets/svg/oraichain-pro-logo.svg')}
-          logo={require('../../public/assets/img/oraichain-pro.svg')}
+          icon={require('../../public/assets/orai_wallet_logo.png')} 
+          logo={require('../../public/assets/logo.svg')}
           subtitle="Cosmos x EVM in one Wallet"
         />
         <Input

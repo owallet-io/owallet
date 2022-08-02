@@ -36,10 +36,10 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
     let path = '/';
     switch (listTabs[tab]) {
       case 'Token':
-        path = '/setting';
+        path = '/token';
         break;
       case 'Account':
-        path = '/send';
+        path = '/setting/set-keyring';
         break;
       case 'Menu':
         path = '/setting/language';

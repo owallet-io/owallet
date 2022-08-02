@@ -61,6 +61,7 @@ import { ValidatorListPage } from './pages/stake/validator-list';
 import { IntlProvider } from 'react-intl';
 import { SignEthereumPage } from './pages/sign/sign-ethereum';
 import { SendEvmPage } from './pages/send-evm';
+import { TokenPage } from './pages/token';
 
 window.owallet = new OWallet(
   manifest.version,
@@ -128,8 +129,8 @@ const StateRenderer: FunctionComponent = observer(() => {
     return (
       <div style={{ height: '100%' }}>
         <Banner
-          icon={require('./public/assets/svg/oraichain-pro-logo.svg')}
-          logo={require('./public/assets/img/oraichain-pro.svg')}
+          icon={require('./public/assets/orai_wallet_logo.png')}
+          logo={require('./public/assets/logo.svg')}
           subtitle="Cosmos x EVM in one Wallet"
         />
       </div>
@@ -138,8 +139,8 @@ const StateRenderer: FunctionComponent = observer(() => {
     return (
       <div style={{ height: '100%' }}>
         <Banner
-          icon={require('./public/assets/svg/oraichain-pro-logo.svg')}
-          logo={require('./public/assets/img/oraichain-pro.svg')}
+          icon={require('./public/assets/orai_wallet_logo.png')}
+          logo={require('./public/assets/logo.svg')}
           subtitle="Cosmos x EVM in one Wallet"
         />
       </div>
@@ -185,6 +186,7 @@ ReactDOM.render(
                   <Route exact path="/" component={StateRenderer} />
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
+                  <Route exact path="/token" component={TokenPage} />
                   <Route
                     exact
                     path="/access/viewing-key"

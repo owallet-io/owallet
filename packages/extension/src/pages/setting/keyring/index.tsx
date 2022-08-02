@@ -26,10 +26,10 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
     <HeaderLayout
       showChainName={false}
       canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({ id: 'setting.keyring' })}
-      onBackButton={() => {
-        history.goBack();
-      }}
+      // alternativeTitle={intl.formatMessage({ id: 'setting.keyring' })}
+      // onBackButton={() => {
+      //   history.goBack();
+      // }}
     >
       <div className={style.container}>
         <div className={style.innerTopContainer}>

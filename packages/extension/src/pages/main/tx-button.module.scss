@@ -3,10 +3,9 @@
 .container-tx-button {
   display: flex;
   flex-direction: row;
-
   .button {
     flex: 1;
-    background-color: $color;
+    background-color: $color-neutral-8;
     margin-right: $layout-margin;
     border-radius: 8px !important;
     border: 1px solid $color !important;
@@ -33,5 +32,8 @@
 
   .qrcode {
     margin-bottom: 20px;
+  }
+  .title {
+    color: $color-neutral-2;
   }
 }

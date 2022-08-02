@@ -127,9 +127,9 @@ export const HeaderOld: FunctionComponent<Props & LocalProps> = observer(
 export const Header: FunctionComponent<Props & LocalProps> = observer(
   ({ toggle, listTabs }) => {
     const checkRouter = {
-      Account: 'send',
+      Account: 'setting/set-keyring',
       Home: '',
-      Token: 'setting',
+      Token: 'token',
       Menu: 'setting/language'
     };
     const hrefReplace = window.location.href.replace(

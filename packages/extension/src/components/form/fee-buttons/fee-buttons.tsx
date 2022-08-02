@@ -89,9 +89,10 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
             feeButtonState={feeButtonState}
           />
         ) : null}
-        {feeButtonState.isGasInputOpen || !feeConfig.feeCurrency ? (
+        {/* {feeButtonState.isGasInputOpen || !feeConfig.feeCurrency ? (
           <GasInput label={gasLabel} gasConfig={gasConfig} />
-        ) : null}
+        ) : null} */}
+        <GasInput label={gasLabel} gasConfig={gasConfig} />
       </React.Fragment>
     );
   }
@@ -123,6 +124,32 @@ export const FeeButtonsInner: FunctionComponent<
       crypto.getRandomValues(bytes);
       return `input-${Buffer.from(bytes).toString('hex')}`;
     });
+
+    const renderIconTypeFee = (label: string) => {
+      switch (label) {
+        case 'low':
+          return (
+            <img
+              src={require('../../../public/assets/img/slow.svg')}
+              alt={label}
+            />
+          );
+        case 'average':
+          return (
+            <img
+              src={require('../../../public/assets/img/average.svg')}
+              alt={label}
+            />
+          );
+        case 'high':
+          return (
+            <img
+              src={require('../../../public/assets/img/fast.svg')}
+              alt={label}
+            />
+          );
+      }
+    };
 
     const language = useLanguage();
 
@@ -178,7 +205,55 @@ export const FeeButtonsInner: FunctionComponent<
             {label}
           </Label>
         ) : null}
-        <ButtonGroup id={inputId} className={styleFeeButtons.buttons}>
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+          {['low', 'average', 'high'].map((fee, i) => {
+            return (
+              <div
+                key={i}
+                style={{
+                  border: `1px solid ${
+                    feeConfig.feeType == fee ? '#7664E4' : '#fff'
+                  }`,
+                  borderRadius: 8,
+                  boxShadow: '0px 10px 35px -3px rgba(24, 39, 75, 0.12)',
+                  flex: 1,
+                  marginLeft: i == 1 ? 5 : 0,
+                  marginRight: i == 1 ? 5 : 0,
+                  padding: 8,
+                  cursor: 'pointer'
+                }}
+                onClick={(e) => {
+                  feeConfig.setFeeType(
+                    fee == 'low' ? 'low' : fee == 'average' ? 'average' : 'high'
+                  );
+                  e.preventDefault();
+                }}
+              >
+                {renderIconTypeFee(fee)}
+                <div className={styleFeeButtons.title}>
+                  {feeSelectLabels[fee]}
+                </div>
+                <div
+                  className={classnames(styleFeeButtons.coin, {
+                    'text-muted': feeConfig.feeType !== fee
+                  })}
+                >
+                  {[lowFee, averageFee, highFee][i].trim(true).toString()}
+                </div>
+                {[lowFeePrice, averageFeePrice, highFeePrice][i] ? (
+                  <div
+                    className={classnames(styleFeeButtons.fiat, {
+                      'text-muted': feeConfig.feeType !== fee
+                    })}
+                  >
+                    {[lowFeePrice, averageFeePrice, highFeePrice][i].toString()}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+        {/* <ButtonGroup id={inputId} className={styleFeeButtons.buttons}>
           <Button
             type="button"
             className={styleFeeButtons.button}
@@ -262,21 +337,22 @@ export const FeeButtonsInner: FunctionComponent<
               {feeConfig.getFeeTypePretty('high').trim(true).toString()}
             </div>
           </Button>
-        </ButtonGroup>
+        </ButtonGroup> */}
         {isFeeLoading ? (
           <FormText>
             <i className="fa fa-spinner fa-spin fa-fw" />
           </FormText>
         ) : null}
+        <div style={{ height: 20 }} />
         {errorText != null ? (
           <FormFeedback style={{ display: 'block' }}>{errorText}</FormFeedback>
         ) : null}
-        <div className={styleFeeButtons.gasWrap}>
-          <span className={styleFeeButtons.gasBtn}>
-            {intl.formatMessage({
-              id: 'input.fee.toggle.set-gas'
-            })}
-          </span>
+        {/* <div className={styleFeeButtons.gasWrap}>
+          // <span className={styleFeeButtons.gasBtn}>
+          //   {intl.formatMessage({
+          //     id: 'input.fee.toggle.set-gas'
+          //   })}
+          // </span>
           <Button
             size="sm"
             color="link"
@@ -305,15 +381,15 @@ export const FeeButtonsInner: FunctionComponent<
                 )}
               />
             </label>
-            {/* {!feeButtonState.isGasInputOpen
-              ? intl.formatMessage({
-                  id: 'input.fee.toggle.set-gas'
-                })
-              : intl.formatMessage({
-                  id: 'input.fee.toggle.set-gas.close'
-                })} */}
+            // {!feeButtonState.isGasInputOpen
+            //   ? intl.formatMessage({
+            //       id: 'input.fee.toggle.set-gas'
+            //     })
+            //   : intl.formatMessage({
+            //       id: 'input.fee.toggle.set-gas.close'
+            //     })}
           </Button>
-        </div>
+        </div> */}
       </FormGroup>
     );
   }

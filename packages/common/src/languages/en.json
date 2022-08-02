@@ -52,7 +52,7 @@
   "setting.connections.confirm.delete-connection.title": "Disable Connection",
   "setting.connections.confirm.delete-connection.paragraph": "Are you sure you want to disable this connection?",
 
-  "setting.address-book.button.add": "Add New",
+  "setting.address-book.button.add": "Add more",
   "setting.address-book.add-address.title": "Add Address",
   "setting.address-book.edit-address.title": "Edit Address",
   "setting.address-book.name": "Name",
@@ -60,7 +60,7 @@
   "setting.address-book.address.error.invalid": "Invalid address",
   "setting.address-book.memo": "Default Memo (Optional)",
   "setting.address-book.confirm.delete-address.title": "Delete Address",
-  "setting.address-book.confirm.delete-address.paragraph": "Are you sure you want to delete this address?",
+  "setting.address-book.confirm.delete-address.paragraph": "Are you sure want to delete this address?",
   "setting.address-book.button.save": "Save",
 
   "setting.export-to-mobile": "Link OWallet Mobile",
@@ -269,6 +269,9 @@
   "fee-buttons.select.low": "Low",
   "fee-buttons.select.average": "Average",
   "fee-buttons.select.high": "High",
+
+  "fee-buttons.select.slow": "Slow",
+  "fee-buttons.select.fast": "Fast",
 
   "input.recipient.error.invalid-bech32": "Invalid address",
   "input.recipient.error.invalid-evm-address": "Invalid EVM address",

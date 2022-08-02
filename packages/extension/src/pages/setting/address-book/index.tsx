@@ -27,6 +27,7 @@ import {
   useMemoConfig,
   useRecipientConfig
 } from '@owallet/hooks';
+import { Input } from '../../../components/form';
 
 export const AddressBookPage: FunctionComponent<{
   onBackButton?: () => void;
@@ -81,11 +82,21 @@ export const AddressBookPage: FunctionComponent<{
 
     const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
     const [addAddressModalIndex, setAddAddressModalIndex] = useState(-1);
-
+    const [modalMore, setModalMore] = useState(false);
     const confirm = useConfirm();
 
-    const addressBookIcons = (index: number) => {
+    const addressBookIcons = (index: number, name?: string) => {
       return [
+        // <img
+        //   src={require('../../../public/assets/img/more-fill.svg')}
+        //   onClick={(e) => {
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //     // setAddAddressModalOpen(true);
+        //     setModalMore(!modalMore);
+        //     setAddAddressModalIndex(index);
+        //   }}
+        // />
         <i
           key="edit"
           className="fas fa-pen"
@@ -108,15 +119,19 @@ export const AddressBookPage: FunctionComponent<{
 
             if (
               await confirm.confirm({
-                img: (
-                  <img
-                    src={require('../../../public/assets/img/trash.svg')}
-                    style={{ height: '80px' }}
-                  />
-                ),
-                title: intl.formatMessage({
-                  id: 'setting.address-book.confirm.delete-address.title'
-                }),
+                styleYesBtn: {
+                  background: '#EF466F'
+                },
+                styleModalBody: {
+                  backgroundColor: '#353945'
+                },
+                styleNoBtn: {
+                  backgroundColor: '#F8F8F9',
+                  color: '#777E90'
+                },
+                yes: 'Delete',
+                no: 'Cancel',
+                title: name,
                 paragraph: intl.formatMessage({
                   id: 'setting.address-book.confirm.delete-address.paragraph'
                 })
@@ -132,40 +147,19 @@ export const AddressBookPage: FunctionComponent<{
     };
 
     return (
-      <HeaderLayout
-        showChainName={false}
-        canChangeChainInfo={false}
-        alternativeTitle={intl.formatMessage({
-          id: 'main.menu.address-book'
-        })}
-        onBackButton={
-          onBackButton
-            ? onBackButton
-            : () => {
-                history.goBack();
-              }
-        }
-      >
-        <Modal
-          isOpen={addAddressModalOpen}
-          backdrop={false}
-          className={styleAddressBook.fullModal}
-          wrapClassName={styleAddressBook.fullModal}
-          contentClassName={styleAddressBook.fullModal}
+      <>
+        <div
+          onClick={onBackButton}
+          style={{
+            cursor: 'pointer',
+            textAlign: 'right'
+          }}
         >
-          <ModalBody className={styleAddressBook.fullModal}>
-            <AddAddressModal
-              closeModal={() => {
-                setAddAddressModalOpen(false);
-                setAddAddressModalIndex(-1);
-              }}
-              recipientConfig={recipientConfig}
-              memoConfig={memoConfig}
-              addressBookConfig={addressBookConfig}
-              index={addAddressModalIndex}
-            />
-          </ModalBody>
-        </Modal>
+          <img
+            src={require('../../../public/assets/img/close.svg')}
+            alt="total-balance"
+          />
+        </div>
         <div className={styleAddressBook.container}>
           <div className={styleAddressBook.innerTopContainer}>
             {hideChainDropdown ? null : (
@@ -190,18 +184,18 @@ export const AddressBookPage: FunctionComponent<{
                 </DropdownMenu>
               </ButtonDropdown>
             )}
-            <div style={{ flex: 1 }} />
             <div className={styleAddressBook.addressBtnWrap}>
-              <Button
-                color=""
-                size="sm"
+              <div
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-
                   setAddAddressModalOpen(true);
                 }}
-                className={styleAddressBook.addressBtn}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer'
+                }}
               >
                 <img
                   src={require('../../../public/assets/svg/add-account.svg')}
@@ -211,9 +205,34 @@ export const AddressBookPage: FunctionComponent<{
                 <span>
                   <FormattedMessage id="setting.address-book.button.add" />
                 </span>
-              </Button>
+              </div>
             </div>
           </div>
+          {/* <div>
+            <Input
+              type={'text'}
+              styleInputGroup={{
+                display: 'flex',
+                flexDirection: 'row-reverse'
+              }}
+              placeholder={'Search Name/Address'}
+              append={
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 50
+                  }}
+                >
+                  <img
+                    src={require('../../../public/assets/img/light.svg')}
+                    alt=""
+                  />
+                </div>
+              }
+            />
+          </div> */}
           <div style={{ flex: '1 1 0', overflowY: 'auto' }}>
             {addressBookConfig.addressBookDatas.map((data, i) => {
               return (
@@ -229,7 +248,7 @@ export const AddressBookPage: FunctionComponent<{
                       : data.address
                   }
                   subParagraph={data.memo}
-                  icons={addressBookIcons(i)}
+                  icons={addressBookIcons(i, data.name)}
                   data-index={i}
                   onClick={(e) => {
                     e.preventDefault();
@@ -247,7 +266,29 @@ export const AddressBookPage: FunctionComponent<{
             })}
           </div>
         </div>
-      </HeaderLayout>
+        {addAddressModalOpen ? (
+          <>
+            <hr
+              className="my-3"
+              style={{
+                height: 1,
+                borderTop: '1px solid #E6E8EC'
+              }}
+            />
+            <AddAddressModal
+              closeModal={() => {
+                setAddAddressModalOpen(false);
+                setAddAddressModalIndex(-1);
+              }}
+              recipientConfig={recipientConfig}
+              memoConfig={memoConfig}
+              addressBookConfig={addressBookConfig}
+              index={addAddressModalIndex}
+              chainId={selectedChainId}
+            />
+          </>
+        ) : null}
+      </>
     );
   }
 );

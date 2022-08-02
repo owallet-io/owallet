@@ -12,9 +12,10 @@ export const PageButton: FunctionComponent<
     icons?: React.ReactElement[];
     styleTitle?: React.CSSProperties;
     styleParagraph?: React.CSSProperties;
+    customModal?: any;
   } & React.HTMLAttributes<HTMLDivElement>
 > = (props) => {
-  const { title, paragraph, subParagraph, icons, styleTitle, styleParagraph } =
+  const { title, paragraph, subParagraph, icons, styleTitle, styleParagraph , customModal} =
     props;
 
   const attributes = { ...props };

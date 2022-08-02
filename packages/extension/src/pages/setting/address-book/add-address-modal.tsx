@@ -42,28 +42,36 @@ export const AddAddressModal: FunctionComponent<{
     ]);
 
     return (
-      <HeaderLayout
-        showChainName={false}
-        canChangeChainInfo={false}
-        alternativeTitle={
-          index >= 0
-            ? intl.formatMessage({
-                id: 'setting.address-book.edit-address.title'
-              })
-            : intl.formatMessage({
-                id: 'setting.address-book.add-address.title'
-              })
-        }
-        onBackButton={() => {
-          // Clear the recipient and memo before closing
-          recipientConfig.setRawRecipient('');
-          memoConfig.setMemo('');
-          closeModal();
-        }}
-      >
-        <form
-          style={{ display: 'flex', flexDirection: 'column', height: '100%' }}
+      // <HeaderLayout
+      //   showChainName={false}
+      //   canChangeChainInfo={false}
+      //   alternativeTitle={
+      //     index >= 0
+      //       ? intl.formatMessage({
+      //           id: 'setting.address-book.edit-address.title'
+      //         })
+      //       : intl.formatMessage({
+      //           id: 'setting.address-book.add-address.title'
+      //         })
+      //   }
+      //   onBackButton={() => {
+      //     // Clear the recipient and memo before closing
+      //     recipientConfig.setRawRecipient('');
+      //     memoConfig.setMemo('');
+      //     closeModal();
+      //   }}
+      // >
+      <>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 20,
+            color: '#353945'
+          }}
         >
+          {name ? 'Edit Address' : 'New Address'}
+        </div>
+        <form style={{ display: 'flex', flexDirection: 'column' }}>
           <Input
             type="text"
             label={intl.formatMessage({ id: 'setting.address-book.name' })}
@@ -82,47 +90,65 @@ export const AddAddressModal: FunctionComponent<{
             memoConfig={memoConfig}
             label={intl.formatMessage({ id: 'setting.address-book.memo' })}
           />
-          <div style={{ flex: 1 }} />
-          <Button
-            type="submit"
-            color="primary"
-            disabled={
-              !name ||
-              recipientConfig.getError() != null ||
-              memoConfig.getError() != null
-            }
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-
-              if (!recipientConfig.recipient) {
-                throw new Error('Invalid address');
-              }
-
-              if (index < 0) {
-                await addressBookConfig.addAddressBook({
-                  name,
-                  address: recipientConfig.recipient,
-                  memo: memoConfig.memo
-                });
-              } else {
-                await addressBookConfig.editAddressBookAt(index, {
-                  name,
-                  address: recipientConfig.recipient,
-                  memo: memoConfig.memo
-                });
-              }
-
-              // Clear the recipient and memo before closing
-              recipientConfig.setRawRecipient('');
-              memoConfig.setMemo('');
-              closeModal();
+          {/* <div style={{ flex: 1 }} /> */}
+          <div
+            style={{
+              display: 'flex'
             }}
           >
-            <FormattedMessage id={'setting.address-book.button.save'} />
-          </Button>
+            <Button
+              style={{
+                width: '50%',
+                border: '1px solid #7664E4',
+                color: '#7664E4'
+              }}
+              onClick={() => closeModal()}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              color="primary"
+              style={{ width: '50%' }}
+              disabled={
+                !name ||
+                recipientConfig.getError() != null ||
+                memoConfig.getError() != null
+              }
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (!recipientConfig.recipient) {
+                  throw new Error('Invalid address');
+                }
+
+                if (index < 0) {
+                  await addressBookConfig.addAddressBook({
+                    name,
+                    address: recipientConfig.recipient,
+                    memo: memoConfig.memo
+                  });
+                } else {
+                  await addressBookConfig.editAddressBookAt(index, {
+                    name,
+                    address: recipientConfig.recipient,
+                    memo: memoConfig.memo
+                  });
+                }
+
+                // Clear the recipient and memo before closing
+                recipientConfig.setRawRecipient('');
+                memoConfig.setMemo('');
+                closeModal();
+              }}
+            >
+              <FormattedMessage id={'setting.address-book.button.save'} />
+            </Button>
+          </div>
         </form>
-      </HeaderLayout>
+      </>
+      // </HeaderLayout>
     );
   }
 );

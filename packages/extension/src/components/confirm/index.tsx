@@ -23,6 +23,8 @@ export interface ConfirmOptions {
 
   styleYesBtn?: CSSProperties;
   styleNoBtn?: CSSProperties;
+
+  styleModalBody?: CSSProperties;
 }
 
 const ConfirmContext = createContext<
@@ -98,7 +100,10 @@ export const ConfirmProvider: FunctionComponent = ({ children }) => {
         className={style.modalDialog}
         onClosed={clearCurrentConfirm}
       >
-        <ModalBody className={style.modal}>
+        <ModalBody
+          className={style.modal}
+          style={currentConfirm?.styleModalBody}
+        >
           <ConfirmDialog
             img={currentConfirm?.img}
             title={currentConfirm?.title}

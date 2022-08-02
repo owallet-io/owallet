@@ -3,14 +3,14 @@
 .container {
   width: 100%;
   max-height: 76px;
-  padding: 16px;
+  // padding: 16px;
   cursor: pointer;
-  background-color: $color-gray-80;
-  border-top: 1px solid $color-gray-70;
+  // background-color: $color-gray-80;
+  // border-top: 1px solid $color-gray-70;
 
-  &:last-child {
-    border-bottom: 1px solid $color-gray-70;
-  }
+  // &:last-child {
+  //   border-bottom: 1px solid $color-gray-70;
+  // }
 
   &.with-sub-paragraph {
     height: 84px;
@@ -42,7 +42,9 @@
 
     h1 {
       font-size: 14px;
-      color: #f6f7fb;
+      color: #353945;
+      font-weight: 600;
+      line-height: 20px;
       margin: 0;
 
       max-width: 240px;
