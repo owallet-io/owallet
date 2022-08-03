@@ -32,7 +32,7 @@ const ManageIntroScreen: FunctionComponent = () => {
   return (
     <View
       style={{
-        paddingHorizontal: spacing['32'],
+        paddingHorizontal: spacing['32']
       }}
     >
       <View style={styles.boardingTitleContainer}>
@@ -51,7 +51,7 @@ const ManageIntroScreen: FunctionComponent = () => {
               color: colors['black']
             }}
           >
-            fugible
+            fungible
           </Text>
           <Text
             style={{

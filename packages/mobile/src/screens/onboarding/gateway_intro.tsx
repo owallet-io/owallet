@@ -1,13 +1,12 @@
 import React, { FunctionComponent } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import { RectButton } from '../../components/rect-button';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
+import { colors, spacing, typography } from '../../themes';
 import { CText as Text } from '../../components/text';
 import { useStore } from '../../stores';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useSimpleTimer } from '../../hooks';
-import { LoadingSpinner } from '../../components/spinner';
+
 const styles = StyleSheet.create({
   boardingRoot: {
     padding: spacing['32'],
@@ -99,7 +98,7 @@ const GatewayIntroScreen: FunctionComponent = () => {
         }}
       >
         {isTimedOut ? (
-          <LoadingSpinner color={colors['white']} size={20} />
+          <ActivityIndicator />
         ) : (
           <Text
             style={{

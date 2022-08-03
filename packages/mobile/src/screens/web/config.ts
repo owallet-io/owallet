@@ -49,12 +49,12 @@ export const DAppInfos: DAppInfo[] = [
   //   uri: 'https://bignft.web.app',
   //   logo: balconyLogo,
   // },
-  // {
-  //   id: 6,
-  //   name: 'Balcony Subnet',
-  //   uri: 'https://re.bignft.app',
-  //   logo: balconyLogo
-  // },
+  {
+    id: 6,
+    name: 'Balcony Subnet',
+    uri: 'https://re.bignft.app',
+    logo: balconyLogo
+  },
   {
     id: 7,
     name: 'OraiDEX Info',
