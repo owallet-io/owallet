@@ -81,7 +81,7 @@ export const AddAddressModal: FunctionComponent<{
               setName(e.target.value);
             }}
           />
-          <AddressInput
+          {/* <AddressInput
             recipientConfig={recipientConfig}
             label={intl.formatMessage({ id: 'setting.address-book.address' })}
             disableAddressBook={true}
@@ -89,7 +89,7 @@ export const AddAddressModal: FunctionComponent<{
           <MemoInput
             memoConfig={memoConfig}
             label={intl.formatMessage({ id: 'setting.address-book.memo' })}
-          />
+          /> */}
           {/* <div style={{ flex: 1 }} /> */}
           <div
             style={{

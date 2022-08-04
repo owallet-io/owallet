@@ -7,7 +7,7 @@ import {
 } from '../../components/form';
 import { useStore } from '../../stores';
 
-import { HeaderLayout } from '../../layouts';
+import { HeaderLayout, LayoutSpace, LayoutHidePage } from '../../layouts';
 
 import { observer } from 'mobx-react-lite';
 
@@ -25,9 +25,11 @@ import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
 import { EthereumEndpoint } from '@owallet/common';
 import classNames from 'classnames';
 
-export const SendPage: FunctionComponent = observer(() => {
+export const SendPage: FunctionComponent<{
+  coinMinimalDenom?: string;
+}> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
-  let search = useLocation().search;
+  let search = useLocation().search || coinMinimalDenom || '';
   if (search.startsWith('?')) {
     search = search.slice(1);
   }

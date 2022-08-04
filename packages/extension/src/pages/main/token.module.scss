@@ -1,3 +1,5 @@
+@import "../../styles/var";
+
 .token-container {
   display: flex;
   flex-direction: row;
@@ -37,8 +39,10 @@
 
       .name {
         font-size: 14px;
-        color: #F6F7FB;
-
+        color: $color-neutral-3;
+        &:global(.activeToken) {
+          color: $color-accent-1;
+        }
         max-width: 216px;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -49,7 +53,7 @@
         font-size: 16px;
         line-height: 1.13;
         letter-spacing: -0.3px;
-        color: #000;
+        color: $color-black;
 
         max-width: 216px;
         white-space: nowrap;
@@ -58,14 +62,14 @@
       }
       .price{
         font-size: 14px;
-        color: #92929d;
+        color: $color-gray-92;
       }
     }
 
     .right-icon {
       i {
         font-size: 18px;
-        color: #999999;
+        color: $color-gray-90;
       }
     }
   }
@@ -75,7 +79,7 @@
   .title {
     font-size: 14px;
     font-weight: bold;
-    color: #92929d;
+    color: $color-gray-92;
 
     margin-bottom: 12px;
   }

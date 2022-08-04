@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 
-import { HeaderLayout } from '../../layouts';
+import { HeaderLayout, LayoutHidePage } from '../../layouts';
 
 import { Card, CardBody } from 'reactstrap';
 
@@ -14,12 +14,16 @@ import { TokensView } from '../main/token';
 import { useIntl } from 'react-intl';
 import { useConfirm } from '../../components/confirm';
 import { IBCTransferView } from '../main/ibc-transfer';
+import { IBCTransferPage } from '../../pages/ibc-transfer';
+import { SendPage } from '../send';
 
 export const TokenPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
+  const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
+  const [hasSend, setHasSend] = React.useState(false);
+  const [coinMinimalDenom, setCoinMinimalDenom] = React.useState('');
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(accountInfo.bech32Address);
@@ -27,22 +31,65 @@ export const TokenPage: FunctionComponent = observer(() => {
   const tokens = queryBalances.unstakables;
 
   const hasTokens = tokens.length > 0;
+  const handleClickToken = (token) => {
+    if (!hasSend) setHasSend(true);
+    setCoinMinimalDenom(token);
+  };
 
   return (
     <HeaderLayout showChainName canChangeChainInfo>
       {uiConfigStore.showAdvancedIBCTransfer &&
       chainStore.current.features?.includes('ibc-transfer') ? (
-        <Card className={classnames(style.card, 'shadow')}>
-          <CardBody>
-            <IBCTransferView />
-          </CardBody>
-        </Card>
+        <>
+          <Card className={classnames(style.card, 'shadow')}>
+            <CardBody>
+              <IBCTransferView
+                handleTransfer={() => setHasIBCTransfer(!hasIBCTransfer)}
+              />
+            </CardBody>
+          </Card>
+          {hasIBCTransfer && (
+            <Card className={classnames(style.card, 'shadow')}>
+              <CardBody>
+                <LayoutHidePage hidePage={() => setHasIBCTransfer(false)} />
+                <div style={{ height: 28 }} />
+                <IBCTransferPage />
+              </CardBody>
+            </Card>
+          )}
+        </>
       ) : (
         <></>
       )}
       {hasTokens ? (
         <Card className={classnames(style.card, 'shadow')}>
-          <CardBody>{<TokensView tokens={tokens} />}</CardBody>
+          <CardBody>
+            {
+              <TokensView
+                tokens={tokens}
+                coinMinimalDenom={coinMinimalDenom}
+                handleClickToken={handleClickToken}
+              />
+            }
+          </CardBody>
+          {hasSend ? (
+            <>
+              <hr
+                className="my-3"
+                style={{
+                  height: 1,
+                  borderTop: '1px solid #E6E8EC'
+                }}
+              />
+              <div style={{ paddingRight: 20, paddingLeft: 20 }}>
+                <LayoutHidePage hidePage={() => {
+                  setHasSend(false);
+                  setCoinMinimalDenom('');
+                }} />
+                <SendPage coinMinimalDenom={coinMinimalDenom} />
+              </div>
+            </>
+          ) : null}
         </Card>
       ) : null}
     </HeaderLayout>

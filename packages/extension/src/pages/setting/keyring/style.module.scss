@@ -1,4 +1,4 @@
-@import "../../../styles/var";
+@import '../../../styles/var';
 
 .container {
   margin: 0 calc(#{$layout-padding} * -1) calc(#{$layout-padding} * -1);
@@ -22,7 +22,11 @@
   .add-btn {
     display: flex;
     align-items: center;
-    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%) !important;
+    background: linear-gradient(
+      90deg,
+      $primary-color 0%,
+      $second-color 100%
+    ) !important;
     color: $color-darker;
 
     &:hover {
@@ -32,15 +36,15 @@
 }
 
 .popover-container {
-  background-color: $color-gray-80;
+  background-color: $color-white;
   border-radius: 6px;
 }
 
 .popover-item {
   cursor: pointer;
-  color: $color;
+  color: $color-neutral-2;
 
   &:hover {
-    color: black;
+    color: $color;
   }
 }

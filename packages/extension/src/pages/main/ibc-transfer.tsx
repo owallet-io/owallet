@@ -9,7 +9,9 @@ import { useStore } from '../../stores';
 import { Dec } from '@owallet/unit';
 import { FormattedMessage } from 'react-intl';
 
-export const IBCTransferView: FunctionComponent = observer(() => {
+export const IBCTransferView: FunctionComponent<{
+  handleTransfer: () => void;
+}> = observer(({ handleTransfer }) => {
   const history = useHistory();
   const { accountStore, chainStore, queriesStore } = useStore();
 
@@ -55,7 +57,7 @@ export const IBCTransferView: FunctionComponent = observer(() => {
         data-loading={accountInfo.isSendingMsg === 'ibcTransfer'}
         onClick={(e) => {
           e.preventDefault();
-
+          if (handleTransfer) return handleTransfer();
           history.push('/ibc-transfer');
         }}
       >

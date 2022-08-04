@@ -25,17 +25,21 @@ interface FormData {
   password: string;
 }
 
-export const ExportPage: FunctionComponent = observer(() => {
+export const ExportPage: FunctionComponent<{
+  indexExport?: string;
+  keyStore?: string;
+}> = observer(({ indexExport, keyStore }) => {
   const history = useHistory();
   const location = useLocation();
   const match = useRouteMatch<{ index: string; type?: string }>();
+
   const intl = useIntl();
 
   const { keyRingStore } = useStore();
 
   const query = queryString.parse(location.search);
 
-  const type = query.type ?? 'mnemonic';
+  const type = (keyStore || query.type) ?? 'mnemonic';
 
   const [loading, setLoading] = useState(false);
   const [keyRing, setKeyRing] = useState('');
@@ -47,23 +51,27 @@ export const ExportPage: FunctionComponent = observer(() => {
   });
 
   useEffect(() => {
-    if (parseInt(match.params.index).toString() !== match.params.index) {
+    if (
+      parseInt(indexExport || match.params.index).toString() !==
+      (indexExport || match.params.index)
+    ) {
       throw new Error('Invalid index');
     }
-  }, [match.params.index]);
+  }, [match?.params?.index, indexExport]);
 
   return (
-    <HeaderLayout
-      showChainName={false}
-      canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({
-        id:
-          type === 'mnemonic' ? 'setting.export' : 'setting.export.private-key'
-      })}
-      onBackButton={useCallback(() => {
-        history.goBack();
-      }, [history])}
-    >
+    // <HeaderLayout
+    //   showChainName={false}
+    //   canChangeChainInfo={false}
+    //   alternativeTitle={intl.formatMessage({
+    //     id:
+    //       type === 'mnemonic' ? 'setting.export' : 'setting.export.private-key'
+    //   })}
+    //   onBackButton={useCallback(() => {
+    //     history.goBack();
+    //   }, [history])}
+    // >
+    <>
       <div className={style.container}>
         {keyRing ? (
           <div
@@ -83,7 +91,7 @@ export const ExportPage: FunctionComponent = observer(() => {
                   setKeyRing(
                     await flowResult(
                       keyRingStore.showKeyRing(
-                        parseInt(match.params.index),
+                        parseInt(indexExport || match.params.index),
                         data.password
                       )
                     )
@@ -107,6 +115,10 @@ export const ExportPage: FunctionComponent = observer(() => {
                 label={intl.formatMessage({
                   id: 'setting.export.input.password'
                 })}
+                styleInputGroup={{
+                  boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+                }}
+                placeholder="Enter your password"
                 name="password"
                 error={errors.password && errors.password.message}
                 ref={register({
@@ -128,6 +140,7 @@ export const ExportPage: FunctionComponent = observer(() => {
           </React.Fragment>
         )}
       </div>
-    </HeaderLayout>
+      {/* </HeaderLayout> */}
+    </>
   );
 });

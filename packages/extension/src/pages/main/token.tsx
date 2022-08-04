@@ -18,8 +18,9 @@ import { Bech32Address } from '@owallet/cosmos';
 
 const TokenView: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
+  active?: boolean;
   onClick: () => void;
-}> = observer(({ onClick, balance }) => {
+}> = observer(({ onClick, balance, active }) => {
   const { chainStore, accountStore, tokensStore, priceStore } = useStore();
   const language = useLanguage();
   const [colors] = useState([
@@ -137,7 +138,13 @@ const TokenView: FunctionComponent<{
       </div>
       <div className={styleToken.innerContainer}>
         <div className={styleToken.content}>
-          <div className={styleToken.name}>{name}</div>
+          <div
+            className={classmames(styleToken.name, {
+              activeToken: active
+            })}
+          >
+            {name}
+          </div>
           <div className={styleToken.amount}>
             {amount.maxDecimals(6).toString()}
             {balance.isFetching ? (
@@ -219,7 +226,9 @@ const TokenView: FunctionComponent<{
 
 export const TokensView: FunctionComponent<{
   tokens: ObservableQueryBalanceInner[];
-}> = observer(({ tokens }) => {
+  handleClickToken?: (token) => void;
+  coinMinimalDenom?: string;
+}> = observer(({ tokens, handleClickToken, coinMinimalDenom }) => {
   // const { chainStore, accountStore, queriesStore } = useStore();
 
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -250,7 +259,17 @@ export const TokensView: FunctionComponent<{
           <TokenView
             key={i.toString()}
             balance={token}
+            active={
+              `?defaultDenom=${token.currency.coinMinimalDenom}` ==
+              coinMinimalDenom
+            }
             onClick={() => {
+              if (handleClickToken) {
+                handleClickToken(
+                  `?defaultDenom=${token.currency.coinMinimalDenom}`
+                );
+                return;
+              }
               history.push({
                 pathname: '/send',
                 search: `?defaultDenom=${token.currency.coinMinimalDenom}`

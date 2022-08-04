@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 
-import { HeaderLayout } from '../../layouts';
+import { HeaderLayout, LayoutHidePage } from '../../layouts';
 
 import { Card, CardBody } from 'reactstrap';
 
@@ -24,6 +24,11 @@ import { IBCTransferView } from './ibc-transfer';
 import { SelectChain } from '../../layouts/header';
 import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
 import { SendPage } from '../send';
+
+enum Tab {
+  Details,
+  Data
+}
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -76,7 +81,7 @@ export const MainPage: FunctionComponent = observer(() => {
   const tokens = queryBalances.unstakables;
 
   const hasTokens = tokens.length > 0;
-
+  const [tab, setTab] = React.useState<Tab>(Tab.Details);
   return (
     <HeaderLayout
       showChainName
@@ -143,6 +148,7 @@ export const MainPage: FunctionComponent = observer(() => {
                     borderTop: '1px solid #E6E8EC'
                   }}
                 />
+                <LayoutHidePage hidePage={() => setHasSend(false)} />
                 <SendPage />
               </>
             ) : null}

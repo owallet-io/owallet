@@ -39,9 +39,21 @@ export const DestinationChainSelector: FunctionComponent<{
         toggle={() => setIsIBCregisterModalOpen((value) => !value)}
       />
       <FormGroup>
-        <Label for={selectorId} className="form-control-label">
-          <FormattedMessage id="component.ibc.channel-registrar.chain-selector.label" />
-        </Label>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Label for={selectorId} className="form-control-label">
+            <FormattedMessage id="component.ibc.channel-registrar.chain-selector.label" />
+          </Label>
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              setIsIBCregisterModalOpen(true);
+            }}
+            className={style.addChain}
+          >
+             <i className="fas fa-plus-circle my-1 mr-1" /> 
+            <span className={style.textAddChain}>Add New</span>
+          </div>
+        </div>
         <ButtonDropdown
           id={selectorId}
           className={style.chainSelector}
@@ -82,7 +94,7 @@ export const DestinationChainSelector: FunctionComponent<{
                 );
               }
             })}
-            <DropdownItem
+            {/* <DropdownItem
               onClick={(e) => {
                 e.preventDefault();
 
@@ -95,7 +107,7 @@ export const DestinationChainSelector: FunctionComponent<{
                   <FormattedMessage id="component.ibc.channel-registrar.chain-selector.button.add" />
                 </span>
               </div>
-            </DropdownItem>
+            </DropdownItem> */}
           </DropdownMenu>
         </ButtonDropdown>
       </FormGroup>

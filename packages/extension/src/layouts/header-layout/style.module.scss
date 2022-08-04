@@ -1,9 +1,9 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 .container {
   height: 100%;
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
 }
 
 .inner-container {
@@ -13,4 +13,12 @@
   margin-top: $header-height;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.layout-hide-page {
+  display: flex;
+  justify-content: flex-end;
+  cursor: pointer;
+  color: $color-neutral-3;
+  font-size: 11px;
 }

@@ -207,11 +207,24 @@ export const SignPage: FunctionComponent = observer(() => {
          */
         signer ? (
           <div className={style.container}>
+            <div
+              style={{
+                color: '#353945',
+                fontSize: 24,
+                fontWeight: 500,
+                textAlign: 'center',
+                paddingBottom: 24
+              }}
+            >
+              {chainStore?.current?.raw?.chainName || 'Oraichain'}
+            </div>
             <div className={classnames(style.tabs)}>
               <ul>
-                <li className={classnames({ active: tab === Tab.Details })}>
+                <li className={classnames({ activeTabs: tab === Tab.Details })}>
                   <a
-                    className={style.tab}
+                    className={classnames(style.tab, {
+                      activeText: tab === Tab.Details
+                    })}
                     onClick={() => {
                       setTab(Tab.Details);
                     }}
@@ -221,9 +234,11 @@ export const SignPage: FunctionComponent = observer(() => {
                     })}
                   </a>
                 </li>
-                <li className={classnames({ active: tab === Tab.Data })}>
+                <li className={classnames({ activeTabs: tab === Tab.Data })}>
                   <a
-                    className={style.tab}
+                    className={classnames(style.tab, {
+                      activeText: tab === Tab.Data
+                    })}
                     onClick={() => {
                       setTab(Tab.Data);
                     }}

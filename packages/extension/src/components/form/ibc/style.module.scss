@@ -1,4 +1,4 @@
-@import "../../../styles/var";
+@import '../../../styles/var';
 
 .chain-selector {
   width: 100%;
@@ -23,7 +23,7 @@
 
     &::after {
       border-radius: 2px;
-      content: " ";
+      content: ' ';
       display: block;
       height: 0.625em;
       margin-top: -0.4375em;
@@ -43,7 +43,7 @@
 
   :global(.dropdown-menu.show) {
     width: 100%;
-    top: $header-height !important;
+    // top: $header-height !important;
   }
 }
 
@@ -63,14 +63,25 @@
 
 :global(.dropdown-menu .dropdown-item:hover) {
   &:hover {
-    background-color: $color-gray-70;
+    // background-color: $color-gray-70;
     color: $color;
   }
 }
 
 :global(.dropdown-item:active) {
   &:active {
-    background-color: $color-gray-70;
+    // background-color: $color-gray-70;
     color: $color;
   }
+}
+
+.addChain {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.textAddChain {
+  font-size: 12px;
+  font-weight: 600;
+  color: $color-accent-1;
 }

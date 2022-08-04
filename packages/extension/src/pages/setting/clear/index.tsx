@@ -3,26 +3,28 @@ import React, {
   useCallback,
   useState,
   useEffect,
-  useMemo,
-} from "react";
-import { HeaderLayout } from "../../../layouts";
+  useMemo
+} from 'react';
+import { HeaderLayout } from '../../../layouts';
 
-import { useHistory, useRouteMatch } from "react-router";
-import { FormattedMessage, useIntl } from "react-intl";
-import { Input } from "../../../components/form";
-import { Button, Form } from "reactstrap";
-import useForm from "react-hook-form";
-import { useStore } from "../../../stores";
-import { observer } from "mobx-react-lite";
+import { useHistory, useRouteMatch } from 'react-router';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { PasswordInput } from '../../../components/form';
+import { Button, Form } from 'reactstrap';
+import useForm from 'react-hook-form';
+import { useStore } from '../../../stores';
+import { observer } from 'mobx-react-lite';
 
-import style from "./style.module.scss";
-import { WarningView } from "./warning-view";
+import style from './style.module.scss';
+import { WarningView } from './warning-view';
 
 interface FormData {
   password: string;
 }
 
-export const ClearPage: FunctionComponent = observer(() => {
+export const ClearPage: FunctionComponent<{
+  indexPage?: string;
+}> = observer(({ indexPage }) => {
   const history = useHistory();
   const match = useRouteMatch<{ index: string }>();
 
@@ -33,31 +35,37 @@ export const ClearPage: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
-      password: "",
-    },
+      password: ''
+    }
   });
 
   useEffect(() => {
-    if (parseInt(match.params.index).toString() !== match.params.index) {
-      throw new Error("Invalid index");
+    if (
+      parseInt(indexPage || match.params.index).toString() !==
+      (indexPage || match.params.index)
+    ) {
+      throw new Error('Invalid index');
     }
-  }, [match.params.index]);
+  }, [match.params.index, indexPage]);
 
   const keyStore = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo[parseInt(match.params.index)];
-  }, [keyRingStore.multiKeyStoreInfo, match.params.index]);
+    return keyRingStore.multiKeyStoreInfo[
+      parseInt(indexPage || match.params.index)
+    ];
+  }, [keyRingStore.multiKeyStoreInfo, indexPage, match.params.index]);
 
   return (
-    <HeaderLayout
-      showChainName={false}
-      canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({
-        id: "setting.clear",
-      })}
-      onBackButton={useCallback(() => {
-        history.goBack();
-      }, [history])}
-    >
+    // <HeaderLayout
+    //   showChainName={false}
+    //   canChangeChainInfo={false}
+    //   alternativeTitle={intl.formatMessage({
+    //     id: 'setting.clear'
+    //   })}
+    //   onBackButton={useCallback(() => {
+    //     history.goBack();
+    //   }, [history])}
+    // >
+    <>
       <div className={style.container}>
         {keyStore ? (
           <WarningView
@@ -71,18 +79,19 @@ export const ClearPage: FunctionComponent = observer(() => {
             try {
               // Make sure that password is valid and keyring is cleared.
               await keyRingStore.deleteKeyRing(
-                parseInt(match.params.index),
+                parseInt(indexPage || match.params.index),
                 data.password
               );
+              analyticsStore.logEvent('Account removed');
 
-              history.push("/");
+              history.push('/');
             } catch (e) {
-              console.log("Fail to decrypt: " + e.message);
+              console.log('Fail to decrypt: ' + e.message);
               setError(
-                "password",
-                "invalid",
+                'password',
+                'invalid',
                 intl.formatMessage({
-                  id: "setting.clear.input.password.error.invalid",
+                  id: 'setting.clear.input.password.error.invalid'
                 })
               );
               setLoading(false);
@@ -92,14 +101,18 @@ export const ClearPage: FunctionComponent = observer(() => {
           <Input
             type="password"
             label={intl.formatMessage({
-              id: "setting.clear.input.password",
+              id: 'setting.clear.input.password'
             })}
+            placeholder={'Enter your password'}
             name="password"
+            styleInputGroup={{
+              boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+            }}
             error={errors.password && errors.password.message}
             ref={register({
               required: intl.formatMessage({
-                id: "setting.clear.input.password.error.required",
-              }),
+                id: 'setting.clear.input.password.error.required'
+              })
             })}
           />
           <Button type="submit" color="primary" block data-loading={loading}>
@@ -107,6 +120,7 @@ export const ClearPage: FunctionComponent = observer(() => {
           </Button>
         </Form>
       </div>
-    </HeaderLayout>
+      {/* </HeaderLayout> */}
+    </>
   );
 });

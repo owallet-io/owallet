@@ -54,7 +54,7 @@ const DepositModal: FunctionComponent<{
 
   return (
     <div className={styleTxButton.depositModal}>
-      <h1 className={styleTxButton.title}>Scan to Receive </h1>
+      <h1 className={styleTxButton.title}>Scan to Receive Tokens </h1>
       <canvas className={styleTxButton.qrcode} id="qrcode" ref={qrCodeRef} />
     </div>
   );

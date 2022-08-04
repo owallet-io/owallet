@@ -8,10 +8,10 @@ export const WarningView: FunctionComponent = () => {
     <div className={styleWarningView.innerContainer}>
       <img
         className={styleWarningView.imgLock}
-        src={require("../../../public/assets/img/icons8-lock.svg")}
+        src={require("../../../public/assets/img/icon-lock.svg")}
         alt="lock"
       />
-      <p>
+      <p className={styleWarningView.textLock}>
         <FormattedMessage id="setting.export.warning" />
       </p>
     </div>

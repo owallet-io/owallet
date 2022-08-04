@@ -121,18 +121,31 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
 
     return (
       <React.Fragment>
+        {/* <Modal
+          isOpen={isAddressBookOpen}
+          centered
+          contentClassName={styleAddressInput.modalStyle}
+          toggle={() => setIsAddressBookOpen(!isAddressBookOpen)}
+        >
+          <AddressBookPage
+            onBackButton={() => setIsAddressBookOpen(false)}
+            hideChainDropdown={true}
+            selectHandler={selectAddressFromAddressBook}
+            ibcChannelConfig={ibcChannelConfig}
+            isInTransaction={true}
+          />
+        </Modal> */}
         <Modal
           style={{
             content: {
               width: '330px',
               minWidth: '330px',
-              inset: "56% auto auto 50%",
-              height: "524px",
+              inset: "50% auto auto 50%",
+              // height: "524px",
               minHeight: 'unset',
               maxHeight: 'unset',
               border: '1px solid #FCFCFD',
               borderRadius: '8px',
-              padding: 16,
             }
           }}
           isOpen={isAddressBookOpen}

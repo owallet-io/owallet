@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { CSSProperties, FunctionComponent, useState } from 'react';
 
 import { HeaderLayout } from '../../../layouts';
 
@@ -6,13 +6,16 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 
 import { useHistory } from 'react-router';
-import { Button, Popover, PopoverBody } from 'reactstrap';
+import { Button, Modal, ModalBody, Popover, PopoverBody } from 'reactstrap';
 
 import style from './style.module.scss';
 import { useLoadingIndicator } from '../../../components/loading-indicator';
-import { PageButton } from '../page-button';
+import { PageButton, PageButtonAccount } from '../page-button';
 import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { ExportPage } from '../export';
+import { ChangeNamePage } from '../keyring/change';
+import { ClearPage } from '../clear';
 
 export const SetKeyRingPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -26,37 +29,36 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
     <HeaderLayout
       showChainName={false}
       canChangeChainInfo={false}
-      // alternativeTitle={intl.formatMessage({ id: 'setting.keyring' })}
+      alternativeTitle={intl.formatMessage({ id: 'setting.keyring' })}
       // onBackButton={() => {
       //   history.goBack();
       // }}
     >
       <div className={style.container}>
         <div className={style.innerTopContainer}>
-          <div style={{ flex: 1 }} />
-          <div className={style.addBtnWrap}>
-            <Button
-              color=""
-              size="sm"
-              onClick={(e) => {
-                e.preventDefault();
-                analyticsStore.logEvent('Add additional account started');
+          <div
+            onClick={(e) => {
+              e.preventDefault();
+              analyticsStore.logEvent('Add additional account started');
 
-                browser.tabs.create({
-                  url: '/popup.html#/register'
-                });
-              }}
-              className={style.addBtn}
-            >
-              <img
-                src={require('../../../public/assets/svg/add-account.svg')}
-                alt=""
-                style={{ marginRight: '4px', width: 16, height: 16 }}
-              />
-              <span>
-                <FormattedMessage id="setting.keyring.button.add" />
-              </span>
-            </Button>
+              browser.tabs.create({
+                url: '/popup.html#/register'
+              });
+            }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer'
+            }}
+          >
+            <img
+              src={require('../../../public/assets/svg/add-account.svg')}
+              alt=""
+              style={{ marginRight: 4 }}
+            />
+            <span>
+              <FormattedMessage id="setting.address-book.button.add" />
+            </span>
           </div>
         </div>
         {keyRingStore.multiKeyStoreInfo.map((keyStore, i) => {
@@ -69,7 +71,8 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
               };
 
           return (
-            <PageButton
+            <PageButtonAccount
+              ind={i}
               key={i.toString()}
               title={`${
                 keyStore.meta?.name
@@ -134,7 +137,8 @@ const KeyRingToolsIcon: FunctionComponent<{
 }> = ({ index, keyStore }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
-
+  const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
+  const [typeSettingAccount, setTypeSettingAccount] = useState<string>('view');
   const history = useHistory();
 
   const [tooltipId] = useState(() => {
@@ -168,7 +172,10 @@ const KeyRingToolsIcon: FunctionComponent<{
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                history.push(`/setting/export/${index}?type=${keyStore.type}`);
+                setIsOpen(false);
+                setIsAccountModalOpen(true);
+                setTypeSettingAccount('view');
+                // history.push(`/setting/export/${index}?type=${keyStore.type}`);
               }}
             >
               <FormattedMessage
@@ -185,8 +192,10 @@ const KeyRingToolsIcon: FunctionComponent<{
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-
-              history.push(`/setting/keyring/change/name/${index}`);
+              setIsOpen(false);
+              setIsAccountModalOpen(true);
+              setTypeSettingAccount('change');
+              // history.push(`/setting/keyring/change/name/${index}`);
             }}
           >
             <FormattedMessage id="setting.keyring.change.name" />
@@ -196,21 +205,32 @@ const KeyRingToolsIcon: FunctionComponent<{
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-
-              history.push(`/setting/clear/${index}`);
+              setIsOpen(false);
+              setIsAccountModalOpen(true);
+              setTypeSettingAccount('delete');
+              // history.push(`/setting/clear/${index}`);
             }}
           >
             <FormattedMessage id="setting.clear" />
           </div>
         </PopoverBody>
       </Popover>
+      <AccountSettingModal
+        isOpen={isAccountModalOpen}
+        index={index}
+        typeSettingAccount={typeSettingAccount}
+        closeModal={() => setIsAccountModalOpen(false)}
+        toggle={() => setIsAccountModalOpen((value) => !value)}
+        keyStore={keyStore?.type}
+      />
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           height: '100%',
           padding: '0 8px',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          color: '#353945'
         }}
         onClick={(e) => {
           e.preventDefault();
@@ -224,3 +244,80 @@ const KeyRingToolsIcon: FunctionComponent<{
     </React.Fragment>
   );
 };
+
+export const AccountSettingModal: FunctionComponent<{
+  isOpen: boolean;
+  closeModal: () => void;
+  toggle: () => void;
+  typeSettingAccount?: string;
+  index?: number;
+  keyStore?: string;
+}> = observer(
+  ({ isOpen, closeModal, toggle, typeSettingAccount, index, keyStore }) => {
+    return (
+      <Modal isOpen={isOpen} toggle={toggle} centered>
+        <ModalBody>
+          <AccountTitleSettingModal type={typeSettingAccount} toggle={toggle}/>
+          {typeSettingAccount === 'view' && (
+            <ExportPage indexExport={index.toString()} keyStore={keyStore} />
+          )}
+          {typeSettingAccount === 'change' && (
+            <ChangeNamePage indexPage={index.toString()} />
+          )}
+          {typeSettingAccount === 'delete' && (
+            <ClearPage indexPage={index.toString()} />
+          )}
+        </ModalBody>
+      </Modal>
+    );
+  }
+);
+
+export const AccountTitleSettingModal: FunctionComponent<{
+  type?: string;
+  styleAccount?: CSSProperties;
+  toggle?: () => void;
+}> = observer(({ type = 'view', styleAccount, toggle }) => {
+  let text = '';
+  switch (type) {
+    case 'view':
+      text = 'View Mnemonic Seed';
+      break;
+    case 'change':
+      text = 'Change Account Name';
+      break;
+    case 'delete':
+      text = 'Delete Account';
+      break;
+  }
+  return (
+    <>
+      {toggle && (
+        <div
+          onClick={toggle}
+          style={{
+            cursor: 'pointer',
+            textAlign: 'right'
+          }}
+        >
+          <img
+            src={require('../../../public/assets/img/close.svg')}
+            alt="total-balance"
+          />
+        </div>
+      )}
+      <div
+        style={
+          styleAccount ?? {
+            textAlign: 'center',
+            color: '#434193',
+            fontSize: 24
+          }
+        }
+      >
+        {text}
+      </div>
+      <div style={{ height: 20 }} />
+    </>
+  );
+});
