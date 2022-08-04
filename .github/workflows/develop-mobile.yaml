@@ -40,7 +40,9 @@ jobs:
             ./node_modules/
           key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-      
+            ${{ runner.os }}-yarn-    
+      - name: Yarn bootstrap
+        run: yarn bootstrap 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts      

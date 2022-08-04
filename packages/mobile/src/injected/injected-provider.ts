@@ -6,7 +6,9 @@ export class RNInjectedEthereum extends InjectedEthereum {
     if (message && typeof message === 'string') {
       try {
         return JSON.parse(message);
-      } catch {
+      } catch (err) {
+        alert(`parseWebviewMessage err`);
+        alert(err.message);
         // noop
       }
     }
@@ -19,15 +21,18 @@ export class RNInjectedEthereum extends InjectedEthereum {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
+        addMessageListener: (fn: (e: any) => void) => {
+          alert(`addMessageListener ${JSON.stringify(fn)}`);
+          window.addEventListener('message', fn);
+        },
         removeMessageListener: (fn: (e: any) => void) =>
           window.removeEventListener('message', fn),
-        postMessage: (message) => {
+        postMessage: message => {
+          alert(`postMessage ${JSON.stringify(message)}`);
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
-        },
+        }
       },
       RNInjectedEthereum.parseWebviewMessage
     );
@@ -58,11 +63,11 @@ export class RNInjectedOWallet extends InjectedOWallet {
           window.addEventListener('message', fn),
         removeMessageListener: (fn: (e: any) => void) =>
           window.removeEventListener('message', fn),
-        postMessage: (message) => {
+        postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
-        },
+        }
       },
       RNInjectedOWallet.parseWebviewMessage
     );

@@ -37,8 +37,12 @@ export const useInjectedSourceCode = () => {
       `${InjectedProviderUrl}/injected-provider.bundle.js`
     );
     fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
-      .then(res => res.text())
-      .then(setCode);
+      .then(res => {
+        alert('get here');
+        return res.text();
+      })
+      .then(setCode)
+      .catch(err => console.log(err));
   }, []);
 
   return code;
