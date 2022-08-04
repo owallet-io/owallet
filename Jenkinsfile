@@ -18,7 +18,7 @@ pipeline {
                     '''
                 }
 
-                sshagent(['phu-cloud']) {
+               sshagent(['phu-cloud']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l root $SERVER_IP <<EOF
                             cd /mnt/volume_nyc3_03/owallet
@@ -36,7 +36,7 @@ pipeline {
     }
     post {
         success {
-            discordSend description: "Build new artifact in url: https://do2.scan.orai.io/${env.PROD_NAME}", footer: '', image: '', link: '', result: '', thumbnail: '', title: '[extension-artifact] [do-sentry2]', webhookURL: 'https://discord.com/api/webhooks/958201849419288638/tiTEM6ekc4pnhbTlaKlNDws1duDcTIRyWp-Yr8dcRXywt9PdqSY0PEWt7TkunkGk1SmV'
+            discordSend description: "Donwload new extension in url: https://do2.scan.orai.io/${env.PROD_NAME}", footer: '', image: '', link: '', result: '', thumbnail: '', title: '[oraichain-extension] [do-sentry2]', webhookURL: 'https://discord.com/api/webhooks/958201849419288638/tiTEM6ekc4pnhbTlaKlNDws1duDcTIRyWp-Yr8dcRXywt9PdqSY0PEWt7TkunkGk1SmV'
         }
     }
 }
