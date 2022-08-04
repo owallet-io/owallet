@@ -60,6 +60,12 @@ export const DAppInfos: DAppInfo[] = [
     name: 'OraiDEX Info',
     uri: 'https://info.oraidex.io',
     logo: oraiLogo
+  },
+  {
+    id: 8,
+    name: 'Balcony Subnet EVM',
+    uri: 'https://staging-big-nft.web.app/properties',
+    logo: balconyLogo
   }
 ];
 
