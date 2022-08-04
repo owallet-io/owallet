@@ -95,6 +95,9 @@ export const LockPage: FunctionComponent = observer(() => {
           label={intl.formatMessage({
             id: 'lock.input.password'
           })}
+          styleInputGroup={{
+            border: '1px solid rgba(8, 4, 28, 0.12)'
+          }}
           name="password"
           error={errors.password && errors.password.message}
           ref={(ref) => {

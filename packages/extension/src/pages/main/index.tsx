@@ -25,11 +25,6 @@ import { SelectChain } from '../../layouts/header';
 import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
 import { SendPage } from '../send';
 
-enum Tab {
-  Details,
-  Data
-}
-
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
   const intl = useIntl();
@@ -81,7 +76,6 @@ export const MainPage: FunctionComponent = observer(() => {
   const tokens = queryBalances.unstakables;
 
   const hasTokens = tokens.length > 0;
-  const [tab, setTab] = React.useState<Tab>(Tab.Details);
   return (
     <HeaderLayout
       showChainName

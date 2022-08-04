@@ -85,6 +85,9 @@ export const ImportLedgerPage: FunctionComponent<{
           label={intl.formatMessage({
             id: 'register.name'
           })}
+          styleInputGroup={{
+            border: '1px solid rgba(8, 4, 28, 0.12)'
+          }}
           type="text"
           name="name"
           ref={register({
@@ -100,7 +103,9 @@ export const ImportLedgerPage: FunctionComponent<{
               label={intl.formatMessage({
                 id: 'register.create.input.password'
               })}
-              type="password"
+              styleInputGroup={{
+                border: '1px solid rgba(8, 4, 28, 0.12)'
+              }}
               name="password"
               ref={register({
                 required: intl.formatMessage({
@@ -120,7 +125,9 @@ export const ImportLedgerPage: FunctionComponent<{
               label={intl.formatMessage({
                 id: 'register.create.input.confirm-password'
               })}
-              type="password"
+              styleInputGroup={{
+                border: '1px solid rgba(8, 4, 28, 0.12)'
+              }}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({
