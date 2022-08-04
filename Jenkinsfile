@@ -13,12 +13,12 @@ pipeline {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l root $SERVER_IP <<EOF
                             cd /mnt/volume_nyc3_03/owallet
-                            git pull origin develop
+                            git pull origin feat/extension-update
                             echo "DONE pull source code"
                     '''
                 }
 
-               sshagent(['phu-cloud']) {
+                sshagent(['phu-cloud']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no -l root $SERVER_IP <<EOF
                             cd /mnt/volume_nyc3_03/owallet
