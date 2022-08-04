@@ -40,7 +40,9 @@ jobs:
             ./node_modules/
           key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-    
+            ${{ runner.os }}-yarn-   
+      - name: Delete node_modules
+        run: rm -rf node_modules
       - name: Yarn bootstrap
         run: yarn bootstrap 
       - name: Install Dependencies
@@ -61,11 +63,11 @@ jobs:
         run: |
           yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}          
           yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
-      - name: deploy on AppCenter
-        working-directory: packages/mobile
-        run: |
-          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+      # - name: deploy on AppCenter
+      #   working-directory: packages/mobile
+      #   run: |
+      #     yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+      #     yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
