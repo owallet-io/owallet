@@ -674,6 +674,7 @@ export class InjectedEthereum implements Ethereum {
 
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
+    alert(`arguments: ${JSON.stringify(args)}`);
     console.log(`arguments: ${JSON.stringify(args)}`);
     return await this.requestMethod(args.method as string, [
       args.params,
