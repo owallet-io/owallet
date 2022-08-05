@@ -1199,7 +1199,7 @@ export class KeyRing {
   ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
+    if (this.password == '') {
       throw new OWalletError(
         'keyring',
         141,
@@ -1231,7 +1231,7 @@ export class KeyRing {
   ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
+    if (this.password == '') {
       throw new OWalletError(
         'keyring',
         141,
