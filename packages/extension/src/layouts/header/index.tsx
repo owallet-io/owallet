@@ -130,7 +130,7 @@ export const Header: FunctionComponent<Props & LocalProps> = observer(
       Account: 'setting/set-keyring',
       Home: '',
       Token: 'token',
-      Menu: 'setting/language'
+      Menu: 'menu'
     };
     const hrefReplace = window.location.href.replace(
       'chrome-extension://cldpgmdapgjebdphikkmaagjllpgoffa/popup.html#/',

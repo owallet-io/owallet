@@ -33,16 +33,7 @@ export const ManageTokenPage: FunctionComponent = observer(() => {
   });
 
   return (
-    <HeaderLayout
-      showChainName={false}
-      canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({
-        id: 'main.menu.token-list'
-      })}
-      onBackButton={() => {
-        history.goBack();
-      }}
-    >
+    <>
       <div className={style.container}>
         {appCurrencies.map((currency) => {
           if (!("type" in currency) || currency.type !== "secret20") {
@@ -161,6 +152,6 @@ export const ManageTokenPage: FunctionComponent = observer(() => {
           );
         })}
       </div>
-    </HeaderLayout>
+    </>
   );
 });

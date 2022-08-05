@@ -39,7 +39,7 @@ export const LayoutHidePage: FunctionComponent<{
       className={style.layoutHidePage}
       onClick={hidePage}
     >
-      <div style={{ paddingRight: 4 }}>{label ?? 'Hiden'}</div>
+      <div style={{ paddingRight: 4 }}>{label ?? 'Hide'}</div>
       {img ?? (
         <img
           src={require('../../public/assets/img/shape.svg')}
@@ -80,7 +80,7 @@ export const HeaderLayout: FunctionComponent<Props> = (props) => {
         path = '/setting/set-keyring';
         break;
       case 'Menu':
-        path = '/setting/language';
+        path = '/menu';
         break;
     }
     history.push(path);

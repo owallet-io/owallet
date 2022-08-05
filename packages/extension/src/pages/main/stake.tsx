@@ -71,7 +71,6 @@ export const StakeView: FunctionComponent = observer(() => {
 
   return (
     <div>
-      {isRewardExist ? (
         <>
           <div
             className={classnames(styleStake.containerInner, styleStake.reward)}
@@ -108,7 +107,7 @@ export const StakeView: FunctionComponent = observer(() => {
               <Button
                 className={styleStake.button}
                 size="sm"
-                disabled={!accountInfo.isReadyToSendMsgs}
+                disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
                 onClick={withdrawAllRewards}
                 data-loading={accountInfo.isSendingMsg === 'withdrawRewards'}
               >
@@ -117,7 +116,6 @@ export const StakeView: FunctionComponent = observer(() => {
             }
           </div>
         </>
-      ) : null}
     </div>
   );
 });

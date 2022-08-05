@@ -2,13 +2,13 @@ import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 
 import styleTxButton from './tx-button.module.scss';
 
-import { Button, Tooltip } from 'reactstrap';
+import { Button, Tooltip, Modal, ModalBody } from 'reactstrap';
 
 import { observer } from 'mobx-react-lite';
 
 import { useStore } from '../../stores';
 
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 
 import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router';
@@ -91,22 +91,17 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
     return (
       <div className={styleTxButton.containerTxButton}>
         <Modal
-          style={{
-            content: {
-              width: '330px',
-              minWidth: '330px',
-              minHeight: 'unset',
-              maxHeight: 'unset',
-              border: '1px solid #FCFCFD',
-              borderRadius: '8px'
-            }
-          }}
+         
+          toggle={() => setIsDepositOpen(false)}
+          centered
           isOpen={isDepositOpen}
-          onRequestClose={() => {
-            setIsDepositOpen(false);
+          style={{
+            margin: 25
           }}
         >
-          <DepositModal bech32Address={accountInfo.bech32Address} />
+          <ModalBody>
+            <DepositModal bech32Address={accountInfo.bech32Address} />
+          </ModalBody>
         </Modal>
         <Button
           className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
@@ -161,98 +156,104 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
   }
 );
 
-export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(() => {
-  const { accountStore, chainStore, queriesStore } = useStore();
+export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
+  () => {
+    const { accountStore, chainStore, queriesStore } = useStore();
 
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
-  // const queryBalances = queries.queryBalances.getQueryBech32Address(
-  //   accountInfo.bech32Address
-  // );
+    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+    const queries = queriesStore.get(chainStore.current.chainId);
+    // const queryBalances = queries.queryBalances.getQueryBech32Address(
+    //   accountInfo.bech32Address
+    // );
 
-  const [isDepositOpen, setIsDepositOpen] = useState(false);
+    const [isDepositOpen, setIsDepositOpen] = useState(false);
 
-  const [tooltipOpen, setTooltipOpen] = useState(false);
+    const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const history = useHistory();
+    const history = useHistory();
 
-  const sendBtnRef = useRef<HTMLButtonElement>(null);
+    const sendBtnRef = useRef<HTMLButtonElement>(null);
 
-  if (!accountInfo.evmosHexAddress) return null;
+    if (!accountInfo.evmosHexAddress) return null;
 
-  const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-    accountInfo.evmosHexAddress
-  ).balance;
+    const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
+      accountInfo.evmosHexAddress
+    ).balance;
 
-  const hasAssets =
-    parseFloat(evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()) >
-    0;
+    const hasAssets =
+      parseFloat(
+        evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()
+      ) > 0;
 
-  return (
-    <div className={styleTxButton.containerTxButton}>
-      <Modal
-        style={{
-          content: {
-            width: '330px',
-            minWidth: '330px',
-            minHeight: 'unset',
-            maxHeight: 'unset'
-          }
-        }}
-        isOpen={isDepositOpen}
-        onRequestClose={() => {
-          setIsDepositOpen(false);
-        }}
-      >
-        <DepositModal bech32Address={accountInfo.bech32Address} />
-      </Modal>
-      <Button
-        className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
-        outline
-        onClick={(e) => {
-          e.preventDefault();
+    return (
+      <div className={styleTxButton.containerTxButton}>
+        <Modal
+          toggle={() => setIsDepositOpen(false)}
+          centered
+          isOpen={isDepositOpen}
+          // style={{
+          //   content: {
+          //     width: '330px',
+          //     minWidth: '330px',
+          //     minHeight: 'unset',
+          //     maxHeight: 'unset'
+          //   }
+          // }}
+          // isOpen={isDepositOpen}
+          // onRequestClose={() => {
+          //   setIsDepositOpen(false);
+          // }}
+        >
+          <DepositModal bech32Address={accountInfo.bech32Address} />
+        </Modal>
+        <Button
+          className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
+          outline
+          onClick={(e) => {
+            e.preventDefault();
 
-          setIsDepositOpen(true);
-        }}
-      >
-        <FormattedMessage id="main.account.button.receive" />
-      </Button>
-      {/*
+            setIsDepositOpen(true);
+          }}
+        >
+          <FormattedMessage id="main.account.button.receive" />
+        </Button>
+        {/*
         "Disabled" property in button tag will block the mouse enter/leave events.
         So, tooltip will not work as expected.
         To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
        */}
-      <Button
-        innerRef={sendBtnRef}
-        className={classnames(
-          styleTxButton.button,
-          {
-            disabled: !hasAssets
-          },
-          styleTxButton.btnSend
-        )}
-        data-loading={accountInfo.isSendingMsg === 'send'}
-        onClick={(e) => {
-          e.preventDefault();
+        <Button
+          innerRef={sendBtnRef}
+          className={classnames(
+            styleTxButton.button,
+            {
+              disabled: !hasAssets
+            },
+            styleTxButton.btnSend
+          )}
+          data-loading={accountInfo.isSendingMsg === 'send'}
+          onClick={(e) => {
+            e.preventDefault();
 
-          if (hasAssets) {
-            history.push('/send');
-          }
-        }}
-      >
-        <FormattedMessage id="main.account.button.send" />
-      </Button>
-      {!hasAssets ? (
-        <Tooltip
-          placement="bottom"
-          isOpen={tooltipOpen}
-          target={sendBtnRef}
-          toggle={() => setTooltipOpen((value) => !value)}
-          fade
+            if (hasAssets) {
+              history.push('/send');
+            }
+          }}
         >
-          <FormattedMessage id="main.account.tooltip.no-asset" />
-        </Tooltip>
-      ) : null}
-    </div>
-  );
-});
+          <FormattedMessage id="main.account.button.send" />
+        </Button>
+        {!hasAssets ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipOpen}
+            target={sendBtnRef}
+            toggle={() => setTooltipOpen((value) => !value)}
+            fade
+          >
+            <FormattedMessage id="main.account.tooltip.no-asset" />
+          </Tooltip>
+        ) : null}
+      </div>
+    );
+  }
+);

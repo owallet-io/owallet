@@ -1,13 +1,14 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, ReactElement, useMemo } from 'react';
 import { HeaderLayout } from '../../layouts';
 import { useHistory } from 'react-router';
-import { PageButton } from './page-button';
+import { PageButton, PageButtonAccount } from './page-button';
 import style from './style.module.scss';
 import { useLanguage } from '@owallet/common';
 import { useIntl } from 'react-intl';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import classNames from 'classnames';
+import { Modal, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
 
 const styleTitle = {
   fontWeight: '400',
@@ -16,6 +17,49 @@ const styleTitle = {
 
 const styleParagraph = {
   color: '#A6A6B0'
+};
+
+export const PageButtonSetting: FunctionComponent<{
+  paragraph?: string;
+  title?: string;
+  modalBody?: ReactElement;
+}> = ({ paragraph, title, modalBody }) => {
+  const [isDepositOpen, setIsDepositOpen] = React.useState(false);
+  const [tooltipId] = React.useState(() => {
+    const bytes = new Uint8Array(4);
+    crypto.getRandomValues(bytes);
+    return `tools-${Buffer.from(bytes).toString('hex')}`;
+  });
+  return (
+    <>
+      <Popover
+        target={tooltipId}
+        isOpen={isDepositOpen}
+        toggle={() => setIsDepositOpen(!isDepositOpen)}
+        placement="bottom"
+        className={style.popoverContainer}
+        hideArrow
+      >
+        <PopoverBody
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className={style.popoverContainer}
+        >
+          {modalBody}
+        </PopoverBody>
+      </Popover>
+      <ul>
+        <li>
+          <div id={tooltipId} onClick={() => setIsDepositOpen(true)}>
+            <div>{title}</div>
+            <div className={classNames(style.paragraph)}>{paragraph}</div>
+          </div>
+        </li>
+      </ul>
+    </>
+  );
 };
 
 export const SettingPage: FunctionComponent = observer(() => {
@@ -50,86 +94,86 @@ export const SettingPage: FunctionComponent = observer(() => {
       );
 
   return (
-    <HeaderLayout
-      showChainName={false}
-      canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({
-        id: 'main.menu.settings'
-      })}
-      onBackButton={() => {
-        history.goBack();
-      }}
-    >
+    <>
       <div className={style.container}>
-        <PageButton
+        <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.language'
           })}
           paragraph={paragraphLang}
-          onClick={() => {
-            history.push({
-              pathname: '/setting/language'
-            });
-          }}
-          icons={useMemo(
-            () => [<i key="next" className="fas fa-chevron-right" />],
-            []
-          )}
-          styleTitle={styleTitle}
-          styleParagraph={styleParagraph}
+          modalBody={
+            <div>
+              <div>English</div>
+              <div>VN</div>
+            </div>
+          }
+          // onClick={() => {
+          //   history.push({
+          //     pathname: '/setting/language'
+          //   });
+          // }}
+          // icons={useMemo(
+          //   () => [<i key="next" className="fas fa-chevron-right" />],
+          //   []
+          // )}
+          // icons={[<KeyRingToolsIcon key="tools" />]}
+          // styleTitle={styleTitle}
+          // styleParagraph={styleParagraph}
         />
-        <PageButton
+        <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.fiat'
           })}
           paragraph={paragraphFiat}
-          onClick={() => {
-            history.push({
-              pathname: '/setting/fiat'
-            });
-          }}
-          icons={useMemo(
-            () => [<i key="next" className="fas fa-chevron-right" />],
-            []
-          )}
-          styleTitle={styleTitle}
-          styleParagraph={styleParagraph}
+          // onClick={() => {
+          //   history.push({
+          //     pathname: '/setting/fiat'
+          //   });
+          // }}
+          // icons={useMemo(
+          //   () => [<i key="next" className="fas fa-chevron-right" />],
+          //   []
+          // )}
+          // icons={[<KeyRingToolsIcon key="tools" />]}
+          // styleTitle={styleTitle}
+          // styleParagraph={styleParagraph}
         />
-        <PageButton
+        <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.connections'
           })}
           paragraph={intl.formatMessage({
             id: 'setting.connections.paragraph'
           })}
-          onClick={() => {
-            history.push({
-              pathname: '/setting/connections'
-            });
-          }}
-          icons={useMemo(
-            () => [<i key="next" className="fas fa-chevron-right" />],
-            []
-          )}
-          styleTitle={styleTitle}
-          styleParagraph={styleParagraph}
+          // onClick={() => {
+          //   history.push({
+          //     pathname: '/setting/connections'
+          //   });
+          // }}
+          // icons={useMemo(
+          //   () => [<i key="next" className="fas fa-chevron-right" />],
+          //   []
+          // )}
+          // styleTitle={styleTitle}
+          // styleParagraph={styleParagraph}
         />
-        <PageButton
+        <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.export-to-mobile'
           })}
-          onClick={() => {
-            history.push({
-              pathname: '/setting/export-to-mobile'
-            });
-          }}
-          icons={useMemo(
-            () => [<i key="next" className="fas fa-chevron-right" />],
-            []
-          )}
-          styleTitle={styleTitle}
+          paragraph={''}
+          // onClick={() => {
+          //   history.push({
+          //     pathname: '/setting/export-to-mobile'
+          //   });
+          // }}
+          // icons={useMemo(
+          //   () => [<i key="next" className="fas fa-chevron-right" />],
+          //   []
+          // )}
+          // styleTitle={styleTitle}
         />
-        <PageButton
+        {/* <PageButton
           title="Show Advanced IBC Transfers"
           onClick={() => {
             uiConfigStore.setShowAdvancedIBCTransfer(
@@ -159,23 +203,24 @@ export const SettingPage: FunctionComponent = observer(() => {
             </label>
           ]}
           styleTitle={styleTitle}
-        />
-        <PageButton
+        /> */}
+        <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.credit'
           })}
-          onClick={() => {
-            history.push({
-              pathname: '/setting/credit'
-            });
-          }}
-          icons={useMemo(
-            () => [<i key="next" className="fas fa-chevron-right" />],
-            []
-          )}
-          styleTitle={styleTitle}
+          paragraph={''}
+          // onClick={() => {
+          //   history.push({
+          //     pathname: '/setting/credit'
+          //   });
+          // }}
+          // icons={useMemo(
+          //   () => [<i key="next" className="fas fa-chevron-right" />],
+          //   []
+          // )}
+          // styleTitle={styleTitle}
         />
       </div>
-    </HeaderLayout>
+    </>
   );
 });

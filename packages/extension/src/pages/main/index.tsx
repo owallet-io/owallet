@@ -80,30 +80,30 @@ export const MainPage: FunctionComponent = observer(() => {
     <HeaderLayout
       showChainName
       canChangeChainInfo
-      menuRenderer={<Menu />}
-      rightRenderer={
-        <div
-          style={{
-            height: '64px',
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingRight: '20px'
-          }}
-        >
-          <i
-            className="fas fa-user"
-            style={{
-              cursor: 'pointer',
-              padding: '4px'
-            }}
-            onClick={(e) => {
-              e.preventDefault();
-              history.push('/setting/set-keyring');
-            }}
-          />
-        </div>
-      }
+      // menuRenderer={<Menu />}
+      // rightRenderer={
+      //   <div
+      //     style={{
+      //       height: '64px',
+      //       display: 'flex',
+      //       flexDirection: 'row',
+      //       alignItems: 'center',
+      //       paddingRight: '20px'
+      //     }}
+      //   >
+      //     <i
+      //       className="fas fa-user"
+      //       style={{
+      //         cursor: 'pointer',
+      //         padding: '4px'
+      //       }}
+      //       onClick={(e) => {
+      //         e.preventDefault();
+      //         history.push('/setting/set-keyring');
+      //       }}
+      //     />
+      //   </div>
+      // }
     >
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />

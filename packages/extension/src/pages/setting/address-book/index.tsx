@@ -34,12 +34,15 @@ export const AddressBookPage: FunctionComponent<{
   hideChainDropdown?: boolean;
   selectHandler?: AddressBookSelectHandler;
   ibcChannelConfig?: IIBCChannelConfig;
+  isInTransaction?: boolean;
+  isCloseIcon?: boolean;
 }> = observer(
   ({
     onBackButton,
     hideChainDropdown,
     selectHandler,
-    ibcChannelConfig
+    ibcChannelConfig,
+    isCloseIcon
     //isInTransaction,
   }) => {
     const intl = useIntl();
@@ -148,23 +151,34 @@ export const AddressBookPage: FunctionComponent<{
 
     return (
       <>
-        <div
-          onClick={onBackButton}
-          style={{
-            cursor: 'pointer',
-            textAlign: 'right'
-          }}
-        >
-          <img
-            src={require('../../../public/assets/img/close.svg')}
-            alt="total-balance"
-          />
-        </div>
+        {!isCloseIcon && (
+          <div
+            onClick={onBackButton}
+            style={{
+              cursor: 'pointer',
+              textAlign: 'right'
+            }}
+          >
+            <img
+              src={require('../../../public/assets/img/close.svg')}
+              alt="total-balance"
+            />
+          </div>
+        )}
         <div className={styleAddressBook.container}>
-          <div className={styleAddressBook.innerTopContainer}>
+          <div
+            className={styleAddressBook.innerTopContainer}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between'
+            }}
+          >
             {hideChainDropdown ? null : (
               <ButtonDropdown isOpen={dropdownOpen} toggle={toggle}>
-                <DropdownToggle caret style={{ boxShadow: 'none' }}>
+                <DropdownToggle
+                  caret
+                  style={{ boxShadow: 'none', paddingLeft: 0 }}
+                >
                   {chainStore.getChain(selectedChainId).chainName}
                 </DropdownToggle>
                 <DropdownMenu>

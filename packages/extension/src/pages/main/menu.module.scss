@@ -1,13 +1,27 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 .container {
   display: flex;
   flex-direction: column;
-  color: $color;
+  color: $primary-color-1;
   height: 100%;
 }
 
 .item {
+  display: flex;
+  text-transform: uppercase;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  &:hover,
+  &:active {
+    color: $color-lighter;
+  }
+}
+
+.item-sign-out {
   cursor: pointer;
   padding: 8px 20px;
   font-size: 18px;
@@ -20,8 +34,9 @@
 
 .sign-out {
   position: relative;
+  color: $color-neutral-3;
   &::after {
-    content: "";
+    content: '';
     width: 100%;
     height: 1px;
     background-color: $color-gray-50;
@@ -33,7 +48,7 @@
 }
 
 .footer {
-  padding: 20px 0px 20px 20px;
+  padding: 20px;
   font-size: 14px;
 
   .inner {
@@ -45,5 +60,18 @@
       margin-right: 6px;
       font-size: 20px;
     }
+  }
+}
+
+.card {
+  margin-bottom: $layout-margin;
+  // background-color: #3b3b45 !important;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  :global(.card-body) {
+    padding: $main-card-padding;
   }
 }
