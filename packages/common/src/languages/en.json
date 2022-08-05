@@ -31,7 +31,7 @@
   "main.menu.address-book": "Address Book",
   "main.menu.token-list": "Token List",
   "main.menu.sign-out": "Sign out",
-  "main.menu.footer.github": "Check it out on GitHub",
+  "main.menu.footer.github": "Check on GitHub",
 
   "main.update-chain.confirm.paragraph": "Chain information has changed. Verify that a chain upgrade has taken place.",
   "main.update-chain.confirm.yes": "Proceed",
@@ -89,7 +89,7 @@
 
   "setting.export": "View Mnemonic Seed",
   "setting.export.private-key": "View Private Key",
-  "setting.export.warning": "Please input your password to proceed",
+  "setting.export.warning": "Input your password to proceed",
   "setting.export.input.password": "Password",
   "setting.export.input.password.error.required": "Password is required",
   "setting.export.input.password.error.invalid": "Invalid password",
@@ -97,8 +97,9 @@
 
   "setting.clear": "Delete Account",
   "setting.clear.alert": "Make sure you’ve backed up your mnemonic seed before proceeding.",
-  "setting.clear.button.back-up": "Back-up account",
-  "setting.clear.warning": "By deleting your account, you will no longer have access to your account on OWallet.",
+  "setting.clear.button.back-up": "Back-up",
+  "setting.clear.warning-old": "By deleting your account, you will no longer have access to your account on OWallet.",
+  "setting.clear.warning": "If deleting account, you will no longer have access to your account Oraichain.",
   "setting.clear.input.password": "Password",
   "setting.clear.input.password.error.required": "Password is required",
   "setting.clear.input.password.error.invalid": "Invalid password",
