@@ -52,7 +52,7 @@ export class InteractionService {
     if (!type) {
       throw new OWalletError('interaction', 101, 'Type should not be empty');
     }
-    // TODO: Add timeout?
+    // TODO: Add timeout for this wait fn
     const interactionWaitingData = await this.addDataToMap(
       type,
       env.isInternalMsg,
@@ -67,7 +67,7 @@ export class InteractionService {
 
     return await this.wait(msg.data.id, () => {
       env.requestInteraction(url, msg, options);
-      // Need to mobile
+      // Need to do check with mobile
     });
   }
 
@@ -80,7 +80,9 @@ export class InteractionService {
         onApprove: resolve,
         onReject: reject
       });
-
+      setTimeout(() => {
+        reject();
+      }, 3000);
       fn();
     });
   }
@@ -98,8 +100,6 @@ export class InteractionService {
   reject(id: string) {
     if (this.resolverMap.has(id)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      console.log('reject waiting data', id);
-
       this.resolverMap.get(id)!.onReject(new Error('Request rejected'));
       this.resolverMap.delete(id);
     }
