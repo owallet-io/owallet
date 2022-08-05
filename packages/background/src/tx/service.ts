@@ -160,39 +160,27 @@ export class BackgroundTxService {
   async request(chainId: string, method: string, params: any[]): Promise<any> {
     let chainInfo: ChainInfoWithEmbed;
     console.log('method in request: ', method);
-    alert(`method ${method}`);
     switch (method) {
       case 'eth_accounts':
       case 'eth_requestAccounts':
         try {
-          alert('eth_requestAccounts try begin');
-          alert(chainId.toString());
           chainInfo = await this.chainsService.getChainInfo(chainId);
           if (chainInfo.coinType !== 60) return undefined;
           const chainIdOrCoinType = params.length
             ? parseInt(params[0])
             : chainId; // default is cointype 60 for ethereum based
           const key = await this.keyRingService.getKey(chainIdOrCoinType);
-          alert(chainIdOrCoinType.toString());
           return [`0x${Buffer.from(key.address).toString('hex')}`];
-        } catch (error) {
-          alert('1');
-          alert(JSON.stringify(error));
-        }
+        } catch (error) {}
         break;
       case 'wallet_switchEthereumChain' as any:
         try {
-          alert('wallet_switchEthereumChain try');
           const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
-          alert(inputChainId);
           chainInfo = isEvm
             ? await this.chainsService.getChainInfo(inputChainId, 'evm')
             : await this.chainsService.getChainInfo(inputChainId);
           return chainInfo.chainId;
-        } catch (error) {
-          alert('2');
-          alert(JSON.stringify(error));
-        }
+        } catch (error) {}
         break;
       default:
         chainInfo = await this.chainsService.getChainInfo(chainId);

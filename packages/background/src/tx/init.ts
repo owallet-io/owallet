@@ -7,6 +7,5 @@ import { BackgroundTxService } from './service';
 export function init(router: Router, service: BackgroundTxService): void {
   router.registerMessage(SendTxMsg);
   router.registerMessage(RequestEthereumMsg);
-
   router.addHandler(ROUTE, getHandler(service));
 }

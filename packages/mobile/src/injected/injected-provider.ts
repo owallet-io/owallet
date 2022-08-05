@@ -7,8 +7,8 @@ export class RNInjectedEthereum extends InjectedEthereum {
       try {
         return JSON.parse(message);
       } catch (err) {
-        alert(`parseWebviewMessage err`);
-        alert(err.message);
+        // alert(`parseWebviewMessage err`);
+        // alert(err.message);
         // noop
       }
     }
@@ -22,13 +22,11 @@ export class RNInjectedEthereum extends InjectedEthereum {
       mode,
       {
         addMessageListener: (fn: (e: any) => void) => {
-          alert(`addMessageListener ${JSON.stringify(fn)}`);
           window.addEventListener('message', fn);
         },
         removeMessageListener: (fn: (e: any) => void) =>
           window.removeEventListener('message', fn),
         postMessage: message => {
-          alert(`postMessage ${JSON.stringify(message)}`);
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));

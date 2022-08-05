@@ -31,7 +31,8 @@ export const InteractionModalsProivder: FunctionComponent = observer(
           permissionStore.reject(data.id)
         }
       }
-    }, [permissionStore, permissionStore.waitingDatas])
+    }, [permissionStore, permissionStore.waitingDatas]);
+
     return (
       <>
         {ledgerInitStore.isInitNeeded ? (
