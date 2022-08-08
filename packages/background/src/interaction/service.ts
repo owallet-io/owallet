@@ -82,7 +82,7 @@ export class InteractionService {
       });
       setTimeout(() => {
         reject();
-      }, 3000);
+      }, 10000);
       fn();
     });
   }
