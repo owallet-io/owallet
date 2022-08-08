@@ -12,24 +12,12 @@ const styleTitle = {
 };
 
 const styleParagraph = {
-  color: '#A6A6B0'
+  color: '#A6A6B0',
 };
 
 export const CreditPage: FunctionComponent = () => {
-  const history = useHistory();
-  const intl = useIntl();
-
   return (
-    <HeaderLayout
-      showChainName={false}
-      canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({
-        id: 'setting.credit'
-      })}
-      onBackButton={() => {
-        history.goBack();
-      }}
-    >
+    <>
       <div className={style.container}>
         <PageButton
           title="Entity Funding Support"
@@ -43,6 +31,7 @@ export const CreditPage: FunctionComponent = () => {
           styleTitle={styleTitle}
           styleParagraph={styleParagraph}
         />
+        <div style={{ height: 10 }} />
         <PageButton
           title="Cosmos Hub node"
           paragraph="Provided by Figment Networks Datahub"
@@ -65,6 +54,7 @@ export const CreditPage: FunctionComponent = () => {
           styleTitle={styleTitle}
           styleParagraph={styleParagraph}
         />
+        <div style={{ height: 10 }} />
         <PageButton
           title="Development grant support"
           paragraph="Provided by grant.fish"
@@ -78,6 +68,6 @@ export const CreditPage: FunctionComponent = () => {
           styleParagraph={styleParagraph}
         />
       </div>
-    </HeaderLayout>
+    </>
   );
 };

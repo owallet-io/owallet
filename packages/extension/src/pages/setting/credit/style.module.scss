@@ -2,7 +2,7 @@
 
 .container {
   margin: 0 calc(#{$layout-padding} * -1) calc(#{$layout-padding} * -1);
-
+  padding: 10px;
   display: flex;
   flex-direction: column;
   height: 100%;

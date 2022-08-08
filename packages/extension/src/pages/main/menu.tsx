@@ -22,7 +22,7 @@ export const Menu: FunctionComponent = observer(() => {
 
   return (
     <HeaderLayout showChainName canChangeChainInfo>
-      <div className={styleMenu.container}>
+      <div className={styleMenu.container} >
         <div
           className={styleMenu.item}
           onClick={() => {
@@ -31,7 +31,11 @@ export const Menu: FunctionComponent = observer(() => {
           }}
         >
           <FormattedMessage id="main.menu.address-book" />
-          <div>
+          <div
+            // style={{
+            //   marginRight: isNumberTabs ? -10 : 0
+            // }}
+          >
             <img
               src={require(isNumberTabs === 1
                 ? '../../public/assets/img/arrow-up.svg'
@@ -73,7 +77,7 @@ export const Menu: FunctionComponent = observer(() => {
         </div>
         {isNumberTabs === 2 && (
           <div className={classnames(styleMenu.settings)}>
-             <SettingPage />
+            <SettingPage />
           </div>
         )}
 

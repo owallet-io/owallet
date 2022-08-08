@@ -15,7 +15,7 @@ export const ConfirmDialog: FunctionComponent<{
 
   styleYesBtn?: CSSProperties;
   styleNoBtn?: CSSProperties;
-
+  styleParagraph?: CSSProperties;
   onConfirm?: () => void;
   onReject?: () => void;
 }> = ({
@@ -26,6 +26,7 @@ export const ConfirmDialog: FunctionComponent<{
   no,
   styleYesBtn,
   styleNoBtn,
+  styleParagraph,
   onConfirm,
   onReject
 }) => {
@@ -34,7 +35,7 @@ export const ConfirmDialog: FunctionComponent<{
       <div className={style.bodyContainer}>
         {imgElement ? imgElement : null}
         {title ? <h1>{title}</h1> : null}
-        <p>{paragraph}</p>
+        <p style={styleParagraph}>{paragraph}</p>
       </div>
       <div className={style.buttons}>
         <Button

@@ -48,16 +48,7 @@ export const ExportToMobilePage: FunctionComponent = () => {
   >([]);
 
   return (
-    <HeaderLayout
-      showChainName={false}
-      canChangeChainInfo={false}
-      alternativeTitle={intl.formatMessage({
-        id: 'setting.export-to-mobile'
-      })}
-      onBackButton={() => {
-        history.goBack();
-      }}
-    >
+    <>
       {exportKeyRingDatas.length === 0 ? (
         <EnterPasswordToExportKeyRingView
           onSetExportKeyRingDatas={setExportKeyRingDatas}
@@ -67,7 +58,7 @@ export const ExportToMobilePage: FunctionComponent = () => {
           exportKeyRingDatas={exportKeyRingDatas}
         />
       )}
-    </HeaderLayout>
+    </>
   );
 };
 
@@ -142,8 +133,8 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
       <div style={{ flex: 1 }} />
       <img
         style={{
-          marginLeft: '80px',
-          marginRight: '80px'
+          marginLeft: '100px',
+          marginRight: '100px'
         }}
         src={require('../../../public/assets/svg/export-to-mobile.svg')}
         alt="export-to-mobile"
@@ -200,6 +191,9 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
             id: 'setting.export-to-mobile.input.password'
           })}
           name="password"
+          styleInputGroup={{
+            border: '1px solid rgba(8, 4, 28, 0.12)'
+          }}
           error={errors.password && errors.password.message}
           ref={register({
             required: intl.formatMessage({
@@ -367,7 +361,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
         }}
       >
         <QRCode
-          size={260}
+          size={150}
           value={qrCodeData ? JSON.stringify(qrCodeData) : ''}
         />
         <div

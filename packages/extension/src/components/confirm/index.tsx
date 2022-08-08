@@ -23,7 +23,7 @@ export interface ConfirmOptions {
 
   styleYesBtn?: CSSProperties;
   styleNoBtn?: CSSProperties;
-
+  styleParagraph?: CSSProperties;
   styleModalBody?: CSSProperties;
 }
 
@@ -116,6 +116,7 @@ export const ConfirmProvider: FunctionComponent = ({ children }) => {
             no={currentConfirm?.no}
             styleYesBtn={currentConfirm?.styleYesBtn}
             styleNoBtn={currentConfirm?.styleNoBtn}
+            styleParagraph={currentConfirm?.styleParagraph}
             onConfirm={currentConfirm?.resolve}
             onReject={currentConfirm?.reject}
           />
