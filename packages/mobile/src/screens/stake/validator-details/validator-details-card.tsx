@@ -235,13 +235,13 @@ export const ValidatorDetailsCard: FunctionComponent<{
               {validator.description.details}
             </Text>
           </View>
-          <DelegatedCard
+          {/* <DelegatedCard
             containerStyle={{
               backgroundColor: colors['white'],
               width: '100%'
             }}
             validatorAddress={validatorAddress}
-          />
+          /> */}
           <TouchableOpacity
             style={{
               marginBottom: 16,

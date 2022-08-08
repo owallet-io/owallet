@@ -94,146 +94,80 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
 
   const { item } = props.route?.params;
 
-  useEffect(() => {
-    // hard config to airight chain
-    sendConfigs.amountConfig.setSendCurrency({
-      coinDecimals: 6,
-      type: 'cw20',
-      coinMinimalDenom:
-        'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
-      coinDenom: 'AIRI',
-      coinGeckoId: 'airight',
-      contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
-      coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
-    });
-  }, []);
+  // useEffect(() => {
+  //   // hard config to airight chain
+  //   sendConfigs.amountConfig.setSendCurrency({
+  //     coinDecimals: 6,
+  //     type: 'cw20',
+  //     coinMinimalDenom:
+  //       'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
+  //     coinDenom: 'AIRI',
+  //     coinGeckoId: 'airight',
+  //     contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
+  //     coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
+  //   });
+  // }, []);
 
   const _onPressTransfer = async () => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={{ paddingBottom: 70 }}>
-          <View>
-            <TextInput
-              label="Destination address"
-              onChange={({ nativeEvent: { eventCount, target, text } }) =>
-                setAddress(text)
-              }
-              defaultValue={address}
-            />
-            {item.version === 1 ? null : (
-              <TextInput
-                label="Quantity"
-                keyboardType="number-pad"
-                onChangeText={txt => {
-                  setQuantity(Number(txt));
-                }}
-                defaultValue={quantity.toString()}
-              />
-            )}
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-evenly'
-            }}
-          >
-            <Button
-              text="Cancel"
-              size="large"
-              containerStyle={{
-                width: '40%'
-              }}
-              style={{
-                backgroundColor: colors['red-500']
-              }}
-              textStyle={{
-                color: colors['white']
-              }}
-              underlayColor={colors['danger-400']}
-              onPress={() => modalStore.close()}
-            />
-            <Button
-              text="Confirm"
-              containerStyle={{
-                width: '40%'
-              }}
-              style={{
-                backgroundColor: colors['purple-900']
-              }}
-              textStyle={{
-                color: colors['white']
-              }}
-              underlayColor={colors['purple-400']}
-              size="large"
-              disabled={
-                item.version === 1
-                  ? address == ''
-                  : address == '' || quantity == 0
-              }
-              // loading={signInteractionStore.isLoading}
-              onPress={async () => {
-                modalStore.close();
-                await delay(600);
-                _onPressBtnMain();
-              }}
-            />
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    );
+    smartNavigation.navigateSmart('TransferNFT', {
+      nft: {
+        ...item,
+        quantity: item.version === 1 ? 1 : owner.availableQuantity
+      }
+    });
   };
 
-  const _onPressBtnMain = async () => {
-    if (account.isReadyToSendMsgs) {
-      try {
-        await account.sendToken(
-          '0.000001', // amount not in use, but must have to send token fn work normally 'cause we use the same fn with send cw20 token
-          sendConfigs.amountConfig.sendCurrency,
-          sendConfigs.recipientConfig.recipient,
-          sendConfigs.memoConfig.memo,
-          { gas: '186415', amount: [{ amount: '0', denom: 'orai' }] }, // default fee and gas
-          {
-            preferNoSetFee: true,
-            preferNoSetMemo: true
-          },
-          {
-            onBroadcasted: txHash => {
-              smartNavigation.pushSmart('TxPendingResult', {
-                txHash: Buffer.from(txHash).toString('hex')
-              });
-            }
-          },
-          {
-            contract_addr:
-              item.version === 1
-                ? 'orai1ase8wkkhczqdda83f0cd9lnuyvf47465j70hyk'
-                : 'orai1c3phe2dcu852ypgvt0peqj8f5kx4x0s4zqcky4',
-            recipient: address,
-            to: address,
-            token_id: item.id.toString(),
-            amount: quantity.toString(),
-            type: item.version === 1 ? '721' : '1155'
-          }
-        );
-      } catch (e) {
-        if (e?.message === 'Request rejected') {
-          return;
-        }
-        if (e?.message.includes('Cannot read properties of undefined')) {
-          return;
-        }
-        console.log('send error', e);
-        if (smartNavigation.canGoBack) {
-          smartNavigation.goBack();
-        } else {
-          smartNavigation.navigateSmart('Home', {});
-        }
-      }
-    }
-  };
+  // const _onPressBtnMain = async () => {
+  //   if (account.isReadyToSendMsgs) {
+  //     try {
+  //       await account.sendToken(
+  //         '0.000001', // amount not in use, but must have to send token fn work normally 'cause we use the same fn with send cw20 token
+  //         sendConfigs.amountConfig.sendCurrency,
+  //         sendConfigs.recipientConfig.recipient,
+  //         sendConfigs.memoConfig.memo,
+  //         { gas: '186415', amount: [{ amount: '0', denom: 'orai' }] }, // default fee and gas
+  //         {
+  //           preferNoSetFee: true,
+  //           preferNoSetMemo: true
+  //         },
+  //         {
+  //           onBroadcasted: txHash => {
+  //             smartNavigation.pushSmart('TxPendingResult', {
+  //               txHash: Buffer.from(txHash).toString('hex')
+  //             });
+  //           }
+  //         },
+  //         {
+  //           contract_addr:
+  //             item.version === 1
+  //               ? 'orai1ase8wkkhczqdda83f0cd9lnuyvf47465j70hyk'
+  //               : 'orai1c3phe2dcu852ypgvt0peqj8f5kx4x0s4zqcky4',
+  //           recipient: address,
+  //           to: address,
+  //           token_id: item.id.toString(),
+  //           amount: quantity.toString(),
+  //           type: item.version === 1 ? '721' : '1155'
+  //         }
+  //       );
+  //     } catch (e) {
+  //       if (e?.message === 'Request rejected') {
+  //         return;
+  //       }
+  //       if (e?.message.includes('Cannot read properties of undefined')) {
+  //         return;
+  //       }
+  //       console.log('send error', e);
+  //       if (smartNavigation.canGoBack) {
+  //         smartNavigation.goBack();
+  //       } else {
+  //         smartNavigation.navigateSmart('Home', {});
+  //       }
+  //     }
+  //   }
+  // };
 
   const [prices, setPrices] = useState({});
+  const [owner, setOwner] = useState<any>({});
 
   useEffect(() => {
     (async function get() {
@@ -245,6 +179,26 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
           }
         );
         setPrices(res.data);
+      } catch (error) {}
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async function get() {
+      try {
+        const res = await API.getNFTOwners(
+          {
+            token_id: item.id
+          },
+          {
+            baseURL: 'https://api.airight.io/'
+          }
+        );
+
+        const currentOwner = res.data.find(
+          d => d.ownerAddress === account.bech32Address
+        );
+        setOwner(currentOwner);
       } catch (error) {}
     })();
   }, []);
@@ -357,14 +311,40 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                     color: colors['gray-150']
                   }}
                 >
-                  {item.totalQuantity - item.availableQuantity}
+                  {item.version === 1 ? 1 : owner?.availableQuantity}
+                  {/* item.totalQuantity - item.availableQuantity */}
                 </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.containerBtn}>
-            {item.offer != null
+            {item.version === 1 && item.offer != null
+              ? ['Transfer'].map((e, i) => (
+                  <TouchableOpacity
+                    style={{
+                      ...styles.btn
+                    }}
+                    onPress={() => _onPressTransfer()}
+                  >
+                    <View style={{ ...styles.btnTransfer }}>
+                      <SendDashboardIcon />
+                      <Text
+                        style={{
+                          ...typography['h7'],
+                          lineHeight: spacing['20'],
+                          color: colors['white'],
+                          paddingLeft: spacing['6'],
+                          fontWeight: '700'
+                        }}
+                      >
+                        {`Transfer`}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))
+              : null}
+            {item.version === 2 && owner.availableQuantity > 0
               ? ['Transfer'].map((e, i) => (
                   <TouchableOpacity
                     style={{

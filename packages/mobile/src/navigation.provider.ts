@@ -55,6 +55,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Send: {
         upperScreenName: 'Others'
       },
+      TransferNFT: {
+        upperScreenName: 'Others'
+      },
       Tokens: {
         upperScreenName: 'Main'
       },
@@ -147,7 +150,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       },
       TransferTokensScreen: {
         upperScreenName: 'SendNavigation'
-      },
+      }
     }).withParams<{
       'Register.NewMnemonic': {
         registerConfig: RegisterConfig;

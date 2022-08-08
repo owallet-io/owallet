@@ -36,6 +36,11 @@ export const API = {
   getNFTs: ({ address }, config: AxiosRequestConfig) => {
     let url = `assets?size=12&offset=0&filter=%7B%22accountAddress%22:%22${address}%22,%22nftStatuses%22:[2]%7D&sort=%7B%22updatedAt%22:%22DESC%22%7D`;
     return API.get(url, config);
+  },
+
+  getNFTOwners: ({ token_id }, config: AxiosRequestConfig) => {
+    let url = `assets/${token_id}/owners?size=10&offset=0`;
+    return API.get(url, config);
   }
 };
 

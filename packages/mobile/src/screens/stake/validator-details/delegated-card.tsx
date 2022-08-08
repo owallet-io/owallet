@@ -80,16 +80,20 @@ export const DelegatedCard: FunctionComponent<{
               alignItems: 'flex-end'
             }}
           >
-            {unbonding?.[0].entries.map(ub => {
-              return (
-                <Text
-                  style={style.flatten(['body2', 'color-text-black-very-low'])}
-                >
-                  {(Number(ub.balance) * 10 ** -6).toFixed(6)}{' '}
-                  {chainStore.current.stakeCurrency.coinDenom}
-                </Text>
-              );
-            })}
+            {/* {unbonding &&
+              unbonding?.[0].entries.map(ub => {
+                return (
+                  <Text
+                    style={style.flatten([
+                      'body2',
+                      'color-text-black-very-low'
+                    ])}
+                  >
+                    {(Number(ub.balance) * 10 ** -6).toFixed(6)}{' '}
+                    {chainStore.current.stakeCurrency.coinDenom}
+                  </Text>
+                );
+              })} */}
           </View>
         </View>
         <View
