@@ -1,3 +1,51 @@
+diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts
+index 0317ca3..37ebc29 100644
+--- a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts
++++ b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts
+@@ -43,12 +43,12 @@ export default class Cosmos {
+      * @example
+      * cosmos.getAddress("44'/60'/0'/0/0", "cosmos").then(o => o.address)
+      */
+-    getAddress(path: string, hrp: string, boolDisplay?: boolean): Promise<{
++    getAddress(bipPath: number[], hrp: string, boolDisplay?: boolean): Promise<{
+         publicKey: string;
+         address: string;
+     }>;
+     foreach<T, A>(arr: T[], callback: (arg0: T, arg1: number) => Promise<A>): Promise<A[]>;
+-    sign(path: string, message: string): Promise<{
++    sign(bipPath: number[], message: string): Promise<{
+         signature: null | Buffer;
+         return_code: number | string;
+     }>;
+diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js
+index 5673f54..5c20cee 100644
+--- a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js
++++ b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js
+@@ -101,8 +101,7 @@ var Cosmos = /** @class */ (function () {
+      * @example
+      * cosmos.getAddress("44'/60'/0'/0/0", "cosmos").then(o => o.address)
+      */
+-    Cosmos.prototype.getAddress = function (path, hrp, boolDisplay) {
+-        var bipPath = BIPPath.fromString(path).toPathArray();
++    Cosmos.prototype.getAddress = function (bipPath, hrp, boolDisplay) {        
+         var serializedPath = this.serializePath(bipPath);
+         var data = Buffer.concat([this.serializeHRP(hrp), serializedPath]);
+         return this.transport
+@@ -129,12 +128,11 @@ var Cosmos = /** @class */ (function () {
+         }
+         return Promise.resolve().then(function () { return iterate(0, arr, []); });
+     };
+-    Cosmos.prototype.sign = function (path, message) {
++    Cosmos.prototype.sign = function (bipPath, message) {
+         return __awaiter(this, void 0, void 0, function () {
+-            var bipPath, serializedPath, chunks, buffer, i, end, response;
++            var serializedPath, chunks, buffer, i, end, response;
+             var _this = this;
+             return __generator(this, function (_a) {                
+-                bipPath = BIPPath.fromString(path).toPathArray();
+                 serializedPath = this.serializePath(bipPath);
+                 chunks = [];
+                 chunks.push(serializedPath);
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
 index 0317ca3..51d02f9 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
@@ -29,7 +77,7 @@ index 0317ca3..51d02f9 100644
          return_code: number | string;
      }>;
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.js b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.js
-index 2b17c6a..e9524e2 100644
+index 2b17c6a..0fedab8 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.js
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.js
 @@ -39,7 +39,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
@@ -60,8 +108,53 @@ index 2b17c6a..e9524e2 100644
 -            var bipPath, serializedPath, chunks, buffer, i, end, response;
 +            var serializedPath, chunks, buffer, i, end, response;
              var _this = this;
-             return __generator(this, function (_a) {                
+             return __generator(this, function (_a) {
 -                bipPath = bip32_path_1["default"].fromString(path).toPathArray();
                  serializedPath = this.serializePath(bipPath);
                  chunks = [];
                  chunks.push(serializedPath);
+diff --git a/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts b/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
+index b8f7f3d..a445ac9 100644
+--- a/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
++++ b/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
+@@ -65,7 +65,7 @@ export default class Cosmos {
+     });
+   }
+ 
+-  serializePath(path: Buffer): Buffer {
++  serializePath(path: Buffer | number[]): Buffer {
+     const buf = Buffer.alloc(20);
+     // HACK : without the >>>,
+     // the bitwise implicitly casts the result to be a signed int32,
+@@ -99,14 +99,13 @@ export default class Cosmos {
+    * cosmos.getAddress("44'/60'/0'/0/0", "cosmos").then(o => o.address)
+    */
+   getAddress(
+-    path: string,
++    bipPath: number[],
+     hrp: string,
+     boolDisplay?: boolean
+   ): Promise<{
+     publicKey: string;
+     address: string;
+   }> {    
+-    const bipPath = BIPPath.fromString(path).toPathArray();
+     const serializedPath = this.serializePath(bipPath);
+     const data = Buffer.concat([this.serializeHRP(hrp), serializedPath]);
+     return this.transport
+@@ -139,13 +138,12 @@ export default class Cosmos {
+   }
+ 
+   async sign(
+-    path: string,
+-    message: string
++    bipPath: number[],
++    message: string | Uint8Array
+   ): Promise<{
+     signature: null | Buffer;
+     return_code: number | string;
+   }> {    
+-    const bipPath = BIPPath.fromString(path).toPathArray();
+     const serializedPath = this.serializePath(bipPath);
+     const chunks: Buffer[] = [];
+     chunks.push(serializedPath);

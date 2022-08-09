@@ -31,7 +31,6 @@
     "@ethersproject/bytes": "^5.5.0",
     "@ethersproject/keccak256": "^5.5.0",
     "@ethersproject/wallet": "^5.5.0",
-    "@ledgerhq/hw-app-cosmos": "^6.27.1",
     "@ledgerhq/hw-transport": "^6.20.0",
     "@ledgerhq/hw-transport-webhid": "^6.20.0",
     "@ledgerhq/hw-transport-webusb": "^6.20.0",

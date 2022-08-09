@@ -1,7 +1,7 @@
 import { delay as diDelay, inject, singleton } from 'tsyringe';
 import { TYPES } from '../types';
 
-import { Ledger, LedgerWebHIDIniter, LedgerWebUSBIniter } from './ledger';
+import { Ledger } from './ledger';
 
 import delay from 'delay';
 
@@ -27,16 +27,8 @@ export class LedgerService {
     options: Partial<LedgerOptions>
   ) {
     this.options = {
-      defaultMode: options.defaultMode || 'webusb',
-      transportIniters: options.transportIniters ?? {}
+      defaultMode: options.defaultMode || 'webusb'
     };
-
-    if (!this.options.transportIniters['webusb']) {
-      this.options.transportIniters['webusb'] = LedgerWebUSBIniter;
-    }
-    if (!this.options.transportIniters['webhid']) {
-      this.options.transportIniters['webhid'] = LedgerWebHIDIniter;
-    }
   }
 
   async getPublicKey(env: Env, bip44HDPath: BIP44HDPath): Promise<Uint8Array> {
@@ -167,12 +159,7 @@ export class LedgerService {
     while (true) {
       const mode = await this.getMode();
       try {
-        const transportIniter = this.options.transportIniters[mode];
-        if (!transportIniter) {
-          throw new Error(`Unknown mode: ${mode}`);
-        }
-
-        const ledger = await Ledger.init(transportIniter, initArgs);
+        const ledger = await Ledger.init(mode, initArgs);
         this.previousInitAborter = undefined;
         return {
           ledger,

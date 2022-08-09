@@ -71,7 +71,7 @@ export class ObservableQueryBalancesInner {
   }
 
   fetch() {
-    this.balanceMap.forEach(bal => bal.fetch());
+    this.balanceMap.forEach((bal) => bal.fetch());
   }
 
   protected getBalanceInner(
@@ -82,10 +82,6 @@ export class ObservableQueryBalancesInner {
     if ('type' in currency && currency.type === 'secret20') {
       key = currency.coinMinimalDenom + '/' + currency.viewingKey;
     }
-    
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-
-    const chainInfo = this.chainGetter.getChain(this.chainId);
 
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
@@ -105,7 +101,7 @@ export class ObservableQueryBalancesInner {
             currency
           );
 
-          console.log(balanceInner)
+          console.log(balanceInner);
 
           if (balanceInner) {
             break;
@@ -156,7 +152,7 @@ export class ObservableQueryBalancesInner {
   @computed
   get positiveBalances(): ObservableQueryBalanceInner[] {
     const balances = this.balances;
-    return balances.filter(bal => bal.balance.toDec().gt(new Dec(0)));
+    return balances.filter((bal) => bal.balance.toDec().gt(new Dec(0)));
   }
 
   /**
@@ -167,7 +163,7 @@ export class ObservableQueryBalancesInner {
   get nonNativeBalances(): ObservableQueryBalanceInner[] {
     const balances = this.balances;
     return balances.filter(
-      bal => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native'
+      (bal) => new DenomHelper(bal.currency.coinMinimalDenom).type !== 'native'
     );
   }
 
@@ -181,7 +177,7 @@ export class ObservableQueryBalancesInner {
 
     const balances = this.balances;
     return balances.filter(
-      bal =>
+      (bal) =>
         new DenomHelper(bal.currency.coinMinimalDenom).type === 'native' &&
         bal.balance.toDec().gt(new Dec(0)) &&
         bal.currency.coinMinimalDenom !==
@@ -195,7 +191,7 @@ export class ObservableQueryBalancesInner {
 
     const result = [];
     const currencies = chainInfo.currencies.filter(
-      cur => cur.coinMinimalDenom !== chainInfo.stakeCurrency.coinMinimalDenom
+      (cur) => cur.coinMinimalDenom !== chainInfo.stakeCurrency.coinMinimalDenom
     );
 
     for (let i = 0; i < currencies.length; i++) {
@@ -209,7 +205,7 @@ export class ObservableQueryBalancesInner {
   readonly getBalanceFromCurrency = computedFn(
     (currency: AppCurrency): CoinPretty => {
       const bal = this.balances.find(
-        bal => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+        (bal) => bal.currency.coinMinimalDenom === currency.coinMinimalDenom
       );
       if (bal) {
         return bal.balance;
