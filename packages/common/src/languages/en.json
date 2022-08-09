@@ -58,7 +58,7 @@
   "setting.address-book.name": "Name",
   "setting.address-book.address": "Address",
   "setting.address-book.address.error.invalid": "Invalid address",
-  "setting.address-book.memo": "Default Memo (Optional)",
+  "setting.address-book.memo": "Memo (Optional)",
   "setting.address-book.confirm.delete-address.title": "Delete Address",
   "setting.address-book.confirm.delete-address.paragraph": "Are you sure want to delete this address?",
   "setting.address-book.button.save": "Save",
