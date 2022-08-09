@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState
+} from 'react';
 
 import styleToken from './token.module.scss';
 import { observer } from 'mobx-react-lite';
@@ -7,6 +12,7 @@ import { useHistory } from 'react-router';
 import { Hash } from '@owallet/crypto';
 import { ObservableQueryBalanceInner } from '@owallet/stores';
 import classmames from 'classnames';
+import { Input } from '../../components/form';
 import { UncontrolledTooltip } from 'reactstrap';
 import { WrongViewingKeyError } from '@owallet/stores';
 import { useNotification } from '../../components/notification';
@@ -250,34 +256,68 @@ export const TokensView: FunctionComponent<{
     });
 
   const history = useHistory();
+  const [search, setSearch] = useState('');
 
   return (
     <div className={styleToken.tokensContainer}>
       <h1 className={styleToken.title}>Tokens</h1>
-      {displayTokens.map((token, i) => {
-        return (
-          <TokenView
-            key={i.toString()}
-            balance={token}
-            active={
-              `?defaultDenom=${token.currency.coinMinimalDenom}` ==
-              coinMinimalDenom
-            }
-            onClick={() => {
-              if (handleClickToken) {
-                handleClickToken(
-                  `?defaultDenom=${token.currency.coinMinimalDenom}`
-                );
-                return;
+      <div>
+        <Input
+          type={'text'}
+          styleInputGroup={{
+            display: 'flex',
+            flexDirection: 'row-reverse'
+          }}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          placeholder={'Search Chain Coin'}
+          append={
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: 50
+              }}
+            >
+              <img src={require('../../public/assets/img/light.svg')} alt="" />
+            </div>
+          }
+        />
+      </div>
+      {displayTokens
+        .filter(
+          (token) =>
+            token?.currency?.coinMinimalDenom?.includes(search) ||
+            token?.currency?.coinDenom?.includes(search) ||
+            token?.currency?.coinGeckoId?.includes(search)
+        )
+        .map((token, i) => {
+          return (
+            <TokenView
+              key={i.toString()}
+              balance={token}
+              active={
+                `?defaultDenom=${token.currency.coinMinimalDenom}` ==
+                coinMinimalDenom
               }
-              history.push({
-                pathname: '/send',
-                search: `?defaultDenom=${token.currency.coinMinimalDenom}`
-              });
-            }}
-          />
-        );
-      })}
+              onClick={() => {
+                if (handleClickToken) {
+                  handleClickToken(
+                    `?defaultDenom=${token.currency.coinMinimalDenom}`
+                  );
+                  return;
+                }
+                history.push({
+                  pathname: '/send',
+                  search: `?defaultDenom=${token.currency.coinMinimalDenom}`
+                });
+              }}
+            />
+          );
+        })}
     </div>
   );
 });

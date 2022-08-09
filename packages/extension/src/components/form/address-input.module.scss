@@ -22,7 +22,7 @@
 .input {
   box-shadow: $input-alternative-box-shadow !important;
   border-radius: 4px;
-
+  color: $color-neutral-2 !important;
   &::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: $color-gray-70 !important;

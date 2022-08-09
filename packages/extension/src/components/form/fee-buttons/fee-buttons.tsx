@@ -238,7 +238,7 @@ export const FeeButtonsInner: FunctionComponent<
                     'text-muted': feeConfig.feeType !== fee
                   })}
                 >
-                  {[lowFee, averageFee, highFee][i].trim(true).toString()}
+                  {[lowFee, averageFee, highFee][i].trim(true).toString() || 0} 
                 </div>
                 {[lowFeePrice, averageFeePrice, highFeePrice][i] ? (
                   <div

@@ -82,12 +82,12 @@ hr {
 }
 
 .form-control {
-  color: $color;
+  color: $color-neutral-2;
   background-color: $background-color-lighter;
   padding: 0.625rem 0.75rem;
   &:focus {
     background-color: $background-color-lighter;
-    color: $color;
+    color: $color-neutral-2;
   }
 }
 
@@ -184,7 +184,7 @@ button[data-loading='true'] {
 
 .btn-secondary {
   color: $color;
-  border: 0 !important;
+  border: 0;
   background-color: transparent !important;
   outline: none;
 

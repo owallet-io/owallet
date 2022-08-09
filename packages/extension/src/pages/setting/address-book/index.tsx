@@ -11,7 +11,9 @@ import {
   DropdownMenu,
   DropdownToggle,
   Modal,
-  ModalBody
+  ModalBody,
+  Popover,
+  PopoverBody
 } from 'reactstrap';
 import styleAddressBook from './style.module.scss';
 import { useStore } from '../../../stores';
@@ -23,6 +25,8 @@ import { useConfirm } from '../../../components/confirm';
 import {
   AddressBookSelectHandler,
   IIBCChannelConfig,
+  IMemoConfig,
+  IRecipientConfig,
   useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig
@@ -102,69 +106,59 @@ export const AddressBookPage: FunctionComponent<{
     const [typeAddress, setTypeAddress] = useState('Add');
     const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
     const [addAddressModalIndex, setAddAddressModalIndex] = useState(-1);
-    const [modalMore, setModalMore] = useState(false);
+    // const [modalMore, setModalMore] = useState(false);
     const confirm = useConfirm();
 
-    const addressBookIcons = (index: number, name?: string) => {
-      return [
-        // <img
-        //   src={require('../../../public/assets/img/more-fill.svg')}
-        //   onClick={(e) => {
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        //     // setAddAddressModalOpen(true);
-        //     setModalMore(!modalMore);
-        //     setAddAddressModalIndex(index);
-        //   }}
-        // />
-        <i
-          key="edit"
-          className="fas fa-pen"
-          style={{ cursor: 'pointer' }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setTypeAddress('Edit');
-            setAddAddressModalOpen(true);
-            setAddAddressModalIndex(index);
-          }}
-        />,
-        <i
-          key="remove"
-          className="fas fa-trash"
-          style={{ cursor: 'pointer' }}
-          onClick={async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+    // const addressBookIcons = (index: number, name?: string) => {
+    //   return [
+    //     <i
+    //       key="edit"
+    //       className="fas fa-pen"
+    //       style={{ cursor: 'pointer' }}
+    //       onClick={(e) => {
+    //         e.preventDefault();
+    //         e.stopPropagation();
+    //         setTypeAddress('Edit');
+    //         setAddAddressModalOpen(true);
+    //         setAddAddressModalIndex(index);
+    //       }}
+    //     />,
+    //     <i
+    //       key="remove"
+    //       className="fas fa-trash"
+    //       style={{ cursor: 'pointer' }}
+    //       onClick={async (e) => {
+    //         e.preventDefault();
+    //         e.stopPropagation();
 
-            if (
-              await confirm.confirm({
-                styleYesBtn: {
-                  background: '#EF466F'
-                },
-                styleModalBody: {
-                  backgroundColor: '#353945'
-                },
-                styleNoBtn: {
-                  backgroundColor: '#F8F8F9',
-                  color: '#777E90'
-                },
-                yes: 'Delete',
-                no: 'Cancel',
-                title: name,
-                paragraph: intl.formatMessage({
-                  id: 'setting.address-book.confirm.delete-address.paragraph'
-                })
-              })
-            ) {
-              setAddAddressModalOpen(false);
-              setAddAddressModalIndex(-1);
-              await addressBookConfig.removeAddressBook(index);
-            }
-          }}
-        />
-      ];
-    };
+    //         if (
+    //           await confirm.confirm({
+    //             styleYesBtn: {
+    //               background: '#EF466F'
+    //             },
+    //             styleModalBody: {
+    //               backgroundColor: '#353945'
+    //             },
+    //             styleNoBtn: {
+    //               backgroundColor: '#F8F8F9',
+    //               color: '#777E90'
+    //             },
+    //             yes: 'Delete',
+    //             no: 'Cancel',
+    //             title: name,
+    //             paragraph: intl.formatMessage({
+    //               id: 'setting.address-book.confirm.delete-address.paragraph'
+    //             })
+    //           })
+    //         ) {
+    //           setAddAddressModalOpen(false);
+    //           setAddAddressModalIndex(-1);
+    //           await addressBookConfig.removeAddressBook(index);
+    //         }
+    //       }}
+    //     />
+    //   ];
+    // };
 
     return (
       <>
@@ -222,6 +216,7 @@ export const AddressBookPage: FunctionComponent<{
                   e.stopPropagation();
                   setTypeAddress('Add');
                   setAddAddressModalOpen(true);
+                  setAddAddressModalIndex(-1);
                 }}
                 style={{
                   display: 'flex',
@@ -284,8 +279,44 @@ export const AddressBookPage: FunctionComponent<{
                       : data.address
                   }
                   subParagraph={data.memo}
-                  icons={addressBookIcons(i, data.name)}
+                  // icons={addressBookIcons(i, data.name)}
                   data-index={i}
+                  icons={[
+                    <AddressBookTools
+                      setTypeAddress={setTypeAddress}
+                      setAddAddressModalIndex={setAddAddressModalIndex}
+                      index={i}
+                      setAddAddressModalOpen={setAddAddressModalOpen}
+                      handleDelete={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (
+                          await confirm.confirm({
+                            styleYesBtn: {
+                              background: '#EF466F'
+                            },
+                            styleModalBody: {
+                              backgroundColor: '#353945'
+                            },
+                            styleNoBtn: {
+                              backgroundColor: '#F8F8F9',
+                              color: '#777E90'
+                            },
+                            yes: 'Delete',
+                            no: 'Cancel',
+                            // title: name,
+                            paragraph: intl.formatMessage({
+                              id: 'setting.address-book.confirm.delete-address.paragraph'
+                            })
+                          })
+                        ) {
+                          setAddAddressModalOpen(false);
+                          setAddAddressModalIndex(-1);
+                          await addressBookConfig.removeAddressBook(i);
+                        }
+                      }}
+                    />
+                  ]}
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -329,3 +360,81 @@ export const AddressBookPage: FunctionComponent<{
     );
   }
 );
+
+const AddressBookTools: FunctionComponent<{
+  index?: number;
+  setAddAddressModalOpen?: any;
+  setAddAddressModalIndex?: any;
+  handleDelete?: (e) => void;
+  setTypeAddress?: any;
+}> = ({
+  setAddAddressModalOpen,
+  handleDelete,
+  index,
+  setAddAddressModalIndex,
+  setTypeAddress
+}) => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
+
+  const [tooltipId] = useState(() => {
+    const bytes = new Uint8Array(4);
+    crypto.getRandomValues(bytes);
+    return `tools-${Buffer.from(bytes).toString('hex')}`;
+  });
+
+  return (
+    <React.Fragment>
+      <Popover
+        target={tooltipId}
+        isOpen={isOpen}
+        toggle={toggleOpen}
+        placement="auto-start"
+        className={styleAddressBook.popoverContainer}
+        hideArrow
+      >
+        <PopoverBody className={styleAddressBook.popoverContainer}>
+          <div
+            className={styleAddressBook.popoverItem}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsOpen(false);
+              setTypeAddress('Edit');
+              setAddAddressModalIndex(index);
+              setAddAddressModalOpen(true);
+            }}
+          >
+            <FormattedMessage id="setting.address-book.button.edit" />
+          </div>
+          <div
+            className={styleAddressBook.popoverItem}
+            onClick={(e) => {
+              setIsOpen(false);
+              handleDelete(e);
+            }}
+          >
+            <FormattedMessage id="setting.address-book.button.delete" />
+          </div>
+        </PopoverBody>
+      </Popover>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          height: '100%',
+          padding: '0 8px',
+          cursor: 'pointer',
+          color: '#353945'
+        }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(true);
+        }}
+      >
+        <i id={tooltipId} className="fas fa-ellipsis-h" />
+      </div>
+    </React.Fragment>
+  );
+};

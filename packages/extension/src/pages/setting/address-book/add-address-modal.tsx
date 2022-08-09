@@ -42,7 +42,7 @@ export const AddAddressModal: FunctionComponent<{
         setName(data.name);
         recipientConfig.setRawRecipient(data.address);
         memoConfig.setMemo(data.memo);
-      }else {
+      } else {
         setName('');
         recipientConfig.setRawRecipient('');
         memoConfig.setMemo('');
@@ -55,25 +55,6 @@ export const AddAddressModal: FunctionComponent<{
     ]);
 
     return (
-      // <HeaderLayout
-      //   showChainName={false}
-      //   canChangeChainInfo={false}
-      //   alternativeTitle={
-      //     index >= 0
-      //       ? intl.formatMessage({
-      //           id: 'setting.address-book.edit-address.title'
-      //         })
-      //       : intl.formatMessage({
-      //           id: 'setting.address-book.add-address.title'
-      //         })
-      //   }
-      //   onBackButton={() => {
-      //     // Clear the recipient and memo before closing
-      //     recipientConfig.setRawRecipient('');
-      //     memoConfig.setMemo('');
-      //     closeModal();
-      //   }}
-      // >
       <>
         <div
           style={{
@@ -160,7 +141,6 @@ export const AddAddressModal: FunctionComponent<{
           </div>
         </form>
       </>
-      // </HeaderLayout>
     );
   }
 );
