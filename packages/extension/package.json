@@ -14,6 +14,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" webpack.config.js && prettier --write \"src/**/*\" webpack.config.js"
   },
   "dependencies": {
+    "@ledgerhq/hw-app-cosmos": "^6.27.1",
     "@cosmjs/encoding": "^0.24.0-alpha.25",
     "@cosmjs/launchpad": "^0.24.0-alpha.25",
     "@cosmjs/proto-signing": "^0.24.0-alpha.25",
