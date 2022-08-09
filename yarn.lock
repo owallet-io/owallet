@@ -2736,36 +2736,45 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.10.1.tgz#510688251b6261744c6b1cde6cfd2dfb13fc27b2"
   integrity sha512-92d1zRQleR1AQ4CAXgWgDtKUms+8EwShLVUcajI+BLWvgJ1Vclmq6PsBIDEQbsm+riVu/Ji3LcHdmgFgmi0VGw==
 
-"@ledgerhq/hw-app-cosmos@^6.27.1":
-  version "6.27.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-cosmos/-/hw-app-cosmos-6.27.2.tgz#9bc5349f6913ccdc10980b41c8ec343ca581bc80"
-  integrity sha512-lK3paJwte5uwnAifgK2LLPWn8IWoO7WSfYpYjbvcd6xbm4qEIPORlg1XhIfRzA9JoHLNbiIqMNbQIHgyRWrYOQ==
+"@ledgerhq/hw-app-cosmos@6.27.1":
+  version "6.27.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-cosmos/-/hw-app-cosmos-6.27.1.tgz#834df28568dfd59304103c7d4222a16c554a1d10"
+  integrity sha512-UJDQmsv5Fb3Owyem/d5mLJLAVIr3yKJjuYArZ3ui6n7zsx+MGtJgUIXUhpEVIk+FrDKnZGa0sqcbvoXW09NIXQ==
   dependencies:
-    "@ledgerhq/errors" "^6.10.1"
-    "@ledgerhq/hw-transport" "^6.27.2"
+    "@ledgerhq/errors" "^6.10.0"
+    "@ledgerhq/hw-transport" "^6.27.1"
     bip32-path "^0.4.2"
 
-"@ledgerhq/hw-transport-webhid@^6.20.0":
-  version "6.27.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-6.27.2.tgz#e3ee2501b1353a335d7436c1f2b95821d2b2f426"
-  integrity sha512-ZlyNheUhcxBZqjJzhSfJfeGQvNbeyWs9866rdQjVeG1zsbTJi0+6tfRv8J248QISS8vHtG5IMSxgMg9mtux9dQ==
+"@ledgerhq/hw-transport-webhid@6.20.0":
+  version "6.20.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-6.20.0.tgz#5341a02b31663bc5259ef055b147e35be15c9b35"
+  integrity sha512-vpbeKmvlQQHQIT7MOAt8TJV7706YkvfEsW2it/vQKAKGjmAYWgrLDXLLgmA1rEDschq0w63crOSp0El4doy+JQ==
   dependencies:
-    "@ledgerhq/devices" "^7.0.0"
-    "@ledgerhq/errors" "^6.10.1"
-    "@ledgerhq/hw-transport" "^6.27.2"
+    "@ledgerhq/devices" "^6.20.0"
+    "@ledgerhq/errors" "^6.10.0"
+    "@ledgerhq/hw-transport" "^6.20.0"
     "@ledgerhq/logs" "^6.10.0"
 
-"@ledgerhq/hw-transport-webusb@^6.20.0":
-  version "6.27.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.27.2.tgz#e8efe6392957ea048860db6a83a0111d6f525e4b"
-  integrity sha512-wuoBBHOtGhJMoZEBjL4OAhvlU3pCD4rMYlwBNchEzayzU9k5ItegP43o71N9Fj/MeKevBqatxJ+tp8eUQbwewA==
+"@ledgerhq/hw-transport-webusb@6.20.0":
+  version "6.20.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.20.0.tgz#ddf4db2727d2dc79930d3c672e11cd08658f22c8"
+  integrity sha512-7rtgOEuEZ7/O5JofcglUVck7RXH5D8vS3zP5SjPURhvSFiJVGrtOVS+Qna7gXqGdkesDcNF0xBkwme+67n4Imw==
   dependencies:
-    "@ledgerhq/devices" "^7.0.0"
-    "@ledgerhq/errors" "^6.10.1"
-    "@ledgerhq/hw-transport" "^6.27.2"
+    "@ledgerhq/devices" "^6.20.0"
+    "@ledgerhq/errors" "^6.10.0"
+    "@ledgerhq/hw-transport" "^6.20.0"
     "@ledgerhq/logs" "^6.10.0"
 
-"@ledgerhq/hw-transport@^6.20.0", "@ledgerhq/hw-transport@^6.27.2":
+"@ledgerhq/hw-transport@6.20.0":
+  version "6.20.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.20.0.tgz#16e84c99fca2d10f637c0e36c87088322479a488"
+  integrity sha512-5KS0Y6CbWRDOv3FgNIfk53ViQOIZqMxAw0RuOexreW5GMwuYfK7ddGi4142qcu7YrxkGo7cNe42wBbx1hdXl0Q==
+  dependencies:
+    "@ledgerhq/devices" "^6.20.0"
+    "@ledgerhq/errors" "^6.10.0"
+    events "^3.3.0"
+
+"@ledgerhq/hw-transport@^6.20.0", "@ledgerhq/hw-transport@^6.27.1":
   version "6.27.2"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.27.2.tgz#318e24b13b4bc392277d0b3b6fbc568f86b41f01"
   integrity sha512-GF4pmK78rEKhZfbmunwQ131c+0MGa6L5IoYlwgFcg6CaFpUjjPiTCKUFsm4flsE0Z0Ltn9QuKoe+xEHULo7rGA==
@@ -23773,8 +23782,10 @@ watchpack@^1.7.4:
   resolved "https://registry.yarnpkg.com/watchpack/-/watchpack-1.7.5.tgz#1267e6c55e0b9b5be44c2023aed5437a2c26c453"
   integrity sha512-9P3MWk6SrKjHsGkLT2KHXdQ/9SNkyoJbabxnKOoJepsvJjJG8uYTR3yTPxPQvNDI3w4Nz1xnE0TLHK4RIVe/MQ==
   dependencies:
+    chokidar "^3.4.1"
     graceful-fs "^4.1.2"
     neo-async "^2.5.0"
+    watchpack-chokidar2 "^2.0.1"
   optionalDependencies:
     chokidar "^3.4.1"
     watchpack-chokidar2 "^2.0.1"

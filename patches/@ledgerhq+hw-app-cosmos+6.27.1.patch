@@ -18,7 +18,7 @@ index 0317ca3..37ebc29 100644
          return_code: number | string;
      }>;
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js
-index 5673f54..5c20cee 100644
+index 5673f54..b18f78c 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.js
 @@ -101,8 +101,7 @@ var Cosmos = /** @class */ (function () {
@@ -41,13 +41,13 @@ index 5673f54..5c20cee 100644
 -            var bipPath, serializedPath, chunks, buffer, i, end, response;
 +            var serializedPath, chunks, buffer, i, end, response;
              var _this = this;
-             return __generator(this, function (_a) {                
+             return __generator(this, function (_a) {
 -                bipPath = BIPPath.fromString(path).toPathArray();
                  serializedPath = this.serializePath(bipPath);
                  chunks = [];
                  chunks.push(serializedPath);
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
-index 0317ca3..51d02f9 100644
+index 0317ca3..e66d990 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
 @@ -35,20 +35,20 @@ export default class Cosmos {
@@ -72,7 +72,7 @@ index 0317ca3..51d02f9 100644
      }>;
      foreach<T, A>(arr: T[], callback: (arg0: T, arg1: number) => Promise<A>): Promise<A[]>;
 -    sign(path: string, message: string): Promise<{
-+    sign(path: number[], message: string): Promise<{
++    sign(path: number[], message: string | Uint8Array): Promise<{
          signature: null | Buffer;
          return_code: number | string;
      }>;
@@ -114,7 +114,7 @@ index 2b17c6a..0fedab8 100644
                  chunks = [];
                  chunks.push(serializedPath);
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts b/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
-index b8f7f3d..a445ac9 100644
+index b8f7f3d..c0843f5 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
 @@ -65,7 +65,7 @@ export default class Cosmos {
@@ -137,7 +137,7 @@ index b8f7f3d..a445ac9 100644
    ): Promise<{
      publicKey: string;
      address: string;
-   }> {    
+   }> {
 -    const bipPath = BIPPath.fromString(path).toPathArray();
      const serializedPath = this.serializePath(bipPath);
      const data = Buffer.concat([this.serializeHRP(hrp), serializedPath]);
@@ -153,7 +153,7 @@ index b8f7f3d..a445ac9 100644
    ): Promise<{
      signature: null | Buffer;
      return_code: number | string;
-   }> {    
+   }> {
 -    const bipPath = BIPPath.fromString(path).toPathArray();
      const serializedPath = this.serializePath(bipPath);
      const chunks: Buffer[] = [];
