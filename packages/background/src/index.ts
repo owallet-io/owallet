@@ -32,9 +32,8 @@ import { ChainInfo } from '@owallet/types';
 import { RNG } from '@owallet/crypto';
 import { CommonCrypto } from './keyring';
 import { Notification } from './tx';
-import { LedgerOptions, TransportIniter } from './ledger/options';
+import { LedgerOptions } from './ledger/options';
 
-export { TransportIniter };
 
 export function init(
   router: Router,

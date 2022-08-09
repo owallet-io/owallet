@@ -1,10 +1,13 @@
-import type { TransportIniter } from '@owallet/background';
-import CosmosApp from '@ledgerhq/hw-app-cosmos/src/Cosmos';
+import CosmosApp from '@ledgerhq/hw-app-cosmos';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { signatureImport } from 'secp256k1';
 import { Buffer } from 'buffer';
 import { fromString } from 'bip32-path';
+
+import Transport from '@ledgerhq/hw-transport';
+
+export type TransportIniter = (...args: any[]) => Promise<Transport>;
 
 export enum LedgerInitErrorOn {
   Transport,
