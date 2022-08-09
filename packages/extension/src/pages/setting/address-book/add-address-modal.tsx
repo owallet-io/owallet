@@ -21,18 +21,31 @@ export const AddAddressModal: FunctionComponent<{
   memoConfig: MemoConfig;
   addressBookConfig: AddressBookConfig;
   index: number;
+  typeAddress?: string;
+  chainId: string;
 }> = observer(
-  ({ closeModal, recipientConfig, memoConfig, addressBookConfig, index }) => {
+  ({
+    closeModal,
+    recipientConfig,
+    memoConfig,
+    addressBookConfig,
+    index,
+    typeAddress
+  }) => {
     const intl = useIntl();
 
     const [name, setName] = useState('');
 
     useEffect(() => {
-      if (index >= 0) {
+      if (index >= 0 && typeAddress === 'Edit') {
         const data = addressBookConfig.addressBookDatas[index];
         setName(data.name);
         recipientConfig.setRawRecipient(data.address);
         memoConfig.setMemo(data.memo);
+      }else {
+        setName('');
+        recipientConfig.setRawRecipient('');
+        memoConfig.setMemo('');
       }
     }, [
       addressBookConfig.addressBookDatas,
@@ -69,7 +82,7 @@ export const AddAddressModal: FunctionComponent<{
             color: '#353945'
           }}
         >
-          {name ? 'Edit Address' : 'New Address'}
+          {typeAddress + ' Address'}
         </div>
         <form style={{ display: 'flex', flexDirection: 'column' }}>
           <Input
@@ -81,7 +94,7 @@ export const AddAddressModal: FunctionComponent<{
               setName(e.target.value);
             }}
           />
-          {/* <AddressInput
+          <AddressInput
             recipientConfig={recipientConfig}
             label={intl.formatMessage({ id: 'setting.address-book.address' })}
             disableAddressBook={true}
@@ -89,8 +102,7 @@ export const AddAddressModal: FunctionComponent<{
           <MemoInput
             memoConfig={memoConfig}
             label={intl.formatMessage({ id: 'setting.address-book.memo' })}
-          /> */}
-          {/* <div style={{ flex: 1 }} /> */}
+          />
           <div
             style={{
               display: 'flex'

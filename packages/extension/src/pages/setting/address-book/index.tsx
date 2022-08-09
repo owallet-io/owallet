@@ -79,10 +79,27 @@ export const AddressBookPage: FunctionComponent<{
             }
           }
     );
+    const [addressBookList, setAddressBookList] = useState(
+      addressBookConfig.addressBookDatas
+    );
+    const [search, setSearch] = useState('');
+    React.useEffect(() => {
+      if (search) {
+        setAddressBookList(
+          addressBookConfig.addressBookDatas.filter(
+            (add) => add.name.includes(search) || add.address.includes(search)
+          )
+        );
+      } else {
+        setAddressBookList(addressBookConfig.addressBookDatas);
+      }
+      return () => {};
+    }, [addressBookConfig?.addressBookDatas, search]);
 
     const [dropdownOpen, setOpen] = useState(false);
     const toggle = () => setOpen(!dropdownOpen);
 
+    const [typeAddress, setTypeAddress] = useState('Add');
     const [addAddressModalOpen, setAddAddressModalOpen] = useState(false);
     const [addAddressModalIndex, setAddAddressModalIndex] = useState(-1);
     const [modalMore, setModalMore] = useState(false);
@@ -107,7 +124,7 @@ export const AddressBookPage: FunctionComponent<{
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-
+            setTypeAddress('Edit');
             setAddAddressModalOpen(true);
             setAddAddressModalIndex(index);
           }}
@@ -203,6 +220,7 @@ export const AddressBookPage: FunctionComponent<{
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  setTypeAddress('Add');
                   setAddAddressModalOpen(true);
                 }}
                 style={{
@@ -222,12 +240,16 @@ export const AddressBookPage: FunctionComponent<{
               </div>
             </div>
           </div>
-          {/* <div>
+          <div>
             <Input
               type={'text'}
               styleInputGroup={{
                 display: 'flex',
                 flexDirection: 'row-reverse'
+              }}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
               }}
               placeholder={'Search Name/Address'}
               append={
@@ -246,9 +268,9 @@ export const AddressBookPage: FunctionComponent<{
                 </div>
               }
             />
-          </div> */}
+          </div>
           <div style={{ flex: '1 1 0', overflowY: 'auto' }}>
-            {addressBookConfig.addressBookDatas.map((data, i) => {
+            {addressBookList.map((data, i) => {
               return (
                 <PageButton
                   key={i.toString()}
@@ -299,6 +321,7 @@ export const AddressBookPage: FunctionComponent<{
               addressBookConfig={addressBookConfig}
               index={addAddressModalIndex}
               chainId={selectedChainId}
+              typeAddress={typeAddress}
             />
           </>
         ) : null}
