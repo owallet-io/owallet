@@ -212,7 +212,11 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               ) : null}
             </Label>
           ) : null}
-          <InputGroup>
+          <InputGroup
+            style={{
+              boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+            }}
+          >
             <Input
               className={classnames(
                 'form-control-alternative',
@@ -238,19 +242,24 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               autoComplete="off"
               placeholder={placeholder}
             />
-            {/* <div>
-              <Button
-                // className={styleAddressInput.addressBookButton}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  amountConfig.toggleIsMax();
+            <div
+              style={{ padding: 7.5, textAlign: 'center', cursor: 'pointer' }}
+              onClick={(e) => {
+                e.preventDefault();
+                amountConfig.toggleIsMax();
+              }}
+            >
+              <div
+                style={{
+                  width: 50,
+                  height: 28,
+                  backgroundColor: '#7664E4',
+                  borderRadius: 4
                 }}
-                // disabled={disabled}
               >
-                Max
-              </Button>
-            </div> */}
+                <span style={{ color: 'white', fontSize: 14 }}>MAX</span>
+              </div>
+            </div>
           </InputGroup>
           {errorText != null ? (
             <FormFeedback style={{ display: 'block', position: 'sticky' }}>

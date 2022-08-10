@@ -51,10 +51,19 @@ export const StakeView: FunctionComponent = observer(() => {
             }
           }
         );
-
-        history.replace('/');
+        history.push('/');
+        notification.push({
+          type: 'success',
+          placement: 'top-center',
+          duration: 5,
+          content: `Success`,
+          canDelete: true,
+          transition: {
+            duration: 0.25
+          }
+        });
       } catch (e) {
-        history.replace('/');
+        history.push('/');
         notification.push({
           type: 'warning',
           placement: 'top-center',
@@ -71,51 +80,51 @@ export const StakeView: FunctionComponent = observer(() => {
 
   return (
     <div>
-        <>
-          <div
-            className={classnames(styleStake.containerInner, styleStake.reward)}
-          >
-            <div className={styleStake.vertical}>
-              <p
-                className={classnames(
-                  'h4',
-                  'my-0',
-                  'font-weight-normal',
-                  styleStake.paragraphSub
-                )}
-              >
-                <FormattedMessage id="main.stake.message.pending-staking-reward" />
-              </p>
-              <p
-                className={classnames(
-                  'h2',
-                  'my-0',
-                  'font-weight-normal',
-                  styleStake.paragraphMain
-                )}
-              >
-                {stakableReward.shrink(true).maxDecimals(6).toString()}
-                {rewards.isFetching ? (
-                  <span>
-                    <i className="fas fa-spinner fa-spin" />
-                  </span>
-                ) : null}
-              </p>
-            </div>
-            <div style={{ flex: 1 }} />
-            {
-              <Button
-                className={styleStake.button}
-                size="sm"
-                disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
-                onClick={withdrawAllRewards}
-                data-loading={accountInfo.isSendingMsg === 'withdrawRewards'}
-              >
-                <FormattedMessage id="main.stake.button.claim-rewards" />
-              </Button>
-            }
+      <>
+        <div
+          className={classnames(styleStake.containerInner, styleStake.reward)}
+        >
+          <div className={styleStake.vertical}>
+            <p
+              className={classnames(
+                'h4',
+                'my-0',
+                'font-weight-normal',
+                styleStake.paragraphSub
+              )}
+            >
+              <FormattedMessage id="main.stake.message.pending-staking-reward" />
+            </p>
+            <p
+              className={classnames(
+                'h2',
+                'my-0',
+                'font-weight-normal',
+                styleStake.paragraphMain
+              )}
+            >
+              {stakableReward.shrink(true).maxDecimals(6).toString()}
+              {rewards.isFetching ? (
+                <span>
+                  <i className="fas fa-spinner fa-spin" />
+                </span>
+              ) : null}
+            </p>
           </div>
-        </>
+          <div style={{ flex: 1 }} />
+          {
+            <Button
+              className={styleStake.button}
+              size="sm"
+              disabled={!isRewardExist || !accountInfo.isReadyToSendMsgs}
+              onClick={withdrawAllRewards}
+              data-loading={accountInfo.isSendingMsg === 'withdrawRewards'}
+            >
+              <FormattedMessage id="main.stake.button.claim-rewards" />
+            </Button>
+          }
+        </div>
+      </>
     </div>
   );
 });

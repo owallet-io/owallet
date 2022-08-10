@@ -43,7 +43,7 @@ export const ExportPage: FunctionComponent<{
 
   const [loading, setLoading] = useState(false);
   const [keyRing, setKeyRing] = useState('');
-
+  const [showPass, setShowPass] = useState(false);
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
       password: ''
@@ -115,8 +115,12 @@ export const ExportPage: FunctionComponent<{
                 label={intl.formatMessage({
                   id: 'setting.export.input.password'
                 })}
+                typeInput={!showPass ? 'password' : 'text'}
                 styleInputGroup={{
                   boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+                }}
+                style={{
+                  boxShadow: 'none !important'
                 }}
                 placeholder="Enter your password"
                 name="password"
@@ -126,6 +130,20 @@ export const ExportPage: FunctionComponent<{
                     id: 'setting.export.input.password.error.required'
                   })
                 })}
+                append={
+                  <Button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    outline={true}
+                    disabled={false}
+                    style={{ boxShadow: 'none !important' }}
+                  >
+                    <img
+                      src={require('../../../public/assets/svg/eyes.svg')}
+                      alt="logo"
+                    />
+                  </Button>
+                }
               />
               <Button
                 type="submit"

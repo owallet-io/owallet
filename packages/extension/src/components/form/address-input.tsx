@@ -140,12 +140,12 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             content: {
               width: '330px',
               minWidth: '330px',
-              inset: "50% auto auto 50%",
+              inset: '50% auto auto 50%',
               // height: "524px",
               minHeight: 'unset',
               maxHeight: 'unset',
               border: '1px solid #FCFCFD',
-              borderRadius: '8px',
+              borderRadius: '8px'
             }
           }}
           isOpen={isAddressBookOpen}
@@ -165,7 +165,11 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               {label}
             </Label>
           ) : null}
-          <InputGroup>
+          <InputGroup
+            style={{
+              boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+            }}
+          >
             <Input
               id={inputId}
               className={classnames(
@@ -185,6 +189,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               <Button
                 className={styleAddressInput.addressBookButton}
                 type="button"
+                outline={true}
                 onClick={() => setIsAddressBookOpen(true)}
                 disabled={disabled}
               >

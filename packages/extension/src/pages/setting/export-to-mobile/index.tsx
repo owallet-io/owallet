@@ -72,7 +72,7 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
   const { keyRingStore } = useStore();
 
   const intl = useIntl();
-
+  const [showPass, setShowPass] = useState(false);
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
       password: ''
@@ -85,20 +85,31 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
     <div className={style.container}>
       <div
         style={{
+          fontSize: 24,
+          fontWeight: 500,
+          color: '#434193',
+          textAlign: 'center',
+          paddingBottom: 24
+        }}
+      >
+        Link OWallet
+      </div>
+      <div
+        style={{
           display: 'flex',
           padding: '16px',
-          background: '#FFFFFF',
-          border: '1px solid #9092B6',
-          borderRadius: '4px'
+          paddingBottom: '36px',
+          background: 'rgba(255, 184, 0, 0.08)',
+          borderRadius: '8px'
         }}
       >
         <img
           style={{
-            width: '32px',
-            height: '32px',
-            marginRight: '12px'
+            width: '22px',
+            height: '22px',
+            marginRight: '4px'
           }}
-          src={require('../../../public/assets/svg/info-mark.svg')}
+          src={require('../../../public/assets/svg/info.svg')}
           alt="info"
         />
         <div
@@ -109,34 +120,36 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
         >
           <h3
             style={{
-              marginBottom: '4px',
-              fontWeight: 'bold',
-              fontSize: '16px',
-              lineHeight: '22px',
-              color: '#32325D'
+              marginBottom: '9px',
+              fontWeight: 600,
+              fontSize: '14px',
+              lineHeight: '20px',
+              color: '#FFB800'
             }}
           >
-            Only scan on OWallet Mobile
+            Only scan on OWallet
           </h3>
           <div
             style={{
-              fontSize: '12px',
-              lineHeight: '16px',
-              color: '#32325D'
+              fontSize: '14px',
+              lineHeight: '20px',
+              color: '#FFB800'
             }}
           >
-            Scanning the QR code outside of OWallet Mobile can lead to loss of
-            funds
+            Scanning the QR code outside of OWallet can lead to loss of funds
           </div>
         </div>
       </div>
       <div style={{ flex: 1 }} />
       <img
         style={{
-          marginLeft: '100px',
-          marginRight: '100px'
+          marginLeft: '90px',
+          marginRight: '90px',
+          marginTop: '24px',
+          width: '132px',
+          height: '132px'
         }}
-        src={require('../../../public/assets/svg/export-to-mobile.svg')}
+        src={require('../../../public/assets/svg/qr-empty.svg')}
         alt="export-to-mobile"
       />
       <div
@@ -144,13 +157,16 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
           padding: '0 20px',
           textAlign: 'center',
           marginTop: '14px',
+          marginBottom: '28px',
           fontSize: '16px',
-          lineHeight: '22px'
+          lineHeight: '22px',
+          color: '#434193'
         }}
       >
-        Scan QR code to export accounts to OWallet Mobile
+        {/* Scan QR code to export accounts to OWallet Mobile */}
+        Enter password to Scan QR code
       </div>
-      {keyRingStore.multiKeyStoreInfo.length > 2 ? (
+      {/* {keyRingStore.multiKeyStoreInfo.length > 2 ? (
         <div
           style={{
             marginTop: '8px',
@@ -162,7 +178,7 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
         >
           The process may take several minutes
         </div>
-      ) : null}
+      ) : null} */}
       <div style={{ flex: 1 }} />
       <Form
         onSubmit={handleSubmit(async (data) => {
@@ -191,8 +207,12 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
             id: 'setting.export-to-mobile.input.password'
           })}
           name="password"
+          typeInput={!showPass ? 'password' : 'text'}
           styleInputGroup={{
-            border: '1px solid rgba(8, 4, 28, 0.12)'
+            boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+          }}
+          style={{
+            boxShadow: 'none !important'
           }}
           error={errors.password && errors.password.message}
           ref={register({
@@ -200,6 +220,20 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
               id: 'setting.export-to-mobile.input.password.error.required'
             })
           })}
+          append={
+            <Button
+              type="button"
+              onClick={() => setShowPass(!showPass)}
+              outline={true}
+              disabled={false}
+              style={{ boxShadow: 'none !important' }}
+            >
+              <img
+                src={require('../../../public/assets/svg/eyes.svg')}
+                alt="logo"
+              />
+            </Button>
+          }
         />
         <Button type="submit" color="primary" block data-loading={loading}>
           <FormattedMessage id="setting.export-to-mobile.button.confirm" />
@@ -351,32 +385,91 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
 
   return (
     <div className={style.container}>
-      <div style={{ flex: 1 }} />
+      <div
+        style={{
+          fontSize: 24,
+          fontWeight: 500,
+          color: '#434193',
+          textAlign: 'center',
+          paddingBottom: 24
+        }}
+      >
+        Link OWallet
+      </div>
       <div
         style={{
           display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center'
+          padding: '16px',
+          paddingBottom: '36px',
+          background: 'rgba(255, 184, 0, 0.08)',
+          borderRadius: '8px'
         }}
       >
-        <QRCode
-          size={150}
-          value={qrCodeData ? JSON.stringify(qrCodeData) : ''}
+        <img
+          style={{
+            width: '22px',
+            height: '22px',
+            marginRight: '4px'
+          }}
+          src={require('../../../public/assets/svg/info.svg')}
+          alt="info"
         />
         <div
           style={{
-            marginTop: '40px',
-            fontSize: '16px',
-            lineHeight: '22px',
-            textAlign: 'center',
-            color: '#172B4D'
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
-          Scan this QR code on OWallet Mobile to export your accounts.
+          <h3
+            style={{
+              marginBottom: '9px',
+              fontWeight: 600,
+              fontSize: '14px',
+              lineHeight: '20px',
+              color: '#FFB800'
+            }}
+          >
+            Only scan on OWallet
+          </h3>
+          <div
+            style={{
+              fontSize: '14px',
+              lineHeight: '20px',
+              color: '#FFB800'
+            }}
+          >
+            Scanning the QR code outside of OWallet can lead to loss of funds
+          </div>
         </div>
       </div>
       <div style={{ flex: 1 }} />
+      <div
+        style={{
+          marginLeft: '90px',
+          marginRight: '90px',
+          marginTop: '24px',
+          width: '132px',
+          height: '132px'
+        }}
+      >
+        <QRCode
+          size={130}
+          value={qrCodeData ? JSON.stringify(qrCodeData) : ''}
+        />
+      </div>
+      <div
+        style={{
+          padding: '0 20px',
+          textAlign: 'center',
+          marginTop: '14px',
+          marginBottom: '28px',
+          fontSize: '16px',
+          lineHeight: '22px',
+          color: '#434193'
+        }}
+      >
+        Scan this QR code on OWallet to export your accounts.
+      </div>
     </div>
   );
 });

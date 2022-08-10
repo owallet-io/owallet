@@ -24,6 +24,7 @@ export interface InputProps {
 
   append?: React.ReactElement;
   styleInputGroup?: CSSProperties;
+  typeInput?: any;
 }
 
 // eslint-disable-next-line react/display-name
@@ -31,7 +32,8 @@ export const Input = forwardRef<
   HTMLInputElement,
   InputProps & React.InputHTMLAttributes<HTMLInputElement>
 >((props, ref) => {
-  const { type, label, text, error, append , styleInputGroup } = props;
+  const { type, label, text, error, append, styleInputGroup, typeInput } =
+    props;
 
   const attributes = { ...props };
   delete attributes.className;
@@ -42,6 +44,8 @@ export const Input = forwardRef<
   delete attributes.error;
   delete attributes.children;
   delete attributes.append;
+  delete attributes.styleInputGroup;
+  delete attributes.typeInput;
 
   const [inputId] = useState(() => {
     const bytes = new Uint8Array(4);
@@ -64,7 +68,7 @@ export const Input = forwardRef<
             props.className,
             styleInput.input
           )}
-          type={type}
+          type={typeInput ?? type}
           innerRef={ref}
           {...attributes}
         />
