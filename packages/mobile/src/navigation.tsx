@@ -117,7 +117,7 @@ import { colors, spacing, typography } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
 import { useRoute } from '@react-navigation/core';
-import { TransferNFTScreen } from './screens/\btransfer-nft';
+import { TransferNFTScreen } from './screens/transfer-nft';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
