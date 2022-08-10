@@ -56,7 +56,13 @@ const sassRule = {
     }
   ]
 };
-const tsRule = { test: /\.tsx?$/, loader: 'ts-loader' };
+const tsRule = {
+  test: /\.tsx?$/,
+  loader: 'ts-loader',
+  options: {
+    allowTsInNodeModules: true
+  }
+};
 const fileRule = {
   test: /\.(svg|png|jpe?g|gif|woff|woff2|eot|ttf)$/i,
   use: [

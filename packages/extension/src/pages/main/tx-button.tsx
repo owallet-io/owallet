@@ -86,159 +86,164 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
 
     const history = useHistory();
 
-    const sendBtnRef = useRef<HTMLButtonElement>(null);
+  return (
+    <div className={styleTxButton.containerTxButton}>
+      <Modal
+        style={{
+          content: {
+            width: '330px',
+            minWidth: '330px',
+            minHeight: 'unset',
+            maxHeight: 'unset',
+            backgroundColor: '#29292d',
+            border: '1px solid #68687A',
+            borderRadius: '8px'
+          }
+        }}
+        isOpen={isDepositOpen}
+        onRequestClose={() => {
+          setIsDepositOpen(false);
+        }}
+      >
+        <DepositModal bech32Address={accountInfo.bech32Address} />
+      </Modal>
+      <Button
+        color=""
+        className={styleTxButton.button}
+        onClick={(e) => {
+          e.preventDefault();
 
-    return (
-      <div className={styleTxButton.containerTxButton}>
-        <Modal
-         
-          toggle={() => setIsDepositOpen(false)}
-          centered
-          isOpen={isDepositOpen}
-          style={{
-            margin: 25
-          }}
-        >
-          <ModalBody>
-            <DepositModal bech32Address={accountInfo.bech32Address} />
-          </ModalBody>
-        </Modal>
-        <Button
-          className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
-          outline
-          onClick={(e) => {
-            e.preventDefault();
-
-            setIsDepositOpen(true);
-          }}
-        >
-          <FormattedMessage id="main.account.button.receive" />
-        </Button>
-        {/*
+          setIsDepositOpen(true);
+        }}
+      >
+        <FormattedMessage id="main.account.button.receive" />
+      </Button>
+      {/*
         "Disabled" property in button tag will block the mouse enter/leave events.
         So, tooltip will not work as expected.
         To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
        */}
-        <Button
-          innerRef={sendBtnRef}
-          className={classnames(
-            styleTxButton.button,
-            {
-              disabled: !hasAssets
-            },
-            styleTxButton.btnSend
-          )}
-          data-loading={accountInfo.isSendingMsg === 'send'}
-          onClick={(e) => {
-            e.preventDefault();
+      <Button
+        innerRef={sendBtnRef}
+        className={classnames(styleTxButton.button, {
+          disabled: !hasAssets
+        })}
+        style={{ cursor: !hasAssets ? 'default' : 'pointer' }}
+        data-loading={accountInfo.isSendingMsg === 'send'}
+        onClick={(e) => {
+          e.preventDefault();
 
-            if (hasAssets) {
-              setHasSend(!hasSend);
-              // history.push('/send');
-            }
-          }}
+          if (hasAssets) {
+            history.push('/send');
+          }
+        }}
+      >
+        <FormattedMessage id="main.account.button.send" />
+      </Button>
+      {!hasAssets ? (
+        <Tooltip
+          placement="bottom"
+          isOpen={tooltipOpen}
+          target={sendBtnRef}
+          toggle={() => setTooltipOpen((value) => !value)}
+          fade
         >
+          <FormattedMessage id="main.account.tooltip.no-asset" />
+        </Tooltip>
+      ) : null}
+    </div>
+  );
+});
+
+export const TxButtonEvmView: FunctionComponent = observer(() => {
+  const { accountStore, chainStore, queriesStore } = useStore();
+
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
+  // const queryBalances = queries.queryBalances.getQueryBech32Address(
+  //   accountInfo.bech32Address
+  // );
+
+  const [isDepositOpen, setIsDepositOpen] = useState(false);
+
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const history = useHistory();
+
+  const sendBtnRef = useRef<HTMLButtonElement>(null);
+
+  if (!accountInfo.evmosHexAddress) return null;
+
+  const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
+    accountInfo.evmosHexAddress
+  ).balance;
+
+  const hasAssets =
+    parseFloat(evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()) >
+    0;
+
+  return (
+    <div className={styleTxButton.containerTxButton}>
+      <Modal
+        style={{
+          content: {
+            width: '330px',
+            minWidth: '330px',
+            minHeight: 'unset',
+            maxHeight: 'unset'
+          }
+        }}
+        isOpen={isDepositOpen}
+        onRequestClose={() => {
+          setIsDepositOpen(false);
+        }}
+      >
+        <DepositModal bech32Address={accountInfo.bech32Address} />
+      </Modal>
+      <Button
+        className={styleTxButton.button}
+        color="primary"
+        outline
+        onClick={(e) => {
+          e.preventDefault();
+
+          setIsDepositOpen(true);
+        }}
+      >
+        <FormattedMessage id="main.account.button.receive" />
+      </Button>
+      {/*
+        "Disabled" property in button tag will block the mouse enter/leave events.
+        So, tooltip will not work as expected.
+        To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
+       */}
+      <Button
+        innerRef={sendBtnRef}
+        className={classnames(styleTxButton.button, {
+          disabled: !hasAssets
+        })}
+        style={{ cursor: !hasAssets ? 'default' : 'pointer' }}
+        color="primary"
+        data-loading={accountInfo.isSendingMsg === 'send'}
+        onClick={(e) => {
+          e.preventDefault();
+
+          if (hasAssets) {
+            history.push('/send-evm');
+          }
+        }}
+      >
+        <span>
           <FormattedMessage id="main.account.button.send" />
-        </Button>
-        {!hasAssets ? (
-          <Tooltip
-            placement="bottom"
-            isOpen={tooltipOpen}
-            target={sendBtnRef}
-            toggle={() => setTooltipOpen((value) => !value)}
-            fade
-          >
-            <FormattedMessage id="main.account.tooltip.no-asset" />
-          </Tooltip>
-        ) : null}
-      </div>
-    );
-  }
-);
-
-export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
-  () => {
-    const { accountStore, chainStore, queriesStore } = useStore();
-
-    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const queries = queriesStore.get(chainStore.current.chainId);
-    // const queryBalances = queries.queryBalances.getQueryBech32Address(
-    //   accountInfo.bech32Address
-    // );
-
-    const [isDepositOpen, setIsDepositOpen] = useState(false);
-
-    const [tooltipOpen, setTooltipOpen] = useState(false);
-
-    const history = useHistory();
-
-    const sendBtnRef = useRef<HTMLButtonElement>(null);
-
-    if (!accountInfo.evmosHexAddress) return null;
-
-    const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-      accountInfo.evmosHexAddress
-    ).balance;
-
-    const hasAssets =
-      parseFloat(
-        evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()
-      ) > 0;
-
-    return (
-      <div className={styleTxButton.containerTxButton}>
-        <Modal
-          toggle={() => setIsDepositOpen(false)}
-          centered
-          isOpen={isDepositOpen}
-          // style={{
-          //   content: {
-          //     width: '330px',
-          //     minWidth: '330px',
-          //     minHeight: 'unset',
-          //     maxHeight: 'unset'
-          //   }
-          // }}
-          // isOpen={isDepositOpen}
-          // onRequestClose={() => {
-          //   setIsDepositOpen(false);
-          // }}
-        >
-          <DepositModal bech32Address={accountInfo.bech32Address} />
-        </Modal>
-        <Button
-          className={classnames(styleTxButton.button, styleTxButton.btnReceive)}
-          outline
-          onClick={(e) => {
-            e.preventDefault();
-
-            setIsDepositOpen(true);
-          }}
-        >
-          <FormattedMessage id="main.account.button.receive" />
-        </Button>
-        {/*
-        "Disabled" property in button tag will block the mouse enter/leave events.
-        So, tooltip will not work as expected.
-        To solve this problem, don't add "disabled" property to button tag and just add "disabled" class manually.
-       */}
-        <Button
-          innerRef={sendBtnRef}
-          className={classnames(
-            styleTxButton.button,
-            {
-              disabled: !hasAssets
-            },
-            styleTxButton.btnSend
-          )}
-          data-loading={accountInfo.isSendingMsg === 'send'}
-          onClick={(e) => {
-            e.preventDefault();
-
-            if (hasAssets) {
-              history.push('/send');
-            }
-          }}
+        </span>
+      </Button>
+      {!hasAssets ? (
+        <Tooltip
+          placement="bottom"
+          isOpen={tooltipOpen}
+          target={sendBtnRef}
+          toggle={() => setTooltipOpen((value) => !value)}
+          fade
         >
           <FormattedMessage id="main.account.button.send" />
         </Button>

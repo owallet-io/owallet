@@ -29,10 +29,9 @@ import {
 } from './types';
 import { ChainInfo } from '@owallet/types';
 import { Env, OWalletError } from '@owallet/router';
-
 import { Buffer } from 'buffer';
 import { ChainIdHelper } from '@owallet/cosmos';
-
+import PRE from 'proxy-recrypt-js';
 import { Wallet } from '@ethersproject/wallet';
 import * as BytesUtils from '@ethersproject/bytes';
 import { ETH } from '@tharsis/address-converter';
@@ -218,8 +217,8 @@ export class KeyRing {
 
     return this.keyStore.coinTypeForChain
       ? this.keyStore.coinTypeForChain[
-          ChainIdHelper.parse(chainId).identifier
-        ] ?? defaultCoinType
+      ChainIdHelper.parse(chainId).identifier
+      ] ?? defaultCoinType
       : defaultCoinType;
   }
 
@@ -465,7 +464,7 @@ export class KeyRing {
     return (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-        ChainIdHelper.parse(chainId).identifier
+      ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     );
   }
@@ -478,7 +477,7 @@ export class KeyRing {
     if (
       this.keyStore.coinTypeForChain &&
       this.keyStore.coinTypeForChain[
-        ChainIdHelper.parse(chainId).identifier
+      ChainIdHelper.parse(chainId).identifier
       ] !== undefined
     ) {
       throw new Error('Coin type already set');
@@ -842,6 +841,66 @@ export class KeyRing {
     }
   }
 
+  public async signProxyDecryptionData(
+    chainId: string,
+    message: object
+  ): Promise<object> {
+    if (this.status !== KeyRingStatus.UNLOCKED) {
+      throw new Error('Key ring is not unlocked');
+    }
+
+    if (!this.keyStore) {
+      throw new Error('Key Store is empty');
+    }
+
+    const privKey = this.loadPrivKey(60);
+    const ethWallet = new Wallet(privKey.toBytes());
+    const privKeyHex = ethWallet.privateKey.slice(2);
+    const decryptedData = PRE.decryptData(privKeyHex, message[0]);
+    return {
+      decryptedData
+    };
+  }
+
+  // thang7
+  public async signProxyReEncryptionData(
+    chainId: string,
+    message: object
+  ): Promise<object> {
+    if (this.status !== KeyRingStatus.UNLOCKED) {
+      throw new Error('Key ring is not unlocked');
+    }
+
+    if (!this.keyStore) {
+      throw new Error('Key Store is empty');
+    }
+
+    const privKey = this.loadPrivKey(60);
+    const ethWallet = new Wallet(privKey.toBytes());
+    const privKeyHex = ethWallet.privateKey.slice(2);
+    const rk = PRE.generateReEncrytionKey(privKeyHex, message[0]);
+
+    return {
+      rk
+    };
+  }
+
+  public async getPublicKey(chainId: string): Promise<string> {
+    if (this.status !== KeyRingStatus.UNLOCKED) {
+      throw new Error('Key ring is not unlocked');
+    }
+
+    if (!this.keyStore) {
+      throw new Error('Key Store is empty');
+    }
+
+    const privKey = this.loadPrivKey(60);
+    const ethWallet = new Wallet(privKey.toBytes());
+    const pubKeyHex = ethWallet.publicKey.slice(2);
+
+    return pubKeyHex;
+  }
+
   public signEthereumTypedData<
     V extends SignTypedDataVersion,
     T extends MessageTypes
@@ -856,34 +915,38 @@ export class KeyRing {
     chainId: string;
     defaultCoinType: number;
   }): ECDSASignature {
-    this.validateVersion(version);
-    if (!typedMessage) {
-      throw new Error('Missing data parameter');
-    }
+    try {
+      this.validateVersion(version);
+      if (!typedMessage) {
+        throw new Error('Missing data parameter');
+      }
 
-    const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
-    if (coinType !== 60) {
-      throw new Error(
-        'Invalid coin type passed in to Ethereum signing (expected 60)'
-      );
-    }
+      const coinType = this.computeKeyStoreCoinType(chainId, defaultCoinType);
+      if (coinType !== 60) {
+        throw new Error(
+          'Invalid coin type passed in to Ethereum signing (expected 60)'
+        );
+      }
 
-    const privateKey = this.loadPrivKey(coinType).toBytes();
+      const privateKey = this.loadPrivKey(coinType).toBytes();
 
-    const messageHash =
-      version === SignTypedDataVersion.V1
-        ? this._typedSignatureHash(typedMessage as TypedDataV1)
-        : this.eip712Hash(
+      const messageHash =
+        version === SignTypedDataVersion.V1
+          ? this._typedSignatureHash(typedMessage as TypedDataV1)
+          : this.eip712Hash(
             typedMessage as TypedMessage<T>,
             version as SignTypedDataVersion.V3 | SignTypedDataVersion.V4
           );
-    console.log(
-      '🚀 ~ file: keyring.ts ~ line 868 ~ KeyRing ~ messageHash',
-      messageHash
-    );
-    const sig = ecsign(messageHash, Buffer.from(privateKey));
-    console.log('🚀 ~ file: keyring.ts ~ line 876 ~ KeyRing ~ sig', sig);
-    return sig;
+      console.log(
+        '🚀 ~ file: keyring.ts ~ line 868 ~ KeyRing ~ messageHash',
+        messageHash
+      );
+      const sig = ecsign(messageHash, Buffer.from(privateKey));
+      console.log('🚀 ~ file: keyring.ts ~ line 876 ~ KeyRing ~ sig', sig);
+      return sig;
+    } catch (error) {
+      console.log("Error on sign typed data: ", error);
+    }
   }
 
   /**
@@ -965,6 +1028,7 @@ export class KeyRing {
         )
       );
     }
+
     return keccak(Buffer.concat(parts));
   }
 
@@ -1098,8 +1162,7 @@ export class KeyRing {
     primaryType: string,
     types: Record<string, MessageTypeProperty[]>
   ): Buffer {
-    // @ts-ignore
-    return keccak(this.encodeType(primaryType, types));
+    return keccak(Buffer.from(this.encodeType(primaryType, types)));
   }
 
   private encodeType(
@@ -1199,7 +1262,7 @@ export class KeyRing {
   ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    if (this.password == '') {
+    if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
       throw new OWalletError(
         'keyring',
         141,
@@ -1231,7 +1294,7 @@ export class KeyRing {
   ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    if (this.password == '') {
+    if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
       throw new OWalletError(
         'keyring',
         141,
@@ -1263,33 +1326,45 @@ export class KeyRing {
   ): Promise<{
     multiKeyStoreInfo: MultiKeyStoreInfoWithSelected;
   }> {
-    if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
-      throw new OWalletError(
-        'keyring',
-        141,
-        'Key ring is locked or not initialized'
+    try {
+      if (this.status !== KeyRingStatus.UNLOCKED || this.password == '') {
+        throw new OWalletError(
+          'keyring',
+          141,
+          'Key ring is locked or not initialized'
+        );
+      }
+      console.log("HERE")
+
+      // Get public key first
+      const publicKey = await this.ledgerKeeper.getPublicKey(env, bip44HDPath);
+
+      console.log(publicKey, 'pubkey hre')
+
+      const keyStore = await KeyRing.CreateLedgerKeyStore(
+        this.rng,
+        this.crypto,
+        kdf,
+        publicKey,
+        this.password,
+        await this.assignKeyStoreIdMeta(meta),
+        bip44HDPath
       );
+
+      console.log(keyStore, 'keystore here')
+
+      this.multiKeyStore.push(keyStore);
+
+      await this.save();
+
+      console.log(this.getMultiKeyStoreInfo,'multi here')
+      return {
+        multiKeyStoreInfo: this.getMultiKeyStoreInfo()
+      };
+    } catch (error) {
+      console.log('Error in add ledger key: ', error);
+      throw new Error(error);
     }
-
-    // Get public key first
-    const publicKey = await this.ledgerKeeper.getPublicKey(env, bip44HDPath);
-
-    const keyStore = await KeyRing.CreateLedgerKeyStore(
-      this.rng,
-      this.crypto,
-      kdf,
-      publicKey,
-      this.password,
-      await this.assignKeyStoreIdMeta(meta),
-      bip44HDPath
-    );
-
-    this.multiKeyStore.push(keyStore);
-
-    await this.save();
-    return {
-      multiKeyStoreInfo: this.getMultiKeyStoreInfo(),
-    };
   }
 
   public async changeKeyStoreFromMultiKeyStore(index: number): Promise<{
@@ -1330,8 +1405,8 @@ export class KeyRing {
         bip44HDPath: keyStore.bip44HDPath,
         selected: this.keyStore
           ? KeyRing.getKeyStoreId(keyStore) ===
-            KeyRing.getKeyStoreId(this.keyStore)
-          : false,
+          KeyRing.getKeyStoreId(this.keyStore)
+          : false
       });
     }
 

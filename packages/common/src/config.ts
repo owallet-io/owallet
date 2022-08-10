@@ -161,7 +161,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Oraiscan',
       txUrl: 'https://scan.orai.io/txs/{txHash}',
       accountUrl: 'https://scan.orai.io/account/{address}'
-    }
+    },
     // beta: true // use v1beta1
   },
   {
@@ -198,7 +198,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Oraiscan',
       txUrl: 'https://testnet.scan.orai.io/txs/{txHash}',
       accountUrl: 'https://testnet.scan.orai.io/account/{address}'
-    }
+    },
     // beta: true // use v1beta1
   },
   {
@@ -318,7 +318,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rpc: 'https://tendermint1.kawaii.global',
     rest: 'https://endpoint1.kawaii.global',
     chainId: '0x1ae6',
-    networkType: 'evm',
+    networkType: "evm",
     chainName: 'Kawaiiverse',
     stakeCurrency: {
       coinDenom: 'ORAIE',
@@ -347,7 +347,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // rpc: 'https://ethrpc-balcony-testnet.orai.us/',
     rest: 'https://ethrpc-balcony-testnet.orai.us/',
     chainId: '0xa2c2a',
-    networkType: 'evm',
+    networkType: "evm",
     coinType: 60,
     chainName: 'Balcony Subnet EVM',
     stakeCurrency: {
@@ -355,8 +355,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'usdc',
       coinDecimals: 18,
       coinGeckoId: 'usd-coin',
-      coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
+      coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
     },
     bip44: {
       coinType: 60
@@ -368,9 +367,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'usdc',
         coinDecimals: 18,
         coinGeckoId: 'usd-coin',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
-      }
+        coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+      },
     ],
     feeCurrencies: [
       {
@@ -378,9 +376,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinMinimalDenom: 'usdc',
         coinDecimals: 18,
         coinGeckoId: 'usd-coin',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
-      }
+        coinImageUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png",
+      },
     ],
     gasPriceStep: {
       low: 0,
@@ -400,8 +397,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'orain',
       coinDecimals: 18,
       coinGeckoId: 'orain',
-      coinImageUrl:
-        'https://lh3.googleusercontent.com/twKOuHzO99pGFTECRdjBfBQrbSpB9z_T5cTRgEMkY7_a6NW7fa5KGxYhX3Rr7o0PyUiR_GUzZxwvDzydU2vKaLm3pfnW0njUHTbS8EQlg-Lu0dk_8sWxyge5aQww7BVl8rpP5GOUvDgrDtCxiAu3Wgl4ET3BF76CrIKzee8bkdEoACYaFBQiX01yjB2LGf6DRR2x3CKWNySKV_Z0PnqOVOr9pE0M8cCYy3_CuHPK-GJL6QZa1pCafzt4TITaqbiwQRAlaGkIemntp-lFj6u-rgM8ArVBUddC3Rn9k6y1fdjprRTYkxvVbiDkz7OZmgc_AjR5h12FjJurZMN28s5-bDBffDygccKkG_0eB8GEgYoWeOh2GkRrCAtrH7kcMoFkqLkS75yZDLgjPk2YWMgG3pfF8lXY04AUsHNBLO99l_2L-_k8vdbE1KZabgGC7LXNuX6hS_aVESl_vMwfWC530iIbZ6966YyJMh7auJjMeHTxJELyE7zcjnnu9ozS2sHwP6v3DrtRA6SoHFA7s9b2lvQHWxrisHHoRl_rscY7_q9yV_76isHogKlu1LWIJHalD65UcdIACKLT0HuID2we9UADSbMyAvLMlEqmc_xx_E_4aHVNWt39mioUxVwpia_qVa63VZJcfjkJdIBXTfHqmFBLQkOmljJWR3kCmWggkY4krbU2fIAf8RB2Woc0vutQ5jedI5uV6lPs--7E6P_5ByqzYcfcnS_fxDoXps088BEJ8uw5AY_EsTSz4jInk_kdR9ZBk-C9AiK4zA3sLCdcDYs559QGRXtjvQ=w108-h109-no?authuser=0'
+      coinImageUrl: 'https://lh3.googleusercontent.com/twKOuHzO99pGFTECRdjBfBQrbSpB9z_T5cTRgEMkY7_a6NW7fa5KGxYhX3Rr7o0PyUiR_GUzZxwvDzydU2vKaLm3pfnW0njUHTbS8EQlg-Lu0dk_8sWxyge5aQww7BVl8rpP5GOUvDgrDtCxiAu3Wgl4ET3BF76CrIKzee8bkdEoACYaFBQiX01yjB2LGf6DRR2x3CKWNySKV_Z0PnqOVOr9pE0M8cCYy3_CuHPK-GJL6QZa1pCafzt4TITaqbiwQRAlaGkIemntp-lFj6u-rgM8ArVBUddC3Rn9k6y1fdjprRTYkxvVbiDkz7OZmgc_AjR5h12FjJurZMN28s5-bDBffDygccKkG_0eB8GEgYoWeOh2GkRrCAtrH7kcMoFkqLkS75yZDLgjPk2YWMgG3pfF8lXY04AUsHNBLO99l_2L-_k8vdbE1KZabgGC7LXNuX6hS_aVESl_vMwfWC530iIbZ6966YyJMh7auJjMeHTxJELyE7zcjnnu9ozS2sHwP6v3DrtRA6SoHFA7s9b2lvQHWxrisHHoRl_rscY7_q9yV_76isHogKlu1LWIJHalD65UcdIACKLT0HuID2we9UADSbMyAvLMlEqmc_xx_E_4aHVNWt39mioUxVwpia_qVa63VZJcfjkJdIBXTfHqmFBLQkOmljJWR3kCmWggkY4krbU2fIAf8RB2Woc0vutQ5jedI5uV6lPs--7E6P_5ByqzYcfcnS_fxDoXps088BEJ8uw5AY_EsTSz4jInk_kdR9ZBk-C9AiK4zA3sLCdcDYs559QGRXtjvQ=w108-h109-no?authuser=0'
     },
     bip44: {
       coinType: 60
@@ -655,11 +651,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
   //   },
   // },
   {
-    rest: 'https://rpc.ankr.com/eth',
-    chainId: '0x01',
-    chainName: 'Ethereum',
+    rest: "https://rpc.ankr.com/eth",
+    chainId: "0x01",
+    chainName: "Ethereum",
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     coinType: 60,
     stakeCurrency: {
@@ -668,7 +664,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'ethereum',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
     },
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     networkType: 'evm',
@@ -679,30 +675,28 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'ethereum',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
-      }
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+      },
     ],
-    get feeCurrencies() {
-      return this.currencies;
-    },
+    get feeCurrencies() { return this.currencies },
     gasPriceStep: {
       low: 10000000000,
       average: 25000000000,
-      high: 40000000000
+      high: 40000000000,
     },
     features: ['isEvm'],
     txExplorer: {
       name: 'Etherscan',
       txUrl: 'https://etherscan.io/tx/{txHash}',
-      accountUrl: 'https://etherscan.io/address/{address}'
-    }
+      accountUrl: 'https://etherscan.io/address/{address}',
+    },
   },
   {
-    rest: 'https://bsc-dataseed1.ninicoin.io',
-    chainId: '0x38',
-    chainName: 'BNB Chain',
+    rest: "https://bsc-dataseed1.ninicoin.io",
+    chainId: "0x38",
+    chainName: "BNB Chain",
     bip44: {
-      coinType: 60
+      coinType: 60,
     },
     coinType: 60,
     stakeCurrency: {
@@ -711,7 +705,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'binancecoin',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
     },
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     networkType: 'evm',
@@ -722,7 +716,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'binancecoin',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
       },
       {
         coinDenom: 'ORAI',
@@ -731,7 +725,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
       },
       {
         coinDenom: 'AIRI',
@@ -740,7 +734,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'airight',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png',
       },
       {
         coinDenom: 'KWT',
@@ -749,8 +743,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'kawaii-islands',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
-      }
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png',
+      },
     ],
     feeCurrencies: [
       {
@@ -759,21 +753,21 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'binancecoin',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-      }
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
+      },
     ],
     gasPriceStep: {
       low: 10000000000,
       average: 25000000000,
-      high: 40000000000
+      high: 40000000000,
     },
     features: ['isEvm'],
     txExplorer: {
       name: 'Bsc Scan',
       txUrl: 'https://bscscan.com/tx/${txHash}',
-      accountUrl: 'https://bscscan.com/address/{address}'
-    }
-  }
+      accountUrl: 'https://bscscan.com/address/{address}',
+    },
+  },
   // {
   //   rest: 'https://bsc-dataseed1.ninicoin.io',
   //   evmRpc: 'https://bsc-dataseed1.ninicoin.io',

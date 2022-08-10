@@ -58,9 +58,7 @@ export class Address extends React.Component<AddressProps> {
             </div>
           }
         >
-          <span style={{ fontSize: 14 }}>
-            {Bech32Address.shortenAddress(children, this.props.maxCharacters)}
-          </span>
+          {Bech32Address.shortenAddress(children, this.props.maxCharacters)}
         </ToolTip>
       );
     } else {

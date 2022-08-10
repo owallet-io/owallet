@@ -65,17 +65,20 @@ export const ImportLedgerPage: FunctionComponent<{
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
+          console.log("REACH SUBMIT!!!!!!!!")
           try {
-            await registerConfig.createLedger(
+            const result = await registerConfig.createLedger(
               data.name,
               data.password,
               bip44Option.bip44HDPath
             );
+            console.log(result,'result create ledger ====')
             analyticsStore.setUserProperties({
               registerType: 'ledger',
               accountType: 'ledger'
             });
           } catch (e) {
+            console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e)
             alert(e.message ? e.message : e.toString());
             registerConfig.clear();
           }

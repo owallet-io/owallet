@@ -61,8 +61,7 @@ import { ValidatorListPage } from './pages/stake/validator-list';
 import { IntlProvider } from 'react-intl';
 import { SignEthereumPage } from './pages/sign/sign-ethereum';
 import { SendEvmPage } from './pages/send-evm';
-import { TokenPage } from './pages/token';
-import { Menu } from './pages/main/menu';
+import './ledger';
 
 window.owallet = new OWallet(
   manifest.version,

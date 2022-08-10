@@ -21,6 +21,7 @@ import { DenomHelper } from '@owallet/common';
 
 import { useLanguage } from '@owallet/common';
 import { Bech32Address } from '@owallet/cosmos';
+import { NetworkType } from '@owallet/types';
 
 const TokenView: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
@@ -232,9 +233,8 @@ const TokenView: FunctionComponent<{
 
 export const TokensView: FunctionComponent<{
   tokens: ObservableQueryBalanceInner[];
-  handleClickToken?: (token) => void;
-  coinMinimalDenom?: string;
-}> = observer(({ tokens, handleClickToken, coinMinimalDenom }) => {
+  networkType: NetworkType;
+}> = observer(({ tokens, networkType }) => {
   // const { chainStore, accountStore, queriesStore } = useStore();
 
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -261,63 +261,20 @@ export const TokensView: FunctionComponent<{
   return (
     <div className={styleToken.tokensContainer}>
       <h1 className={styleToken.title}>Tokens</h1>
-      <div>
-        <Input
-          type={'text'}
-          styleInputGroup={{
-            display: 'flex',
-            flexDirection: 'row-reverse'
-          }}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-          placeholder={'Search Chain Coin'}
-          append={
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: 50
-              }}
-            >
-              <img src={require('../../public/assets/img/light.svg')} alt="" />
-            </div>
-          }
-        />
-      </div>
-      {displayTokens
-        .filter(
-          (token) =>
-            token?.currency?.coinMinimalDenom?.includes(search) ||
-            token?.currency?.coinDenom?.includes(search) ||
-            token?.currency?.coinGeckoId?.includes(search)
-        )
-        .map((token, i) => {
-          return (
-            <TokenView
-              key={i.toString()}
-              balance={token}
-              active={
-                `?defaultDenom=${token.currency.coinMinimalDenom}` ==
-                coinMinimalDenom
-              }
-              onClick={() => {
-                if (handleClickToken) {
-                  handleClickToken(
-                    `?defaultDenom=${token.currency.coinMinimalDenom}`
-                  );
-                  return;
-                }
-                history.push({
-                  pathname: '/send',
-                  search: `?defaultDenom=${token.currency.coinMinimalDenom}`
-                });
-              }}
-            />
-          );
-        })}
+      {displayTokens.map((token, i) => {
+        return (
+          <TokenView
+            key={i.toString()}
+            balance={token}
+            onClick={() => {
+              history.push({
+                pathname: networkType === 'evm' ? '/send-evm' : '/send',
+                search: `?defaultDenom=${token.currency.coinMinimalDenom}`
+              });
+            }}
+          />
+        );
+      })}
     </div>
   );
 });

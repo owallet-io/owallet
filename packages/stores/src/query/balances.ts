@@ -82,6 +82,8 @@ export class ObservableQueryBalancesInner {
     if ('type' in currency && currency.type === 'secret20') {
       key = currency.coinMinimalDenom + '/' + currency.viewingKey;
     }
+    
+    const chainInfo = this.chainGetter.getChain(this.chainId);
 
     if (!this.balanceMap.has(key)) {
       runInAction(() => {
@@ -100,8 +102,6 @@ export class ObservableQueryBalancesInner {
             currency.coinMinimalDenom,
             currency
           );
-
-          console.log(balanceInner);
 
           if (balanceInner) {
             break;

@@ -243,9 +243,11 @@ export class KeyRingStore {
     kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
     const msg = new AddLedgerKeyMsg(kdf, meta, bip44HDPath);
-    this.multiKeyStoreInfo = (yield* toGenerator(
+    const result = (yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
-    )).multiKeyStoreInfo;
+    )).multiKeyStoreInfo
+    console.log("🚀 ~ file: keyring.ts ~ line 251 ~ KeyRingStore ~ result", result)
+    this.multiKeyStoreInfo = result;
   }
 
   @flow

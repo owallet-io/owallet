@@ -6,7 +6,7 @@ import {
   ContentScriptMessageRequester
 } from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
-import { init, ScryptParams } from '@owallet/background';
+import { init, Ledger, ScryptParams } from '@owallet/background';
 import scrypt from 'scrypt-js';
 import { Buffer } from 'buffer';
 
@@ -58,3 +58,6 @@ init(
 );
 
 router.listen(BACKGROUND_PORT);
+
+// @ts-ignore
+window.Ledger = Ledger;

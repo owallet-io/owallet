@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { Button } from 'reactstrap';
 
 import { HeaderLayout } from '../../../layouts';
@@ -64,13 +70,18 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
     parseInt(dataSign?.data?.data?.data?.estimatedGasLimit, 16)
   );
   const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
-  const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
+  const decimals = useRef(chainStore.current.feeCurrencies[0].coinDecimals);
 
   useEffect(() => {
     console.log('dataSign: ', dataSign);
     try {
       if (dataSign) {
-        chainStore.selectChain(dataSign?.data?.chainId);
+        decimals.current = dataSign?.data?.data?.data?.decimals;
+        let chainIdSign = dataSign?.data?.chainId;
+        if (!chainIdSign?.toString()?.startsWith('0x'))
+          chainIdSign = '0x' + Number(chainIdSign).toString(16);
+        chainStore.selectChain(chainIdSign);
+
         const estimatedGasLimit = parseInt(
           dataSign?.data?.data?.data?.estimatedGasLimit,
           16
@@ -78,14 +89,16 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
         const estimatedGasPrice = new Big(
           parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16)
         )
-          .div(new Big(10).pow(decimals))
-          .toFixed(decimals);
+          .div(new Big(10).pow(decimals.current))
+          .toFixed(decimals.current);
+
+        console.log(estimatedGasPrice, '');
 
         if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== 'NaN') {
           setGasPrice(estimatedGasPrice);
           gasConfig.setGas(estimatedGasLimit);
           feeConfig.setFee(
-            new Big(estimatedGasLimit).mul(estimatedGasPrice).toFixed(decimals)
+            new Big(estimatedGasLimit).mul(estimatedGasPrice).toFixed(decimals.current)
           );
         }
       }
@@ -93,6 +106,9 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
       console.log(error);
     }
   }, [dataSign]);
+
+  console.log(gasPrice, 'GAS PRICE!!!!!!!!!!!');
+  console.log(feeConfig.feeRaw, 'FEE RAWWWWWWWWW!!!!!!!!!!!');
 
   const memoConfig = useMemoConfig(chainStore, current.chainId);
 
@@ -240,7 +256,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                   <EthereumDetailsTab
                     dataSign={dataSign}
                     gasPrice={gasPrice}
-                    decimals={decimals}
+                    decimals={decimals.current}
                     // signDocHelper={signDocHelper}
                     memoConfig={memoConfig}
                     feeConfig={feeConfig}
@@ -315,15 +331,15 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                         '0x' +
                         parseInt(
                           new Big(parseFloat(feeConfig.feeRaw))
-                            .mul(new Big(10).pow(decimals))
+                            .mul(new Big(10).pow(decimals.current))
                             .div(parseFloat(gasConfig.gasRaw))
-                            .toFixed(decimals)
+                            .toFixed(decimals.current)
                         ).toString(16);
                       await signInteractionStore.approveEthereumAndWaitEnd({
                         gasPrice,
                         gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(
                           16
-                        )}`,
+                        )}`
                         // fees: `0x${parseFloat(feeConfig.feeRaw).toString(16)}`
                       });
                       // }

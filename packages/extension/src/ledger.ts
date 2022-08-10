@@ -1,13 +1,10 @@
-import CosmosApp from '@ledgerhq/hw-app-cosmos';
+import type { TransportIniter } from '@owallet/background';
+import CosmosApp from '@ledgerhq/hw-app-cosmos/src/Cosmos';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { signatureImport } from 'secp256k1';
 import { Buffer } from 'buffer';
 import { fromString } from 'bip32-path';
-
-import Transport from '@ledgerhq/hw-transport';
-
-export type TransportIniter = (...args: any[]) => Promise<Transport>;
 
 export enum LedgerInitErrorOn {
   Transport,
@@ -33,7 +30,7 @@ export class LedgerInitError extends Error {
 }
 
 export class Ledger {
-  constructor(private readonly cosmosApp: CosmosApp) {}
+  constructor(private readonly cosmosApp: CosmosApp) { }
 
   static async init(
     mode: 'webusb' | 'webhid',
@@ -44,9 +41,13 @@ export class Ledger {
 
     const transport = await transportIniter(...initArgs);
     try {
+      console.log("return ledger 1")
       const cosmosApp = new CosmosApp(transport);
+      console.log("return ledger 2")
       const ledger = new Ledger(cosmosApp);
+      console.log("return ledger 3")
       const versionResponse = await ledger.getVersion();
+      console.log("return ledger 4")
 
       // In this case, device is on screen saver.
       // However, it is almost same as that the device is not unlocked to user-side.
@@ -55,8 +56,10 @@ export class Ledger {
         throw new Error('Device is on screen saver');
       }
 
+      console.log("return ledger 5")
       return ledger;
     } catch (e) {
+      console.log(e)
       if (transport) {
         await transport.close();
       }
@@ -77,9 +80,12 @@ export class Ledger {
     if (!this.cosmosApp) {
       throw new Error('Cosmos App not initialized');
     }
-
+    console.log('getversion 1')
     const { version, device_locked, major, test_mode } =
       await this.cosmosApp.getAppConfiguration();
+
+      console.log('getversion 2')
+
 
     return {
       deviceLocked: device_locked,
@@ -130,18 +136,29 @@ export class Ledger {
 }
 
 let ledger: Ledger = null;
-
+let currentMode;
 const channelDevice = new BroadcastChannel('device');
+
+console.log(ledger,'LEDGER ?????????')
 
 channelDevice.addEventListener('message', async (event) => {
   const { method, args, requestId } = event.data;
   let response: any;
 
+  if (!ledger && currentMode) {
+    ledger = await Ledger.init(currentMode);
+  }
+
   switch (method) {
     case 'init':
-      const [mode, initArgs] = args;
-      ledger = await Ledger.init(mode, initArgs);
-      response = true;
+      try {
+        const [mode, initArgs] = args;
+        currentMode = mode;
+        ledger = await Ledger.init(mode, initArgs);
+        response = true;
+      } catch (error) {
+        response = false;
+      }
       break;
     case 'isWebHIDSupported':
       response = await Ledger.isWebHIDSupported();

@@ -167,7 +167,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
               ? totalPrice.toString()
               : total.shrink(true).maxDecimals(6).toString()}
           </div>
-          <div className={styleAsset.indicatorIcon}>
+          {/* <div className={styleAsset.indicatorIcon}>
             <React.Fragment>
               {balanceStakableQuery.isFetching ? (
                 <i className="fas fa-spinner fa-spin" />
@@ -187,14 +187,10 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                 </ToolTip>
               ) : null}
             </React.Fragment>
-          </div>
+          </div> */}
         </div>
-        <React.Suspense fallback={<div style={{ height: '150px' }} />}>
-          <img
-            src={require('../../public/assets/img/total-balance.svg')}
-            alt="total-balance"
-          />
-          {/* <LazyDoughnut
+        {/* <React.Suspense fallback={<div style={{ height: '150px' }} />}>
+          <LazyDoughnut
             data={{
               datasets: [
                 {
@@ -267,44 +263,8 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
                 }
               }
             }}
-          /> */}
-        </React.Suspense>
-      </div>
-      <div style={{ marginTop: '12px', width: '100%' }}>
-        <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: '#777E90' }}>
-            <span className="badge-dot badge badge-secondary">
-              <i className="bg-gray" />
-            </span>
-            <FormattedMessage id="main.account.chart.available-balance" />
-          </div>
-          <div style={{ minWidth: '20px' }} />
-          <div
-            className={styleAsset.value}
-            style={{
-              color: '#353945E5'
-            }}
-          >
-            {stakable.shrink(true).maxDecimals(6).toString()}
-          </div>
-        </div>
-        <div className={styleAsset.legend}>
-          <div className={styleAsset.label} style={{ color: '#777E90' }}>
-            <span className="badge-dot badge badge-secondary">
-              <i className="bg-gray" />
-            </span>
-            <FormattedMessage id="main.account.chart.staked-balance" />
-          </div>
-          <div style={{ minWidth: '20px' }} />
-          <div
-            className={styleAsset.value}
-            style={{
-              color: '#353945E5'
-            }}
-          >
-            {stakedSum.shrink(true).maxDecimals(6).toString()}
-          </div>
-        </div>
+          />
+        </React.Suspense> */}
       </div>
     </React.Fragment>
   );
@@ -327,30 +287,31 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
 
   const accountInfo = accountStore.getAccount(current.chainId);
 
+  // get total amount
+
+  let totalPrice;
+  let total;
+  if (accountInfo.evmosHexAddress) {
+    total = queries.evm.queryEvmBalance.getQueryBalance(
+      accountInfo.evmosHexAddress
+    )?.balance;
+    if (total) totalPrice = priceStore?.calculatePrice(total, fiatCurrency);
+  }
+
   // wait for account to be
   if (!accountInfo.evmosHexAddress) return null;
 
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(
-    accountInfo.evmosHexAddress
-  ).balance;
-
   return (
     <React.Fragment>
-      <div style={{ marginTop: '12px', width: '100%' }}>
-        <div
-          className={styleAsset.legend}
-          style={{ flexDirection: 'column', alignItems: 'center' }}
-        >
-          <div className={styleAsset.label}>
-            <img src={chainInfo.stakeCurrency.coinImageUrl} />
+      <div className={styleAsset.containerChart}>
+        <div className={styleAsset.centerText}>
+          <div className={styleAsset.big}>
+            <FormattedMessage id="main.account.chart.total-balance" />
           </div>
-          <div
-            className={styleAsset.value}
-            style={{
-              color: '#D6CCF4'
-            }}
-          >
-            {balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+          <div className={styleAsset.small}>
+            {totalPrice
+              ? totalPrice.toString()
+              : total?.trim(true).shrink(true).maxDecimals(6).toString()}
           </div>
         </div>
       </div>

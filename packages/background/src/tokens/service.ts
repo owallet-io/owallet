@@ -103,34 +103,40 @@ export class TokensService {
   async addToken(chainId: string, currency: AppCurrency) {
     try {
       const chainInfo = await this.chainsService.getChainInfo(chainId);
-  
+
       currency = await TokensService.validateCurrency(chainInfo, currency);
-  
+      // Update coinMinimalDenom here ?
+      currency = {
+        ...currency,
+        coinMinimalDenom: `${'type' in currency && currency.type}:${
+          'contractAddress' in currency && currency.contractAddress
+        }:${currency.coinDenom}`
+      };
+
       const chainCurrencies = await this.getTokens(chainId);
-  
+
       const isTokenForAccount =
         'type' in currency && currency.type === 'secret20';
       let isCurrencyUpdated = false;
-  
+
       for (const chainCurrency of chainCurrencies) {
         if (currency.coinMinimalDenom === chainCurrency.coinMinimalDenom) {
           if (!isTokenForAccount) {
             // If currency is already registered, do nothing.
             return;
           }
-  
+
           isCurrencyUpdated = true;
         }
       }
-  
+
       if (!isTokenForAccount) {
         try {
           const currencies = await this.getTokensFromChain(chainId);
           currencies.push(currency);
           await this.saveTokensToChain(chainId, currencies);
-          
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
       } else {
         const currencies = await this.getTokensFromChainAndAccount(chainId);
@@ -148,7 +154,7 @@ export class TokensService {
         }
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -389,7 +395,8 @@ export class TokensService {
     currency = await ERC20CurrencySchema.validateAsync(currency);
 
     // Validate the contract address.
-    if (!Web3.utils.isAddress(currency.contractAddress)) throw new Error("Not a valid erc20 address");
+    if (!Web3.utils.isAddress(currency.contractAddress))
+      throw new Error('Not a valid erc20 address');
     return currency;
   }
 

@@ -133,7 +133,7 @@ export class BackgroundTxService {
       const txHash = Buffer.from(txResponse.txhash, 'hex');
 
       const txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
-      txTracer.traceTx(txHash).then(tx => {
+      txTracer.traceTx(txHash).then((tx) => {
         txTracer.close();
         BackgroundTxService.processTxResultNotification(this.notification, tx);
       });
@@ -159,29 +159,24 @@ export class BackgroundTxService {
 
   async request(chainId: string, method: string, params: any[]): Promise<any> {
     let chainInfo: ChainInfoWithEmbed;
-    console.log('method in request: ', method);
+    console.log('method in request: ', method)
+    
     switch (method) {
       case 'eth_accounts':
       case 'eth_requestAccounts':
-        try {
-          chainInfo = await this.chainsService.getChainInfo(chainId);
-          if (chainInfo.coinType !== 60) return undefined;
-          const chainIdOrCoinType = params.length
-            ? parseInt(params[0])
-            : chainId; // default is cointype 60 for ethereum based
-          const key = await this.keyRingService.getKey(chainIdOrCoinType);
-          return [`0x${Buffer.from(key.address).toString('hex')}`];
-        } catch (error) {}
-        break;
+        chainInfo = await this.chainsService.getChainInfo(chainId);
+        if (chainInfo.coinType !== 60) return undefined;
+        const chainIdOrCoinType = params.length ? parseInt(params[0]) : chainId; // default is cointype 60 for ethereum based
+        const key = await this.keyRingService.getKey(chainIdOrCoinType);
+        return [`0x${Buffer.from(key.address).toString('hex')}`];
       case 'wallet_switchEthereumChain' as any:
-        try {
-          const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
-          chainInfo = isEvm
-            ? await this.chainsService.getChainInfo(inputChainId, 'evm')
-            : await this.chainsService.getChainInfo(inputChainId);
-          return chainInfo.chainId;
-        } catch (error) {}
-        break;
+        const { chainId: inputChainId, isEvm } = this.parseChainId(params[0]);
+        console.log('ChainId when switch: ', inputChainId);
+        chainInfo = isEvm
+          ? await this.chainsService.getChainInfo(inputChainId, 'evm')
+          : await this.chainsService.getChainInfo(inputChainId);
+
+        return chainInfo.chainId;
       default:
         chainInfo = await this.chainsService.getChainInfo(chainId);
         if (!chainInfo.rest)

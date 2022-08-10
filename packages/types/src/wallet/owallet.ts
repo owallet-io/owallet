@@ -145,6 +145,9 @@ export interface Ethereum {
   signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
   signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void>;
+  signProxyReEncryptionData(chainId: string, data: object): Promise<object>;
+  signProxyDecryptionData(chainId: string, data: object): Promise<object>;
+  getPublicKey(chainId: string): Promise<object>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }

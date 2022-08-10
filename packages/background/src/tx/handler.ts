@@ -10,10 +10,7 @@ export const getHandler: (service: BackgroundTxService) => Handler = (
       case SendTxMsg:
         return handleSendTxMsg(service)(env, msg as SendTxMsg);
       case RequestEthereumMsg:
-        return handleRequestEthereumMsg(service)(
-          env,
-          msg as RequestEthereumMsg
-        );
+        return handleRequestEthereumMsg(service)(env, msg as RequestEthereumMsg);
       default:
         throw new Error('Unknown msg type');
     }
@@ -22,7 +19,7 @@ export const getHandler: (service: BackgroundTxService) => Handler = (
 
 const handleSendTxMsg: (
   service: BackgroundTxService
-) => InternalHandler<SendTxMsg> = service => {
+) => InternalHandler<SendTxMsg> = (service) => {
   return async (env, msg) => {
     await service.permissionService.checkOrGrantBasicAccessPermission(
       env,
@@ -36,7 +33,7 @@ const handleSendTxMsg: (
 
 const handleRequestEthereumMsg: (
   service: BackgroundTxService
-) => InternalHandler<RequestEthereumMsg> = service => {
+) => InternalHandler<RequestEthereumMsg> = (service) => {
   return async (env, msg) => {
     await service.permissionService.checkOrGrantBasicAccessPermission(
       env,

@@ -39,6 +39,9 @@ import {
   RequestVerifyADR36AminoSignDoc,
   RequestSignEthereumTypedDataMsg,
   SignEthereumTypedDataObject,
+  RequestSignProxyReEncryptionDataMsg,
+  RequestSignProxyDecryptionDataMsg,
+  RequestPublicKeyMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -324,9 +327,37 @@ export class Ethereum implements IEthereum {
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void> {
-    const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
-    await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<any> {
+    try {
+      const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
+      const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      console.log("RESULT AFTER ALL!!!!!!!!!!!!")
+      return result;
+    } catch (error) {
+      console.log(error,'error on send message!!!!!!!!!!!!!!!');
+    }
+  }
+
+  async getPublicKey(chainId: string): Promise<object> {
+    const msg = new RequestPublicKeyMsg(chainId);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async signProxyDecryptionData(
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    const msg = new RequestSignProxyDecryptionDataMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  // thang2
+  async signProxyReEncryptionData(
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    const msg = new RequestSignProxyReEncryptionDataMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   // async sign()

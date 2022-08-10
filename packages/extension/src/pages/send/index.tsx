@@ -207,19 +207,21 @@ export const SendPage: FunctionComponent<{
                       tx,
                       'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                     );
-                    // notification.push({
-                    //   placement: 'top-center',
-                    //   type: tx?.status === '0x1' ? 'success' : 'danger',
-                    //   duration: 5,
-                    //   content:
-                    //     tx?.status === '0x1'
-                    //       ? `Transaction successful with tx: ${tx?.transactionHash}`
-                    //       : `Transaction failed with tx: ${tx?.transactionHash}`,
-                    //   canDelete: true,
-                    //   transition: {
-                    //     duration: 0.25
-                    //   }
-                    // });
+                    notification.push({
+                      placement: 'top-center',
+                      // type: tx?.status === '0x1' ? 'success' : 'danger',
+                      type: 'info',
+                      duration: 5,
+                      // content:
+                      //   tx?.status === '0x1'
+                      //     ? `Transaction successful with tx: ${tx?.transactionHash}`
+                      //     : `Transaction failed with tx: ${tx?.transactionHash}`,
+                      content: 'Transaction succeeded!',
+                      canDelete: true,
+                      transition: {
+                        duration: 0.25
+                      }
+                    });
                   }
                 }
               );

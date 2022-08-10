@@ -4,8 +4,8 @@ const callProxy = (method: string, args: any[] = []): Promise<any> =>
   new Promise((resolve) => {
     let requestId = Date.now();
     const handler = ({ data }) => {
-      // match requestId
       if (data.requestId !== requestId) return;
+      console.log(method, data);
       resolve(data.response);
       channelDevice.removeEventListener('message', handler);
     };
@@ -15,8 +15,10 @@ const callProxy = (method: string, args: any[] = []): Promise<any> =>
 
 export class Ledger {
   static async init(mode: string, initArgs: any[] = []): Promise<Ledger> {
-    await callProxy('init', [mode, initArgs]);
-    return new Ledger();
+    const resultInit = await callProxy('init', [mode, initArgs]);
+    if (resultInit)
+      return new Ledger();
+    else throw new Error("Device state invalid!")
   }
 
   getVersion(): Promise<{

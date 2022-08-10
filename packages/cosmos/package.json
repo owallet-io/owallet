@@ -12,7 +12,7 @@
     "clean": "rm -rf node_modules; rm -rf build",
     "build": "tsc",
     "build:proto": "mkdir -p build/stargate/proto/generated && cp ./src/stargate/proto/generated/* ./build/stargate/proto/generated",
-    "dev": "tsc -w",
+    "dev": "yarn build:proto && tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""

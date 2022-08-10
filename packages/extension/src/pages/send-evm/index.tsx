@@ -72,7 +72,7 @@ export const SendEvmPage: FunctionComponent = observer(() => {
     chainStore,
     current.chainId,
     accountInfo.msgOpts.send,
-    accountInfo.bech32Address,
+    accountInfo.evmosHexAddress,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
     chainStore.current.networkType === 'evm' &&

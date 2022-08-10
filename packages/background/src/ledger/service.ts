@@ -117,6 +117,10 @@ export class LedgerService {
     try {
       ledger = await this.initLedger(env);
       return await fn(ledger.ledger, ledger.retryCount);
+
+    }
+    catch (error) {
+      console.log("ERROR IN USE LEDGER ,", error)
     } finally {
       if (ledger) {
         await ledger.ledger.close();
@@ -187,9 +191,9 @@ export class LedgerService {
                 }
               )) as
                 | {
-                    abort?: boolean;
-                    initArgs?: any[];
-                  }
+                  abort?: boolean;
+                  initArgs?: any[];
+                }
                 | undefined;
 
               if (response?.abort) {

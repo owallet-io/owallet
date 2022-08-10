@@ -55,6 +55,7 @@ export class ExtensionRouter extends Router {
   ): Promise<Result> {
     try {
       const result = await this.handleMessage(message, sender);
+      console.log("🚀 ~ file: extension.ts ~ line 63 ~ ExtensionRouter ~ result", result)
       return {
         return: result
       };

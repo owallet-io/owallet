@@ -10,7 +10,6 @@
 
   .paragraph-main {
     line-height: 1.35;
-    color: $color-black;
   }
 
   .paragraph-sub {
@@ -25,11 +24,7 @@
 
   .button {
     min-width: 76px;
-    border-radius: 4px !important;
-    color: $color-white;
-    font-weight: 500;
-    background-color: $color !important;
-    padding: 6px 16px;
+    padding: 6px 10px 4px;
   }
 }
 

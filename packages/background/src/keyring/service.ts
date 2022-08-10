@@ -274,7 +274,6 @@ export class KeyRingService {
       );
     }
 
-    console.log('sign amino =======');
     const newSignDoc = (await this.interactionService.waitApprove(
       env,
       '/sign',
@@ -345,7 +344,8 @@ export class KeyRingService {
     if (signer !== bech32Address) {
       throw new Error('Signer mismatched');
     }
-    console.log('message hereeeeeeee ==============', msgOrigin);
+
+    
 
     const newSignDocBytes = (await this.interactionService.waitApprove(
       env,
@@ -390,12 +390,153 @@ export class KeyRingService {
   ): Promise<string> {
     const coinType = await this.chainsService.getChainCoinType(chainId);
     const rpc = (await this.chainsService.getChainInfo(chainId)).rest;
-    const decimals = (await this.chainsService.getChainInfo(chainId))
-      .feeCurrencies?.[0].coinDecimals;
 
     console.log(data, 'DATA IN HEREEEEEEEEEEEEEEEEEEEEEEEE');
 
     // TODO: add UI here so users can change gas, memo & fee
+    const newData = await this.estimateFeeAndWaitApprove(
+      env,
+      chainId,
+      rpc,
+      data
+    );
+
+    try {
+      const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
+        chainId,
+        coinType,
+        rpc,
+        newData
+      );
+
+      return rawTxHex;
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        'request-sign-ethereum-end',
+        {}
+      );
+    }
+  }
+
+  async requestSignEthereumTypedData(
+    env: Env,
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<ECDSASignature> {
+    console.log(
+      'in request sign ethereum typed data: ',
+      chainId,
+      data
+    );
+
+    try {
+      const rawTxHex = await this.keyRing.signEthereumTypedData({
+        typedMessage: data.typedMessage,
+        version: data.version,
+        chainId,
+        defaultCoinType: data.defaultCoinType
+      });
+
+      return rawTxHex;
+    } catch (e) {
+      console.log('e', e.message);
+    } finally {
+      this.interactionService.dispatchEvent(APP_PORT, 'request-sign-end', {});
+    }
+  }
+
+  async requestPublicKey(env: Env, chainId: string): Promise<string> {
+    console.log('in request sign proxy re-encryption data: ', chainId);
+
+    try {
+      const rawTxHex = await this.keyRing.getPublicKey(chainId);
+
+      return rawTxHex;
+    } catch (e) {
+      console.log('e', e.message);
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        'request-sign-ethereum-end',
+        {}
+      );
+    }
+  }
+
+  async requestSignProxyDecryptionData(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    console.log('in request sign proxy decryption data: ', chainId);
+
+    try {
+      const rpc = (await this.chainsService.getChainInfo(chainId)).rest;
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpc,
+        data
+      );
+      const rawTxHex = await this.keyRing.signProxyDecryptionData(
+        chainId,
+        newData
+      );
+
+      return rawTxHex;
+    } catch (e) {
+      console.log('e', e.message);
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        'request-sign-ethereum-end',
+        {}
+      );
+    }
+  }
+
+  // thang6
+  async requestSignProxyReEncryptionData(
+    env: Env,
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    console.log('in request sign proxy re-encryption data: ', chainId);
+
+    try {
+      const rpc = (await this.chainsService.getChainInfo(chainId)).rest;
+      const newData = await this.estimateFeeAndWaitApprove(
+        env,
+        chainId,
+        rpc,
+        data
+      );
+      const rawTxHex = await this.keyRing.signProxyReEncryptionData(
+        chainId,
+        newData
+      );
+
+      return rawTxHex;
+    } catch (e) {
+      console.log('e', e.message);
+    } finally {
+      this.interactionService.dispatchEvent(
+        APP_PORT,
+        'request-sign-ethereum-end',
+        {}
+      );
+    }
+  }
+
+  async estimateFeeAndWaitApprove(
+    env: Env,
+    chainId: string,
+    rpc: string,
+    data: object
+  ): Promise<object> {
+    const decimals = (await this.chainsService.getChainInfo(chainId))
+      .feeCurrencies?.[0].coinDecimals;
     const estimatedGasPrice = await request(rpc, 'eth_gasPrice', []);
     var estimatedGasLimit = '0x5028';
     try {
@@ -440,59 +581,7 @@ export class KeyRingService {
       gasLimit: 10000000
     };
 
-    const newData = { ...data, gasPrice, gasLimit, memo, fees };
-
-    try {
-      const rawTxHex = await this.keyRing.signAndBroadcastEthereum(
-        chainId,
-        coinType,
-        rpc,
-        newData
-      );
-
-      return rawTxHex;
-    } finally {
-      this.interactionService.dispatchEvent(
-        APP_PORT,
-        'request-sign-ethereum-end',
-        {}
-      );
-    }
-  }
-
-  async requestSignEthereumTypedData(
-    env: Env,
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<ECDSASignature> {
-    console.log(
-      'in request sign ethereum typed data: ',
-      chainId,
-      data.typedMessage,
-      data.version,
-      data.defaultCoinType
-    );
-
-    try {
-      // it stuck here in ledger
-      // console.log('ledger stuck');
-      const rawTxHex = await this.keyRing.signEthereumTypedData({
-        typedMessage: data.typedMessage,
-        version: data.version,
-        chainId,
-        defaultCoinType: data.defaultCoinType
-      });
-
-      return rawTxHex;
-    } catch (e) {
-      console.log('e', e.message);
-    } finally {
-      this.interactionService.dispatchEvent(
-        APP_PORT,
-        'request-sign-ethereum-end',
-        {}
-      );
-    }
+    return { ...data, gasPrice, gasLimit, memo, fees };
   }
 
   async verifyADR36AminoSignDoc(
