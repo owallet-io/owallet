@@ -1,0 +1,26 @@
+name: Create issue to Jira project
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-to-project:
+    name: Jira process
+    runs-on: ubuntu-latest
+    steps:
+      - uses: atlassian/gajira-login@master
+        name: Login to Jira
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - name: Create issue in Jira
+        uses: atlassian/gajira-create@master
+        with:
+          project: ${{ secrets.JIRA_PROJECT }}
+          issuetype: Bug
+          summary: |
+            ${{ github.event.issue.title }}
+          description: |
+            ${{ github.event.issue.body }}
