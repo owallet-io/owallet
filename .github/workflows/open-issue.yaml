@@ -23,4 +23,4 @@ jobs:
           summary: |
             ${{ github.event.issue.title }}
           description: |
-            ${{ github.event.issue.body }} - Please check in: ${{ github.event.issue.url }}
+            ${{ github.event.issue.body }} - Please check url: ${{ github.event.issue.url }}
