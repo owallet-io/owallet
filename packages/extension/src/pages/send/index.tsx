@@ -209,14 +209,11 @@ export const SendPage: FunctionComponent<{
                     );
                     notification.push({
                       placement: 'top-center',
-                      // type: tx?.status === '0x1' ? 'success' : 'danger',
-                      type: 'info',
+                      type: tx?.data ? 'success' : 'danger',
                       duration: 5,
-                      // content:
-                      //   tx?.status === '0x1'
-                      //     ? `Transaction successful with tx: ${tx?.transactionHash}`
-                      //     : `Transaction failed with tx: ${tx?.transactionHash}`,
-                      content: 'Transaction succeeded!',
+                      content: tx?.data
+                        ? `Transaction successful with tx: ${tx?.hash}`
+                        : `Transaction failed with tx: ${tx?.hash}`,
                       canDelete: true,
                       transition: {
                         duration: 0.25
