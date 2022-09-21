@@ -345,7 +345,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['ibc-go', 'stargate', 'isEvm']
   },
-
   {
     rpc: 'https://rpc-cosmoshub.keplr.app',
     rest: 'https://lcd-cosmoshub.keplr.app',
