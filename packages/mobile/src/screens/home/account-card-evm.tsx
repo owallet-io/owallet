@@ -33,8 +33,14 @@ import { NetworkErrorViewEVM } from './network-error-view-evm';
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    modalStore,
+    keyRingStore
+  } = useStore();
 
   const [evmAddress, setEvmAddress] = useState(null);
 
@@ -61,6 +67,9 @@ export const AccountCardEVM: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  const selected = keyRingStore.multiKeyStoreInfo.find(
+    keyStore => keyStore.selected
+  );
 
   useEffect(() => {
     setEvmAddress(account.evmosHexAddress);
@@ -313,7 +322,10 @@ export const AccountCardEVM: FunctionComponent<{
                   fontSize: 14
                 }}
               >
-                {`Coin type: ${chainStore.current.bip44.coinType}`}
+                {`Coin type: ${
+                  selected.bip44HDPath.coinType ??
+                  chainStore.current.bip44.coinType
+                }`}
               </Text>
             </View>
             <TouchableOpacity onPress={_onPressMyWallet}>

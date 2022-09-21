@@ -37,6 +37,45 @@ const CheckIcon: FunctionComponent<{
   );
 };
 
+export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
+  const bip44HDPath = keyStore.bip44HDPath
+    ? keyStore.bip44HDPath
+    : {
+        coinType: 0,
+        account: 0,
+        change: 0,
+        addressIndex: 0
+      };
+
+  switch (keyStore.type) {
+    case 'ledger':
+      return `Ledger - m/44'/118'/${bip44HDPath.account}'${
+        bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
+          ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
+          : ''
+      }`;
+    case 'mnemonic':
+      if (
+        bip44HDPath.account !== 0 ||
+        bip44HDPath.change !== 0 ||
+        bip44HDPath.addressIndex !== 0
+      ) {
+        return `Mnemonic - m/44'/-/${bip44HDPath.account}'${
+          bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
+            ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
+            : ''
+        }`;
+      }
+      return;
+    case 'privateKey':
+      // Torus key
+      if (keyStore.meta?.email) {
+        return keyStore.meta.email;
+      }
+      return;
+  }
+};
+
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
 
@@ -46,19 +85,19 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
+      keyStore => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'ledger'
+      keyStore => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'privateKey'
+      keyStore => keyStore.type === 'privateKey' && !keyStore.meta?.email
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 

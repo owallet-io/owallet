@@ -9,8 +9,7 @@ import { Copyable } from '../../components/copyable';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
-import { DownArrowIcon, SettingDashboardIcon } from '../../components/icon';
-import { useNavigation } from '@react-navigation/native';
+import { DownArrowIcon } from '../../components/icon';
 import {
   BuyIcon,
   DepositIcon,
@@ -20,20 +19,26 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
-import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { Bech32Address } from '@owallet/cosmos';
-import { Dec } from '@owallet/unit';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    modalStore,
+    keyRingStore
+  } = useStore();
+
+  const selected = keyRingStore.multiKeyStoreInfo.find(
+    keyStore => keyStore.selected
+  );
 
   const smartNavigation = useSmartNavigation();
-  const navigation = useNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -263,7 +268,10 @@ export const AccountCard: FunctionComponent<{
                     paddingVertical: spacing['6']
                   }}
                 >
-                  {`Coin type: ${chainStore.current.bip44.coinType}`}
+                  {`Coin type: ${
+                    selected.bip44HDPath.coinType ??
+                    chainStore.current.bip44.coinType
+                  }`}
                 </Text>
               </View>
 
