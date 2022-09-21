@@ -264,10 +264,7 @@ export const AccountCard: FunctionComponent<{
                     paddingVertical: spacing['6']
                   }}
                 >
-                  {`Coin type: ${
-                    selected?.bip44HDPath?.coinType ??
-                    chainStore?.current?.bip44?.coinType
-                  }`}
+                  {`Coin type: ${chainStore.current.bip44.coinType}`}
                 </Text>
               </View>
 

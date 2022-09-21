@@ -299,13 +299,11 @@ export const AccountCardEVM: FunctionComponent<{
               <Text
                 style={{
                   paddingLeft: spacing['6'],
-                  fontSize: 14
+                  fontWeight: '700',
+                  fontSize: 16
                 }}
               >
-                {`Coin type: ${
-                  selected?.bip44HDPath?.coinType ??
-                  chainStore?.current?.bip44?.coinType
-                }`}
+                {`Coin type: ${chainStore.current.bip44.coinType}`}
               </Text>
             </View>
             <TouchableOpacity onPress={_onPressMyWallet}>
