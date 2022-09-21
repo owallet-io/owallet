@@ -83,10 +83,10 @@ export const AccountCard: FunctionComponent<{
     }
   };
 
-  const _onPressNamespace = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(NamespaceModal(account));
-  };
+  // const _onPressNamespace = () => {
+  //   modalStore.setOpen();
+  //   modalStore.setChildren(NamespaceModal(account));
+  // };
   const _onPressMyWallet = () => {
     modalStore.setOpen();
     modalStore.setChildren(MyWalletModal());
@@ -269,7 +269,7 @@ export const AccountCard: FunctionComponent<{
                   }}
                 >
                   {`Coin type: ${
-                    selected.bip44HDPath.coinType ??
+                    selected?.bip44HDPath.coinType ??
                     chainStore.current.bip44.coinType
                   }`}
                 </Text>

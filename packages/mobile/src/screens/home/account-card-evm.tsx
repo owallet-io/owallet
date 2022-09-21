@@ -12,10 +12,8 @@ import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
-import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { DownArrowIcon, SettingDashboardIcon } from '../../components/icon';
-import { useNavigation } from '@react-navigation/native';
 import {
   BuyIcon,
   DepositIcon,
@@ -43,24 +41,6 @@ export const AccountCardEVM: FunctionComponent<{
   } = useStore();
 
   const [evmAddress, setEvmAddress] = useState(null);
-
-  const deterministicNumber = useCallback(chainInfo => {
-    const bytes = Hash.sha256(
-      Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
-    );
-    return (
-      (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
-    );
-  }, []);
-
-  const profileColor = useCallback(
-    chainInfo => {
-      const colors = ['red', 'green', 'purple', 'orange'];
-
-      return colors[deterministicNumber(chainInfo) % colors.length];
-    },
-    [deterministicNumber]
-  );
 
   const smartNavigation = useSmartNavigation();
   // const navigation = useNavigation();
@@ -323,7 +303,7 @@ export const AccountCardEVM: FunctionComponent<{
                 }}
               >
                 {`Coin type: ${
-                  selected.bip44HDPath.coinType ??
+                  selected?.bip44HDPath.coinType ??
                   chainStore.current.bip44.coinType
                 }`}
               </Text>
