@@ -314,7 +314,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       high: 0.00004
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ['stargate', 'ibc-transfer', 'cosmwasm','no-legacy-stdTx'],
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
@@ -345,6 +345,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['ibc-go', 'stargate', 'isEvm']
   },
+
   {
     rpc: 'https://rpc-cosmoshub.keplr.app',
     rest: 'https://lcd-cosmoshub.keplr.app',

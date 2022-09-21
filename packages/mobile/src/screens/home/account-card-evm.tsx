@@ -299,8 +299,7 @@ export const AccountCardEVM: FunctionComponent<{
               <Text
                 style={{
                   paddingLeft: spacing['6'],
-                  fontWeight: '700',
-                  fontSize: 16
+                  fontSize: 14
                 }}
               >
                 {`Coin type: ${chainStore.current.bip44.coinType}`}
