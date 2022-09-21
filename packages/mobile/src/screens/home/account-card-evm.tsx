@@ -1,14 +1,19 @@
-import React, { FunctionComponent, ReactElement, useCallback } from 'react';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
 import { View, ViewStyle, Image } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
-import { Copyable } from '../../components/copyable';
+import { AddressCopyable } from '../../components/address-copyable';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
-import { NetworkErrorView } from './network-error-view';
 import { DownArrowIcon, SettingDashboardIcon } from '../../components/icon';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -23,48 +28,66 @@ import { NamespaceModal, AddressQRCodeModal } from './components';
 import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { Bech32Address } from '@owallet/cosmos';
-import { Dec } from '@owallet/unit';
+import { NetworkErrorViewEVM } from './network-error-view-evm';
 
-export const AccountCard: FunctionComponent<{
+export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, priceStore, modalStore } =
     useStore();
 
+  const [evmAddress, setEvmAddress] = useState(null);
+
+  const deterministicNumber = useCallback(chainInfo => {
+    const bytes = Hash.sha256(
+      Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
+    );
+    return (
+      (bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24)) >>> 0
+    );
+  }, []);
+
+  const profileColor = useCallback(
+    chainInfo => {
+      const colors = ['red', 'green', 'purple', 'orange'];
+
+      return colors[deterministicNumber(chainInfo) % colors.length];
+    },
+    [deterministicNumber]
+  );
+
   const smartNavigation = useSmartNavigation();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
-  const stakable = queryStakable?.balance;
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-  const delegated = queryDelegated.total;
+  useEffect(() => {
+    setEvmAddress(account.evmosHexAddress);
+  }, [account?.evmosHexAddress]);
 
-  const queryUnbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
-  const unbonding = queryUnbonding.total;
+  // const queryStakable = queries.queryBalances.getQueryBech32Address(
+  //   account.bech32Address
+  // ).stakable;
+  // const stakable = queryStakable?.balance;
+  let totalPrice;
+  let total;
+  if (account.evmosHexAddress) {
+    total = queries.evm.queryEvmBalance.getQueryBalance(
+      account.evmosHexAddress
+    )?.balance;
 
-  const stakedSum = delegated.add(unbonding);
+    if (total) {
+      totalPrice = priceStore?.calculatePrice(total, 'USD');
+    }
+  }
+  // const data: [number, number] = [
+  //   parseFloat(stakable.toDec().toString()),
+  //   parseFloat(stakedSum.toDec().toString())
+  // ];
 
-  const total = stakable.add(stakedSum);
-
-  const totalPrice = priceStore.calculatePrice(total);
-
-  const data: [number, number] = [
-    parseFloat(stakable.toDec().toString()),
-    parseFloat(stakedSum.toDec().toString())
-  ];
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -120,10 +143,12 @@ export const AccountCard: FunctionComponent<{
       >
         <View
           style={{
-            display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            padding: spacing['8'],
+            paddingTop: spacing['6'],
+            paddingBottom: spacing['6'],
+            paddingLeft: spacing['12'],
+            paddingRight: spacing['12']
           }}
         >
           {icon}
@@ -133,7 +158,7 @@ export const AccountCard: FunctionComponent<{
               lineHeight: spacing['20'],
               color: colors['white'],
               paddingLeft: spacing['6'],
-              fontWeight: '700',
+              fontWeight: '700'
             }}
           >
             {name}
@@ -152,7 +177,7 @@ export const AccountCard: FunctionComponent<{
       <CardBody
         style={{
           paddingBottom: spacing['0'],
-          paddingTop: safeAreaInsets.top + 10,
+          paddingTop: safeAreaInsets.top + 10
         }}
       >
         <View
@@ -160,7 +185,7 @@ export const AccountCard: FunctionComponent<{
             height: 256,
             borderWidth: spacing['0.5'],
             borderColor: colors['gray-100'],
-            borderRadius: spacing['12'],
+            borderRadius: spacing['12']
           }}
         >
           <LinearGradient
@@ -170,8 +195,7 @@ export const AccountCard: FunctionComponent<{
             style={{
               borderTopLeftRadius: spacing['11'],
               borderTopRightRadius: spacing['11'],
-              height: 179,
-              backgroundColor: '#5E499A', //linear-gradient(112.91deg, #161532 0%, #5E499A 89.85%)
+              height: 179
             }}
           >
             <View
@@ -200,8 +224,8 @@ export const AccountCard: FunctionComponent<{
                 }}
               >
                 {totalPrice
-                  ? totalPrice.toString()
-                  : total.shrink(true).maxDecimals(6).toString()}
+                  ? totalPrice?.toString()
+                  : total?.shrink(true).maxDecimals(6).toString()}
               </Text>
             </View>
             <View
@@ -222,7 +246,13 @@ export const AccountCard: FunctionComponent<{
           <View
             style={{
               backgroundColor: colors['white'],
-              height: 165,
+              display: 'flex',
+              height: 75,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              paddingLeft: spacing['12'],
+              paddingRight: spacing['18'],
               borderBottomLeftRadius: spacing['11'],
               borderBottomRightRadius: spacing['11'],
               shadowColor: colors['gray-150'],
@@ -237,7 +267,7 @@ export const AccountCard: FunctionComponent<{
             <View
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <View
@@ -245,13 +275,13 @@ export const AccountCard: FunctionComponent<{
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
-                  paddingBottom: spacing['2'],
+                  paddingBottom: spacing['2']
                 }}
               >
                 <Image
                   style={{
                     width: spacing['26'],
-                    height: spacing['26'],
+                    height: spacing['26']
                   }}
                   source={require('../../assets/image/address_default.png')}
                   fadeDuration={0}
@@ -259,59 +289,54 @@ export const AccountCard: FunctionComponent<{
                 <Text
                   style={{
                     paddingLeft: spacing['6'],
-                    fontSize: 14,
-                    paddingVertical: spacing['6']
+                    fontWeight: '700',
+                    fontSize: 16
                   }}
                 >
-                  {`Coin type: ${chainStore.current.bip44.coinType}`}
+                  {account.name || '...'}
                 </Text>
               </View>
 
-              <Copyable
-                text={Bech32Address.shortenAddress(account.bech32Address, 22)}
+              <AddressCopyable
+                address={
+                  chainStore.current.networkType === 'cosmos'
+                    ? account.bech32Address
+                    : evmAddress
+                }
+                maxCharacters={22}
+                networkType={chainStore.current.networkType}
               />
+              {/* chainInfo.bip44.coinType */}
+              <Text
+                style={{
+                  paddingLeft: spacing['6'],
+                  fontWeight: '700',
+                  fontSize: 16
+                }}
+              >
+                {`Coin type: ${chainStore.current.bip44.coinType}`}
+              </Text>
             </View>
-            <TouchableOpacity
-              onPress={_onPressMyWallet}
-              disabled={stakable.toDec().lte(new Dec(0))}
-            >
+            <TouchableOpacity onPress={_onPressMyWallet}>
               <DownArrowIcon height={28} color={colors['gray-150']} />
             </TouchableOpacity>
           </View>
 
-          {queryStakable.isFetching ? (
+          {/* {queryStakable?.isFetching ? (
             <View
               style={{
                 position: 'absolute',
                 bottom: 50,
-                left: '50%',
+                left: '50%'
               }}
             >
               <LoadingSpinner color={colors['gray-150']} size={22} />
             </View>
-          ) : null}
+          ) : null} */}
         </View>
       </CardBody>
-      <View
-        style={{
-          alignItems: 'center',
-          position: 'absolute',
-          bottom: 40,
-          left: '8%',
-          zIndex: 999,
-          justifyContent: 'center'
-        }}
-      >
-        <TouchableOpacity
-          style={styles.containerBtn}
-          onPress={() => {
-            smartNavigation.navigateSmart('Transactions', {});
-          }}
-        >
-          <Text style={styles.textLoadMore}>{'Transactions history'}</Text>
-        </TouchableOpacity>
-      </View>
-      <NetworkErrorView />
+
+      {/* <NetworkErrorViewEVM /> */}
       <View style={{ height: 20 }} />
       {/* <CardBody>
         <View
@@ -338,13 +363,13 @@ export const AccountCard: FunctionComponent<{
               justifyContent: 'space-between',
               alignItems: 'center',
               paddingLeft: spacing['12'],
-              paddingRight: spacing['8'],
+              paddingRight: spacing['8']
             }}
           >
             <View
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <Text style={{ paddingBottom: spacing['6'] }}>Namespace</Text>
@@ -352,7 +377,7 @@ export const AccountCard: FunctionComponent<{
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <Image
@@ -370,7 +395,7 @@ export const AccountCard: FunctionComponent<{
                     fontSize: spacing['18'],
                     lineHeight: 26,
                     textAlign: 'center',
-                    color: colors['gray-900'],
+                    color: colors['gray-900']
                   }}
                 >
                   {account.name || 'Harris.orai'}
