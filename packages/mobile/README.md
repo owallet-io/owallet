@@ -1,7 +1,16 @@
 ## How to start
 
 ```bash
-# watch provider change in development mode
+# Install Pod for iOS build
+cd ios
+pod install
+```
+
+```bash
+# link provider to specific static server
+yarn link:provider ~/Projects/oraiswap-frontend/public/injected-provider.bundle.js
+
+# watch change
 yarn watch:provider
 
 # finally start hot-server

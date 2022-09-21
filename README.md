@@ -35,7 +35,13 @@ git clone https://github.com/oraichain/owallet
 yarn bootstrap
 ```
 
-3. Build it
+3. Clone packages/background
+
+```shell
+git submodule add --force https://github.com/oraichain/owallet-background.git packages/background
+```
+
+4. Build it
 
 ```shell
 yarn build 

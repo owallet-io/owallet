@@ -34,9 +34,9 @@ export const Transactions: FunctionComponent = () => {
       const res = await API.getHistory(
         {
           address: account.bech32Address,
-          offset: 0,
-          isRecipient,
-          isAll
+          page: page.current,
+          limit: 10,
+          type: indexChildren === 0 ? 'native' : 'cw20'
         },
         { baseURL: chainStore.current.rest }
       );
@@ -71,8 +71,6 @@ export const Transactions: FunctionComponent = () => {
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
         .then(tx => {
-          console.log('tx ===', tx);
-
           page.current = 1;
           setTimeout(() => {
             fetchData();
@@ -231,7 +229,6 @@ export const Transactions: FunctionComponent = () => {
             }}
             onPress={() => {
               page.current = 1;
-              setLoading(true);
               fetchData();
             }}
           />
