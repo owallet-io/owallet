@@ -1,12 +1,12 @@
 # This is a basic workflow to help you get started with Actions
 
-name: code-push
+name: injected-provider
 
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [master]
+    branches: [develop]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -29,14 +29,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      # - uses: sonarsource/sonarqube-scan-action@master
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-
       - uses: actions/cache@v2
         id: yarn-cache
         with:
@@ -45,48 +44,42 @@ jobs:
             ./node_modules/
           key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      - name: Checkout submodule repo
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      # Update references
-      - name: Git Sumbodule Update
-        working-directory: packages/background
-        run: |
-          git pull origin mobile
+            ${{ runner.os }}-yarn-   
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform --ignore-scripts
-      - name: Install mobile packages
+        run: yarn --ignore-platform --ignore-scripts      
+      - name: Install mobile packages        
         working-directory: packages/mobile
         run: yarn --silent
       - name: Build Libs
-        run: yarn build:libs
+        run: yarn build:libs      
       - name: Build provider
         working-directory: packages/mobile
         run: yarn build:provider
         env:
-          CI: false
-      - name: Deploy on AppCenter
+          CI: false      
+      - name: Deploy Firebase
         working-directory: packages/mobile
-
         run: |
-          yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-          yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+          yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}          
+          yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
+      # - name: deploy on AppCenter
+      #   working-directory: packages/mobile
+      #   run: |
+      #     yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+      #     yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: Success! comment=${{ github.event.head_commit.message }}
+            webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+            webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+            username: "GitBot"
+            message: Success! comment=${{ github.event.head_commit.message }}
       - name: Send discord message
         if: ${{ failure() }}
         uses: appleboy/discord-action@master
         with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+            webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+            webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+            username: "GitBot"
+            message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
