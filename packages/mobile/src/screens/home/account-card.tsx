@@ -265,7 +265,7 @@ export const AccountCard: FunctionComponent<{
                   }}
                 >
                   {`Coin type: ${
-                    selected.bip44HDPath.coinType ??
+                    selected?.bip44HDPath.coinType ??
                     chainStore.current.bip44.coinType
                   }`}
                 </Text>
