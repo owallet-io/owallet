@@ -247,7 +247,7 @@ export const AccountCardEVM: FunctionComponent<{
             style={{
               backgroundColor: colors['white'],
               display: 'flex',
-              height: 75,
+              height: 95,
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -310,8 +310,7 @@ export const AccountCardEVM: FunctionComponent<{
               <Text
                 style={{
                   paddingLeft: spacing['6'],
-                  fontWeight: '700',
-                  fontSize: 16
+                  fontSize: 14
                 }}
               >
                 {`Coin type: ${chainStore.current.bip44.coinType}`}
