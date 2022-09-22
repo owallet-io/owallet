@@ -66,7 +66,7 @@ jobs:
         run: yarn build:provider
         env:
           CI: false      
-      - name: deploy on AppCenter
+      - name: Deploy on AppCenter
         working-directory: packages/mobile
         run: |
           appcenter login --token ${{ secrets.CODEPUSH_TOKEN }}
