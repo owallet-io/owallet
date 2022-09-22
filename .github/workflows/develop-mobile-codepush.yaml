@@ -85,7 +85,9 @@ jobs:
         run: yarn build:libs
       - name: Build provider
         working-directory: packages/mobile
-        run: yarn build:provider
+        run: |
+          yarn build:provider
+          yarn add appcenter-cli
         env:
           CI: false
       - name: Deploy on AppCenter
