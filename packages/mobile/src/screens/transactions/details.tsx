@@ -232,8 +232,60 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     >
   >();
 
-  const { txhash, tx, timestamp, gas_used, gas_wanted, height, code }: any =
-    route.params?.item || {};
+  const { item, type } = route.params || {};
+
+  console.log('type', type);
+
+  const { tx_hash, tx, timestamp, gas_used, gas_wanted, height, code }: any =
+    item || {};
+
+  const amountDataCell = useCallback(() => {
+    let amount;
+
+    if (
+      item?.messages?.find(
+        msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
+      )
+    ) {
+      const msg = item?.messages?.find(msg => {
+        return getTxTypeNew(msg['@type']) === 'MsgRecvPacket';
+      });
+
+      const msgRec = JSON.parse(
+        Buffer.from(msg?.packet?.data, 'base64').toString('ascii')
+      );
+      amount = msgRec;
+      const port = item?.message?.packet?.destination_port;
+      const channel = item?.message?.packet?.destination_channel;
+      console.log('msgRec', msgRec);
+    } else if (
+      item?.messages?.find(msg => getTxTypeNew(msg['@type']) === 'MsgTransfer')
+    ) {
+      const rawLog = JSON.parse(item?.raw_log);
+      const rawLogParse = parseIbcMsgTransfer(rawLog);
+      const rawLogDenomSplit = rawLogParse?.denom?.split('/');
+      console.log('rawLogParse', rawLogParse);
+      amount = rawLog;
+    } else {
+      const type = getTxTypeNew(
+        item.messages[item?.messages?.length - 1]['@type'],
+        item?.raw_log,
+        item?.result
+      );
+      const msg = item?.messages?.find(
+        msg => getTxTypeNew(msg['@type']) === type
+      );
+
+      amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
+    }
+
+    return !amount.denom.startsWith('u')
+      ? `${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
+      : `${formatOrai(amount.amount ?? 0)} ${
+          amount.denom ? amount.denom?.substring(1) : ''
+        }`;
+  }, [item]);
+
   const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
   const { messages } = tx?.body || {};
   const { title, isPlus, amount, denom, unbond } = getTransactionValue({

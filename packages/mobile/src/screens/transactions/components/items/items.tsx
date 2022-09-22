@@ -28,10 +28,46 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
       {
         type: messages?.[0]?.['@type']
       }
-    ],
-    address,
-    logs: item.logs
-  });
+      const rawLog = JSON.parse(item?.raw_log);
+      const rawLogParse = parseIbcMsgTransfer(rawLog);
+      const rawLogDenomSplit = rawLogParse?.denom?.split('/');
+      console.log('rawLogParse', rawLogParse);
+      amount = rawLog;
+    } else {
+      const type = getTxTypeNew(
+        item?.messages[item?.messages?.length - 1]['@type'],
+        item?.raw_log,
+        item?.result
+      );
+      const msg = item?.messages?.find(
+        msg => getTxTypeNew(msg['@type']) === type
+      );
+
+      amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
+    }
+
+    return (
+      <Text
+        style={{
+          ...styles.textAmount,
+          marginTop: spacing['8'],
+          textTransform: 'uppercase'
+          // color:
+          //   amount == 0 || title === 'Received Token' || title === 'Reward'
+          //     : colors['red-500']
+        }}
+      >
+        {/* {amount == 0 || title === 'Received Token' || title === 'Reward'
+            ? '+'
+            : '-'} */}
+        {!amount.denom.startsWith('u')
+          ? `${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
+          : `${formatOrai(amount.amount ?? 0)} ${
+              amount.denom ? amount.denom?.substring(1) : ''
+            }`}
+      </Text>
+    );
+  }, [item]);
 
   const renderChildren = () => {
     return (
