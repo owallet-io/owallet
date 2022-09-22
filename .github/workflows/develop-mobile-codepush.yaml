@@ -87,6 +87,7 @@ jobs:
         working-directory: packages/mobile
         run: |
           yarn build:provider
+          yarn policies set-version 1.19.0
           yarn add appcenter-cli
         env:
           CI: false
