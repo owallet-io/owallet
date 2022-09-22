@@ -36,7 +36,7 @@ export const NotificationElement: FunctionComponent<
       fade={false}
       toggle={canDelete ? onDelete : undefined}
     >
-      <span className="alert-inner--text">{content}</span>
+      <span className="alert-inner--text" style={{ wordWrap: 'break-word'}}>{content}</span>
     </Alert>
   );
 };
