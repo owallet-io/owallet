@@ -47,13 +47,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Install Dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --ignore-platform --ignore-scripts
-      - name: Install mobile packages
-        working-directory: packages/mobile
-        run: yarn --silent
-
       - name: Checkout submodule repo
         uses: actions/checkout@v3
       - name: Check Submodule Name
@@ -65,6 +58,17 @@ jobs:
           fetch_depth: "50"
           pass_if_unchanged: true
           require_head: true
+
+      - name: Build background
+        working-directory: packages/background
+        run: yarn build
+
+      - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn --ignore-platform --ignore-scripts
+      - name: Install mobile packages
+        working-directory: packages/mobile
+        run: yarn --silent
 
       # - name: Pull packages/background
       #   working-directory: packages/background
