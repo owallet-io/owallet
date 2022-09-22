@@ -55,7 +55,7 @@ jobs:
         run: yarn --silent
 
       - name: Pull packages/background
-        working-directory: packages/mobile
+        working-directory: packages/background
         uses: actions/checkout@v3
         with:
           repository: oraichain/owallet-background
