@@ -51,8 +51,6 @@ jobs:
       - name: Install mobile packages        
         working-directory: packages/mobile
         run: yarn --silent
-      - name: Install appcenter-cli
-        run: yarn add appcenter-cli 
       - name: Pull packages/background
         working-directory: packages/background
         - uses: actions/checkout@v3
