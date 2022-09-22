@@ -53,17 +53,19 @@ jobs:
           submodules: true
       # Update references
       - name: Git Sumbodule Update
+        working-directory: packages/background
         run: |
-          git submodule sync
-      - name: Check Submodule Name
-        uses: jtmullen/submodule-branch-check-action@v1
-        with:
-          path: "packages/background"
-          branch: "mobile"
-          first_parent: true
-          fetch_depth: "50"
-          pass_if_unchanged: true
-          require_head: true
+          git checkout mobile
+          git pull origin mobile
+      # - name: Check Submodule Name
+      #   uses: jtmullen/submodule-branch-check-action@v1
+      #   with:
+      #     path: "packages/background"
+      #     branch: "mobile"
+      #     first_parent: true
+      #     fetch_depth: "50"
+      #     pass_if_unchanged: true
+      #     require_head: true
 
       - name: Build background
         working-directory: packages/background
