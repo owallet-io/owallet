@@ -66,9 +66,6 @@ jobs:
       #     pass_if_unchanged: true
       #     require_head: true
 
-      - name: Build libs
-        run: yarn build:libs
-
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
@@ -84,8 +81,8 @@ jobs:
       #     path: "mobile"
       #     token: ${{ github.token }}
 
-      # - name: Build Libs
-      #   run: yarn build:libs
+      - name: Build Libs
+        run: yarn build:libs
       - name: Build provider
         working-directory: packages/mobile
         run: yarn build:provider
