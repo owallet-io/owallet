@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: injected-provider
+name: code-push
 
 # Controls when the action will run.
 on:
@@ -51,6 +51,14 @@ jobs:
       - name: Install mobile packages        
         working-directory: packages/mobile
         run: yarn --silent
+      - name: Install appcenter-cli
+        run: yarn add appcenter-cli 
+      - name: Pull packages/background
+        working-directory: packages/background
+        - uses: actions/checkout@v3
+            with:
+              path: 'mobile'
+              token: ${{ github.token }}
       - name: Build Libs
         run: yarn build:libs      
       - name: Build provider
@@ -58,16 +66,15 @@ jobs:
         run: yarn build:provider
         env:
           CI: false      
-      - name: Deploy Firebase
+      - name: deploy on AppCenter
         working-directory: packages/mobile
         run: |
-          yarn firebase use oraichain-mainnet --token ${{ secrets.FIREBASE_TOKEN }}          
-          yarn firebase deploy --only hosting:owallet-provider --token ${{ secrets.FIREBASE_TOKEN }} -m "${{ github.event.head_commit.message }}"
-      # - name: deploy on AppCenter
-      #   working-directory: packages/mobile
-      #   run: |
-      #     yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-      #     yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+          appcenter login --token ${{ secrets.CODEPUSH_TOKEN }}
+          appcenter codepush release-react -a Oraichain/Owallet -t 0.0.10 --output-dir build
+          appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.4 --output-dir build"
+        # run: |
+        #   yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+        #   yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
       - name: Send discord message
         uses: appleboy/discord-action@master
         with:
