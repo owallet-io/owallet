@@ -282,9 +282,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         ? '-'
         : '+';
 
-    return amount && !amount?.denom?.startsWith('u')
-      ? `${prefix} ${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
-      : `${prefix} ${formatOrai(amount.amount ?? 0)} ${
+    return !amount.denom.startsWith('u')
+      ? `${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
+      : `${formatOrai(amount.amount ?? 0)} ${
           amount.denom ? amount.denom?.substring(1) : ''
         }`;
   }, [item]);
