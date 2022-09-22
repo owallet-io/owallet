@@ -54,8 +54,7 @@ jobs:
       # Update references
       - name: Git Sumbodule Update
         run: |
-          git pull --recurse-submodules
-          git submodule update --remote --recursive
+          git submodule sync
       - name: Check Submodule Name
         uses: jtmullen/submodule-branch-check-action@v1
         with:
