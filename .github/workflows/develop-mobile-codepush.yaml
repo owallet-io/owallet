@@ -55,7 +55,6 @@ jobs:
       - name: Git Sumbodule Update
         working-directory: packages/background
         run: |
-          git checkout mobile
           git pull origin mobile
       # - name: Check Submodule Name
       #   uses: jtmullen/submodule-branch-check-action@v1
