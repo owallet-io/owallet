@@ -6,7 +6,7 @@ name: code-push
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [feat/build-android]
+    branches: [develop]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -56,31 +56,12 @@ jobs:
         working-directory: packages/background
         run: |
           git pull origin mobile
-      # - name: Check Submodule Name
-      #   uses: jtmullen/submodule-branch-check-action@v1
-      #   with:
-      #     path: "packages/background"
-      #     branch: "mobile"
-      #     first_parent: true
-      #     fetch_depth: "50"
-      #     pass_if_unchanged: true
-      #     require_head: true
-
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
       - name: Install mobile packages
         working-directory: packages/mobile
         run: yarn --silent
-
-      # - name: Pull packages/background
-      #   working-directory: packages/background
-      #   uses: actions/checkout@v3
-      #   with:
-      #     repository: oraichain/owallet-background
-      #     path: "mobile"
-      #     token: ${{ github.token }}
-
       - name: Build Libs
         run: yarn build:libs
       - name: Build provider
@@ -90,25 +71,22 @@ jobs:
           CI: false
       - name: Deploy on AppCenter
         working-directory: packages/mobile
-        # run: |
-        #   appcenter login --token ${{ secrets.CODEPUSH_TOKEN }}
-        #   appcenter codepush release-react -a Oraichain/Owallet -t 0.0.10 --output-dir build
-        #   appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.4 --output-dir build"
+
         run: |
           yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
           yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
-      # - name: Send discord message
-      #   uses: appleboy/discord-action@master
-      #   with:
-      #     webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-      #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-      #     username: "GitBot"
-      #     message: Success! comment=${{ github.event.head_commit.message }}
-      # - name: Send discord message
-      #   if: ${{ failure() }}
-      #   uses: appleboy/discord-action@master
-      #   with:
-      #     webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-      #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-      #     username: "GitBot"
-      #     message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Success! comment=${{ github.event.head_commit.message }}
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
