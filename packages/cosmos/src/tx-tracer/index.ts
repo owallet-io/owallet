@@ -51,7 +51,7 @@ export class TendermintTxTracer {
   }
 
   protected getWsEndpoint(): string {
-    let url = this.url;
+    let url = this.url ?? 'https://rpc.orai.io';
     if (url?.startsWith('http')) {
       url = url.replace('http', 'ws');
     }
@@ -61,8 +61,6 @@ export class TendermintTxTracer {
         : '/' + this.wsEndpoint;
 
       url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
-
-      console.log('url ===', url);
     }
 
     return url;
