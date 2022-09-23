@@ -31,7 +31,7 @@ export const HomeScreen: FunctionComponent = observer(() => {
   const scrollViewRef = useRef<ScrollView | null>(null);
 
   const currentChain = chainStore.current;
-  const currentChainId = currentChain.chainId;
+  const currentChainId = currentChain?.chainId;
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(

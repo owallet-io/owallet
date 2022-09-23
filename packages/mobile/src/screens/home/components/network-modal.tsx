@@ -15,7 +15,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
           ...styles.containerBtn
         }}
         onPress={() => {
-          chainStore.selectChain(item.chainId);
+          chainStore.selectChain(item?.chainId);
           chainStore.saveLastViewChainId();
           modalStore.close();
         }}
@@ -104,7 +104,7 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                item.chainId === chainStore.current.chainId
+                item?.chainId === chainStore.current.chainId
                   ? colors['purple-900']
                   : colors['gray-100'],
               justifyContent: 'center',

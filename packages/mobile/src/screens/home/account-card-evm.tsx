@@ -47,8 +47,8 @@ export const AccountCardEVM: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const selected = keyRingStore.multiKeyStoreInfo.find(
-    keyStore => keyStore.selected
+  const selected = keyRingStore?.multiKeyStoreInfo.find(
+    keyStore => keyStore?.selected
   );
 
   useEffect(() => {
@@ -303,8 +303,8 @@ export const AccountCardEVM: FunctionComponent<{
                 }}
               >
                 {`Coin type: ${
-                  selected?.bip44HDPath.coinType ??
-                  chainStore.current.bip44.coinType
+                  selected?.bip44HDPath?.coinType ??
+                  chainStore?.current?.bip44?.coinType
                 }`}
               </Text>
             </View>

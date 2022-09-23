@@ -34,8 +34,8 @@ export const AccountCard: FunctionComponent<{
     keyRingStore
   } = useStore();
 
-  const selected = keyRingStore.multiKeyStoreInfo.find(
-    keyStore => keyStore.selected
+  const selected = keyRingStore?.multiKeyStoreInfo.find(
+    keyStore => keyStore?.selected
   );
 
   const smartNavigation = useSmartNavigation();
@@ -265,8 +265,8 @@ export const AccountCard: FunctionComponent<{
                   }}
                 >
                   {`Coin type: ${
-                    selected?.bip44HDPath.coinType ??
-                    chainStore.current.bip44.coinType
+                    selected?.bip44HDPath?.coinType ??
+                    chainStore?.current?.bip44?.coinType
                   }`}
                 </Text>
               </View>

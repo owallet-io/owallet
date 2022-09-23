@@ -51,16 +51,16 @@ export class TendermintTxTracer {
   }
 
   protected getWsEndpoint(): string {
-    let url = this.url;
-    if (url.startsWith('http')) {
+    let url = this.url ?? 'https://rpc.orai.io';
+    if (url?.startsWith('http')) {
       url = url.replace('http', 'ws');
     }
-    if (!url.endsWith(this.wsEndpoint)) {
+    if (!url?.endsWith(this.wsEndpoint)) {
       const wsEndpoint = this.wsEndpoint.startsWith('/')
         ? this.wsEndpoint
         : '/' + this.wsEndpoint;
 
-      url = url.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
+      url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
     }
 
     return url;
