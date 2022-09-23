@@ -229,6 +229,7 @@ export const Transactions: FunctionComponent = () => {
             }}
             onPress={() => {
               page.current = 1;
+              setLoading(true);
               fetchData();
             }}
           />
