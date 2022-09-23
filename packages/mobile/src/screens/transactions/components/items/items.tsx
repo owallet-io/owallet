@@ -60,7 +60,8 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
         {/* {amount == 0 || title === 'Received Token' || title === 'Reward'
             ? '+'
             : '-'} */}
-        {!amount.denom.startsWith('u')
+        {console.log(amount, 'amount ===')}
+        {amount && !amount?.denom?.startsWith('u')
           ? `${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
           : `${formatOrai(amount.amount ?? 0)} ${
               amount.denom ? amount.denom?.substring(1) : ''
