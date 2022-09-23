@@ -88,10 +88,11 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
               : colors['green-500']
         }}
       >
-        {/* {amount == 0 || title === 'Received Token' || title === 'Reward'
-            ? '+'
-            : '-'} */}
-        {console.log(amount, 'amount ===')}
+        {getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
+        item?.messages?.[0]?.from_address &&
+        address === item.messages[0].from_address
+          ? '-'
+          : '+'}
         {amount && !amount?.denom?.startsWith('u')
           ? `${formatOrai(amount.amount ?? 0)} ${amount.denom ?? ''}`
           : `${formatOrai(amount.amount ?? 0)} ${
