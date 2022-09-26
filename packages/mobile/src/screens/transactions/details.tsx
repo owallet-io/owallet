@@ -240,28 +240,22 @@ export const TransactionDetail: FunctionComponent<any> = () => {
 
   const amountDataCell = useCallback(() => {
     let amount;
-
-    if (
-      item?.messages?.find(
-        msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
-      )
-    ) {
-      const msg = item?.messages?.find(msg => {
-        return getTxTypeNew(msg['@type']) === 'MsgRecvPacket';
-      });
-
+    let msg = item?.messages?.find(
+      msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
+    );
+    if (msg) {
       const msgRec = JSON.parse(
         Buffer.from(msg?.packet?.data, 'base64').toString('ascii')
       );
       amount = msgRec;
-      const port = item?.message?.packet?.destination_port;
-      const channel = item?.message?.packet?.destination_channel;
+      // const port = item?.message?.packet?.destination_port;
+      // const channel = item?.message?.packet?.destination_channel;
     } else if (
       item?.messages?.find(msg => getTxTypeNew(msg['@type']) === 'MsgTransfer')
     ) {
       const rawLog = JSON.parse(item?.raw_log);
-      const rawLogParse = parseIbcMsgTransfer(rawLog);
-      const rawLogDenomSplit = rawLogParse?.denom?.split('/');
+      // const rawLogParse = parseIbcMsgTransfer(rawLog);
+      // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
       const type = getTxTypeNew(

@@ -97,7 +97,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'privateKey' && !keyStore.meta?.email
+      keyStore => keyStore.type === 'privateKey'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 

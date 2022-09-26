@@ -17,28 +17,16 @@ import { useStore } from '../../../stores';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
-function isPrivateKey(str: string): boolean {
-  if (str.startsWith('0x')) {
-    return true;
-  }
-
-  if (str.length === 64) {
-    try {
-      return Buffer.from(str, 'hex').length === 32;
-    } catch {
-      return false;
-    }
-  }
-  return false;
-}
+const isPrivateKey = (str: string): boolean =>
+  /(?:0x)?[0-9a-fA-F]{64}/.test(str);
 
 function trimWordsStr(str: string): string {
   str = str.trim();
   // Split on the whitespace or new line.
   const splited = str.split(/\s+/);
   const words = splited
-    .map((word) => word.trim())
-    .filter((word) => word.trim().length > 0);
+    .map(word => word.trim())
+    .filter(word => word.trim().length > 0);
   return words.join(' ');
 }
 
@@ -58,7 +46,7 @@ export const RecoverMnemonicIntro: FunctionComponent<{
     <Button
       color=""
       block
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
 
         registerConfig.setType(TypeRecoverMnemonic);
