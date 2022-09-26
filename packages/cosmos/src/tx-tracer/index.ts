@@ -60,9 +60,9 @@ export class TendermintTxTracer {
         ? this.wsEndpoint
         : '/' + this.wsEndpoint;
 
-      url = (url + wsEndpoint).replace(/\/\//g, '/');
+      url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
 
-      // url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
+      console.log('url ===', url);
     }
 
     return url;
@@ -222,7 +222,10 @@ export class TendermintTxTracer {
 
   //  Subscribe the msg
   async subscribeMsgByAddress(msg: string): Promise<any> {
-    await Promise.race([100, this.subscribeMsg(msg)]);
+    const result = await this.subscribeMsg(msg);
+    return new Promise(resolve => {
+      setTimeout(() => resolve(result), 100);
+    });
   }
 
   subscribeMsg(address: string): Promise<any> {
