@@ -51,7 +51,7 @@ export class TendermintTxTracer {
   }
 
   protected getWsEndpoint(): string {
-    let url = this.url ?? 'https://rpc.orai.io';
+    let url = this.url;
     if (url?.startsWith('http')) {
       url = url.replace('http', 'ws');
     }
@@ -60,7 +60,9 @@ export class TendermintTxTracer {
         ? this.wsEndpoint
         : '/' + this.wsEndpoint;
 
-      url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
+      url = (url + wsEndpoint).replace(/\/\//g, '/');
+
+      // url = url?.endsWith('/') ? url + wsEndpoint.slice(1) : url + wsEndpoint;
     }
 
     return url;
@@ -105,7 +107,13 @@ export class TendermintTxTracer {
     }
 
     for (const [id, tx] of this.txSubscribes) {
-      this.sendSubscribeTxRpc(id, tx.hash);
+      if (tx.hash) {
+        this.sendSubscribeTxRpc(id, tx.hash);
+      } else {
+        if (tx.address) {
+          this.sendSubscribeMsgRpc(id, tx.address);
+        }
+      }
     }
 
     for (const [id, query] of this.pendingQueries) {
@@ -207,6 +215,38 @@ export class TendermintTxTracer {
           method: 'subscribe',
           params: ["tm.event='NewBlock'"],
           id: 1
+        })
+      );
+    }
+  }
+
+  //  Subscribe the msg
+  async subscribeMsgByAddress(msg: string): Promise<any> {
+    await Promise.race([100, this.subscribeMsg(msg)]);
+  }
+
+  subscribeMsg(address: string): Promise<any> {
+    const id = this.createRandomId();
+
+    return new Promise<unknown>((resolve, reject) => {
+      this.txSubscribes.set(id, {
+        address,
+        resolver: resolve,
+        rejector: reject
+      });
+
+      this.sendSubscribeMsgRpc(id, address);
+    });
+  }
+
+  protected sendSubscribeMsgRpc(id: number, address: string): void {
+    if (this.readyState === WsReadyState.OPEN) {
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
+          params: [`tm.event='Tx' AND transfer.recipient = '${address}'`],
+          id
         })
       );
     }

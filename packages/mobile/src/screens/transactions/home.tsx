@@ -60,6 +60,36 @@ export const Transactions: FunctionComponent = () => {
     }
   };
 
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const chainInfo = chainStore.getChain(chainStore.current.chainId);
+    let msgTracer: TendermintTxTracer | undefined;
+    if (msgTracer) {
+      msgTracer.close();
+    }
+    if (isFocused) {
+      msgTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
+      msgTracer
+        .subscribeMsgByAddress(account.bech32Address)
+        .then(tx => {
+          page.current = 1;
+          setTimeout(() => {
+            fetchData();
+          }, 1500);
+        })
+        .catch(e => {
+          console.log(`Failed to trace the tx ()`, e);
+        });
+    }
+
+    return () => {
+      if (msgTracer) {
+        msgTracer.close();
+      }
+    };
+  }, [chainStore, isFocused, data]);
+
   useEffect(() => {
     offset.current = 0;
     fetchData();
