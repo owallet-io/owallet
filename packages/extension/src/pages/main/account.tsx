@@ -13,8 +13,8 @@ import { WalletStatus } from '@owallet/stores';
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const selected = keyRingStore.multiKeyStoreInfo.find(
-    (keyStore) => keyStore.selected
+  const selected = keyRingStore?.multiKeyStoreInfo?.find(
+    (keyStore) => keyStore?.selected
   );
   const { account, change, addressIndex, coinType } = selected?.bip44HDPath;
   const intl = useIntl();
