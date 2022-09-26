@@ -255,8 +255,8 @@ export class TendermintTxTracer {
 
   // Query the tx and subscribe the tx.
   async traceTx(hash: Uint8Array): Promise<any> {
-    await this.queryTx(hash);
     const result = await this.subscribeTx(hash);
+    this.queryTx(hash);
     return new Promise(resolve => {
       setTimeout(() => resolve(result), 100);
     });
