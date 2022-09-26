@@ -36,7 +36,7 @@ const ChainElement: FunctionComponent<{
             chainId: chainInfo.chainId,
             chainName: chainInfo.chainName,
             networkType: chainInfo.networkType,
-            rpc: chainInfo?.rpc || chainInfo?.rest,
+            rpc: chainInfo?.rpc ?? chainInfo?.rest,
             // ...chainInfo
           });
           chainStore.selectChain(chainInfo.chainId);

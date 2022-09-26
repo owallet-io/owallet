@@ -240,7 +240,15 @@ export const TokensView: FunctionComponent<{
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
   const displayTokens = tokens
-    .filter((token) => token?.balance)
+    .filter((v, i, obj) => {
+      return (
+        v?.balance &&
+        obj.findIndex(
+          (v2) =>
+            v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom
+        ) === i
+      );
+    })
     .sort((a, b) => {
       const aDecIsZero = a.balance.toDec().isZero();
       const bDecIsZero = b.balance.toDec().isZero();
