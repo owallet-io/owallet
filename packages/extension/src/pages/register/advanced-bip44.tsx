@@ -8,7 +8,7 @@ import { BIP44HDPath } from '@owallet/background';
 
 export class BIP44Option {
   @observable
-  protected _coinType?: number;
+  protected _coinType?: number = 0;
 
   @observable
   protected _account: number = 0;
@@ -46,7 +46,8 @@ export class BIP44Option {
     return {
       account: this.account,
       change: this.change,
-      addressIndex: this.index
+      addressIndex: this.index,
+      coinType: this.coinType
     };
   }
 
@@ -88,7 +89,8 @@ export const AdvancedBIP44Option: FunctionComponent<{
   const [isOpen, setIsOpen] = useState(
     bip44Option.account !== 0 ||
       bip44Option.change !== 0 ||
-      bip44Option.index !== 0
+      bip44Option.index !== 0 || 
+      bip44Option.coinType !== undefined
   );
   const toggleOpen = async () => {
     if (isOpen) {
@@ -103,6 +105,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
         bip44Option.setAccount(0);
         bip44Option.setChange(0);
         bip44Option.setIndex(0);
+        bip44Option.setCoinType(undefined);
       }
     } else {
       setIsOpen(true);
@@ -134,13 +137,49 @@ export const AdvancedBIP44Option: FunctionComponent<{
               alignItems: 'baseline'
             }}
           >
-            <div>{`m/44'/${
+            {/* <div>{`m/44'/${
               bip44Option.coinType != null ? bip44Option.coinType : '···'
-            }'/`}</div>
+            }'/`}</div> */}
+            <div>{`m/44’/`}</div>
             <Input
               type="number"
               className="form-control-alternative"
-              style={{ width: '100px', textAlign: 'right' }}
+              style={{ maxWidth: '92px', textAlign: 'right' }}
+              value={
+                bip44Option.coinType != null
+                  ? bip44Option?.coinType?.toString()
+                  : 0
+              }
+              onChange={(e) => {
+                e.preventDefault();
+
+                let value = e.target.value;
+                if (value) {
+                  if (value !== '0') {
+                    // Remove leading zeros
+                    for (let i = 0; i < value.length; i++) {
+                      if (value[i] === '0') {
+                        value = value.replace('0', '');
+                      } else {
+                        break;
+                      }
+                    }
+                  }
+                  const parsed = parseFloat(value);
+                  // Should be integer and positive.
+                  if (Number.isInteger(parsed) && parsed >= 0) {
+                    bip44Option.setCoinType(parsed);
+                  }
+                } else {
+                  bip44Option.setCoinType(undefined);
+                }
+              }}
+            />
+            <div>{`'/`}</div>
+            <Input
+              type="number"
+              className="form-control-alternative"
+              style={{ maxWidth: '92px', textAlign: 'right' }}
               value={bip44Option.account.toString()}
               onChange={(e) => {
                 e.preventDefault();
@@ -171,7 +210,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
             <Input
               type="number"
               className="form-control-alternative"
-              style={{ width: '100px', textAlign: 'right' }}
+              style={{ maxWidth: '92px', textAlign: 'right' }}
               value={bip44Option.change.toString()}
               onChange={(e) => {
                 e.preventDefault();
@@ -205,7 +244,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
             <Input
               type="number"
               className="form-control-alternative"
-              style={{ width: '100px', textAlign: 'right' }}
+              style={{ maxWidth: '92px', textAlign: 'right' }}
               value={bip44Option.index.toString()}
               onChange={(e) => {
                 e.preventDefault();

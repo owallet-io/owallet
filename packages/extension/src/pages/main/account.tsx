@@ -11,9 +11,12 @@ import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
 
 export const AccountView: FunctionComponent = observer(() => {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore, chainStore, keyRingStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
+  const selected = keyRingStore.multiKeyStoreInfo.find(
+    (keyStore) => keyStore.selected
+  );
+  const { account, change, addressIndex, coinType } = selected?.bip44HDPath;
   const intl = useIntl();
 
   const notification = useNotification();
@@ -140,6 +143,18 @@ export const AccountView: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
         </div>
       )}
+      <div className={styleAccount.coinType}>
+        {' '}
+        {`Coin type: m/44'/${
+          (coinType ?? chainStore.current.bip44.coinType) +
+          "'/" +
+          (account ?? '0') +
+          "'/" +
+          (change ?? '0') +
+          '/' +
+          (addressIndex ?? '0')
+        }`}
+      </div>
     </div>
   );
 });
