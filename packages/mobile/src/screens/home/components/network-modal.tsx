@@ -146,6 +146,15 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
         >
           {`Select networks`}
         </Text>
+
+        <TouchableOpacity
+          onPress={() => {
+            smartNavigation.navigateSmart('Network.select', {});
+            modalStore.close();
+          }}
+        >
+          <Text>+</Text>
+        </TouchableOpacity>
       </View>
 
       <View

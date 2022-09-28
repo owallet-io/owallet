@@ -51,8 +51,8 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
   get chainInfosInUI() {
     return this.chainInfos.filter(chainInfo => {
-      return !chainInfo.raw.hideInUI
-    })
+      return !chainInfo.raw.hideInUI;
+    });
   }
 
   @action
@@ -116,7 +116,15 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     )
 
-    this.setChainInfos(chainInfos)
+  @flow
+  *addChain(chainInfo) {
+    const msg = new GetChainInfosMsg();
+    const result = yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, msg)
+    );
+    const msgAddchain = new SuggestChainInfoMsg(chainInfo);
+    yield this.requester.sendMessage(BACKGROUND_PORT, msgAddchain);
+    yield this.setChainInfos([...result.chainInfos, chainInfo]);
   }
 
   @flow
