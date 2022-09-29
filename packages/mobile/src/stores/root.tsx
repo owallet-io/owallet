@@ -158,6 +158,14 @@ export class RootStore {
               'core',
               new RNMessageRequesterInternal()
             );
+          },
+          getEthereum: async () => {
+            return new Ethereum(
+              version,
+              'core',
+              '0x38',
+              new RNMessageRequesterInternal()
+            );
           }
         },
         chainOpts: this.chainStore.chainInfos.map(chainInfo => {

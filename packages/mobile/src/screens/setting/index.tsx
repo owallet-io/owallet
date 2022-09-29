@@ -28,11 +28,13 @@ import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';
+import moment from 'moment';
 
 export const SettingScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
+  const { keychainStore, keyRingStore, priceStore, modalStore, appInitStore } =
+    useStore();
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
+    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
       return {
         key,
         label: key.toUpperCase()
@@ -40,7 +42,11 @@ export const SettingScreen: FunctionComponent = observer(() => {
     });
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
-    (keyStore) => keyStore.selected
+    keyStore => keyStore.selected
+  );
+
+  const date = moment(appInitStore.getInitApp.date_updated).format(
+    'MMM DD, YYYY - HH:mm'
   );
 
   const smartNavigation = useSmartNavigation();
@@ -180,12 +186,16 @@ export const SettingScreen: FunctionComponent = observer(() => {
             smartNavigation.navigateSmart('AddressBook', {});
           }}
         />
+
         {keychainStore.isBiometrySupported || keychainStore.isBiometryOn ? (
           <SettingBiometricLockItem
           // topBorder={!canShowPrivateData(keyRingStore.keyRingType)}
           />
         ) : null}
         {/* <SettingSectionTitle title="Others" /> */}
+        {appInitStore.getInitApp.date_updated ? (
+          <SettingItem label={`Date Updated: ${date}`} />
+        ) : null}
         <SettingItem
           label="About OWallet"
           onPress={() => {

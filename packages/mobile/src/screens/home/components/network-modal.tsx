@@ -134,9 +134,13 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
     >
       <View
         style={{
-          justifyContent: 'flex-start'
+          justifyContent: 'space-between',
+          flexDirection: 'row',
+          width: '100%',
+          alignItems: 'center'
         }}
       >
+        <View style={{ width: '30%' }} />
         <Text
           style={{
             ...typography.h6,
@@ -146,14 +150,21 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
         >
           {`Select networks`}
         </Text>
-
         <TouchableOpacity
           onPress={() => {
             smartNavigation.navigateSmart('Network.select', {});
             modalStore.close();
           }}
         >
-          <Text>+</Text>
+          <Text
+            style={{
+              ...typography.h7,
+              fontWeight: '600',
+              color: colors['gray-900']
+            }}
+          >
+            + Add network
+          </Text>
         </TouchableOpacity>
       </View>
 

@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { View, Image } from 'react-native';
 
-export const OWalletLogo: FunctionComponent<{ size?: number }> = ({ size }) => {
+export const OWalletLogo = ({ size }) => {
   return (
     <View
       style={{
@@ -13,8 +13,8 @@ export const OWalletLogo: FunctionComponent<{ size?: number }> = ({ size }) => {
     >
       <Image
         style={{
-          width: size ?? 120,
-          height: size ?? 120
+          width: size || 120,
+          height: size || 120
         }}
         source={require('../../assets/logo/splash-background-owallet.png')}
         resizeMode="contain"

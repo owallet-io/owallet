@@ -5,11 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export class AppInit {
   @persist('object')
   @observable
-  protected initApp: { status: boolean };
+  protected initApp: { status: boolean; date_updated: null | number };
 
   constructor() {
     makeObservable(this);
-    this.initApp = { status: true };
+    this.initApp = { status: true, date_updated: null };
   }
 
   @computed
@@ -19,13 +19,18 @@ export class AppInit {
 
   @action
   updateInitApp() {
-    this.initApp = { status: false };
+    this.initApp = { ...this.initApp, status: false };
+  }
+
+  @action
+  updateDate(date) {
+    this.initApp = { ...this.initApp, date_updated: date };
   }
 }
 
 const hydrate = create({
   storage: AsyncStorage, // or AsyncStorage in react-native.
-  jsonify: true, // if you use AsyncStorage, here shoud be true
+  jsonify: true // if you use AsyncStorage, here shoud be true
 });
 
 export const appInit = new AppInit();

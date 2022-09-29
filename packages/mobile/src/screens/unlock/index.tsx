@@ -92,7 +92,13 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
 };
 
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, keychainStore, accountStore, chainStore } = useStore();
+  const {
+    keyRingStore,
+    keychainStore,
+    accountStore,
+    chainStore,
+    appInitStore
+  } = useStore();
   const navigation = useNavigation();
 
   const [downloading, setDownloading] = useState(false);
@@ -119,12 +125,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [autoBiometryStatus, navigation]);
 
   useEffect(() => {
-    (async () => {
-      await hideSplashScreen();
-    })();
-  }, [autoBiometryStatus, navigation]);
-
-  useEffect(() => {
+    if (__DEV__) {
+      return;
+    }
     CodePush.sync(
       {
         // updateDialog: {
@@ -155,6 +158,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           case CodePush.SyncStatus.UPDATE_INSTALLED:
             console.log('UPDATE_INSTALLED');
             setDownloading(false);
+            setInstalling(false);
+            appInitStore.updateDate(Date.now());
             // Hide loading modal
             // setState({ showDownloadingModal: false });
             break;

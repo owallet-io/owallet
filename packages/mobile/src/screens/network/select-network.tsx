@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
 import { colors } from '../../themes';
@@ -11,13 +11,17 @@ import { useSimpleTimer } from '../../hooks';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { Bech32Address } from '@owallet/cosmos';
-import { EmbedChainInfos } from '@owallet/common';
 
 interface FormData {
   name: string;
+  chainId: string;
   url_rpc: string;
+  url_rest: string;
   code: string;
+  coinMinimal: string;
+  coingecko: string;
   url_block: string;
+  networkType: string;
   symbol: string;
 }
 
@@ -30,64 +34,57 @@ export const SelectNetworkScreen = () => {
     formState: { errors }
   } = useForm<FormData>();
   const { isTimedOut, setTimer } = useSimpleTimer();
-  const { chainStore, embedChainInfosStore } = useStore();
+  const { chainStore } = useStore();
   const smartNavigation = useSmartNavigation();
   const submit = handleSubmit(async () => {
-    const { name, url_rpc, code, url_block, symbol } = getValues();
+    const {
+      name,
+      chainId,
+      url_rpc,
+      url_rest,
+      code,
+      url_block,
+      symbol,
+      coingecko,
+      coinMinimal,
+      networkType
+    } = getValues();
+
     setTimer(2000);
+    const block = url_block ?? 'https://scan.orai.io';
     const chainInfo = {
-      rpc: 'https://rpc.orai.io',
-      rest: 'https://lcd.orai.io',
-      chainId: 'Oraichain-plus',
-      chainName: 'Oraichain Plus',
-      networkType: 'cosmos',
+      rpc: `${url_rpc}`,
+      rest: `${url_rest}`,
+      chainId: `${chainId ?? name.split(' ').join('-')}`,
+      chainName: `${name}`,
+      networkType: networkType.toLocaleLowerCase(),
       stakeCurrency: {
-        coinDenom: 'ORAI',
-        coinMinimalDenom: 'orai',
+        coinDenom: `${code.split(' ').join('').toLocaleUpperCase()}`,
+        coinMinimalDenom: `${coinMinimal
+          .split(' ')
+          .join('')
+          .toLocaleLowerCase()}`,
         coinDecimals: 6,
-        coinGeckoId: 'oraichain-token',
+        coinGeckoId: `${
+          coingecko.split(' ').join('-').toLocaleLowerCase() ??
+          code.split(' ').join('-').toLocaleLowerCase()
+        }`,
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+          symbol !== ''
+            ? symbol
+            : 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
       },
       bip44: {
         coinType: 118
       },
-      bech32Config: Bech32Address.defaultBech32Config('orai'),
+      bech32Config: Bech32Address.defaultBech32Config(
+        `${
+          coingecko.split(' ').join('-').toLocaleLowerCase() ??
+          code.split(' ').join('-').toLocaleLowerCase()
+        }`
+      ),
       get currencies() {
-        return [
-          this.stakeCurrency,
-          {
-            type: 'cw20',
-            coinDenom: 'AIRI',
-            coinMinimalDenom:
-              'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
-            contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
-            coinDecimals: 6,
-            coinGeckoId: 'airight',
-            coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
-          },
-          {
-            type: 'cw20',
-            coinDenom: 'ORAIX',
-            coinMinimalDenom:
-              'cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:OraiDex Token',
-            contractAddress: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
-            coinDecimals: 6,
-            // coinGeckoId: 'oraix',
-            coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
-          },
-          {
-            type: 'cw20',
-            coinDenom: 'USDT',
-            coinMinimalDenom:
-              'cw20:orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh:Tether',
-            contractAddress: 'orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh',
-            coinDecimals: 6,
-            coinGeckoId: 'tether',
-            coinImageUrl:
-              'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
-          }
-        ];
+        return [this.stakeCurrency];
       },
       get feeCurrencies() {
         return [this.stakeCurrency];
@@ -98,17 +95,20 @@ export const SelectNetworkScreen = () => {
         high: 0.00004
       },
       features: ['stargate', 'ibc-transfer', 'cosmwasm'],
-      chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
+      chainSymbolImageUrl:
+        symbol !== ''
+          ? symbol
+          : 'https://orai.io/images/logos/logomark-dark.png',
       txExplorer: {
-        name: 'Oraiscan',
-        txUrl: 'https://scan.orai.io/txs/{txHash}',
-        accountUrl: 'https://scan.orai.io/account/{address}'
+        name: 'Scan',
+        txUrl: `${block}/txs/{txHash}`,
+        accountUrl: `${block}/account/{address}`
       },
       beta: true // use v1beta1
     };
     await chainStore.addChain(chainInfo);
-    await embedChainInfosStore.addChain(chainInfo);
-    await chainStore.tryUpdateChain(chainInfo.chainId);
+    alert('Network added successfully!');
+    smartNavigation.goBack();
   });
 
   return (
@@ -156,7 +156,7 @@ export const SelectNetworkScreen = () => {
               labelStyle={{
                 fontWeight: '700'
               }}
-              placeholder={'Network name (Optional)'}
+              placeholder={'Network name'}
               inputStyle={{
                 ...styles.borderInput
               }}
@@ -176,15 +176,45 @@ export const SelectNetworkScreen = () => {
       />
       <Controller
         control={control}
-        // rules={{
-        //   required: 'New RPC network is required',
-        //   validate: (value: string) => {
-        //     const values = value.toLowerCase();
-        //     if (!/^https?:\/\//.test(values)) {
-        //       return 'The url must have a proper https prefix';
-        //     }
-        //   }
-        // }}
+        rules={{
+          required: 'Chain Id is required'
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Chain Id"
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              placeholder={'Chain Id'}
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.chainId?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="chainId"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'New RPC network is required',
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!/^https?:\/\//.test(values)) {
+              return 'The url must have a proper https prefix';
+            }
+          }
+        }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
@@ -212,19 +242,61 @@ export const SelectNetworkScreen = () => {
       />
       <Controller
         control={control}
-        // rules={{
-        //   required: 'Code is required',
-        //   validate: (value: string) => {
-        //     const values = value.toLowerCase();
-        //     if (!/\b(0x[0-9a-fA-F]+|[0-9]+)\b/.test(values)) {
-        //       return 'Invalid number. Please enter a decimal or hexadecimal number starting with "0x".';
-        //     }
-        //   }
-        // }}
+        rules={{
+          required: 'New Rest network is required',
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!/^https?:\/\//.test(values)) {
+              return 'The url must have a proper https prefix';
+            }
+          }
+        }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="Code"
+              label="URL Rest"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'New Rest network'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                setFocus('url_rest');
+              }}
+              error={errors.url_rest?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="url_rest"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Coin Denom is required',
+          // validate: (value: string) => {
+          //   const values = value.toLowerCase();
+          //   if (!/\b(0x[0-9a-fA-F]+|[0-9]+)\b/.test(values)) {
+          //     return 'Invalid number. Please enter a decimal or hexadecimal number starting with "0x".';
+          //   }
+          // }
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!values) {
+              return 'Coin Denom is required';
+            }
+          }
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Coin Denom"
               inputStyle={{
                 ...styles.borderInput
               }}
@@ -248,17 +320,127 @@ export const SelectNetworkScreen = () => {
       />
       <Controller
         control={control}
+        rules={{
+          required: 'Coin Minimnal Denom is required',
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!values) {
+              return 'Coin Minimnal is required';
+            }
+          }
+        }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="Symbol"
+              label="Coin Minimal Denom"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Coin Minimal Denom'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.coinMinimal?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="coinMinimal"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Network type is required',
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!/^(cosmos|evm)/.test(values)) {
+              return 'Network type must be cosmos or evm';
+            }
+          }
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Network type"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Network type (Cosmos or EVM)'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.networkType?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="networkType"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Coingecko ID is required',
+
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!values) {
+              return 'Coingecko ID is required';
+            }
+          }
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Coingecko ID"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Coingecko ID'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.coingecko?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="coingecko"
+        defaultValue=""
+      />
+
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Symbol (Optional)"
               inputStyle={{
                 ...styles.borderInput
               }}
               labelStyle={{
                 fontWeight: '700'
               }}
-              placeholder={'Symbol (Optional)'}
+              placeholder={'Symbol'}
               onSubmitEditing={() => {
                 submit();
               }}
@@ -279,7 +461,7 @@ export const SelectNetworkScreen = () => {
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="Block explorer URL"
+              label="Block explorer URL (Optional)"
               inputStyle={{
                 ...styles.borderInput
               }}
@@ -289,7 +471,7 @@ export const SelectNetworkScreen = () => {
               onSubmitEditing={() => {
                 submit();
               }}
-              placeholder={'Block explorer URL (Optional)'}
+              placeholder={'Block explorer URL'}
               error={errors.url_block?.message}
               onBlur={onBlur}
               onChangeText={onChange}
