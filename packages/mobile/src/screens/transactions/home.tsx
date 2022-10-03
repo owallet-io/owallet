@@ -93,19 +93,32 @@ export const Transactions: FunctionComponent = () => {
     fetchData();
   }, [account.bech32Address, indexChildren]);
 
-  const _renderItem = ({ item, index }) => {
-    return (
-      <TransactionItem
-        address={account.bech32Address}
-        item={item}
-        key={index}
-        onPress={() => smartNavigation.navigateSmart('Transactions.Detail', {})}
-        containerStyle={{
-          backgroundColor: colors['gray-10']
-        }} // customize item transaction
-      />
-    );
-  };
+  const _renderItem = useCallback(
+    ({ item, index }) => {
+      return (
+        <TransactionItem
+          loading={loading}
+          type={indexChildren === 0 ? 'native' : 'cw20'}
+          address={account.bech32Address}
+          item={item}
+          key={index}
+          onPress={() =>
+            smartNavigation.navigateSmart('Transactions.Detail', {
+              item: {
+                ...item,
+                address: account.bech32Address
+              },
+              type: indexChildren === 0 ? 'native' : 'cw20'
+            })
+          }
+          containerStyle={{
+            backgroundColor: colors['gray-10']
+          }} // customize item transaction
+        />
+      );
+    },
+    [indexChildren, loading]
+  );
 
   return (
     <View style={styles.container}>

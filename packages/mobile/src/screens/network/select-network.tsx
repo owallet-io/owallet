@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
-import { colors } from '../../themes';
+import { colors, typography } from '../../themes';
 import { OWalletLogo } from '../register/owallet-logo';
 import { CText as Text } from '../../components/text';
 import { Controller, useForm } from 'react-hook-form';
@@ -18,11 +18,16 @@ interface FormData {
   url_rpc: string;
   url_rest: string;
   code: string;
+  bech32Config: string;
   coinMinimal: string;
   coingecko: string;
   url_block: string;
   networkType: string;
+  features: string;
   symbol: string;
+  feeLow: number;
+  feeMedium: number;
+  feeHigh: number;
 }
 
 export const SelectNetworkScreen = () => {
@@ -43,19 +48,26 @@ export const SelectNetworkScreen = () => {
       url_rpc,
       url_rest,
       code,
+      bech32Config,
       url_block,
       symbol,
       coingecko,
       coinMinimal,
-      networkType
+      networkType,
+      features,
+      feeLow,
+      feeMedium,
+      feeHigh
     } = getValues();
 
     setTimer(2000);
-    const block = url_block ?? 'https://scan.orai.io';
+    const block = url_block;
     const chainInfo = {
       rpc: `${url_rpc}`,
       rest: `${url_rest}`,
-      chainId: `${chainId ?? name.split(' ').join('-')}`,
+      chainId:
+        chainId.split(' ').join('-').toLocaleLowerCase() ??
+        `${name.split(' ').join('-')}`,
       chainName: `${name}`,
       networkType: networkType.toLocaleLowerCase(),
       stakeCurrency: {
@@ -79,8 +91,8 @@ export const SelectNetworkScreen = () => {
       },
       bech32Config: Bech32Address.defaultBech32Config(
         `${
-          coingecko.split(' ').join('-').toLocaleLowerCase() ??
-          code.split(' ').join('-').toLocaleLowerCase()
+          bech32Config.split(' ').join('').toLocaleLowerCase() ??
+          code.split(' ').join('').toLocaleLowerCase()
         }`
       ),
       get currencies() {
@@ -90,11 +102,11 @@ export const SelectNetworkScreen = () => {
         return [this.stakeCurrency];
       },
       gasPriceStep: {
-        low: 0,
-        average: 0.000025,
-        high: 0.00004
+        low: feeLow,
+        average: feeMedium,
+        high: feeHigh
       },
-      features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+      features: features.replace(/ /g, '').split(','),
       chainSymbolImageUrl:
         symbol !== ''
           ? symbol
@@ -103,8 +115,8 @@ export const SelectNetworkScreen = () => {
         name: 'Scan',
         txUrl: `${block}/txs/{txHash}`,
         accountUrl: `${block}/account/{address}`
-      },
-      beta: true // use v1beta1
+      }
+      // beta: true // use v1beta1
     };
     await chainStore.addChain(chainInfo);
     alert('Network added successfully!');
@@ -147,6 +159,16 @@ export const SelectNetworkScreen = () => {
         networks provided
       </Text>
       <View style={{ height: 20 }} />
+      <Text
+        style={{
+          ...typography.h3,
+          fontWeight: '900',
+          color: colors['gray-900'],
+          paddingBottom: 20
+        }}
+      >
+        {`Network Info`}
+      </Text>
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value, ref } }) => {
@@ -279,6 +301,215 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
+          required: 'Network type is required',
+          validate: (value: string) => {
+            const values = value.toLowerCase();
+            if (!/^(cosmos|evm)/.test(values)) {
+              return 'Network type must be cosmos or evm';
+            }
+          }
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Network type"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Network type (Cosmos or EVM)'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.networkType?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="networkType"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Bech32 config is required'
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Bech32 Config"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Bech32 Config'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.bech32Config?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="bech32Config"
+        defaultValue=""
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Features is required'
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Features"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={`Features(ex: stargate, ibc-transfer, no-legacy-stdTx, ibc-go)`}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.features?.message}
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+            />
+          );
+        }}
+        name="features"
+        defaultValue=""
+      />
+      <Text
+        style={{
+          ...typography.h3,
+          fontWeight: '900',
+          color: colors['gray-900'],
+          paddingBottom: 20
+        }}
+      >
+        {`Fee config`}
+      </Text>
+      <Controller
+        control={control}
+        rules={{
+          required: 'Fee(Low) is required'
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Fee (Low)"
+              keyboardType="numeric"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Fee (Low)'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.feeLow?.message}
+              onBlur={onBlur}
+              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              value={value.toString()}
+              ref={ref}
+            />
+          );
+        }}
+        name="feeLow"
+        defaultValue={0}
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Fee(Average) is required'
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Fee (Average)"
+              keyboardType="numeric"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Fee (Average)'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.feeMedium?.message}
+              onBlur={onBlur}
+              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              value={value.toString()}
+              ref={ref}
+            />
+          );
+        }}
+        name="feeMedium"
+        defaultValue={0}
+      />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Fee(High) is required'
+        }}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Fee (High)"
+              keyboardType="numeric"
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              placeholder={'Fee (High)'}
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              onSubmitEditing={() => {
+                submit();
+              }}
+              error={errors.feeHigh?.message}
+              onBlur={onBlur}
+              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              value={value.toString()}
+              ref={ref}
+            />
+          );
+        }}
+        name="feeHigh"
+        defaultValue={0}
+      />
+      <Text
+        style={{
+          ...typography.h3,
+          fontWeight: '900',
+          color: colors['gray-900'],
+          paddingBottom: 20
+        }}
+      >
+        {`Token Info`}
+      </Text>
+      <Controller
+        control={control}
+        rules={{
           required: 'Coin Denom is required',
           // validate: (value: string) => {
           //   const values = value.toLowerCase();
@@ -354,42 +585,7 @@ export const SelectNetworkScreen = () => {
         name="coinMinimal"
         defaultValue=""
       />
-      <Controller
-        control={control}
-        rules={{
-          required: 'Network type is required',
-          validate: (value: string) => {
-            const values = value.toLowerCase();
-            if (!/^(cosmos|evm)/.test(values)) {
-              return 'Network type must be cosmos or evm';
-            }
-          }
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Network type"
-              inputStyle={{
-                ...styles.borderInput
-              }}
-              placeholder={'Network type (Cosmos or EVM)'}
-              labelStyle={{
-                fontWeight: '700'
-              }}
-              onSubmitEditing={() => {
-                submit();
-              }}
-              error={errors.networkType?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="networkType"
-        defaultValue=""
-      />
+
       <Controller
         control={control}
         rules={{

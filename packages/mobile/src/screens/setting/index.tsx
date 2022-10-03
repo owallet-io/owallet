@@ -15,7 +15,6 @@ import { useStore } from '../../stores';
 import { SettingRemoveAccountItem } from './items/remove-account';
 import { canShowPrivateData } from './screens/view-private-data';
 import { SettingViewPrivateDataItem } from './items/view-private-data';
-import { useStyle } from '../../styles';
 import {
   View,
   StyleSheet,
@@ -28,11 +27,9 @@ import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';
-import moment from 'moment';
 
 export const SettingScreen: FunctionComponent = observer(() => {
-  const { keychainStore, keyRingStore, priceStore, modalStore, appInitStore } =
-    useStore();
+  const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const currencyItems = useMemo(() => {
     return Object.keys(priceStore.supportedVsCurrencies).map(key => {
       return {
@@ -43,10 +40,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
     keyStore => keyStore.selected
-  );
-
-  const date = moment(appInitStore.getInitApp.date_updated).format(
-    'MMM DD, YYYY - HH:mm'
   );
 
   const smartNavigation = useSmartNavigation();
@@ -193,9 +186,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           />
         ) : null}
         {/* <SettingSectionTitle title="Others" /> */}
-        {appInitStore.getInitApp.date_updated ? (
-          <SettingItem label={`Date Updated: ${date}`} />
-        ) : null}
+
         <SettingItem
           label="About OWallet"
           onPress={() => {

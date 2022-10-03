@@ -1,6 +1,6 @@
 import React from 'react';
 import { FunctionComponent } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../../themes';
@@ -9,6 +9,8 @@ import moment from 'moment';
 
 interface TransactionItemProps {
   item: any;
+  loading?: boolean;
+  type?: string;
   address: string;
   onPress?: () => void;
   containerStyle?: ViewStyle;
@@ -17,10 +19,13 @@ interface TransactionItemProps {
 export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
   item,
   address,
+  loading,
+  type,
   onPress,
   containerStyle
 }) => {
-  const { txhash, tx, timestamp } = item || {};
+  const { timestamp } = item || {};
+
   const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
 
   // const { messages } = tx?.body || {};
@@ -59,7 +64,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
       }
       const rawLog = JSON.parse(item?.raw_log);
       const rawLogParse = parseIbcMsgTransfer(rawLog);
-      const rawLogDenomSplit = rawLogParse?.denom?.split('/');
+      // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
       const type = getTxTypeNew(
@@ -152,7 +157,9 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
     );
   };
 
-  return (
+  return loading ? (
+    <ActivityIndicator />
+  ) : (
     <RectButton
       style={{
         ...styles.container, // default style for container

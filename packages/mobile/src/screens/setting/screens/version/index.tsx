@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { SettingSectionTitle } from '../../components';
+import { observer } from 'mobx-react-lite';
 import DeviceInfo from 'react-native-device-info';
 import codePush from 'react-native-code-push';
 import {
@@ -11,10 +12,16 @@ import { colors, spacing, typography } from '../../../../themes';
 import { View, Text } from 'react-native';
 import { useStyle } from '../../../../styles';
 import { Divider } from '@rneui/base';
+import { useStore } from '../../../../stores';
+import moment from 'moment';
 
-export const OWalletVersionScreen: FunctionComponent = () => {
+export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
   const [buildNumber] = useState(() => DeviceInfo.getBuildNumber());
+  const { appInitStore } = useStore();
+  const date = moment(appInitStore.getInitApp.date_updated).format(
+    'MMM DD, YYYY - HH:mm'
+  );
   // "undefined" means that it is on fetching,
   // empty string "" means that there is no data.
   const [currentCodeVersion, setCurrentCodeVersion] = useState<
@@ -136,6 +143,9 @@ export const OWalletVersionScreen: FunctionComponent = () => {
           paragraph={parseVersion(latestCodeVersion)}
           divider={false}
         />
+        {appInitStore.getInitApp.date_updated ? (
+          <SettingItem label="Date Updated" paragraph={date} divider={false} />
+        ) : null}
         <SettingItem
           label="Pending Code Version"
           paragraph={parseVersion(pendingCodeVersion)}
@@ -143,7 +153,7 @@ export const OWalletVersionScreen: FunctionComponent = () => {
       </TouchableWithoutFeedback>
     </PageWithScrollViewInBottomTabView>
   );
-};
+});
 
 const SettingItem: FunctionComponent<{
   label: string;
