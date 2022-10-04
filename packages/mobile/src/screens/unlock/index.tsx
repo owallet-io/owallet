@@ -9,7 +9,6 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import * as SplashScreen from 'expo-splash-screen';
 import { TextInput } from '../../components/input';
-import { Button } from '../../components/button';
 import delay from 'delay';
 import { useStore } from '../../stores';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -20,6 +19,7 @@ import { AccountStore } from '@owallet/stores';
 import { autorun } from 'mobx';
 import { colors, spacing } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
+import { ProgressBar } from '../../components/progress-bar';
 import CodePush from 'react-native-code-push';
 
 let splashScreenHided = false;
@@ -103,6 +103,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const [downloading, setDownloading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
@@ -159,15 +160,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             console.log('UPDATE_INSTALLED');
             setDownloading(false);
             setInstalling(false);
+            setLoaded(true);
             appInitStore.updateDate(Date.now());
             // Hide loading modal
-            // setState({ showDownloadingModal: false });
             break;
         }
       },
       ({ receivedBytes, totalBytes }) => {
         /* Update download modal progress */
-        // setState({ downloadProgress: (receivedBytes / totalBytes) * 100 });
+        setProgress(Math.ceil((receivedBytes / totalBytes) * 100));
       }
     );
   }, []);
@@ -282,10 +283,32 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       >
         Checking for update
       </Text>
-      <Image
-        style={{
-          width: 300,
-          height: 8
+      <View style={{ marginVertical: 12 }}>
+        <Text
+          style={{
+            color: colors['purple-700'],
+            textAlign: 'center',
+            fontSize: 13,
+            lineHeight: 22
+          }}
+        >
+          {progress}%
+        </Text>
+        {/* <Image
+          style={{
+            width: 300,
+            height: 8
+          }}
+          fadeDuration={0}
+          resizeMode="stretch"
+          source={require('../../assets/image/transactions/process_pedding.gif')}
+        /> */}
+        <ProgressBar progress={progress} styles={{ width: 260 }} />
+      </View>
+      <TouchableOpacity
+        onPress={() => {
+          setDownloading(false);
+          setInstalling(false);
         }}
         fadeDuration={0}
         resizeMode="stretch"

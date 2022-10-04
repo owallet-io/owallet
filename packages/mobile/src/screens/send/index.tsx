@@ -1,16 +1,19 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useSendTxConfig } from '@owallet/hooks';
 import { useStore } from '../../stores';
 import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { Dec } from '@owallet/unit';
+
 import {
   AddressInput,
   AmountInput,
   MemoInput,
   CurrencySelector,
-  FeeButtons
+  FeeButtons,
+  TextInput
 } from '../../components/input';
 import { Button } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -19,6 +22,7 @@ import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { CText as Text } from '../../components/text';
+import { Toggle } from '../../components/toggle';
 
 const styles = StyleSheet.create({
   'padding-x-page': {
@@ -42,7 +46,9 @@ const styles = StyleSheet.create({
 
 export const SendScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
-  const safeAreaInsets = useSafeAreaInsets();
+
+  const [customFee, setCustomFee] = useState(false);
+
   const route = useRoute<
     RouteProp<
       Record<
@@ -107,9 +113,11 @@ export const SendScreen: FunctionComponent = observer(() => {
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError() ??
-    sendConfigs.feeConfig.getError();
+    sendConfigs.gasConfig.getError();
+  // ?? sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
+
+  console.log('fee ===', sendConfigs.feeConfig.fee);
 
   return (
     <PageWithScrollView>
@@ -145,13 +153,67 @@ export const SendScreen: FunctionComponent = observer(() => {
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <FeeButtons
-            label="Transaction Fee"
-            gasLabel="gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-            labelStyle={styles.sendlabelInput}
-          />
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingBottom: 24,
+              alignItems: 'center'
+            }}
+          >
+            <Toggle
+              on={customFee}
+              onChange={value => {
+                setCustomFee(value);
+                if (!value) {
+                  if (
+                    sendConfigs.feeConfig.feeCurrency &&
+                    !sendConfigs.feeConfig.fee
+                  ) {
+                    sendConfigs.feeConfig.setFeeType('average');
+                  }
+                }
+              }}
+            />
+            <Text
+              style={{
+                fontWeight: '700',
+                fontSize: 16,
+                lineHeight: 34,
+                paddingHorizontal: 8
+              }}
+            >
+              Custom Fee
+            </Text>
+          </View>
+
+          {customFee && chainStore.current.networkType !== 'evm' ? (
+            <TextInput
+              label="Custom Fee"
+              placeholder="Type your Fee here"
+              keyboardType={'numeric'}
+              labelStyle={styles.sendlabelInput}
+              onChangeText={text => {
+                const gasPrice = new Dec(text.replace(/,/g, '.'));
+                const feeAmount = gasPrice.mul(
+                  new Dec(sendConfigs.gasConfig.gas)
+                );
+
+                sendConfigs.feeConfig.setManualFee({
+                  amount: feeAmount.roundUp().toString(),
+                  denom: sendConfigs.feeConfig.feeCurrency.coinDenom
+                });
+              }}
+            />
+          ) : chainStore.current.networkType !== 'evm' ? (
+            <FeeButtons
+              label="Transaction Fee"
+              gasLabel="gas"
+              feeConfig={sendConfigs.feeConfig}
+              gasConfig={sendConfigs.gasConfig}
+              labelStyle={styles.sendlabelInput}
+            />
+          ) : null}
+
           <MemoInput
             label="Memo (Optional)"
             placeholder="Type your memo here"

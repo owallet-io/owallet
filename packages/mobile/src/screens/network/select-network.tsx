@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Keyboard, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
 import { colors, typography } from '../../themes';
 import { OWalletLogo } from '../register/owallet-logo';
@@ -11,6 +11,7 @@ import { useSimpleTimer } from '../../hooks';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { Bech32Address } from '@owallet/cosmos';
+import RadioGroup from 'react-native-radio-buttons-group';
 
 interface FormData {
   name: string;
@@ -30,6 +31,31 @@ interface FormData {
   feeHigh: number;
 }
 
+export const SelectNetworkType = ({ onSelectNetworkType, modalStore }) => {
+  const [radioButtons, setRadioButtons] = useState([
+    {
+      id: 'cosmos',
+      label: 'Cosmos',
+      value: 'cosmos'
+    },
+    {
+      id: 'evm',
+      label: 'EVM',
+      value: 'evm'
+    }
+  ]);
+
+  function onPressRadioButton(radioButtonsArray) {
+    setRadioButtons(radioButtonsArray);
+    onSelectNetworkType && onSelectNetworkType(radioButtonsArray);
+    modalStore.close();
+  }
+
+  return (
+    <RadioGroup radioButtons={radioButtons} onPress={onPressRadioButton} />
+  );
+};
+
 export const SelectNetworkScreen = () => {
   const {
     control,
@@ -39,8 +65,19 @@ export const SelectNetworkScreen = () => {
     formState: { errors }
   } = useForm<FormData>();
   const { isTimedOut, setTimer } = useSimpleTimer();
-  const { chainStore } = useStore();
+  const { chainStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
+  // const navigation = useNavigation();
+  const _onPressNetworkType = onChange => {
+    Keyboard.dismiss();
+    modalStore.setOpen();
+    modalStore.setChildren(
+      <SelectNetworkType
+        onSelectNetworkType={onChange}
+        modalStore={modalStore}
+      />
+    );
+  };
   const submit = handleSubmit(async () => {
     const {
       name,
@@ -320,12 +357,13 @@ export const SelectNetworkScreen = () => {
               labelStyle={{
                 fontWeight: '700'
               }}
-              onSubmitEditing={() => {
-                submit();
-              }}
+              // onSubmitEditing={() => {
+              //   submit();
+              // }}
               error={errors.networkType?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
+              // onBlur={onBlur}
+              // onChangeText={onChange}
+              onFocus={() => _onPressNetworkType(onChange)}
               value={value}
               ref={ref}
             />
@@ -337,16 +375,16 @@ export const SelectNetworkScreen = () => {
       <Controller
         control={control}
         rules={{
-          required: 'Bech32 config is required'
+          required: 'Bech32 Prefix is required'
         }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="Bech32 Config"
+              label="Bech32 Prefix"
               inputStyle={{
                 ...styles.borderInput
               }}
-              placeholder={'Bech32 Config'}
+              placeholder={'Bech32 Prefix'}
               labelStyle={{
                 fontWeight: '700'
               }}

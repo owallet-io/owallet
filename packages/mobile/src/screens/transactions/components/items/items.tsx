@@ -46,16 +46,16 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
         msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
       )
     ) {
-      const msg = item?.messages?.find(msg => {
-        return getTxTypeNew(msg['@type']) === 'MsgRecvPacket';
+      const msg = item?.messages?.find(m => {
+        return getTxTypeNew(m['@type']) === 'MsgRecvPacket';
       });
 
       const msgRec = JSON.parse(
         Buffer.from(msg?.packet?.data, 'base64').toString('ascii')
       );
       amount = msgRec;
-      const port = item?.message?.packet?.destination_port;
-      const channel = item?.message?.packet?.destination_channel;
+      // const port = item?.message?.packet?.destination_port;
+      // const channel = item?.message?.packet?.destination_channel;
     } else if (
       item?.messages?.find(msg => getTxTypeNew(msg['@type']) === 'MsgTransfer')
     ) {
@@ -63,12 +63,12 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
         return;
       }
       const rawLog = JSON.parse(item?.raw_log);
-      const rawLogParse = parseIbcMsgTransfer(rawLog);
+      // const rawLogParse = parseIbcMsgTransfer(rawLog);
       // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
       const type = getTxTypeNew(
-        item?.messages[item?.messages?.length - 1]['@type'],
+        item?.messages?.[item?.messages?.length - 1]['@type'],
         item?.raw_log,
         item?.result
       );
@@ -88,14 +88,14 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
           color:
             getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
             item?.messages?.[0]?.from_address &&
-            address === item.messages[0].from_address
+            address === item?.messages?.[0]?.from_address
               ? colors['red-500']
               : colors['green-500']
         }}
       >
         {getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
         item?.messages?.[0]?.from_address &&
-        address === item.messages[0].from_address
+        address === item?.messages?.[0]?.from_address
           ? '-'
           : '+'}
         {amount && !amount?.denom?.startsWith('u')
@@ -144,10 +144,51 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
             style={{
               ...styles.textAmount,
               marginTop: spacing['8'],
-              textTransform: 'uppercase',
-              color: amount?.includes?.('-')
-                ? colors['red-500']
-                : colors['green-500']
+              textTransform: 'uppercase'
+              // color:
+              //   amount == 0 || title === 'Received Token' || title === 'Reward'
+              //     : colors['red-500']
+            }}
+          >
+            {/* {amount == 0 || title === 'Received Token' || title === 'Reward'
+            ? '+'
+            : '-'} */}
+            {formatOrai(item.amount ?? 0, item.decimal)} {item.symbol}
+          </Text>
+        </View>
+      </View>
+    ) : (
+      <View
+        style={{
+          ...styles.innerButton,
+          flex: 1
+        }}
+      >
+        <View>
+          <Text
+            style={{
+              ...styles.textInfo
+            }}
+          >
+            {getTxTypeNew(
+              item?.messages?.[item?.messages?.length - 1]['@type'],
+              item?.raw_log,
+              item?.result
+            )}
+          </Text>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end'
+          }}
+        >
+          <Text
+            style={{
+              ...styles.textInfo,
+              color: colors['gray-300']
             }}
           >
             {convertAmount(amount)} {denom}
