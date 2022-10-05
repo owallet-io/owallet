@@ -5,7 +5,14 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  Image,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { observer } from 'mobx-react-lite';
 import * as SplashScreen from 'expo-splash-screen';
 import { TextInput } from '../../components/input';
@@ -232,6 +239,20 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigation]);
+
+  useEffect(() => {
+    const appStateHandler = (state: AppStateStatus) => {
+      if (state !== 'active') {
+        setDownloading(false);
+        setInstalling(false);
+      }
+    };
+    AppState.addEventListener('change', appStateHandler);
+
+    return () => {
+      AppState.removeEventListener('change', appStateHandler);
+    };
+  }, []);
 
   useEffect(() => {
     if (keyRingStore.status === KeyRingStatus.UNLOCKED) {

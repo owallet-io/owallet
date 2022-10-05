@@ -134,22 +134,10 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
     >
       <View
         style={{
-          justifyContent: 'space-between',
-          flexDirection: 'row',
-          width: '100%',
-          alignItems: 'center'
+          alignItems: 'flex-end',
+          width: '100%'
         }}
       >
-        <View style={{ width: '30%' }} />
-        <Text
-          style={{
-            ...typography.h6,
-            fontWeight: '900',
-            color: colors['gray-900']
-          }}
-        >
-          {`Select networks`}
-        </Text>
         <TouchableOpacity
           onPress={() => {
             smartNavigation.navigateSmart('Network.select', {});
@@ -158,15 +146,24 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
         >
           <Text
             style={{
-              ...typography.h7,
-              fontWeight: '600',
-              color: colors['gray-900']
+              fontSize: 12,
+              fontWeight: '700',
+              color: colors['purple-700']
             }}
           >
-            + Add network
+            + Add more
           </Text>
         </TouchableOpacity>
       </View>
+      <Text
+        style={{
+          ...typography.h6,
+          fontWeight: '900',
+          color: colors['gray-900']
+        }}
+      >
+        {`Select networks`}
+      </Text>
 
       <View
         style={{

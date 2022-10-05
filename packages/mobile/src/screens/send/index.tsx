@@ -153,7 +153,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               paddingBottom: 24,
@@ -184,7 +184,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               Custom Fee
             </Text>
-          </View>
+          </View> */}
 
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput

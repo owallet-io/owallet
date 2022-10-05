@@ -1,4 +1,5 @@
 export * from './arrow';
+export * from './add-more';
 export * from './arrow-down';
 export * from './copy';
 export * from './plus';
