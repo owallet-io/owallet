@@ -345,54 +345,54 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['ibc-go', 'stargate', 'isEvm']
   },
-  // {
-  //   rpc: 'https://rpc-cosmoshub.keplr.app',
-  //   rest: 'https://lcd-cosmoshub.keplr.app',
-  //   chainId: 'cosmoshub-4',
-  //   chainName: 'Cosmos Hub',
-  //   networkType: 'cosmos',
-  //   stakeCurrency: {
-  //     coinDenom: 'ATOM',
-  //     coinMinimalDenom: 'uatom',
-  //     coinDecimals: 6,
-  //     coinGeckoId: 'cosmos',
-  //     coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
-  //   },
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('cosmos'),
-  //   currencies: [
-  //     {
-  //       coinDenom: 'ATOM',
-  //       coinMinimalDenom: 'uatom',
-  //       coinDecimals: 6,
-  //       coinGeckoId: 'cosmos',
-  //       coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
-  //     }
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: 'ATOM',
-  //       coinMinimalDenom: 'uatom',
-  //       coinDecimals: 6,
-  //       coinGeckoId: 'cosmos',
-  //       coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
-  //     }
-  //   ],
-  //   coinType: 118,
-  //   gasPriceStep: {
-  //     low: 0,
-  //     average: 0.025,
-  //     high: 0.04
-  //   },
-  //   features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
-  //   chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
-  //   txExplorer: {
-  //     name: 'Mintscan',
-  //     txUrl: 'https://www.mintscan.io/cosmos/txs/{txHash}'
-  //   }
-  // },
+  {
+    rpc: 'https://rpc-cosmoshub.keplr.app',
+    rest: 'https://lcd-cosmoshub.keplr.app',
+    chainId: 'cosmoshub-4',
+    chainName: 'Cosmos Hub',
+    networkType: 'cosmos',
+    stakeCurrency: {
+      coinDenom: 'ATOM',
+      coinMinimalDenom: 'uatom',
+      coinDecimals: 6,
+      coinGeckoId: 'cosmos',
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+    },
+    bip44: {
+      coinType: 118
+    },
+    bech32Config: Bech32Address.defaultBech32Config('cosmos'),
+    currencies: [
+      {
+        coinDenom: 'ATOM',
+        coinMinimalDenom: 'uatom',
+        coinDecimals: 6,
+        coinGeckoId: 'cosmos',
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+      }
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: 'ATOM',
+        coinMinimalDenom: 'uatom',
+        coinDecimals: 6,
+        coinGeckoId: 'cosmos',
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+      }
+    ],
+    coinType: 118,
+    gasPriceStep: {
+      low: 0,
+      average: 0.025,
+      high: 0.04
+    },
+    features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
+    chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
+    txExplorer: {
+      name: 'Mintscan',
+      txUrl: 'https://www.mintscan.io/cosmos/txs/{txHash}'
+    }
+  },
 
   {
     rpc: 'https://rpc-osmosis.keplr.app',
