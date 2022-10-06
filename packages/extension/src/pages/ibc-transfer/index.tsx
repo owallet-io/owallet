@@ -31,7 +31,7 @@ export const IBCTransferPage: FunctionComponent = observer(() => {
 
   const [phase, setPhase] = useState<'channel' | 'amount'>('channel');
 
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 

@@ -9,6 +9,7 @@ import {
   onBecomeUnobserved,
   reaction
 } from 'mobx';
+
 import Axios, { AxiosInstance, CancelToken, CancelTokenSource } from 'axios';
 import { KVStore, toGenerator } from '@owallet/common';
 import { DeepReadonly } from 'utility-types';
@@ -139,7 +140,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
 
   @action
   private stop() {
-    if (this.isStarted) {
+    if (this._isStarted) {
       this.onStop();
       this._isStarted = false;
     }
@@ -208,7 +209,6 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
     }
 
     this._isFetching = true;
-    this.cancelToken = Axios.CancelToken.source();
 
     // If there is no existing response, try to load saved reponse.
     if (!this._response) {
@@ -226,8 +226,10 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       });
     }
 
+    this.cancelToken = Axios.CancelToken.source();
+
     try {
-      const response = yield* toGenerator(
+      let response = yield* toGenerator(
         this.fetchResponse(this.cancelToken.token)
       );
       if (

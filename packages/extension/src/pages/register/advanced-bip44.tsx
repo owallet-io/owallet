@@ -98,7 +98,17 @@ export const AdvancedBIP44Option: FunctionComponent<{
         await confirm.confirm({
           paragraph: intl.formatMessage({
             id: 'register.bip44.confirm.clear'
-          })
+          }),
+          styleParagraph: {
+            color: '#A6A6B0'
+          },
+          yes: 'Yes',
+          no: 'No',
+          styleNoBtn: {
+            background: '#F5F5FA',
+            border: '1px solid #3B3B45',
+            color: '#3B3B45'
+          }
         })
       ) {
         setIsOpen(false);
@@ -121,10 +131,11 @@ export const AdvancedBIP44Option: FunctionComponent<{
           e.preventDefault();
           toggleOpen();
         }}
-        style={{ color: '#8f63ec' }}
+        style={{ color: '#8f63ec', border: '1px solid #7664e4' }}
       >
         <FormattedMessage id="register.bip44.button.advanced" />
       </Button>
+      <div style={{ height: 10 }} />
       {isOpen ? (
         <FormGroup>
           <Label target="bip44-path" className="form-control-label">
@@ -274,6 +285,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
           </div>
         </FormGroup>
       ) : null}
+      <div style={{ height: 10 }} />
     </React.Fragment>
   );
 });

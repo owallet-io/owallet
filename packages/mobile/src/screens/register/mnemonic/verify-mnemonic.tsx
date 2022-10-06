@@ -22,7 +22,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoadingSpinner } from '../../../components/spinner';
 import { OWalletLogo } from '../owallet-logo';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
+export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -38,7 +38,6 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
   >();
 
   const { analyticsStore } = useStore();
-
   const smartNavigation = useSmartNavigation();
 
   const registerConfig = route.params.registerConfig;
@@ -189,7 +188,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(() => {
             registerType: 'seed',
             accountType: 'mnemonic'
           });
-          if (checkRouter(route.name, 'RegisterVerifyMnemonicMain')) {
+          if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
             navigate('RegisterEnd', {
               password: newMnemonicConfig.password,
               type: 'new'

@@ -24,7 +24,7 @@
 
 .container-account-inner {
   .image-wrap {
-    background-image: url("../../public/assets/img/account-inner.png");
+    // background-image: url("../../public/assets/img/account-inner.png");
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
     border-radius: 8px;
@@ -36,7 +36,7 @@
 
 .card {
   margin-bottom: $layout-margin;
-  background-color: #3b3b45 !important;
+  // background-color: #3b3b45 !important;
 
   &:last-of-type {
     margin-bottom: 0;

@@ -4,7 +4,10 @@ import { ChainGetter } from '@owallet/stores';
 import { action, makeObservable, observable } from 'mobx';
 import { useState } from 'react';
 
-export class FeeEthereumConfig extends TxChainSetter implements IFeeEthereumConfig {
+export class FeeEthereumConfig
+  extends TxChainSetter
+  implements IFeeEthereumConfig
+{
   /*
    This field is used to handle the value from the input more flexibly.
    We use string because there is no guarantee that only number is input in input component.
@@ -48,13 +51,19 @@ export class FeeEthereumConfig extends TxChainSetter implements IFeeEthereumConf
 
   @action
   setFee(fee: string) {
-    // if (typeof fee === 'number') {
-    //   // this._feeRaw = Math.floor(fee).toString();
-    //   return;
-    // }
+    if (fee.startsWith('.')) {
+      fee = '0' + fee;
+    }
 
     this._feeRaw = fee;
     return;
+    // if (typeof fee === 'number') {
+    //   this._feeRaw = Math.floor(fee).toString();
+    //   return;
+    // }
+
+    // // this._feeRaw = fee;
+    // // return;
 
     // if (fee === '') {
     //   this._feeRaw = fee;
@@ -63,9 +72,9 @@ export class FeeEthereumConfig extends TxChainSetter implements IFeeEthereumConf
 
     // // Gas must not be floated.
     // if (typeof fee === 'string') {
-    //   // if (!Number.isNaN(Number.parseInt(fee))) {
-    //   //   return;
-    //   // }
+    //   if (!Number.isNaN(Number.parseInt(fee))) {
+    //     return;
+    //   }
     //   this._feeRaw = fee;
     //   return;
     // }

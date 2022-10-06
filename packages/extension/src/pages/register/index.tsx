@@ -24,7 +24,8 @@ import {
   TypeImportLedger
 } from './ledger';
 import { WelcomePage } from './welcome';
-import { AdditionalSignInPrepend } from '@owallet/common';
+
+export const AdditionalSignInPrepend: RegisterOption[] | undefined = undefined;
 
 export enum NunWords {
   WORDS12,
@@ -54,7 +55,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
   }, []);
 
   const { keyRingStore } = useStore();
-
+  
   const registerConfig = useRegisterConfig(keyRingStore, [
     ...(AdditionalSignInPrepend ?? []),
     {
@@ -73,11 +74,12 @@ export const RegisterPage: FunctionComponent = observer(() => {
       page: ImportLedgerPage
     }
   ]);
-
   return (
     <EmptyLayout
       className={style.container}
-      style={{ padding: 0, overflowY: 'auto', height: '100vh' }}
+      style={{ 
+        justifyContent: registerConfig.isIntro || registerConfig.isFinalized ? 'center' : 'start'
+      }}
     >
       <div className={style.logoContainer}>
         <div>
@@ -93,19 +95,19 @@ export const RegisterPage: FunctionComponent = observer(() => {
             src={require('../../public/assets/logo.svg')}
             alt="logo"
           />
-          <div className={style.paragraph}>Wallet for the Interchain</div>
+          <div className={style.paragraph}>Cosmos x EVM in one Wallet</div>
         </div>
       </div>
       {registerConfig.render()}
       {registerConfig.isFinalized ? <WelcomePage /> : null}
       {registerConfig.isIntro ? (
         <div className={style.subContent}>
-          <FormattedMessage
+          {/* <FormattedMessage
             id="register.intro.sub-content"
             values={{
               br: <br />
             }}
-          />
+          /> */}
         </div>
       ) : null}
     </EmptyLayout>

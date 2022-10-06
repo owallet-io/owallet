@@ -15,9 +15,10 @@ export class Header extends React.Component<HeaderProps> {
 
     return (
       <div className={classnames(["header", { fixed }])}>
-        <div className="header-menu-left">{left}</div>
-        <div className="header-section">{children}</div>
-        <div className="header-menu-right">{right}</div>
+        {/* <div className="header-menu-left">{left}</div> */}
+        {/* <div className="header-section">{children}</div> */}
+        {/* <div className="header-menu-right">{right}</div> */}
+        {children}
       </div>
     );
   }

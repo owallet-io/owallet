@@ -229,7 +229,7 @@ export const AddressBookPage: FunctionComponent<{
                   alt=""
                   style={{ marginRight: 4 }}
                 />
-                <span>
+                <span style={{ fontSize: 12, fontWeight: 600 }}>
                   <FormattedMessage id="setting.address-book.button.add" />
                 </span>
               </div>
@@ -238,9 +238,36 @@ export const AddressBookPage: FunctionComponent<{
           <div>
             <Input
               type={'text'}
+              classNameInputGroup={styleAddressBook.inputGroup}
+              className={styleAddressBook.input}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+              }}
+              placeholder={'Search Name/Address'}
+              append={
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 50,
+                    backgroundColor: 'rgba(230, 232, 236, 0.2)'
+                  }}
+                >
+                  <img
+                    src={require('../../../public/assets/img/light.svg')}
+                    alt=""
+                  />
+                </div>
+              }
+            />
+            {/* <Input
+              type={'text'}
               styleInputGroup={{
                 display: 'flex',
-                flexDirection: 'row-reverse'
+                flexDirection: 'row-reverse',
+                boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
               }}
               value={search}
               onChange={(e) => {
@@ -262,7 +289,7 @@ export const AddressBookPage: FunctionComponent<{
                   />
                 </div>
               }
-            />
+            /> */}
           </div>
           <div style={{ flex: '1 1 0', overflowY: 'auto' }}>
             {addressBookList.map((data, i) => {
@@ -279,6 +306,17 @@ export const AddressBookPage: FunctionComponent<{
                       : data.address
                   }
                   subParagraph={data.memo}
+                  styleParagraph={{
+                    maxWidth: 220,
+                    fontWeight: 500,
+                    fontSize: 14,
+                    color: '#777E90'
+                  }}
+                  styleTitle={{
+                    fontWeight: 600,
+                    fontSize: 14,
+                    color: '#353945'
+                  }}
                   // icons={addressBookIcons(i, data.name)}
                   data-index={i}
                   icons={[

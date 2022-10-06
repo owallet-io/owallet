@@ -6,7 +6,13 @@ import { DenomHelper } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
 import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
-import { HasCosmosQueries, HasEvmQueries, QueriesSetBase, QueriesStore } from '../query';
+
+import {
+  HasCosmosQueries,
+  HasEvmQueries,
+  QueriesSetBase,
+  QueriesStore
+} from '../query';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter, StdFeeEthereum } from '../common';
 
@@ -30,9 +36,9 @@ export class AccountWithEthereum
     send: {
       native: {
         type: 'send',
-        gas: 80000,
-      },
-    },
+        gas: 80000
+      }
+    }
   };
 
   constructor(
@@ -49,7 +55,12 @@ export class AccountWithEthereum
   ) {
     super(eventListener, chainGetter, chainId, queriesStore, opts);
 
-    this.ethereum = new EthereumAccount(this, chainGetter, chainId, queriesStore);
+    this.ethereum = new EthereumAccount(
+      this,
+      chainGetter,
+      chainId,
+      queriesStore
+    );
   }
 }
 
@@ -78,14 +89,59 @@ export class EthereumAccount {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    extraOptions?: {
+      from: string;
+      contract_addr: string;
+      token_id?: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+      gas?: string;
+    }
   ): Promise<boolean> {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-    console.log(stdFee, "STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!")
+    console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
 
-    if (signOptions.networkType === "evm") {
-
+    if (signOptions.networkType === 'evm') {
       switch (denomHelper.type) {
+        case 'erc20':
+          const realAmount = (() => {
+            let dec = new Dec(amount);
+            dec = dec.mul(
+              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+            );
+            return dec.truncate().toString();
+          })();
+
+          await this.base.sendEvmMsgs(
+            'send',
+            {
+              type: 'erc20',
+              value: { ...extraOptions, amount: realAmount }
+            },
+            memo,
+            {
+              gas: '0x' + parseInt(stdFee.gas).toString(16),
+              gasPrice: stdFee.gasPrice
+            },
+            signOptions,
+            this.txEventsWithPreOnFulfill(onTxEvents, tx => {
+              console.log('Tx on fullfill: ', tx);
+              if (tx) {
+                // After succeeding to send token, refresh the balance.
+                const queryEvmBalance =
+                  this.queries.evm.queryEvmBalance.getQueryBalance(
+                    this.base.evmosHexAddress
+                  );
+
+                if (queryEvmBalance) {
+                  queryEvmBalance.fetch();
+                }
+              }
+            })
+          );
+          return true;
         case 'native':
           const actualAmount = (() => {
             let dec = new Dec(amount);
@@ -94,7 +150,7 @@ export class EthereumAccount {
             );
             return dec.truncate().toString();
           })();
-  
+
           const msg = {
             type: this.base.msgOpts.send.native.type,
             value: {
@@ -103,27 +159,30 @@ export class EthereumAccount {
               amount: [
                 {
                   denom: currency.coinMinimalDenom,
-                  amount: actualAmount,
-                },
-              ],
-            },
+                  amount: actualAmount
+                }
+              ]
+            }
           };
-    
+
           await this.base.sendEvmMsgs(
             'send',
             msg,
             memo,
             {
-              gas: stdFee.gas,
-              gasPrice: stdFee.gasPrice,
+              gas: '0x' + parseInt(stdFee.gas).toString(16),
+              gasPrice: stdFee.gasPrice
             },
             signOptions,
-            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              console.log("Tx on fullfill: ", tx)
+            this.txEventsWithPreOnFulfill(onTxEvents, tx => {
+              console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress)
-  
+                const queryEvmBalance =
+                  this.queries.evm.queryEvmBalance.getQueryBalance(
+                    this.base.evmosHexAddress
+                  );
+
                 if (queryEvmBalance) {
                   queryEvmBalance.fetch();
                 }
@@ -173,7 +232,7 @@ export class EthereumAccount {
                 onFulfill(tx);
               }
             }
-          : undefined,
+          : undefined
     };
   }
 

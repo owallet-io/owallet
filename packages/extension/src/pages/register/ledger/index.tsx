@@ -21,6 +21,7 @@ interface FormData {
 export const ImportLedgerIntro: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
+  const { analyticsStore } = useStore();
   return (
     <Button
       color=""
@@ -54,6 +55,8 @@ export const ImportLedgerPage: FunctionComponent<{
       confirmPassword: ''
     }
   });
+
+  const { analyticsStore } = useStore();
 
   return (
     <div>
@@ -102,7 +105,7 @@ export const ImportLedgerPage: FunctionComponent<{
         />
         {registerConfig.mode === 'create' ? (
           <React.Fragment>
-            <Input
+            <PasswordInput
               label={intl.formatMessage({
                 id: 'register.create.input.password'
               })}
@@ -124,13 +127,14 @@ export const ImportLedgerPage: FunctionComponent<{
               })}
               error={errors.password && errors.password.message}
             />
-            <Input
+            <PasswordInput
               label={intl.formatMessage({
                 id: 'register.create.input.confirm-password'
               })}
               styleInputGroup={{
                 border: '1px solid rgba(8, 4, 28, 0.12)'
               }}
+              style={{ position: 'relative'}}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({

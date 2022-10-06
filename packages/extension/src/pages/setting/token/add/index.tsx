@@ -62,13 +62,6 @@ export const AddTokenPage: FunctionComponent = observer(() => {
     }
   }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const queryContractInfo = queries.secret.querySecret20ContractInfo.getQueryContract(
-    contractAddress
-  );
-
-  const tokenInfo = queryContractInfo.tokenInfo;
-
   const isSecret20 =
     (chainStore.current.features ?? []).find(
       (feature) => feature === 'secretwasm'
@@ -109,7 +102,8 @@ export const AddTokenPage: FunctionComponent = observer(() => {
   };
 
   return (
-    <>
+    <div style={{ padding: 20 }}>
+      <div style={{ fontSize: 24, textAlign: 'center', paddingBottom: 30 }}>Add Token</div>
       <Form
         className={style.container}
         onSubmit={form.handleSubmit(async (data) => {
@@ -224,6 +218,8 @@ export const AddTokenPage: FunctionComponent = observer(() => {
           label={intl.formatMessage({
             id: 'setting.token.add.contract-address'
           })}
+          classNameInputGroup={style.inputGroup}
+          className={style.input}
           name="contractAddress"
           autoComplete="off"
           readOnly={tokensStore.waitingSuggestedToken != null}
@@ -259,11 +255,23 @@ export const AddTokenPage: FunctionComponent = observer(() => {
           label={intl.formatMessage({
             id: 'setting.token.add.name'
           })}
+          styleInputGroup={{
+            boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+          }}
+          style={{
+            color: '#353945'
+          }}
           value={tokenInfo?.name ?? '-'}
           readOnly={true}
         />
         <Input
           type="text"
+          style={{
+            color: '#353945'
+          }}
+          styleInputGroup={{
+            boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+          }}
           label={intl.formatMessage({
             id: 'setting.token.add.symbol'
           })}
@@ -271,6 +279,12 @@ export const AddTokenPage: FunctionComponent = observer(() => {
           readOnly={true}
         />
         <Input
+          style={{
+            color: '#353945'
+          }}
+          styleInputGroup={{
+            boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
+          }}
           type="text"
           label={intl.formatMessage({
             id: 'setting.token.add.decimals'
@@ -327,6 +341,6 @@ export const AddTokenPage: FunctionComponent = observer(() => {
           <FormattedMessage id="setting.token.add.button.submit" />
         </Button>
       </Form>
-    </>
+    </div>
   );
 });

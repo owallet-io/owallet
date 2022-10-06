@@ -20,7 +20,7 @@ import { ClearPage } from '../clear';
 export const SetKeyRingPage: FunctionComponent = observer(() => {
   const intl = useIntl();
 
-  const { keyRingStore } = useStore();
+  const { keyRingStore, analyticsStore } = useStore();
   const history = useHistory();
 
   const loadingIndicator = useLoadingIndicator();
@@ -56,7 +56,7 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
               alt=""
               style={{ marginRight: 4 }}
             />
-            <span>
+            <span style={{ fontSize: 12, fontWeight: 600 }}>
               <FormattedMessage id="setting.address-book.button.add" />
             </span>
           </div>
@@ -257,7 +257,7 @@ export const AccountSettingModal: FunctionComponent<{
     return (
       <Modal isOpen={isOpen} toggle={toggle} centered>
         <ModalBody>
-          <AccountTitleSettingModal type={typeSettingAccount} toggle={toggle}/>
+          <AccountTitleSettingModal type={typeSettingAccount} toggle={toggle} />
           {typeSettingAccount === 'view' && (
             <ExportPage indexExport={index.toString()} keyStore={keyStore} />
           )}
@@ -306,17 +306,19 @@ export const AccountTitleSettingModal: FunctionComponent<{
           />
         </div>
       )}
-      <div
-        style={
-          styleAccount ?? {
-            textAlign: 'center',
-            color: '#434193',
-            fontSize: 24
+      {type && (
+        <div
+          style={
+            styleAccount ?? {
+              textAlign: 'center',
+              color: '#434193',
+              fontSize: 24
+            }
           }
-        }
-      >
-        {text}
-      </div>
+        >
+          {text}
+        </div>
+      )}
       <div style={{ height: 20 }} />
     </>
   );

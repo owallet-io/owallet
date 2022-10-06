@@ -67,7 +67,7 @@ async getOWallet(): Promise<OWallet | undefined> {
 }
 ```
 
-There may be multiple ways to achieve the same result, and not one method is preferred over the other.
+There may be multiple ways to achieve the same result, and no preferred method.
 
 ## OWallet-specific features
 

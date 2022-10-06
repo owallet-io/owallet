@@ -97,6 +97,7 @@ export const colors = {
   'purple-400': '#AE94DE',
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
+  "purple-h1": "#7E58EA",
 
   // yellow
   'yellow-10': '#FFF6E9',

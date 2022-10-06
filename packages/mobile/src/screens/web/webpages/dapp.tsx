@@ -1,6 +1,6 @@
-import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { FunctionComponent } from 'react';
-import { WebpageScreen } from '../components/webpage-screen';
+import { RouteProp, useRoute } from "@react-navigation/native";
+import React, { FunctionComponent } from "react";
+import { WebpageScreen } from "../components/webpage-screen";
 
 export const DAppWebpageScreen: FunctionComponent = () => {
   const route = useRoute<
@@ -17,5 +17,6 @@ export const DAppWebpageScreen: FunctionComponent = () => {
     >
   >();
   const { uri, name } = route.params;
+
   return <WebpageScreen name={name} source={{ uri }} />;
 };

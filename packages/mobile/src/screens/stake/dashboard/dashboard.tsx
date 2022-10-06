@@ -1,29 +1,47 @@
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { StyleSheet, View, Image } from 'react-native';
 import { colors, typography, spacing, metrics } from '../../../themes';
 import { CText as Text } from '../../../components/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ArrowOpsiteUpDownIcon } from '../../../components/icon';
 import { _keyExtract } from '../../../utils/helper';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { MyRewardCard } from './reward-card';
 import { DelegationsCard } from './delegations-card';
 import { useStore } from '../../../stores';
 import { observer } from 'mobx-react-lite';
+import { API } from '../../../common/api';
 
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();
   const { chainStore, accountStore, queriesStore } = useStore();
+  const [validators, setValidators] = useState([]);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const staked = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  ).total;
+  useEffect(() => {
+    (async function get() {
+      try {
+        const res = await API.getValidatorList(
+          {},
+          {
+            baseURL: 'https://api.scan.orai.io'
+          }
+        );
+        setValidators(res.data.data);
+      } catch (error) {}
+    })();
+  }, []);
+
+  const staked =
+    chainStore.current.networkType === 'cosmos'
+      ? queries.cosmos.queryDelegations.getQueryBech32Address(
+          account.bech32Address
+        ).total
+      : null;
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -45,32 +63,54 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
             ...styles.containerMyStaking
           }}
         >
-          <MyRewardCard />
-          <View
-            style={{
-              alignItems: 'flex-start',
-              justifyContent: 'center',
-              marginTop: spacing['32']
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                ...styles.containerBtnClaim,
-                height: 40
-              }}
-              onPress={() => {
-                smartNavigation.navigate('Validator.List', {});
-              }}
-            >
+          {chainStore.current.networkType === 'cosmos' ? (
+            <MyRewardCard />
+          ) : (
+            <View style={{ alignItems: 'center' }}>
+              <Image
+                source={require('../../../assets/image/not_found.png')}
+                resizeMode="contain"
+                height={142}
+                width={142}
+              />
               <Text
                 style={{
-                  ...typography.h7,
-                  fontWeight: '700',
-                  color: colors['white']
+                  ...typography.h4,
+                  fontWeight: '400',
+                  marginVertical: spacing['52']
                 }}
-              >{`Stake now`}</Text>
-            </TouchableOpacity>
-          </View>
+              >{`No result found`}</Text>
+            </View>
+          )}
+
+          {chainStore.current.networkType === 'cosmos' ? (
+            <View
+              style={{
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                marginTop: spacing['32']
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  ...styles.containerBtnClaim,
+                  height: 40
+                }}
+                onPress={() => {
+                  smartNavigation.navigate('Validator.List', {});
+                }}
+              >
+                <Text
+                  style={{
+                    ...typography.h7,
+                    fontWeight: '700',
+                    color: colors['white']
+                  }}
+                >{`Stake now`}</Text>
+              </TouchableOpacity>
+            </View>
+          ) : null}
+
           <View
             style={{
               position: 'absolute',
@@ -78,41 +118,48 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               bottom: 0
             }}
           >
-            <Image
-              style={{
-                width: 148,
-                height: 148
-              }}
-              source={require('../../../assets/image/stake_gift.png')}
-              resizeMode="contain"
-              fadeDuration={0}
-            />
+            {chainStore.current.networkType === 'cosmos' ? (
+              <Image
+                style={{
+                  width: 148,
+                  height: 148
+                }}
+                source={require('../../../assets/image/stake_gift.png')}
+                resizeMode="contain"
+                fadeDuration={0}
+              />
+            ) : null}
           </View>
         </View>
 
         <View>
-          <View
-            style={{
-              ...styles.containerTitle
-            }}
-          >
-            <Text
+          {chainStore.current.networkType === 'cosmos' ? (
+            <View
               style={{
-                ...typography.h6,
-                fontWeight: '600'
+                ...styles.containerTitle
               }}
             >
               <Text
                 style={{
-                  fontWeight: '400'
+                  ...typography.h6,
+                  fontWeight: '600'
                 }}
               >
-                Total stake:{' '}
+                <Text
+                  style={{
+                    fontWeight: '400'
+                  }}
+                >
+                  Total stake:{' '}
+                </Text>
+                {`${staked.maxDecimals(6).trim(true).shrink(true).toString()}`}
               </Text>
-              {`${staked.maxDecimals(6).trim(true).shrink(true).toString()}`}
-            </Text>
-          </View>
-          <DelegationsCard />
+            </View>
+          ) : null}
+
+          {chainStore.current.networkType === 'cosmos' ? (
+            <DelegationsCard validatorList={validators} />
+          ) : null}
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>

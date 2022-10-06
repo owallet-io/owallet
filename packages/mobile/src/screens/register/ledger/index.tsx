@@ -10,6 +10,7 @@ import { TextInput } from '../../../components/input';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { useStore } from '../../../stores';
+import { Button } from '../../../components/button';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import {
   checkRouter,
@@ -69,13 +70,12 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         getValues('password'),
         bip44Option.bip44HDPath
       );
-      analyticsStore.setUserId();
       analyticsStore.setUserProperties({
         registerType: 'ledger',
         accountType: 'ledger'
       });
 
-      if (checkRouter(route.name, 'RegisterNewLedgerMain')) {
+      if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
         navigate('RegisterEnd', {
           password: getValues('password')
         });
@@ -167,7 +167,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       />
       {/* <BIP44AdvancedButton bip44Option={bip44Option} /> */}
       {mode === 'create' ? (
-        <>
+        <React.Fragment>
           <Controller
             control={control}
             rules={{
@@ -183,6 +183,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
                 <TextInput
                   label="Password"
                   returnKeyType="next"
+                  secureTextEntry={true}
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
                   }}
@@ -268,7 +269,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             name="confirmPassword"
             defaultValue=""
           />
-        </>
+        </React.Fragment>
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={{ height: 20 }} />
@@ -296,7 +297,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       <View
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
-            route.name,
+            props?.route?.name,
             'RegisterNewLedgerMain'
           )
         }}
@@ -309,7 +310,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             fontSize: 16
           }}
           onPress={() => {
-            if (checkRouter(route.name, 'RegisterNewLedgerMain')) {
+            if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
               smartNavigation.goBack();
             } else {
               smartNavigation.navigateSmart('Register.Intro', {});

@@ -45,6 +45,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable
   protected additionAmountToNeedFee: boolean = true;
 
+  @observable
+  protected _disableBalanceCheck: boolean = false;
+
   constructor(
     chainGetter: ChainGetter,
     initialChainId: string,
@@ -201,9 +204,10 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     const feeTypePrimitive = this.getFeeTypePrimitive(feeType);
     const feeCurrency = this.feeCurrency;
 
-    return new CoinPretty(feeCurrency, new Int(feeTypePrimitive.amount))
-      .precision(feeCurrency.coinDecimals)
-      .maxDecimals(feeCurrency.coinDecimals);
+    return new CoinPretty(
+      feeCurrency,
+      new Int(feeTypePrimitive.amount)
+    ).maxDecimals(feeCurrency.coinDecimals);
   });
 
   getError(): Error | undefined {
@@ -278,6 +282,15 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     } catch (error) {
         console.log("Error on get fees: ", error);
     }
+  }
+
+  @action
+  setDisableBalanceCheck(bool: boolean) {
+    this._disableBalanceCheck = bool;
+  }
+
+  get disableBalanceCheck(): boolean {
+    return this._disableBalanceCheck;
   }
 }
 

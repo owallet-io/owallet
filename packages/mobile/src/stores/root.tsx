@@ -20,9 +20,8 @@ import { ChainStore } from './chain';
 import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import { AppInit, appInit } from './app_init';
 import EventEmitter from 'eventemitter3';
-import { OWallet } from '@owallet/provider';
+import { OWallet, Ethereum } from '@owallet/provider';
 import { KeychainStore } from './keychain';
-import { WalletConnectStore } from './wallet-connect';
 import { FeeType } from '@owallet/hooks';
 import {
   AmplitudeApiKey,
@@ -80,6 +79,7 @@ export class RootStore {
   >;
 
   public readonly deepLinkUriStore: DeepLinkStore;
+  public readonly browserStore: BrowserStore;
   public readonly modalStore: ModalStore;
   public readonly appInitStore: AppInit;
 
@@ -135,7 +135,7 @@ export class RootStore {
       QueriesWithCosmosAndSecretAndCosmwasmAndEvm
     );
 
-    this.accountStore = new AccountStore(
+    this.accountStore = new AccountStore<AccountWithAll>(
       {
         addEventListener: (type: string, fn: () => void) => {
           eventEmitter.addListener(type, fn);
@@ -144,7 +144,7 @@ export class RootStore {
           eventEmitter.removeListener(type, fn);
         }
       },
-      AccountWithCosmosAndSecret,
+      AccountWithAll,
       this.chainStore,
       this.queriesStore,
       {
@@ -212,6 +212,7 @@ export class RootStore {
       24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
+      this.queriesStore,
       this.queriesStore
     );
 
@@ -220,21 +221,6 @@ export class RootStore {
     this.keychainStore = new KeychainStore(
       new AsyncKVStore('store_keychain'),
       this.keyRingStore
-    );
-
-    this.walletConnectStore = new WalletConnectStore(
-      new AsyncKVStore('store_wallet_connect'),
-      {
-        addEventListener: (type: string, fn: () => void) => {
-          eventEmitter.addListener(type, fn);
-        },
-        removeEventListener: (type: string, fn: () => void) => {
-          eventEmitter.removeListener(type, fn);
-        },
-      },
-      this.chainStore,
-      this.keyRingStore,
-      this.permissionStore
     );
 
     this.analyticsStore = new AnalyticsStore(

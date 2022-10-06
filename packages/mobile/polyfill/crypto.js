@@ -50,3 +50,8 @@ Object.assign(
   require('public-encrypt'),
   require('randomfill')
 );
+
+// implement window crypto
+if (typeof window === 'object') {
+  if (!window.crypto) window.crypto = exports.webcrypto;
+}

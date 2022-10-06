@@ -4,15 +4,24 @@ import { ToolTip } from '../tooltip';
 import { Bech32Address } from '@owallet/cosmos';
 
 export interface AddressProps {
-  maxCharacters: number;
   children: string;
   tooltipFontSize?: string;
   tooltipAddress?: string;
-
-  lineBreakBeforePrefix?: boolean;
 }
 
-export class Address extends React.Component<AddressProps> {
+export interface Bech32AddressProps {
+  maxCharacters: number;
+  lineBreakBeforePrefix?: boolean;
+  isRaw?: false;
+}
+
+export interface RawAddressProps {
+  isRaw: true;
+}
+
+export class Address extends React.Component<
+  AddressProps & (Bech32AddressProps | RawAddressProps)
+> {
   copyRef = React.createRef<HTMLDivElement>();
 
   componentDidMount(): void {
@@ -28,8 +37,7 @@ export class Address extends React.Component<AddressProps> {
   }
 
   render() {
-    const { tooltipFontSize, lineBreakBeforePrefix, children } = this.props;
-
+    const { tooltipFontSize, children } = this.props;
     const tooltipAddress = this.props.tooltipAddress
       ? this.props.tooltipAddress
       : children;

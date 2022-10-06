@@ -55,8 +55,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
     );
   };
 
-  useLogScreenView("Setting");
-
   return (
     <PageWithScrollViewInBottomTabView>
       <StatusBar
@@ -112,7 +110,9 @@ export const SettingScreen: FunctionComponent = observer(() => {
                   fontWeight: 'bold'
                 }}
               >
-                {selected ? 'OWallet Account' : 'No Account'}
+                {selected
+                  ? selected.meta?.name || 'Keplr Account'
+                  : 'No Account'}
               </Text>
             </View>
             <DownArrowIcon color={colors['black']} height={12} />

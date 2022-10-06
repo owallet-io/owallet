@@ -2,8 +2,9 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   AddressInput,
   FeeButtons,
-  CoinInput,
-  MemoInput
+  // CoinInput,
+  MemoInput,
+  CoinInputEvm
 } from '../../components/form';
 import { useStore } from '../../stores';
 import bigInteger from 'big-integer';
@@ -34,9 +35,11 @@ import { GasEthereumInput } from '../../components/form/gas-ethereum-input';
 import { FeeInput } from '../../components/form/fee-input';
 import axios from 'axios';
 
-export const SendEvmPage: FunctionComponent = observer(() => {
+export const SendEvmPage: FunctionComponent<{
+  coinMinimalDenom?: string;
+}> = observer(({ coinMinimalDenom }) => {
   const history = useHistory();
-  let search = useLocation().search;
+  let search = useLocation().search || coinMinimalDenom || '';
   if (search.startsWith('?')) {
     search = search.slice(1);
   }
@@ -56,6 +59,12 @@ export const SendEvmPage: FunctionComponent = observer(() => {
   }, []);
 
   const intl = useIntl();
+  const inputRef = React.useRef(null);
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [coinMinimalDenom]);
 
   const notification = useNotification();
 
@@ -157,69 +166,72 @@ export const SendEvmPage: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   return (
-    <HeaderLayout
-      showChainName
-      canChangeChainInfo={false}
-      onBackButton={
-        isDetachedPage
-          ? undefined
-          : () => {
-              history.goBack();
-            }
-      }
-      rightRenderer={
-        isDetachedPage ? undefined : (
-          <div
-            style={{
-              height: '64px',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingRight: '20px'
-            }}
-          >
-            <i
-              className="fas fa-external-link-alt"
-              style={{
-                cursor: 'pointer',
-                padding: '4px',
-                color: '#ffffff'
-              }}
-              onClick={async (e) => {
-                e.preventDefault();
+    // <HeaderLayout
+    //   showChainName
+    //   canChangeChainInfo={false}
+    //   onBackButton={
+    //     isDetachedPage
+    //       ? undefined
+    //       : () => {
+    //           history.goBack();
+    //         }
+    //   }
+    //   rightRenderer={
+    //     isDetachedPage ? undefined : (
+    //       <div
+    //         style={{
+    //           height: '64px',
+    //           display: 'flex',
+    //           flexDirection: 'row',
+    //           alignItems: 'center',
+    //           paddingRight: '20px'
+    //         }}
+    //       >
+    //         <i
+    //           className="fas fa-external-link-alt"
+    //           style={{
+    //             cursor: 'pointer',
+    //             padding: '4px',
+    //             color: '#ffffff'
+    //           }}
+    //           onClick={async (e) => {
+    //             e.preventDefault();
 
-                const windowInfo = await browser.windows.getCurrent();
+    //             const windowInfo = await browser.windows.getCurrent();
 
-                let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
-                if (sendConfigs.recipientConfig.rawRecipient) {
-                  queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
-                }
-                if (sendConfigs.amountConfig.amount) {
-                  queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
-                }
-                if (sendConfigs.memoConfig.memo) {
-                  queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
-                }
+    //             let queryString = `?detached=true&defaultDenom=${sendConfigs.amountConfig.sendCurrency.coinMinimalDenom}`;
+    //             if (sendConfigs.recipientConfig.rawRecipient) {
+    //               queryString += `&defaultRecipient=${sendConfigs.recipientConfig.rawRecipient}`;
+    //             }
+    //             if (sendConfigs.amountConfig.amount) {
+    //               queryString += `&defaultAmount=${sendConfigs.amountConfig.amount}`;
+    //             }
+    //             if (sendConfigs.memoConfig.memo) {
+    //               queryString += `&defaultMemo=${sendConfigs.memoConfig.memo}`;
+    //             }
 
-                await openPopupWindow(
-                  browser.runtime.getURL(`/popup.html#/send${queryString}`),
-                  undefined,
-                  {
-                    top: (windowInfo.top || 0) + 80,
-                    left:
-                      (windowInfo.left || 0) +
-                      (windowInfo.width || 0) -
-                      PopupSize.width -
-                      20
-                  }
-                );
-                window.close();
-              }}
-            />
-          </div>
-        )
-      }
-    >
+    //             await openPopupWindow(
+    //               browser.runtime.getURL(`/popup.html#/send${queryString}`),
+    //               undefined,
+    //               {
+    //                 top: (windowInfo.top || 0) + 80,
+    //                 left:
+    //                   (windowInfo.left || 0) +
+    //                   (windowInfo.width || 0) -
+    //                   PopupSize.width -
+    //                   20
+    //               }
+    //             );
+    //             window.close();
+    //           }}
+    //         />
+    //       </div>
+    //     )
+    //   }
+    // >
+    // console.log({ sendConfigs: sendConfigs.amountConfig});
+
+    <>
       <form
         className={style.formContainer}
         onSubmit={async (e: any) => {
@@ -323,13 +335,15 @@ export const SendEvmPage: FunctionComponent = observer(() => {
         <div className={style.formInnerContainer}>
           <div>
             <AddressInput
+              inputRef={inputRef}
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               label={intl.formatMessage({ id: 'send.input.recipient' })}
               placeholder="Enter recipient address"
             />
-            <CoinInput
+            <CoinInputEvm
               amountConfig={sendConfigs.amountConfig}
+              feeConfig={feeConfig.feeRaw}
               label={intl.formatMessage({ id: 'send.input.amount' })}
               balanceText={intl.formatMessage({
                 id: 'send.input-button.balance'
@@ -354,11 +368,9 @@ export const SendEvmPage: FunctionComponent = observer(() => {
               feeConfig={feeConfig}
               gasPrice={gasPrice}
               decimals={decimals}
-              // defaultValue={
-              //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit, 16) *
-              //     parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16) ||
-              //   0
-              // }
+              denom={sendConfigs.feeConfig}
+              classNameInput={style.input}
+              classNameInputGroup={style.inputGroup}
             />
             {/* <FeeButtons
               feeConfig={sendConfigs.feeConfig}
@@ -397,6 +409,7 @@ export const SendEvmPage: FunctionComponent = observer(() => {
           </Button>
         </div>
       </form>
-    </HeaderLayout>
+      {/* </HeaderLayout> */}
+    </>
   );
 });

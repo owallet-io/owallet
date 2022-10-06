@@ -142,6 +142,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       'Transactions.Detail': {
         upperScreenName: 'Others'
       },
+      'Network.select': {
+        upperScreenName: 'Others'
+      },
       'Web.Intro': {
         upperScreenName: 'Web'
       },
@@ -187,6 +190,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       };
       'Validator.Details': {
         validatorAddress: string;
+        apr: number;
       };
       'Validator.List': {
         validatorSelector?: (validatorAddress: string) => void;
@@ -222,7 +226,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       };
       TxSuccessResult: {
         chainId?: string;
-        txHash: string;
+        txHash?: string;
       };
       TxFailedResult: {
         chainId?: string;

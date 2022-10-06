@@ -1,4 +1,4 @@
-import { init, ScryptParams } from '@owallet/background';
+import { init, LedgerInternal, ScryptParams } from '@owallet/background';
 import {
   RNEnv,
   RNMessageRequesterInternalToUI,
@@ -20,13 +20,31 @@ import { DAppInfos } from '../screens/web/config';
 const { webcrypto } = require('crypto');
 const router = new RNRouterBackground(RNEnv.produceEnv);
 
+LedgerInternal.transportIniters.ble = async (deviceId?: string) => {
+  const lastDeviceId = await getLastUsedLedgerDeviceId();
+
+  if (!deviceId && !lastDeviceId) {
+    throw new Error('Device id is empty');
+  }
+
+  if (!deviceId) {
+    deviceId = lastDeviceId;
+  }
+
+  if (deviceId && deviceId !== lastDeviceId) {
+    await setLastUsedLedgerDeviceId(deviceId);
+  }
+
+  return await TransportBLE.open(deviceId);
+};
+
 init(
   router,
   (prefix: string) => new AsyncKVStore(prefix),
   new RNMessageRequesterInternalToUI(),
   EmbedChainInfos,
   // allow all dApps
-  DAppInfos.map((dApp) => dApp.uri),
+  DAppInfos.map(dApp => dApp.uri),
   // @ts-ignore
   webcrypto.getRandomValues,
   {
@@ -56,26 +74,7 @@ init(
     }
   },
   {
-    defaultMode: 'ble',
-    transportIniters: {
-      ble: async (deviceId?: string) => {
-        const lastDeviceId = await getLastUsedLedgerDeviceId();
-
-        if (!deviceId && !lastDeviceId) {
-          throw new Error('Device id is empty');
-        }
-
-        if (!deviceId) {
-          deviceId = lastDeviceId;
-        }
-
-        if (deviceId && deviceId !== lastDeviceId) {
-          await setLastUsedLedgerDeviceId(deviceId);
-        }
-
-        return await TransportBLE.open(deviceId);
-      }
-    }
+    defaultMode: 'ble'
   }
 );
 

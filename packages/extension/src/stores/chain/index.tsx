@@ -18,7 +18,7 @@ import { toGenerator } from '@owallet/common';
 
 export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @observable
-  protected selectedChainId: string;
+  protected _selectedChainId: string;
 
   @observable
   protected _isInitializing: boolean = false;
@@ -39,7 +39,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
       })
     );
 
-    this.selectedChainId = embedChainInfos[0].chainId;
+    this._selectedChainId = embedChainInfos[0].chainId;
 
     makeObservable(this);
 
@@ -50,18 +50,22 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
     return this._isInitializing;
   }
 
+  get selectedChainId(): string {
+    return this._selectedChainId;
+  }
+
   @action
   selectChain(chainId: string) {
     if (this._isInitializing) {
       this.deferChainIdSelect = chainId;
     }
-    this.selectedChainId = chainId;
+    this._selectedChainId = chainId;
   }
 
   @computed
   get current(): ChainInfoInner<ChainInfoWithEmbed> {
-    if (this.hasChain(this.selectedChainId)) {
-      return this.getChain(this.selectedChainId);
+    if (this.hasChain(this._selectedChainId)) {
+      return this.getChain(this._selectedChainId);
     }
 
     return this.chainInfos[0];

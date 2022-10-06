@@ -15,7 +15,10 @@
   padding: 20px;
   font-size: 18px;
   font-weight: bold;
-  &:hover,
+  &:hover {
+    color: $color;
+    font-weight: bold;
+  }
   &:active {
     color: $color-lighter;
   }
@@ -60,6 +63,12 @@
       margin-right: 6px;
       font-size: 20px;
     }
+  }
+}
+
+.card-add-token {
+  :global(.card-body) {
+    padding: 0 !important;
   }
 }
 

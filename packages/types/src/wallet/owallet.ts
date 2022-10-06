@@ -78,9 +78,25 @@ export interface OWallet {
   ): Promise<DirectSignResponse>;
   sendTx(
     chainId: string,
-    stdTx: StdTx,
+    /*
+     If the type is `StdTx`, it is considered as legacy stdTx.
+     If the type is `Uint8Array`, it is considered as proto tx.
+     */
+    tx: StdTx | Uint8Array,
     mode: BroadcastMode
   ): Promise<Uint8Array>;
+
+  signArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array
+  ): Promise<StdSignature>;
+  verifyArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    signature: StdSignature
+  ): Promise<boolean>;
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner;
   getOfflineSignerOnlyAmino(chainId: string): OfflineSigner;
@@ -139,7 +155,7 @@ export interface Ethereum {
    * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
    */
   readonly mode: EthereumMode;
-  chainId: string;
+  initChainId: string;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
   signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;

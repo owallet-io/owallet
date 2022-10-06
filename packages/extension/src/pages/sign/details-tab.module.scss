@@ -1,4 +1,4 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 .hr {
   background-color: gray;
@@ -22,13 +22,15 @@
   flex-direction: column;
   color: $color-neutral-3;
   margin-bottom: 8px;
+  font-size: 12px;
 }
 
 .msg-container {
-  overflow: auto;
+  // overflow: auto;
   padding-bottom: 32px;
   // flex: 1;
-
+  font-size: 12px;
+  color: $color-neutral-3;
   hr {
     margin: 8px 0;
   }
@@ -54,10 +56,12 @@
       display: flex;
       flex: 1;
       flex-direction: column;
-
       .content-title {
         font-size: 16px;
         font-weight: bold;
+        color: $color-neutral-3 !important;
+      }
+      pre {
         color: $color-neutral-3 !important;
       }
 

@@ -51,6 +51,11 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
     protected readonly queriesStore: {
       get(chainId: string): QueriesSetBase & HasCosmosQueries;
     },
+    protected readonly cosmwasmQueriesStore:
+      | {
+          get(chainId: string): QueriesSetBase & HasCosmwasmQueries;
+        }
+      | undefined,
     protected readonly coinDenomGenerator: (
       denomTrace: {
         denom: string;
@@ -363,6 +368,11 @@ export class IBCCurrencyRegsitrar<C extends ChainInfo = ChainInfo> {
     protected readonly queriesStore: {
       get(chainId: string): QueriesSetBase & HasCosmosQueries;
     },
+    protected readonly cosmwasmQueriesStore:
+      | {
+          get(chainId: string): QueriesSetBase & HasCosmwasmQueries;
+        }
+      | undefined,
     protected readonly coinDenomGenerator: (
       denomTrace: {
         denom: string;
@@ -402,6 +412,7 @@ export class IBCCurrencyRegsitrar<C extends ChainInfo = ChainInfo> {
             this.chainStore,
             this.accountStore,
             this.queriesStore,
+            this.cosmwasmQueriesStore,
             this.coinDenomGenerator
           )
         );

@@ -12,7 +12,7 @@ import { useIntl } from 'react-intl';
 const ChainElement: FunctionComponent<{
   chainInfo: ChainInfoWithEmbed;
 }> = observer(({ chainInfo }) => {
-  const { chainStore } = useStore();
+  const { chainStore, analyticsStore, keyRingStore } = useStore();
 
   const intl = useIntl();
 
@@ -24,7 +24,7 @@ const ChainElement: FunctionComponent<{
         [style.chainName]: true,
         selected: chainInfo.chainId === chainStore.current.chainId
       })}
-      onClick={() => {
+      onClick={async () => {
         if (chainInfo.chainId !== chainStore.current.chainId) {
           analyticsStore.logEvent('Chain changed', {
             chainId: chainStore.current.chainId,
@@ -63,7 +63,17 @@ const ChainElement: FunctionComponent<{
                     {
                       chainName: chainInfo.chainName
                     }
-                  )
+                  ),
+                  styleParagraph: {
+                    color: '#A6A6B0'
+                  },
+                  yes: 'Yes',
+                  no: 'No',
+                  styleNoBtn: {
+                    background: '#F5F5FA',
+                    border: '1px solid #3B3B45',
+                    color: '#3B3B45'
+                  }
                 })
               ) {
                 await chainStore.removeChainInfo(chainInfo.chainId);
@@ -79,11 +89,9 @@ const ChainElement: FunctionComponent<{
 export const ChainList: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
 
-  const mainChainList = chainStore.chainInfos.filter(
-    (chainInfo) => !chainInfo.beta
-  );
+  const mainChainList = chainStore.chainInfos;
   const betaChainList = chainStore.chainInfos.filter(
-    (chainInfo) => chainInfo.beta
+    (chainInfo) => chainInfo.beta && chainInfo.chainId != 'Oraichain'
   );
 
   return (
@@ -150,6 +158,34 @@ export const ChainList: FunctionComponent = observer(() => {
             <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
           )
       )}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <hr
+          className="my-3"
+          style={{
+            flex: 1,
+            borderTop: '1px solid rgba(255, 255, 255)'
+          }}
+        ></hr>
+        <div
+          style={{
+            fontSize: '14px',
+            color: 'rgba(255, 255, 255)',
+            margin: '0 8px'
+          }}
+        >
+          Beta Support
+        </div>
+        <hr
+          className="my-3"
+          style={{
+            flex: 1,
+            borderTop: '1px solid rgba(255, 255, 255)'
+          }}
+        />
+      </div>
+      {betaChainList.map((chainInfo) => (
+        <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
+      ))}
     </div>
   );
 });

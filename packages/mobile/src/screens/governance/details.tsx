@@ -476,7 +476,7 @@ export const GovernanceVoteModal: FunctionComponent<{
 );
 
 export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
-  const { chainStore, queriesStore, accountStore, analyticsStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
@@ -519,13 +519,6 @@ export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useLogScreenView("Proposal detail", {
-    chainId: chainStore.current.chainId,
-    chainName: chainStore.current.chainName,
-    proposalId,
-    proposalTitle: proposal?.title,
-  });
-
   return (
     <PageWithScrollView
       fixed={
@@ -540,12 +533,6 @@ export const GovernanceDetailsScreen: FunctionComponent = observer(() => {
               size="large"
               disabled={!voteEnabled || !account.isReadyToSendMsgs}
               onPress={() => {
-                analyticsStore.logEvent("Vote started", {
-                  chainId: chainStore.current.chainId,
-                  chainName: chainStore.current.chainName,
-                  proposalId,
-                  proposalTitle: proposal?.title,
-                });
                 setIsModalOpen(true);
               }}
             />

@@ -345,7 +345,7 @@ export const FeeButtonsInner: FunctionComponent<
         ) : null}
         <div style={{ height: 20 }} />
         {errorText != null ? (
-          <FormFeedback style={{ display: 'block' }}>{errorText}</FormFeedback>
+          <FormFeedback style={{ display: 'block', marginTop: -15 }}>{errorText}</FormFeedback>
         ) : null}
         {/* <div className={styleFeeButtons.gasWrap}>
           // <span className={styleFeeButtons.gasBtn}>

@@ -62,17 +62,17 @@ class FeeButtonState {
 }
 
 export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  (props) => {
+  props => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
     return (
-      <>
+      <React.Fragment>
         {props.feeConfig.feeCurrency ? <FeeButtonsInner {...props} /> : null}
         {feeButtonState.isGasInputOpen || !props.feeConfig.feeCurrency ? (
           <GasInput label={props.gasLabel} gasConfig={props.gasConfig} />
         ) : null}
-      </>
+      </React.Fragment>
     );
   }
 );
@@ -84,7 +84,7 @@ export const getFeeErrorText = (error: Error): string | undefined => {
     case NotLoadedFeeError:
       return undefined;
     default:
-      return error.message ?? 'Unknown error';
+      return error.message || 'Unknown error';
   }
 };
 
@@ -116,7 +116,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     // But because this component uses hooks, using a hook in the line below can cause an error.
     // Note that hooks should be used above this line, and only rendering-related logic should exist below this line.
     if (!feeConfig.feeCurrency) {
-      return null;
+      return <React.Fragment />;
     }
 
     const lowFee = feeConfig.getFeeTypePretty('low');
@@ -206,7 +206,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             ...styles.containerBtnFee,
             ...(selected
               ? {
-                  borderColor: colors['primary'],
+                  borderColor: colors['purple-900'],
                   borderWidth: 1
                 }
               : {
@@ -239,7 +239,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           {price ? (
             <Text
               style={{
-                fontSize: 10.5,
+                fontSize: 10,
                 color: '#636366',
                 lineHeight: 16
               }}
@@ -294,7 +294,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             }
           )}
           {renderButton(
-            'High',
+            'Fast',
             highFeePrice,
             highFee,
             feeConfig.feeType === 'high',

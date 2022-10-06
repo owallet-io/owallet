@@ -22,14 +22,22 @@ export class SignDocAmountConfig
   @observable.ref
   protected signDocHelper?: SignDocHelper = undefined;
 
+  @observable
+  protected _sender: string;
+
+  @observable
+  protected _disableBalanceCheck: boolean = false;
+
   constructor(
     chainGetter: ChainGetter,
     initialChainId: string,
-    msgOpts: CosmosMsgOpts
+    msgOpts: CosmosMsgOpts,
+    sender: string
   ) {
     super(chainGetter, initialChainId);
 
     this.msgOpts = msgOpts;
+    this._sender = sender;
 
     makeObservable(this);
   }
@@ -65,6 +73,11 @@ export class SignDocAmountConfig
 
   get sendableCurrencies(): AppCurrency[] {
     return [this.sendCurrency];
+  }
+
+  @action
+  setSender(sender: string): void {
+    this._sender = sender;
   }
 
   get sender(): string {
@@ -220,6 +233,15 @@ export class SignDocAmountConfig
     return false;
   }
 
+  get fraction(): number | undefined {
+    // noop
+    return undefined;
+  }
+
+  setFraction(_: number | undefined) {
+    // noop
+  }
+
   setAmount(): void {
     // noop
   }
@@ -228,21 +250,28 @@ export class SignDocAmountConfig
     // noop
   }
 
-  setSender(): void {
-    // noop
+  @action
+  setDisableBalanceCheck(bool: boolean) {
+    this._disableBalanceCheck = bool;
+  }
+
+  get disableBalanceCheck(): boolean {
+    return this._disableBalanceCheck;
   }
 }
 
 export const useSignDocAmountConfig = (
   chainGetter: ChainGetter,
   chainId: string,
-  msgOpts: CosmosMsgOpts
+  msgOpts: CosmosMsgOpts,
+  sender: string
 ) => {
   const [config] = useState(
-    () => new SignDocAmountConfig(chainGetter, chainId, msgOpts)
+    () => new SignDocAmountConfig(chainGetter, chainId, msgOpts, sender)
   );
   config.setChain(chainId);
   config.setMsgOpts(msgOpts);
+  config.setSender(sender);
 
   return config;
 };

@@ -121,15 +121,19 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
     keyStores: MultiKeyStoreInfoWithSelectedElem[]
   ) => {
     return (
-      <>
+      <React.Fragment>
         {keyStores.length > 0 ? (
-          <>
+          <React.Fragment>
             <KeyStoreSectionTitle title={title} />
             {keyStores.map((keyStore, i) => {
               return (
                 <KeyStoreItem
                   key={i.toString()}
-                  label="OWallet Account"
+                  label={keyStore.meta?.name || 'OWallet Account'}
+                  paragraph={getKeyStoreParagraph(keyStore)}
+                  topBorder={i === 0}
+                  bottomBorder={keyStores.length - 1 !== i}
+                  active={keyStore.selected}
                   onPress={async () => {
                     analyticsStore.logEvent('Account changed');
                     await selectKeyStore(keyStore);
@@ -137,9 +141,9 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
                 />
               );
             })}
-          </>
+          </React.Fragment>
         ) : null}
-      </>
+      </React.Fragment>
     );
   };
 

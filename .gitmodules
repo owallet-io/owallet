@@ -1,0 +1,3 @@
+[submodule "packages/background"]
+	path = packages/background
+	url = https://github.com/oraichain/owallet-background.git

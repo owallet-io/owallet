@@ -1,4 +1,6 @@
 @import '../../../styles/var';
+@import "../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
+@import "../../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
 
 .chain-selector {
   width: 100%;
@@ -12,15 +14,16 @@
 
     .channel {
       float: right;
-
       letter-spacing: 0.14px;
       color: $color;
+      &:hover {
+        color: white;
+      }
     }
   }
 
   :global(.dropdown-toggle) {
     box-shadow: 0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02) !important;
-
     &::after {
       border-radius: 2px;
       content: ' ';
@@ -61,16 +64,23 @@
   align-items: center;
 }
 
+:global(.dropdown-menu.show) {
+  width: 100%;
+  background-color: $background-color-lighter;
+  position: absolute !important;
+  left: 0 !important;
+  top: 46px !important;
+  transform: none !important;
+}
+
 :global(.dropdown-menu .dropdown-item:hover) {
   &:hover {
-    // background-color: $color-gray-70;
-    color: $color;
+    color: $color-white !important;
   }
 }
 
 :global(.dropdown-item:active) {
   &:active {
-    // background-color: $color-gray-70;
     color: $color;
   }
 }
@@ -80,8 +90,17 @@
   align-items: center;
   cursor: pointer;
 }
+
 .textAddChain {
   font-size: 12px;
   font-weight: 600;
   color: $color-accent-1;
+}
+
+
+.input-group {
+  box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
+  &:focus-within {
+    box-shadow: $input-focus-alternative-box-shadow !important;
+  }
 }

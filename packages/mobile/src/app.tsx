@@ -5,7 +5,6 @@ import { AppNavigation } from './navigation';
 import { ModalsProvider } from './modals/base';
 import { Platform, StatusBar, LogBox, Text } from 'react-native';
 import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
-import codePush from 'react-native-code-push';
 import { InteractionModalsProivder } from './providers/interaction-modals-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoadingScreenProvider } from './providers/loading-screen';

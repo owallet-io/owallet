@@ -16,7 +16,8 @@ export class TendermintTxTracer {
   protected txSubscribes: Map<
     number,
     {
-      hash: Uint8Array;
+      address?: string;
+      hash?: Uint8Array;
       resolver: (data?: unknown) => void;
       rejector: (e: Error) => void;
     }
@@ -51,7 +52,7 @@ export class TendermintTxTracer {
   }
 
   protected getWsEndpoint(): string {
-    let url = this.url ?? 'https://rpc.orai.io';
+    let url = this.url;
     if (url?.startsWith('http')) {
       url = url.replace('http', 'ws');
     }

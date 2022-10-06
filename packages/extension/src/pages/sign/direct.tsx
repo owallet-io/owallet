@@ -4,6 +4,7 @@ import { cosmos, cosmwasm, UnknownMessage } from '@owallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
+  renderMsgExecuteContract,
   renderMsgSend,
   renderMsgUndelegate,
   renderUnknownMessage
@@ -18,33 +19,43 @@ export function renderDirectMessage(
   currencies: Currency[],
   intl: IntlShape
 ) {
-  if (msg instanceof cosmos.bank.v1beta1.MsgSend) {
-    return renderMsgSend(
-      currencies,
-      intl,
-      msg.amount as CoinPrimitive[],
-      msg.toAddress
-    );
-  }
+  try {
+    if (msg instanceof cosmos.bank.v1beta1.MsgSend) {
+      return renderMsgSend(
+        currencies,
+        intl,
+        msg.amount as CoinPrimitive[],
+        msg.toAddress
+      );
+    }
 
-  if (msg instanceof cosmos.staking.v1beta1.MsgDelegate) {
-    return renderMsgDelegate(
-      currencies,
-      intl,
-      msg.amount as CoinPrimitive,
-      msg.validatorAddress
-    );
-  }
+    if (msg instanceof cosmos.staking.v1beta1.MsgDelegate) {
+      return renderMsgDelegate(
+        currencies,
+        intl,
+        msg.amount as CoinPrimitive,
+        msg.validatorAddress
+      );
+    }
 
-  if (msg instanceof cosmos.staking.v1beta1.MsgBeginRedelegate) {
-    return renderMsgBeginRedelegate(
-      currencies,
-      intl,
-      msg.amount as CoinPrimitive,
-      msg.validatorSrcAddress,
-      msg.validatorDstAddress
-    );
-  }
+    if (msg instanceof cosmos.staking.v1beta1.MsgBeginRedelegate) {
+      return renderMsgBeginRedelegate(
+        currencies,
+        intl,
+        msg.amount as CoinPrimitive,
+        msg.validatorSrcAddress,
+        msg.validatorDstAddress
+      );
+    }
+
+    if (msg instanceof cosmos.staking.v1beta1.MsgUndelegate) {
+      return renderMsgUndelegate(
+        currencies,
+        intl,
+        msg.amount as CoinPrimitive,
+        msg.validatorAddress
+      );
+    }
 
     if (
       msg instanceof cosmwasm.wasm.v1.MsgExecuteContract ||
@@ -62,8 +73,11 @@ export function renderDirectMessage(
       );
     }
 
-  if (msg instanceof UnknownMessage) {
-    return renderUnknownMessage(msg.toJSON());
+    if (msg instanceof UnknownMessage) {
+      return renderUnknownMessage(msg.toJSON());
+    }
+  } catch (e) {
+    console.log(e);
   }
 
   return renderUnknownMessage({

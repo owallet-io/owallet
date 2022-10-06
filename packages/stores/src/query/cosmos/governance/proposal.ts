@@ -133,13 +133,13 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
     if (this.proposalStatus !== ProposalStatus.VOTING_PERIOD) {
       return {
         yes: new IntPretty(new Int(this.raw.final_tally_result.yes))
-          .precision(stakeCurrency.coinDecimals)
+          .moveDecimalPointLeft(stakeCurrency.coinDecimals)
           .maxDecimals(stakeCurrency.coinDecimals),
         no: new IntPretty(new Int(this.raw.final_tally_result.no))
-          .precision(stakeCurrency.coinDecimals)
+          .moveDecimalPointLeft(stakeCurrency.coinDecimals)
           .maxDecimals(stakeCurrency.coinDecimals),
         abstain: new IntPretty(new Int(this.raw.final_tally_result.abstain))
-          .precision(stakeCurrency.coinDecimals)
+          .moveDecimalPointLeft(stakeCurrency.coinDecimals)
           .maxDecimals(stakeCurrency.coinDecimals),
         noWithVeto: new IntPretty(
           new Int(this.raw.final_tally_result.no_with_veto)
@@ -153,15 +153,15 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
       return {
         yes: new IntPretty(new Int(0))
           .ready(false)
-          .precision(stakeCurrency.coinDecimals)
+          .moveDecimalPointLeft(stakeCurrency.coinDecimals)
           .maxDecimals(stakeCurrency.coinDecimals),
         no: new IntPretty(new Int(0))
           .ready(false)
-          .precision(stakeCurrency.coinDecimals)
+          .moveDecimalPointLeft(stakeCurrency.coinDecimals)
           .maxDecimals(stakeCurrency.coinDecimals),
         abstain: new IntPretty(new Int(0))
           .ready(false)
-          .precision(stakeCurrency.coinDecimals)
+          .moveDecimalPointLeft(stakeCurrency.coinDecimals)
           .maxDecimals(stakeCurrency.coinDecimals),
         noWithVeto: new IntPretty(new Int(0))
           .ready(false)
@@ -172,13 +172,13 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
 
     return {
       yes: new IntPretty(new Int(this.response.data.result.yes))
-        .precision(stakeCurrency.coinDecimals)
+        .moveDecimalPointLeft(stakeCurrency.coinDecimals)
         .maxDecimals(stakeCurrency.coinDecimals),
       no: new IntPretty(new Int(this.response.data.result.no))
-        .precision(stakeCurrency.coinDecimals)
+        .moveDecimalPointLeft(stakeCurrency.coinDecimals)
         .maxDecimals(stakeCurrency.coinDecimals),
       abstain: new IntPretty(new Int(this.response.data.result.abstain))
-        .precision(stakeCurrency.coinDecimals)
+        .moveDecimalPointLeft(stakeCurrency.coinDecimals)
         .maxDecimals(stakeCurrency.coinDecimals),
       noWithVeto: new IntPretty(new Int(this.response.data.result.no_with_veto))
         .moveDecimalPointLeft(stakeCurrency.coinDecimals)

@@ -170,7 +170,6 @@ export class RegisterConfig {
     name: string,
     privateKey: Uint8Array,
     password: string,
-    email?: string,
     meta: Record<string, string> = {}
   ) {
     this._isLoading = true;

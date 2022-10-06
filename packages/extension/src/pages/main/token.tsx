@@ -37,7 +37,7 @@ const TokenView: FunctionComponent<{
     ['#F6F7FB', '#0e0314']
   ]);
 
-  let name = balance.currency.coinDenom.toUpperCase();
+  let name = balance.currency.coinDenom;
   const minimalDenom = balance.currency.coinMinimalDenom;
 
   let amount = balance.balance.trim(true).shrink(true);
@@ -233,8 +233,9 @@ const TokenView: FunctionComponent<{
 
 export const TokensView: FunctionComponent<{
   tokens: ObservableQueryBalanceInner[];
-  networkType: NetworkType;
-}> = observer(({ tokens, networkType }) => {
+  handleClickToken?: (token) => void;
+  coinMinimalDenom?: string;
+}> = observer(({ tokens, handleClickToken, coinMinimalDenom }) => {
   // const { chainStore, accountStore, queriesStore } = useStore();
 
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -250,8 +251,8 @@ export const TokensView: FunctionComponent<{
       );
     })
     .sort((a, b) => {
-      const aDecIsZero = a.balance.toDec().isZero();
-      const bDecIsZero = b.balance.toDec().isZero();
+      const aDecIsZero = a.balance?.toDec()?.isZero();
+      const bDecIsZero = b.balance?.toDec()?.isZero();
 
       if (aDecIsZero && !bDecIsZero) {
         return 1;
@@ -269,20 +270,63 @@ export const TokensView: FunctionComponent<{
   return (
     <div className={styleToken.tokensContainer}>
       <h1 className={styleToken.title}>Tokens</h1>
-      {displayTokens.map((token, i) => {
-        return (
-          <TokenView
-            key={i.toString()}
-            balance={token}
-            onClick={() => {
-              history.push({
-                pathname: networkType === 'evm' ? '/send-evm' : '/send',
-                search: `?defaultDenom=${token.currency.coinMinimalDenom}`
-              });
-            }}
-          />
-        );
-      })}
+      <div>
+        <Input
+          type={'text'}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+          classNameInputGroup={styleToken.inputGroup}
+          placeholder={'Search Chain Coin'}
+          append={
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: 50
+              }}
+            >
+              <img src={require('../../public/assets/img/light.svg')} alt="" />
+            </div>
+          }
+        />
+      </div>
+      {displayTokens
+        .filter(
+          (token) =>
+            token?.currency?.coinMinimalDenom?.includes(search.toUpperCase()) ||
+            token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
+            token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
+            token?.currency?.coinMinimalDenom?.includes(search.toLowerCase()) ||
+            token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
+            token?.currency?.coinGeckoId?.includes(search.toLowerCase())
+        )
+        .map((token, i) => {
+          return (
+            <TokenView
+              key={i.toString()}
+              balance={token}
+              active={
+                `?defaultDenom=${token.currency.coinMinimalDenom}` ==
+                coinMinimalDenom
+              }
+              onClick={() => {
+                if (handleClickToken) {
+                  handleClickToken(
+                    `?defaultDenom=${token.currency.coinMinimalDenom}`
+                  );
+                  return;
+                }
+                history.push({
+                  pathname: '/send',
+                  search: `?defaultDenom=${token.currency.coinMinimalDenom}`
+                });
+              }}
+            />
+          );
+        })}
     </div>
   );
 });

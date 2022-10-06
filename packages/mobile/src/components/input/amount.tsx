@@ -1,7 +1,7 @@
-import React, { FunctionComponent, useMemo } from 'react'
-import { observer } from 'mobx-react-lite'
-import { TextInput } from './input'
-import { TextStyle, View, ViewStyle } from 'react-native'
+import React, { FunctionComponent, useMemo } from 'react';
+import { observer } from 'mobx-react-lite';
+import { TextInput } from './input';
+import { TextStyle, View, ViewStyle } from 'react-native';
 import {
   EmptyAmountError,
   IAmountConfig,
@@ -9,21 +9,21 @@ import {
   InvalidNumberAmountError,
   NegativeAmountError,
   ZeroAmountError
-} from '@owallet/hooks'
-import { Button } from '../button'
-import { useStyle } from '../../styles'
-import { colors, spacing } from '../../themes'
+} from '@owallet/hooks';
+import { Button } from '../button';
+import { useStyle } from '../../styles';
+import { colors, spacing } from '../../themes';
 
 export const AmountInput: FunctionComponent<{
-  labelStyle?: TextStyle
-  containerStyle?: ViewStyle
-  inputContainerStyle?: ViewStyle
-  errorLabelStyle?: TextStyle
-  placeholder?: string
-  placeholderTextColor?: string
-  label: string
-
-  amountConfig: IAmountConfig
+  labelStyle?: TextStyle;
+  containerStyle?: ViewStyle;
+  inputContainerStyle?: ViewStyle;
+  errorLabelStyle?: TextStyle;
+  placeholder?: string;
+  placeholderTextColor?: string;
+  label: string;
+  allowMax?: boolean;
+  amountConfig: IAmountConfig;
 }> = observer(
   ({
     labelStyle,
@@ -33,27 +33,28 @@ export const AmountInput: FunctionComponent<{
     label,
     amountConfig,
     placeholder,
-    placeholderTextColor
+    placeholderTextColor,
+    allowMax = true
   }) => {
-    const error = amountConfig.getError()
+    const error = amountConfig.getError();
     const errorText: string | undefined = useMemo(() => {
       if (error) {
         switch (error.constructor) {
           case EmptyAmountError:
-            return
+            return;
           case InvalidNumberAmountError:
-            return 'Invalid number'
+            return 'Invalid number';
           case ZeroAmountError:
-            return 'Amount is zero'
+            return 'Amount is zero';
           case NegativeAmountError:
-            return 'Amount is negative'
+            return 'Amount is negative';
           case InsufficientAmountError:
-            return 'Insufficient fund'
+            return 'Insufficient fund';
           default:
-            return 'Unknown error'
+            return 'Unknown error';
         }
       }
-    }, [error])
+    }, [error]);
 
     return (
       <TextInput
@@ -64,46 +65,44 @@ export const AmountInput: FunctionComponent<{
         errorLabelStyle={errorLabelStyle}
         value={amountConfig.amount}
         onChangeText={text => {
-          amountConfig.setAmount(text.replace(/,/g, '.'))
+          amountConfig.setAmount(text.replace(/,/g, '.'));
         }}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
         inputRight={
-          <View
-            style={{
-              height: 1,
-              overflow: 'visible',
-              justifyContent: 'center'
-            }}
-          >
-            <Button
-              text="MAX"
-              mode={'light'}
-              size="small"
+          allowMax ? (
+            <View
               style={{
-                paddingHorizontal: spacing['5'],
-                paddingVertical: spacing['3']
+                height: 1,
+                overflow: 'visible',
+                justifyContent: 'center'
               }}
-              containerStyle={{
-                height: 24,
-                borderRadius: spacing['4'],
-                backgroundColor: colors['white'],
-                borderColor: colors['purple-900'],
-                borderWidth: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-              textStyle={{
-                color: colors['purple-900'],
-                textTransform: 'uppercase'
-              }}
-              onPress={() => {
-                amountConfig.setIsMax(!amountConfig.isMax)
-              }}
-            />
-          </View>
+            >
+              <Button
+                text="MAX"
+                mode={'light'}
+                size="small"
+                containerStyle={{
+                  height: 24,
+                  borderRadius: spacing['8'],
+                  backgroundColor: colors['purple-900'],
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+                textStyle={{
+                  color: colors['white'],
+                  textTransform: 'uppercase'
+                }}
+                onPress={() => {
+                  amountConfig.setIsMax(!amountConfig.isMax);
+                }}
+              />
+            </View>
+          ) : null
         }
         error={errorText}
         keyboardType="numeric"
       />
-    )
+    );
   }
-)
+);

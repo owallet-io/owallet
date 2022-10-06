@@ -4,6 +4,7 @@ import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../text';
 import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
+import { colors } from '../../themes';
 
 export const Button: FunctionComponent<{
   color?: 'primary' | 'secondary' | 'danger' ;
@@ -20,6 +21,9 @@ export const Button: FunctionComponent<{
   containerStyle?: ViewStyle;
   style?: ViewStyle;
   textStyle?: TextStyle;
+
+  rippleColor?: string;
+  underlayColor?: string;
 }> = ({
   color = 'primary',
   mode = 'fill',
@@ -92,6 +96,10 @@ export const Button: FunctionComponent<{
   })();
 
   const rippleColor = (() => {
+    if (propRippleColor) {
+      return propRippleColor;
+    }
+
     switch (mode) {
       case 'fill':
         return style.get(`color-button-${color}-fill-ripple` as any).color;
@@ -103,6 +111,10 @@ export const Button: FunctionComponent<{
   })();
 
   const underlayColor = (() => {
+    if (propUnderlayColor) {
+      return propUnderlayColor;
+    }
+
     switch (mode) {
       case 'fill':
         return style.get(`color-button-${color}-fill-underlay` as any).color;
@@ -202,11 +214,12 @@ export const Button: FunctionComponent<{
               color={
                 mode === 'fill' || (mode === 'light' && disabled)
                   ? style.get('color-white').color
-                  : style.get(
-                      `color-button-${color}${
-                        disabled ? '-disabled' : ''
-                      }` as any
-                    ).color
+                  : colors['purple-700']
+                  //  style.get(
+                  //     `color-button-${color}${
+                  //       disabled ? '-disabled' : ''
+                  //     }` as any
+                  //   ).color
               }
               size={20}
             />

@@ -19,28 +19,23 @@ import { Button } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { colors, spacing } from '../../themes';
 import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 
 const styles = StyleSheet.create({
-  'padding-x-page': {
-    paddingLeft: 20,
-    paddingRight: 20
+  sendInputRoot: {
+    paddingHorizontal: spacing['20'],
+    paddingVertical: spacing['24'],
+    backgroundColor: colors['white'],
+    borderRadius: 24
   },
-  'flex-grow': {
-    flexGrow: 1
-  },
-  'height-page-pad': {
-    height: 20
-  },
-  'flex-1': {
-    display: 'flex',
-    flex: 1
-  },
-  'margin-bottom-102': {
-    marginBottom: 102
+  sendlabelInput: {
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22,
+    color: colors['gray-900'],
+    marginBottom: spacing['8']
   }
 });
 
@@ -69,8 +64,6 @@ export const SendScreen: FunctionComponent = observer(() => {
     ? route?.params?.chainId
     : chainStore?.current?.chainId;
 
-  console.log({ route: route });
-
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
@@ -96,8 +89,6 @@ export const SendScreen: FunctionComponent = observer(() => {
       });
 
       if (currency) {
-        console.log('currency', currency);
-
         sendConfigs.amountConfig.setSendCurrency(currency);
       }
     }
@@ -150,6 +141,7 @@ export const SendScreen: FunctionComponent = observer(() => {
           <AmountInput
             placeholder="ex. 1000 ORAI"
             label="Amount"
+            allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
           />
@@ -220,9 +212,12 @@ export const SendScreen: FunctionComponent = observer(() => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <TouchableOpacity
+          <Button
+            text="Send"
+            size="large"
+            disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+            loading={account.isSendingMsg === 'send'}
             style={{
-              marginBottom: 24,
               backgroundColor: colors['purple-900'],
               borderRadius: 8
             }}
@@ -237,9 +232,16 @@ export const SendScreen: FunctionComponent = observer(() => {
                     sendConfigs.feeConfig.toStdFee(),
                     {
                       preferNoSetFee: true,
-                      preferNoSetMemo: true
+                      preferNoSetMemo: true,
+                      networkType: chainStore.current.networkType
                     },
                     {
+                      onFulfill: tx => {
+                        console.log(
+                          tx,
+                          'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
+                        );
+                      },
                       onBroadcasted: txHash => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
@@ -250,7 +252,22 @@ export const SendScreen: FunctionComponent = observer(() => {
                           txHash: Buffer.from(txHash).toString('hex')
                         });
                       }
-                    }
+                    },
+                    // In case send erc20 in evm network
+                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+                      'erc20'
+                    )
+                      ? {
+                          type: 'erc20',
+                          from: account.evmosHexAddress,
+                          contract_addr:
+                            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                              ':'
+                            )[1],
+                          recipient: sendConfigs.recipientConfig.recipient,
+                          amount: sendConfigs.amountConfig.amount
+                        }
+                      : null
                   );
                 } catch (e) {
                   if (e?.message === 'Request rejected') {
@@ -268,30 +285,11 @@ export const SendScreen: FunctionComponent = observer(() => {
                     smartNavigation.navigateSmart('Home', {});
                   }
                 }
-              );
-            } catch (e) {
-              if (e?.message === 'Request rejected') {
-                return;
               }
-              console.log('send error', e);
-              smartNavigation.navigateSmart('Home', {});
-            }
-          }
-        }}
-      >
-        <Text
-          style={{
-            color: 'white',
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Send
-        </Text>
-      </TouchableOpacity>
-      <View style={[styles['height-page-pad'], styles['margin-bottom-102']]} />
+            }}
+          />
+        </View>
+      </View>
     </PageWithScrollView>
   );
 });

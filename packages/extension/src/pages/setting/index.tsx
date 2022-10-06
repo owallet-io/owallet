@@ -17,6 +17,7 @@ import {
   Card,
   CardBody,
   Modal,
+  ModalBody,
   Popover,
   PopoverBody,
   PopoverHeader
@@ -147,50 +148,51 @@ export const SettingPage: FunctionComponent = observer(() => {
             id: 'setting.language'
           })}
           paragraph={paragraphLang}
-          modalBody={
-            <div style={{ padding: 10 }}>
-              {[
-                {
-                  lang: 'en',
-                  title: 'English',
-                  text: 'English'
-                },
-                {
-                  lang: 'ko',
-                  title: 'Korea',
-                  text: '한국어'
-                }
-              ].map((la, i) => {
-                return (
-                  <div className={style.settingModalLang} key={i}>
-                    <img
-                      src={require(la.lang === 'en'
-                        ? '../../public/assets/flag/english.svg'
-                        : '../../public/assets/flag/korea.svg')}
-                      alt="total-balance"
-                      width={20}
-                    />
-                    <div style={{ width: 12 }} />
-                    <span
-                      className={classNames(style.textLang)}
-                      style={{
-                        color: paragraphLang == la.text ? '#7664E4' : '#353945'
-                      }}
-                      onClick={useCallback(() => {
-                        language.setLanguage(la.lang);
-                        history.replace('/');
-                        // history.push({
-                        //   pathname: '/'
-                        // });
-                      }, [history, language])}
-                    >
-                      {la.title}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          }
+          disable={true}
+          // modalBody={
+          //   <div style={{ padding: 10 }}>
+          //     {[
+          //       {
+          //         lang: 'en',
+          //         title: 'English',
+          //         text: 'English'
+          //       },
+          //       {
+          //         lang: 'ko',
+          //         title: 'Korea',
+          //         text: '한국어'
+          //       }
+          //     ].map((la, i) => {
+          //       return (
+          //         <div className={style.settingModalLang} key={i}>
+          //           <img
+          //             src={require(la.lang === 'en'
+          //               ? '../../public/assets/flag/english.svg'
+          //               : '../../public/assets/flag/korea.svg')}
+          //             alt="total-balance"
+          //             width={20}
+          //           />
+          //           <div style={{ width: 12 }} />
+          //           <span
+          //             className={classNames(style.textLang)}
+          //             style={{
+          //               color: paragraphLang == la.text ? '#7664E4' : '#353945'
+          //             }}
+          //             onClick={useCallback(() => {
+          //               language.setLanguage(la.lang);
+          //               history.replace('/');
+          //               // history.push({
+          //               //   pathname: '/'
+          //               // });
+          //             }, [history, language])}
+          //           >
+          //             {la.title}
+          //           </span>
+          //         </div>
+          //       );
+          //     })}
+          //   </div>
+          // }
         />
         <PageButtonSetting
           title={intl.formatMessage({
@@ -198,7 +200,7 @@ export const SettingPage: FunctionComponent = observer(() => {
           })}
           paragraph={paragraphFiat}
           modalBody={
-            <div style={{ padding: 10 }}>
+            <div style={{ padding: 10, height: 250, overflow: 'auto' }}>
               {Object.keys(priceStore.supportedVsCurrencies).map((currency) => {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 const fiatCurrency =
@@ -252,14 +254,14 @@ export const SettingPage: FunctionComponent = observer(() => {
           type={1}
         />
         {isHasTabs === 1 && (
-          <Card>
-            <CardBody>
-              <SettingConnectionsPage />
-            </CardBody>
-          </Card>
+          <Modal isOpen={!!isHasTabs} centered toggle={() => setIsHasTabs(0)}>
+            <ModalBody>
+              <SettingConnectionsPage toggleModal={() => setIsHasTabs(0)} />
+            </ModalBody>
+          </Modal>
         )}
 
-        <PageButtonSetting
+        {/* <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.export-to-mobile'
           })}
@@ -275,7 +277,7 @@ export const SettingPage: FunctionComponent = observer(() => {
               <ExportToMobilePage />
             </CardBody>
           </Card>
-        )}
+        )} */}
 
         {/* <PageButton
           title="Show Advanced IBC Transfers"
@@ -308,7 +310,7 @@ export const SettingPage: FunctionComponent = observer(() => {
           ]}
           styleTitle={styleTitle}
         /> */}
-        <PageButtonSetting
+        {/* <PageButtonSetting
           title={intl.formatMessage({
             id: 'setting.credit'
           })}
@@ -322,7 +324,7 @@ export const SettingPage: FunctionComponent = observer(() => {
           //   () => [<i key="next" className="fas fa-chevron-right" />],
           //   []
           // )}
-        />
+        /> */}
       </div>
     </>
   );

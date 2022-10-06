@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { colors } from '../../themes';
 import { CText as Text } from '../text';
 

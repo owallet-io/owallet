@@ -2,6 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useState
 } from 'react';
 import { observer } from 'mobx-react-lite';
@@ -20,7 +21,16 @@ import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
 import { Bech32Address } from '@owallet/cosmos';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RectButton } from '../../../../components/rect-button';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import {
+  HeaderLeftButton,
+  HeaderRightButton
+} from '../../../../components/header';
+import {
+  HeaderAddIcon,
+  HeaderBackButtonIcon
+} from '../../../../components/header/icon';
+import { AddressBookIcon } from '../../../../components/icon';
 import { useConfirmModal } from '../../../../providers/confirm-modal';
 import { colors, metrics, spacing, typography } from '../../../../themes';
 import { TextInput } from '../../../../components/input';
@@ -129,14 +139,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       //   </HeaderRightButton>
       // )
     });
-  }, [
-    addressBookConfig,
-    analyticsStore,
-    chainId,
-    chainStore,
-    smartNavigation,
-    style,
-  ]);
+  }, [addressBookConfig, chainId, chainStore, smartNavigation, style]);
 
   const isInTransaction = recipientConfig != null || memoConfig != null;
   const AddressBookItem =

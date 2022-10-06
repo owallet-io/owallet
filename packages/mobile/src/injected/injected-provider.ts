@@ -47,10 +47,8 @@ export class RNInjectedOWallet extends InjectedOWallet {
       }
     }
 
-    try {
-      if (!message.id) {
-        throw new Error("Empty id");
-      }
+    return message;
+  }
 
   constructor(version: string, mode: OWalletMode) {
     super(

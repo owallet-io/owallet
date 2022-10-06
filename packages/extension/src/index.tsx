@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { AppIntlProvider } from './languages';
 
 import './styles/global.scss';
 
@@ -49,8 +48,11 @@ import { AddEvmTokenPage } from './pages/setting/token-evm/add';
 import { ManageTokenPage } from './pages/setting/token/manage';
 
 // import * as BackgroundTxResult from "../../background/tx/foreground";
-
-import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
+import {
+  AppIntlProvider,
+  AdditonalIntlMessages,
+  LanguageToFiatCurrency
+} from '@owallet/common';
 
 import manifest from './manifest.json';
 import { Ethereum, OWallet } from '@owallet/provider';
@@ -62,8 +64,10 @@ import { IntlProvider } from 'react-intl';
 import { SignEthereumPage } from './pages/sign/sign-ethereum';
 import { SendEvmPage } from './pages/send-evm';
 import './ledger';
+import { TokenPage } from './pages/token';
+import { Menu } from './pages/main/menu';
 
-window.owallet = new OWallet(
+const owallet = new OWallet(
   manifest.version,
   'core',
   new InExtensionMessageRequester()
@@ -82,13 +86,13 @@ window.owallet = owallet;
 window.ethereum = ethereum;
 
 // Make sure that icon file will be included in bundle
-require('./public/assets/svg/oraichain-pro-logo.svg');
-// require('./public/assets/icon/icon-16.png');
-// require('./public/assets/icon/icon-48.png');
-// require('./public/assets/icon/icon-128.png');
-require('./public/assets/icon/icon-orai-16.png');
-require('./public/assets/icon/icon-orai-48.png');
-require('./public/assets/icon/icon-orai-128.png');
+require('./public/assets/orai_wallet_logo.png');
+require('./public/assets/icon/icon-16.png');
+require('./public/assets/icon/icon-48.png');
+require('./public/assets/icon/icon-128.png');
+// require('./public/assets/icon/icon-orai-16.png');
+// require('./public/assets/icon/icon-orai-48.png');
+// require('./public/assets/icon/icon-orai-128.png');
 
 configure({
   enforceActions: 'always' // Make mobx to strict mode.

@@ -70,17 +70,15 @@ export const LedgerGranterModal: FunctionComponent<{
 
     const style = useStyle();
 
-    const [bleManager] = useState(() => new BleManager());
-
     const resumed = useRef(false);
-    const [isAvailable, setIsAvailable] = useState(false);
+    const [isBLEAvailable, setIsBLEAvailable] = useState(false);
 
     useEffect(() => {
       // If this modal appears, it's probably because there was a problem with the ledger connection.
       // Ledger transport library for BLE seems to cache the transport internally.
       // But this can be small problem when the ledger connection is failed.
       // So, when this modal appears, try to disconnect the bluetooth connection for nano X.
-      getLastUsedLedgerDeviceId().then((deviceId) => {
+      getLastUsedLedgerDeviceId().then(deviceId => {
         if (deviceId) {
           TransportBLE.disconnect(deviceId);
         }
@@ -89,25 +87,24 @@ export const LedgerGranterModal: FunctionComponent<{
 
     useUnmount(() => {
       // When the modal is closed without resuming, abort all the ledger init interactions.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       if (!resumed.current) {
         ledgerInitStore.abortAll();
       }
     });
 
     useEffect(() => {
-      const subscription = bleManager.onStateChange((newState) => {
+      const subscription = bleManager.onStateChange(newState => {
         if (newState === State.PoweredOn) {
-          setIsAvailable(true);
+          setIsBLEAvailable(true);
         } else {
-          setIsAvailable(false);
+          setIsBLEAvailable(false);
         }
       }, true);
 
       return () => {
         subscription.remove();
       };
-    }, [bleManager]);
+    }, []);
 
     useEffect(() => {
       if (Platform.OS === 'android' && !isBLEAvailable) {
@@ -116,7 +113,7 @@ export const LedgerGranterModal: FunctionComponent<{
         // Below API can be called only in android.
         bleManager.enable();
       }
-    }, [bleManager, isAvailable]);
+    }, [isBLEAvailable]);
 
     const [isFinding, setIsFinding] = useState(false);
 
@@ -167,7 +164,7 @@ export const LedgerGranterModal: FunctionComponent<{
         if (Platform.OS === 'android') {
           PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-          ).then((granted) => {
+          ).then(granted => {
             if (granted == PermissionsAndroid.RESULTS.GRANTED) {
               setPermissionStatus(BLEPermissionGrantStatus.Granted);
             } else {
@@ -181,20 +178,13 @@ export const LedgerGranterModal: FunctionComponent<{
     useEffect(() => {
       let unsubscriber: (() => void) | undefined;
 
-      if (isAvailable) {
+      if (
+        isBLEAvailable &&
+        permissionStatus === BLEPermissionGrantStatus.Granted
+      ) {
         setIsFinding(true);
 
         (async () => {
-          if (Platform.OS === "android") {
-            const granted = await PermissionsAndroid.request(
-              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-            );
-
-            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-              throw new Error("Failed to get permission from OS");
-            }
-          }
-
           let _devices: {
             id: string;
             name: string;
@@ -208,7 +198,7 @@ export const LedgerGranterModal: FunctionComponent<{
               if (e.type === 'add') {
                 const device = e.descriptor;
 
-                if (!_devices.find((d) => d.id === device.id)) {
+                if (!_devices.find(d => d.id === device.id)) {
                   console.log(
                     `Ledger device found (id: ${device.id}, name: ${device.name})`
                   );
@@ -250,7 +240,7 @@ export const LedgerGranterModal: FunctionComponent<{
         }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isAvailable]);
+    }, [isBLEAvailable, permissionStatus]);
 
     return (
       <CardModal
@@ -267,9 +257,7 @@ export const LedgerGranterModal: FunctionComponent<{
                   'items-center'
                 ])}
               >
-                <LoadingSpinner
-                  size={20}
-                />
+                <LoadingSpinner size={20} />
               </View>
             </View>
           ) : undefined
@@ -277,11 +265,11 @@ export const LedgerGranterModal: FunctionComponent<{
       >
         {isBLEAvailable &&
         permissionStatus === BLEPermissionGrantStatus.Granted ? (
-          <>
+          <React.Fragment>
             {errorOnListen ? (
               <LedgerErrorView text={errorOnListen} />
             ) : (
-              <>
+              <React.Fragment>
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
                 >
@@ -292,10 +280,10 @@ export const LedgerGranterModal: FunctionComponent<{
                 >
                   2. Choose your hardware wallet to connect.
                 </Text>
-              </>
+              </React.Fragment>
             )}
 
-            {devices.map((device) => {
+            {devices.map(device => {
               return (
                 <LedgerNanoBLESelector
                   key={device.id}
@@ -308,7 +296,7 @@ export const LedgerGranterModal: FunctionComponent<{
                 />
               );
             })}
-          </>
+          </React.Fragment>
         ) : permissionStatus === BLEPermissionGrantStatus.Failed ||
           BLEPermissionGrantStatus.FailedAndRetry ? (
           <LedgerErrorView text="OWallet doesn't have permission to use bluetooth">
@@ -376,7 +364,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
 
     try {
       setIsConnecting(true);
-      const ledger = await Ledger.init(() => TransportBLE.open(deviceId));
+      const ledger = await Ledger.init('ble', [deviceId]);
       await ledger.close();
 
       return true;

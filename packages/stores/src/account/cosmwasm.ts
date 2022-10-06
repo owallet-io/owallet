@@ -89,11 +89,19 @@ export class CosmwasmAccount {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    extraOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ): Promise<boolean> {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
 
-    if (signOptions.networkType === "cosmos") {
+    if (signOptions.networkType === 'cosmos') {
       switch (denomHelper.type) {
         case 'cw20':
           const actualAmount = (() => {
@@ -103,72 +111,71 @@ export class CosmwasmAccount {
             );
             return dec.truncate().toString();
           })();
-  
+
           if (!('type' in currency) || currency.type !== 'cw20') {
             throw new Error('Currency is not cw20');
           }
+
+          if (extraOptions && Object.keys(extraOptions).length !== 0) {
+            let contractAddress, transfer_nft_directly;
+            contractAddress =
+              extraOptions.type === '721'
+                ? 'orai1r5je7ftryvymzukudqgh0dwrkyfyr8u07cjuhw'
+                : 'orai1m0cdln6klzlsk87jww9wwr7ksasa6cnava28j5';
+            transfer_nft_directly =
+              extraOptions.type === '721'
+                ? {
+                    contract_addr: extraOptions.contract_addr,
+                    recipient: extraOptions.recipient,
+                    token_id: extraOptions.token_id
+                  }
+                : {
+                    contract_addr: extraOptions.contract_addr,
+                    amount: extraOptions.amount,
+                    to: extraOptions.to,
+                    token_id: extraOptions.token_id
+                  };
+            await this.sendExecuteContractMsg(
+              'send',
+              contractAddress,
+              {
+                transfer_nft_directly
+              },
+              [],
+              memo,
+              {
+                amount: stdFee.amount ?? [],
+                gas: stdFee.gas ?? this.base.msgOpts.send.cw20.gas.toString()
+              },
+              signOptions,
+              this.txEventsWithPreOnFulfill(onTxEvents, tx => {
+                if (tx.code == null || tx.code === 0) {
+                  // After succeeding to send token, refresh the balance.
+                  const queryBalance = this.queries.queryBalances
+                    .getQueryBech32Address(this.base.bech32Address)
+                    .balances.find(bal => {
+                      return (
+                        bal.currency.coinMinimalDenom ===
+                        currency.coinMinimalDenom
+                      );
+                    });
+
+                  if (queryBalance) {
+                    queryBalance.fetch();
+                  }
+                }
+              })
+            );
+            return true;
+          }
+
           await this.sendExecuteContractMsg(
             'send',
-            contractAddress,
+            currency.contractAddress || denomHelper.contractAddress,
             {
-              transfer_nft_directly
-            },
-            [],
-            memo,
-            {
-              amount: stdFee.amount ?? [],
-              gas: stdFee.gas ?? this.base.msgOpts.send.cw20.gas.toString()
-            },
-            signOptions,
-            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              if (tx.code == null || tx.code === 0) {
-                // After succeeding to send token, refresh the balance.
-                const queryBalance = this.queries.queryBalances
-                  .getQueryBech32Address(this.base.bech32Address)
-                  .balances.find((bal) => {
-                    return (
-                      bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-                    );
-                  });
-  
-                if (queryBalance) {
-                  queryBalance.fetch();
-                }
-              }
-            })
-          );
-          return true;
-        }
-
-        await this.sendExecuteContractMsg(
-          'send',
-          currency.contractAddress || denomHelper.contractAddress,
-          {
-            transfer: {
-              recipient: recipient,
-              amount: actualAmount
-            }
-          },
-          [],
-          memo,
-          {
-            amount: stdFee.amount ?? [],
-            gas: stdFee.gas ?? this.base.msgOpts.send.cw20.gas.toString()
-          },
-          signOptions,
-          this.txEventsWithPreOnFulfill(onTxEvents, tx => {
-            if (tx.code == null || tx.code === 0) {
-              // After succeeding to send token, refresh the balance.
-              const queryBalance = this.queries.queryBalances
-                .getQueryBech32Address(this.base.bech32Address)
-                .balances.find(bal => {
-                  return (
-                    bal.currency.coinMinimalDenom === currency.coinMinimalDenom
-                  );
-                });
-
-              if (queryBalance) {
-                queryBalance.fetch();
+              transfer: {
+                recipient: recipient,
+                amount: actualAmount
               }
             },
             [],
@@ -178,17 +185,18 @@ export class CosmwasmAccount {
               gas: stdFee.gas ?? this.base.msgOpts.send.cw20.gas.toString()
             },
             signOptions,
-            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
+            this.txEventsWithPreOnFulfill(onTxEvents, tx => {
               if (tx.code == null || tx.code === 0) {
                 // After succeeding to send token, refresh the balance.
                 const queryBalance = this.queries.queryBalances
                   .getQueryBech32Address(this.base.bech32Address)
-                  .balances.find((bal) => {
+                  .balances.find(bal => {
                     return (
-                      bal.currency.coinMinimalDenom === currency.coinMinimalDenom
+                      bal.currency.coinMinimalDenom ===
+                      currency.coinMinimalDenom
                     );
                   });
-  
+
                 if (queryBalance) {
                   queryBalance.fetch();
                 }

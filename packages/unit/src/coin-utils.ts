@@ -123,8 +123,10 @@ export class CoinUtils {
       return '0';
     }
 
-    const integer = dec.truncate();
-    const fraction = dec.sub(new Dec(integer));
+    const isNeg = dec.isNegative();
+
+    const integer = dec.abs().truncate();
+    const fraction = dec.abs().sub(new Dec(integer));
 
     const decimals = Math.max(
       maxDecimals - integer.toString().length + 1,

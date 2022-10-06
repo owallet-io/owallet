@@ -24,6 +24,7 @@
   border-radius: 4px;
   background-color: $background-color;
   color: $color-neutral-2 !important;
+ 
   &::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: $color-gray-70 !important;
@@ -31,15 +32,19 @@
   }
 
   &:focus {
-    // box-shadow: $input-focus-alternative-box-shadow !important;
-    // border: 1px solid $color-gray-70 !important;
     border-radius: 4px;
+  }
+  
+}
+
+.input-group {
+  box-shadow: 0 1px 3px rgb(50 50 93 / 15%), 0 1px 0 rgb(0 0 0 / 2%);
+  &:focus-within {
+    box-shadow: $input-focus-alternative-box-shadow !important;
   }
 }
 
 .address-book-button {
-  // box-shadow: $input-alternative-box-shadow !important;
-
   &:hover {
     box-shadow: $input-focus-alternative-box-shadow !important;
   }

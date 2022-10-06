@@ -37,6 +37,18 @@ export const DAppInfos = [
     name: 'OraiDEX Info',
     uri: 'https://info.oraidex.io',
     logo: oraiLogo
+  },
+  {
+    id: 8,
+    name: 'Orchai App',
+    uri: 'https://app.orchai.io',
+    logo: oraiLogo
+  },
+  {
+    id: 9,
+    name: 'Orchai App Staging',
+    uri: 'https://app-staging.orchai.io',
+    logo: oraiLogo
   }
 ];
 

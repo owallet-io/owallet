@@ -72,7 +72,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const { chainStore, analyticsStore } = useStore();
+  const { chainStore } = useStore();
 
   const recipientConfig = useRecipientConfig(
     chainStore,

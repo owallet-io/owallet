@@ -3,7 +3,7 @@ import {
   ObservableChainQueryMap
 } from '../../chain-query';
 import { BondStatus, Validators, Validator } from './types';
-import { KVStore } from '@owallet/common';
+import { KVStore, fetchAdapter } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 import {
   autorun,
@@ -52,7 +52,8 @@ export class ObservableQueryValidatorThumbnail extends ObservableQuery<KeybaseRe
 
   constructor(kvStore: KVStore, validator: Validator) {
     const instance = Axios.create({
-      baseURL: 'https://keybase.io/'
+      baseURL: 'https://keybase.io/',
+      adapter: fetchAdapter
     });
 
     super(
@@ -118,9 +119,9 @@ export class ObservableQueryValidatorsInner extends ObservableChainQuery<Validat
             case BondStatus.Bonded:
               return `/staking/validators?status=BOND_STATUS_BONDED`;
             case BondStatus.Unbonded:
-              return `/staking/validators?status=BOND_STATUS_UNBONDED`;
+              return `/staking/validators?status=BOND_STATUS_UNBONDED&limit=500`;
             case BondStatus.Unbonding:
-              return `/staking/validators?status=BOND_STATUS_UNBONDING`;
+              return `/staking/validators?status=BOND_STATUS_UNBONDING&limit=500`;
           }
         })();
 

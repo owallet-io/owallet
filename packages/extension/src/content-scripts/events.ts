@@ -5,10 +5,17 @@ export function initEvents(router: Router) {
   router.registerMessage(PushEventDataMsg);
 
   router.addHandler('interaction-foreground', (_, msg) => {
+    console.log('interaction-foreground event');
     switch (msg.constructor) {
       case PushEventDataMsg:
         if ((msg as PushEventDataMsg).data.type === 'keystore-changed') {
-          window.dispatchEvent(new Event('keplr_keystorechange'));
+          window.dispatchEvent(
+            new CustomEvent('keplr_keystorechange', {
+              detail: {
+                ...(msg as PushEventDataMsg).data
+              }
+            })
+          );
         }
         return {};
       default:

@@ -10,9 +10,7 @@ const isEnvAnalyzer = process.env.ANALYZER === 'true';
 const tsRule = {
   test: /\.ts$/,
   loader: 'ts-loader',
-  options: {
-    configFile: 'tsconfig.provider.json'
-  }
+  options: { transpileOnly: true, configFile: 'tsconfig.provider.json' }
 };
 
 module.exports = (env, args) => {

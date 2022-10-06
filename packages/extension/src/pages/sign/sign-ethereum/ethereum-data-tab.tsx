@@ -7,5 +7,5 @@ import style from '../style.module.scss';
 export const EthereumDataTab: FunctionComponent<{
   data: object;
 }> = observer(({ data }) => {
-  return <pre className={style.message}>{JSON.stringify(data, null, 2)} </pre>;
+  return <pre className={style.message}>{JSON.stringify(data, null, 2)}</pre>;
 });

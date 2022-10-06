@@ -69,6 +69,10 @@ export const DestinationChainSelector: FunctionComponent<{
             )}
           </DropdownToggle>
           <DropdownMenu>
+            {/* {
+              !ibcChannelInfo.getTransferChannels().length && <> No chain </>
+            } */}
+
             {ibcChannelInfo.getTransferChannels().map((channel) => {
               if (!chainStore.hasChain(channel.counterpartyChainId)) {
                 return undefined;
@@ -77,7 +81,6 @@ export const DestinationChainSelector: FunctionComponent<{
               const chainInfo = chainStore.getChain(
                 channel.counterpartyChainId
               );
-
               if (chainInfo) {
                 return (
                   <DropdownItem

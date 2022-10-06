@@ -195,7 +195,7 @@ export class SecretAccount {
 
           const dataOutput = Buffer.from(
             Buffer.from(
-              await enigmaUtils.decrypt(dataOutputCipher, nonce)
+              await enigmaUtils.decrypt(dataField.data, nonce)
             ).toString(),
             'base64'
           ).toString();

@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FunctionComponent } from 'react';
 import { ActivityIndicator, StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { RectButton } from '../../../../components/rect-button';
-import { colors, metrics, spacing, typography } from '../../../../themes';
-import { convertAmount, getTransactionValue } from '../../../../utils/helper';
+import { colors, spacing, typography } from '../../../../themes';
+import {
+  convertAmount,
+  formatOrai,
+  getTransactionValue,
+  getTxTypeNew,
+  parseIbcMsgTransfer
+} from '../../../../utils/helper';
 import moment from 'moment';
+// import { Buffer } from 'buffer';
 
 interface TransactionItemProps {
   item: any;
@@ -108,7 +115,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
   }, [item]);
 
   const renderChildren = () => {
-    return (
+    return type === 'cw20' ? (
       <View
         style={{
           ...styles.innerButton,
@@ -121,7 +128,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
               ...styles.textInfo
             }}
           >
-            {title}
+            {item.name}
           </Text>
         </View>
 
@@ -191,8 +198,9 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
               color: colors['gray-300']
             }}
           >
-            {convertAmount(amount)} {denom}
+            {date}
           </Text>
+          {amountDataCell()}
         </View>
       </View>
     );
@@ -226,7 +234,8 @@ const styles = StyleSheet.create({
   textInfo: {
     ...typography.h7,
     color: colors['gray-900'],
-    fontWeight: '600'
+    fontWeight: '600',
+    maxWidth: 200
   },
   textAmount: {
     ...typography.h6,

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { FlatList, Image, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { RectButton } from '../../../../components/rect-button';
+import { useStore } from '../../../../stores';
 import { colors, metrics, spacing, typography } from '../../../../themes';
 import { _keyExtract } from '../../../../utils/helper';
 import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
@@ -18,7 +19,7 @@ const MnemonicSeed = ({ styles }) => {
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'privateKey'
+      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 

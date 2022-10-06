@@ -9,7 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rimraf node_modules build",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
@@ -26,6 +26,6 @@
     "@walletconnect/utils": "^1.6.4",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
-    "secretjs": "^0.16.0"
+    "secretjs": "^0.17.0"
   }
 }

@@ -72,7 +72,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
     //   bip44HDPath: bip44Option.bip44HDPath,
     // });
 
-    if (checkRouter(route.name, 'RegisterMain')) {
+    if (checkRouter(props?.route?.name, 'RegisterMain')) {
       navigate('RegisterVerifyMnemonicMain', {
         registerConfig,
         newMnemonicConfig,
@@ -153,7 +153,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
         defaultValue=""
       />
       {mode === 'create' ? (
-        <>
+        <React.Fragment>
           <Controller
             control={control}
             rules={{
@@ -172,6 +172,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
                   inputStyle={{
                     ...styles.borderInput
                   }}
+                  secureTextEntry={true}
                   onSubmitEditing={() => {
                     setFocus('confirmPassword');
                   }}
@@ -254,7 +255,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             name="confirmPassword"
             defaultValue=""
           />
-        </>
+        </React.Fragment>
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View
@@ -285,7 +286,10 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
       </TouchableOpacity>
       <View
         style={{
-          paddingBottom: checkRouterPaddingBottomBar(route.name, 'RegisterMain')
+          paddingBottom: checkRouterPaddingBottomBar(
+            props?.route?.name,
+            'RegisterMain'
+          )
         }}
       >
         <Text
@@ -296,7 +300,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             fontSize: 16
           }}
           onPress={() => {
-            if (checkRouter(route.name, 'RegisterMain')) {
+            if (checkRouter(props?.route?.name, 'RegisterMain')) {
               smartNavigation.goBack();
             } else {
               smartNavigation.navigateSmart('Register.Intro', {});

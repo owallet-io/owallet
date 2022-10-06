@@ -8,6 +8,7 @@
 /* eslint-disable */
 
 const { getDefaultConfig } = require('metro-config');
+
 const blacklist = require('metro-config/src/defaults/exclusionList');
 const getWorkspaces = require('get-yarn-workspaces');
 const path = require('path');

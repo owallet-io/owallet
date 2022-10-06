@@ -42,6 +42,8 @@ export const TypeRecoverMnemonic = 'recover-mnemonic';
 export const RecoverMnemonicIntro: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
+  const { analyticsStore } = useStore();
+
   return (
     <Button
       color=""
@@ -67,6 +69,8 @@ export const RecoverMnemonicPage: FunctionComponent<{
   const intl = useIntl();
 
   const bip44Option = useBIP44Option();
+
+  const { analyticsStore } = useStore();
 
   const { register, handleSubmit, getValues, errors } = useForm<FormData>({
     defaultValues: {
@@ -193,11 +197,10 @@ export const RecoverMnemonicPage: FunctionComponent<{
           />
           {registerConfig.mode === 'create' ? (
             <React.Fragment>
-              <Input
+              <PasswordInput
                 label={intl.formatMessage({
                   id: 'register.create.input.password'
                 })}
-                type="password"
                 name="password"
                 ref={register({
                   required: intl.formatMessage({
@@ -216,7 +219,7 @@ export const RecoverMnemonicPage: FunctionComponent<{
                 }}
                 error={errors.password && errors.password.message}
               />
-              <Input
+              <PasswordInput
                 label={intl.formatMessage({
                   id: 'register.create.input.confirm-password'
                 })}

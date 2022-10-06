@@ -20,9 +20,9 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
 
   const registerConfig = useRegisterConfig(keyRingStore, []);
 
+  const safeAreaInsets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
-
-  useLogScreenView("Register");
+  const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
   return (
     <PageWithScrollView

@@ -91,7 +91,7 @@ const GatewayIntroScreen: FunctionComponent = () => {
         disabled={isTimedOut}
         onPress={async () => {
           await appInitStore.updateInitApp();
-          setTimer(2000);
+          setTimer(1000);
           setTimeout(() => {
             smartNavigation.navigateSmart('Register.Intro', {});
           }, 1000);

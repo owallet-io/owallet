@@ -57,7 +57,8 @@ export const EarningCard: FunctionComponent<{
               txHash: Buffer.from(txHash).toString('hex')
             });
           }
-        }
+        },
+        stakingReward.currency.coinMinimalDenom
       );
     } catch (e) {
       crashlytics().recordError(e);
@@ -239,8 +240,6 @@ export const EarningCard: FunctionComponent<{
               <TouchableOpacity
                 style={styles['btn-manage']}
                 onPress={() => {
-                  console.log('push StackActions');
-
                   navigate('MainTab', { screen: 'Invest' });
                   // smartNavigation.navigateSmart('Staking.Dashboard', {});
                 }}

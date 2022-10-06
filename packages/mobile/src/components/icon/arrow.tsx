@@ -17,6 +17,7 @@ export const RightArrowIcon: FunctionComponent<
     type === 'left' ? { transform: [{ rotate: '180deg' }] } : {}
   return (
     <Svg
+      onPress={onPress}
       fillRule="evenodd"
       strokeLinecap="round"
       strokeLinejoin="round"

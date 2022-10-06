@@ -27,6 +27,8 @@ export const LockPage: FunctionComponent = observer(() => {
   const intl = useIntl();
   const history = useHistory();
 
+  const passwordRef = useRef<HTMLInputElement | null>();
+
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
       password: ''
@@ -90,8 +92,7 @@ export const LockPage: FunctionComponent = observer(() => {
           logo={require('../../public/assets/logo.svg')}
           subtitle="Cosmos x EVM in one Wallet"
         />
-        <Input
-          type="password"
+        <PasswordInput
           label={intl.formatMessage({
             id: 'lock.input.password'
           })}

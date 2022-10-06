@@ -37,6 +37,12 @@ export const SignPage: FunctionComponent = observer(() => {
 
   const intl = useIntl();
 
+  useEffect(() => {
+    return () => {
+      signInteractionStore.reject();
+    };
+  }, []);
+
   const {
     chainStore,
     keyRingStore,
@@ -57,7 +63,8 @@ export const SignPage: FunctionComponent = observer(() => {
   const amountConfig = useSignDocAmountConfig(
     chainStore,
     current.chainId,
-    accountStore.getAccount(current.chainId).msgOpts
+    accountStore.getAccount(current.chainId).msgOpts,
+    signer
   );
   const feeConfig = useFeeConfig(
     chainStore,
@@ -69,7 +76,6 @@ export const SignPage: FunctionComponent = observer(() => {
   );
   const memoConfig = useMemoConfig(chainStore, current.chainId);
 
-  const signDocWapper = signInteractionStore.waitingData?.data.signDocWrapper;
   const signDocHelper = useSignDocHelper(feeConfig, memoConfig);
   amountConfig.setSignDocHelper(signDocHelper);
 
@@ -98,9 +104,16 @@ export const SignPage: FunctionComponent = observer(() => {
       ) {
         feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
       }
+      amountConfig.setDisableBalanceCheck(
+        !!data.data.signOptions.disableBalanceCheck
+      );
+      feeConfig.setDisableBalanceCheck(
+        !!data.data.signOptions.disableBalanceCheck
+      );
       setSigner(data.data.signer);
     }
   }, [
+    amountConfig,
     chainStore,
     gasConfig,
     memoConfig,
@@ -189,23 +202,32 @@ export const SignPage: FunctionComponent = observer(() => {
   })();
 
   return (
-    <HeaderLayout
-      showChainName
-      canChangeChainInfo={false}
-      onBackButton={
-        interactionInfo.interactionInternal
-          ? () => {
-              history.goBack();
-            }
-          : undefined
-      }
+    // <HeaderLayout
+    //   showChainName={alternativeTitle == null}
+    //   alternativeTitle={alternativeTitle != null ? alternativeTitle : undefined}
+    //   canChangeChainInfo={false}
+    //   onBackButton={
+    //     interactionInfo.interactionInternal
+    //       ? () => {
+    //           history.goBack();
+    //         }
+    //       : undefined
+    //   }
+    // >
+    <div
+      style={{
+        padding: 20,
+        backgroundColor: '#FFFFFF',
+        height: '100%',
+        overflowX: 'auto'
+      }}
     >
       {
         /*
          Show the informations of tx when the sign data is delivered.
          If sign data not delivered yet, show the spinner alternatively.
          */
-        signer ? (
+        isLoaded ? (
           <div className={style.container}>
             <div
               style={{
@@ -259,30 +281,33 @@ export const SignPage: FunctionComponent = observer(() => {
                 <DataTab signDocHelper={signDocHelper} />
               ) : null}
               {tab === Tab.Details ? (
-                <DetailsTab
-                  signDocHelper={signDocHelper}
-                  memoConfig={memoConfig}
-                  feeConfig={feeConfig}
-                  gasConfig={gasConfig}
-                  isInternal={
-                    interactionInfo.interaction &&
-                    interactionInfo.interactionInternal
-                  }
-                  preferNoSetFee={preferNoSetFee}
-                  preferNoSetMemo={preferNoSetMemo}
-                />
+                signDocHelper.signDocWrapper?.isADR36SignDoc ? (
+                  <ADR36SignDocDetailsTab
+                    signDocWrapper={signDocHelper.signDocWrapper}
+                    isADR36WithString={isADR36WithString}
+                    origin={origin}
+                  />
+                ) : (
+                  <DetailsTab
+                    signDocHelper={signDocHelper}
+                    memoConfig={memoConfig}
+                    feeConfig={feeConfig}
+                    gasConfig={gasConfig}
+                    isInternal={
+                      interactionInfo.interaction &&
+                      interactionInfo.interactionInternal
+                    }
+                    preferNoSetFee={preferNoSetFee}
+                    preferNoSetMemo={preferNoSetMemo}
+                  />
+                )
               ) : null}
             </div>
             <div style={{ flex: 1 }} />
             <div className={style.buttons}>
               {keyRingStore.keyRingType === 'ledger' &&
               signInteractionStore.isLoading ? (
-                <Button
-                  className={style.button}
-                  color="primary"
-                  disabled={true}
-                  outline
-                >
+                <Button className={style.button} disabled={true} outline>
                   <FormattedMessage id="sign.button.confirm-ledger" />{' '}
                   <i className="fa fa-spinner fa-spin fa-fw" />
                 </Button>
@@ -362,6 +387,7 @@ export const SignPage: FunctionComponent = observer(() => {
           </div>
         )
       }
-    </HeaderLayout>
+      {/* </HeaderLayout> */}
+    </div>
   );
 });

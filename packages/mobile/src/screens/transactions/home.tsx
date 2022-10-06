@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import { CText as Text } from '../../components/text';
 import {
   ActivityIndicator,
@@ -14,7 +20,9 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { API } from '../../common/api';
 import crashlytics from '@react-native-firebase/crashlytics';
-
+import { NewsTab } from './news';
+import { useIsFocused } from '@react-navigation/core';
+import { TendermintTxTracer } from '@owallet/cosmos';
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -24,29 +32,29 @@ export const Transactions: FunctionComponent = () => {
   const [loading, setLoading] = useState(true);
   const [loadMore, setLoadMore] = useState(false);
   const smartNavigation = useSmartNavigation();
-  const offset = useRef(0);
+  const page = useRef(1);
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
-    const isRecipient = indexChildren === 1;
-    const isAll = indexChildren === 0;
+    // const isRecipient = indexChildren === 1;
+    // const isAll = indexChildren === 0;
     try {
-      const res = await API.getHistory(
+      const res = await API.getTransactions(
         {
           address: account.bech32Address,
           page: page.current,
           limit: 10,
           type: indexChildren === 0 ? 'native' : 'cw20'
         },
-        { baseURL: chainStore.current.rest }
+        // { baseURL: chainStore.current.rest }
+        { baseURL: 'https://api.scan.orai.io' }
       );
 
-      const value = res.data?.tx_responses || [];
-      const total = res?.data?.pagination?.total;
+      const value = res.data?.data || [];
       let newData = isLoadMore ? [...data, ...value] : value;
       hasMore.current = value?.length === 10;
-      offset.current = newData.length;
-      if (total && offset.current === Number(total)) {
+      page.current = res.data?.page.page_id + 1;
+      if (page.current === res.data?.page.total_page) {
         hasMore.current = false;
       }
       setData(newData);
@@ -89,9 +97,9 @@ export const Transactions: FunctionComponent = () => {
   }, [chainStore, isFocused, data]);
 
   useEffect(() => {
-    offset.current = 0;
+    page.current = 1;
     fetchData();
-  }, [account.bech32Address, indexChildren]);
+  }, [indexChildren]);
 
   const _renderItem = useCallback(
     ({ item, index }) => {
@@ -165,18 +173,11 @@ export const Transactions: FunctionComponent = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <View
-        style={{
-          backgroundColor: colors['white'],
-          borderRadius: spacing['24']
-        }}
-      >
+      {indexParent == 0 && (
         <View
           style={{
-            marginTop: spacing['12'],
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center'
+            backgroundColor: colors['white'],
+            borderRadius: spacing['24']
           }}
         >
           <View
@@ -187,7 +188,7 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center'
             }}
           >
-            {['Send', 'Receive'].map((title: string, i: number) => (
+            {['Transactions', 'CW20'].map((title: string, i: number) => (
               <TouchableOpacity
                 key={i}
                 style={{
@@ -202,35 +203,17 @@ export const Transactions: FunctionComponent = () => {
                   setIndexChildren(i);
                 }}
               >
-                {title}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        <TransactionSectionTitle
-          title={'Transfer list'}
-          containerStyle={{
-            paddingTop: spacing['4']
-          }}
-        />
-        <View style={styles.transactionList}>
-          <FlatList
-            contentContainerStyle={{ flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={_keyExtract}
-            data={data}
-            renderItem={_renderItem}
-            ListFooterComponent={<View style={{ height: spacing['12'] }} />}
-            ListEmptyComponent={
-              <View style={styles.transactionListEmpty}>
                 <Text
                   style={{
-                    ...typography.subtitle1,
-                    color: colors['gray-300'],
-                    marginTop: spacing['8']
+                    fontSize: 16,
+                    fontWeight: '700',
+                    color:
+                      indexChildren === i
+                        ? colors['gray-900']
+                        : colors['gray-300']
                   }}
                 >
-                  {'Not found transaction'}
+                  {title}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -284,7 +267,8 @@ export const Transactions: FunctionComponent = () => {
             ) : null}
           </View>
         </View>
-      </View>
+      )}
+      {indexParent == 1 && <NewsTab />}
     </View>
   );
 };

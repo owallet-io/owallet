@@ -42,11 +42,12 @@ export class ObservableQueryIBCChannel extends ObservableChainQueryMap<ChannelRe
     super(kvStore, chainId, chainGetter, (key: string) => {
       const params = JSON.parse(key);
 
-      return new ObservableChainQuery<ChannelResponse>(
+      return new ObservableChainQueryIBCChannel(
         this.kvStore,
         this.chainId,
         this.chainGetter,
-        `/ibc/core/channel/v1beta1/channels/${params.channelId}/ports/${params.portId}`
+        params.portId,
+        params.channelId
       );
     });
   }

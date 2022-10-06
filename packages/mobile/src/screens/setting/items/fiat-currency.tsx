@@ -1,8 +1,8 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { RightArrow, SettingItem } from '../components';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { SelectorModal } from '../../../components/input';
+import React, { FunctionComponent, useMemo, useState } from "react";
+import { RightArrow, SettingItem } from "../components";
+import { observer } from "mobx-react-lite";
+import { useStore } from "../../../stores";
+import { SelectorModal } from "../../../components/input";
 
 export const SettingFiatCurrencyItem: FunctionComponent<{
   topBorder?: boolean;
@@ -15,13 +15,13 @@ export const SettingFiatCurrencyItem: FunctionComponent<{
     return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
-        label: key.toUpperCase()
+        label: key.toUpperCase(),
       };
     });
   }, [priceStore.supportedVsCurrencies]);
 
   return (
-    <>
+    <React.Fragment>
       <SelectorModal
         isOpen={isOpenModal}
         close={() => setIsOpenModal(false)}
@@ -40,6 +40,6 @@ export const SettingFiatCurrencyItem: FunctionComponent<{
           setIsOpenModal(true);
         }}
       />
-    </>
+    </React.Fragment> 
   );
 });

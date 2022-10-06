@@ -16,6 +16,7 @@ export class SignInteractionStore {
       // Reject all interactions that is not first one.
       // This interaction can have only one interaction at once.
       const datas = this.waitingDatas.slice();
+
       if (datas.length > 1) {
         for (let i = 1; i < datas.length; i++) {
           this.rejectWithId(datas[i].id);
@@ -93,13 +94,14 @@ export class SignInteractionStore {
     const wrapper =
       data.data.mode === 'amino'
         ? SignDocWrapper.fromAminoSignDoc(data.data.signDoc)
-        : new SignDocWrapper(data.data.mode, data.data.signDocBytes);
+        : SignDocWrapper.fromDirectSignDocBytes(data.data.signDocBytes);
 
     return {
       id: data.id,
       type: data.type,
       isInternal: data.isInternal,
       data: {
+        chainId: data.data.chainId,
         msgOrigin: data.data.msgOrigin,
         signer: data.data.signer,
         signDocWrapper: wrapper,

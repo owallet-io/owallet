@@ -16,6 +16,8 @@ import { useConfirm } from '../../components/confirm';
 import { IBCTransferView } from '../main/ibc-transfer';
 import { IBCTransferPage } from '../../pages/ibc-transfer';
 import { SendPage } from '../send';
+import { SelectChain } from '../../layouts/header';
+import { SendEvmPage } from '../send-evm';
 
 export const TokenPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
@@ -26,9 +28,20 @@ export const TokenPage: FunctionComponent = observer(() => {
   const [coinMinimalDenom, setCoinMinimalDenom] = React.useState('');
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(accountInfo.bech32Address);
+    .queryBalances.getQueryBech32Address(
+      chainStore.current.networkType === 'evm'
+        ? accountInfo.evmosHexAddress
+        : accountInfo.bech32Address
+    );
 
-  const tokens = queryBalances.unstakables;
+  const tokens = queryBalances.balances;
+  // const queryBalances = queriesStore
+  //   .get(chainStore.current.chainId)
+  //   .queryBalances.getQueryBech32Address(
+  //     accountStore.getAccount(chainStore.current.chainId).bech32Address
+  //   );
+
+  // const tokens = queryBalances.balances;
 
   const hasTokens = tokens.length > 0;
   const handleClickToken = (token) => {
@@ -38,6 +51,8 @@ export const TokenPage: FunctionComponent = observer(() => {
 
   return (
     <HeaderLayout showChainName canChangeChainInfo>
+      <SelectChain showChainName canChangeChainInfo />
+      <div style={{ height: 10 }} />
       {uiConfigStore.showAdvancedIBCTransfer &&
       chainStore.current.features?.includes('ibc-transfer') ? (
         <>
@@ -82,11 +97,17 @@ export const TokenPage: FunctionComponent = observer(() => {
                 }}
               />
               <div style={{ paddingRight: 20, paddingLeft: 20 }}>
-                <LayoutHidePage hidePage={() => {
-                  setHasSend(false);
-                  setCoinMinimalDenom('');
-                }} />
-                <SendPage coinMinimalDenom={coinMinimalDenom} />
+                <LayoutHidePage
+                  hidePage={() => {
+                    setHasSend(false);
+                    setCoinMinimalDenom('');
+                  }}
+                />
+                {chainStore.current.networkType === 'evm' ? (
+                  <SendEvmPage coinMinimalDenom={coinMinimalDenom} />
+                ) : (
+                  <SendPage coinMinimalDenom={coinMinimalDenom} />
+                )}
               </div>
             </>
           ) : null}

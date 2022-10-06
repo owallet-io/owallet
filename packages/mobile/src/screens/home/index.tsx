@@ -22,8 +22,9 @@ import { BIP44Selectable } from './bip44-selectable';
 import { useFocusEffect } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
+import { AccountCardEVM } from './account-card-evm';
 
-export const HomeScreen: FunctionComponent = observer(() => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
@@ -101,7 +102,7 @@ export const HomeScreen: FunctionComponent = observer(() => {
       priceStore.waitFreshResponse(),
       ...queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
-        .balances.map((bal) => {
+        .balances.map(bal => {
           return bal.waitFreshResponse();
         }),
       queries.cosmos.queryRewards
@@ -117,22 +118,19 @@ export const HomeScreen: FunctionComponent = observer(() => {
 
     setRefreshing(false);
   }, [accountStore, chainStore, priceStore, queriesStore]);
+  // const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      accountStore.getAccount(chainStore.current.chainId).bech32Address
-    );
+  // const queryBalances = queriesStore
+  //   .get(chainStore.current.chainId)
+  //   .queryBalances.getQueryBech32Address(
+  //     accountStore.getAccount(chainStore.current.chainId).bech32Address
+  //   );
 
-  const tokens = queryBalances.balances.concat(
-    queryBalances.nonNativeBalances,
-    queryBalances.positiveNativeUnstakables
-  );
+  // const queryBalancesEVM = queries.evm.queryEvmBalance.getQueryBalance(
+  //   accountStore.getAccount(chainStore.current.chainId).evmosHexAddress
+  // );
 
-  useLogScreenView("Home Dashboard", {
-    chainId: chainStore.current.chainId,
-    chainName: chainStore.current.chainName,
-  });
+  // const tokens = queryBalances.balances;
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -142,11 +140,16 @@ export const HomeScreen: FunctionComponent = observer(() => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      <AccountCard containerStyle={styles.containerStyle} />
-      {tokens.length > 0 ? (
-        <TokensCard containerStyle={styles.containerStyle} />
+      {chainStore.current.networkType === 'cosmos' ? (
+        <AccountCard containerStyle={styles.containerStyle} />
+      ) : (
+        <AccountCardEVM containerStyle={styles.containerStyle} />
+      )}
+      <TokensCard containerStyle={styles.containerStyle} />
+      {chainStore.current.networkType === 'cosmos' ? (
+        <EarningCard containerStyle={styles.containerEarnStyle} />
       ) : null}
-      <EarningCard containerStyle={styles.containerEarnStyle} />
+
       {/* {currentChain.networkType === 'cosmos' && (
         <>
           <MyRewardCard

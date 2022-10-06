@@ -102,6 +102,7 @@ export const IBCChannelRegistrarModal: FunctionComponent<{
             placeholder={intl.formatMessage({
               id: 'component.ibc.channel-registrar.chain-selector.add.channel.placeholder'
             })}
+            classNameInputGroup={style.inputGroup}
             onChange={(e) => {
               e.preventDefault();
               setChannelId(e.target.value);

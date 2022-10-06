@@ -13,12 +13,10 @@ import {
   IFeeConfig,
   IFeeEthereumConfig,
   IGasConfig,
-  IMemoConfig,
-  SignDocHelper
+  IMemoConfig
 } from '@owallet/hooks';
 import { useLanguage } from '@owallet/common';
 import { Badge, Button, Label } from 'reactstrap';
-import { renderDirectMessage } from '../direct';
 import { FeeInput } from '../../../components/form/fee-input';
 import { GasEthereumInput } from '../../../components/form/gas-ethereum-input';
 import classnames from 'classnames';
@@ -51,7 +49,7 @@ export const EthereumDetailsTab: FunctionComponent<{
   }) => {
     const { chainStore, priceStore, accountStore } = useStore();
     const intl = useIntl();
-    
+
     return (
       <div className={styleDetailsTab.container}>
         <Label
@@ -64,8 +62,10 @@ export const EthereumDetailsTab: FunctionComponent<{
             {JSON.stringify(dataSign).length}
           </Badge>
         </Label>
-        <div id="signing-messages" className={styleDetailsTab.msgContainer}>
-          {/* {renderedMsgs} */}
+        <div id="signing-messages" style={{
+          overflow: 'auto',
+          height: 80
+        }} className={styleDetailsTab.msgContainer}>
           {JSON.stringify(dataSign, null, 2)}
         </div>
         {!preferNoSetMemo ? (

@@ -42,7 +42,7 @@ export const UndelegationsCard: FunctionComponent<{
     <Card style={containerStyle}>
       <CardBody
         style={{
-          backgroundColor: 'white'
+          backgroundColor: 'white',
         }}
       >
         <Text style={style.flatten(['h4', 'color-text-black-very-high'])}>

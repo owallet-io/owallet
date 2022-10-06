@@ -22,7 +22,8 @@ import {
   KeyRing,
   CheckPasswordMsg,
   ExportKeyRingData,
-  ExportKeyRingDatasMsg
+  ExportKeyRingDatasMsg,
+  ChangeChainMsg
 } from '@owallet/background';
 
 import { computed, flow, makeObservable, observable, runInAction } from 'mobx';
@@ -131,6 +132,8 @@ export class KeyRingStore {
 
   @observable.shallow
   protected selectablesMap: Map<string, KeyRingSelectablesStore> = new Map();
+
+  protected keyStoreChangedListeners: (() => void)[] = [];
 
   constructor(
     protected readonly eventDispatcher: {
@@ -245,8 +248,11 @@ export class KeyRingStore {
     const msg = new AddLedgerKeyMsg(kdf, meta, bip44HDPath);
     const result = (yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
-    )).multiKeyStoreInfo
-    console.log("🚀 ~ file: keyring.ts ~ line 251 ~ KeyRingStore ~ result", result)
+    )).multiKeyStoreInfo;
+    console.log(
+      '🚀 ~ file: keyring.ts ~ line 251 ~ KeyRingStore ~ result',
+      result
+    );
     this.multiKeyStoreInfo = result;
   }
 
@@ -339,7 +345,7 @@ export class KeyRingStore {
     );
     // If selectedIndex and index are same, name could be changed, so dispatch keystore event
     if (selectedIndex === index) {
-      this.eventDispatcher.dispatchEvent("keplr_keystorechange");
+      this.dispatchKeyStoreChangeEvent();
     }
   }
 
@@ -396,6 +402,13 @@ export class KeyRingStore {
       BACKGROUND_PORT,
       new ExportKeyRingDatasMsg(password)
     );
+  }
+
+  @flow
+  *changeChain(chainInfos: Object = {}) {
+    const msg = new ChangeChainMsg(chainInfos);
+    yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+    this.dispatchKeyStoreChangeEvent();
   }
 
   protected dispatchKeyStoreChangeEvent() {

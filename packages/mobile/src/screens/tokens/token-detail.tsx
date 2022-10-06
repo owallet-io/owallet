@@ -33,33 +33,37 @@ import {
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { navigate } from '../../router/root';
 import { API } from '../../common/api';
-import { useRoute } from '@react-navigation/native';
+import { useLoadingScreen } from '../../providers/loading-screen';
+import { AddressQRCodeModal } from '../home/components';
+import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
 
-export const TokenDetailScreen: FunctionComponent = observer(() => {
-  const { chainStore, queriesStore, accountStore } = useStore();
+export const TokenDetailScreen: FunctionComponent = observer(props => {
+  const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
-  const route = useRoute();
 
-  const { amountBalance, balanceCoinDenom, priceBalance } = route.params ?? {};
+  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
+    props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+  // const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
-  const delegated = queryDelegated.total;
+  // const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+  //   account.bech32Address
+  // );
+  // const delegated = queryDelegated.total;
 
-  const queryUnbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
+  // const queryUnbonding =
+  //   queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+  //     account.bech32Address
+  //   );
 
-  const unbonding = queryUnbonding.total;
-  const stakedSum = delegated.add(unbonding);
+  // const unbonding = queryUnbonding.total;
+  // const stakedSum = delegated.add(unbonding);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
-      accountStore.getAccount(chainStore.current.chainId).bech32Address
+      chainStore.current.networkType === 'evm'
+        ? account.evmosHexAddress
+        : account.bech32Address
     );
 
   const tokens = queryBalances.balances
@@ -68,28 +72,30 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
       queryBalances.positiveNativeUnstakables
     )
     .slice(0, 2);
-
+  const page = useRef(1);
   const [data, setData] = useState([]);
   const offset = useRef(0);
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
-    const res = await API.getHistory(
+    const res = await API.getTransactions(
       {
         address: account.bech32Address,
-        offset: 0,
-        isRecipient: false
+        page: page.current,
+        limit: 10,
+        type: 'native'
       },
-      { baseURL: chainStore.current.rest }
+      // { baseURL: chainStore.current.rest }
+      { baseURL: 'https://api.scan.orai.io' }
     );
 
-    const value = res.data?.tx_responses || [];
-    const total = res?.data?.pagination?.total;
+    const value = res.data?.data || [];
     let newData = isLoadMore ? [...data, ...value] : value;
     hasMore.current = value?.length === 10;
-    offset.current = newData.length;
-    if (total && offset.current === Number(total)) {
+    page.current = res.data?.page.page_id + 1;
+    if (page.current === res.data?.page.total_page) {
       hasMore.current = false;
     }
+
     setData(newData);
   };
 
@@ -205,17 +211,32 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
               alignItems: 'center'
             }}
           >
-            <TokenSymbol
-              style={{
-                marginRight: spacing['12']
-              }}
-              size={44}
-              chainInfo={{
-                stakeCurrency: chainStore.current.stakeCurrency
-              }}
-              currency={tokens?.[0]?.balance?.currency}
-              imageScale={0.54}
-            />
+            {chainStore.current.networkType === 'evm' ? (
+              <TokenSymbolEVM
+                style={{
+                  marginRight: spacing['12']
+                }}
+                size={44}
+                chainInfo={{
+                  stakeCurrency: chainStore.current.stakeCurrency
+                }}
+                currency={tokens?.[0]?.balance?.currency}
+                imageScale={0.54}
+              />
+            ) : (
+              <TokenSymbol
+                style={{
+                  marginRight: spacing['12']
+                }}
+                size={44}
+                chainInfo={{
+                  stakeCurrency: chainStore.current.stakeCurrency
+                }}
+                currency={tokens?.[0]?.balance?.currency}
+                imageScale={0.54}
+              />
+            )}
+
             <View
               style={{
                 justifyContent: 'space-between'
@@ -282,16 +303,29 @@ export const TokenDetailScreen: FunctionComponent = observer(() => {
           height: metrics.screenHeight / 2
         }}
       >
-        <TransactionSectionTitle title={'Transaction list'} />
+        <TransactionSectionTitle
+          title={'Transaction list'}
+          onPress={async () => {
+            await loadingScreen.openAsync();
+            await fetchData();
+            loadingScreen.setIsLoading(false);
+          }}
+        />
         <FlatList
           data={data}
           renderItem={({ item, index }) => (
             <TransactionItem
+              type={'native'}
               item={item}
               address={account.bech32Address}
               key={index}
               onPress={() =>
-                smartNavigation.navigateSmart('Transactions.Detail', {})
+                smartNavigation.navigateSmart('Transactions.Detail', {
+                  item: {
+                    ...item,
+                    address: account.bech32Address
+                  }
+                })
               }
             />
           )}

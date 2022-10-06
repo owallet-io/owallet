@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import {
+  AppState,
   BackHandler,
   Platform,
   StyleSheet,
@@ -11,7 +12,6 @@ import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ModalBase } from './base';
 import { ModalContext, useModalState } from './hooks';
-import { useStyle } from '../../styles';
 import Animated from 'react-native-reanimated';
 import { ModalTransisionProvider, useModalTransision } from './transition';
 import { BlurView } from '@react-native-community/blur';
@@ -138,9 +138,8 @@ AppState.addEventListener('change', (state) => {
 });
 
 export const ModalsProvider: FunctionComponent = observer(({ children }) => {
-  const hasOpenedModal = globalModalRendererState.modals.some(
-    (modal) => modal.isOpen
-  );
+  const hasOpenedModal =
+    globalModalRendererState.modals.find((modal) => modal.isOpen) != null;
 
   useEffect(() => {
     if (hasOpenedModal) {
@@ -171,7 +170,7 @@ export const ModalsProvider: FunctionComponent = observer(({ children }) => {
   }, [hasOpenedModal]);
 
   return (
-    <>
+    <React.Fragment>
       {children}
       {globalModalRendererState.modals.length > 0 ? (
         <View
@@ -187,17 +186,17 @@ export const ModalsProvider: FunctionComponent = observer(({ children }) => {
           <ModalRenderersRoot />
         </View>
       ) : null}
-    </>
+    </React.Fragment>
   );
 });
 
 export const ModalRenderersRoot: FunctionComponent = observer(() => {
   return (
-    <>
+    <React.Fragment>
       {globalModalRendererState.modals.map((modal) => {
         return <ModalRenderer key={modal.key} modal={modal} />;
       })}
-    </>
+    </React.Fragment>
   );
 }) as FunctionComponent;
 
@@ -321,7 +320,7 @@ const ModalBackdrop: FunctionComponent = () => {
   const blurBackdropOnIOS = modal.blurBackdropOnIOS && Platform.OS === 'ios';
 
   return (
-    <>
+    <React.Fragment>
       {!modal.disableBackdrop ? (
         <TouchableWithoutFeedback
           disabled={modal.disableClosingOnBackdropPress}
@@ -331,24 +330,32 @@ const ModalBackdrop: FunctionComponent = () => {
         >
           <Animated.View
             style={StyleSheet.flatten([
-              style.flatten(
-                ['absolute-fill'],
-                [!blurBackdropOnIOS && 'background-color-modal-backdrop']
-              ),
               {
-                opacity
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                opacity,
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                top: 0,
+                bottom: 0
               }
             ])}
           >
             {blurBackdropOnIOS ? (
               <BlurView
-                style={style.flatten(['absolute-fill'])}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0
+                }}
                 blurType="dark"
               />
             ) : null}
           </Animated.View>
         </TouchableWithoutFeedback>
       ) : null}
-    </>
+    </React.Fragment>
   );
 };

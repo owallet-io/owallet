@@ -32,7 +32,7 @@ export const ClearPage: FunctionComponent<{
 
   const [loading, setLoading] = useState(false);
 
-  const { keyRingStore } = useStore();
+  const { keyRingStore, analyticsStore } = useStore();
   const { register, handleSubmit, setError, errors } = useForm<FormData>({
     defaultValues: {
       password: ''
@@ -98,8 +98,7 @@ export const ClearPage: FunctionComponent<{
             }
           })}
         >
-          <Input
-            type="password"
+          <PasswordInput
             label={intl.formatMessage({
               id: 'setting.clear.input.password'
             })}

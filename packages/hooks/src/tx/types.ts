@@ -17,7 +17,11 @@ export interface IMemoConfig extends ITxChainSetter {
 
 export interface IGasConfig extends ITxChainSetter {
   gas: number;
-  setGas(gas: number): void;
+  /*
+   The actual gas value from the input.
+   */
+  gasRaw: string;
+  setGas(gas: number | string): void;
 
   getError(): Error | undefined;
 }
@@ -74,9 +78,25 @@ export interface IAmountConfig extends ITxChainSetter {
   sendableCurrencies: AppCurrency[];
   sender: string;
   setSender(sender: string): void;
+
+  /**
+   * @deprecated Use `setFraction(1)`
+   * @param isMax
+   */
   setIsMax(isMax: boolean): void;
+
+  /**
+   * @deprecated
+   */
   toggleIsMax(): void;
+
+  /**
+   * @deprecated Use `fraction === 1`
+   */
   isMax: boolean;
+
+  fraction: number | undefined;
+  setFraction(value: number | undefined): void;
 
   getError(): Error | undefined;
 }

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { PageWithSectionList } from '../../../components/page';
@@ -18,8 +18,9 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { RectButton } from '../../../components/rect-button';
 import { ValidatorThumbnails } from '@owallet/common';
 import { colors, spacing, typography } from '../../../themes';
+import { API } from '../../../common/api';
 
-type Sort = 'APY' | 'Voting Power' | 'Name';
+type Sort = 'APR' | 'Voting Power' | 'Name';
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -39,6 +40,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const queries = queriesStore.get(chainStore.current.chainId);
 
   const [search, setSearch] = useState('');
+  const [validators, setValidators] = useState([]);
   const [sort, setSort] = useState<Sort>('Voting Power');
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
@@ -46,15 +48,30 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
     BondStatus.Bonded
   );
 
+  useEffect(() => {
+    (async function get() {
+      try {
+        const res = await API.getValidatorList(
+          {},
+          {
+            baseURL: 'https://api.scan.orai.io'
+          }
+        );
+        setValidators(res.data.data);
+      } catch (error) {}
+    })();
+  }, []);
+
   const data = useMemo(() => {
     let data = bondedValidators.validators;
     if (search) {
-      data = data.filter((val) =>
+      data = data.filter(val =>
         val.description.moniker?.toLowerCase().includes(search.toLowerCase())
       );
     }
+
     switch (sort) {
-      case 'APY':
+      case 'APR':
         data.sort((val1, val2) => {
           return new Dec(val1.commission.commission_rates.rate).gt(
             new Dec(val2.commission.commission_rates.rate)
@@ -84,21 +101,16 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
     return data;
   }, [bondedValidators.validators, search, sort]);
 
-  useLogScreenView("Validator list", {
-    chainId: chainStore.current.chainId,
-    chainName: chainStore.current.chainName,
-  });
-
   const items = useMemo(() => {
     return [
-      { label: 'APY', key: 'APY' },
+      { label: 'APR', key: 'APR' },
       { label: 'Amount Staked', key: 'Voting Power' },
       { label: 'Name', key: 'Name' }
     ];
   }, []);
 
   const sortItem = useMemo(() => {
-    const item = items.find((item) => item.key === sort);
+    const item = items.find(item => item.key === sort);
     if (!item) {
       throw new Error(`Can't find the item for sort (${sort})`);
     }
@@ -106,7 +118,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   }, [items, sort]);
 
   return (
-    <>
+    <React.Fragment>
       <SelectorModal
         close={() => {
           setIsSortModalOpen(false);
@@ -114,7 +126,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         isOpen={isSortModalOpen}
         items={items}
         selectedKey={sort}
-        setSelectedKey={(key) => setSort(key as Sort)}
+        setSelectedKey={key => setSort(key as Sort)}
       />
 
       <PageWithSectionList
@@ -132,6 +144,10 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
           return <View style={{ height: spacing['24'] }} />;
         }}
         renderItem={({ item, index }: { item: Validator; index: number }) => {
+          const foundValidator = validators.find(
+            v => v.operator_address === item.operator_address
+          );
+
           return (
             <View
               style={{
@@ -142,6 +158,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
             >
               <ValidatorItem
                 validatorAddress={item.operator_address}
+                apr={foundValidator?.apr ?? 0}
                 index={index}
                 sort={sort}
                 onSelectValidator={route.params.validatorSelector}
@@ -165,7 +182,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
               </Text>
               <View
                 style={{
-                  paddingHorizontal: spacing['20'],
+                  paddingHorizontal: spacing['24'],
                   paddingTop: spacing['12'],
                   paddingBottom: spacing['4']
                 }}
@@ -180,7 +197,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                     padding: 0
                   }}
                   value={search}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setSearch(text);
                   }}
                   paragraph={
@@ -188,7 +205,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                       style={{
                         flexDirection: 'row',
                         marginTop: spacing['32'],
-                        marginBottom: spacing['16']
+                        marginHorizontal: spacing['16']
                       }}
                     >
                       <View
@@ -245,17 +262,18 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
           );
         }}
       />
-    </>
+    </React.Fragment>
   );
 });
 
 const ValidatorItem: FunctionComponent<{
   validatorAddress: string;
+  apr: number;
   index: number;
   sort: Sort;
 
   onSelectValidator?: (validatorAddress: string) => void;
-}> = observer(({ validatorAddress, index, sort, onSelectValidator }) => {
+}> = observer(({ validatorAddress, index, sort, apr, onSelectValidator }) => {
   const { chainStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
@@ -278,7 +296,8 @@ const ValidatorItem: FunctionComponent<{
           smartNavigation.goBack();
         } else {
           smartNavigation.navigateSmart('Validator.Details', {
-            validatorAddress
+            validatorAddress,
+            apr
           });
         }
       }}
@@ -335,13 +354,7 @@ const ValidatorItem: FunctionComponent<{
           ...styles.textInfo
         }}
       >
-        {queries.cosmos.queryInflation.inflation
-          .mul(
-            new Dec(1).sub(new Dec(validator.commission.commission_rates.rate))
-          )
-          .maxDecimals(2)
-          .trim(true)
-          .toString() + '%'}
+        {apr?.toFixed(2).toString() + '%'}
       </Text>
     </RectButton>
   ) : null;

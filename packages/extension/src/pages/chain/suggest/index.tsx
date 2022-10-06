@@ -10,7 +10,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 
 export const ChainSuggestedPage: FunctionComponent = observer(() => {
-  const { chainSuggestStore } = useStore();
+  const { chainSuggestStore, analyticsStore } = useStore();
   const history = useHistory();
 
   const interactionInfo = useInteractionInfo(() => {
@@ -32,7 +32,7 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: '100%', paddingTop: '80px' }}>
       <div className={style.container}>
         <img
-          src={require('../../../public/assets/svg/oraichain-pro-logo.svg')}
+          src={require('../../../public/assets/orai_wallet_logo.png')}
           alt="logo"
           style={{ height: '92px', maxWidth: 92, margin: '0 auto' }}
         />
@@ -71,8 +71,12 @@ export const ChainSuggestedPage: FunctionComponent = observer(() => {
         <div className={style.buttons}>
           <Button
             className={style.button}
-            color="danger"
+            // color="danger"
             outline
+            style={{
+              border: '1px solid red',
+              color: 'red'
+            }}
             disabled={!chainSuggestStore.waitingSuggestedChainInfo}
             data-loading={chainSuggestStore.isLoading}
             onClick={async (e) => {

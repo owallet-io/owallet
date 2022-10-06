@@ -201,8 +201,7 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
           }
         })}
       >
-        <Input
-          type="password"
+        <PasswordInput
           label={intl.formatMessage({
             id: 'setting.export-to-mobile.input.password'
           })}

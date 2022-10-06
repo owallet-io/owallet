@@ -27,7 +27,7 @@ export const MyRewardCard: FunctionComponent<{
     queries.cosmos.queryRewards.getQueryBech32Address(
       account.bech32Address
     ).stakableReward;
-
+  const stakingReward = queryReward.stakableReward;
   const apy = queries.cosmos.queryInflation.inflation;
 
   const style = useStyle();
@@ -51,11 +51,14 @@ export const MyRewardCard: FunctionComponent<{
             fontWeight: '700'
           }}
         >
-          My Pending Rewards (
-          <Text style={style.flatten(['h7', 'color-primary'])}>
+          My Pending Rewards
+          {/* <Text style={{
+            ...typography['h7'],
+            color: colors['purple-700']
+          }}>
             {`${apy.maxDecimals(2).trim(true).toString()}% per year`}
           </Text>
-          )
+          ) */}
         </Text>
 
         <View>
@@ -111,7 +114,13 @@ export const MyRewardCard: FunctionComponent<{
                     {},
                     {},
                     {
-                      onBroadcasted: (txHash) => {
+                      onFulfill: tx => {
+                        console.log(
+                          tx,
+                          'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
+                        );
+                      },
+                      onBroadcasted: txHash => {
                         analyticsStore.logEvent('Claim reward tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName
@@ -120,7 +129,8 @@ export const MyRewardCard: FunctionComponent<{
                           txHash: Buffer.from(txHash).toString('hex')
                         });
                       }
-                    }
+                    },
+                    stakingReward.currency.coinMinimalDenom
                   );
                 } catch (e) {
                   console.log({ errorClaim: e });

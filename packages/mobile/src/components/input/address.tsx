@@ -14,9 +14,10 @@ import { TextInput } from './input';
 import { ObservableEnsFetcher } from '@owallet/ens';
 import { LoadingSpinner } from '../spinner';
 import { useStyle } from '../../styles';
-import { AddressBookIcon } from '../icon';
+import { AddressBookIcon, NoteIcon } from '../icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
+import { colors } from '../../themes';
 
 const styles = StyleSheet.create({
   absolute: {
@@ -50,6 +51,9 @@ export const AddressInput: FunctionComponent<{
   memoConfig: IMemoConfig;
 
   disableAddressBook?: boolean;
+
+  placeholder?: string;
+  placeholderTextColor?: string;
 }> = observer(
   ({
     labelStyle,
@@ -107,6 +111,8 @@ export const AddressInput: FunctionComponent<{
         onChangeText={(text) => {
           recipientConfig.setRawRecipient(text);
         }}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
         paragraph={
           isENSAddress ? (
             isENSLoading ? (

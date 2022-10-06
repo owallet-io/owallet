@@ -1,5 +1,5 @@
 import Clipboard from 'expo-clipboard';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Divider } from '@rneui/base';
 import { CText as Text } from '../../components/text';
@@ -24,6 +24,7 @@ interface TransactionInfo {
 }
 interface TransactionDetail {
   amount: string;
+  type?: string;
   result: 'Success' | 'Fail';
   height: number | string;
   size: number | string;
@@ -37,6 +38,8 @@ const bindStyleTxInfo = (
 ): { color?: string; textTransform?: string; fontWeight?: string } => {
   switch (label) {
     case 'Transaction hash':
+      return { color: colors['purple-700'], textTransform: 'uppercase' };
+    case 'Fee':
       return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Amount':
       return value.includes('-')
@@ -60,7 +63,7 @@ const bindValueTxInfo = (label: string, value: string) => {
     case 'Transaction hash':
     case 'From':
     case 'To':
-      return formatContractAddress(value);
+      return formatContractAddress(value ?? '');
 
     default:
       return value;
@@ -71,8 +74,9 @@ const InfoItems: FunctionComponent<{
   label: string;
   value: string;
   topBorder?: boolean;
+  title?: string;
   onPress?: () => void;
-}> = ({ label, value, topBorder }) => {
+}> = ({ label, value, topBorder, title }) => {
   const style = useStyle();
   const { isTimedOut, setTimer } = useSimpleTimer();
   const renderChildren = () => {
@@ -98,7 +102,11 @@ const InfoItems: FunctionComponent<{
               ...typography.body2
             }}
           >
-            {bindValueTxInfo(label, value)}
+            {value}
+            {/* {label !== 'Amount'
+              ? bindValueTxInfo(label, value)
+              : (title === 'Received Token' ? '+' : '-') +
+                bindValueTxInfo(label, value)} */}
           </Text>
         </View>
         {label !== 'Amount' && (
@@ -226,7 +234,8 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       Record<
         string,
         {
-          item: object;
+          item: any;
+          type: string;
         }
       >,
       string
@@ -284,62 +293,148 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   }, [item]);
 
   const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
-  const { messages } = tx?.body || {};
-  const { title, isPlus, amount, denom, unbond } = getTransactionValue({
-    data: [
-      {
-        type: messages?.[0]?.['@type']
-      }
-    ],
-    address: route.params?.item?.address,
-    logs: route.params?.item?.logs
-  });
+  // const { messages } = tx?.body || {};
+  const title =
+    type === 'cw20'
+      ? item.name
+      : getTxTypeNew(
+          item?.messages[item?.messages?.length - 1]['@type'],
+          item?.raw_log,
+          item?.result
+        );
+  // const { title, isPlus, amount, denom, unbond } = getTransactionValue({
+  //   data: [
+  //     {
+  //       type: messages?.[0]?.['@type']
+  //     }
+  //   ],
+  //   address: route.params?.item?.address,
+  //   logs: route.params?.item?.logs
+  // });
+
+  const txAddresses = () => {
+    if (type === 'cw20') {
+      return [
+        {
+          label: 'Contract',
+          value: formatContractAddress(item?.contract_address)
+        },
+        {
+          label: 'Sender',
+          value: formatContractAddress(item?.sender)
+        },
+        {
+          label: 'Receiver',
+          value: formatContractAddress(item?.receiver)
+        }
+      ];
+    }
+    if (title.includes('MsgExecuteContract')) {
+      return [
+        {
+          label: 'Contract',
+          value: formatContractAddress(item?.messages?.[0]?.contract)
+        },
+        {
+          label: 'Sender',
+          value: formatContractAddress(item?.messages?.[0]?.sender)
+        }
+      ];
+    }
+    switch (title) {
+      case 'MsgSend':
+        return [
+          {
+            label: 'From',
+            value: formatContractAddress(item?.messages?.[0]?.from_address)
+          },
+          {
+            label: 'To',
+            value: formatContractAddress(item?.messages?.[0]?.to_address)
+          }
+        ];
+
+      case 'MsgRecvPacket':
+        return [
+          {
+            label: 'Signer',
+            value: formatContractAddress(item?.messages?.[0]?.signer)
+          }
+        ];
+      case 'MsgVote':
+        return [
+          {
+            label: 'Voter',
+            value: formatContractAddress(item?.messages?.[0]?.voter)
+          }
+        ];
+      case 'MsgSubmitProposal':
+        return [
+          {
+            label: 'Proposer',
+            value: formatContractAddress(item?.messages?.[0]?.proposer)
+          }
+        ];
+      default:
+        return [
+          {
+            label: 'Delegator address',
+            value: formatContractAddress(item?.messages?.[0]?.delegator_address)
+          },
+          {
+            label: 'Validator address',
+            value: formatContractAddress(item?.messages?.[0]?.validator_address)
+          }
+        ];
+    }
+  };
 
   const txInfos: TransactionInfo[] = [
-    {
-      label: 'From',
-      value: tx?.body?.messages?.[0]?.from_address
-    },
-    {
-      label: 'To',
-      value: tx?.body?.messages?.[0]?.to_address
-    },
+    ...txAddresses(),
     {
       label: 'Transaction hash',
       value: formatContractAddress(tx_hash)
     },
     {
       label: 'Amount',
-      value: `${convertAmount(amount)} ${denom.toUpperCase()}`
+      value:
+        type === 'cw20'
+          ? `${formatOrai(item.amount ?? 0, item.decimal)} ${item.symbol ?? ''}`
+          : amountDataCell()
     }
   ];
 
   const txDetail: TransactionInfo[] = [
     {
+      label: 'Msg',
+      value: title
+    },
+    {
       label: 'Result',
-      value: code === 0 ? 'Success' : 'Failed'
+      value: code === 0 || item?.status_code === 0 ? 'Success' : 'Failed'
     },
     {
       label: 'Block height',
-      value: height
-    },
-    {
-      label: 'Gas (used/ wanted)',
-      value: `${gas_used} / ${gas_wanted}`
+      value: type === 'cw20' ? 'None' : height
     },
     {
       label: 'Fee',
-      value: `${tx?.auth_info?.fee?.amount?.[0]?.amount * Math.pow(10, -6)} ${
-        tx?.auth_info?.fee?.amount?.[0]?.denom
-      }`
+      value: item?.fee?.amount
+        ? `${formatOrai(item.fee.amount[0].amount || 0)} ${
+            item.fee.amount[0].denom
+          }`
+        : 0
     },
-    {
-      label: 'Amount',
-      value: `${convertAmount(amount)} ${denom}`
-    },
+    // {
+    //   label: 'Amount',
+    //   value: amountDataCell()
+    // },
     {
       label: 'Time',
-      value: date
+      value:
+        type === 'cw20'
+          ? moment(item.transaction_time).format('MMM DD, YYYY [at] HH:mm')
+          : date
     }
   ];
 
@@ -356,6 +451,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
             label={item.label}
             topBorder={true}
             value={item.value}
+            title={title}
           />
         ))}
       </View>

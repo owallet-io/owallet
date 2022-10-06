@@ -61,12 +61,13 @@ export class InjectedOWallet implements IOWallet {
     } = {
       addMessageListener: (fn: (e: any) => void) =>
         window.addEventListener('message', fn),
-      postMessage: (message) =>
+      postMessage: message =>
         window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
-    eventListener.addMessageListener(async (e: any) => {
+    // listen method when inject send to
+    eventListener.addMessageListener(async (e: MessageEvent) => {
       const message: ProxyRequest = parseMessage
         ? parseMessage(e.data)
         : e.data;
@@ -171,7 +172,7 @@ export class InjectedOWallet implements IOWallet {
           }
         };
 
-        window.postMessage(proxyResponse, window.location.origin);
+        eventListener.postMessage(proxyResponse);
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
@@ -182,7 +183,7 @@ export class InjectedOWallet implements IOWallet {
           }
         };
 
-        window.postMessage(proxyResponse, window.location.origin);
+        eventListener.postMessage(proxyResponse);
       }
     });
   }
@@ -190,7 +191,7 @@ export class InjectedOWallet implements IOWallet {
   protected requestMethod(method: keyof IOWallet, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -217,8 +218,7 @@ export class InjectedOWallet implements IOWallet {
           return;
         }
 
-        window.removeEventListener("message", receiveResponse);
-
+        this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
 
         if (!result) {
@@ -234,9 +234,8 @@ export class InjectedOWallet implements IOWallet {
         resolve(result.return);
       };
 
-      window.addEventListener("message", receiveResponse);
-
-      window.postMessage(proxyMessage, window.location.origin);
+      this.eventListener.addMessageListener(receiveResponse);
+      this.eventListener.postMessage(proxyMessage);
     });
   }
 
@@ -256,7 +255,7 @@ export class InjectedOWallet implements IOWallet {
         window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) =>
         window.removeEventListener('message', fn),
-      postMessage: (message) =>
+      postMessage: message =>
         window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
@@ -276,7 +275,7 @@ export class InjectedOWallet implements IOWallet {
 
   async sendTx(
     chainId: string,
-    stdTx: StdTx,
+    tx: StdTx | Uint8Array,
     mode: BroadcastMode
   ): Promise<Uint8Array> {
     return await this.requestMethod('sendTx', [chainId, tx, mode]);
@@ -458,7 +457,15 @@ export class InjectedOWallet implements IOWallet {
 
 export class InjectedEthereum implements Ethereum {
   // we use this chain id for chain id switching from user
-  public static chainId: string;
+  get chainId() {
+    return window.localStorage.getItem('owallet.chainId');
+  }
+
+  set chainId(chainId: string) {
+    window.localStorage.setItem('owallet.chainId', chainId);
+  }
+
+  // public static chainId: string;
 
   static startProxy(
     ethereum: Ethereum,
@@ -468,7 +475,7 @@ export class InjectedEthereum implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) =>
         window.addEventListener('message', fn),
-      postMessage: (message) =>
+      postMessage: message =>
         window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
@@ -507,18 +514,19 @@ export class InjectedEthereum implements Ethereum {
 
         // TODO: eth_sendTransaction is special case. Other case => pass through custom request RPC without signing
         var result: any;
-        const chainId = message.args[1]
-          ? message.args[1]
-          : this.chainId
-          ? this.chainId
-          : ethereum.chainId;
+        const chainId =
+          message.args[1] ??
+          (await window.localStorage.getItem('owallet.chainId')) ??
+          ethereum.initChainId;
 
-        console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
-        console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message abc", message, chainId)
+        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
+        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
         switch (message.method) {
           case 'eth_signTypedData_v4':
-            result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
-            console.log(result,'result sign v4 ????????????????')
+            result = await ethereum.signEthereumTypeData(
+              chainId,
+              message.args[0]
+            );
             break;
           case 'public_key':
             result = await ethereum.getPublicKey(chainId);
@@ -553,16 +561,15 @@ export class InjectedEthereum implements Ethereum {
           case 'eth_chainId' as any:
             if (chainId?.toString()?.startsWith('0x')) {
               result = chainId;
-            }
-            else result = '0x0'
+            } else result = '0x0';
             break;
           case 'wallet_switchEthereumChain' as any:
-            this.chainId = await ethereum.request({
+            result = await ethereum.request({
               method: message.method as string,
               params: message.args[0],
               chainId
             });
-            result = this.chainId;
+            window.localStorage.setItem('owallet.chainId', result);
             break;
           case 'eth_getTransactionReceipt' as any:
             try {
@@ -582,6 +589,7 @@ export class InjectedEthereum implements Ethereum {
               params: message.args[0],
               chainId
             });
+
             break;
         }
 
@@ -617,7 +625,7 @@ export class InjectedEthereum implements Ethereum {
   ): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -666,7 +674,7 @@ export class InjectedEthereum implements Ethereum {
     });
   }
 
-  public chainId: string;
+  public initChainId: string;
 
   constructor(
     public readonly version: string,
@@ -680,15 +688,15 @@ export class InjectedEthereum implements Ethereum {
         window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) =>
         window.removeEventListener('message', fn),
-      postMessage: (message) =>
+      postMessage: message =>
         window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
 
-  // async send(): Promise<void> {
-  //   console.log('console.log send');
-  // }
+  async enable() {
+    return await this.requestMethod('eth_requestAccounts', [[]]);
+  }
 
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
@@ -696,7 +704,7 @@ export class InjectedEthereum implements Ethereum {
     return await this.requestMethod(args.method as string, [
       args.params,
       args.chainId
-    ]); // TODO: how to collect chain id, signer & rpc?
+    ]);
   }
 
   async signAndBroadcastEthereum(

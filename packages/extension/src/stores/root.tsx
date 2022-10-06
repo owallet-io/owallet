@@ -32,13 +32,15 @@ import {
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
-import { UIConfigStore } from '@owallet/common/build/ui-config';
+import { UIConfigStore } from '@owallet/common';
 import { FeeType } from '@owallet/hooks';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import Amplitude from 'amplitude-js';
 import { ChainIdHelper } from '@owallet/cosmos';
 
 export class RootStore {
+  public readonly uiConfigStore: UIConfigStore;
+
   public readonly chainStore: ChainStore;
   public readonly keyRingStore: KeyRingStore;
   public readonly ibcChannelStore: IBCChannelStore;
@@ -235,7 +237,7 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       window,
-      AccountWithCosmosAndSecret,
+      AccountWithAll,
       this.chainStore,
       this.queriesStore,
       {
@@ -304,6 +306,7 @@ export class RootStore {
       24 * 3600 * 1000,
       this.chainStore,
       this.accountStore,
+      this.queriesStore,
       this.queriesStore
     );
 

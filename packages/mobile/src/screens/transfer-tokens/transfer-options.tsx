@@ -1,12 +1,12 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   SendBridgeIcon,
   SendCrossChainIcon,
   SendQRCodeIcon,
-  SendWithinNetworkIcon,
+  SendWithinNetworkIcon
 } from '../../components/icon';
 import { colors, spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -27,29 +27,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing['6'],
     width: '50%'
   },
-  sendTokenCardMain: {
+  sendTokenCardText: {
     marginBottom: spacing['12'],
     borderRadius: spacing['12'],
-    height: 122,
+    height: 130,
     alignItems: 'center',
-    paddingVertical: spacing['16'],
+    paddingTop: spacing['16'],
     paddingHorizontal: spacing['8'],
     backgroundColor: colors['white'],
     shadowColor: '#18274B',
     shadowOffset: {
       width: 0,
-      height: 12,
+      height: 12
     },
     shadowOpacity: 0.12,
     shadowRadius: 16.0
   },
   iconSendToken: {
-    marginBottom: spacing['6'],
+    marginBottom: spacing['6']
   },
   textSendToken: {
     fontWeight: '800',
-    fontSize: 14,
-  },
+    fontSize: 14
+  }
 });
 
 const tokenTransferInfo = [

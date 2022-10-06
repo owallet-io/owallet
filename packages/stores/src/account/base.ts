@@ -20,7 +20,9 @@ import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator } from '@owallet/common';
+import { DenomHelper, toGenerator, fetchAdapter } from '@owallet/common';
+import Web3 from 'web3';
+import ERC20_ABI from '../query/evm/erc20.json';
 import {
   BroadcastMode,
   makeSignDoc,
@@ -65,9 +67,9 @@ export interface MsgOpt {
 type AminoMsgsOrWithProtoMsgs =
   | Msg[]
   | {
-    aminoMsgs: Msg[];
-    protoMsgs?: google.protobuf.IAny[];
-  };
+      aminoMsgs: Msg[];
+      protoMsgs?: google.protobuf.IAny[];
+    };
 
 export interface AccountSetOpts<MsgOpts> {
   readonly prefetching: boolean;
@@ -123,10 +125,18 @@ export class AccountSetBase<MsgOpts, Queries> {
     onTxEvents?:
       | ((tx: any) => void)
       | {
-        onBroadcastFailed?: (e?: Error) => void;
-        onBroadcasted?: (txHash: Uint8Array) => void;
-        onFulfill?: (tx: any) => void;
-      }
+          onBroadcastFailed?: (e?: Error) => void;
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        },
+    extraOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id?: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ) => Promise<boolean>)[] = [];
 
   constructor(
@@ -144,7 +154,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.pubKey = new Uint8Array();
 
     if (opts.autoInit) {
-      this.init()
+      this.init();
     }
   }
 
@@ -171,9 +181,9 @@ export class AccountSetBase<MsgOpts, Queries> {
       onTxEvents?:
         | ((tx: any) => void)
         | {
-          onBroadcasted?: (txHash: Uint8Array) => void;
-          onFulfill?: (tx: any) => void;
-        }
+            onBroadcasted?: (txHash: Uint8Array) => void;
+            onFulfill?: (tx: any) => void;
+          }
     ) => Promise<boolean>
   ) {
     this.sendTokenFns.push(fn);
@@ -278,7 +288,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     );
   }
 
-  // get here 11
   async sendMsgs(
     type: string | 'unknown',
     msgs:
@@ -290,10 +299,18 @@ export class AccountSetBase<MsgOpts, Queries> {
     onTxEvents?:
       | ((tx: any) => void)
       | {
-        onBroadcastFailed?: (e?: Error) => void;
-        onBroadcasted?: (txHash: Uint8Array) => void;
-        onFulfill?: (tx: any) => void;
-      }
+          onBroadcastFailed?: (e?: Error) => void;
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        },
+    extraOptions?: {
+      type: string;
+      contract_addr: string;
+      token_id?: string;
+      recipient?: string;
+      amount?: string;
+      to?: string;
+    }
   ) {
     runInAction(() => {
       this._isSendingMsg = type;
@@ -360,7 +377,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         wsObject: this.opts.wsObject
       }
     );
-    txTracer.traceTx(txHash).then((tx) => {
+    txTracer.traceTx(txHash).then(tx => {
       txTracer.close();
 
       runInAction(() => {
@@ -372,7 +389,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
           .balances.find(
-            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
+            bal => bal.currency.coinMinimalDenom === feeAmount.denom
           );
 
         if (bal) {
@@ -404,10 +421,10 @@ export class AccountSetBase<MsgOpts, Queries> {
     onTxEvents?:
       | ((tx: any) => void)
       | {
-        onBroadcastFailed?: (e?: Error) => void;
-        onBroadcasted?: (txHash: Uint8Array) => void;
-        onFulfill?: (tx: any) => void;
-      }
+          onBroadcastFailed?: (e?: Error) => void;
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
   ) {
     runInAction(() => {
       this._isSendingMsg = type;
@@ -417,8 +434,35 @@ export class AccountSetBase<MsgOpts, Queries> {
     console.log('FEE in SEND EVM: ', fee);
 
     try {
-      const result = await this.broadcastEvmMsgs(msgs, fee);
-      txHash = result.txHash;
+      if (msgs.type === 'erc20') {
+        const { value } = msgs;
+        const provider = this.chainGetter.getChain(this.chainId).rest;
+        const web3 = new Web3(provider);
+        const contract = new web3.eth.Contract(
+          // @ts-ignore
+          ERC20_ABI,
+          value.contract_addr,
+          { from: value.from }
+        );
+        let data = contract.methods
+          .transfer(value.recipient, value.amount)
+          .encodeABI();
+
+        let txObj = {
+          gas: web3.utils.toHex(value.gas),
+          to: value.contract_addr,
+          value: '0x0', // Must be 0x0, maybe this field is not in use while send erc20 tokens
+          from: value.from,
+          data
+        };
+
+        const result = await this.broadcastErc20EvmMsgs(txObj, fee);
+
+        txHash = result.txHash;
+      } else {
+        const result = await this.broadcastEvmMsgs(msgs, fee);
+        txHash = result.txHash;
+      }
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -457,8 +501,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    const sleep = milliseconds => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (
@@ -479,7 +523,7 @@ export class AccountSetBase<MsgOpts, Queries> {
             txHash
           ]);
           console.log(
-            '🚀 ~ file: base.ts ~ lin ~ transactionReceipt',
+            '🚀 ~ file: base.ts ~ line ~ transactionReceipt',
             transactionReceipt
           );
           retryCount += 1;
@@ -559,9 +603,17 @@ export class AccountSetBase<MsgOpts, Queries> {
     onTxEvents?:
       | ((tx: any) => void)
       | {
-        onBroadcasted?: (txHash: Uint8Array) => void;
-        onFulfill?: (tx: any) => void;
-      }
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        },
+    extraOptions?: {
+      type: string;
+      from?: string;
+      contract_addr: string;
+      token_id?: string;
+      recipient?: string;
+      amount?: string;
+    }
   ) {
     for (let i = 0; i < this.sendTokenFns.length; i++) {
       const fn = this.sendTokenFns[i];
@@ -574,7 +626,8 @@ export class AccountSetBase<MsgOpts, Queries> {
           memo,
           stdFee,
           signOptions,
-          onTxEvents
+          onTxEvents,
+          extraOptions
         )
       ) {
         return;
@@ -602,7 +655,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   // TODO; do we have to add a new broadcast msg for Ethereum? -- Update: Added done
   // Return the tx hash.
   protected async broadcastMsgs(
-    msgs: Msg[],
+    msgs: AminoMsgsOrWithProtoMsgs,
     fee: StdFee,
     memo: string = '',
     signOptions?: OWalletSignOptions,
@@ -693,10 +746,6 @@ export class AccountSetBase<MsgOpts, Queries> {
           signDoc,
           signOptions
         );
-        console.log(
-          '🚀 ~ file: base.ts ~ line 696 ~ AccountSetBase<MsgOpts, ~ signResponse',
-          signResponse
-        );
 
         signedTx = cosmos.tx.v1beta1.TxRaw.encode({
           bodyBytes: signResponse.signed.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
@@ -769,6 +818,37 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await ethereum.signAndBroadcastEthereum(
         this.chainId,
         message
+      );
+
+      return {
+        txHash: signResponse.rawTxHex
+      };
+    } catch (error) {
+      console.log('Error on broadcastMsgs: ', error);
+    }
+  }
+
+  protected async broadcastErc20EvmMsgs(
+    msgs: object,
+    fee: StdFeeEthereum
+  ): Promise<{
+    txHash: string;
+  }> {
+    try {
+      if (this.walletStatus !== WalletStatus.Loaded) {
+        throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
+      }
+
+      if (Object.values(msgs).length === 0) {
+        throw new Error('There is no msg to send');
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const ethereum = (await this.getEthereum())!;
+
+      const signResponse = await ethereum.signAndBroadcastEthereum(
+        this.chainId,
+        { ...msgs, type: 'erc20', gas: fee.gas, gasPrice: fee.gasPrice }
       );
 
       return {

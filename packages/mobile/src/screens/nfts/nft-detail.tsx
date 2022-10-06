@@ -1,6 +1,6 @@
 import React, {
   FunctionComponent,
-  ReactElement,
+  // ReactElement,
   useEffect,
   useState
 } from 'react';
@@ -9,35 +9,36 @@ import { useStore } from '../../stores';
 import {
   StyleSheet,
   View,
-  ViewStyle,
+  // ViewStyle,
   Image,
-  TouchableWithoutFeedback,
-  Keyboard
+  ActivityIndicator
+  // TouchableWithoutFeedback,
+  // Keyboard
 } from 'react-native';
 import { Text } from '@rneui/base';
-import { CoinPretty } from '@owallet/unit';
+// import { CoinPretty } from '@owallet/unit';
 import { useSmartNavigation } from '../../navigation.provider';
-import { Currency } from '@owallet/types';
-import { TokenSymbol } from '../../components/token-symbol';
+// import { Currency } from '@owallet/types';
+// import { TokenSymbol } from '../../components/token-symbol';
 import { DenomHelper, EthereumEndpoint } from '@owallet/common';
-import { Bech32Address } from '@owallet/cosmos';
+// import { Bech32Address } from '@owallet/cosmos';
 import { colors, metrics, spacing, typography } from '../../themes';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
+// import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import {
   convertAmount,
-  formatContractAddress,
+  // formatContractAddress,
   _keyExtract
 } from '../../utils/helper';
 import {
-  QuantityIcon,
-  SendIcon,
-  TransactionMinusIcon
+  QuantityIcon
+  // SendIcon,
+  // TransactionMinusIcon
 } from '../../components/icon';
 import LinearGradient from 'react-native-linear-gradient';
 import {
-  BuyIcon,
-  DepositIcon,
+  // BuyIcon,
+  // DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
 import {
@@ -48,9 +49,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { API } from '../../common/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSendTxConfig } from '@owallet/hooks';
-import { Button } from '../../components/button';
-import { TextInput } from '../../components/input';
-import delay from 'delay';
+import ProgressiveImage from '../../components/progessive-image';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
@@ -80,8 +79,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
-  const [address, setAddress] = useState('');
-  const [quantity, setQuantity] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const sendConfigs = useSendTxConfig(
     chainStore,
@@ -94,20 +92,6 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
 
   const { item } = props.route?.params;
 
-  // useEffect(() => {
-  //   // hard config to airight chain
-  //   sendConfigs.amountConfig.setSendCurrency({
-  //     coinDecimals: 6,
-  //     type: 'cw20',
-  //     coinMinimalDenom:
-  //       'cw20:orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg:aiRight Token',
-  //     coinDenom: 'AIRI',
-  //     coinGeckoId: 'airight',
-  //     contractAddress: 'orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg',
-  //     coinImageUrl: 'https://i.ibb.co/m8mCyMr/airi.png'
-  //   });
-  // }, []);
-
   const _onPressTransfer = async () => {
     smartNavigation.navigateSmart('TransferNFT', {
       nft: {
@@ -116,55 +100,6 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
       }
     });
   };
-
-  // const _onPressBtnMain = async () => {
-  //   if (account.isReadyToSendMsgs) {
-  //     try {
-  //       await account.sendToken(
-  //         '0.000001', // amount not in use, but must have to send token fn work normally 'cause we use the same fn with send cw20 token
-  //         sendConfigs.amountConfig.sendCurrency,
-  //         sendConfigs.recipientConfig.recipient,
-  //         sendConfigs.memoConfig.memo,
-  //         { gas: '186415', amount: [{ amount: '0', denom: 'orai' }] }, // default fee and gas
-  //         {
-  //           preferNoSetFee: true,
-  //           preferNoSetMemo: true
-  //         },
-  //         {
-  //           onBroadcasted: txHash => {
-  //             smartNavigation.pushSmart('TxPendingResult', {
-  //               txHash: Buffer.from(txHash).toString('hex')
-  //             });
-  //           }
-  //         },
-  //         {
-  //           contract_addr:
-  //             item.version === 1
-  //               ? 'orai1ase8wkkhczqdda83f0cd9lnuyvf47465j70hyk'
-  //               : 'orai1c3phe2dcu852ypgvt0peqj8f5kx4x0s4zqcky4',
-  //           recipient: address,
-  //           to: address,
-  //           token_id: item.id.toString(),
-  //           amount: quantity.toString(),
-  //           type: item.version === 1 ? '721' : '1155'
-  //         }
-  //       );
-  //     } catch (e) {
-  //       if (e?.message === 'Request rejected') {
-  //         return;
-  //       }
-  //       if (e?.message.includes('Cannot read properties of undefined')) {
-  //         return;
-  //       }
-  //       console.log('send error', e);
-  //       if (smartNavigation.canGoBack) {
-  //         smartNavigation.goBack();
-  //       } else {
-  //         smartNavigation.navigateSmart('Home', {});
-  //       }
-  //     }
-  //   }
-  // };
 
   const [prices, setPrices] = useState({});
   const [owner, setOwner] = useState<any>({});
@@ -186,6 +121,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
   useEffect(() => {
     (async function get() {
       try {
+        setLoading(true);
         const res = await API.getNFTOwners(
           {
             token_id: item.id
@@ -198,6 +134,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
         const currentOwner = res.data.find(
           d => d.ownerAddress === account.bech32Address
         );
+        setLoading(false);
         setOwner(currentOwner);
       } catch (error) {}
     })();
@@ -247,9 +184,9 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
           </View>
 
           <View style={styles.containerImage}>
-            <Image
+            <ProgressiveImage
               source={{
-                uri: item.url
+                uri: item.picture ?? item.url
               }}
               style={{
                 width: metrics.screenWidth - 110,
@@ -312,13 +249,13 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                   }}
                 >
                   {item.version === 1 ? 1 : owner?.availableQuantity}
-                  {/* item.totalQuantity - item.availableQuantity */}
                 </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.containerBtn}>
+            {loading ? <ActivityIndicator /> : null}
             {item.version === 1 && item.offer != null
               ? ['Transfer'].map((e, i) => (
                   <TouchableOpacity
@@ -385,7 +322,12 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
         <FlatList
           data={[]}
           renderItem={({ item, index }) => (
-            <TransactionItem item={item} key={index} address={''} />
+            <TransactionItem
+              type={'native'}
+              item={item}
+              key={index}
+              address={''}
+            />
           )}
           keyExtractor={_keyExtract}
           showsVerticalScrollIndicator={false}

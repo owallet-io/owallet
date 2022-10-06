@@ -61,7 +61,7 @@ export const AccessPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: '100%', paddingTop: '80px' }}>
       <div className={style.container}>
         <img
-          src={require('../../public/assets/svg/oraichain-pro-logo.svg')}
+          src={require('../../public/assets/orai_wallet_logo.png')}
           alt="logo"
           style={{ height: '92px', maxWidth: 92, margin: '0 auto' }}
         />
@@ -82,7 +82,7 @@ export const AccessPage: FunctionComponent = observer(() => {
         <div className={style.permission}>
           <FormattedMessage id="access.permission.title" />
         </div>
-        <ul>
+        <ul >
           <li>
             <FormattedMessage id="access.permission.account" />
           </li>

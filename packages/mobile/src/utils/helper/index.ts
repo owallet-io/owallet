@@ -1,6 +1,6 @@
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
-import find from 'lodash/find';
+import { find } from 'lodash';
 import moment from 'moment';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -34,8 +34,8 @@ export const checkValidDomain = (url: string) => {
 export const _keyExtract = (item, index) => index.toString();
 
 export const formatContractAddress = (address: string) => {
-  const fristLetter = address.slice(0, 10);
-  const lastLetter = address.slice(-5);
+  const fristLetter = address?.slice(0, 10) ?? '';
+  const lastLetter = address?.slice(-5) ?? '';
 
   return `${fristLetter}...${lastLetter}`;
 };

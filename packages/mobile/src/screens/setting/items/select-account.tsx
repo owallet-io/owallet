@@ -5,6 +5,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { View } from 'react-native';
+import { getKeyStoreParagraph } from '../screens/select-account';
 
 export const SettingSelectAccountItem: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -18,13 +19,20 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
 
   return (
-    <>
+    <React.Fragment>
       <View
         style={style.flatten(['height-1', 'background-color-border-white'])}
       />
       <KeyStoreItem
         containerStyle={style.flatten(['padding-left-10'])}
-        label={selected ? 'OWallet Account' : 'No Account'}
+        defaultRightWalletIconStyle={style.flatten(['margin-right-2'])}
+        label={
+          selected ? selected.meta?.name || 'OWallet Account' : 'No Account'
+        }
+        paragraph={selected ? getKeyStoreParagraph(selected) : undefined}
+        right={<RightArrow />}
+        topBorder={false}
+        bottomBorder={false}
         onPress={() => {
           smartNavigation.navigateSmart('SettingSelectAccount', {});
         }}
@@ -32,6 +40,6 @@ export const SettingSelectAccountItem: FunctionComponent = observer(() => {
       <View
         style={style.flatten(['height-1', 'background-color-border-white'])}
       />
-    </>
+    </React.Fragment>
   );
 });

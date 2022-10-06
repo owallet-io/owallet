@@ -9,15 +9,12 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rimraf node_modules build",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
-  },
-  "devDependencies": {
-    "@owallet/provider-mock": "^0.9.16"
   },
   "dependencies": {
     "@cosmjs/encoding": "^0.24.0-alpha.25",
@@ -31,10 +28,11 @@
     "@owallet/router": "^0.9.6",
     "@owallet/types": "^0.9.12",
     "@owallet/unit": "^0.9.12",
-    "axios": "^0.21.4",
+    "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",
+    "long": "^4.0.0",
     "mobx": "^6.1.7",
     "mobx-utils": "^6.0.3",
     "p-queue": "^6.6.2",

@@ -37,7 +37,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CodePushDeploymentKey</key>
-	<string>Bp7ApGEQu01igCf6axrsaAgi6Mc0X5oBgGjFI</string>
+	<string>ZxkH4o1dYxVWfFeMFAILUj3qEJQnBM3Aam2Tl</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>owallet</string>
@@ -58,9 +58,9 @@
 		</dict>
 	</dict>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>App uses Bluetooth to find, connect and communicate with Ledger Nano devices. Please grant access.</string>
+	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>App uses Bluetooth to find, connect and communicate with Ledger Nano devices. Please grant access.</string>
+	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
 	<key>NSCameraUsageDescription</key>
 	<string>App uses camera to scan address</string>
 	<key>NSFaceIDUsageDescription</key>

@@ -124,13 +124,20 @@ export interface MsgExecuteContract {
     // eslint-disable-next-line @typescript-eslint/ban-types
     msg: object | string;
     sender: string;
-    sent_funds: [
+    // The field is for wasm message.
+    funds?: [
       {
         amount: string;
         denom: string;
       }
     ];
-    // The bottom two fields are for secret-wasm message.
+    // The bottom fields are for secret-wasm message.
+    sent_funds?: [
+      {
+        amount: string;
+        denom: string;
+      }
+    ];
     callback_code_hash?: string;
     callback_sig?: string | null;
   };
@@ -144,7 +151,7 @@ export interface MsgLink {
         to: string;
       }
     ];
-    address: string;
+    neuron: string;
   };
 }
 
@@ -512,7 +519,7 @@ export const WasmExecutionMsgView: FunctionComponent<{
 }> = observer(({ msg }) => {
   const { chainStore, accountStore } = useStore();
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const intl = useIntl();
 
   const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
@@ -576,7 +583,7 @@ export const WasmExecutionMsgView: FunctionComponent<{
       ) : null}
       <Button
         size="sm"
-        style={{ float: 'right', marginRight: '6px' }}
+        style={{ float: 'right', marginRight: isOpen ? '12px' : '6px' }}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

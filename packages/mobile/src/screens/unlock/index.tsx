@@ -84,7 +84,7 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
       tryBiometricAutoOnce.current = true;
       (async () => {
         try {
-          await delay(20);
+          await delay(2000);
           await keychainStore.tryUnlockWithBiometry();
           setStatus(AutoBiomtricStatus.SUCCESS);
         } catch (e) {
@@ -109,6 +109,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const navigation = useNavigation();
 
   const [downloading, setDownloading] = useState(false);
+  const [installing, setInstalling] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -161,7 +162,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           case CodePush.SyncStatus.INSTALLING_UPDATE:
             console.log('INSTALLING_UPDATE');
             // show installing
-            // setState({ showInstalling: true });
+            setInstalling(true);
             break;
           case CodePush.SyncStatus.UPDATE_INSTALLED:
             console.log('UPDATE_INSTALLED');
@@ -193,16 +194,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await keychainStore.tryUnlockWithBiometry();
       setIsLoading(false);
       await hideSplashScreen();
-
-      analyticsStore.logEvent("Account unlocked", {
-        authType: "biometrics",
-      });
     } catch (e) {
       console.log(e);
       setIsLoading(false);
       setIsBiometricLoading(false);
     }
-  }, [analyticsStore, keychainStore]);
+  }, [keychainStore]);
 
   const tryUnlock = async () => {
     try {
@@ -211,10 +208,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await keyRingStore.unlock(password);
 
       await hideSplashScreen();
-
-      analyticsStore.logEvent("Account unlocked", {
-        authType: "password",
-      });
     } catch (e) {
       console.log(e);
       setIsLoading(false);
@@ -268,7 +261,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   return !routeToRegisterOnce.current &&
     keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
-  ) : downloading ? (
+  ) : downloading || installing ? (
     <View
       style={{
         width: '100%',
@@ -302,7 +295,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           opacity: isLoading ? 0.5 : 1
         }}
       >
-        Checking for update
+        {installing ? `Installing` : `Checking for`} update
       </Text>
       <View style={{ marginVertical: 12 }}>
         <Text
@@ -331,13 +324,23 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           setDownloading(false);
           setInstalling(false);
         }}
-        fadeDuration={0}
-        resizeMode="stretch"
-        source={require('../../assets/image/transactions/process_pedding.gif')}
-      />
+      >
+        <Text
+          style={{
+            color: colors['purple-700'],
+            textAlign: 'center',
+            fontWeight: '600',
+            fontSize: 16,
+            lineHeight: 22,
+            opacity: isLoading ? 0.5 : 1
+          }}
+        >
+          Cancel
+        </Text>
+      </TouchableOpacity>
     </View>
   ) : (
-    <>
+    <React.Fragment>
       <View
         style={{
           flex: 1,
@@ -464,6 +467,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           />
         </KeyboardAwareScrollView>
       </View>
-    </>
+    </React.Fragment>
   );
 });

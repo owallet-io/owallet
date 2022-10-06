@@ -110,8 +110,7 @@ export const ExportPage: FunctionComponent<{
                 }
               })}
             >
-              <Input
-                type="password"
+              <PasswordInput
                 label={intl.formatMessage({
                   id: 'setting.export.input.password'
                 })}

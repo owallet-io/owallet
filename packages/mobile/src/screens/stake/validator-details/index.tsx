@@ -1,5 +1,8 @@
 import React, { FunctionComponent } from 'react';
-import { PageWithScrollView, PageWithScrollViewInBottomTabView } from '../../../components/page';
+import {
+  PageWithScrollView,
+  PageWithScrollViewInBottomTabView
+} from '../../../components/page';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet, View } from 'react-native';
@@ -13,6 +16,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         string,
         {
           validatorAddress: string;
+          apr: number;
         }
       >,
       string
@@ -20,6 +24,8 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   >();
 
   const validatorAddress = route.params.validatorAddress;
+  const apr = route.params.apr;
+
   return (
     <PageWithScrollViewInBottomTabView>
       <ValidatorDetailsCard
@@ -27,6 +33,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
           ...styles.containerCard
         }}
         validatorAddress={validatorAddress}
+        apr={apr}
       />
     </PageWithScrollViewInBottomTabView>
   );

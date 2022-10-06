@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useCallback, useState } from 'react';
 import { Button } from '../../../components/button';
 import { Share, StyleSheet, View } from 'react-native';
-import { Copyable } from '../../../components/copyable';
+import { CardModal } from '../../../modals/card';
+import { AddressCopyable } from '../../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
 import { AccountWithAll } from '@owallet/stores';
 import { CText as Text } from '../../../components/text';
-import { Bech32Address } from '@owallet/cosmos';
 
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
@@ -33,9 +33,7 @@ export const AddressQRCodeModal: FunctionComponent<{
             marginVertical: spacing['16']
           }}
         >{`Scan QR Code or copy below address`}</Text>
-        <Copyable
-          text={Bech32Address.shortenAddress(account.bech32Address, 22)}
-        />
+        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
         <View style={{ marginVertical: spacing['32'] }}>
           {account.bech32Address ? (
             <QRCode size={200} value={account.bech32Address} />
@@ -59,10 +57,11 @@ export const AddressQRCodeModal: FunctionComponent<{
             mode="light"
             size="large"
             loading={account.bech32Address === ''}
+            disabled={account.bech32Address === ''}
             onPress={() => {
               Share.share({
                 message: account.bech32Address
-              }).catch((e) => {
+              }).catch(e => {
                 console.log(e);
               });
             }}

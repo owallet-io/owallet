@@ -17,6 +17,7 @@ import {
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
+import ProgressiveImage from '../../components/progessive-image';
 
 // hard code data to test UI
 // const nftsData = [
@@ -75,7 +76,9 @@ export const TokensCard: FunctionComponent<{
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
-      accountStore.getAccount(chainStore.current.chainId).bech32Address
+      chainStore.current.networkType === 'evm'
+        ? account.evmosHexAddress
+        : account.bech32Address
     );
 
   const tokens = queryBalances.balances.concat(
@@ -89,8 +92,6 @@ export const TokensCard: FunctionComponent<{
   //   customDomain: 'https://api.coingecko.com/'
   // };
   // const getPriceCoinGecko = async () => {
-  //   console.log({ test: listTokens.join(',') });
-
   //   return await API.get(
   //     `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
   //     config
@@ -127,9 +128,9 @@ export const TokensCard: FunctionComponent<{
             justifyContent: 'center'
           }}
         >
-          <Image
+          <ProgressiveImage
             source={{
-              uri: item.url
+              uri: item.picture ?? item.url
             }}
             style={styles.itemPhoto}
             resizeMode="cover"
@@ -145,7 +146,9 @@ export const TokensCard: FunctionComponent<{
           }}
         >
           <Text style={styles.itemText}>
-            {formatContractAddress(item.name)}
+            {item.name.length > 11
+              ? formatContractAddress(item.name)
+              : item.name}
           </Text>
 
           {item.version === 1 ? (
@@ -159,7 +162,7 @@ export const TokensCard: FunctionComponent<{
                 ? `${convertAmount(item.offer.amount)} ${item.offer.denom}`
                 : ''}
             </Text>
-          ) : (
+          ) : item.offer ? (
             <View>
               <Text
                 style={{
@@ -179,7 +182,7 @@ export const TokensCard: FunctionComponent<{
                 To {convertAmount(item.offer?.highestPrice)} {item.offer?.denom}
               </Text>
             </View>
-          )}
+          ) : null}
         </View>
       </TouchableOpacity>
     );
@@ -205,9 +208,8 @@ export const TokensCard: FunctionComponent<{
           }}
         >
           {['Tokens', 'NFTs'].map((title: string, i: number) => (
-            <View>
+            <View key={i}>
               <TouchableOpacity
-                key={i}
                 style={{
                   justifyContent: 'center',
                   alignItems: 'center',
@@ -246,9 +248,10 @@ export const TokensCard: FunctionComponent<{
               const priceBalance = priceStore.calculatePrice(token.balance);
               return (
                 <TokenItem
-                  key={token.currency.coinMinimalDenom}
+                  key={token.currency?.coinMinimalDenom}
                   chainInfo={{
-                    stakeCurrency: chainStore.current.stakeCurrency
+                    stakeCurrency: chainStore.current.stakeCurrency,
+                    networkType: chainStore.current.networkType
                   }}
                   balance={token.balance}
                   priceBalance={priceBalance}
@@ -258,43 +261,63 @@ export const TokensCard: FunctionComponent<{
           </CardBody>
         ) : (
           <CardBody>
-            <SectionList
-              stickySectionHeadersEnabled={false}
-              sections={[
-                {
-                  title: 'NFTs',
-                  data: nfts
-                }
-              ]}
-              renderSectionHeader={({ section }) => {
-                {
-                  return (
-                    <>
-                      <View
-                        style={{
-                          marginTop: spacing['12'],
-                          flexDirection: 'row'
-                        }}
-                      >
-                        <Text style={styles.sectionHeader}>
-                          {section.title}
-                        </Text>
-                        <DownArrowIcon color={colors['black']} height={12} />
-                      </View>
+            {nfts.length > 0 ? (
+              <SectionList
+                stickySectionHeadersEnabled={false}
+                sections={[
+                  {
+                    title: 'NFTs',
+                    data: nfts
+                  }
+                ]}
+                renderSectionHeader={({ section }) => {
+                  {
+                    return (
+                      <>
+                        <View
+                          style={{
+                            marginTop: spacing['12'],
+                            flexDirection: 'row'
+                          }}
+                        >
+                          <Text style={styles.sectionHeader}>
+                            {section.title}
+                          </Text>
+                          <DownArrowIcon color={colors['black']} height={12} />
+                        </View>
 
-                      <FlatList
-                        horizontal
-                        data={section.data}
-                        renderItem={_renderFlatlistItem}
-                        keyExtractor={_keyExtract}
-                        showsHorizontalScrollIndicator={false}
-                      />
-                    </>
-                  );
-                }
-              }}
-              renderItem={() => <View />}
-            />
+                        <FlatList
+                          horizontal
+                          data={section.data}
+                          renderItem={_renderFlatlistItem}
+                          keyExtractor={_keyExtract}
+                          showsHorizontalScrollIndicator={false}
+                        />
+                      </>
+                    );
+                  }
+                }}
+                renderItem={() => <View />}
+              />
+            ) : (
+              <View style={styles.transactionListEmpty}>
+                <Image
+                  source={require('../../assets/image/not_found.png')}
+                  resizeMode="contain"
+                  height={142}
+                  width={142}
+                />
+                <Text
+                  style={{
+                    ...typography.subtitle2,
+                    color: colors['gray-300'],
+                    marginTop: spacing['8']
+                  }}
+                >
+                  {`No result found`}
+                </Text>
+              </View>
+            )}
           </CardBody>
         )}
 
@@ -353,13 +376,19 @@ const styles = StyleSheet.create({
     padding: spacing['12']
   },
   itemPhoto: {
-    width: (metrics.screenWidth - 120) / 2,
-    height: (metrics.screenWidth - 120) / 2,
-    borderRadius: spacing['6']
+    // width: (metrics.screenWidth - 84) / 2,
+    height: (metrics.screenWidth - 84) / 2,
+    borderRadius: 10,
+    marginHorizontal: 'auto',
+    width: (metrics.screenWidth - 84) / 2
   },
   itemText: {
     ...typography.h7,
     color: colors['gray-900'],
     fontWeight: '700'
+  },
+  transactionListEmpty: {
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });

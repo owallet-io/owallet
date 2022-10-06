@@ -1,11 +1,11 @@
 import React, { FunctionComponent, ReactElement, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
-import { View, ViewStyle, Image } from 'react-native';
+import { View, ViewStyle, Image, StyleSheet } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
-import { Copyable } from '../../components/copyable';
+import { AddressCopyable } from '../../components/address-copyable';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
@@ -46,7 +46,8 @@ export const AccountCard: FunctionComponent<{
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
-  const stakable = queryStakable?.balance;
+
+  const stakable = queryStakable.balance;
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
   );
@@ -65,7 +66,7 @@ export const AccountCard: FunctionComponent<{
   const totalPrice = priceStore.calculatePrice(total);
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -121,10 +122,12 @@ export const AccountCard: FunctionComponent<{
       >
         <View
           style={{
-            display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            padding: spacing['8'],
+            paddingTop: spacing['6'],
+            paddingBottom: spacing['6'],
+            paddingLeft: spacing['12'],
+            paddingRight: spacing['12']
           }}
         >
           {icon}
@@ -134,7 +137,7 @@ export const AccountCard: FunctionComponent<{
               lineHeight: spacing['20'],
               color: colors['white'],
               paddingLeft: spacing['6'],
-              fontWeight: '700',
+              fontWeight: '700'
             }}
           >
             {name}
@@ -153,7 +156,7 @@ export const AccountCard: FunctionComponent<{
       <CardBody
         style={{
           paddingBottom: spacing['0'],
-          paddingTop: safeAreaInsets.top + 10,
+          paddingTop: safeAreaInsets.top + 10
         }}
       >
         <View
@@ -161,7 +164,7 @@ export const AccountCard: FunctionComponent<{
             height: 256,
             borderWidth: spacing['0.5'],
             borderColor: colors['gray-100'],
-            borderRadius: spacing['12'],
+            borderRadius: spacing['12']
           }}
         >
           <LinearGradient
@@ -171,8 +174,7 @@ export const AccountCard: FunctionComponent<{
             style={{
               borderTopLeftRadius: spacing['11'],
               borderTopRightRadius: spacing['11'],
-              height: 179,
-              backgroundColor: '#5E499A', //linear-gradient(112.91deg, #161532 0%, #5E499A 89.85%)
+              height: 179
             }}
           >
             <View
@@ -237,25 +239,51 @@ export const AccountCard: FunctionComponent<{
           >
             <View
               style={{
-                display: 'flex',
+                flexDirection: 'row',
                 justifyContent: 'space-between',
+                paddingLeft: spacing['12'],
+                paddingRight: spacing['18'],
+                paddingTop: spacing['18'],
+                width: '100%',
+                alignItems: 'center'
               }}
             >
               <View
                 style={{
                   display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingBottom: spacing['2'],
+                  justifyContent: 'space-between'
                 }}
               >
-                <Image
+                <View
                   style={{
-                    width: spacing['26'],
-                    height: spacing['26'],
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    paddingBottom: spacing['2']
                   }}
-                  source={require('../../assets/image/address_default.png')}
-                  fadeDuration={0}
+                >
+                  <Image
+                    style={{
+                      width: spacing['26'],
+                      height: spacing['26']
+                    }}
+                    source={require('../../assets/image/address_default.png')}
+                    fadeDuration={0}
+                  />
+                  <Text
+                    style={{
+                      paddingLeft: spacing['6'],
+                      fontWeight: '700',
+                      fontSize: 16
+                    }}
+                  >
+                    {account.name || '...'}
+                  </Text>
+                </View>
+
+                <AddressCopyable
+                  address={account.bech32Address}
+                  maxCharacters={22}
                 />
                 <Text
                   style={{
@@ -270,25 +298,18 @@ export const AccountCard: FunctionComponent<{
                   }`}
                 </Text>
               </View>
-
-              <Copyable
-                text={Bech32Address.shortenAddress(account.bech32Address, 22)}
-              />
+              <TouchableOpacity onPress={_onPressMyWallet}>
+                <DownArrowIcon height={28} color={colors['gray-150']} />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              onPress={_onPressMyWallet}
-              disabled={stakable.toDec().lte(new Dec(0))}
-            >
-              <DownArrowIcon height={28} color={colors['gray-150']} />
-            </TouchableOpacity>
           </View>
 
           {queryStakable.isFetching ? (
             <View
               style={{
                 position: 'absolute',
-                bottom: 50,
-                left: '50%',
+                bottom: 10,
+                left: '50%'
               }}
             >
               <LoadingSpinner color={colors['gray-150']} size={22} />
@@ -316,7 +337,7 @@ export const AccountCard: FunctionComponent<{
         </TouchableOpacity>
       </View>
       <NetworkErrorView />
-      <View style={{ height: 20 }} />
+      <View style={{ height: 100 }} />
       {/* <CardBody>
         <View
           style={{
@@ -342,13 +363,13 @@ export const AccountCard: FunctionComponent<{
               justifyContent: 'space-between',
               alignItems: 'center',
               paddingLeft: spacing['12'],
-              paddingRight: spacing['8'],
+              paddingRight: spacing['8']
             }}
           >
             <View
               style={{
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'space-between'
               }}
             >
               <Text style={{ paddingBottom: spacing['6'] }}>Namespace</Text>
@@ -356,7 +377,7 @@ export const AccountCard: FunctionComponent<{
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
-                  alignItems: 'center',
+                  alignItems: 'center'
                 }}
               >
                 <Image
@@ -374,7 +395,7 @@ export const AccountCard: FunctionComponent<{
                     fontSize: spacing['18'],
                     lineHeight: 26,
                     textAlign: 'center',
-                    color: colors['gray-900'],
+                    color: colors['gray-900']
                   }}
                 >
                   {account.name || 'Harris.orai'}
@@ -392,4 +413,21 @@ export const AccountCard: FunctionComponent<{
       </CardBody> */}
     </Card>
   );
+});
+
+const styles = StyleSheet.create({
+  textLoadMore: {
+    ...typography['h7'],
+    color: colors['purple-700']
+  },
+  containerBtn: {
+    alignItems: 'center',
+    marginTop: spacing['18'],
+    justifyContent: 'center',
+    backgroundColor: colors['gray-50'],
+    width: metrics.screenWidth - 68,
+    height: spacing['40'],
+    paddingVertical: spacing['10'],
+    borderRadius: spacing['12']
+  }
 });

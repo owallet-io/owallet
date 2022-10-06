@@ -11,7 +11,7 @@ import { useRecipientConfig } from './recipient';
 import { useSendGasConfig } from './send-gas';
 import { useAmountConfig } from './amount';
 
-type MsgOpts = CosmosMsgOpts & SecretMsgOpts;
+type MsgOpts = CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts;
 
 export const useSendTxConfig = (
   chainGetter: ChainGetter,

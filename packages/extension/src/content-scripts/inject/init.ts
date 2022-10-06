@@ -15,36 +15,33 @@ export function init(
   getEnigmaUtils: (chainId: string) => SecretUtils
 ) {
   // Give a priority to production build.
-  if (process.env.NODE_ENV !== 'production') {
-    if (!window.owallet) {
-      window.owallet = owallet;
-    }
-
-    if (!window.ethereum) {
-      window.ethereum = ethereum;
-    }
-
-    if (!window.getOfflineSigner) {
-      window.getOfflineSigner = getOfflineSigner;
-    }
-    if (!window.getOfflineSignerOnlyAmino) {
-      window.getOfflineSignerOnlyAmino = getOfflineSignerOnlyAmino;
-    }
-    if (!window.getOfflineSignerAuto) {
-      window.getOfflineSignerAuto = getOfflineSignerAuto;
-    }
-    if (!window.getEnigmaUtils) {
-      window.getEnigmaUtils = getEnigmaUtils;
-    }
-  } else {
+  if (!window.owallet) {
     window.owallet = owallet;
-    window.ethereum = ethereum;
-    window.getOfflineSigner = getOfflineSigner;
-    window.getOfflineSignerOnlyAmino = getOfflineSignerOnlyAmino;
-    window.getOfflineSignerAuto = getOfflineSignerAuto;
-    window.getEnigmaUtils = getEnigmaUtils;
   }
 
-  // also for keplr
-  (window as any).keplr = owallet;
+  if (!window.ethereum) {
+    window.ethereum = ethereum;
+  }
+
+  if (!window.getOfflineSigner) {
+    window.getOfflineSigner = getOfflineSigner;
+  }
+  if (!window.getOfflineSignerOnlyAmino) {
+    window.getOfflineSignerOnlyAmino = getOfflineSignerOnlyAmino;
+  }
+  if (!window.getOfflineSignerAuto) {
+    window.getOfflineSignerAuto = getOfflineSignerAuto;
+  }
+  if (!window.getEnigmaUtils) {
+    window.getEnigmaUtils = getEnigmaUtils;
+  }
+  // } else {
+  //   window.owallet = owallet;
+  //   window.ethereum = ethereum;
+  //   window.getOfflineSigner = getOfflineSigner;
+  //   window.getOfflineSignerOnlyAmino = getOfflineSignerOnlyAmino;
+  //   window.getOfflineSignerAuto = getOfflineSignerAuto;
+  //   window.getEnigmaUtils = getEnigmaUtils;
+  // }
+  window.keplr = window.keplr || owallet;
 }

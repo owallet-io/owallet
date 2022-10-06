@@ -6,8 +6,14 @@ import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { CText as Text } from '../../../components/text';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export const NetworkModal = ({ profileColor, chainStore, modalStore }) => { 
+export const NetworkModal = ({
+  profileColor,
+  chainStore,
+  modalStore,
+  smartNavigation
+}) => {
   const _renderItem = ({ item }) => {
     return (
       <RectButton
@@ -60,10 +66,8 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
 
           <View
             style={{
-              ...typography.h7,
-              color: colors['gray-300'],
-              fontWeight: '900',
-              fontSize: 12,
+              justifyContent: 'space-between',
+              marginLeft: spacing['12']
             }}
           >
             <Text
@@ -76,28 +80,18 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
             >
               {item.chainName}
             </Text>
-            <Text
+            {/* <Text
               style={{
                 ...typography.h7,
                 color: colors['gray-300'],
                 fontWeight: '900',
                 fontSize: 12
               }}
-            >{`$${item.price || 0}`}</Text>
+            >{`$${item.price || 0}`}</Text> */}
           </View>
         </View>
 
-      <View>
-        <View
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: spacing['32'],
-            backgroundColor: colors['primary'],
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <View>
           <View
             style={{
               width: 24,
@@ -126,7 +120,6 @@ export const NetworkModal = ({ profileColor, chainStore, modalStore }) => {
   };
 
   return (
-    // container
     <View
       style={{
         alignItems: 'center'

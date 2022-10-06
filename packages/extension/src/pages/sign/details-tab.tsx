@@ -64,9 +64,9 @@ export const DetailsTab: FunctionComponent<{
           );
           return (
             <React.Fragment key={i.toString()}>
-              <Msg icon={msgContent.icon} title={msgContent.title}>
+              <MsgRender icon={msgContent.icon} title={msgContent.title}>
                 {msgContent.content}
-              </Msg>
+              </MsgRender>
               <hr />
             </React.Fragment>
           );
@@ -80,9 +80,9 @@ export const DetailsTab: FunctionComponent<{
           );
           return (
             <React.Fragment key={i.toString()}>
-              <Msg icon={msgContent.icon} title={msgContent.title}>
+              <MsgRender icon={msgContent.icon} title={msgContent.title}>
                 {msgContent.content}
-              </Msg>
+              </MsgRender>
               <hr />
             </React.Fragment>
           );
@@ -127,7 +127,13 @@ export const DetailsTab: FunctionComponent<{
                   feeConfig.fee,
                   language.fiatCurrency
                 ) ? (
-                  <div style={{ display: 'inline-block', fontSize: '12px' }}>
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      fontSize: '12px',
+                      color: '#353945'
+                    }}
+                  >
                     {priceStore
                       .calculatePrice(feeConfig.fee, language.fiatCurrency)
                       ?.toString()}
@@ -172,8 +178,15 @@ export const DetailsTab: FunctionComponent<{
             <Label for="memo" className="form-control-label">
               <FormattedMessage id="sign.info.memo" />
             </Label>
-            <div id="memo" style={{ marginBottom: '8px' }}>
-              <div style={{ color: memoConfig.memo ? 'gray' : '#AAAAAA' }}>
+            <div
+              id="memo"
+              style={{
+                marginBottom: '8px',
+                color: memoConfig.memo ? '#353945' : '#AAAAAA',
+                fontSize: 12,
+              }}
+            >
+              <div>
                 {memoConfig.memo
                   ? memoConfig.memo
                   : intl.formatMessage({ id: 'sign.info.warning.empty-memo' })}
@@ -186,7 +199,7 @@ export const DetailsTab: FunctionComponent<{
   }
 );
 
-const Msg: FunctionComponent<{
+export const MsgRender: FunctionComponent<{
   icon?: string;
   title: string;
 }> = ({ icon = 'fas fa-question', title, children }) => {

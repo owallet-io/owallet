@@ -13,7 +13,8 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 const styles = StyleSheet.create({
   sendTokenCard: {
     borderRadius: spacing['24'],
-  },
+    padding: spacing['12']
+  }
 });
 
 const TransferTokensScreen: FunctionComponent<{

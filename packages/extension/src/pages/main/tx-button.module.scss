@@ -1,22 +1,27 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 .container-tx-button {
   display: flex;
   flex-direction: row;
   .button {
+    font-weight: 500;
     flex: 1;
-    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
-    box-shadow: inset 0px 1px 0px rgba(173, 144, 237, 0.7);
-    border-radius: 4px;
+    background-color: $color-neutral-8;
     margin-right: $layout-margin;
+    border-radius: 8px !important;
+    border: 1px solid $color !important;
+    box-shadow: none;
     &:last-child {
       margin-right: 0;
     }
-    color: $color-darker;
-
-    &:hover {
-      color: $color-darker;
-    }
+  }
+  .btnSend {
+    color: $color-white;
+    background-color: $color !important;
+  }
+  .btnReceive {
+    color: $color;
+    background-color: $color-white !important;
   }
 }
 
@@ -25,17 +30,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: $background-color;
-  width: 100%;
-
-  .title {
-    font-size: 14px;
-    font-weight: 700;
-    color: $color;
-  }
 
   .qrcode {
     margin-bottom: 20px;
-    border-radius: 8px;
+  }
+  .title {
+    color: $color-neutral-2;
+    font-size: 21px;
   }
 }

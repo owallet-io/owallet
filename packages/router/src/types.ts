@@ -21,7 +21,10 @@ export interface Env {
   readonly requestInteraction: FnRequestInteraction;
 }
 
-export type EnvProducer = (sender: MessageSender) => Env;
+export type EnvProducer = (
+  sender: MessageSender,
+  routerMeta: Record<string, any>
+) => Env;
 
 export interface MessageRequester {
   sendMessage<M extends Message<unknown>>(

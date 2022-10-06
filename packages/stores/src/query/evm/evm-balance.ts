@@ -5,6 +5,7 @@ import { ChainGetter, QueryResponse } from '../../common';
 import { computed } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
+import { MyBigInt } from '../../common/utils/';
 
 export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result> {
   constructor(
@@ -54,7 +55,7 @@ export class ObservableQueryEvmBalanceInner extends ObservableChainQuery<Result>
 
     return new CoinPretty(
       chainInfo.stakeCurrency,
-      new Int(BigInt(this.response.data.result).toString())
+      new Int(new MyBigInt(this.response.data.result).toString())
     );
   }
 }

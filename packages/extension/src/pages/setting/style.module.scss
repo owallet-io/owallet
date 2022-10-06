@@ -50,9 +50,9 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  &:first-child {
-    padding-bottom: 16px;
-  }
+  // &:first-child {
+  //   padding-bottom: 16px;
+  // }
   &:hover {
     color: $color-accent-1 !important;
   }

@@ -20,7 +20,7 @@ import {
   EmptyAmountError,
   InvalidNumberAmountError,
   ZeroAmountError,
-  NagativeAmountError,
+  NegativeAmountError,
   InsufficientAmountError,
   IAmountConfig
 } from '@owallet/hooks';
@@ -40,6 +40,10 @@ export interface CoinInputProps {
 
   disableAllBalance?: boolean;
 }
+
+const reduceStringAssets = (str) => {
+  return (str && str.split('(')[0]) || '';
+};
 
 export const CoinInput: FunctionComponent<CoinInputProps> = observer(
   ({ amountConfig, className, label, disableAllBalance, placeholder }) => {
@@ -66,7 +70,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             return intl.formatMessage({
               id: 'input.amount.error.is-zero'
             });
-          case NagativeAmountError:
+          case NegativeAmountError:
             return intl.formatMessage({
               id: 'input.amount.error.is-negative'
             });
@@ -115,12 +119,12 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             : new CoinPretty(amountConfig.sendCurrency, new Int(0))
         );
       }
-    }, [tokenDenom]);
+    }, [tokenDenom, chainStore.current.chainId]);
 
     const selectableCurrencies = amountConfig.sendableCurrencies
       .filter((cur) => {
         const bal = queryBalances.getBalanceFromCurrency(cur);
-        return !bal.toDec().isZero();
+        return !bal?.toDec()?.isZero();
       })
       .sort((a, b) => {
         return a.coinDenom < b.coinDenom ? -1 : 1;
@@ -204,19 +208,16 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                     amountConfig.toggleIsMax();
                   }}
                 >
-                  <span>{`Total: ${balance
-                    .trim(true)
-                    .maxDecimals(6)
-                    .toString()}`}</span>
+                  <span>{`Total: ${
+                    reduceStringAssets(
+                      balance?.trim(true)?.maxDecimals(6)?.toString()
+                    ) || 0
+                  }`}</span>
                 </div>
               ) : null}
             </Label>
           ) : null}
-          <InputGroup
-            style={{
-              boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
-            }}
-          >
+          <InputGroup className={styleCoinInput.inputGroup}>
             <Input
               className={classnames(
                 'form-control-alternative',
@@ -253,11 +254,18 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
                 style={{
                   width: 50,
                   height: 28,
-                  backgroundColor: '#7664E4',
+                  backgroundColor: amountConfig.isMax ? '#7664E4' : '#f8fafc',
                   borderRadius: 4
                 }}
               >
-                <span style={{ color: 'white', fontSize: 14 }}>MAX</span>
+                <span
+                  style={{
+                    color: amountConfig.isMax ? 'white' : '#7664E4',
+                    fontSize: 14
+                  }}
+                >
+                  MAX
+                </span>
               </div>
             </div>
           </InputGroup>

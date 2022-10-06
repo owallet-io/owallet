@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../components/page';
+import { GoogleIcon, AppleIcon } from '../../components/icon';
 import { useStyle } from '../../styles';
-import { View, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useRegisterConfig } from '@owallet/hooks';
@@ -20,7 +21,9 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
 
   const registerConfig = useRegisterConfig(keyRingStore, []);
 
+  const safeAreaInsets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
+  const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
   return (
     <PageWithScrollView

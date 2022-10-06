@@ -34,124 +34,133 @@ export const ManageTokenPage: FunctionComponent = observer(() => {
 
   return (
     <>
-      <div className={style.container}>
-        {appCurrencies.map((currency) => {
-          if (!("type" in currency) || currency.type !== "secret20") {
-            return;
-          }
+      {appCurrencies.length ? (
+        <>
+          <div className={style.container}>
+            {appCurrencies.map((currency) => {
+              const cosmwasmToken = currency as CW20Currency | Secret20Currency;
 
-          const secret20 = currency as Secret20Currency;
+              const icons: React.ReactElement[] = [];
 
-          const icons: React.ReactElement[] = [];
+              if ('viewingKey' in cosmwasmToken) {
+                icons.push(
+                  <i
+                    key="copy"
+                    className="fas fa-copy"
+                    style={{
+                      cursor: 'pointer'
+                    }}
+                    onClick={async (e) => {
+                      e.preventDefault();
 
-          if ('viewingKey' in cosmwasmToken) {
+                      await navigator.clipboard.writeText(
+                        cosmwasmToken.viewingKey
+                      );
+                      // TODO: Show success tooltip.
+                      notification.push({
+                        placement: 'top-center',
+                        type: 'success',
+                        duration: 2,
+                        content: intl.formatMessage({
+                          id: 'setting.token.manage.notification.viewing-key.copy'
+                        }),
+                        canDelete: true,
+                        transition: {
+                          duration: 0.25
+                        }
+                      });
+                    }}
+                  />
+                );
+              }
+
+              /*
             icons.push(
               <i
-                key="copy"
-                className="fas fa-copy"
+                key="connections"
+                className="fas fa-link"
                 style={{
-                  cursor: 'pointer'
+                  cursor: "pointer",
                 }}
-                onClick={async (e) => {
+                onClick={(e) => {
                   e.preventDefault();
-
-                  await navigator.clipboard.writeText(cosmwasmToken.viewingKey);
-                  // TODO: Show success tooltip.
-                  notification.push({
-                    placement: 'top-center',
-                    type: 'success',
-                    duration: 2,
-                    content: intl.formatMessage({
-                      id: 'setting.token.manage.notification.viewing-key.copy'
-                    }),
-                    canDelete: true,
-                    transition: {
-                      duration: 0.25
-                    }
-                  });
+  
+                  history.push(
+                    `/setting/connections/viewing-key/${currency.contractAddress}`
+                  );
                 }}
               />
             );
-          }
+             */
 
-          /*
-          icons.push(
-            <i
-              key="connections"
-              className="fas fa-link"
-              style={{
-                cursor: "pointer",
-              }}
-              onClick={(e) => {
-                e.preventDefault();
+              icons.push(
+                <i
+                  key="trash"
+                  className="fas fa-trash-alt"
+                  style={{
+                    cursor: 'pointer'
+                  }}
+                  onClick={async (e) => {
+                    e.preventDefault();
 
-                history.push(
-                  `/setting/connections/viewing-key/${currency.contractAddress}`
-                );
-              }}
-            />
-          );
-           */
-
-          icons.push(
-            <i
-              key="trash"
-              className="fas fa-trash-alt"
-              style={{
-                cursor: 'pointer'
-              }}
-              onClick={async (e) => {
-                e.preventDefault();
-
-                if (
-                  await confirm.confirm({
-                    paragraph: intl.formatMessage({
-                      id: 'setting.token.manage.confirm.remove-token'
-                    }),
-                    yes: 'Disable token',
-                    no: 'Cancel',
-                    styleYesBtn: {
-                      background: 'transparent',
-                      border: '1px solid #FF424F',
-                      color: '#FF424F'
-                    },
-                    styleNoBtn: {
-                      background: '#3B3B45',
-                      color: '#F5F5FA'
+                    if (
+                      await confirm.confirm({
+                        paragraph: intl.formatMessage({
+                          id: 'setting.token.manage.confirm.remove-token'
+                        }),
+                        yes: 'Disable token',
+                        no: 'Cancel',
+                        styleYesBtn: {
+                          background: 'transparent',
+                          border: '1px solid #FF424F',
+                          color: '#FF424F'
+                        },
+                        styleParagraph: {
+                          color: '#525f7f'
+                        },
+                        styleNoBtn: {
+                          background: '#3B3B45',
+                          color: '#F5F5FA'
+                        }
+                      })
+                    ) {
+                      await tokensStore
+                        .getTokensOf(chainStore.current.chainId)
+                        .removeToken(cosmwasmToken);
                     }
-                  })
-                ) {
-                  await tokensStore
-                    .getTokensOf(chainStore.current.chainId)
-                    .removeToken(secret20);
-                }
-              }}
-            />
-          );
+                  }}
+                />
+              );
 
-          return (
-            <PageButton
-              key={secret20.contractAddress}
-              style={{
-                cursor: 'auto'
-              }}
-              title={secret20.coinDenom}
-              paragraph={Bech32Address.shortenAddress(
-                secret20.contractAddress,
-                30
-              )}
-              icons={icons}
-              styleTitle={{
-                fontWeight: '400',
-                fontSize: 14
-              }}
-              styleParagraph={{
-                color: '#A6A6B0'
-              }}
-            />
-          );
-        })}
-      </div>
+              return (
+                <PageButton
+                  key={cosmwasmToken.contractAddress}
+                  style={{
+                    cursor: 'auto'
+                  }}
+                  title={cosmwasmToken.coinDenom}
+                  paragraph={Bech32Address.shortenAddress(
+                    cosmwasmToken.contractAddress,
+                    30
+                  )}
+                  icons={icons}
+                  styleTitle={{
+                    fontWeight: '400',
+                    fontSize: 14
+                  }}
+                  styleParagraph={{
+                    color: '#A6A6B0'
+                  }}
+                />
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <div style={{ fontSize: 16, textAlign: 'center' }}>
+          List Tokens Empty
+        </div>
+      )}
     </>
   );
 });

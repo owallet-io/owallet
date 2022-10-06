@@ -10,7 +10,6 @@
 
 #import <React/RCTLinkingManager.h>
 
-#import <Firebase.h>
 #import <CodePush/CodePush.h>
 
 #import <AppCenterReactNative.h>

@@ -10,9 +10,9 @@ export const MemoInput: FunctionComponent<{
   inputContainerStyle?: ViewStyle;
   inputStyle?: ViewStyle;
   errorLabelStyle?: TextStyle;
-
+  placeholder?: string;
   label: string;
-
+  placeholderTextColor?: string;
   memoConfig: IMemoConfig;
   multiline?: boolean
 }> = observer(
@@ -38,6 +38,8 @@ export const MemoInput: FunctionComponent<{
         multiline={multiline}
         errorLabelStyle={errorLabelStyle}
         value={memoConfig.memo}
+        placeholder={placeholder}
+        placeholderTextColor={placeholderTextColor}
         onChangeText={(text) => {
           memoConfig.setMemo(text);
         }}

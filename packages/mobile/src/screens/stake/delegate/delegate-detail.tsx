@@ -22,6 +22,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
           string,
           {
             validatorAddress: string;
+            apr: number;
           }
         >,
         string
@@ -29,6 +30,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     >();
     const { chainStore, queriesStore, accountStore } = useStore();
     const validatorAddress = route?.params?.validatorAddress;
+    const apr = route?.params?.apr;
 
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -51,7 +53,8 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
       BondStatus.Unbonded
     );
-    const thumbnail = ValidatorThumbnails[validatorAddress] ||
+    const thumbnail =
+      ValidatorThumbnails[validatorAddress] ||
       bondedValidators.getValidatorThumbnail(validatorAddress) ||
       unbondingValidators.getValidatorThumbnail(validatorAddress) ||
       unbondedValidators.getValidatorThumbnail(validatorAddress);
@@ -135,18 +138,10 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               }}
             >
               <Text style={{ ...styles.textInfo, marginBottom: spacing['4'] }}>
-                APY
+                APR
               </Text>
               <Text style={{ ...styles.textBlock }}>
-                {queries.cosmos.queryInflation.inflation
-                  .mul(
-                    new Dec(1).sub(
-                      new Dec(validator.commission.commission_rates.rate)
-                    )
-                  )
-                  .maxDecimals(2)
-                  .trim(true)
-                  .toString() + '%'}
+                {apr.toFixed(2).toString() + '%'}
               </Text>
             </View>
           </View>
@@ -182,7 +177,8 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               }}
               onPress={() => {
                 smartNavigation.navigateSmart('Validator.Details', {
-                  validatorAddress
+                  validatorAddress,
+                  apr
                 });
               }}
             >

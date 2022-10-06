@@ -5,7 +5,7 @@ import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { KeyStoreItem } from '../../components';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import { View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { CText as Text} from "../../../../components/text";
 import { useStyle } from '../../../../styles';
 
 const SectionTitle: FunctionComponent<{
@@ -45,14 +45,19 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const renderKeyStores = (title: string, currencyItems: any) => {
     return (
-      <>
-        <>
+      <React.Fragment>
+        <React.Fragment>
           <SectionTitle title={title} />
           {currencyItems.map((cur, i) => {
             return (
               <KeyStoreItem
                 key={i.toString()}
                 label={cur.label || 'USD'}
+                topBorder={i === 0}
+                bottomBorder={currencyItems.length - 1 !== i}
+                right={
+                  priceStore.defaultVsCurrency == cur.key ? <></> : undefined
+                }
                 onPress={async () => {
                   priceStore.setDefaultVsCurrency(cur.key || 'usd');
                   smartNavigation.navigateSmart('Setting', {});
@@ -60,8 +65,8 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
               />
             );
           })}
-        </>
-      </>
+        </React.Fragment>
+      </React.Fragment>
     );
   };
 

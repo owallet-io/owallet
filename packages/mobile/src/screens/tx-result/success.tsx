@@ -28,13 +28,13 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   // const [pangpareAnimProgress] = React.useState(new Animated.Value(0));
 
   const route = useRoute<
-    RouteProp< 
+    RouteProp<
       Record<
         string,
         {
           chainId?: string;
           // Hex encoded bytes.
-          txHash: string;
+          txHash?: string;
         }
       >,
       string
@@ -44,7 +44,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const chainId = route.params.chainId
     ? route.params.chainId
     : chainStore.current.chainId;
-  const txHash = route.params.txHash;
+  const txHash = route.params?.txHash;
 
   const smartNavigation = useSmartNavigation();
 
@@ -131,7 +131,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               Your transaction has been confirmed by the blockchain.
               Congratulations!
             </Text>
-            {chainInfo.raw.txExplorer ? (
+            {chainInfo.raw.txExplorer && txHash ? (
               <TouchableOpacity
                 style={{
                   paddingTop: 32,

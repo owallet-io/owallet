@@ -30,7 +30,7 @@ const renderIconValidator = (label: string, size?: number) => {
           <ValidatorBlockIcon color={'#1E1E1E'} size={size} />
         </View>
       );
-    case 'APY':
+    case 'APR':
       return (
         <View
           style={{
@@ -66,7 +66,8 @@ const renderIconValidator = (label: string, size?: number) => {
 export const ValidatorDetailsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorAddress: string;
-}> = observer(({ containerStyle, validatorAddress }) => {
+  apr?: number;
+}> = observer(({ containerStyle, validatorAddress, apr }) => {
   const { chainStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
@@ -104,18 +105,10 @@ export const ValidatorDetailsCard: FunctionComponent<{
             {validator.description.website}
           </Text>
         );
-      case 'APY':
+      case 'APR':
         return (
           <Text style={{ ...styles.textDetail }}>
-            {queries.cosmos.queryInflation.inflation
-              .mul(
-                new Dec(1).sub(
-                  new Dec(validator.commission.commission_rates.rate)
-                )
-              )
-              .maxDecimals(2)
-              .trim(true)
-              .toString() + '%'}
+            {apr ? apr?.toFixed(2).toString() + '%' : '0' + '%'}
           </Text>
         );
       case 'Commission':
@@ -184,7 +177,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               justifyContent: 'space-between'
             }}
           >
-            {['Website', 'APY', 'Commission', 'Voting power'].map(
+            {['Website', 'APR', 'Commission', 'Voting power'].map(
               (label: string, index: number) => (
                 <View
                   style={{
@@ -253,7 +246,19 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 validatorAddress
               });
             }}
-          />
+          >
+            <Text
+              style={{
+                color: colors['white'],
+                textAlign: 'center',
+                fontWeight: '700',
+                fontSize: 16,
+                padding: 16
+              }}
+            >
+              Stake now
+            </Text>
+          </TouchableOpacity>
         </View>
       ) : null}
     </>

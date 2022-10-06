@@ -9,7 +9,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf node_modules; rm -rf build",
+    "clean": "rimraf node_modules build",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
@@ -21,6 +21,10 @@
     "@owallet/cosmos": "^0.9.16",
     "@owallet/types": "^0.9.12",
     "buffer": "^6.0.3",
-    "delay": "^4.4.0"
+    "delay": "^4.4.0",
+    "axios": "^0.21.4"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0"
   }
 }

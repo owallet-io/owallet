@@ -16,6 +16,7 @@ import {
   AminoSignResponse,
   BroadcastMode,
   OfflineSigner,
+  StdSignature,
   StdSignDoc,
   StdTx
 } from '@cosmjs/launchpad';
@@ -185,6 +186,23 @@ export class OWalletConnectV1 implements OWallet {
     ]);
   }
 
+  protected async sendCustomRequest(
+    request: Partial<IJsonRpcRequest>,
+    options?: IRequestOptions
+  ): Promise<any> {
+    if (this.options.onBeforeSendRequest) {
+      await this.options.onBeforeSendRequest(request, options);
+    }
+
+    const res = await this.connector.sendCustomRequest(request, options);
+
+    if (this.options.onAfterSendRequest) {
+      await this.options.onAfterSendRequest(res, request, options);
+    }
+
+    return res;
+  }
+
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
       chainIds = [chainIds];
@@ -203,7 +221,7 @@ export class OWalletConnectV1 implements OWallet {
       return;
     }
 
-    await this.connector.sendCustomRequest({
+    await this.sendCustomRequest({
       id: payloadId(),
       jsonrpc: '2.0',
       method: 'keplr_enable_wallet_connect_v1',
@@ -214,7 +232,7 @@ export class OWalletConnectV1 implements OWallet {
   }
 
   protected getKeyHasEnabled() {
-    return `${this.connector.session.key}-enabled`;
+    return `${this.connector.session.handshakeTopic}-enabled`;
   }
 
   protected async getHasEnabledChainIds(): Promise<string[]> {
@@ -286,7 +304,7 @@ export class OWalletConnectV1 implements OWallet {
     }
 
     const response = (
-      await this.connector.sendCustomRequest({
+      await this.sendCustomRequest({
         id: payloadId(),
         jsonrpc: '2.0',
         method: 'keplr_get_key_wallet_connect_v1',
@@ -307,7 +325,7 @@ export class OWalletConnectV1 implements OWallet {
   }
 
   protected getKeyLastSeenKey() {
-    return `${this.connector.session.key}-key`;
+    return `${this.connector.session.handshakeTopic}-key`;
   }
 
   protected async getLastSeenKey(
@@ -402,11 +420,11 @@ export class OWalletConnectV1 implements OWallet {
    */
   sendTx(
     chainId: string,
-    stdTx: StdTx,
+    tx: StdTx | Uint8Array,
     mode: BroadcastMode
   ): Promise<Uint8Array> {
     if (this.options.sendTx) {
-      return this.options.sendTx(chainId, stdTx, mode);
+      return this.options.sendTx(chainId, tx, mode);
     }
 
     throw new Error('send tx is not delivered by options');
@@ -419,7 +437,7 @@ export class OWalletConnectV1 implements OWallet {
     signOptions: OWalletSignOptions = {}
   ): Promise<AminoSignResponse> {
     return (
-      await this.connector.sendCustomRequest({
+      await this.sendCustomRequest({
         id: payloadId(),
         jsonrpc: '2.0',
         method: 'keplr_sign_amino_wallet_connect_v1',

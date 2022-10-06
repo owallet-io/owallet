@@ -1,4 +1,4 @@
-import { Env, MessageSender } from "./types";
+import { Env, MessageSender } from './types';
 
 /**
  * This messaging system is influenced by cosmos-sdk.
@@ -37,12 +37,18 @@ export abstract class Message<R> {
   public readonly origin!: string;
 
   /**
+   * You can put values here that can be helpful when processing in the router.
+   * In logic, these values should not be used.
+   */
+  public routerMeta?: Record<string, any>;
+
+  /**
    * Ask for approval if message is sent externally.
    */
   approveExternal(
-    _env: Omit<Env, "requestInteraction">,
+    _env: Omit<Env, 'requestInteraction'>,
     _sender: MessageSender
   ): boolean {
-    return false;
+    return true;
   }
 }

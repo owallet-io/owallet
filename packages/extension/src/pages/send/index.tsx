@@ -35,8 +35,12 @@ export const SendPage: FunctionComponent<{
   }
   const query = queryString.parse(search) as {
     defaultDenom: string | undefined;
+    defaultRecipient: string | undefined;
+    defaultAmount: string | undefined;
+    defaultMemo: string | undefined;
+    detached: string | undefined;
   };
-
+  const inputRef = React.useRef(null);
   useEffect(() => {
     // Scroll to top on page mounted.
     if (window.scrollTo) {
@@ -44,6 +48,11 @@ export const SendPage: FunctionComponent<{
     }
   }, []);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [coinMinimalDenom]);
   const intl = useIntl();
 
   const notification = useNotification();
@@ -250,6 +259,12 @@ export const SendPage: FunctionComponent<{
                   duration: 0.25
                 }
               });
+            } finally {
+              // XXX: If the page is in detached state,
+              // close the window without waiting for tx to commit. analytics won't work.
+              if (isDetachedPage) {
+                window.close();
+              }
             }
           }
         }}
@@ -257,6 +272,7 @@ export const SendPage: FunctionComponent<{
         <div className={style.formInnerContainer}>
           <div>
             <AddressInput
+              inputRef={inputRef}
               recipientConfig={sendConfigs.recipientConfig}
               memoConfig={sendConfigs.memoConfig}
               label={intl.formatMessage({ id: 'send.input.recipient' })}

@@ -9,12 +9,13 @@ import {
   Label,
   Input,
   FormFeedback,
-  // Modal,
+  Modal,
   InputGroup,
   Button,
-  FormText
+  FormText,
+  ModalBody
 } from 'reactstrap';
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 import { AddressBookPage } from '../../pages/setting/address-book';
 
 import styleAddressInput from './address-input.module.scss';
@@ -47,6 +48,7 @@ export interface AddressInputProps {
   disableAddressBook?: boolean;
 
   disabled?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 export const AddressInput: FunctionComponent<AddressInputProps> = observer(
@@ -59,7 +61,8 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
     disableAddressBook,
     disabled = false,
     placeholder,
-    inputStyle
+    inputStyle,
+    inputRef
   }) => {
     const intl = useIntl();
 
@@ -121,43 +124,20 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
 
     return (
       <React.Fragment>
-        {/* <Modal
-          isOpen={isAddressBookOpen}
-          centered
-          contentClassName={styleAddressInput.modalStyle}
-          toggle={() => setIsAddressBookOpen(!isAddressBookOpen)}
-        >
-          <AddressBookPage
-            onBackButton={() => setIsAddressBookOpen(false)}
-            hideChainDropdown={true}
-            selectHandler={selectAddressFromAddressBook}
-            ibcChannelConfig={ibcChannelConfig}
-            isInTransaction={true}
-          />
-        </Modal> */}
         <Modal
-          style={{
-            content: {
-              width: '330px',
-              minWidth: '330px',
-              inset: '50% auto auto 50%',
-              // height: "524px",
-              minHeight: 'unset',
-              maxHeight: 'unset',
-              border: '1px solid #FCFCFD',
-              borderRadius: '8px'
-            }
-          }}
           isOpen={isAddressBookOpen}
-          onRequestClose={() => setIsAddressBookOpen(false)}
+          toggle={() => setIsAddressBookOpen(false)}
+          centered
         >
-          <AddressBookPage
-            onBackButton={() => setIsAddressBookOpen(false)}
-            hideChainDropdown={true}
-            selectHandler={selectAddressFromAddressBook}
-            ibcChannelConfig={ibcChannelConfig}
-            isInTransaction={true}
-          />
+          <ModalBody>
+            <AddressBookPage
+              onBackButton={() => setIsAddressBookOpen(false)}
+              hideChainDropdown={true}
+              selectHandler={selectAddressFromAddressBook}
+              ibcChannelConfig={ibcChannelConfig}
+              isInTransaction={true}
+            />
+          </ModalBody>
         </Modal>
         <FormGroup className={className}>
           {label ? (
@@ -166,9 +146,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             </Label>
           ) : null}
           <InputGroup
-            style={{
-              boxShadow: '0px 2px 4px 1px rgba(8, 4, 28, 0.12)'
-            }}
+            className={styleAddressInput.inputGroup}
           >
             <Input
               id={inputId}
@@ -176,6 +154,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
                 'form-control-alternative',
                 styleAddressInput.input
               )}
+              innerRef={inputRef}
               value={recipientConfig.rawRecipient}
               onChange={(e) => {
                 recipientConfig.setRawRecipient(e.target.value);

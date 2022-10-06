@@ -36,11 +36,6 @@ export const MyRewardCard: FunctionComponent<{
           .upperCase(true)
           .toString()}
         onPress={async () => {
-          analyticsStore.logEvent("Claim reward started", {
-            chainId: chainStore.current.chainId,
-            chainName: chainStore.current.chainName,
-          });
-
           try {
             await account.cosmos.sendWithdrawDelegationRewardMsgs(
               queryReward.getDescendingPendingRewardValidatorAddresses(8),
@@ -48,7 +43,10 @@ export const MyRewardCard: FunctionComponent<{
               {},
               {},
               {
-                onBroadcasted: (txHash) => {
+                onFulfill: tx => {
+                  console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+                },
+                onBroadcasted: txHash => {
                   analyticsStore.logEvent('Claim reward tx broadcasted', {
                     chainId: chainStore.current.chainId,
                     chainName: chainStore.current.chainName
@@ -57,7 +55,8 @@ export const MyRewardCard: FunctionComponent<{
                     txHash: Buffer.from(txHash).toString('hex')
                   });
                 }
-              }
+              },
+              stakingReward.currency.coinMinimalDenom
             );
           } catch (e) {
             if (e?.message === 'Request rejected') {

@@ -26,7 +26,7 @@ export class DecUtils {
     return decStr;
   }
 
-  private static precisions: { [precision: string]: Dec } = {};
+  protected static tenExponentNs: { [n: string]: Dec } = {};
 
   public static getTenExponentN(n: number): Dec {
     if (n < -Dec.precision) {
@@ -34,22 +34,29 @@ export class DecUtils {
       // Anything less than 18 precision is 0, so there is a high probability of an error.
       throw new Error('Too little precision');
     }
-    if (precision > 18) {
-      throw new Error("Too much precision");
+
+    if (DecUtils.tenExponentNs[n.toString()]) {
+      return DecUtils.tenExponentNs[n.toString()];
     }
 
-    if (DecUtils.precisions[precision.toString()]) {
-      return DecUtils.precisions[precision.toString()];
-    }
+    const dec = new Dec(10).pow(new Int(n));
+    DecUtils.tenExponentNs[n.toString()] = dec;
 
-    let dec = new Dec(1);
+    return dec;
+  }
 
   public static getTenExponentNInPrecisionRange(n: number): Dec {
     if (n > Dec.precision) {
       throw new Error('Too much precision');
     }
 
-    DecUtils.precisions[precision.toString()] = dec;
-    return dec;
+    return DecUtils.getTenExponentN(n);
+  }
+
+  /**
+   * @deprecated Use`getTenExponentNInPrecisionRange`
+   */
+  public static getPrecisionDec(precision: number): Dec {
+    return DecUtils.getTenExponentNInPrecisionRange(precision);
   }
 }

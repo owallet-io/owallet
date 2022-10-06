@@ -1,9 +1,9 @@
-@import "../../styles/var";
+@import '../../styles/var';
 
 $container-width: 420px;
 
-:global(body)[data-centered="true"] {
-  margin: auto;
+:global(body)[data-centered='true'] {
+  // margin: auto;
   background-color: $background-color;
   height: 100%;
   overflow: visible !important;
@@ -14,15 +14,30 @@ $container-width: 420px;
     .container {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      // justify-content: center;
       background-color: transparent !important;
     }
   }
 }
 
 .container {
-  width: $container-width;
-  margin-left: ($popup-size-width - $container-width) / 2;
+  // width: $container-width;
+  // margin-left: ($popup-size-width - $container-width) / 2;
+  padding-left: 35vw;
+  padding-right: 35vw;
+  overflow-y: auto;
+  height: 100vh;
+  width: 100vw;
+
+  @media screen and (max-width: 786px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  @media screen and (max-width: 1024px) {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
   display: flex;
   flex-direction: column;
@@ -73,7 +88,7 @@ $container-width: 420px;
   }
 
   .mnemonic {
-    font-family: "Courier Prime", serif;
+    font-family: 'Courier Prime', serif;
     font-size: 16px;
     letter-spacing: -0.36px;
 
@@ -147,7 +162,7 @@ $container-width: 420px;
   border: none;
   &:hover {
     color: $color-darker;
-    background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
+    // background: linear-gradient(90deg, $primary-color 0%, $second-color 100%);
   }
   &:active {
     color: $color-darker;

@@ -20,6 +20,7 @@ export const TextInput = React.forwardRef<
     inputContainerStyle?: ViewStyle;
     errorLabelStyle?: TextStyle;
     inputStyle?: TextStyle;
+    iconLabel?: React.ReactNode;
 
     label?: string;
     error?: string;
@@ -108,7 +109,7 @@ export const TextInput = React.forwardRef<
         )}
       >
         {props.topInInputContainer}
-        <View style={style.flatten(["flex-row", "items-center"])}>
+        <View style={style.flatten(['flex-row', 'items-center'])}>
           {props.inputLeft}
           <NativeTextInput
             multiline={props.multiline}
@@ -141,7 +142,7 @@ export const TextInput = React.forwardRef<
         {props.bottomInInputContainer}
       </View>
       {props.paragraph && !props.error ? (
-        typeof props.paragraph === "string" ? (
+        typeof props.paragraph === 'string' ? (
           <View>
             <Text
               style={StyleSheet.flatten([

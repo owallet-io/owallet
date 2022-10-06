@@ -16,8 +16,11 @@ import {
 import styleConnections from './style.module.scss';
 import { useIntl } from 'react-intl';
 import { useConfirm } from '../../../components/confirm';
+import classnames from 'classnames';
 
-export const SettingConnectionsPage: FunctionComponent = observer(() => {
+export const SettingConnectionsPage: FunctionComponent<{
+  toggleModal?: () => void;
+}> = observer(({ toggleModal }) => {
   const history = useHistory();
   const intl = useIntl();
 
@@ -40,7 +43,56 @@ export const SettingConnectionsPage: FunctionComponent = observer(() => {
   return (
     <>
       <div className={style.container}>
+        <div
+          onClick={toggleModal}
+          style={{
+            cursor: 'pointer',
+            textAlign: 'right'
+          }}
+        >
+          <img
+            src={require('../../../public/assets/img/close.svg')}
+            alt="total-balance"
+          />
+        </div>
+        <div
+          style={{
+            color: '#434193',
+            fontSize: 24,
+            fontWeight: 500,
+            paddingBottom: 16,
+            textAlign: 'center'
+          }}
+        >
+          Manage Connections
+        </div>
         <ButtonDropdown
+          className={classnames(styleConnections.tokenSelector)}
+          isOpen={dropdownOpen}
+          toggle={toggle}
+          // disabled={amountConfig.fraction === 1}
+        >
+          <DropdownToggle caret>
+            {chainStore.getChain(selectedChainId).chainName}
+          </DropdownToggle>
+          <DropdownMenu>
+            {chainStore.chainInfos.map((chainInfo) => {
+              return (
+                <DropdownItem
+                  key={chainInfo.chainId}
+                  onClick={(e) => {
+                    e.preventDefault();
+
+                    setSelectedChainId(chainInfo.chainId);
+                  }}
+                >
+                  {chainInfo.chainName}
+                </DropdownItem>
+              );
+            })}
+          </DropdownMenu>
+        </ButtonDropdown>
+        {/* <ButtonDropdown
           isOpen={dropdownOpen}
           toggle={toggle}
           className={styleConnections.dropdown}
@@ -64,7 +116,7 @@ export const SettingConnectionsPage: FunctionComponent = observer(() => {
               );
             })}
           </DropdownMenu>
-        </ButtonDropdown>
+        </ButtonDropdown> */}
         {basicAccessInfo.origins.map((origin) => {
           return (
             <PageButton

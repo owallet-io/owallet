@@ -5,6 +5,7 @@ import { DenomHelper } from '@owallet/common';
 import { Bech32Address } from '@owallet/cosmos';
 import { TextStyle, ViewStyle } from 'react-native';
 import { Selector } from './selector';
+// import { SettingViewPrivateDataItem } from './items/view-private-data';
 
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;

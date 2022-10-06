@@ -60,6 +60,7 @@ const tsRule = {
   test: /\.tsx?$/,
   loader: 'ts-loader',
   options: {
+    transpileOnly: true,
     allowTsInNodeModules: true
   }
 };
@@ -77,66 +78,68 @@ const fileRule = {
   ]
 };
 
-const extensionConfig = (env, args) => {
-  return {
-    name: 'extension',
-    mode: isEnvDevelopment ? 'development' : 'production',
-    // In development environment, turn on source map.
-    devtool: isEnvDevelopment ? 'cheap-source-map' : false,
-    // In development environment, webpack watch the file changes, and recompile
-    watch: isEnvDevelopment,
-    entry: {
-      popup: ['./src/index.tsx'],
-      background: ['./src/background/background.ts'],
-      contentScripts: ['./src/content-scripts/content-scripts.ts'],
-      injectedScript: ['./src/content-scripts/inject/injected-script.ts']
-    },
-    output: {
-      path: path.resolve(__dirname, isEnvDevelopment ? 'dist' : 'prod'),
-      filename: '[name].bundle.js'
-    },
-    resolve: commonResolve('src/public/assets'),
-    module: {
-      rules: [sassRule, tsRule, fileRule]
-    },
-    performance: {
-      hints: false,
-      maxEntrypointSize: 512000,
-      maxAssetSize: 512000
-    },
-    plugins: [
-      // Remove all and write anyway
-      // TODO: Optimizing build process
-      new CleanWebpackPlugin(),
-      new ForkTsCheckerWebpackPlugin(),
-      new CopyWebpackPlugin(
-        [
-          {
-            from: './src/manifest.json',
-            to: './'
-          },
-          {
-            from: './src/service_worker.js',
-            to: './'
-          },
-          {
-            from: '../../node_modules/webextension-polyfill/dist/browser-polyfill.js'
-          }
-        ],
-        { copyUnmodified: true }
-      ),
-      new HtmlWebpackPlugin({
-        template: './src/index.html',
-        filename: 'popup.html',
-        excludeChunks: ['background', 'contentScripts', 'injectedScript']
-      }),
-      new WriteFilePlugin(),
-      new webpack.EnvironmentPlugin(['NODE_ENV']),
-      new BundleAnalyzerPlugin({
-        analyzerMode: isEnvAnalyzer ? 'server' : 'disabled'
-      })
-    ]
-  };
+const extensionConfig = {
+  parallelism: 10,
+  name: 'extension',
+  mode: isEnvDevelopment ? 'development' : 'production',
+  // In development environment, turn on source map.
+  devtool: isEnvDevelopment ? 'cheap-source-map' : false,
+  // In development environment, webpack watch the file changes, and recompile
+  watch: isEnvDevelopment,
+  entry: {
+    popup: ['./src/index.tsx'],
+    background: ['./src/background/background.ts'],
+    contentScripts: ['./src/content-scripts/content-scripts.ts'],
+    injectedScript: ['./src/content-scripts/inject/injected-script.ts']
+  },
+  output: {
+    path: path.resolve(__dirname, isEnvDevelopment ? 'dist' : 'prod'),
+    filename: '[name].bundle.js'
+  },
+  resolve: commonResolve('src/public/assets'),
+  module: {
+    rules: [sassRule, tsRule, fileRule]
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
+  },
+  plugins: [
+    // Remove all and write anyway
+    // TODO: Optimizing build process
+    new CleanWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin(),
+    new CopyWebpackPlugin(
+      [
+        {
+          from:
+            process.env.GECKO === 'true'
+              ? './src/manifest-gecko.json'
+              : './src/manifest.json',
+          to: './manifest.json'
+        },
+        {
+          from: './src/service_worker.js',
+          to: './'
+        },
+        {
+          from: '../../node_modules/webextension-polyfill/dist/browser-polyfill.js'
+        }
+      ],
+      { copyUnmodified: true }
+    ),
+    new HtmlWebpackPlugin({
+      template: './src/index.html',
+      filename: 'popup.html',
+      excludeChunks: ['background', 'contentScripts', 'injectedScript']
+    }),
+    new WriteFilePlugin(),
+    new webpack.EnvironmentPlugin(['NODE_ENV']),
+    new BundleAnalyzerPlugin({
+      analyzerMode: isEnvAnalyzer ? 'server' : 'disabled'
+    })
+  ]
 };
 
 module.exports = extensionConfig;

@@ -31,6 +31,8 @@ interface FormData {
 export const NewMnemonicIntro: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
+  const { analyticsStore } = useStore();
+
   return (
     <Button
       block
@@ -167,7 +169,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
           className={style.mnemonic}
           style={{
             border: '1px solid rgba(8, 4, 28, 0.12)',
-            color: '#7664e4'
+            color: '#7664e4',
           }}
           autoCapitalize="none"
           placeholder={intl.formatMessage({
@@ -213,7 +215,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
         />
         {registerConfig.mode === 'create' ? (
           <React.Fragment>
-            <Input
+            <PasswordInput
               label={intl.formatMessage({
                 id: 'register.create.input.password'
               })}
@@ -235,7 +237,7 @@ export const GenerateMnemonicModePage: FunctionComponent<{
               })}
               error={errors.password && errors.password.message}
             />
-            <Input
+            <PasswordInput
               label={intl.formatMessage({
                 id: 'register.create.input.confirm-password'
               })}
@@ -303,6 +305,8 @@ export const VerifyMnemonicModePage: FunctionComponent<{
     // Clear suggested words.
     setSuggestedWords([]);
   }, [newMnemonicConfig.mnemonic]);
+
+  const { analyticsStore } = useStore();
 
   return (
     <div>

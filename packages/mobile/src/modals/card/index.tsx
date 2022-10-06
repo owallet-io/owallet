@@ -413,7 +413,7 @@ export const CardModal: FunctionComponent<{
             ) : null}
           </View>
           {title ? (
-            <>
+            <React.Fragment>
               <View
                 style={style.flatten([
                   'flex-row',
@@ -437,7 +437,7 @@ export const CardModal: FunctionComponent<{
                   'background-color-border-white'
                 ])}
               />
-            </>
+            </React.Fragment>
           ) : null}
         </Animated.View>
       </PanGestureHandler>

@@ -28,7 +28,8 @@ import {
   GovernanceDetailsScreen,
   GovernanceScreen
 } from './screens/governance';
-
+import { createDrawerNavigator } from '@react-navigation/drawer';
+// import { DrawerContent } from './components/drawer';
 import { useStyle } from './styles';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
@@ -113,6 +114,7 @@ import { OnboardingIntroScreen } from './screens/onboarding';
 import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
+import { SelectNetworkScreen } from './screens/network';
 import { colors, spacing, typography } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
@@ -120,7 +122,28 @@ import { useRoute } from '@react-navigation/core';
 import { TransferNFTScreen } from './screens/transfer-nft';
 
 const Stack = createStackNavigator();
+// const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
+
+const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
+  const style = useStyle();
+
+  const navigation = useNavigation();
+
+  return (
+    <HeaderLeftButton
+      onPress={() => {
+        if (navigation.canGoBack) navigation.goBack();
+      }}
+    >
+      <View style={style.flatten(['flex-row', 'items-center'])}>
+        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
+          <HeaderBackButtonIcon />
+        </Text>
+      </View>
+    </HeaderLeftButton>
+  );
+});
 
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
@@ -135,7 +158,9 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
         alignItems: 'center'
       }}
     >
-      <View style={{ display: 'flex', flexDirection: 'row' }}>
+      <View
+        style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+      >
         <TouchableOpacity
           onPress={() => {
             smartNavigation.navigateSmart('Transactions', {});
@@ -161,6 +186,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
 const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
   const { chainStore, modalStore } = useStore();
 
+  const smartNavigation = useSmartNavigation();
   const deterministicNumber = useCallback(chainInfo => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
@@ -178,19 +204,20 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
     },
     [deterministicNumber]
   );
-
+  // const navigation = useNavigation();
   const _onPressNetworkModal = () => {
     modalStore.setOpen();
     modalStore.setChildren(
       NetworkModal({
         profileColor,
         chainStore,
-        modalStore
+        modalStore,
+        smartNavigation
       })
     );
   };
   return (
-    <>
+    <React.Fragment>
       <View
         style={{
           display: 'flex',
@@ -220,7 +247,7 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
           </View>
         </TouchableWithoutFeedback>
       </View>
-    </>
+    </React.Fragment>
   );
 });
 
@@ -243,7 +270,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
   };
 
   return (
-    <>
+    <React.Fragment>
       <View
         style={{
           backgroundColor: colors['white'],
@@ -255,7 +282,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
           paddingHorizontal: spacing['12']
         }}
       >
-        {route.name === 'Home' ? (
+        {route.name === 'Home' || route.name === 'Network.select' ? (
           <View />
         ) : (
           <TouchableWithoutFeedback onPress={onPressBack}>
@@ -272,7 +299,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
           <HomeScreenHeaderRight />
         </View>
       </View>
-    </>
+    </React.Fragment>
   );
 });
 const ScreenHeaderLeft: FunctionComponent<{ uri?: string }> = observer(({}) => {
@@ -311,7 +338,6 @@ export const MainNavigation: FunctionComponent = () => {
         name="Home"
         component={HomeScreen}
       />
-
       <Stack.Screen
         options={{
           title: '',
@@ -349,8 +375,8 @@ export const MainNavigation: FunctionComponent = () => {
           title: '',
           headerLeft: null
         }}
-        name="Ntfs"
-        component={NtfsScreen}
+        name="RegisterRecoverMnemonicMain"
+        component={RecoverMnemonicScreen}
       />
       <Stack.Screen
         options={{
@@ -512,7 +538,7 @@ export const OtherNavigation: FunctionComponent = () => {
           header: () => <CustomHeader />
         }}
         name="Send"
-        component={sendScreen}
+        component={SendScreen}
       />
       <Stack.Screen
         options={{
@@ -556,6 +582,13 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Governance Details"
         component={GovernanceDetailsScreen}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
+        name="Network.select"
+        component={SelectNetworkScreen}
       />
       {/* <Stack.Screen
         options={{
@@ -724,8 +757,7 @@ export const WebNavigation: FunctionComponent = () => {
           title: 'Browser'
         }}
         name="Browser"
-        component={OnboardingIntroScreen}
-        // component={Browser}
+        component={Browser}
       />
       <Stack.Screen
         options={{
@@ -811,7 +843,20 @@ export const InvestNavigation: FunctionComponent = () => {
 
 export const MainTabNavigation: FunctionComponent = () => {
   const style = useStyle();
+
+  const navigation = useNavigation();
   const { chainStore } = useStore();
+
+  const focusedScreen = useFocusedScreen();
+
+  useEffect(() => {
+    // When the focused screen is not "Home" screen and the drawer is open,
+    // try to close the drawer forcely.
+    // navigate("Browser")
+    // if (focusedScreen.name !== 'Home' && isDrawerOpen) {
+    //   navigation.dispatch(DrawerActions.toggleDrawer());
+    // }
+  }, [focusedScreen.name, navigation]);
 
   const checkActiveTabBottom = (color: string) => {
     return color == '#C6C6CD';
@@ -823,6 +868,9 @@ export const MainTabNavigation: FunctionComponent = () => {
     let nameRoute = name;
     switch (name) {
       case 'Main':
+        icon = checkColor ? <HomeOutlineIcon /> : <HomeFillIcon />;
+        break;
+      case 'Home':
         icon = checkColor ? <HomeOutlineIcon /> : <HomeFillIcon />;
         break;
       case 'Browser':
@@ -874,7 +922,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         tabBarIcon: ({ color }) => {
           switch (route.name) {
             case 'Main':
-              return <RenderTabsBarIcon color={color} name={'Main'} />;
+              return <RenderTabsBarIcon color={color} name={'Home'} />;
             case 'Browser':
               return <RenderTabsBarIcon color={color} name={'Browser'} />;
             case 'SendNavigation':
@@ -929,7 +977,7 @@ export const MainTabNavigation: FunctionComponent = () => {
               }}
             />
           </View>
-        ),
+        )
       })}
       tabBarOptions={{
         activeTintColor: style.get('color-primary').color,
@@ -973,6 +1021,28 @@ export const MainTabNavigation: FunctionComponent = () => {
     </Tab.Navigator>
   );
 };
+
+// export const MainTabNavigationWithDrawer: FunctionComponent = () => {
+//   const focused = useFocusedScreen();
+
+//   return (
+//     <Drawer.Navigator
+//       drawerType="slide"
+//       drawerContent={(props) => <DrawerContent {...props} />}
+//       screenOptions={{
+//         // If the focused screen is not "Home" screen,
+//         // disable the gesture to open drawer.
+//         swipeEnabled: focused.name === 'Home',
+//         gestureEnabled: focused.name === 'Home'
+//       }}
+//       gestureHandlerProps={{
+//         hitSlop: {}
+//       }}
+//     >
+//       <Drawer.Screen name="MainTab" component={MainTabNavigation} />
+//     </Drawer.Navigator>
+//   );
+// };
 
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();

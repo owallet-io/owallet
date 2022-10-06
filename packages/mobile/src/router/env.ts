@@ -13,6 +13,7 @@ export class RNEnv {
         // But, in mobile environment, the background and frontend are running in the same proccess.
         // So, there is no need to open the popup from background.
         // The interaction should be handled via the interaction stores.
+
         return await new RNMessageRequesterInternalToUI().sendMessage(
           APP_PORT,
           msg
@@ -24,6 +25,8 @@ export class RNEnv {
   protected static readonly checkIsInternalMessage = (
     sender: MessageSender
   ): boolean => {
-    return sender.id === 'react-native' && sender.url === 'owallet://internal';
+    return (
+      sender.id === 'react-native' && sender.url === 'react-native://internal'
+    );
   };
 }
