@@ -86,7 +86,7 @@ export const SelectFeatures = ({ onChange }) => {
         return (
           <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <CheckBox
-              style={{ flex: 1, padding: 10 }}
+              style={{ flex: 1, padding: 14 }}
               onClick={() => {
                 const tempArr = [...selected];
                 if (selected.includes(f)) {
