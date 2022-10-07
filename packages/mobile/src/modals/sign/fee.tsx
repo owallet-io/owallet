@@ -136,7 +136,9 @@ export const FeeInSign: FunctionComponent<{
             <Text
               style={{
                 ...typography['subtitle1'],
-                color: canFeeEditable ? colors['purple-700'] : colors['text-black-medium'],
+                color: canFeeEditable
+                  ? colors['purple-700']
+                  : colors['text-black-medium']
               }}
             >
               {fee.trim(true).toString()}

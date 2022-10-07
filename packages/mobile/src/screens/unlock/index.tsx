@@ -157,6 +157,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             console.log('DOWNLOADING_PACKAGE');
             // Show "downloading" modal
             // modal.open();
+            appInitStore.updateDate(Date.now());
             setDownloading(true);
             break;
           case CodePush.SyncStatus.INSTALLING_UPDATE:
