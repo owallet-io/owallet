@@ -53,24 +53,24 @@ export const DAppInfos: DAppInfo[] = [
   //   uri: 'https://bignft.web.app',
   //   logo: balconyLogo,
   // },
-  {
-    id: 6,
-    name: 'Balcony Subnet',
-    uri: 'https://re.bignft.app',
-    logo: balconyLogo
-  },
+  // {
+  //   id: 6,
+  //   name: 'Balcony Subnet',
+  //   uri: 'https://re.bignft.app',
+  //   logo: balconyLogo
+  // },
   {
     id: 7,
     name: 'OraiDEX Info',
     uri: 'https://info.oraidex.io',
     logo: oraiLogo
   },
-  {
-    id: 8,
-    name: 'Balcony Subnet EVM',
-    uri: 'https://staging-big-nft.web.app/properties',
-    logo: balconyLogo
-  },
+  // {
+  //   id: 8,
+  //   name: 'Balcony Subnet EVM',
+  //   uri: 'https://staging-big-nft.web.app/properties',
+  //   logo: balconyLogo
+  // },
   {
     id: 9,
     name: 'Orchai App',
@@ -81,6 +81,12 @@ export const DAppInfos: DAppInfo[] = [
     id: 10,
     name: 'Orchai App Staging',
     uri: 'https://app-staging.orchai.io',
+    logo: oraiLogo
+  },
+  {
+    id: 11,
+    name: 'Kawaii App Staging',
+    uri: ' https://owallet-kawaii.web.app',
     logo: oraiLogo
   }
 ];

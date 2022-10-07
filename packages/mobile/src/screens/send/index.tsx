@@ -108,8 +108,6 @@ export const SendScreen: FunctionComponent = observer(() => {
   // ?? sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
-  console.log('fee ===', sendConfigs.feeConfig.fee);
-
   return (
     <PageWithScrollView>
       <View style={{ marginBottom: 99 }}>
@@ -145,7 +143,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
           />
-          {/* <View
+          <View
             style={{
               flexDirection: 'row',
               paddingBottom: 24,
@@ -176,7 +174,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               Custom Fee
             </Text>
-          </View> */}
+          </View>
 
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput
@@ -185,14 +183,11 @@ export const SendScreen: FunctionComponent = observer(() => {
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
               onChangeText={text => {
-                const gasPrice = new Dec(text.replace(/,/g, '.'));
-                const feeAmount = gasPrice.mul(
-                  new Dec(sendConfigs.gasConfig.gas)
-                );
+                const fee = new Dec(Number(text.replace(/,/g, '.')) * 10 ** 6);
 
                 sendConfigs.feeConfig.setManualFee({
-                  amount: feeAmount.roundUp().toString(),
-                  denom: sendConfigs.feeConfig.feeCurrency.coinDenom
+                  amount: fee.roundUp().toString(),
+                  denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
                 });
               }}
             />
