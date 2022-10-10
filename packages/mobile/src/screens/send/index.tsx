@@ -178,7 +178,7 @@ export const SendScreen: FunctionComponent = observer(() => {
 
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput
-              label="Custom Fee"
+              label="Fee"
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}

@@ -86,7 +86,13 @@ export const DAppInfos: DAppInfo[] = [
   {
     id: 11,
     name: 'Kawaii App Staging',
-    uri: ' https://owallet-kawaii.web.app',
+    uri: 'https://owallet-kawaii.web.app',
+    logo: oraiLogo
+  },
+  {
+    id: 12,
+    name: 'Kawaii App',
+    uri: 'https://owallet-kawaii.firebaseapp.com',
     logo: oraiLogo
   }
 ];

@@ -51,6 +51,7 @@ export interface IFeeEthereumConfig extends ITxChainSetter {
 export interface IFeeConfig extends ITxChainSetter {
   feeType: FeeType | undefined;
   setFeeType(feeType: FeeType | undefined): void;
+  setManualFee(fee: CoinPrimitive | undefined): void;
   feeCurrencies: Currency[];
   feeCurrency: Currency | undefined;
   toStdFee(): StdFee;
