@@ -25,7 +25,7 @@ interface FormData {
   coingecko: string;
   url_block: string;
   networkType: string;
-  features: string;
+  features: Array<string>;
   symbol: string;
   feeLow: number;
   feeMedium: number;
@@ -66,6 +66,7 @@ const features = [
   'stargate',
   'ibc-transfer',
   'cosmwasm',
+  'secretwasm',
   'ibc-go',
   'isEvm',
   'no-legacy-stdTx'
@@ -79,7 +80,7 @@ export const SelectFeatures = ({ onChange }) => {
       style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
-        maxHeight: 100
+        maxHeight: 150
       }}
     >
       {features.map(f => {
@@ -211,7 +212,8 @@ export const SelectNetworkScreen = () => {
       alert('Network added successfully!');
       smartNavigation.goBack();
     } catch (err) {
-      alert('Oops! Something went wrong!');
+      // alert('Oops! Something went wrong!');
+      alert(err.message);
     }
   });
 
@@ -651,16 +653,16 @@ export const SelectNetworkScreen = () => {
 
       <Controller
         control={control}
-        rules={{
-          required: 'Coingecko ID is required',
+        // rules={{
+        //   required: 'Coingecko ID is required',
 
-          validate: (value: string) => {
-            const values = value.toLowerCase();
-            if (!values) {
-              return 'Coingecko ID is required';
-            }
-          }
-        }}
+        //   validate: (value: string) => {
+        //     const values = value.toLowerCase();
+        //     if (!values) {
+        //       return 'Coingecko ID is required';
+        //     }
+        //   }
+        // }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
