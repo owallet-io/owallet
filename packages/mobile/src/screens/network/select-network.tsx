@@ -472,7 +472,6 @@ export const SelectNetworkScreen = () => {
           );
         }}
         name="features"
-        defaultValue=""
       />
       <Text
         style={{
