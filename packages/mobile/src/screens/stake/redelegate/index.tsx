@@ -5,8 +5,8 @@ import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
-import { PageWithScrollView, PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { Card, CardBody, CardDivider } from '../../../components/card';
+import { Dec } from '@owallet/unit';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { Image, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
@@ -14,7 +14,7 @@ import {
   AmountInput,
   FeeButtons,
   MemoInput,
-  SelectorButtonWithoutModal
+  TextInput
 } from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
@@ -26,6 +26,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DownArrowIcon } from '../../../components/icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { Toggle } from '../../../components/toggle';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -43,6 +44,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
 
   const smartNavigation = useSmartNavigation();
+  const [customFee, setCustomFee] = useState(false);
 
   const { chainStore, accountStore, queriesStore, analyticsStore, modalStore } =
     useStore();
@@ -134,7 +136,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             preferNoSetFee: true
           },
           {
-            onBroadcasted: (txHash) => {
+            onBroadcasted: txHash => {
               analyticsStore.logEvent('Redelgate tx broadcasted', {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
@@ -319,7 +321,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 <View
                   style={{
                     width: 40,
-                    height: 40,
+                    height: 40
                   }}
                 >
                   <ValidatorThumbnail
@@ -423,7 +425,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             marginTop: 20,
             padding: 20,
             backgroundColor: colors['white'],
-            borderRadius: 24,
+            borderRadius: 24
           }}
         >
           <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
@@ -431,12 +433,68 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             label="Memo (Optional)"
             memoConfig={sendConfigs.memoConfig}
           />
-          <FeeButtons
-            label="Fee"
-            gasLabel="gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-          />
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingBottom: 24,
+              alignItems: 'center'
+            }}
+          >
+            <Toggle
+              on={customFee}
+              onChange={value => {
+                setCustomFee(value);
+                if (!value) {
+                  if (
+                    sendConfigs.feeConfig.feeCurrency &&
+                    !sendConfigs.feeConfig.fee
+                  ) {
+                    sendConfigs.feeConfig.setFeeType('average');
+                  }
+                }
+              }}
+            />
+            <Text
+              style={{
+                fontWeight: '700',
+                fontSize: 16,
+                lineHeight: 34,
+                paddingHorizontal: 8
+              }}
+            >
+              Custom Fee
+            </Text>
+          </View>
+          {customFee && chainStore.current.networkType !== 'evm' ? (
+            <TextInput
+              label="Fee"
+              placeholder="Type your Fee here"
+              keyboardType={'numeric'}
+              labelStyle={{
+                fontSize: 16,
+                fontWeight: '700',
+                lineHeight: 22,
+                color: colors['gray-900'],
+                marginBottom: spacing['8']
+              }}
+              onChangeText={text => {
+                const fee = new Dec(Number(text.replace(/,/g, '.')) * 10 ** 6);
+
+                sendConfigs.feeConfig.setManualFee({
+                  amount: fee.roundUp().toString(),
+                  denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+                });
+              }}
+            />
+          ) : chainStore.current.networkType !== 'evm' ? (
+            <FeeButtons
+              label="Fee"
+              gasLabel="gas"
+              feeConfig={sendConfigs.feeConfig}
+              gasConfig={sendConfigs.gasConfig}
+            />
+          ) : null}
+
           <Button
             style={{
               backgroundColor: isDisable
