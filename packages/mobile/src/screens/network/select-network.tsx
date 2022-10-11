@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
 import { colors, typography } from '../../themes';
@@ -72,8 +72,22 @@ const features = [
   'no-legacy-stdTx'
 ];
 
-export const SelectFeatures = ({ onChange }) => {
+export const SelectFeatures = ({ onChange, networkType }) => {
   const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+    if (networkType === 'evm') {
+      setSelected(['ibc-go', 'stargate', 'isEvm']);
+    } else {
+      setSelected([
+        'stargate',
+        'ibc-go',
+        'ibc-transfer',
+        'cosmwasm',
+        'no-legacy-stdTx'
+      ]);
+    }
+  }, [networkType]);
 
   return (
     <View
@@ -87,6 +101,11 @@ export const SelectFeatures = ({ onChange }) => {
         return (
           <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <CheckBox
+              disabled={
+                (networkType === 'cosmos' &&
+                  (f === 'isEvm' || f === 'secretwasm')) ||
+                (networkType === 'evm' && f === 'cosmwasm')
+              }
               style={{ flex: 1, padding: 14 }}
               onClick={() => {
                 const tempArr = [...selected];
@@ -124,6 +143,7 @@ export const SelectNetworkScreen = () => {
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { chainStore } = useStore();
   const smartNavigation = useSmartNavigation();
+  const [networkType, setNetworkType] = useState('cosmos');
 
   const submit = handleSubmit(async () => {
     const {
@@ -219,6 +239,7 @@ export const SelectNetworkScreen = () => {
 
   const handleChangeNetwork = selected => {
     setValue('networkType', selected.value);
+    setNetworkType(selected.value);
   };
 
   const handleSelectFeatures = features => {
@@ -452,27 +473,22 @@ export const SelectNetworkScreen = () => {
         name="bech32Config"
         defaultValue=""
       />
-      <Controller
-        control={control}
-        render={({ field: {} }) => {
-          return (
-            <View style={{ paddingBottom: 20 }}>
-              <Text
-                style={{
-                  ...typography.h6,
-                  fontWeight: '600',
-                  color: colors['gray-900'],
-                  paddingBottom: 8
-                }}
-              >
-                {`Features`}
-              </Text>
-              <SelectFeatures onChange={handleSelectFeatures} />
-            </View>
-          );
-        }}
-        name="features"
-      />
+      <View style={{ paddingBottom: 20 }}>
+        <Text
+          style={{
+            ...typography.h6,
+            fontWeight: '600',
+            color: colors['gray-900'],
+            paddingBottom: 8
+          }}
+        >
+          {`Features`}
+        </Text>
+        <SelectFeatures
+          onChange={handleSelectFeatures}
+          networkType={networkType}
+        />
+      </View>
       <Text
         style={{
           ...typography.h3,
@@ -649,7 +665,6 @@ export const SelectNetworkScreen = () => {
         name="coinMinimal"
         defaultValue=""
       />
-
       <Controller
         control={control}
         // rules={{
@@ -687,7 +702,6 @@ export const SelectNetworkScreen = () => {
         name="coingecko"
         defaultValue=""
       />
-
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value, ref } }) => {
@@ -715,7 +729,6 @@ export const SelectNetworkScreen = () => {
         name="symbol"
         defaultValue=""
       />
-
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value, ref } }) => {
