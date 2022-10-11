@@ -48,6 +48,15 @@ InjectedEthereumOWallet.startProxy(
   )
 );
 
+InjectedEthereumOWallet.startProxy(
+  new Ethereum(
+    manifest.version,
+    'core',
+    '0x38',
+    new InExtensionMessageRequester()
+  )
+);
+
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
 router.addGuard(ContentScriptGuards.checkMessageIsInternal);
 initEvents(router);
