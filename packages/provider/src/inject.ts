@@ -31,12 +31,7 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
-import {
-  NAMESPACE,
-  NAMESPACE_ETHEREUM,
-  NAMESPACE_ETHEREUM_OWALLET,
-  NAMESPACE_TRONWEB
-} from './constants';
+import { NAMESPACE, NAMESPACE_ETHEREUM, NAMESPACE_ETHEREUM_OWALLET } from './constants';
 import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 
 export interface ProxyRequest {
@@ -88,7 +83,7 @@ export class InjectedOWallet implements IOWallet {
       ) {
         return;
       }
-
+      
       try {
         if (!message.id) {
           throw new Error('Empty id');
@@ -539,12 +534,22 @@ export class InjectedEthereum implements Ethereum {
           case 'public_key':
             result = await ethereum.getPublicKey(chainId);
             break;
+<<<<<<< HEAD
           // case 'eth_signDecryptData':
           //   result = await ethereum.signDecryptData(chainId, message.args[0]);
           //   break;
           // case 'eth_signReEncryptData':
           //   result = await ethereum.signReEncryptData(chainId, message.args[0]);
           //   break;
+=======
+          case 'eth_signDecryptData':
+            result = await ethereum.signDecryptData(chainId, message.args[0]);
+            break;
+          // thang1
+          case 'eth_signReEncryptData':
+            result = await ethereum.signReEncryptData(chainId, message.args[0]);
+            break;
+>>>>>>> 3c359801 (func sp kawaii)
           case 'wallet_addEthereumChain':
             await ethereum.experimentalSuggestChain(message.args[0]);
             break;
@@ -745,12 +750,26 @@ export class InjectedEthereum implements Ethereum {
     return;
   }
 
+<<<<<<< HEAD
   async signReEncryptData(chainId: string, data: object): Promise<object> {
+=======
+  async signReEncryptData(
+    chainId: string,
+    data: object
+  ): Promise<object> {
+>>>>>>> 3c359801 (func sp kawaii)
     console.log('WILL NOT USE');
     return;
   }
 
+<<<<<<< HEAD
   async signDecryptData(chainId: string, data: object): Promise<object> {
+=======
+  async signDecryptData(
+    chainId: string,
+    data: object
+  ): Promise<object> {
+>>>>>>> 3c359801 (func sp kawaii)
     console.log('WILL NOT USE');
     return;
   }
@@ -770,6 +789,10 @@ export class InjectedEthereum implements Ethereum {
   // }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3c359801 (func sp kawaii)
 export class InjectedEthereumOWallet implements Ethereum {
   // we use this chain id for chain id switching from user
   get chainId() {
@@ -831,7 +854,11 @@ export class InjectedEthereumOWallet implements Ethereum {
         var result: any;
         const chainId =
           message.args[1] ??
+<<<<<<< HEAD
           (await window.localStorage.getItem('eth_owallet.chainId')) ??
+=======
+          (await window.localStorage.getItem('owallet.chainId')) ??
+>>>>>>> 3c359801 (func sp kawaii)
           eth_owallet.initChainId;
 
         // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
@@ -846,6 +873,7 @@ export class InjectedEthereumOWallet implements Ethereum {
           case 'public_key':
             result = await eth_owallet.getPublicKey(chainId);
             break;
+<<<<<<< HEAD
           // case 'eth_signDecryptData':
           //   result = await eth_owallet.signDecryptData(
           //     chainId,
@@ -858,6 +886,15 @@ export class InjectedEthereumOWallet implements Ethereum {
           //     message.args[0]
           //   );
           //   break;
+=======
+          case 'eth_signDecryptData':
+            result = await eth_owallet.signDecryptData(chainId, message.args[0]);
+            break;
+          // thang1
+          case 'eth_signReEncryptData':
+            result = await eth_owallet.signReEncryptData(chainId, message.args[0]);
+            break;
+>>>>>>> 3c359801 (func sp kawaii)
           case 'wallet_addEthereumChain':
             await eth_owallet.experimentalSuggestChain(message.args[0]);
             break;
@@ -882,7 +919,11 @@ export class InjectedEthereumOWallet implements Ethereum {
               params: message.args[0],
               chainId
             });
+<<<<<<< HEAD
             window.localStorage.setItem('eth_owallet.chainId', result);
+=======
+            window.localStorage.setItem('owallet.chainId', result);
+>>>>>>> 3c359801 (func sp kawaii)
             break;
           case 'eth_getTransactionReceipt' as any:
             try {
@@ -1047,14 +1088,22 @@ export class InjectedEthereumOWallet implements Ethereum {
     return;
   }
 
+<<<<<<< HEAD
   async signAndBroadcastTron(
     chainId: string,
     data: SignEthereumTypedDataObject
   ): Promise<{ rawTxHex: string }> {
+=======
+  async signReEncryptData(
+    chainId: string,
+    data: object
+  ): Promise<object> {
+>>>>>>> 3c359801 (func sp kawaii)
     console.log('WILL NOT USE');
     return;
   }
 
+<<<<<<< HEAD
   // async signReEncryptData(
   //   chainId: string,
   //   data: object
@@ -1067,6 +1116,15 @@ export class InjectedEthereumOWallet implements Ethereum {
   //   console.log('WILL NOT USE');
   //   return;
   // }
+=======
+  async signDecryptData(
+    chainId: string,
+    data: object
+  ): Promise<object> {
+    console.log('WILL NOT USE');
+    return;
+  }
+>>>>>>> 3c359801 (func sp kawaii)
 
   async getPublicKey(chainId: string): Promise<object> {
     console.log('WILL NOT USE');
@@ -1081,6 +1139,7 @@ export class InjectedEthereumOWallet implements Ethereum {
   // async getKey(chainId: string): Promise<Key> {
   //   return await this.requestMethod('getKey', [chainId]);
   // }
+<<<<<<< HEAD
 }
 
 export class InjectedTronWebOWallet implements TronWeb {
@@ -1277,3 +1336,6 @@ export class InjectedTronWebOWallet implements TronWeb {
     ]);
   }
 }
+=======
+}
+>>>>>>> 3c359801 (func sp kawaii)
