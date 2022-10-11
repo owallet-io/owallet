@@ -206,7 +206,9 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             marginBottom: spacing['8']
           }}
           onChangeText={text => {
-            const fee = new Dec(Number(text.replace(/,/g, '.')) * 10 ** 6);
+            const fee = new Dec(
+              Number(text.replace(/,/g, '.')) * Math.pow(10, 6)
+            );
 
             sendConfigs.feeConfig.setManualFee({
               amount: fee.roundUp().toString(),

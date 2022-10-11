@@ -71,7 +71,9 @@ const FeeButtonsModal: FunctionComponent<{
                 marginBottom: 8
               }}
               onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.')) * 10 ** 6);
+                const fee = new Dec(
+                  Number(text.replace(/,/g, '.')) * Math.pow(10, 6)
+                );
 
                 feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),

@@ -135,7 +135,7 @@ export const SelectNetworkScreen = () => {
       bech32Config,
       url_block,
       symbol,
-      coingecko,
+      coingecko = '',
       coinMinimal,
       networkType,
       features,
@@ -167,7 +167,7 @@ export const SelectNetworkScreen = () => {
             .toLocaleLowerCase()}`,
           coinDecimals: 6,
           coinGeckoId: `${
-            coingecko.split(' ').join('-').toLocaleLowerCase() ??
+            coingecko?.split(' ').join('-').toLocaleLowerCase() ??
             code.split(' ').join('-').toLocaleLowerCase()
           }`,
           coinImageUrl:
