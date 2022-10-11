@@ -5,7 +5,7 @@ import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
-import { Dec } from '@owallet/unit';
+import { Dec, DecUtils } from '@owallet/unit';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { Image, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
@@ -478,10 +478,9 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 marginBottom: spacing['8']
               }}
               onChangeText={text => {
-                const fee = new Dec(
-                  Number(text.replace(/,/g, '.')) * Math.pow(10, 6)
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+                  DecUtils.getPrecisionDec(6)
                 );
-
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
                   denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom

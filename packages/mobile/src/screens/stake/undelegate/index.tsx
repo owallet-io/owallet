@@ -4,7 +4,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { useUndelegateTxConfig } from '@owallet/hooks';
-import { Dec } from '@owallet/unit';
+import { Dec, DecUtils } from '@owallet/unit';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import {
   AmountInput,
@@ -206,8 +206,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             marginBottom: spacing['8']
           }}
           onChangeText={text => {
-            const fee = new Dec(
-              Number(text.replace(/,/g, '.')) * Math.pow(10, 6)
+            const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+              DecUtils.getPrecisionDec(6)
             );
 
             sendConfigs.feeConfig.setManualFee({

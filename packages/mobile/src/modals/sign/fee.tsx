@@ -5,7 +5,7 @@ import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { useStore } from '../../stores';
 import { useStyle } from '../../styles';
-import { CoinPretty, Dec } from '@owallet/unit';
+import { CoinPretty, Dec, DecUtils } from '@owallet/unit';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { OWalletSignOptions } from '@owallet/types';
 import { RightArrowIcon } from '../../components/icon';
@@ -71,8 +71,8 @@ const FeeButtonsModal: FunctionComponent<{
                 marginBottom: 8
               }}
               onChangeText={text => {
-                const fee = new Dec(
-                  Number(text.replace(/,/g, '.')) * Math.pow(10, 6)
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+                  DecUtils.getPrecisionDec(6)
                 );
 
                 feeConfig.setManualFee({

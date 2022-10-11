@@ -18,7 +18,7 @@ import { BondStatus } from '@owallet/stores';
 import { colors, spacing, typography } from '../../../themes';
 import { CText as Text } from '../../../components/text';
 import { Toggle } from '../../../components/toggle';
-import { Dec } from '@owallet/unit';
+import { Dec, DecUtils } from '@owallet/unit';
 
 // import { RectButton } from '../../../components/rect-button';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -149,7 +149,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             keyboardType={'numeric'}
             labelStyle={styles.sendlabelInput}
             onChangeText={text => {
-              const fee = new Dec(Number(text.replace(/,/g, '.')) * 10 ** 6);
+              const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+                DecUtils.getPrecisionDec(6)
+              );
 
               sendConfigs.feeConfig.setManualFee({
                 amount: fee.roundUp().toString(),
