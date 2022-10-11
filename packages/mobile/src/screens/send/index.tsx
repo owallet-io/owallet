@@ -184,7 +184,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               labelStyle={styles.sendlabelInput}
               onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getPrecisionDec(6)
+                  DecUtils.getTenExponentNInPrecisionRange(6)
                 );
 
                 sendConfigs.feeConfig.setManualFee({

@@ -479,7 +479,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
               }}
               onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getPrecisionDec(6)
+                  DecUtils.getTenExponentNInPrecisionRange(6)
                 );
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
