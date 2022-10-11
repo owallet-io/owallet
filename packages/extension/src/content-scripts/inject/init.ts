@@ -28,6 +28,10 @@ export function init(
     window.ethereum = ethereum;
   }
 
+  if (!window.eth_owallet) {
+    window.eth_owallet = eth_owallet;
+  }
+
   if (!window.getOfflineSigner) {
     window.getOfflineSigner = getOfflineSigner;
   }

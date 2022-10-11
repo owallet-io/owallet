@@ -14,7 +14,7 @@ export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo?.find(
-    (keyStore) => keyStore?.selected
+    keyStore => keyStore?.selected
   );
   const intl = useIntl();
 
