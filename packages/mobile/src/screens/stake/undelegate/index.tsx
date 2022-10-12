@@ -1,14 +1,17 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { useUndelegateTxConfig } from '@owallet/hooks';
+import { Dec, DecUtils } from '@owallet/unit';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView
-} from '../../../components/page';
-import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
+  AmountInput,
+  FeeButtons,
+  MemoInput,
+  TextInput
+} from '../../../components/input';
 import { View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { Button } from '../../../components/button';
@@ -19,6 +22,7 @@ import { Buffer } from 'buffer';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { colors, spacing } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
+import { Toggle } from '../../../components/toggle';
 
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -39,6 +43,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
+  const [customFee, setCustomFee] = useState(false);
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -156,12 +161,70 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       */}
       <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
       <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <FeeButtons
-        label="Fee"
-        gasLabel="gas"
-        feeConfig={sendConfigs.feeConfig}
-        gasConfig={sendConfigs.gasConfig}
-      />
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingBottom: 24,
+          alignItems: 'center'
+        }}
+      >
+        <Toggle
+          on={customFee}
+          onChange={value => {
+            setCustomFee(value);
+            if (!value) {
+              if (
+                sendConfigs.feeConfig.feeCurrency &&
+                !sendConfigs.feeConfig.fee
+              ) {
+                sendConfigs.feeConfig.setFeeType('average');
+              }
+            }
+          }}
+        />
+        <Text
+          style={{
+            fontWeight: '700',
+            fontSize: 16,
+            lineHeight: 34,
+            paddingHorizontal: 8
+          }}
+        >
+          Custom Fee
+        </Text>
+      </View>
+      {customFee && chainStore.current.networkType !== 'evm' ? (
+        <TextInput
+          label="Fee"
+          placeholder="Type your Fee here"
+          keyboardType={'numeric'}
+          labelStyle={{
+            fontSize: 16,
+            fontWeight: '700',
+            lineHeight: 22,
+            color: colors['gray-900'],
+            marginBottom: spacing['8']
+          }}
+          onChangeText={text => {
+            const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+              DecUtils.getPrecisionDec(6)
+            );
+
+            sendConfigs.feeConfig.setManualFee({
+              amount: fee.roundUp().toString(),
+              denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+            });
+          }}
+        />
+      ) : chainStore.current.networkType !== 'evm' ? (
+        <FeeButtons
+          label="Fee"
+          gasLabel="gas"
+          feeConfig={sendConfigs.feeConfig}
+          gasConfig={sendConfigs.gasConfig}
+        />
+      ) : null}
+
       <Button
         text="Unstake"
         size="large"

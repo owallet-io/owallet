@@ -5,7 +5,7 @@ import { useStore } from '../../stores';
 import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
-import { Dec } from '@owallet/unit';
+import { Dec, DecUtils } from '@owallet/unit';
 
 import {
   AddressInput,
@@ -178,12 +178,14 @@ export const SendScreen: FunctionComponent = observer(() => {
 
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput
-              label="Custom Fee"
+              label="Fee"
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
               onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.')) * 10 ** 6);
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+                  DecUtils.getPrecisionDec(6)
+                );
 
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),

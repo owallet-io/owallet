@@ -1,25 +1,29 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView
-} from '../../../components/page';
-import { useStyle } from '../../../styles';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import { useStore } from '../../../stores';
 import { useDelegateTxConfig } from '@owallet/hooks';
 import { EthereumEndpoint } from '@owallet/common';
-import { AmountInput, FeeButtons, MemoInput } from '../../../components/input';
+import {
+  AmountInput,
+  FeeButtons,
+  MemoInput,
+  TextInput
+} from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { BondStatus } from '@owallet/stores';
 import { colors, spacing, typography } from '../../../themes';
 import { CText as Text } from '../../../components/text';
-import { RectButton } from '../../../components/rect-button';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { DownArrowIcon } from '../../../components/icon';
-import { StakeAdvanceModal } from '../components/stake-advance';
+import { Toggle } from '../../../components/toggle';
+import { Dec, DecUtils } from '@owallet/unit';
+
+// import { RectButton } from '../../../components/rect-button';
+// import { TouchableOpacity } from 'react-native-gesture-handler';
+// import { DownArrowIcon } from '../../../components/icon';
+// import { StakeAdvanceModal } from '../components/stake-advance';
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -36,10 +40,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validatorAddress = route.params.validatorAddress;
 
-  const { modalStore, chainStore, accountStore, queriesStore, analyticsStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
 
-  const style = useStyle();
+  const [customFee, setCustomFee] = useState(false);
+
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -72,14 +76,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   const validator = bondedValidators.getValidator(validatorAddress);
 
-  const _onOpenStakeModal = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      StakeAdvanceModal({
-        config: sendConfigs
-      })
-    );
-  };
+  // const _onOpenStakeModal = () => {
+  //   modalStore.setOpen();
+  //   modalStore.setChildren(
+  //     StakeAdvanceModal({
+  //       config: sendConfigs
+  //     })
+  //   );
+  // };
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -102,12 +106,67 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           label={'Memo (Optional)'}
           memoConfig={sendConfigs.memoConfig}
         />
-        <FeeButtons
-          label="Fee"
-          gasLabel="gas"
-          feeConfig={sendConfigs.feeConfig}
-          gasConfig={sendConfigs.gasConfig}
-        />
+
+        {/* Need to some custom fee here */}
+
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingBottom: 24,
+            alignItems: 'center'
+          }}
+        >
+          <Toggle
+            on={customFee}
+            onChange={value => {
+              setCustomFee(value);
+              if (!value) {
+                if (
+                  sendConfigs.feeConfig.feeCurrency &&
+                  !sendConfigs.feeConfig.fee
+                ) {
+                  sendConfigs.feeConfig.setFeeType('average');
+                }
+              }
+            }}
+          />
+          <Text
+            style={{
+              fontWeight: '700',
+              fontSize: 16,
+              lineHeight: 34,
+              paddingHorizontal: 8
+            }}
+          >
+            Custom Fee
+          </Text>
+        </View>
+
+        {customFee && chainStore.current.networkType !== 'evm' ? (
+          <TextInput
+            label="Fee"
+            placeholder="Type your Fee here"
+            keyboardType={'numeric'}
+            labelStyle={styles.sendlabelInput}
+            onChangeText={text => {
+              const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+                DecUtils.getPrecisionDec(6)
+              );
+
+              sendConfigs.feeConfig.setManualFee({
+                amount: fee.roundUp().toString(),
+                denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+              });
+            }}
+          />
+        ) : chainStore.current.networkType !== 'evm' ? (
+          <FeeButtons
+            label="Fee"
+            gasLabel="gas"
+            feeConfig={sendConfigs.feeConfig}
+            gasConfig={sendConfigs.gasConfig}
+          />
+        ) : null}
 
         {/* <TouchableOpacity
           style={{
@@ -168,7 +227,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   preferNoSetFee: true
                 },
                 {
-                  onBroadcasted: (txHash) => {
+                  onBroadcasted: txHash => {
                     analyticsStore.logEvent('Delegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
@@ -218,6 +277,13 @@ const styles = StyleSheet.create({
     ...typography.h6,
     color: colors['white'],
     fontWeight: '700'
+  },
+  sendlabelInput: {
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22,
+    color: colors['gray-900'],
+    marginBottom: spacing['8']
   },
   textNormal: {
     ...typography.h7,

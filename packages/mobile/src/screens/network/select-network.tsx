@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
 import { colors, typography } from '../../themes';
@@ -25,7 +25,7 @@ interface FormData {
   coingecko: string;
   url_block: string;
   networkType: string;
-  features: string;
+  features: Array<string>;
   symbol: string;
   feeLow: number;
   feeMedium: number;
@@ -66,27 +66,47 @@ const features = [
   'stargate',
   'ibc-transfer',
   'cosmwasm',
+  'secretwasm',
   'ibc-go',
   'isEvm',
   'no-legacy-stdTx'
 ];
 
-export const SelectFeatures = ({ onChange }) => {
+export const SelectFeatures = ({ onChange, networkType }) => {
   const [selected, setSelected] = useState([]);
+
+  useEffect(() => {
+    if (networkType === 'evm') {
+      setSelected(['ibc-go', 'stargate', 'isEvm']);
+    } else {
+      setSelected([
+        'stargate',
+        'ibc-go',
+        'ibc-transfer',
+        'cosmwasm',
+        'no-legacy-stdTx'
+      ]);
+    }
+  }, [networkType]);
 
   return (
     <View
       style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
-        maxHeight: 100
+        maxHeight: 150
       }}
     >
       {features.map(f => {
         return (
           <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <CheckBox
-              style={{ flex: 1, padding: 10 }}
+              disabled={
+                (networkType === 'cosmos' &&
+                  (f === 'isEvm' || f === 'secretwasm')) ||
+                (networkType === 'evm' && f === 'cosmwasm')
+              }
+              style={{ flex: 1, padding: 14 }}
               onClick={() => {
                 const tempArr = [...selected];
                 if (selected.includes(f)) {
@@ -123,6 +143,7 @@ export const SelectNetworkScreen = () => {
   const { isTimedOut, setTimer } = useSimpleTimer();
   const { chainStore } = useStore();
   const smartNavigation = useSmartNavigation();
+  const [networkType, setNetworkType] = useState('cosmos');
 
   const submit = handleSubmit(async () => {
     const {
@@ -134,7 +155,7 @@ export const SelectNetworkScreen = () => {
       bech32Config,
       url_block,
       symbol,
-      coingecko,
+      coingecko = '',
       coinMinimal,
       networkType,
       features,
@@ -166,7 +187,7 @@ export const SelectNetworkScreen = () => {
             .toLocaleLowerCase()}`,
           coinDecimals: 6,
           coinGeckoId: `${
-            coingecko.split(' ').join('-').toLocaleLowerCase() ??
+            coingecko?.split(' ').join('-').toLocaleLowerCase() ??
             code.split(' ').join('-').toLocaleLowerCase()
           }`,
           coinImageUrl:
@@ -211,12 +232,14 @@ export const SelectNetworkScreen = () => {
       alert('Network added successfully!');
       smartNavigation.goBack();
     } catch (err) {
-      alert('Oops! Something went wrong!');
+      // alert('Oops! Something went wrong!');
+      alert(err.message);
     }
   });
 
   const handleChangeNetwork = selected => {
     setValue('networkType', selected.value);
+    setNetworkType(selected.value);
   };
 
   const handleSelectFeatures = features => {
@@ -450,28 +473,22 @@ export const SelectNetworkScreen = () => {
         name="bech32Config"
         defaultValue=""
       />
-      <Controller
-        control={control}
-        render={({ field: {} }) => {
-          return (
-            <View style={{ paddingBottom: 20 }}>
-              <Text
-                style={{
-                  ...typography.h6,
-                  fontWeight: '600',
-                  color: colors['gray-900'],
-                  paddingBottom: 8
-                }}
-              >
-                {`Features`}
-              </Text>
-              <SelectFeatures onChange={handleSelectFeatures} />
-            </View>
-          );
-        }}
-        name="features"
-        defaultValue=""
-      />
+      <View style={{ paddingBottom: 20 }}>
+        <Text
+          style={{
+            ...typography.h6,
+            fontWeight: '600',
+            color: colors['gray-900'],
+            paddingBottom: 8
+          }}
+        >
+          {`Features`}
+        </Text>
+        <SelectFeatures
+          onChange={handleSelectFeatures}
+          networkType={networkType}
+        />
+      </View>
       <Text
         style={{
           ...typography.h3,
@@ -648,19 +665,18 @@ export const SelectNetworkScreen = () => {
         name="coinMinimal"
         defaultValue=""
       />
-
       <Controller
         control={control}
-        rules={{
-          required: 'Coingecko ID is required',
+        // rules={{
+        //   required: 'Coingecko ID is required',
 
-          validate: (value: string) => {
-            const values = value.toLowerCase();
-            if (!values) {
-              return 'Coingecko ID is required';
-            }
-          }
-        }}
+        //   validate: (value: string) => {
+        //     const values = value.toLowerCase();
+        //     if (!values) {
+        //       return 'Coingecko ID is required';
+        //     }
+        //   }
+        // }}
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
@@ -686,7 +702,6 @@ export const SelectNetworkScreen = () => {
         name="coingecko"
         defaultValue=""
       />
-
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value, ref } }) => {
@@ -714,7 +729,6 @@ export const SelectNetworkScreen = () => {
         name="symbol"
         defaultValue=""
       />
-
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value, ref } }) => {
