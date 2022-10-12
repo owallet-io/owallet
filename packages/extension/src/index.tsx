@@ -83,6 +83,8 @@ const ethereum = new Ethereum(
 //@ts-ignore
 window.owallet = owallet;
 //@ts-ignore
+window.eth_owallet = ethereum;
+//@ts-ignore
 window.ethereum = ethereum;
 
 // Make sure that icon file will be included in bundle
