@@ -354,7 +354,7 @@ const ValidatorItem: FunctionComponent<{
           ...styles.textInfo
         }}
       >
-        {apr?.toFixed(2).toString() + '%'}
+        {apr && apr > 0 ? apr.toFixed(2).toString() + '%' : ''}
       </Text>
     </RectButton>
   ) : null;

@@ -120,6 +120,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
 import { useRoute } from '@react-navigation/core';
 import { TransferNFTScreen } from './screens/transfer-nft';
+import { DashBoardScreen } from './screens/dashboard';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -559,6 +560,13 @@ export const OtherNavigation: FunctionComponent = () => {
         options={{
           header: () => <CustomHeader />
         }}
+        name="Dashboard"
+        component={DashBoardScreen}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
         name="Transactions.Detail"
         component={TransactionDetail}
       />
@@ -569,6 +577,7 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Camera"
         component={CameraScreen}
       />
+
       <Stack.Screen
         options={{
           title: 'Governance'
