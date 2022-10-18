@@ -22,7 +22,7 @@ import { Button } from 'reactstrap';
 
 import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
-
+import Web3 from 'web3';
 import {
   useFeeEthereumConfig,
   useGasEthereumConfig,
@@ -99,29 +99,50 @@ export const SendEvmPage: FunctionComponent<{
 
   useEffect(() => {
     // Get gas price
-    const getGasPrice = async () => {
-      try {
-        const response = await axios.post(chainStore.current.rest, {
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'eth_gasPrice',
-          params: []
-        });
-        setGasPrice(
-          new Big(parseInt(response.data.result, 16))
-            .div(new Big(10).pow(decimals))
-            .toFixed(decimals)
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getGasPrice();
-  }, []);
+    if (coinMinimalDenom) {
+      (async () => {
+        await getFee();
+      })();
+    }
+  }, [coinMinimalDenom]);
+
+  const getFee = async () => {
+    try {
+      const response = await axios.post(chainStore.current.rest, {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'eth_gasPrice',
+        params: []
+      });
+      setGasPrice(
+        new Big(parseInt(response.data.result, 16))
+          .div(new Big(10).pow(decimals))
+          .toFixed(decimals)
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    gasConfig.setGas(21000);
-    feeConfig.setFee(new Big(21000).mul(new Big(gasPrice)).toFixed(decimals));
+    (async () => {
+      try {
+        const web3 = new Web3(chainStore.current.rest);
+        const estimate = await web3.eth.estimateGas({
+          to: accountInfo?.evmosHexAddress,
+          from: query?.defaultDenom?.split(':')?.[1]
+        });
+        gasConfig.setGas(estimate ?? 21000);
+        feeConfig.setFee(
+          new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
+        );
+      } catch (error) {
+        gasConfig.setGas(21000);
+        feeConfig.setFee(
+          new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
+        );
+      }
+    })();
   }, [gasPrice]);
 
   useEffect(() => {
@@ -292,7 +313,21 @@ export const SendEvmPage: FunctionComponent<{
                       }
                     });
                   }
-                }
+                },
+                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+                  'erc20'
+                )
+                  ? {
+                      type: 'erc20',
+                      from: accountInfo.evmosHexAddress,
+                      contract_addr:
+                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                          ':'
+                        )[1],
+                      recipient: sendConfigs.recipientConfig.recipient,
+                      amount: sendConfigs.amountConfig.amount
+                    }
+                  : null
               );
               if (!isDetachedPage) {
                 history.replace('/');

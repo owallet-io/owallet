@@ -44,14 +44,17 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
       return `input-${Buffer.from(bytes).toString('hex')}`;
     });
 
-    useEffect(() => {
+     useEffect(() => {
       try {
         if (gasConfig.gasRaw !== 'NaN' && gasPrice != 'NaN') {
           feeConfig.setFee(
             new Big(parseInt(gasConfig.gasRaw)).mul(gasPrice).toFixed(decimals)
           );
+        } else {
+          feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
         }
       } catch (error) {
+        feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
         console.log(error);
       }
     }, [gasConfig.gasRaw, gasPrice]);
@@ -84,7 +87,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
                 textTransform: 'uppercase'
               }}
             >
-              {denom?.feeCurrency?.coinDenom || 'ORAI'}
+              {denom?.feeCurrency?.coinDenom ?? denom ?? 'ORAI'}
             </span>
           }
         />

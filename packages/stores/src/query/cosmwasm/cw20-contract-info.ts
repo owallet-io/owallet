@@ -21,7 +21,7 @@ export class ObservableQueryCw20ContactInfoInner extends ObservableCosmwasmContr
       return undefined;
     }
 
-    return this.response.data;
+    return this.response?.data?.token_info_response ?? this.response?.data;
   }
 }
 
