@@ -92,23 +92,23 @@ export const colors = {
   'green-500': '#4BB10C',
 
   // purple
+  'purple-10': '#F3F1F5',
   'purple-50': '#EAE9FF',
   'purple-100': '#E2DEEB',
   'purple-400': '#AE94DE',
   'purple-700': '#945EF8',
   'purple-900': '#8B1BFB',
-  "purple-h1": "#7E58EA",
+  'purple-h1': '#7E58EA',
 
   // yellow
   'yellow-10': '#FFF6E9',
 
   //splash-background
-  'splash-background': "#FBF8FF",
+  'splash-background': '#FBF8FF',
 
   //orange
   'orange-800': '#EF6363',
 
   //blue
-  'blue-300': '#8C93A7',
-  
-}
+  'blue-300': '#8C93A7'
+};
