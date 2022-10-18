@@ -60,6 +60,11 @@ export const API = {
     return API.get(url, config);
   },
 
+  getCoinInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
+    let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
+    return API.get(url, config);
+  },
+
   getNFTs: ({ address }, config: AxiosRequestConfig) => {
     let url = `assets?size=12&offset=0&filter=%7B%22accountAddress%22:%22${address}%22,%22nftStatuses%22:[2]%7D&sort=%7B%22updatedAt%22:%22DESC%22%7D`;
     return API.get(url, config);

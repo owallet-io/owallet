@@ -4,10 +4,12 @@ import { Card } from '../../../components/card';
 import { CText as Text } from '../../../components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { colors, spacing } from '../../../themes';
+import { useStore } from '../../../stores';
 
 export const InfoCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
+  const { chainStore } = useStore();
   return (
     <Card style={styles.card}>
       <View style={styles.headerWrapper}>
@@ -54,7 +56,7 @@ export const InfoCard: FunctionComponent<{
               lineHeight: 20
             }}
           >
-            ORAI
+            {chainStore.current.chainName}
           </Text>{' '}
           and more, please visit{' '}
           <Text
@@ -65,7 +67,7 @@ export const InfoCard: FunctionComponent<{
               lineHeight: 20
             }}
           >
-            info.oraidex.io
+            {'info.oraidex.io'}
           </Text>
         </Text>
       </View>

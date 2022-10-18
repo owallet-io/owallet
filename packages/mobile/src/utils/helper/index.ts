@@ -283,3 +283,7 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
+
+export function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

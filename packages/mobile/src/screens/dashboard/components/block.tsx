@@ -7,11 +7,31 @@ import { colors, spacing } from '../../../themes';
 import { useStore } from '../../../stores';
 import { ActivityIcon, ClockIcon } from '../../../components/icon';
 import FastImage from 'react-native-fast-image';
+import { API } from '../../../common/api';
+import { numberWithCommas } from '../../../utils/helper';
+import moment from 'moment';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
   const { chainStore } = useStore();
+
+  const [data, setData] = useState(null);
+
+  React.useEffect(() => {
+    API.getCoinInfo(
+      {
+        id: chainStore.current.stakeCurrency.coinGeckoId
+      },
+      { baseURL: 'https://api.coingecko.com/api/v3' }
+    )
+      .then(res => {
+        setData(res?.data?.[0]);
+      })
+      .catch(ex => {
+        console.log('exception querying coinGecko', ex);
+      });
+  }, [chainStore.current.chainId]);
 
   const renderBlockInfo = (title, value, sub, color, isBottom) => {
     return (
@@ -26,14 +46,6 @@ export const BlockCard: FunctionComponent<{
             : null
         ]}
       >
-        {/* <View
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 24,
-            backgroundColor: color
-          }}
-        /> */}
         <View
           style={{
             width: 48,
@@ -49,11 +61,14 @@ export const BlockCard: FunctionComponent<{
         <View style={{ paddingLeft: 33 }}>
           <View style={{ alignItems: 'center', flexDirection: 'row' }}>
             <ClockIcon size={18} color={colors['gray-700']} />
-            <Text style={styles.blockTitle}>{'  '}Last block height</Text>
+            <Text style={styles.blockTitle}>
+              {'  '}
+              {title}
+            </Text>
           </View>
 
-          <Text style={styles.blockValue}>8,010,033</Text>
-          <Text style={styles.blockSub}>13s ago</Text>
+          <Text style={styles.blockValue}>{value}</Text>
+          <Text style={styles.blockSub}>{sub}</Text>
         </View>
       </View>
     );
@@ -63,29 +78,40 @@ export const BlockCard: FunctionComponent<{
     <Card style={styles.card}>
       <View style={styles.headerWrapper}>
         <View style={[styles.blockWrapper, { paddingTop: 0 }]}>
-          <FastImage
+          <View
             style={{
-              width: 48,
-              height: 48,
-              borderRadius: 24
+              width: 56,
+              height: 56,
+              borderRadius: 8,
+              backgroundColor: colors['purple-100'],
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
-            resizeMode={FastImage.resizeMode.contain}
-            source={{
-              uri: chainStore.current.stakeCurrency.coinImageUrl
-            }}
-          />
+          >
+            <FastImage
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 24
+              }}
+              resizeMode={FastImage.resizeMode.contain}
+              source={{
+                uri: chainStore.current.stakeCurrency.coinImageUrl
+              }}
+            />
+          </View>
+
           <View style={{ paddingLeft: 33 }}>
             <View
               style={{
                 alignItems: 'center',
-                flexDirection: 'row',
-                justifyContent: 'center'
+                flexDirection: 'row'
               }}
             >
               <ClockIcon size={18} color={colors['gray-700']} />
-              <Text style={styles.blockTitle}>{'  '}Block time 6.08ms</Text>
+              <Text style={styles.blockTitle}>{'  '}Coin market info</Text>
             </View>
-            <Text style={styles.blockValue}>$113</Text>
+            <Text style={styles.blockValue}>${data?.current_price}</Text>
             <View
               style={{
                 paddingHorizontal: 12,
@@ -100,10 +126,17 @@ export const BlockCard: FunctionComponent<{
                 <Text
                   style={[
                     styles.blockSub,
-                    { lineHeight: 20, color: colors['danger-300'] }
+                    {
+                      lineHeight: 20,
+                      color:
+                        data?.market_cap_change_percentage_24h > 0
+                          ? colors['green-500']
+                          : colors['danger-300']
+                    }
                   ]}
                 >
-                  -7.59% (24h)
+                  {data?.market_cap_change_percentage_24h > 0 ? '+' : '-'}
+                  {data?.market_cap_change_percentage_24h}% (24h)
                 </Text>
               </Text>
             </View>
@@ -118,7 +151,7 @@ export const BlockCard: FunctionComponent<{
                 Market Cap
               </Text>
               <Text style={{ fontWeight: '700', lineHeight: 20 }}>
-                $4,727,867
+                ${numberWithCommas(data?.market_cap ?? 0)}
               </Text>
             </View>
             <View
@@ -128,14 +161,36 @@ export const BlockCard: FunctionComponent<{
                 alignItems: 'center'
               }}
             >
-              <Text style={[styles.blockSub, { lineHeight: 20 }]}>24h Vol</Text>
-              <Text style={{ fontWeight: '700', lineHeight: 20 }}>$4,727</Text>
+              <Text style={[styles.blockSub, { lineHeight: 20 }]}>
+                Trading Vol
+              </Text>
+              <Text style={{ fontWeight: '700', lineHeight: 20 }}>
+                ${numberWithCommas(data?.total_volume ?? 0)}
+              </Text>
             </View>
           </View>
         </View>
-        {renderBlockInfo(1, 1, 1, colors['profile-green'], false)}
-        {renderBlockInfo(1, 1, 1, colors['purple-400'], false)}
-        {renderBlockInfo(1, 1, 1, colors['blue-300'], true)}
+        {renderBlockInfo(
+          '24h Low / 24h High',
+          `$${data?.low_24h ?? 0} / $${data?.high_24h ?? 0}`,
+          moment(data?.last_updated).fromNow(),
+          colors['profile-green'],
+          false
+        )}
+        {renderBlockInfo(
+          'Total Volume',
+          '$' + numberWithCommas(data?.total_volume ?? 0),
+          moment(data?.last_updated).fromNow(),
+          colors['purple-400'],
+          false
+        )}
+        {renderBlockInfo(
+          'Market Cap Rank',
+          `#${data?.market_cap_rank ?? 0}`,
+          moment(data?.last_updated).fromNow(),
+          colors['blue-300'],
+          true
+        )}
       </View>
     </Card>
   );
