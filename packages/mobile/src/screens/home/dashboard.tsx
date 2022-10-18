@@ -91,8 +91,8 @@ export const DashboardCard: FunctionComponent<{
     datasets: [
       {
         data: [0],
-        color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`, // optional
-        strokeWidth: 2 // optional
+        color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
+        strokeWidth: 2
       }
     ],
     suffix: ''
@@ -103,8 +103,8 @@ export const DashboardCard: FunctionComponent<{
     datasets: [
       {
         data: [0],
-        color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`, // optional
-        strokeWidth: 2 // optional
+        color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
+        strokeWidth: 2
       }
     ],
     suffix: ''
@@ -118,7 +118,6 @@ export const DashboardCard: FunctionComponent<{
         id: chainStore.current.stakeCurrency.coinGeckoId
       },
       { baseURL: 'https://api.coingecko.com/api/v3' }
-      //   { baseURL: 'https://api.scan.orai.io' }
     )
       .then(res => {
         if (typeof res.data === 'object') {
