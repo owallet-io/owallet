@@ -7,4 +7,10 @@ export type Cw20ContractTokenInfo = {
   name: string;
   symbol: string;
   total_supply: string;
+  token_info_response?: {
+    decimals: number;
+    name: string;
+    symbol: string;
+    total_supply: string;
+  };
 };
