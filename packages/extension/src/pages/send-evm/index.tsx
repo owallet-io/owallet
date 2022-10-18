@@ -126,6 +126,7 @@ export const SendEvmPage: FunctionComponent<{
   };
 
   useEffect(() => {
+<<<<<<< HEAD
     console.log("here");
     (async () => {
       try {
@@ -146,19 +147,35 @@ export const SendEvmPage: FunctionComponent<{
         // });
         // console.log(query?.defaultDenom,'zzzzzzzzz')
         // console.log(estimate,'estimateeee')
+=======
+    (async () => {
+      try {
+        const web3 = new Web3(chainStore.current.rest);
+        const estimate = await web3.eth.estimateGas({
+          to: accountInfo?.evmosHexAddress,
+          from: query?.defaultDenom?.split(':')?.[1]
+        });
+>>>>>>> 191745a8 (fixbug func sp kawaii)
         gasConfig.setGas(estimate ?? 21000);
         feeConfig.setFee(
           new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       } catch (error) {
+<<<<<<< HEAD
         console.log(error,'zzz')
+=======
+>>>>>>> 191745a8 (fixbug func sp kawaii)
         gasConfig.setGas(21000);
         feeConfig.setFee(
           new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       }
     })();
+<<<<<<< HEAD
   }, [gasPrice, sendConfigs.amountConfig.amount]);
+=======
+  }, [gasPrice]);
+>>>>>>> 191745a8 (fixbug func sp kawaii)
 
   useEffect(() => {
     if (query.defaultDenom) {
