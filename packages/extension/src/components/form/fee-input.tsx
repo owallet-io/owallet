@@ -44,7 +44,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
       return `input-${Buffer.from(bytes).toString('hex')}`;
     });
 
-    useEffect(() => {
+     useEffect(() => {
       try {
         if (gasConfig.gasRaw !== 'NaN' && gasPrice != 'NaN') {
           feeConfig.setFee(
