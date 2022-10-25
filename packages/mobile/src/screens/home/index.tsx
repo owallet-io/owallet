@@ -24,6 +24,7 @@ import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
+import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -146,8 +147,12 @@ export const HomeScreen: FunctionComponent = observer(props => {
       ) : (
         <AccountCardEVM containerStyle={styles.containerStyle} />
       )}
+
       <DashboardCard />
-      <TokensCard containerStyle={styles.containerStyle} />
+      <TokensCard />
+      {chainStore.current.networkType === 'cosmos' ? (
+        <UndelegationsCard />
+      ) : null}
       {chainStore.current.networkType === 'cosmos' ? (
         <EarningCard containerStyle={styles.containerEarnStyle} />
       ) : null}

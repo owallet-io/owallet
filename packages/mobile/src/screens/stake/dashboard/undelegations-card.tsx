@@ -9,6 +9,7 @@ import { useIntl } from 'react-intl';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { ProgressBar } from '../../../components/progress-bar';
 import { BondStatus } from '@owallet/stores';
+import { colors, spacing } from '../../../themes';
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -39,10 +40,18 @@ export const UndelegationsCard: FunctionComponent<{
   const intl = useIntl();
 
   return (
-    <Card style={containerStyle}>
+    <Card
+      style={{
+        padding: spacing['28'],
+        paddingBottom: spacing['14'],
+        marginTop: spacing['32'],
+        borderRadius: spacing['24'],
+        backgroundColor: colors['white']
+      }}
+    >
       <CardBody
         style={{
-          backgroundColor: 'white',
+          backgroundColor: 'white'
         }}
       >
         <Text style={style.flatten(['h4', 'color-text-black-very-high'])}>
@@ -52,7 +61,7 @@ export const UndelegationsCard: FunctionComponent<{
           const validator = bondedValidators.validators
             .concat(unbondingValidators.validators)
             .concat(unbondedValidators.validators)
-            .find((val) => val.operator_address === unbonding.validatorAddress);
+            .find(val => val.operator_address === unbonding.validatorAddress);
           const thumbnail =
             bondedValidators.getValidatorThumbnail(
               unbonding.validatorAddress
