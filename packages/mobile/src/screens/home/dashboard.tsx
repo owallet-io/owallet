@@ -85,6 +85,7 @@ export const DashboardCard: FunctionComponent<{
 }> = observer(({ canView = true }) => {
   const [active, setActive] = useState('price');
   const [chartSuffix, setChartSuffix] = useState('');
+  const [isNetworkError, setNetworkError] = useState(false);
   const { chainStore } = useStore();
   const [data, setData] = useState({
     labels: ['12:00'],
@@ -121,11 +122,13 @@ export const DashboardCard: FunctionComponent<{
     )
       .then(res => {
         if (typeof res.data === 'object') {
+          setNetworkError(false);
           setData(formatData(transformData(res?.data?.prices)));
           setDataVolumes(formatData(transformData(res?.data?.total_volumes)));
         }
       })
       .catch(ex => {
+        setNetworkError(true);
         console.log('exception querying coinGecko', ex);
       });
   }, [chainStore.current.chainId]);
@@ -154,6 +157,16 @@ export const DashboardCard: FunctionComponent<{
         backgroundColor: colors['white']
       }}
     >
+      <Text
+        style={{
+          alignSelf: 'center',
+          paddingBottom: spacing['16'],
+          fontSize: 17,
+          fontWeight: '500'
+        }}
+      >
+        {chainStore.current.chainName}
+      </Text>
       <View style={styles.headerWrapper}>
         <View style={styles.headerLeftWrapper}>
           <TouchableOpacity
@@ -198,7 +211,7 @@ export const DashboardCard: FunctionComponent<{
           </TouchableOpacity>
         ) : null}
       </View>
-      {active === 'price' ? (
+      {!isNetworkError && active === 'price' ? (
         <LineChart
           data={data}
           withDots={false}
@@ -210,16 +223,16 @@ export const DashboardCard: FunctionComponent<{
           chartConfig={chartConfig}
           bezier
         />
-      ) : (
+      ) : !isNetworkError ? (
         <BarChart
           data={dataVolumes}
-          width={metrics.screenWidth - 56}
+          width={metrics.screenWidth - 72}
           height={220}
           yAxisLabel="$"
           yAxisSuffix={chartSuffix}
           chartConfig={chartConfig}
         />
-      )}
+      ) : null}
     </Card>
   );
 });
