@@ -3,18 +3,21 @@ import { observer } from 'mobx-react-lite';
 import { Card } from '../../../components/card';
 import { CText as Text } from '../../../components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../themes';
+import { spacing } from '../../../themes';
 import { useStore } from '../../../stores';
 import { ActivityIcon, ClockIcon } from '../../../components/icon';
 import FastImage from 'react-native-fast-image';
 import { API } from '../../../common/api';
 import { numberWithCommas } from '../../../utils/helper';
 import moment from 'moment';
+import { useTheme } from '@react-navigation/native';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
   const { chainStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
 
   const [data, setData] = useState(null);
 
@@ -196,40 +199,41 @@ export const BlockCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  headerWrapper: {
-    alignItems: 'center',
-    paddingBottom: 40
-  },
-  card: {
-    padding: spacing['28'],
-    paddingBottom: spacing['14'],
-    marginBottom: spacing['32'],
-    borderRadius: spacing['24'],
-    backgroundColor: colors['white']
-  },
-  blockWrapper: {
-    flexDirection: 'row',
-    borderBottomColor: colors['gray-100'],
-    borderBottomWidth: 1,
-    width: '100%',
-    padding: 24,
-    alignItems: 'center'
-  },
-  blockTitle: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: colors['gray-800']
-  },
-  blockValue: {
-    fontSize: 34,
-    fontWeight: '500',
-    lineHeight: 50,
-    color: colors['gray-900']
-  },
-  blockSub: {
-    fontSize: 12,
-    lineHeight: 16,
-    color: colors['gray-600']
-  }
-});
+const styling = (colors: object) =>
+  StyleSheet.create({
+    headerWrapper: {
+      alignItems: 'center',
+      paddingBottom: 40
+    },
+    card: {
+      padding: spacing['28'],
+      paddingBottom: spacing['14'],
+      marginBottom: spacing['32'],
+      borderRadius: spacing['24'],
+      backgroundColor: colors['white']
+    },
+    blockWrapper: {
+      flexDirection: 'row',
+      borderBottomColor: colors['gray-100'],
+      borderBottomWidth: 1,
+      width: '100%',
+      padding: 24,
+      alignItems: 'center'
+    },
+    blockTitle: {
+      fontSize: 14,
+      lineHeight: 20,
+      color: colors['gray-800']
+    },
+    blockValue: {
+      fontSize: 34,
+      fontWeight: '500',
+      lineHeight: 50,
+      color: colors['gray-900']
+    },
+    blockSub: {
+      fontSize: 12,
+      lineHeight: 16,
+      color: colors['gray-600']
+    }
+  });

@@ -44,6 +44,7 @@ export const UndelegationsCard: FunctionComponent<{
       style={{
         padding: spacing['28'],
         paddingBottom: spacing['14'],
+        paddingTop: spacing['14'],
         marginTop: spacing['32'],
         borderRadius: spacing['24'],
         backgroundColor: colors['white']
@@ -54,9 +55,26 @@ export const UndelegationsCard: FunctionComponent<{
           backgroundColor: 'white'
         }}
       >
-        <Text style={style.flatten(['h4', 'color-text-black-very-high'])}>
+        <Text
+          style={style.flatten([
+            'h6',
+            'color-text-black-very-high',
+            'self-center'
+          ])}
+        >
           My Unstaking
         </Text>
+        {unbondings.length > 0 ? null : (
+          <Text
+            style={style.flatten([
+              'body2',
+              'color-text-black-low',
+              'padding-top-18'
+            ])}
+          >
+            {"You don't have any unboniding assets yet"}
+          </Text>
+        )}
         {unbondings.map((unbonding, unbondingIndex) => {
           const validator = bondedValidators.validators
             .concat(unbondingValidators.validators)
@@ -80,22 +98,30 @@ export const UndelegationsCard: FunctionComponent<{
               <View
                 key={unbonding.validatorAddress}
                 style={style.flatten(
-                  ['padding-y-28'],
+                  ['padding-y-16'],
                   [isLastUnbondingIndex && 'padding-bottom-8']
                 )}
               >
                 <View style={style.flatten(['flex-row', 'items-center'])}>
-                  <ValidatorThumbnail size={44} url={thumbnail} />
+                  <ValidatorThumbnail
+                    size={32}
+                    url={thumbnail}
+                    style={{
+                      backgroundColor: colors['purple-100'],
+                      borderRadius: 32
+                    }}
+                  />
                   <Text
                     style={style.flatten([
                       'margin-left-16',
-                      'h6',
+                      'h7',
                       'color-text-black-medium'
                     ])}
                   >
                     {validator?.description.moniker ?? '...'}
                   </Text>
                 </View>
+
                 {entries.map((entry, i) => {
                   const remainingText = (() => {
                     const current = new Date().getTime();
