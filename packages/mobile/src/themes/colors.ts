@@ -110,7 +110,9 @@ export const colors = {
   'orange-800': '#EF6363',
 
   //blue
-  'blue-300': '#8C93A7'
+  'blue-300': '#8C93A7',
+  //background
+  background: '#111'
 };
 
 export const lightColors = {
@@ -225,5 +227,8 @@ export const lightColors = {
   'orange-800': '#EF6363',
 
   //blue
-  'blue-300': '#8C93A7'
+  'blue-300': '#8C93A7',
+
+  //background
+  background: '#fff'
 };
