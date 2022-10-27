@@ -9,7 +9,7 @@ const data = [
   {
     label: 'OraiDEX is now ready for Ledger users with full options',
     content:
-      'Claim ORAIX using Ledger x #Keplr extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
+      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
     time: 'Wed 28, 2022',
     img: ''
   }

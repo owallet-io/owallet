@@ -19,12 +19,16 @@ import { TextInput } from '../../components/input';
 import delay from 'delay';
 import { useStore } from '../../stores';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { StackActions, useNavigation } from '@react-navigation/native';
+import {
+  StackActions,
+  useNavigation,
+  useTheme
+} from '@react-navigation/native';
 import { KeyRingStatus } from '@owallet/background';
 import { KeychainStore } from '../../stores/keychain';
 import { AccountStore } from '@owallet/stores';
 import { autorun } from 'mobx';
-import { colors, spacing } from '../../themes';
+import { spacing } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
 import { ProgressBar } from '../../components/progress-bar';
 import CodePush from 'react-native-code-push';
@@ -107,7 +111,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     appInitStore
   } = useStore();
   const navigation = useNavigation();
-
+  const { colors } = useTheme();
   const [downloading, setDownloading] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -268,7 +272,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         width: '100%',
         height: '100%',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: colors['splash-background']
       }}
     >
       <View

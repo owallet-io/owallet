@@ -14,7 +14,11 @@ import {
 } from 'react-native';
 import { CText as Text } from './components/text';
 import { KeyRingStatus } from '@owallet/background';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigation,
+  useTheme
+} from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { useStore } from './stores';
 import { observer } from 'mobx-react-lite';
@@ -858,6 +862,8 @@ export const MainTabNavigation: FunctionComponent = () => {
   const navigation = useNavigation();
   const { chainStore } = useStore();
 
+  const { colors } = useTheme();
+
   const focusedScreen = useFocusedScreen();
 
   useEffect(() => {
@@ -995,7 +1001,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         inactiveTintColor: style.get('color-text-black-very-very-low').color,
         style: {
           borderTopWidth: 0.5,
-          borderTopColor: style.get('border-color-border-white').borderColor,
+          borderTopColor: colors['primary'],
           shadowColor: style.get('color-transparent').color,
           elevation: 0,
           paddingLeft: 10,

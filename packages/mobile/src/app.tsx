@@ -3,7 +3,7 @@ import { StoreProvider, useStore } from './stores';
 import { StyleProvider } from './styles';
 import { AppNavigation } from './navigation';
 import { ModalsProvider } from './modals/base';
-import { Platform, StatusBar, LogBox, Text } from 'react-native';
+import { Platform, StatusBar, LogBox, Text, View } from 'react-native';
 import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
 import { InteractionModalsProivder } from './providers/interaction-modals-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

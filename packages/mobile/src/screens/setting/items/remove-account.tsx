@@ -4,14 +4,14 @@ import { SettingItem } from '../components';
 import { useStyle } from '../../../styles';
 import { PasswordInputModal } from '../../../modals/password-input/modal';
 import { useStore } from '../../../stores';
-import { useNavigation } from '@react-navigation/native';
-import { colors } from '../../../themes';
+import { useNavigation, useTheme } from '@react-navigation/native';
 
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
   const { keychainStore, keyRingStore, analyticsStore } = useStore();
 
+  const { colors } = useTheme();
   const style = useStyle();
 
   const navigation = useNavigation();
@@ -38,9 +38,9 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         paragraph="Please make sure you have saved the correct mnemonic before logging out"
         textButtonRight="Remove"
         buttonRightStyle={{ backgroundColor: colors['orange-800'] }}
-        onEnterPassword={async (password) => {
+        onEnterPassword={async password => {
           const index = keyRingStore.multiKeyStoreInfo.findIndex(
-            (keyStore) => keyStore.selected
+            keyStore => keyStore.selected
           );
 
           if (index >= 0) {

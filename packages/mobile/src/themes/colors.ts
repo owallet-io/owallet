@@ -1,5 +1,5 @@
 export const colors = {
-  primary: '#4762E7',
+  primary: '#1A1D25',
   'primary-10': '#F1F3FC',
   'primary-50': '#E2E8FF',
   'primary-100': '#B3BEF7',
@@ -11,6 +11,7 @@ export const colors = {
   'primary-700': '#0320B4',
   'primary-800': '#001A9A',
   'primary-900': '#00157D',
+  'primary-text': '#E2DEEB',
   secondary: '#FF63B4',
   'secondary-50': '#FCD1F4',
   'secondary-100': '#F3B1E1',
@@ -54,7 +55,7 @@ export const colors = {
   'text-black-very-very-low': '#C6C6CD',
   'text-black-very-very-very-low': '#DCDCE3',
   'text-primary': '#4334F1',
-  'border-gray': '#C6C6CD',
+  'border-gray': '#111',
   'border-white': '#F5F5F5',
   'border-pink': '#D7C4F5',
   white: '#fff',
@@ -104,7 +105,7 @@ export const colors = {
   'yellow-10': '#FFF6E9',
 
   //splash-background
-  'splash-background': '#FBF8FF',
+  'splash-background': '#1E1E1E',
 
   //orange
   'orange-800': '#EF6363',
@@ -112,11 +113,11 @@ export const colors = {
   //blue
   'blue-300': '#8C93A7',
   //background
-  background: '#111'
+  background: '#1E1E1E'
 };
 
 export const lightColors = {
-  primary: '#4762E7',
+  primary: '#fff',
   'primary-10': '#F1F3FC',
   'primary-50': '#E2E8FF',
   'primary-100': '#B3BEF7',
@@ -128,6 +129,7 @@ export const lightColors = {
   'primary-700': '#0320B4',
   'primary-800': '#001A9A',
   'primary-900': '#00157D',
+  'primary-text': '#1C1C1E',
   secondary: '#FF63B4',
   'secondary-50': '#FCD1F4',
   'secondary-100': '#F3B1E1',
@@ -230,5 +232,5 @@ export const lightColors = {
   'blue-300': '#8C93A7',
 
   //background
-  background: '#fff'
+  background: '#F5F5F5'
 };

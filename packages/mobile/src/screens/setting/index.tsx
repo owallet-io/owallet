@@ -60,7 +60,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <StatusBar
         animated={true}
         backgroundColor="white"
@@ -102,7 +102,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
               <Text
                 style={{
                   ...typography['text-caption2'],
-                  color: colors['text-black-very-low']
+                  color: colors['primary-text']
                 }}
               >
                 WALLET
@@ -110,16 +110,16 @@ export const SettingScreen: FunctionComponent = observer(() => {
               <Text
                 style={{
                   ...typography['h6'],
-                  color: colors['gray-900'],
+                  color: colors['primary-text'],
                   fontWeight: 'bold'
                 }}
               >
                 {selected
-                  ? selected.meta?.name || 'Keplr Account'
+                  ? selected.meta?.name || 'OWallet Account'
                   : 'No Account'}
               </Text>
             </View>
-            <DownArrowIcon color={colors['black']} height={12} />
+            <DownArrowIcon color={colors['primary-text']} height={12} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={_onPressCountryModal}
@@ -134,7 +134,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
               <Text
                 style={{
                   ...typography['subtitle2'],
-                  color: colors['text-black-very-low']
+                  color: colors['gray-300']
                 }}
               >
                 CURRENCY
@@ -150,7 +150,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
                 <Text
                   style={{
                     ...typography['h6'],
-                    color: colors['gray-900'],
+                    color: colors['gray-300'],
                     marginHorizontal: spacing['8']
                   }}
                 >
@@ -158,7 +158,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
                 </Text>
               </View>
             </View>
-            <DownArrowIcon color={colors['black']} height={12} />
+            <DownArrowIcon color={colors['primary-text']} height={12} />
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -167,7 +167,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
       {/* <SettingSectionTitle title="General" /> */}
       <View
         style={{
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           borderBottomLeftRadius: Platform.OS === 'ios' ? 32 : 0,
           borderBottomRightRadius: Platform.OS === 'ios' ? 32 : 0
         }}
@@ -206,7 +206,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
 const styling = (colors: object) =>
   StyleSheet.create({
     shadowBox: {
-      shadowColor: '#ccc',
+      shadowColor: colors['splash-background'],
       shadowOffset: {
         width: 0,
         height: 3
@@ -232,7 +232,7 @@ const styling = (colors: object) =>
     },
     containerInfo: {
       position: 'absolute',
-      backgroundColor: colors['background'],
+      backgroundColor: colors['primary'],
       height: 160,
       margin: 24,
       marginTop: 150,
