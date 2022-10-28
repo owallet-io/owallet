@@ -1,22 +1,20 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
-import { SettingSectionTitle } from '../../components';
 import { observer } from 'mobx-react-lite';
 import DeviceInfo from 'react-native-device-info';
 import codePush from 'react-native-code-push';
-import {
-  RectButton,
-  TouchableWithoutFeedback
-} from 'react-native-gesture-handler';
-import { colors, spacing, typography } from '../../../../themes';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { spacing, typography } from '../../../../themes';
 import { View, Text } from 'react-native';
 import { useStyle } from '../../../../styles';
 import { Divider } from '@rneui/base';
 import { useStore } from '../../../../stores';
 import moment from 'moment';
+import { useTheme } from '@react-navigation/native';
 
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
+  const { colors } = useTheme();
   const [buildNumber] = useState(() => DeviceInfo.getBuildNumber());
   const { appInitStore } = useStore();
   const date = moment(appInitStore.getInitApp.date_updated).format(
@@ -82,7 +80,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
   }
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View
         style={{
           marginTop: spacing['32'],
@@ -91,7 +89,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
       />
       <TouchableWithoutFeedback
         style={{
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           borderRadius: spacing['24'],
           marginHorizontal: spacing['20']
         }}
@@ -133,7 +131,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
       />
       <TouchableWithoutFeedback
         style={{
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           borderRadius: spacing['24'],
           marginHorizontal: spacing['20']
         }}
@@ -161,7 +159,7 @@ const SettingItem: FunctionComponent<{
   divider?: boolean;
 }> = ({ label, paragraph, divider }) => {
   const style = useStyle();
-
+  const { colors } = useTheme();
   const renderChildren = () => {
     return (
       <React.Fragment>
@@ -183,7 +181,7 @@ const SettingItem: FunctionComponent<{
             <Text
               style={{
                 ...typography.h6,
-                color: colors['text-black-medium'],
+                color: colors['primary-text'],
                 fontWeight: '600',
                 textAlign: 'left'
               }}
@@ -194,7 +192,7 @@ const SettingItem: FunctionComponent<{
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['text-black-very-low'],
+                  color: colors['primary-text'],
                   textAlign: 'right'
                 }}
               >
@@ -206,7 +204,7 @@ const SettingItem: FunctionComponent<{
             <Divider
               orientation="vertical"
               width={1}
-              color={colors['gray-500']}
+              color={colors['primary-text']}
               style={{
                 marginTop: spacing['24']
               }}

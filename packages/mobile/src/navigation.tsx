@@ -155,7 +155,7 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
-
+  const { colors } = useTheme();
   return (
     <View
       style={{
@@ -190,9 +190,9 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   );
 });
 
-const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
+const HomeScreenHeaderTitle: FunctionComponent = observer(({}) => {
   const { chainStore, modalStore } = useStore();
-
+  const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
   const deterministicNumber = useCallback(chainInfo => {
     const bytes = Hash.sha256(
@@ -245,7 +245,7 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
             <Text
               style={{
                 ...typography['h5'],
-                ...colors['color-text-black-low'],
+                color: colors['primary-text'],
                 marginLeft: spacing['8']
               }}
             >
@@ -262,6 +262,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
   const { top } = useSafeAreaInsets();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
+  const { colors } = useTheme();
   const route = useRoute();
 
   const onPressBack = () => {
@@ -280,7 +281,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
     <React.Fragment>
       <View
         style={{
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-around',
@@ -294,7 +295,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
         ) : (
           <TouchableWithoutFeedback onPress={onPressBack}>
             <View>
-              <HeaderBackButtonIcon />
+              <HeaderBackButtonIcon color={colors['primary-text']} />
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -303,7 +304,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
           <HomeScreenHeaderTitle />
         </View>
         <View>
-          <HomeScreenHeaderRight />
+          <HomeScreenHeaderRight color={colors['primary-text']} />
         </View>
       </View>
     </React.Fragment>
@@ -660,13 +661,25 @@ export const SettingStackScreen: FunctionComponent = () => {
 
   const navigation = useNavigation();
 
+  const { colors } = useTheme();
+
   const { analyticsStore } = useStore();
 
   return (
     <Stack.Navigator
       screenOptions={{
         ...PlainHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(['h5', 'color-text-black-high'])
+        headerTitleStyle: {
+          fontSize: 18,
+          lineHeight: 24,
+          letterSpacing: 0.3,
+          color: colors['primary-text']
+        },
+        headerStyle: {
+          backgroundColor: colors['primary'],
+          shadowColor: 'transparent', // this covers iOS
+          elevation: 0 // this covers Android
+        }
       }}
       headerMode="screen"
     >

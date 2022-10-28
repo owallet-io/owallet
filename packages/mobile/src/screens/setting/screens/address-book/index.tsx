@@ -19,7 +19,7 @@ import { AsyncKVStore } from '../../../../common';
 import { useStore } from '../../../../stores';
 import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
 import { Bech32Address } from '@owallet/cosmos';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { RectButton } from '../../../../components/rect-button';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {
@@ -44,25 +44,26 @@ const addressBookItemComponent = {
   inSetting: View
 };
 
-const styles = StyleSheet.create({
-  addressBookRoot: {
-    padding: spacing['22'],
-    backgroundColor: colors['white'],
-    marginTop: spacing['16'],
-    borderRadius: spacing['24']
-  },
-  addressBookItem: {
-    marginTop: spacing['16'],
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    borderRadius: spacing['8']
-  },
-  addressBookAdd: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    addressBookRoot: {
+      padding: spacing['22'],
+      backgroundColor: colors['primary'],
+      marginTop: spacing['16'],
+      borderRadius: spacing['24']
+    },
+    addressBookItem: {
+      marginTop: spacing['16'],
+      backgroundColor: colors['gray-10'],
+      paddingVertical: spacing['8'],
+      paddingHorizontal: spacing['16'],
+      borderRadius: spacing['8']
+    },
+    addressBookAdd: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    }
+  });
 
 const debounce = (fn, delay) => {
   let timerId;
@@ -77,7 +78,8 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const [contractList, setContractList] = useState<any[]>([]);
   const { chainStore } = useStore();
   const { bottom } = useSafeAreaInsets();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const confirmModal = useConfirmModal();
 
   const route = useRoute<
@@ -145,12 +147,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
-  const onNameSearch = (txt) => {
+  const onNameSearch = txt => {
     const searchWord = txt ?? nameSearch;
     if (searchWord) {
       const addressList = addressBookConfig.addressBookDatas;
       if (addressList.length > 0) {
-        const newAdressList = addressList.filter((address) =>
+        const newAdressList = addressList.filter(address =>
           address.name.toLowerCase().includes(searchWord.toLowerCase())
         );
         return setContractList(newAdressList);
@@ -169,9 +171,15 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
       : addressBookConfig.addressBookDatas;
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ alignItems: 'center', marginTop: spacing['16'] }}>
-        <Text style={{ ...typography.h3, fontWeight: '700' }}>
+        <Text
+          style={{
+            ...typography.h3,
+            fontWeight: '700',
+            color: colors['primary-text']
+          }}
+        >
           Address book
         </Text>
       </View>
@@ -196,7 +204,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
               borderBottomRightRadius: spacing['8']
             }}
             value={nameSearch}
-            onChangeText={(text) => {
+            onChangeText={text => {
               setNameSearch(text);
               debouncedHandler(text);
             }}
