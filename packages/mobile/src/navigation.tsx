@@ -888,40 +888,69 @@ export const MainTabNavigation: FunctionComponent = () => {
     // }
   }, [focusedScreen.name, navigation]);
 
-  const checkActiveTabBottom = (color: string) => {
-    return color == '#C6C6CD';
+  const checkActiveTabBottom = (name: string) => {
+    return name === focusedScreen.name;
   };
 
-  const RenderTabsBarIcon = ({ color, name }) => {
-    let checkColor = checkActiveTabBottom(color);
+  const RenderTabsBarIcon = ({ name }) => {
+    let choosen = checkActiveTabBottom(name);
+
+    if (name === 'Settings') {
+      choosen = checkActiveTabBottom('Setting');
+    }
     let icon;
     let nameRoute = name;
     switch (name) {
       case 'Main':
-        icon = checkColor ? <HomeOutlineIcon /> : <HomeFillIcon />;
+        icon = choosen ? (
+          <HomeFillIcon color={colors['purple-700']} />
+        ) : (
+          <HomeFillIcon color={colors['icon-text']} />
+        );
         break;
       case 'Home':
-        icon = checkColor ? <HomeOutlineIcon /> : <HomeFillIcon />;
+        icon = choosen ? (
+          <HomeFillIcon color={colors['purple-700']} />
+        ) : (
+          <HomeFillIcon color={colors['icon-text']} />
+        );
         break;
       case 'Browser':
-        icon = checkColor ? <BrowserOutLineIcon /> : <BrowserFillIcon />;
+        icon = choosen ? (
+          <BrowserOutLineIcon color={colors['purple-700']} />
+        ) : (
+          <BrowserFillIcon color={colors['icon-text']} />
+        );
         break;
       case 'Invest':
-        icon = checkColor ? <InvestOutlineIcon /> : <InvestFillIcon />;
+        icon = choosen ? (
+          <InvestFillIcon color={colors['purple-700']} />
+        ) : (
+          <InvestFillIcon color={colors['icon-text']} />
+        );
         break;
       case 'Settings':
-        icon = checkColor ? <SettingOutLineIcon /> : <SettingFillIcon />;
+        icon = choosen ? (
+          <SettingFillIcon color={colors['purple-700']} />
+        ) : (
+          <SettingFillIcon color={colors['icon-text']} />
+        );
         break;
       default:
-        icon = checkColor ? <SettingOutLineIcon /> : <SettingFillIcon />;
+        icon = choosen ? (
+          <SettingFillIcon color={colors['purple-700']} />
+        ) : (
+          <SettingFillIcon color={colors['icon-text']} />
+        );
         break;
     }
+
     return (
       <View
         style={{
           display: 'flex',
           alignItems: 'center',
-          paddingTop: !checkColor ? 30 : 12
+          paddingTop: choosen ? 30 : 12
         }}
       >
         {icon}
@@ -930,14 +959,14 @@ export const MainTabNavigation: FunctionComponent = () => {
             style={{
               fontSize: 12,
               lineHeight: 16,
-              color: '#5F5E77'
+              color: choosen ? colors['purple-700'] : colors['icon-text']
             }}
           >
             {nameRoute}
           </Text>
         )}
 
-        {!checkColor && (
+        {choosen && (
           <View style={{ paddingTop: 10 }}>
             <DotsIcon />
           </View>
@@ -961,7 +990,7 @@ export const MainTabNavigation: FunctionComponent = () => {
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    paddingTop: !checkActiveTabBottom(color) ? 30 : 8
+                    paddingTop: checkActiveTabBottom(route.name) ? 30 : 8
                   }}
                 >
                   <Image
@@ -973,7 +1002,7 @@ export const MainTabNavigation: FunctionComponent = () => {
                     resizeMode="contain"
                     fadeDuration={0}
                   />
-                  {!checkActiveTabBottom(color) && (
+                  {checkActiveTabBottom(route.name) && (
                     <View style={{ paddingTop: 14 }}>
                       <DotsIcon />
                     </View>

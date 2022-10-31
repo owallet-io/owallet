@@ -4,23 +4,14 @@ import { Card } from '../../components/card';
 import { CText as Text } from '../../components/text';
 import { TouchableOpacity, View, ViewStyle, StyleSheet } from 'react-native';
 import { BarChart, LineChart } from 'react-native-chart-kit';
-import { colors, metrics, spacing } from '../../themes';
+import { metrics, spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { API } from '../../common/api';
 import moment from 'moment';
 import { nFormatter } from '../../utils/helper';
+import { useTheme } from '@react-navigation/native';
 
-const chartConfig = {
-  backgroundColor: '#fff',
-  backgroundGradientFrom: '#fff',
-  backgroundGradientTo: '#fff',
-  color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
-  labelColor: (opacity = 1) => `rgba(142, 142, 147, ${opacity})`,
-  strokeWidth: 3,
-  barPercentage: 0.5,
-  useShadowColorFromDataset: false
-};
 const TWO_HOURS_IN_MINUTES = 24 * 60;
 const DATA_COUNT_DENOM = 4;
 const transformData = data => {
@@ -83,6 +74,19 @@ export const DashboardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   canView?: boolean;
 }> = observer(({ canView = true }) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  const chartConfig = {
+    backgroundColor: colors['primary'],
+    backgroundGradientFrom: colors['primary'],
+    backgroundGradientTo: colors['primary'],
+    color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(142, 142, 147, ${opacity})`,
+    strokeWidth: 3,
+    barPercentage: 0.5,
+    useShadowColorFromDataset: false
+  };
+
   const [active, setActive] = useState('price');
   const [chartSuffix, setChartSuffix] = useState('');
   const [isNetworkError, setNetworkError] = useState(false);
@@ -154,7 +158,7 @@ export const DashboardCard: FunctionComponent<{
         paddingBottom: spacing['14'],
         marginBottom: spacing['32'],
         borderRadius: spacing['24'],
-        backgroundColor: colors['white']
+        backgroundColor: colors['primary']
       }}
     >
       <Text
@@ -162,7 +166,8 @@ export const DashboardCard: FunctionComponent<{
           alignSelf: 'center',
           paddingBottom: spacing['16'],
           fontSize: 17,
-          fontWeight: '500'
+          fontWeight: '500',
+          color: colors['primary-text']
         }}
       >
         {chainStore.current.chainName}
@@ -237,44 +242,45 @@ export const DashboardCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  headerWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 40
-  },
-  headerLeftWrapper: {
-    flexDirection: 'row',
-    paddingVertical: 4,
-    paddingHorizontal: 7,
-    borderColor: '#EAE9FF',
-    borderWidth: 1,
-    borderRadius: 4
-  },
-  active: {
-    padding: 7,
-    backgroundColor: colors['purple-700'],
-    borderRadius: 4
-  },
-  inActive: {
-    padding: 7,
-    backgroundColor: colors['white'],
-    borderRadius: 4
-  },
-  activeText: {
-    color: colors['white'],
-    fontSize: 14
-  },
-  inActiveText: {
-    color: colors['purple-700'],
-    fontSize: 14
-  },
-  viewDetail: {
-    backgroundColor: '#F2F2F7',
-    opacity: 0.6,
-    paddingVertical: 4,
-    paddingHorizontal: 7,
-    borderRadius: 4
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    headerWrapper: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingBottom: 40
+    },
+    headerLeftWrapper: {
+      flexDirection: 'row',
+      paddingVertical: 4,
+      paddingHorizontal: 7,
+      borderColor: colors['sub-primary'],
+      borderWidth: 1,
+      borderRadius: 4
+    },
+    active: {
+      padding: 7,
+      backgroundColor: colors['purple-700'],
+      borderRadius: 4
+    },
+    inActive: {
+      padding: 7,
+      backgroundColor: colors['primary'],
+      borderRadius: 4
+    },
+    activeText: {
+      color: colors['white'],
+      fontSize: 14
+    },
+    inActiveText: {
+      color: colors['purple-700'],
+      fontSize: 14
+    },
+    viewDetail: {
+      backgroundColor: '#F2F2F7',
+      opacity: 0.6,
+      paddingVertical: 4,
+      paddingHorizontal: 7,
+      borderRadius: 4
+    }
+  });

@@ -19,7 +19,7 @@ import {
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
@@ -27,6 +27,7 @@ import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
+import { useTheme } from '@react-navigation/native';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -39,7 +40,7 @@ export const AccountCardEVM: FunctionComponent<{
     modalStore,
     keyRingStore
   } = useStore();
-
+  const { colors } = useTheme();
   const [evmAddress, setEvmAddress] = useState(null);
 
   const smartNavigation = useSmartNavigation();
@@ -145,7 +146,7 @@ export const AccountCardEVM: FunctionComponent<{
             style={{
               ...typography['h7'],
               lineHeight: spacing['20'],
-              color: colors['white'],
+              color: colors['primary-text'],
               paddingLeft: spacing['6'],
               fontWeight: '700'
             }}
@@ -173,7 +174,7 @@ export const AccountCardEVM: FunctionComponent<{
           style={{
             height: 256,
             borderWidth: spacing['0.5'],
-            borderColor: colors['gray-100'],
+            borderColor: colors['primary'],
             borderRadius: spacing['12']
           }}
         >
@@ -234,7 +235,7 @@ export const AccountCardEVM: FunctionComponent<{
           </LinearGradient>
           <View
             style={{
-              backgroundColor: colors['white'],
+              backgroundColor: colors['primary'],
               display: 'flex',
               height: 95,
               flexDirection: 'row',
@@ -279,7 +280,8 @@ export const AccountCardEVM: FunctionComponent<{
                   style={{
                     paddingLeft: spacing['6'],
                     fontWeight: '700',
-                    fontSize: 16
+                    fontSize: 16,
+                    color: colors['primary-text']
                   }}
                 >
                   {account.name || '...'}
@@ -299,6 +301,7 @@ export const AccountCardEVM: FunctionComponent<{
               <Text
                 style={{
                   paddingLeft: spacing['6'],
+                  color: colors['primary-text'],
                   fontSize: 14
                 }}
               >
@@ -328,7 +331,7 @@ export const AccountCardEVM: FunctionComponent<{
       </CardBody>
 
       {/* <NetworkErrorViewEVM /> */}
-      <View style={{ height: 20 }} />
+      <View style={{ height: 50 }} />
       {/* <CardBody>
         <View
           style={{

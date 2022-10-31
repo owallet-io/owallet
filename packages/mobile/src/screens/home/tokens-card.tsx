@@ -70,7 +70,8 @@ export const TokensCard: FunctionComponent<{
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [nfts, setNFTs] = useState([]);
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
   // const [price, setPrice] = useState<object>({});
@@ -196,7 +197,7 @@ export const TokensCard: FunctionComponent<{
           paddingTop: spacing['8'],
           paddingBottom: spacing['14'],
           borderRadius: spacing['24'],
-          backgroundColor: colors['white']
+          backgroundColor: colors['primary']
         }}
       >
         <View
@@ -224,7 +225,8 @@ export const TokensCard: FunctionComponent<{
                   style={{
                     fontSize: 14,
                     fontWeight: '700',
-                    color: index === i ? colors['gray-900'] : colors['gray-300']
+                    color:
+                      index === i ? colors['primary-text'] : colors['gray-300']
                   }}
                 >
                   {title}
@@ -236,7 +238,7 @@ export const TokensCard: FunctionComponent<{
                   height: 2,
                   marginTop: 8,
                   backgroundColor:
-                    index === i ? colors['black'] : colors['white']
+                    index === i ? colors['border'] : colors['primary']
                 }}
               />
             </View>
@@ -326,7 +328,7 @@ export const TokensCard: FunctionComponent<{
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: colors['white']
+            backgroundColor: colors['primary']
           }}
         >
           <RectButton
@@ -349,47 +351,48 @@ export const TokensCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  textLoadMore: {
-    ...typography['h7'],
-    color: colors['purple-700']
-  },
-  containerBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors['gray-50'],
-    width: metrics.screenWidth - 48,
-    height: spacing['40'],
-    paddingVertical: spacing['10'],
-    borderRadius: spacing['12']
-  },
-  sectionHeader: {
-    ...typography.h7,
-    color: colors['gray-800'],
-    marginBottom: spacing['8'],
-    marginRight: spacing['10']
-  },
-  flatListItem: {
-    backgroundColor: colors['gray-50'],
-    borderRadius: spacing['12'],
-    width: (metrics.screenWidth - 60) / 2,
-    marginRight: spacing['12'],
-    padding: spacing['12']
-  },
-  itemPhoto: {
-    // width: (metrics.screenWidth - 84) / 2,
-    height: (metrics.screenWidth - 84) / 2,
-    borderRadius: 10,
-    marginHorizontal: 'auto',
-    width: (metrics.screenWidth - 84) / 2
-  },
-  itemText: {
-    ...typography.h7,
-    color: colors['gray-900'],
-    fontWeight: '700'
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    textLoadMore: {
+      ...typography['h7'],
+      color: colors['purple-700']
+    },
+    containerBtn: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors['gray-50'],
+      width: metrics.screenWidth - 48,
+      height: spacing['40'],
+      paddingVertical: spacing['10'],
+      borderRadius: spacing['12']
+    },
+    sectionHeader: {
+      ...typography.h7,
+      color: colors['gray-800'],
+      marginBottom: spacing['8'],
+      marginRight: spacing['10']
+    },
+    flatListItem: {
+      backgroundColor: colors['gray-50'],
+      borderRadius: spacing['12'],
+      width: (metrics.screenWidth - 60) / 2,
+      marginRight: spacing['12'],
+      padding: spacing['12']
+    },
+    itemPhoto: {
+      // width: (metrics.screenWidth - 84) / 2,
+      height: (metrics.screenWidth - 84) / 2,
+      borderRadius: 10,
+      marginHorizontal: 'auto',
+      width: (metrics.screenWidth - 84) / 2
+    },
+    itemText: {
+      ...typography.h7,
+      color: colors['gray-900'],
+      fontWeight: '700'
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  });

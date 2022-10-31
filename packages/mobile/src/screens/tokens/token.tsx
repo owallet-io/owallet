@@ -3,14 +3,17 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@rneui/base';
-import { colors, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
 import { FlatList } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../utils/helper';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { TokenItem } from './components/token-item';
+import { useTheme } from '@react-navigation/native';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   // const queryBalances = queriesStore
   //   .get(chainStore.current.chainId)
@@ -42,10 +45,14 @@ export const TokensScreen: FunctionComponent = observer(() => {
   }, [chainStore.current.chainId]);
 
   return (
-    <PageWithScrollViewInBottomTabView style={{ flex: 1, marginBottom: 70 }}>
+    <PageWithScrollViewInBottomTabView
+      style={{ flex: 1, marginBottom: 70 }}
+      backgroundColor={colors['background']}
+    >
       <Text
         style={{
-          ...styles.title
+          ...styles.title,
+          color: colors['primary-text']
         }}
       >
         {`My Tokens`}
@@ -79,40 +86,41 @@ export const TokensScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  containerToken: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing['4'],
-    marginVertical: spacing['8'],
-    paddingTop: spacing['18'],
-    paddingBottom: spacing['18']
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  title: {
-    ...typography.h3,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: colors['gray-900'],
-    marginTop: spacing['12']
-  },
-  containerTokens: {
-    backgroundColor: colors['white'],
-    borderRadius: spacing['24'],
-    marginTop: spacing['16'],
-    paddingVertical: spacing['12'],
-    paddingHorizontal: spacing['24']
-  },
-  containerTokenItem: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: spacing['8'],
-    marginVertical: spacing['4']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    container: {
+      flex: 1
+    },
+    containerToken: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginHorizontal: spacing['4'],
+      marginVertical: spacing['8'],
+      paddingTop: spacing['18'],
+      paddingBottom: spacing['18']
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    title: {
+      ...typography.h3,
+      fontWeight: '700',
+      textAlign: 'center',
+      color: colors['gray-900'],
+      marginTop: spacing['12']
+    },
+    containerTokens: {
+      backgroundColor: colors['primary'],
+      borderRadius: spacing['24'],
+      marginTop: spacing['16'],
+      paddingVertical: spacing['12'],
+      paddingHorizontal: spacing['24']
+    },
+    containerTokenItem: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      paddingVertical: spacing['8'],
+      marginVertical: spacing['4']
+    }
+  });

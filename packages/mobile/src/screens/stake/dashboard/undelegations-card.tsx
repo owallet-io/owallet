@@ -9,13 +9,14 @@ import { useIntl } from 'react-intl';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { ProgressBar } from '../../../components/progress-bar';
 import { BondStatus } from '@owallet/stores';
-import { colors, spacing } from '../../../themes';
+import { spacing } from '../../../themes';
+import { useTheme } from '@react-navigation/native';
 
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
-
+  const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -47,30 +48,28 @@ export const UndelegationsCard: FunctionComponent<{
         paddingTop: spacing['14'],
         marginTop: spacing['32'],
         borderRadius: spacing['24'],
-        backgroundColor: colors['white']
+        backgroundColor: colors['primary']
       }}
     >
       <CardBody
         style={{
-          backgroundColor: 'white'
+          backgroundColor: colors['primary']
         }}
       >
         <Text
-          style={style.flatten([
-            'h6',
-            'color-text-black-very-high',
-            'self-center'
-          ])}
+          style={[
+            { color: colors['primary-text'] },
+            style.flatten(['h6', 'self-center'])
+          ]}
         >
           My Unstaking
         </Text>
         {unbondings.length > 0 ? null : (
           <Text
-            style={style.flatten([
-              'body2',
-              'color-text-black-low',
-              'padding-top-18'
-            ])}
+            style={[
+              { color: colors['primary-text'] },
+              style.flatten(['body2', 'color-text-black-low', 'padding-top-18'])
+            ]}
           >
             {"You don't have any unboniding assets yet"}
           </Text>
@@ -112,11 +111,10 @@ export const UndelegationsCard: FunctionComponent<{
                     }}
                   />
                   <Text
-                    style={style.flatten([
-                      'margin-left-16',
-                      'h7',
-                      'color-text-black-medium'
-                    ])}
+                    style={[
+                      { color: colors['primary-text'] },
+                      style.flatten(['margin-left-16', 'h7'])
+                    ]}
                   >
                     {validator?.description.moniker ?? '...'}
                   </Text>
@@ -173,7 +171,7 @@ export const UndelegationsCard: FunctionComponent<{
                   return (
                     <View
                       key={i.toString()}
-                      style={style.flatten(['padding-top-24'])}
+                      style={style.flatten(['padding-top-12'])}
                     >
                       <View
                         style={style.flatten([
@@ -183,10 +181,11 @@ export const UndelegationsCard: FunctionComponent<{
                         ])}
                       >
                         <Text
-                          style={style.flatten([
-                            'subtitle2',
-                            'color-text-black-medium'
-                          ])}
+                          style={[
+                            { color: colors['primary-text'] },
+                            ,
+                            style.flatten(['subtitle2'])
+                          ]}
                         >
                           {entry.balance
                             .shrink(true)
@@ -213,9 +212,12 @@ export const UndelegationsCard: FunctionComponent<{
               </View>
               {!isLastUnbondingIndex && (
                 <View
-                  style={StyleSheet.flatten([
-                    style.flatten(['height-1', 'background-color-divider'])
-                  ])}
+                  style={[
+                    style.flatten(['height-1']),
+                    {
+                      backgroundColor: colors['divider']
+                    }
+                  ]}
                 />
               )}
             </React.Fragment>

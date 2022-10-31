@@ -5,7 +5,7 @@ import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { KeyStoreItem } from '../../components';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import { View } from 'react-native';
-import { CText as Text} from "../../../../components/text";
+import { CText as Text } from '../../../../components/text';
 import { useStyle } from '../../../../styles';
 
 const SectionTitle: FunctionComponent<{
@@ -34,7 +34,7 @@ const SectionTitle: FunctionComponent<{
 export const SettingSelectLangScreen: FunctionComponent = observer(() => {
   const { priceStore } = useStore();
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
+    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
       return {
         key,
         label: key.toUpperCase()
@@ -60,7 +60,7 @@ export const SettingSelectLangScreen: FunctionComponent = observer(() => {
                 }
                 onPress={async () => {
                   priceStore.setDefaultVsCurrency(cur.key || 'usd');
-                  smartNavigation.navigateSmart('Setting', {});
+                  smartNavigation.navigateSmart('Settings', {});
                 }}
               />
             );

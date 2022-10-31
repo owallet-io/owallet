@@ -44,6 +44,7 @@ export const colors = {
   'profile-orange': '#FEC078',
   'profile-yellow': '#F2ED64',
   icon: '#2C4163',
+  'icon-text': '#E2DEEB',
   card: '#000',
   success: '#2DCE89',
   error: '#F5365C',
@@ -55,6 +56,7 @@ export const colors = {
   'text-black-very-very-low': '#C6C6CD',
   'text-black-very-very-very-low': '#DCDCE3',
   'text-primary': '#4334F1',
+  border: '#C6C6CD',
   'border-gray': '#111',
   'border-white': '#F5F5F5',
   'border-pink': '#D7C4F5',
@@ -106,6 +108,7 @@ export const colors = {
 
   //splash-background
   'splash-background': '#1E1E1E',
+  'sub-primary': '#434762',
 
   //orange
   'orange-800': '#EF6363',
@@ -113,7 +116,7 @@ export const colors = {
   //blue
   'blue-300': '#8C93A7',
   //background
-  background: '#1E1E1E'
+  background: '#01040D'
 };
 
 export const lightColors = {
@@ -162,6 +165,7 @@ export const lightColors = {
   'profile-orange': '#FEC078',
   'profile-yellow': '#F2ED64',
   icon: '#2C4163',
+  'icon-text': '#8C93A7',
   card: '#000',
   success: '#2DCE89',
   error: '#F5365C',
@@ -173,6 +177,7 @@ export const lightColors = {
   'text-black-very-very-low': '#C6C6CD',
   'text-black-very-very-very-low': '#DCDCE3',
   'text-primary': '#4334F1',
+  border: '#111',
   'border-gray': '#C6C6CD',
   'border-white': '#F5F5F5',
   'border-pink': '#D7C4F5',
@@ -224,6 +229,7 @@ export const lightColors = {
 
   //splash-background
   'splash-background': '#FBF8FF',
+  'sub-primary': '#F3F1F5',
 
   //orange
   'orange-800': '#EF6363',

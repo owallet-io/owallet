@@ -13,6 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../../utils/helper';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { RightArrowIcon } from '../../../components/icon';
+import { useTheme } from '@react-navigation/native';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
@@ -31,6 +32,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   priceBalance,
   totalBalance = 1000
 }) => {
+  const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
   // The IBC currency could have long denom (with the origin chain/channel information).
@@ -116,7 +118,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           <Text
             style={{
               ...typography.subtitle2,
-              color: colors['gray-900'],
+              color: colors['primary-text'],
               fontWeight: '700'
             }}
           >
@@ -141,7 +143,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           alignItems: 'flex-end'
         }}
       >
-        <RightArrowIcon height={10} color={colors['gray-150']} />
+        <RightArrowIcon height={10} color={colors['primary-text']} />
       </View>
       {/* <View
         style={{

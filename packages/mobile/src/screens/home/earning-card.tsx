@@ -9,14 +9,15 @@ import {
 } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { observer } from 'mobx-react-lite';
-import { colors, metrics, spacing, typography } from '../../themes';
-import { AddIcon, GiftIcon } from '../../components/icon';
+import { metrics, spacing, typography } from '../../themes';
+import { AddIcon } from '../../components/icon';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { Dec } from '@owallet/unit';
 import { LoadingSpinner } from '../../components/spinner';
 import { navigate } from '../../router/root';
 import crashlytics from '@react-native-firebase/crashlytics';
+import { useTheme } from '@react-navigation/native';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -24,6 +25,8 @@ export const EarningCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
     useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
@@ -86,7 +89,14 @@ export const EarningCard: FunctionComponent<{
     <View style={containerStyle}>
       <Card style={styles.card}>
         <View style={styles.cardBody}>
-          <Text style={{ ...styles['text-earn'] }}>Earnings</Text>
+          <Text
+            style={[
+              { ...styles['text-earn'] },
+              { color: colors['primary-text'] }
+            ]}
+          >
+            Earnings
+          </Text>
           <Image
             style={{
               width: 120,
@@ -98,9 +108,12 @@ export const EarningCard: FunctionComponent<{
             fadeDuration={0}
           />
           <Text
-            style={{
-              ...styles['text-amount']
-            }}
+            style={[
+              {
+                ...styles['text-amount']
+              },
+              { color: colors['primary-text'] }
+            ]}
           >
             {stakingReward
               .shrink(true)
@@ -109,7 +122,7 @@ export const EarningCard: FunctionComponent<{
               .upperCase(true)
               .toString()}
           </Text>
-          <Text style={styles['amount']}>
+          <Text style={[styles['amount']]}>
             {totalStakingReward
               ? totalStakingReward.toString()
               : stakingReward.shrink(true).maxDecimals(6).toString()}
@@ -203,7 +216,7 @@ export const EarningCard: FunctionComponent<{
                     style={{
                       fontSize: 16,
                       lineHeight: 22,
-                      color: colors['gray-900'],
+                      color: colors['primary-text'],
                       fontWeight: '700'
                     }}
                   >
@@ -258,80 +271,81 @@ export const EarningCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  card: {
-    paddingBottom: spacing['20'],
-    marginTop: spacing['32'],
-    borderTopLeftRadius: spacing['24'],
-    borderTopRightRadius: spacing['24'],
-    backgroundColor: colors['white'],
-    padding: spacing['24']
-  },
-  cardBody: {
-    backgroundColor: colors['white'],
-    alignItems: 'center'
-  },
-  'flex-center': {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-
-  'text-earn': {
-    fontWeight: '800',
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors['black']
-  },
-  'text-amount': {
-    fontWeight: '900',
-    fontSize: 24,
-    lineHeight: 34,
-    color: colors['black']
-  },
-  'text-rewards': {
-    ...typography['h7'],
-    lineHeight: spacing['20'],
-    color: colors['white'],
-    paddingLeft: spacing['6'],
-    fontWeight: '700'
-  },
-  amount: {
-    fontWeight: '700',
-    fontSize: 16,
-    lineHeight: 22,
-    color: colors['gray-300']
-  },
-  'btn-claim': {
-    backgroundColor: colors['purple-900'],
-    borderWidth: 0.5,
-    marginTop: 16,
-    width: metrics.screenWidth - 48,
-    borderRadius: spacing['12']
-  },
-  'btn-manage': {
-    backgroundColor: '#F3F1F5',
-    borderWidth: 0.5,
-    padding: 10,
-    width: metrics.screenWidth - 80,
-    borderRadius: spacing['12'],
-    borderColor: '#F3F1F5'
-  },
-  'view-box-staking': {
-    height: 176,
-    marginTop: 24,
-    backgroundColor: colors['white'],
-    width: metrics.screenWidth - 48,
-    borderRadius: spacing['12'],
-    padding: 16,
-    display: 'flex',
-    justifyContent: 'space-around',
-    shadowColor: '#18274B',
-    shadowOffset: {
-      width: 0,
-      height: 12
+const styling = colors =>
+  StyleSheet.create({
+    card: {
+      paddingBottom: spacing['20'],
+      marginTop: spacing['32'],
+      borderTopLeftRadius: spacing['24'],
+      borderTopRightRadius: spacing['24'],
+      backgroundColor: colors['primary'],
+      padding: spacing['24']
     },
-    shadowOpacity: 0.12,
-    shadowRadius: 16.0
-  }
-});
+    cardBody: {
+      backgroundColor: colors['primary'],
+      alignItems: 'center'
+    },
+    'flex-center': {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+
+    'text-earn': {
+      fontWeight: '800',
+      fontSize: 16,
+      lineHeight: 22,
+      color: colors['black']
+    },
+    'text-amount': {
+      fontWeight: '900',
+      fontSize: 24,
+      lineHeight: 34,
+      color: colors['black']
+    },
+    'text-rewards': {
+      ...typography['h7'],
+      lineHeight: spacing['20'],
+      color: colors['white'],
+      paddingLeft: spacing['6'],
+      fontWeight: '700'
+    },
+    amount: {
+      fontWeight: '700',
+      fontSize: 16,
+      lineHeight: 22,
+      color: colors['gray-300']
+    },
+    'btn-claim': {
+      backgroundColor: colors['purple-900'],
+      borderWidth: 0.5,
+      marginTop: 16,
+      width: metrics.screenWidth - 48,
+      borderRadius: spacing['12']
+    },
+    'btn-manage': {
+      backgroundColor: '#F3F1F5',
+      borderWidth: 0.5,
+      padding: 10,
+      width: metrics.screenWidth - 80,
+      borderRadius: spacing['12'],
+      borderColor: '#F3F1F5'
+    },
+    'view-box-staking': {
+      height: 176,
+      marginTop: 24,
+      backgroundColor: colors['primary'],
+      width: metrics.screenWidth - 48,
+      borderRadius: spacing['12'],
+      padding: 16,
+      display: 'flex',
+      justifyContent: 'space-around',
+      shadowColor: '#18274B',
+      shadowOffset: {
+        width: 0,
+        height: 12
+      },
+      shadowOpacity: 0.12,
+      shadowRadius: 16.0
+    }
+  });

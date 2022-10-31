@@ -1,8 +1,8 @@
 import React, { FunctionComponent, ReactElement, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { FlatList, Image, StyleSheet, View, Animated } from 'react-native';
-import { Text, Tab } from '@rneui/base';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { Text } from '@rneui/base';
+import { metrics, spacing, typography } from '../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   convertAmount,
@@ -14,6 +14,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
+import { useTheme } from '@react-navigation/native';
 
 // hard code data to test UI
 // const nftsData = [
@@ -63,7 +64,8 @@ export const NftsScreen: FunctionComponent = observer(props => {
   const [index, setIndex] = useState<number>(0);
   const [activeSection, setActiveSection] = useState([0]);
   const smartNavigation = useSmartNavigation();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const { nfts } = props.route?.params;
 
   //function shadow
@@ -173,11 +175,12 @@ export const NftsScreen: FunctionComponent = observer(props => {
   );
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View>
         <Text
           style={{
-            ...styles.title
+            ...styles.title,
+            color: colors['primary-text']
           }}
         >
           {`My NFTs`}
@@ -206,7 +209,8 @@ export const NftsScreen: FunctionComponent = observer(props => {
                   style={{
                     fontSize: 16,
                     fontWeight: '700',
-                    color: index === i ? colors['gray-900'] : colors['gray-300']
+                    color:
+                      index === i ? colors['primary-text'] : colors['gray-300']
                   }}
                 >
                   {title}
@@ -291,53 +295,54 @@ export const NftsScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors['white'],
-    borderRadius: spacing['24']
-  },
-  containerTab: {},
-  title: {
-    ...typography.h3,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: colors['gray-900'],
-    marginTop: spacing['12'],
-    marginBottom: spacing['12']
-  },
-  containerBtn: {
-    backgroundColor: colors['purple-900'],
-    borderRadius: spacing['8'],
-    marginHorizontal: spacing['24'],
-    paddingVertical: spacing['16'],
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: spacing['12']
-  },
-  flatListItem: {
-    backgroundColor: colors['gray-50'],
-    borderRadius: spacing['12'],
-    width: (metrics.screenWidth - 60) / 2,
-    marginHorizontal: spacing['6'],
-    padding: spacing['12'],
-    marginVertical: spacing['6']
-  },
-  itemPhoto: {
-    width: (metrics.screenWidth - 120) / 2,
-    height: (metrics.screenWidth - 120) / 2,
-    borderRadius: spacing['6']
-  },
-  containerCollection: {
-    marginHorizontal: spacing['24'],
-    marginTop: spacing['32']
-  },
-  containerSectionTitle: {
-    flexDirection: 'row',
-    marginBottom: spacing['16']
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 200
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors['primary'],
+      borderRadius: spacing['24']
+    },
+    containerTab: {},
+    title: {
+      ...typography.h3,
+      fontWeight: '700',
+      textAlign: 'center',
+      color: colors['primary-text'],
+      marginTop: spacing['12'],
+      marginBottom: spacing['12']
+    },
+    containerBtn: {
+      backgroundColor: colors['purple-900'],
+      borderRadius: spacing['8'],
+      marginHorizontal: spacing['24'],
+      paddingVertical: spacing['16'],
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: spacing['12']
+    },
+    flatListItem: {
+      backgroundColor: colors['gray-50'],
+      borderRadius: spacing['12'],
+      width: (metrics.screenWidth - 60) / 2,
+      marginHorizontal: spacing['6'],
+      padding: spacing['12'],
+      marginVertical: spacing['6']
+    },
+    itemPhoto: {
+      width: (metrics.screenWidth - 120) / 2,
+      height: (metrics.screenWidth - 120) / 2,
+      borderRadius: spacing['6']
+    },
+    containerCollection: {
+      marginHorizontal: spacing['24'],
+      marginTop: spacing['32']
+    },
+    containerSectionTitle: {
+      flexDirection: 'row',
+      marginBottom: spacing['16']
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingBottom: 200
+    }
+  });

@@ -63,7 +63,7 @@ export const BlockCard: FunctionComponent<{
         </View>
         <View style={{ paddingLeft: 33 }}>
           <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-            <ClockIcon size={18} color={colors['gray-700']} />
+            <ClockIcon size={18} color={colors['primary-text']} />
             <Text style={styles.blockTitle}>
               {'  '}
               {title}
@@ -111,7 +111,7 @@ export const BlockCard: FunctionComponent<{
                 flexDirection: 'row'
               }}
             >
-              <ClockIcon size={18} color={colors['gray-700']} />
+              <ClockIcon size={18} color={colors['primary-text']} />
               <Text style={styles.blockTitle}>{'  '}Coin market info</Text>
             </View>
             <Text style={styles.blockValue}>${data?.current_price}</Text>
@@ -153,7 +153,13 @@ export const BlockCard: FunctionComponent<{
               <Text style={[styles.blockSub, { lineHeight: 20 }]}>
                 Market Cap
               </Text>
-              <Text style={{ fontWeight: '700', lineHeight: 20 }}>
+              <Text
+                style={{
+                  fontWeight: '700',
+                  lineHeight: 20,
+                  color: colors['primary-text']
+                }}
+              >
                 ${numberWithCommas(data?.market_cap ?? 0)}
               </Text>
             </View>
@@ -167,7 +173,13 @@ export const BlockCard: FunctionComponent<{
               <Text style={[styles.blockSub, { lineHeight: 20 }]}>
                 Trading Vol
               </Text>
-              <Text style={{ fontWeight: '700', lineHeight: 20 }}>
+              <Text
+                style={{
+                  fontWeight: '700',
+                  lineHeight: 20,
+                  color: colors['primary-text']
+                }}
+              >
                 ${numberWithCommas(data?.total_volume ?? 0)}
               </Text>
             </View>
@@ -210,7 +222,7 @@ const styling = (colors: object) =>
       paddingBottom: spacing['14'],
       marginBottom: spacing['32'],
       borderRadius: spacing['24'],
-      backgroundColor: colors['white']
+      backgroundColor: colors['primary']
     },
     blockWrapper: {
       flexDirection: 'row',
@@ -223,13 +235,13 @@ const styling = (colors: object) =>
     blockTitle: {
       fontSize: 14,
       lineHeight: 20,
-      color: colors['gray-800']
+      color: colors['primary-text']
     },
     blockValue: {
       fontSize: 34,
       fontWeight: '500',
       lineHeight: 50,
-      color: colors['gray-900']
+      color: colors['primary-text']
     },
     blockSub: {
       fontSize: 12,

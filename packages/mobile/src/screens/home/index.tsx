@@ -19,7 +19,7 @@ import { observer } from 'mobx-react-lite';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useTheme } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
@@ -28,7 +28,8 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -120,25 +121,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
     setRefreshing(false);
   }, [accountStore, chainStore, priceStore, queriesStore]);
-  // const queries = queriesStore.get(chainStore.current.chainId);
-
-  // const queryBalances = queriesStore
-  //   .get(chainStore.current.chainId)
-  //   .queryBalances.getQueryBech32Address(
-  //     accountStore.getAccount(chainStore.current.chainId).bech32Address
-  //   );
-
-  // const queryBalancesEVM = queries.evm.queryEvmBalance.getQueryBalance(
-  //   accountStore.getAccount(chainStore.current.chainId).evmosHexAddress
-  // );
-
-  // const tokens = queryBalances.balances;
 
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
+      backgroundColor={colors['background']}
       ref={scrollViewRef}
     >
       <BIP44Selectable />
@@ -174,12 +163,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styles = StyleSheet.create({
-  containerStyle: {
-    paddingBottom: 12,
-    backgroundColor: colors['gray-100']
-  },
-  containerEarnStyle: {
-    backgroundColor: colors['gray-100']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerStyle: {
+      paddingBottom: 12,
+      backgroundColor: colors['background']
+    },
+    containerEarnStyle: {
+      backgroundColor: colors['background']
+    }
+  });

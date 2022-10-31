@@ -13,14 +13,14 @@ export const DashBoardScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ paddingVertical: spacing['24'] }}>
         <Text
           style={{
             ...typography['h3'],
             fontWeight: '700',
             textAlign: 'center',
-            color: colors['gray-700'],
+            color: colors['primary-text'],
             paddingBottom: spacing['24']
           }}
         >

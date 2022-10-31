@@ -12,6 +12,7 @@ import {
   parseIbcMsgTransfer
 } from '../../../../utils/helper';
 import moment from 'moment';
+import { useTheme } from '@react-navigation/native';
 // import { Buffer } from 'buffer';
 
 interface TransactionItemProps {
@@ -32,7 +33,8 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
   containerStyle
 }) => {
   const { timestamp } = item || {};
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const date = moment(timestamp).format('MMM DD, YYYY [at] HH:mm');
 
   // const { messages } = tx?.body || {};
@@ -221,30 +223,31 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginLeft: spacing['24'],
-    marginRight: spacing['24'],
-    borderRadius: spacing['8'],
-    backgroundColor: colors['red-50'],
-    marginTop: spacing['4'],
-    marginBottom: spacing['8']
-  },
-  textInfo: {
-    ...typography.h7,
-    color: colors['gray-900'],
-    fontWeight: '600',
-    maxWidth: 200
-  },
-  textAmount: {
-    ...typography.h6,
-    fontWeight: '800'
-  },
-  innerButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: spacing['8'],
-    marginHorizontal: spacing['16']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      marginLeft: spacing['24'],
+      marginRight: spacing['24'],
+      borderRadius: spacing['8'],
+      backgroundColor: colors['red-50'],
+      marginTop: spacing['4'],
+      marginBottom: spacing['8']
+    },
+    textInfo: {
+      ...typography.h7,
+      color: colors['primary-text'],
+      fontWeight: '600',
+      maxWidth: 200
+    },
+    textAmount: {
+      ...typography.h6,
+      fontWeight: '800'
+    },
+    innerButton: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginVertical: spacing['8'],
+      marginHorizontal: spacing['16']
+    }
+  });

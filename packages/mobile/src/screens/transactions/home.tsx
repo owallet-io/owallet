@@ -14,7 +14,7 @@ import {
   View
 } from 'react-native';
 import { TransactionSectionTitle, TransactionItem } from './components';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
@@ -23,8 +23,12 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import { NewsTab } from './news';
 import { useIsFocused } from '@react-navigation/core';
 import { TendermintTxTracer } from '@owallet/cosmos';
+import { useTheme } from '@react-navigation/native';
+
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [indexParent, setIndexParent] = useState<number>(0);
   const [indexChildren, setIndexChildren] = useState<number>(0);
@@ -120,7 +124,7 @@ export const Transactions: FunctionComponent = () => {
             })
           }
           containerStyle={{
-            backgroundColor: colors['gray-10']
+            backgroundColor: colors['sub-primary']
           }} // customize item transaction
         />
       );
@@ -135,7 +139,7 @@ export const Transactions: FunctionComponent = () => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           borderRadius: spacing['12'],
           height: 56,
           marginVertical: spacing['12'],
@@ -152,9 +156,7 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center',
               paddingVertical: spacing['12'],
               backgroundColor:
-                indexParent === i
-                  ? colors['purple-900']
-                  : colors['transparent'],
+                indexParent === i ? colors['purple-900'] : colors['primary'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
@@ -176,7 +178,7 @@ export const Transactions: FunctionComponent = () => {
       {indexParent == 0 && (
         <View
           style={{
-            backgroundColor: colors['white'],
+            backgroundColor: colors['primary'],
             borderRadius: spacing['24']
           }}
         >
@@ -209,7 +211,7 @@ export const Transactions: FunctionComponent = () => {
                     fontWeight: '700',
                     color:
                       indexChildren === i
-                        ? colors['gray-900']
+                        ? colors['primary-text']
                         : colors['gray-300']
                   }}
                 >
@@ -273,30 +275,31 @@ export const Transactions: FunctionComponent = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors['gray-50'],
-    marginBottom: spacing['20']
-  },
-  tabBarHeader: {
-    backgroundColor: colors['white'],
-    display: 'flex',
-    flexDirection: 'row',
-    width: metrics.screenWidth,
-    justifyContent: 'space-around',
-    height: spacing['44']
-  },
-  tabText: {
-    ...typography.body2,
-    fontWeight: 'normal'
-  },
-  tabSelected: {},
-  transactionList: {
-    height: metrics.screenHeight / 1.5
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: metrics.screenHeight / 4
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: colors['background'],
+      marginBottom: spacing['20']
+    },
+    tabBarHeader: {
+      backgroundColor: colors['background'],
+      display: 'flex',
+      flexDirection: 'row',
+      width: metrics.screenWidth,
+      justifyContent: 'space-around',
+      height: spacing['44']
+    },
+    tabText: {
+      ...typography.body2,
+      fontWeight: 'normal'
+    },
+    tabSelected: {},
+    transactionList: {
+      height: metrics.screenHeight / 1.5
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: metrics.screenHeight / 4
+    }
+  });

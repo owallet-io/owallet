@@ -15,16 +15,19 @@ import {
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
+import { useTheme } from '@react-navigation/native';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const {
     chainStore,
     accountStore,
@@ -163,7 +166,7 @@ export const AccountCard: FunctionComponent<{
           style={{
             height: 256,
             borderWidth: spacing['0.5'],
-            borderColor: colors['gray-100'],
+            borderColor: colors['primary'],
             borderRadius: spacing['12']
           }}
         >
@@ -224,7 +227,7 @@ export const AccountCard: FunctionComponent<{
           </LinearGradient>
           <View
             style={{
-              backgroundColor: colors['white'],
+              backgroundColor: colors['primary'],
               height: 165,
               borderBottomLeftRadius: spacing['11'],
               borderBottomRightRadius: spacing['11'],
@@ -274,7 +277,8 @@ export const AccountCard: FunctionComponent<{
                     style={{
                       paddingLeft: spacing['6'],
                       fontWeight: '700',
-                      fontSize: 16
+                      fontSize: 16,
+                      color: colors['primary-text']
                     }}
                   >
                     {account.name || '...'}
@@ -289,7 +293,8 @@ export const AccountCard: FunctionComponent<{
                   style={{
                     paddingLeft: spacing['6'],
                     fontSize: 14,
-                    paddingVertical: spacing['6']
+                    paddingVertical: spacing['6'],
+                    color: colors['primary-text']
                   }}
                 >
                   {`Coin type: ${
@@ -299,7 +304,7 @@ export const AccountCard: FunctionComponent<{
                 </Text>
               </View>
               <TouchableOpacity onPress={_onPressMyWallet}>
-                <DownArrowIcon height={28} color={colors['gray-150']} />
+                <DownArrowIcon height={28} color={colors['primary-text']} />
               </TouchableOpacity>
             </View>
           </View>
@@ -415,19 +420,20 @@ export const AccountCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  textLoadMore: {
-    ...typography['h7'],
-    color: colors['purple-700']
-  },
-  containerBtn: {
-    alignItems: 'center',
-    marginTop: spacing['18'],
-    justifyContent: 'center',
-    backgroundColor: colors['gray-50'],
-    width: metrics.screenWidth - 68,
-    height: spacing['40'],
-    paddingVertical: spacing['10'],
-    borderRadius: spacing['12']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    textLoadMore: {
+      ...typography['h7'],
+      color: colors['purple-700']
+    },
+    containerBtn: {
+      alignItems: 'center',
+      marginTop: spacing['18'],
+      justifyContent: 'center',
+      backgroundColor: colors['gray-50'],
+      width: metrics.screenWidth - 68,
+      height: spacing['40'],
+      paddingVertical: spacing['10'],
+      borderRadius: spacing['12']
+    }
+  });
