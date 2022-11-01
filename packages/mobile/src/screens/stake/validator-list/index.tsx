@@ -14,7 +14,7 @@ import {
   ValidatorOutlineIcon
 } from '../../../components/icon';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { RectButton } from '../../../components/rect-button';
 import { ValidatorThumbnails } from '@owallet/common';
 import { colors, spacing, typography } from '../../../themes';
@@ -36,9 +36,9 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   >();
 
   const { chainStore, queriesStore } = useStore();
-
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const [search, setSearch] = useState('');
   const [validators, setValidators] = useState([]);
   const [sort, setSort] = useState<Sort>('Voting Power');
@@ -131,7 +131,8 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
 
       <PageWithSectionList
         style={{
-          marginBottom: 80
+          marginBottom: 70,
+          backgroundColor: colors['background']
         }}
         sections={[
           {
@@ -175,7 +176,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                   ...typography.h3,
                   fontWeight: '700',
                   textAlign: 'center',
-                  color: colors['gray-900']
+                  color: colors['primary-text']
                 }}
               >
                 {`Active validators`}
@@ -215,13 +216,14 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                         }}
                       >
                         <ValidatorOutlineIcon
-                          color={colors['gray-900']}
+                          color={colors['primary-text']}
                           size={16}
                         />
                         <Text
                           style={{
                             ...styles.title,
-                            marginLeft: spacing['8']
+                            marginLeft: spacing['8'],
+                            color: colors['sub-primary-text']
                           }}
                         >
                           {`Validator list`}
@@ -244,6 +246,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                             ...styles.title,
                             marginRight: spacing['10'],
                             textTransform: 'uppercase',
+                            color: colors['sub-primary-text'],
                             marginBottom: spacing['8']
                           }}
                         >
@@ -275,6 +278,8 @@ const ValidatorItem: FunctionComponent<{
   onSelectValidator?: (validatorAddress: string) => void;
 }> = observer(({ validatorAddress, index, sort, apr, onSelectValidator }) => {
   const { chainStore, queriesStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
@@ -287,7 +292,7 @@ const ValidatorItem: FunctionComponent<{
       style={{
         ...styles.container,
         flexDirection: 'row',
-        backgroundColor: colors['white'],
+        backgroundColor: colors['item'],
         alignItems: 'center'
       }}
       onPress={() => {
@@ -321,7 +326,7 @@ const ValidatorItem: FunctionComponent<{
         <Text
           style={{
             ...styles.textInfo,
-            color: colors['gray-900']
+            color: colors['primary-text']
           }}
           numberOfLines={1}
           ellipsizeMode="tail"
@@ -332,7 +337,7 @@ const ValidatorItem: FunctionComponent<{
         <Text
           style={{
             ...styles.textInfo,
-            color: colors['gray-300']
+            color: colors['sub-primary-text']
           }}
         >
           {new CoinPretty(
@@ -351,7 +356,8 @@ const ValidatorItem: FunctionComponent<{
       />
       <Text
         style={{
-          ...styles.textInfo
+          ...styles.textInfo,
+          color: colors['primary-text']
         }}
       >
         {apr && apr > 0 ? apr.toFixed(2).toString() + '%' : ''}
@@ -360,26 +366,27 @@ const ValidatorItem: FunctionComponent<{
   ) : null;
 });
 
-const styles = StyleSheet.create({
-  title: {
-    ...typography.h7,
-    fontWeight: '400',
-    color: colors['gray-700']
-  },
-  container: {
-    backgroundColor: colors['white'],
-    flexDirection: 'row',
-    paddingTop: spacing['8'],
-    paddingBottom: spacing['8'],
-    paddingLeft: spacing['8'],
-    paddingRight: spacing['16']
-  },
-  containerInfo: {
-    marginLeft: spacing['12']
-  },
-  textInfo: {
-    ...typography.h6,
-    fontWeight: '400',
-    color: colors['gray-900']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    title: {
+      ...typography.h7,
+      fontWeight: '400',
+      color: colors['gray-700']
+    },
+    container: {
+      backgroundColor: colors['background'],
+      flexDirection: 'row',
+      paddingTop: spacing['8'],
+      paddingBottom: spacing['8'],
+      paddingLeft: spacing['8'],
+      paddingRight: spacing['16']
+    },
+    containerInfo: {
+      marginLeft: spacing['12']
+    },
+    textInfo: {
+      ...typography.h6,
+      fontWeight: '400',
+      color: colors['gray-900']
+    }
+  });

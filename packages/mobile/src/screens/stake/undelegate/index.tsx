@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { useUndelegateTxConfig } from '@owallet/hooks';
@@ -15,7 +15,7 @@ import {
 import { View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { Button } from '../../../components/button';
-import { Card, CardBody, CardDivider } from '../../../components/card';
+import { CardBody, CardDivider } from '../../../components/card';
 import { BondStatus } from '@owallet/stores';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { Buffer } from 'buffer';
@@ -40,7 +40,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
 
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
-
+  const { colors } = useTheme();
   const style = useStyle();
   const smartNavigation = useSmartNavigation();
   const [customFee, setCustomFee] = useState(false);
@@ -104,23 +104,32 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
     <PageWithScrollViewInBottomTabView
       style={style.flatten(['padding-x-page'])}
       contentContainerStyle={style.get('flex-grow-1')}
+      backgroundColor={colors['background']}
     >
       <View style={style.flatten(['height-page-pad'])} />
       <View
         style={{
           marginBottom: spacing['12'],
           borderRadius: spacing['8'],
-          backgroundColor: colors['white']
+          backgroundColor: colors['primary']
         }}
       >
         <CardBody>
           <View style={style.flatten(['flex-row', 'items-center'])}>
             <ValidatorThumbnail
-              style={style.flatten(['margin-right-12'])}
+              style={{
+                marginRight: spacing['8'],
+                backgroundColor: colors['border']
+              }}
               size={36}
               url={validatorThumbnail}
             />
-            <Text style={style.flatten(['h6', 'color-text-black-high'])}>
+            <Text
+              style={[
+                style.flatten(['h6', 'color-text-black-high']),
+                { color: colors['primary-text'] }
+              ]}
+            >
               {validator ? validator.description.moniker : '...'}
             </Text>
           </View>
@@ -133,12 +142,20 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
           />
           <View style={style.flatten(['flex-row', 'items-center'])}>
             <Text
-              style={style.flatten(['subtitle2', 'color-text-black-medium'])}
+              style={[
+                style.flatten(['subtitle2', 'color-text-black-medium']),
+                { color: colors['sub-primary-text'] }
+              ]}
             >
               Staked
             </Text>
             <View style={style.get('flex-1')} />
-            <Text style={style.flatten(['body2', 'color-text-black-medium'])}>
+            <Text
+              style={[
+                style.flatten(['body2', 'color-text-black-medium']),
+                { color: colors['sub-primary-text'] }
+              ]}
+            >
               {staked.trim(true).shrink(true).maxDecimals(6).toString()}
             </Text>
           </View>
@@ -187,7 +204,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             fontWeight: '700',
             fontSize: 16,
             lineHeight: 34,
-            paddingHorizontal: 8
+            paddingHorizontal: 8,
+            color: colors['primary-text']
           }}
         >
           Custom Fee

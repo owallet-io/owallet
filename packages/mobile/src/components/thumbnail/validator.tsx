@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from 'react'
-import { View, ViewStyle } from 'react-native'
-import FastImage from 'react-native-fast-image'
-import {  spacing } from '../../themes'
-import { PersonIcon } from '../icon'
+import React, { FunctionComponent } from 'react';
+import { View, ViewStyle } from 'react-native';
+import FastImage from 'react-native-fast-image';
+import { spacing } from '../../themes';
+import { PersonIcon } from '../icon';
 
 export const ValidatorThumbnail: FunctionComponent<{
-  style?: ViewStyle
-  url?: string
-  size: number
+  style?: ViewStyle;
+  url?: string;
+  size: number;
 }> = ({ style: propStyle, url, size }) => {
   return (
     <View
@@ -36,5 +36,5 @@ export const ValidatorThumbnail: FunctionComponent<{
         <PersonIcon size={size} color="black" />
       )}
     </View>
-  )
-}
+  );
+};

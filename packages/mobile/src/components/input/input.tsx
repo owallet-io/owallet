@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { CText as Text } from '../text';
 import { useStyle } from '../../styles';
-import { colors, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
+import { useTheme } from '@react-navigation/native';
 
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<
@@ -39,6 +40,7 @@ export const TextInput = React.forwardRef<
   const { style: propsStyle, ...restProps } = props;
 
   const style = useStyle();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -58,7 +60,7 @@ export const TextInput = React.forwardRef<
             <Text
               style={{
                 ...typography.h7,
-                color: colors['gray-900'],
+                color: colors['primary-text'],
                 marginBottom: spacing['3'],
                 ...props.labelStyle
               }}
@@ -104,6 +106,10 @@ export const TextInput = React.forwardRef<
                     !(props.editable ?? true) && 'background-color-disabled'
                   ]
                 ),
+                {
+                  backgroundColor: colors['item'],
+                  borderColor: colors['border']
+                },
                 props.inputContainerStyle
               ]
         )}
@@ -117,23 +123,26 @@ export const TextInput = React.forwardRef<
               props.placeholderTextColor ??
               style.get('color-text-gray-300').color
             }
-            style={StyleSheet.flatten([
-              style.flatten([
-                'padding-0',
-                'body2-in-text-input',
-                'color-text-black-medium',
-                'flex-1'
+            style={[
+              StyleSheet.flatten([
+                style.flatten([
+                  'padding-0',
+                  'body2-in-text-input',
+                  'color-text-black-medium',
+                  'flex-1'
+                ]),
+                Platform.select({
+                  ios: {},
+                  android: {
+                    // On android, the text input's height does not equals to the line height by strange.
+                    // To fix this problem, set the height explicitly.
+                    height: style.get('body2-in-text-input')?.lineHeight
+                  }
+                }),
+                propsStyle
               ]),
-              Platform.select({
-                ios: {},
-                android: {
-                  // On android, the text input's height does not equals to the line height by strange.
-                  // To fix this problem, set the height explicitly.
-                  height: style.get('body2-in-text-input')?.lineHeight
-                }
-              }),
-              propsStyle
-            ])}
+              { color: colors['sub-primary-text'] }
+            ]}
             {...restProps}
             ref={ref}
           />

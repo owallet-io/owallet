@@ -12,10 +12,9 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import {
   formatContractAddress,
   formatOrai,
-  getTxTypeNew,
-  parseIbcMsgTransfer
+  getTxTypeNew
 } from '../../utils/helper';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp, useTheme } from '@react-navigation/native';
 import moment from 'moment';
 import { useSimpleTimer } from '../../hooks';
 interface TransactionInfo {
@@ -78,6 +77,8 @@ const InfoItems: FunctionComponent<{
   onPress?: () => void;
 }> = ({ label, value, topBorder, title }) => {
   const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const { isTimedOut, setTimer } = useSimpleTimer();
   const renderChildren = () => {
     return (
@@ -165,6 +166,8 @@ const DetailItems: FunctionComponent<{
   onPress?: () => void;
 }> = ({ label, onPress, value, topBorder }) => {
   const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const renderChildren = () => {
     return (
       <>
@@ -229,6 +232,8 @@ const DetailItems: FunctionComponent<{
 
 export const TransactionDetail: FunctionComponent<any> = () => {
   const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const route = useRoute<
     RouteProp<
       Record<
@@ -473,32 +478,33 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {},
-  containerTitle: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['16'],
-    backgroundColor: colors['white']
-  },
-  textTitle: {
-    ...typography.h3,
-    color: colors['black'],
-    lineHeight: 34,
-    fontWeight: 'bold'
-  },
-  containerDetailVertical: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: metrics.screenWidth - 40
-  },
-  containerDetailHorizontal: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: metrics.screenWidth - 40
-  },
-  textParagraph: {}
-});
+const styling = colors =>
+  StyleSheet.create({
+    container: {},
+    containerTitle: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['16'],
+      backgroundColor: colors['white']
+    },
+    textTitle: {
+      ...typography.h3,
+      color: colors['black'],
+      lineHeight: 34,
+      fontWeight: 'bold'
+    },
+    containerDetailVertical: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: metrics.screenWidth - 40
+    },
+    containerDetailHorizontal: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: metrics.screenWidth - 40
+    },
+    textParagraph: {}
+  });

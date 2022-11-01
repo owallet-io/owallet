@@ -109,6 +109,7 @@ export const colors = {
   //splash-background
   'splash-background': '#1E1E1E',
   'sub-primary': '#434762',
+  'sub-primary-text': '#E2DEEB',
 
   //orange
   'orange-800': '#EF6363',
@@ -116,7 +117,9 @@ export const colors = {
   //blue
   'blue-300': '#8C93A7',
   //background
-  background: '#01040D'
+  background: '#01040D',
+  // item
+  item: '#2B2D3B'
 };
 
 export const lightColors = {
@@ -177,7 +180,7 @@ export const lightColors = {
   'text-black-very-very-low': '#C6C6CD',
   'text-black-very-very-very-low': '#DCDCE3',
   'text-primary': '#4334F1',
-  border: '#111',
+  border: '#E2DEEB',
   'border-gray': '#C6C6CD',
   'border-white': '#F5F5F5',
   'border-pink': '#D7C4F5',
@@ -230,6 +233,7 @@ export const lightColors = {
   //splash-background
   'splash-background': '#FBF8FF',
   'sub-primary': '#F3F1F5',
+  'sub-primary-text': '#3A3A3C',
 
   //orange
   'orange-800': '#EF6363',
@@ -238,5 +242,7 @@ export const lightColors = {
   'blue-300': '#8C93A7',
 
   //background
-  background: '#F5F5F5'
+  background: '#F5F5F5',
+  // item
+  item: '#fff'
 };

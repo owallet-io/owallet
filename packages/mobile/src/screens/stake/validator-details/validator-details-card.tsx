@@ -1,11 +1,12 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
+import { useTheme } from '@react-navigation/native';
 import { BondStatus } from '@owallet/stores';
 import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
-import { Button } from '../../../components/button';
+// import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { colors, metrics, spacing, typography } from '../../../themes';
@@ -16,9 +17,9 @@ import {
   ValidatorVotingIcon
 } from '../../../components/icon';
 import { ValidatorThumbnails } from '@owallet/common';
-import { DelegatedCard } from './delegated-card';
+// import { DelegatedCard } from './delegated-card';
 
-const renderIconValidator = (label: string, size?: number) => {
+const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
     case 'Website':
       return (
@@ -69,6 +70,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
   apr?: number;
 }> = observer(({ containerStyle, validatorAddress, apr }) => {
   const { chainStore, queriesStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
@@ -143,7 +146,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
         style={{
           ...typography.h3,
           fontWeight: '700',
-          color: colors['gray-900'],
+          color: colors['primary-text'],
           textAlign: 'center',
           marginTop: spacing['16']
         }}
@@ -163,7 +166,8 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <Text
               style={{
                 ...styles.textInfo,
-                fontWeight: '700'
+                fontWeight: '700',
+                color: colors['primary-text']
               }}
             >
               {validator.description.moniker}
@@ -184,13 +188,14 @@ export const ValidatorDetailsCard: FunctionComponent<{
                     ...styles.containerItem
                   }}
                 >
-                  {renderIconValidator(label, 24)}
+                  {renderIconValidator(label, 24, styles)}
                   <Text
                     style={{
                       ...typography.h7,
                       fontWeight: '700',
                       textAlign: 'center',
-                      marginTop: spacing['6']
+                      marginTop: spacing['6'],
+                      color: colors['primary-text']
                     }}
                   >
                     {label}
@@ -208,10 +213,10 @@ export const ValidatorDetailsCard: FunctionComponent<{
             <Text
               style={{
                 ...typography.h7,
-                color: colors['gray-900'],
                 fontWeight: '700',
                 marginTop: spacing['24'],
-                marginBottom: spacing['4']
+                marginBottom: spacing['4'],
+                color: colors['sub-primary-text']
               }}
             >
               Description
@@ -265,32 +270,33 @@ export const ValidatorDetailsCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  containerIcon: {
-    borderRadius: spacing['8'],
-    padding: spacing['10'],
-    alignItems: 'center',
-    backgroundColor: colors['gray-10']
-  },
-  textInfo: {
-    ...typography.h5,
-    fontWeight: '400',
-    marginLeft: spacing['12']
-  },
-  containerItem: {
-    borderWidth: 1,
-    borderColor: colors['purple-50'],
-    borderRadius: spacing['8'],
-    width: (metrics.screenWidth - 60) / 2,
-    marginVertical: spacing['6'],
-    paddingVertical: spacing['16'],
-    paddingHorizontal: spacing['16'],
-    alignItems: 'center'
-  },
-  textDetail: {
-    ...typography.h7,
-    fontWeight: '700',
-    color: colors['gray-300'],
-    textAlign: 'center'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerIcon: {
+      borderRadius: spacing['8'],
+      padding: spacing['10'],
+      alignItems: 'center',
+      backgroundColor: colors['gray-10']
+    },
+    textInfo: {
+      ...typography.h5,
+      fontWeight: '400',
+      marginLeft: spacing['12']
+    },
+    containerItem: {
+      borderWidth: 1,
+      borderColor: colors['purple-50'],
+      borderRadius: spacing['8'],
+      width: (metrics.screenWidth - 60) / 2,
+      marginVertical: spacing['6'],
+      paddingVertical: spacing['16'],
+      paddingHorizontal: spacing['16'],
+      alignItems: 'center'
+    },
+    textDetail: {
+      ...typography.h7,
+      fontWeight: '700',
+      color: colors['gray-300'],
+      textAlign: 'center'
+    }
+  });

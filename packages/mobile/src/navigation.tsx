@@ -889,7 +889,7 @@ export const MainTabNavigation: FunctionComponent = () => {
   }, [focusedScreen.name, navigation]);
 
   const checkActiveTabBottom = (name: string) => {
-    return name === focusedScreen.name;
+    return name.includes(focusedScreen.name);
   };
 
   const RenderTabsBarIcon = ({ name }) => {
@@ -981,9 +981,9 @@ export const MainTabNavigation: FunctionComponent = () => {
         tabBarIcon: ({ color }) => {
           switch (route.name) {
             case 'Main':
-              return <RenderTabsBarIcon color={color} name={'Home'} />;
+              return <RenderTabsBarIcon name={'Home'} />;
             case 'Browser':
-              return <RenderTabsBarIcon color={color} name={'Browser'} />;
+              return <RenderTabsBarIcon name={'Browser'} />;
             case 'SendNavigation':
               return (
                 <View
@@ -1010,9 +1010,9 @@ export const MainTabNavigation: FunctionComponent = () => {
                 </View>
               );
             case 'Invest':
-              return <RenderTabsBarIcon color={color} name={'Invest'} />;
+              return <RenderTabsBarIcon name={'Invest'} />;
             case 'Settings':
-              return <RenderTabsBarIcon color={color} name={'Settings'} />;
+              return <RenderTabsBarIcon name={'Settings'} />;
           }
         },
         tabBarButton: props => (

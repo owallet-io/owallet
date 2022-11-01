@@ -8,14 +8,16 @@ import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
 import { Dec } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation.provider';
-import { colors, spacing, typography } from '../../../themes';
+import { spacing, typography } from '../../../themes';
 import { DownArrowIcon } from '../../../components/icon';
+import { useTheme } from '@react-navigation/native';
 
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -30,7 +32,6 @@ export const MyRewardCard: FunctionComponent<{
   const stakingReward = queryReward.stakableReward;
   const apy = queries.cosmos.queryInflation.inflation;
 
-  const style = useStyle();
   const smartNavigation = useSmartNavigation();
 
   const isDisable =
@@ -42,13 +43,14 @@ export const MyRewardCard: FunctionComponent<{
     <View style={containerStyle}>
       <View
         style={{
-          backgroundColor: colors['white']
+          backgroundColor: colors['primary']
         }}
       >
         <Text
           style={{
             ...styles.textInfo,
-            fontWeight: '700'
+            fontWeight: '700',
+            color: colors['sub-primary-text']
           }}
         >
           My Pending Rewards
@@ -67,7 +69,8 @@ export const MyRewardCard: FunctionComponent<{
               ...styles.textInfo,
               marginTop: spacing['4'],
               fontWeight: '400',
-              fontSize: 20
+              fontSize: 20,
+              color: colors['sub-primary-text']
             }}
           >
             {pendingStakableReward
@@ -161,23 +164,24 @@ export const MyRewardCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  textInfo: {
-    ...typography.h6,
-    color: colors['text-black-medium']
-  },
-  containerBtn: {
-    borderWidth: 0,
-    backgroundColor: colors['transparent'],
-    paddingLeft: 0,
-    marginLeft: 0,
-    marginTop: 0,
-    paddingTop: 0
-  },
-  btn: {
-    flexDirection: 'row',
-    paddingHorizontal: 0,
-    justifyContent: 'flex-start',
-    paddingVertical: 0
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    textInfo: {
+      ...typography.h6,
+      color: colors['text-black-medium']
+    },
+    containerBtn: {
+      borderWidth: 0,
+      backgroundColor: colors['transparent'],
+      paddingLeft: 0,
+      marginLeft: 0,
+      marginTop: 0,
+      paddingTop: 0
+    },
+    btn: {
+      flexDirection: 'row',
+      paddingHorizontal: 0,
+      justifyContent: 'flex-start',
+      paddingVertical: 0
+    }
+  });

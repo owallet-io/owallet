@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import { useStore } from '../../../stores';
 import { useDelegateTxConfig } from '@owallet/hooks';
@@ -15,7 +15,7 @@ import {
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { BondStatus } from '@owallet/stores';
-import { colors, spacing, typography } from '../../../themes';
+import { spacing, typography } from '../../../themes';
 import { CText as Text } from '../../../components/text';
 import { Toggle } from '../../../components/toggle';
 import { Dec, DecUtils } from '@owallet/unit';
@@ -41,7 +41,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   const validatorAddress = route.params.validatorAddress;
 
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
 
   const smartNavigation = useSmartNavigation();
@@ -86,10 +87,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   // };
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <Text
         style={{
-          ...styles.title
+          ...styles.title,
+          color: colors['primary-text']
         }}
       >
         Staking
@@ -135,7 +137,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
               fontWeight: '700',
               fontSize: 16,
               lineHeight: 34,
-              paddingHorizontal: 8
+              paddingHorizontal: 8,
+              color: colors['primary-text']
             }}
           >
             Custom Fee
@@ -195,10 +198,19 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         >
           <View>
             <Text
-              style={{ ...styles.textNormal, marginBottom: spacing['4'] }}
+              style={{
+                ...styles.textNormal,
+                marginBottom: spacing['4'],
+                color: colors['sub-primary-text']
+              }}
             >{`Gas limit`}</Text>
             {/* Gas limit now fixed at 0.00004 ORAI for every transactions */}
-            <Text style={{ ...styles.textNormal }}>{`200000`}</Text>
+            <Text
+              style={{
+                ...styles.textNormal,
+                color: colors['sub-primary-text']
+              }}
+            >{`200000`}</Text>
           </View>
           <View />
         </View>
@@ -257,44 +269,46 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styles = StyleSheet.create({
-  page: {
-    padding: spacing['page']
-  },
-  containerStaking: {
-    borderRadius: spacing['24'],
-    backgroundColor: colors['white']
-  },
-  containerBtn: {
-    backgroundColor: colors['purple-900'],
-    marginLeft: spacing['24'],
-    marginRight: spacing['24'],
-    borderRadius: spacing['8'],
-    marginTop: spacing['20'],
-    paddingVertical: spacing['16']
-  },
-  textBtn: {
-    ...typography.h6,
-    color: colors['white'],
-    fontWeight: '700'
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  },
-  textNormal: {
-    ...typography.h7,
-    color: colors['gray-600']
-  },
-  title: {
-    ...typography.h3,
-    fontWeight: '700',
-    textAlign: 'center',
-    color: colors['gray-900'],
-    marginTop: spacing['12'],
-    marginBottom: spacing['12']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    page: {
+      padding: spacing['page']
+    },
+    containerStaking: {
+      borderRadius: spacing['24'],
+      backgroundColor: colors['primary'],
+      marginBottom: spacing['24']
+    },
+    containerBtn: {
+      backgroundColor: colors['purple-900'],
+      marginLeft: spacing['24'],
+      marginRight: spacing['24'],
+      borderRadius: spacing['8'],
+      marginTop: spacing['20'],
+      paddingVertical: spacing['16']
+    },
+    textBtn: {
+      ...typography.h6,
+      color: colors['white'],
+      fontWeight: '700'
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      color: colors['gray-900'],
+      marginBottom: spacing['8']
+    },
+    textNormal: {
+      ...typography.h7,
+      color: colors['gray-600']
+    },
+    title: {
+      ...typography.h3,
+      fontWeight: '700',
+      textAlign: 'center',
+      color: colors['gray-900'],
+      marginTop: spacing['12'],
+      marginBottom: spacing['12']
+    }
+  });

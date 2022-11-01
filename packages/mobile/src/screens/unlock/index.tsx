@@ -390,9 +390,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
                 paddingBottom: 40
               }}
               inputStyle={{
-                borderColor: colors['purple-100'],
+                borderColor: colors['border'],
                 borderWidth: 1,
-                backgroundColor: colors['white'],
+                backgroundColor: colors['item'],
                 paddingLeft: 11,
                 paddingRight: 11,
                 paddingTop: 12,

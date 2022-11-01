@@ -9,13 +9,15 @@ import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { colors, spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ValidatorThumbnails } from '@owallet/common';
+import { useTheme } from '@react-navigation/native';
 
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorList: Array<any>;
 }> = observer(({ containerStyle, validatorList }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -91,7 +93,8 @@ export const DelegationsCard: FunctionComponent<{
                 style={{
                   ...styles.containerItem,
                   marginTop: 8,
-                  marginBottom: 8
+                  marginBottom: 8,
+                  backgroundColor: colors['item']
                 }}
                 onPress={() => {
                   smartNavigation.navigate('Delegate.Detail', {
@@ -102,7 +105,8 @@ export const DelegationsCard: FunctionComponent<{
               >
                 <ValidatorThumbnail
                   style={{
-                    marginRight: spacing['12']
+                    marginRight: spacing['12'],
+                    backgroundColor: colors['white']
                   }}
                   size={40}
                   url={thumbnail}
@@ -111,7 +115,8 @@ export const DelegationsCard: FunctionComponent<{
                   style={{
                     ...styles.textInfo,
                     fontWeight: '700',
-                    fontSize: 16
+                    fontSize: 16,
+                    color: colors['sub-primary-text']
                   }}
                   numberOfLines={1}
                   ellipsizeMode="tail"
@@ -121,7 +126,8 @@ export const DelegationsCard: FunctionComponent<{
                 <View style={{ flex: 1 }} />
                 <Text
                   style={{
-                    ...styles.textInfo
+                    ...styles.textInfo,
+                    color: colors['sub-primary-text']
                   }}
                 >
                   {amount.maxDecimals(4).trim(true).shrink(true).toString()}
@@ -135,19 +141,20 @@ export const DelegationsCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  containerItem: {
-    backgroundColor: colors['white'],
-    borderRadius: spacing['8'],
-    flexDirection: 'row',
-    marginHorizontal: spacing['24'],
-    padding: spacing['8'],
-    alignItems: 'center',
-    justifyContent: 'flex-start'
-  },
-  textInfo: {
-    ...typography.h5,
-    fontWeight: '400',
-    color: colors['gray-900']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerItem: {
+      backgroundColor: colors['white'],
+      borderRadius: spacing['8'],
+      flexDirection: 'row',
+      marginHorizontal: spacing['24'],
+      padding: spacing['8'],
+      alignItems: 'center',
+      justifyContent: 'flex-start'
+    },
+    textInfo: {
+      ...typography.h5,
+      fontWeight: '400',
+      color: colors['gray-900']
+    }
+  });

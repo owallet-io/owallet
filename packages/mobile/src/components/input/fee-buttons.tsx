@@ -29,7 +29,8 @@ import {
   AverageIconFill,
   FastIconFill
 } from '../icon';
-import { colors, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
+import { useTheme } from '@react-navigation/native';
 export interface FeeButtonsProps {
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;
@@ -100,6 +101,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     const { priceStore } = useStore();
 
     const style = useStyle();
+    const { colors } = useTheme();
+    const styles = styling(colors);
 
     useEffect(() => {
       if (feeConfig.feeCurrency && !feeConfig.fee) {
@@ -222,7 +225,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <Text
               style={{
                 ...typography.h7,
-                fontWeight: '700'
+                fontWeight: '700',
+                color: colors['sub-primary-text']
               }}
             >
               {label}
@@ -231,7 +235,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           <Text
             style={{
               fontSize: 10,
-              fontWeight: '700'
+              fontWeight: '700',
+              color: colors['sub-primary-text']
             }}
           >
             {amount.maxDecimals(6).trim(true).separator(' ').toString()}
@@ -240,8 +245,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             <Text
               style={{
                 fontSize: 10,
-                color: '#636366',
-                lineHeight: 16
+                lineHeight: 16,
+                color: colors['sub-primary-text']
               }}
             >
               {price.toString()}
@@ -259,14 +264,17 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         }}
       >
         <Text
-          style={StyleSheet.flatten([
-            style.flatten([
-              'subtitle3',
-              'color-text-black-medium',
-              'margin-bottom-3'
+          style={[
+            StyleSheet.flatten([
+              style.flatten([
+                'subtitle3',
+                'color-text-black-medium',
+                'margin-bottom-3'
+              ]),
+              labelStyle
             ]),
-            labelStyle
-          ])}
+            { color: colors['sub-primary-text'] }
+          ]}
         >
           {label}
         </Text>
@@ -344,21 +352,22 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
   }
 );
 
-const styles = StyleSheet.create({
-  containerBtnFee: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing['12'],
-    backgroundColor: colors['white'],
-    borderColor: colors['white'],
-    borderRadius: spacing['12'],
-    marginLeft: 5,
-    marginRight: 5
-  },
-  containerIcon: {
-    borderRadius: spacing['8'],
-    padding: spacing['10'],
-    width: 44,
-    alignItems: 'center'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerBtnFee: {
+      flex: 1,
+      justifyContent: 'center',
+      padding: spacing['12'],
+      backgroundColor: colors['item'],
+      borderColor: colors['white'],
+      borderRadius: spacing['12'],
+      marginLeft: 5,
+      marginRight: 5
+    },
+    containerIcon: {
+      borderRadius: spacing['8'],
+      padding: spacing['10'],
+      width: 44,
+      alignItems: 'center'
+    }
+  });

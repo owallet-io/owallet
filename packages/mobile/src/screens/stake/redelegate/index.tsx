@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { BondStatus } from '@owallet/stores';
@@ -18,14 +18,11 @@ import {
 } from '../../../components/input';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
-import { colors, spacing, typography } from '../../../themes';
+import { spacing } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
 import ValidatorsList from './validators-list';
-import { HeaderBackDownButtonIcon } from '../../../components/header/icon';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DownArrowIcon } from '../../../components/icon';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { Toggle } from '../../../components/toggle';
 
 export const RedelegateScreen: FunctionComponent = observer(() => {
@@ -45,12 +42,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
   const [customFee, setCustomFee] = useState(false);
-
+  const { colors } = useTheme();
   const { chainStore, accountStore, queriesStore, analyticsStore, modalStore } =
     useStore();
 
   const style = useStyle();
-  const bottomTabBarHeight = useBottomTabBarHeight();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -180,6 +176,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{
         flexGrow: 1
       }}
+      backgroundColor={colors['background']}
     >
       <View style={style.flatten(['height-page-pad'])} />
       <Text
@@ -187,7 +184,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           fontSize: 24,
           lineHeight: 34,
           fontWeight: '700',
-          textAlign: 'center'
+          textAlign: 'center',
+          color: colors['primary-text']
         }}
       >
         Switch validator
@@ -196,7 +194,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         style={{
           borderRadius: spacing['8'],
           marginTop: 24,
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           marginLeft: 20,
           marginRight: 20
         }}
@@ -214,7 +212,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <View style={{ width: 40, height: 40 }}>
               <ValidatorThumbnail
-                style={style.flatten(['margin-right-12'])}
+                style={{
+                  marginRight: spacing['8'],
+                  backgroundColor: colors['border']
+                }}
                 size={36}
                 url={srcValidatorThumbnail}
               />
@@ -222,10 +223,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             <View style={{ paddingLeft: 12 }}>
               <Text
                 style={{
-                  color: colors['gray-900'],
                   fontSize: 18,
                   lineHeight: 22,
-                  fontWeight: '700'
+                  fontWeight: '700',
+                  color: colors['primary-text']
                 }}
               >
                 {srcValidator ? srcValidator.description.moniker : '...'}
@@ -280,7 +281,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
         style={{
           marginBottom: spacing['12'],
           borderRadius: spacing['8'],
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           marginLeft: 20,
           marginRight: 20
         }}
@@ -382,7 +383,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                     fontWeight: '700',
                     fontSize: 16,
                     lineHeight: 22,
-                    paddingLeft: 12
+                    paddingLeft: 12,
+                    color: colors['primary-text']
                   }}
                 >
                   Select validator
