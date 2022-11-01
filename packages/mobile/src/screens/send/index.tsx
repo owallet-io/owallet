@@ -16,7 +16,7 @@ import {
   TextInput
 } from '../../components/input';
 import { Button } from '../../components/button';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { colors, spacing } from '../../themes';
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   sendInputRoot: {
     paddingHorizontal: spacing['20'],
     paddingVertical: spacing['24'],
-    backgroundColor: colors['white'],
+    backgroundColor: colors['primary'],
     borderRadius: 24
   },
   sendlabelInput: {
@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
 
 export const SendScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
-
+  const { colors } = useTheme();
   const [customFee, setCustomFee] = useState(false);
 
   const route = useRoute<
@@ -109,14 +109,15 @@ export const SendScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
         <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
           <Text
             style={{
               fontWeight: '700',
               fontSize: 24,
-              lineHeight: 34
+              lineHeight: 34,
+              color: colors['primary-text']
             }}
           >
             Send
@@ -169,7 +170,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                 fontWeight: '700',
                 fontSize: 16,
                 lineHeight: 34,
-                paddingHorizontal: 8
+                paddingHorizontal: 8,
+                color: colors['primary-text']
               }}
             >
               Custom Fee

@@ -10,7 +10,8 @@ import { CText as Text } from '../text';
 import { useStyle } from '../../styles';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../rect-button';
-import { colors, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
+import { useTheme } from '@react-navigation/native';
 
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
@@ -32,7 +33,7 @@ export const SelectorModal: FunctionComponent<{
     maxItemsToShow,
     modalPersistent
   }) => {
-    const style = useStyle();
+    const { colors } = useTheme();
 
     const renderBall = (selected: boolean) => {
       if (selected) {
@@ -103,58 +104,60 @@ export const SelectorModal: FunctionComponent<{
     };
 
     return (
-      <View>
-        <View
+      <View
+        style={{
+          borderRadius: spacing['8'],
+          overflow: 'hidden',
+          backgroundColor: colors['background'],
+          paddingVertical: spacing['16']
+        }}
+      >
+        <ScrollView
           style={{
-            borderRadius: spacing['8'],
-            overflow: 'hidden',
-            backgroundColor: colors['white'],
-            paddingVertical: spacing['16']
+            maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
+            paddingHorizontal: spacing['24']
           }}
+          ref={scrollViewRef}
+          persistentScrollbar={true}
+          onLayout={onInit}
         >
-          <ScrollView
-            style={{
-              maxHeight: maxItemsToShow ? 64 * maxItemsToShow : undefined,
-              paddingHorizontal: spacing['24']
-            }}
-            ref={scrollViewRef}
-            persistentScrollbar={true}
-            onLayout={onInit}
-          >
-            {items.map(item => {
-              return (
-                <View
+          {items.map(item => {
+            return (
+              <View
+                style={{
+                  backgroundColor: colors['gray-100'],
+                  borderRadius: spacing['12'],
+                  marginTop: spacing['8'],
+                  marginBottom: spacing['8'],
+                  paddingHorizontal: spacing['18']
+                }}
+              >
+                <RectButton
+                  key={item.key}
                   style={{
-                    backgroundColor: colors['gray-100'],
-                    borderRadius: spacing['12'],
-                    marginTop: spacing['8'],
-                    marginBottom: spacing['8'],
-                    paddingHorizontal: spacing['18']
+                    height: 64,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}
+                  onPress={() => {
+                    setSelectedKey(item.key);
+                    if (!modalPersistent) {
+                      close();
+                    }
                   }}
                 >
-                  <RectButton
-                    key={item.key}
-                    style={{
-                      height: 64,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between'
-                    }}
-                    onPress={() => {
-                      setSelectedKey(item.key);
-                      if (!modalPersistent) {
-                        close();
-                      }
-                    }}
+                  <Text
+                    style={{ ...styles.label, color: colors['primary-text'] }}
                   >
-                    <Text style={{ ...styles.label }}>{item.label}</Text>
-                    {renderBall(item.key === selectedKey)}
-                  </RectButton>
-                </View>
-              );
-            })}
-          </ScrollView>
-        </View>
+                    {item.label}
+                  </Text>
+                  {renderBall(item.key === selectedKey)}
+                </RectButton>
+              </View>
+            );
+          })}
+        </ScrollView>
       </View>
     );
   }
@@ -251,6 +254,7 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
   onPress
 }) => {
   const style = useStyle();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -261,12 +265,9 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
     >
       <Text
         style={StyleSheet.flatten([
-          style.flatten([
-            'subtitle3',
-            'color-text-black-medium',
-            'margin-bottom-3'
-          ]),
-          labelStyle
+          style.flatten(['subtitle3', 'margin-bottom-3']),
+          labelStyle,
+          { color: colors['sub-primary-text'] }
         ])}
       >
         {label}
@@ -281,7 +282,10 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
             'border-width-1',
             'border-color-border-white'
           ]),
-          selectorContainerStyle
+          selectorContainerStyle,
+          {
+            backgroundColor: colors['item']
+          }
         ])}
         onPress={onPress}
       >
@@ -291,7 +295,8 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
               ['body2', 'color-text-black-medium', 'padding-0'],
               [!selected && 'color-text-black-low']
             ),
-            textStyle
+            textStyle,
+            { color: colors['sub-primary-text'] }
           ])}
         >
           {selected ? selected.label : placeHolder ?? ''}
@@ -311,7 +316,6 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.h5,
-    fontWeight: '700',
-    color: colors['gray-900']
+    fontWeight: '700'
   }
 });

@@ -53,7 +53,7 @@ const bindStyleTxInfo = (
             textTransform: 'uppercase'
           };
     default:
-      return { color: colors['gray-900'] };
+      return { color: colors['sub-primary-text'] };
   }
 };
 
@@ -90,7 +90,7 @@ const InfoItems: FunctionComponent<{
         >
           <Text
             style={{
-              color: colors['gray-600'],
+              color: colors['primary-text'],
               ...typography.h7
             }}
           >
@@ -142,15 +142,20 @@ const InfoItems: FunctionComponent<{
       }}
     >
       <View
-        style={StyleSheet.flatten([
-          style.flatten([
-            'height-62',
-            'flex-row',
-            'items-center',
-            'padding-x-20',
-            'background-color-white'
-          ])
-        ])}
+        style={[
+          StyleSheet.flatten([
+            style.flatten([
+              'height-62',
+              'flex-row',
+              'items-center',
+              'padding-x-20',
+              'background-color-white'
+            ])
+          ]),
+          {
+            backgroundColor: colors['item']
+          }
+        ]}
       >
         {renderChildren()}
       </View>
@@ -171,11 +176,18 @@ const DetailItems: FunctionComponent<{
   const renderChildren = () => {
     return (
       <>
-        <View style={styles.containerDetailHorizontal}>
+        <View
+          style={[
+            styles.containerDetailHorizontal,
+            {
+              backgroundColor: colors['item']
+            }
+          ]}
+        >
           <View style={{ flex: 1 }}>
             <Text
               style={{
-                color: colors['gray-600'],
+                color: colors['primary-text'],
                 ...typography.h7
               }}
             >
@@ -193,7 +205,7 @@ const DetailItems: FunctionComponent<{
                     ? colors['green-500']
                     : value === 'Failed'
                     ? colors['red-500']
-                    : colors['black']
+                    : colors['sub-primary-text']
               }}
             >
               {bindValueTxInfo(label, value)}
@@ -212,15 +224,20 @@ const DetailItems: FunctionComponent<{
       }}
     >
       <RectButton
-        style={StyleSheet.flatten([
-          style.flatten([
-            'height-62',
-            'flex-row',
-            'items-center',
-            'padding-x-20',
-            'background-color-white'
-          ])
-        ])}
+        style={[
+          StyleSheet.flatten([
+            style.flatten([
+              'height-62',
+              'flex-row',
+              'items-center',
+              'padding-x-20',
+              'background-color-white'
+            ])
+          ]),
+          {
+            backgroundColor: colors['item']
+          }
+        ]}
         onPress={onPress}
       >
         {renderChildren()}
@@ -444,7 +461,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   ];
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={styles.containerTitle}>
         <Text style={styles.textTitle}>Transaction Detail</Text>
       </View>
@@ -484,11 +501,11 @@ const styling = colors =>
     containerTitle: {
       paddingHorizontal: spacing['20'],
       paddingVertical: spacing['16'],
-      backgroundColor: colors['white']
+      backgroundColor: colors['primary']
     },
     textTitle: {
       ...typography.h3,
-      color: colors['black'],
+      color: colors['primary-text'],
       lineHeight: 34,
       fontWeight: 'bold'
     },

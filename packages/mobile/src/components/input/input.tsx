@@ -119,10 +119,6 @@ export const TextInput = React.forwardRef<
           {props.inputLeft}
           <NativeTextInput
             multiline={props.multiline}
-            placeholderTextColor={
-              props.placeholderTextColor ??
-              style.get('color-text-gray-300').color
-            }
             style={[
               StyleSheet.flatten([
                 style.flatten([
@@ -144,6 +140,9 @@ export const TextInput = React.forwardRef<
               { color: colors['sub-primary-text'] }
             ]}
             {...restProps}
+            placeholderTextColor={
+              props.placeholderTextColor ?? colors['sub-primary-text']
+            }
             ref={ref}
           />
           {props.inputRight}
