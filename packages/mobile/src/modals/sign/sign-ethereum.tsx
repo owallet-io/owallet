@@ -10,18 +10,20 @@ import {
 } from 'react-native';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
-
+import Web3 from 'web3';
 import { Button } from '../../components/button';
 import { colors } from '../../themes';
 import Big from 'big.js';
 
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
+import ERC20_ABI from './erc20.json';
 
 import { TextInput } from '../../components/input';
 import { useFeeEthereumConfig, useGasEthereumConfig } from '@owallet/hooks';
 import { FeeEthereumInSign } from './fee-ethereum';
 import { navigationRef } from '../../router/root';
+import axios from 'axios';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
@@ -30,25 +32,21 @@ export const SignEthereumModal: FunctionComponent<{
   close: () => void;
 }> = registerModal(
   observer(() => {
-    const { chainStore, signInteractionStore } = useStore();
+    const { chainStore, signInteractionStore, accountStore, sendStore } =
+      useStore();
 
     useUnmount(() => {
       signInteractionStore.rejectAll();
-      // navigationRef.current.goBack();
     });
 
-    const [isInternal, setIsInternal] = useState(false);
+    const chainId = chainStore?.current?.chainId;
 
-    // Check that the request is from the wallet connect.
-    // If this is undefiend, the request is not from the wallet connect.
-    // const [wcSession, setWCSession] = useState<
-    //   WalletConnect['session'] | undefined
-    // >();
+    const account = accountStore.getAccount(chainId);
 
     const current = chainStore.current;
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
     const [dataSign, setDataSign] = useState(null);
-    const [gasPrice, setGasPrice] = useState('0');
+    const [gasPrice, setGasPrice] = useState('');
     const gasConfig = useGasEthereumConfig(
       chainStore,
       current.chainId,
@@ -58,40 +56,60 @@ export const SignEthereumModal: FunctionComponent<{
     const decimals = useRef(chainStore.current.feeCurrencies[0].coinDecimals);
 
     useEffect(() => {
-      try {
-        if (dataSign) {
-          decimals.current = dataSign?.data?.data?.data?.decimals;
-          let chainIdSign = dataSign?.data?.chainId;
-          if (!chainIdSign?.toString()?.startsWith('0x'))
-            chainIdSign = '0x' + Number(chainIdSign).toString(16);
-          chainStore.selectChain(chainIdSign);
+      const estimateGas = async () => {
+        try {
+          if (dataSign) {
+            decimals.current = dataSign?.data?.data?.data?.decimals;
+            let chainIdSign = dataSign?.data?.chainId;
+            if (!chainIdSign?.toString()?.startsWith('0x'))
+              chainIdSign = '0x' + Number(chainIdSign).toString(16);
+            chainStore.selectChain(chainIdSign);
+            const response = await axios.post(chainStore.current.rest, {
+              jsonrpc: '2.0',
+              id: 1,
+              method: 'eth_gasPrice',
+              params: []
+            });
 
-          const estimatedGasLimit = parseInt(
-            dataSign?.data?.data?.data?.estimatedGasLimit,
-            16
-          );
-          const estimatedGasPrice = new Big(
-            parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16)
-          )
-            .div(new Big(10).pow(decimals.current))
-            .toFixed(decimals.current);
-
-          if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== 'NaN') {
-            setGasPrice(estimatedGasPrice);
-            gasConfig.setGas(estimatedGasLimit);
-            feeConfig.setFee(
-              new Big(estimatedGasLimit)
-                .mul(estimatedGasPrice)
+            setGasPrice(
+              new Big(parseInt(response.data.result, 16))
+                .div(new Big(10).pow(decimals.current))
                 .toFixed(decimals.current)
             );
-          }
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    }, [dataSign]);
+            // @ts-ignore
+            const web3 = new Web3(chainStore.current.rest);
+            const tokenInfo = new web3.eth.Contract(
+              ERC20_ABI,
+              sendStore.sendObj?.contract_addr
+            );
+            const estimate = await tokenInfo.methods
+              .transfer(
+                account?.evmosHexAddress,
+                '0x' +
+                  parseFloat(
+                    new Big(sendStore.sendObj?.amount)
+                      .mul(new Big(10).pow(decimals.current))
+                      .toString()
+                  ).toString(16)
+              )
+              .estimateGas({
+                from: sendStore.sendObj?.contract_addr
+              });
 
-    // const memoConfig = useMemoConfig(chainStore, current.chainId);
+            gasConfig.setGas(estimate);
+            feeConfig.setFee(
+              new Big(estimate).mul(gasPrice).toFixed(decimals.current)
+            );
+          }
+        } catch (error) {
+          gasConfig.setGas(21000);
+          feeConfig.setFee(
+            new Big(21000).mul(new Big(gasPrice)).toFixed(decimals.current)
+          );
+        }
+      };
+      estimateGas();
+    }, [dataSign]);
 
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
@@ -99,19 +117,15 @@ export const SignEthereumModal: FunctionComponent<{
       }
     }, [signInteractionStore.waitingEthereumData]);
 
-    // const [fee, setFee] = useState<string>('0x0');
     const [memo, setMemo] = useState<string>('');
 
     const style = useStyle();
-
-    // const [chainId, setChainId] = useState(chainStore.current.chainId);
 
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
 
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
-        setIsInternal(data.isInternal);
       }
     }, [signInteractionStore.waitingEthereumData]);
 
@@ -125,12 +139,6 @@ export const SignEthereumModal: FunctionComponent<{
 
     return (
       <CardModal>
-        {/* {wcSession ? (
-          <WCAppLogoAndName
-            containerStyle={style.flatten(['margin-y-14'])}
-            peerMeta={wcSession.peerMeta}
-          />
-        ) : null} */}
         <KeyboardAvoidingView
           behavior="position"
           keyboardVerticalOffset={keyboardVerticalOffset}
