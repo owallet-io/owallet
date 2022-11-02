@@ -426,7 +426,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           style={{
             marginTop: 20,
             padding: 20,
-            backgroundColor: colors['white'],
+            backgroundColor: colors['primary'],
             borderRadius: 24
           }}
         >
@@ -461,7 +461,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 fontWeight: '700',
                 fontSize: 16,
                 lineHeight: 34,
-                paddingHorizontal: 8
+                paddingHorizontal: 8,
+                color: colors['primary-text']
               }}
             >
               Custom Fee
