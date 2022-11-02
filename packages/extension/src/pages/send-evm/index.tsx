@@ -9,6 +9,7 @@ import {
 import { useStore } from '../../stores';
 import bigInteger from 'big-integer';
 import Big from 'big.js';
+import ERC20_ABI from './erc20.json';
 
 import { HeaderLayout } from '../../layouts';
 
@@ -125,25 +126,39 @@ export const SendEvmPage: FunctionComponent<{
   };
 
   useEffect(() => {
+    console.log("here");
     (async () => {
       try {
         const web3 = new Web3(chainStore.current.rest);
-        const estimate = await web3.eth.estimateGas({
-          to: accountInfo?.evmosHexAddress,
-          from: query?.defaultDenom?.split(':')?.[1]
-        });
+        // @ts-ignore
+        const tokenInfo = new web3.eth.Contract(ERC20_ABI, query?.defaultDenom?.split(':')?.[1])
+        const estimate = await tokenInfo.methods.transfer(
+          accountInfo?.evmosHexAddress,
+          '0x' + parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(16)
+
+        ).estimateGas({
+          from: query?.defaultDenom?.split(':')?.[1],
+        })
+        // console.log("🚀 ~ file: index.tsx ~ line 139 ~ estimate1", estimate1)
+        // const estimate = await web3.eth.estimateGas({
+        //   to: accountInfo?.evmosHexAddress,
+        //   from: query?.defaultDenom?.split(':')?.[1]
+        // });
+        // console.log(query?.defaultDenom,'zzzzzzzzz')
+        // console.log(estimate,'estimateeee')
         gasConfig.setGas(estimate ?? 21000);
         feeConfig.setFee(
           new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       } catch (error) {
+        console.log(error,'zzz')
         gasConfig.setGas(21000);
         feeConfig.setFee(
           new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       }
     })();
-  }, [gasPrice]);
+  }, [gasPrice, sendConfigs.amountConfig.amount]);
 
   useEffect(() => {
     if (query.defaultDenom) {
