@@ -19,30 +19,32 @@ import { Button } from '../../components/button';
 import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
-import { colors, spacing } from '../../themes';
+import { spacing } from '../../themes';
 import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 
-const styles = StyleSheet.create({
-  sendInputRoot: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    backgroundColor: colors['primary'],
-    borderRadius: 24
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      backgroundColor: colors['primary'],
+      borderRadius: 24
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      color: colors['gray-900'],
+      marginBottom: spacing['8']
+    }
+  });
 
 export const SendScreen: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
     useStore();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
 
   const route = useRoute<

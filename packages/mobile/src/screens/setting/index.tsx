@@ -190,7 +190,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           />
         ) : null}
         {/* <SettingSectionTitle title="Others" /> */}
-        {/* <SettingSwitchModeItem /> */}
+        <SettingSwitchModeItem />
         <SettingItem
           label="About OWallet"
           onPress={() => {

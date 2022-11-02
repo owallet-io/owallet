@@ -102,6 +102,8 @@ export const SignEthereumModal: FunctionComponent<{
             );
           }
         } catch (error) {
+          console.log('error ===', error);
+
           gasConfig.setGas(21000);
           feeConfig.setFee(
             new Big(21000).mul(new Big(gasPrice)).toFixed(decimals.current)
