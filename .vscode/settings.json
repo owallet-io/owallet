@@ -3,5 +3,8 @@
     "prettier.singleQuote": true,
     "prettier.jsxSingleQuote": false,
     "prettier.trailingComma": "none",
-    "prettier.semi": true
+    "prettier.semi": true,
+    "js/ts.implicitProjectConfig.experimentalDecorators":true
+
+
 }
