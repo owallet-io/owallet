@@ -15,6 +15,7 @@ import {
 import { CText as Text } from './components/text';
 import { KeyRingStatus } from '@owallet/background';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 import { useStore } from './stores';
 import { observer } from 'mobx-react-lite';
 import { HomeScreen } from './screens/home';
@@ -120,6 +121,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
 import { useRoute } from '@react-navigation/core';
 import { TransferNFTScreen } from './screens/transfer-nft';
+import { DashBoardScreen } from './screens/dashboard';
+import { lightColors } from './themes/colors';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -559,6 +562,13 @@ export const OtherNavigation: FunctionComponent = () => {
         options={{
           header: () => <CustomHeader />
         }}
+        name="Dashboard"
+        component={DashBoardScreen}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
         name="Transactions.Detail"
         component={TransactionDetail}
       />
@@ -569,6 +579,7 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Camera"
         component={CameraScreen}
       />
+
       <Stack.Screen
         options={{
           title: 'Governance'
@@ -1045,7 +1056,7 @@ export const MainTabNavigation: FunctionComponent = () => {
 // };
 
 export const AppNavigation: FunctionComponent = observer(() => {
-  const { keyRingStore, deepLinkUriStore } = useStore();
+  const { keyRingStore, deepLinkUriStore, appInitStore } = useStore();
   useEffect(() => {
     Linking.getInitialURL()
       .then(url => {
@@ -1066,11 +1077,16 @@ export const AppNavigation: FunctionComponent = observer(() => {
     };
   }, []);
 
+  const scheme = appInitStore.getInitApp.theme;
+
   return (
     <PageScrollPositionProvider>
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
-          <NavigationContainer ref={navigationRef}>
+          <NavigationContainer
+            ref={navigationRef}
+            theme={scheme === 'dark' ? DarkTheme : DefaultTheme}
+          >
             <Stack.Navigator
               initialRouteName={
                 keyRingStore.status !== KeyRingStatus.UNLOCKED
@@ -1099,3 +1115,17 @@ export const AppNavigation: FunctionComponent = observer(() => {
     </PageScrollPositionProvider>
   );
 });
+
+const DarkTheme = {
+  dark: true,
+  colors: {
+    ...colors
+  }
+};
+
+const DefaultTheme = {
+  dark: false,
+  colors: {
+    ...lightColors
+  }
+};

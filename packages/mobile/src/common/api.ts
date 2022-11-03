@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import moment from 'moment';
 
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
@@ -41,6 +42,26 @@ export const API = {
     if (type === 'cw20') {
       url = `/v1/ow20_smart_contracts/${address}?limit=${limit}&page_id=${page}`;
     }
+    return API.get(url, config);
+  },
+
+  getMarketChartRange: (
+    { id, from, to }: { id: string; from?: number; to?: number },
+    config: AxiosRequestConfig
+  ) => {
+    if (!to) {
+      to = moment().unix();
+    }
+    if (!from) {
+      from = moment().subtract(1, 'days').unix();
+    }
+
+    let url = `/coins/${id}/market_chart/range?vs_currency=usd&from=${from}&to=${to}`;
+    return API.get(url, config);
+  },
+
+  getCoinInfo: ({ id }: { id: string }, config: AxiosRequestConfig) => {
+    let url = `/coins/markets?vs_currency=usd&ids=${id}&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=24h`;
     return API.get(url, config);
   },
 
