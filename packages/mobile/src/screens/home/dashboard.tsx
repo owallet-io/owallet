@@ -194,7 +194,8 @@ export const DashboardCard: FunctionComponent<{
             </Text>
           </TouchableOpacity>
         </View>
-        {canView ? (
+
+        {canView && !isNetworkError ? (
           <TouchableOpacity
             onPress={() => {
               smartNavigation.navigateSmart('Dashboard', {});
@@ -211,6 +212,18 @@ export const DashboardCard: FunctionComponent<{
           </TouchableOpacity>
         ) : null}
       </View>
+      {isNetworkError ? (
+        <Text
+          style={{
+            alignSelf: 'center',
+            paddingBottom: spacing['16'],
+            fontSize: 17,
+            fontWeight: '300'
+          }}
+        >
+          {'There is no information for this chain yet'}
+        </Text>
+      ) : null}
       {!isNetworkError && active === 'price' ? (
         <LineChart
           data={data}
@@ -226,7 +239,7 @@ export const DashboardCard: FunctionComponent<{
       ) : !isNetworkError ? (
         <BarChart
           data={dataVolumes}
-          width={metrics.screenWidth - 72}
+          width={metrics.screenWidth - 98}
           height={220}
           yAxisLabel="$"
           yAxisSuffix={chartSuffix}
