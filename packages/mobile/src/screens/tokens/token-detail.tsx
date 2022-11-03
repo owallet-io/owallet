@@ -17,7 +17,7 @@ import {
 import { Text } from '@rneui/base';
 import { useSmartNavigation } from '../../navigation.provider';
 import { TokenSymbol } from '../../components/token-symbol';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { TransactionMinusIcon } from '../../components/icon';
 import LinearGradient from 'react-native-linear-gradient';
@@ -36,11 +36,13 @@ import { API } from '../../common/api';
 import { useLoadingScreen } from '../../providers/loading-screen';
 import { AddressQRCodeModal } from '../home/components';
 import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
+import { useTheme } from '@react-navigation/native';
 
 export const TokenDetailScreen: FunctionComponent = observer(props => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
     props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -183,11 +185,11 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     );
   };
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View
         style={{
           borderWidth: spacing['0.5'],
-          borderColor: colors['gray-100'],
+          borderColor: colors['border'],
           borderRadius: spacing['12'],
           marginHorizontal: spacing['24'],
           marginVertical: spacing['12']
@@ -270,8 +272,6 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               display: 'flex',
               flexDirection: 'row',
               paddingTop: spacing['6'],
-              // paddingLeft: spacing['22'],
-              // paddingRight: spacing['22'],
               justifyContent: 'space-around',
               paddingBottom: spacing['24']
             }}
@@ -297,7 +297,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
 
       <View
         style={{
-          backgroundColor: colors['white'],
+          backgroundColor: colors['primary'],
           borderRadius: spacing['24'],
           paddingBottom: spacing['24'],
           height: metrics.screenHeight / 2
@@ -396,17 +396,18 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styles = StyleSheet.create({
-  containerToken: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing['4'],
-    marginVertical: spacing['8'],
-    paddingTop: spacing['18'],
-    paddingBottom: spacing['18']
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerToken: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginHorizontal: spacing['4'],
+      marginVertical: spacing['8'],
+      paddingTop: spacing['18'],
+      paddingBottom: spacing['18']
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  });

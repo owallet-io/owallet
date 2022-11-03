@@ -4,7 +4,6 @@ import { useStore } from '../../../../stores';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { KeyStoreItem, KeyStoreSectionTitle } from '../../components';
 import Svg, { Path } from 'react-native-svg';
-import { useStyle } from '../../../../styles';
 import { useLoadingScreen } from '../../../../providers/loading-screen';
 import {
   MultiKeyStoreInfoElem,
@@ -12,6 +11,7 @@ import {
 } from '@owallet/background';
 import { View } from 'react-native';
 import { useSmartNavigation } from '../../../../navigation.provider';
+import { useTheme } from '@react-navigation/native';
 
 const CheckIcon: FunctionComponent<{
   color: string;
@@ -79,7 +79,7 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
 
-  const style = useStyle();
+  const { colors } = useTheme();
 
   const smartNavigation = useSmartNavigation();
 
@@ -129,6 +129,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
               return (
                 <KeyStoreItem
                   key={i.toString()}
+                  colors={colors}
                   label={keyStore.meta?.name || 'OWallet Account'}
                   paragraph={getKeyStoreParagraph(keyStore)}
                   topBorder={i === 0}
@@ -148,12 +149,12 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   };
 
   return (
-    <PageWithScrollViewInBottomTabView>
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       {renderKeyStores('mnemonic seed', mnemonicKeyStores)}
       {renderKeyStores('hardware wallet', ledgerKeyStores)}
       {renderKeyStores('private key', privateKeyStores)}
       {/* Margin bottom for last */}
-      <View style={style.get('height-16')} />
+      <View style={{ height: 16 }} />
     </PageWithScrollViewInBottomTabView>
   );
 });

@@ -230,7 +230,7 @@ const styling = colors =>
       marginLeft: spacing['24'],
       marginRight: spacing['24'],
       borderRadius: spacing['8'],
-      backgroundColor: colors['red-50'],
+      backgroundColor: colors['sub-primary'],
       marginTop: spacing['4'],
       marginBottom: spacing['8']
     },

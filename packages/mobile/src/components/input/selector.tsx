@@ -279,12 +279,12 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
             'padding-x-11',
             'padding-y-12',
             'border-radius-4',
-            'border-width-1',
-            'border-color-border-white'
+            'border-width-1'
           ]),
           selectorContainerStyle,
           {
-            backgroundColor: colors['item']
+            backgroundColor: colors['item'],
+            borderColor: colors['border']
           }
         ])}
         onPress={onPress}

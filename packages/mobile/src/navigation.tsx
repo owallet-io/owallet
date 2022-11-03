@@ -412,14 +412,14 @@ export const MainNavigation: FunctionComponent = () => {
       />
       <Stack.Screen
         options={{
-          title: 'Token detail'
+          header: () => <CustomHeader />
         }}
         name="Tokens.Detail"
         component={TokenDetailScreen}
       />
       <Stack.Screen
         options={{
-          title: 'Ntf detail'
+          header: () => <CustomHeader />
         }}
         name="Nfts.Detail"
         component={NftDetailScreen}
@@ -711,18 +711,16 @@ export const SettingStackScreen: FunctionComponent = () => {
               <HeaderAddIcon />
             </HeaderRightButton>
           ),
-          ...BlurredHeaderScreenOptionsPreset
+          ...BlurredHeaderScreenOptionsPreset,
+          headerStyle: {
+            backgroundColor: colors['primary'],
+            shadowColor: 'transparent', // this covers iOS
+            elevation: 0 // this covers Android
+          }
         }}
         component={SettingSelectAccountScreen}
       />
-      <Stack.Screen
-        name="SettingSelectLang"
-        options={{
-          title: 'Select Currency',
-          ...BlurredHeaderScreenOptionsPreset
-        }}
-        component={SettingSelectLangScreen}
-      />
+
       <Stack.Screen
         name="Setting.ViewPrivateData"
         component={ViewPrivateDataScreen}

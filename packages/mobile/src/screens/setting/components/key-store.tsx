@@ -20,28 +20,20 @@ import {
 } from '../../../components/icon';
 import { colors, spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useTheme } from '@react-navigation/native';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
 }> = ({ title }) => {
-  const style = useStyle();
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   return (
     <View
       style={{
         ...styles.containerSectionTitle
       }}
     >
-      {/* <Image
-        style={{
-          width: 20,
-          height: 20,
-          marginRight: 8
-        }}
-        source={require('../../../assets/image/webpage/note-icon.png')}
-        fadeDuration={0}
-      /> */}
-      <NoteIcon color={colors['purple-900']} height={20}/>
+      <NoteIcon color={colors['purple-900']} height={20} />
       <Text
         style={{
           ...typography['subtitle1'],
@@ -116,12 +108,15 @@ export const KeyStoreItem: FunctionComponent<{
   labelStyle?: TextStyle;
   label: string;
   active?: boolean;
+  colors: any;
   onPress?: () => void;
-}> = ({ containerStyle, labelStyle, label, onPress, active }) => {
+}> = ({ containerStyle, labelStyle, label, onPress, active, colors }) => {
+  const styles = styling(colors);
   const renderChildren = () => {
     return (
       <View
         style={{
+          ...containerStyle,
           ...styles.containerItem
         }}
       >
@@ -136,7 +131,7 @@ export const KeyStoreItem: FunctionComponent<{
           <Text
             style={{
               ...typography.h5,
-              color: colors['text-black-high'],
+              color: colors['sub-primary-text'],
               fontWeight: '700',
               marginLeft: spacing['12'],
               ...labelStyle
@@ -192,28 +187,29 @@ export const KeyStoreItem: FunctionComponent<{
   );
 };
 
-const styles = StyleSheet.create({
-  selectBtn: {
-    height: 54,
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  containerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors['gray-10'],
-    borderRadius: spacing['12'],
-    marginVertical: spacing['8'],
-    marginHorizontal: spacing['20'],
-    paddingVertical: spacing['4']
-  },
-  containerSectionTitle: {
-    marginHorizontal: spacing['20'],
-    paddingTop: spacing['16'],
-    paddingBottom: spacing['12'],
-    marginTop: spacing['16'],
-    flexDirection: 'row',
-    alignItems: 'center',
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    selectBtn: {
+      height: 54,
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    containerItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      backgroundColor: colors['sub-primary'],
+      borderRadius: spacing['12'],
+      marginVertical: spacing['8'],
+      marginHorizontal: spacing['20'],
+      paddingVertical: spacing['4']
+    },
+    containerSectionTitle: {
+      marginHorizontal: spacing['20'],
+      paddingTop: spacing['16'],
+      paddingBottom: spacing['12'],
+      marginTop: spacing['16'],
+      flexDirection: 'row',
+      alignItems: 'center'
+    }
+  });

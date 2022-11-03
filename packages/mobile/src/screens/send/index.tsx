@@ -175,7 +175,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                   fontWeight: '700',
                   fontSize: 16,
                   lineHeight: 34,
-                  paddingHorizontal: 8
+                  paddingHorizontal: 8,
+                  color: colors['primary-text']
                 }}
               >
                 Custom Fee

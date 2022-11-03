@@ -56,7 +56,7 @@ export const colors = {
   'text-black-very-very-low': '#C6C6CD',
   'text-black-very-very-very-low': '#DCDCE3',
   'text-primary': '#4334F1',
-  border: '#C6C6CD',
+  border: '#83838F',
   'border-gray': '#111',
   'border-white': '#F5F5F5',
   'border-pink': '#D7C4F5',

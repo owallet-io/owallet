@@ -54,7 +54,8 @@ export const SettingScreen: FunctionComponent = observer(() => {
         data: currencyItems,
         current: priceStore.defaultVsCurrency,
         priceStore,
-        modalStore
+        modalStore,
+        colors
       })
     );
   };
@@ -133,8 +134,8 @@ export const SettingScreen: FunctionComponent = observer(() => {
             <View>
               <Text
                 style={{
-                  ...typography['subtitle2'],
-                  color: colors['gray-300']
+                  ...typography['text-caption2'],
+                  color: colors['primary-text']
                 }}
               >
                 CURRENCY
@@ -150,7 +151,8 @@ export const SettingScreen: FunctionComponent = observer(() => {
                 <Text
                   style={{
                     ...typography['h6'],
-                    color: colors['gray-300'],
+                    color: colors['primary-text'],
+                    fontWeight: 'bold',
                     marginHorizontal: spacing['8']
                   }}
                 >
@@ -162,8 +164,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
           </TouchableOpacity>
         </View>
       </ImageBackground>
-      {/* <SettingSelectAccountItem /> */}
-      {/* <SettingFiatCurrencyItem topBorder={true} /> */}
       {/* <SettingSectionTitle title="General" /> */}
       <View
         style={{

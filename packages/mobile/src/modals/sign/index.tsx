@@ -242,26 +242,7 @@ export const SignModal: FunctionComponent<{
           signOptions={signInteractionStore.waitingData?.data.signOptions}
           isInternal={isInternal}
         />
-        {/* <Button
-          text="Approve"
-          size="large"
-          disabled={
-            signDocWapper == null ||
-            signDocHelper.signDocWrapper == null ||
-            memoConfig.getError() != null ||
-            feeConfig.getError() != null
-          }
-          loading={signInteractionStore.isLoading}
-          onPress={async () => {
-            try {
-              if (signDocHelper.signDocWrapper) {
-                await signInteractionStore.approveAndWaitEnd(
-                  signDocHelper.signDocWrapper
-                );
-              }
-            } catch (error) {
-              console.log(error);
-            } */}
+
         <View
           style={{
             flexDirection: 'row',

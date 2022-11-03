@@ -109,9 +109,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       SettingSelectAccount: {
         upperScreenName: 'Settings'
       },
-      SettingSelectLang: {
-        upperScreenName: 'Settings'
-      },
+
       'Setting.ViewPrivateData': {
         upperScreenName: 'Settings'
       },

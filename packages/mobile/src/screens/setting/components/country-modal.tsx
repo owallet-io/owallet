@@ -1,39 +1,43 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useMemo,
-  useState
-} from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { colors, metrics, spacing, typography } from '../../../themes';
+import React, { FunctionComponent } from 'react';
+import { View, FlatList } from 'react-native';
+import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
 import { CText as Text } from '../../../components/text';
 import { KeyStoreItem } from '.';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { ModalStore } from '../../../stores/modal';
+import { useTheme } from '@react-navigation/native';
 
 interface CountryModalProps {
   data: any;
   current: any;
   priceStore: CoinGeckoPriceStore;
-  modalStore: ModalStore
+  modalStore: ModalStore;
+  colors: object;
 }
 
 export const CountryModal: FunctionComponent<CountryModalProps> = ({
   data,
   current,
   priceStore,
-  modalStore
+  modalStore,
+  colors
 }) => {
   const _renderItem = ({ item, index }) => {
     return (
       <KeyStoreItem
+        colors={colors}
         key={index.toString()}
+        containerStyle={{
+          backgroundColor: colors['sub-primary'],
+          flexDirection: 'row',
+          justifyContent: 'space-between'
+        }}
         label={item.label || 'USD'}
         active={current === item.key ? true : false}
         onPress={() => {
           priceStore.setDefaultVsCurrency(item.key || 'usd');
-          modalStore.close()
+          modalStore.close();
         }}
       />
     );
@@ -43,7 +47,8 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
     // container
     <View
       style={{
-        alignItems: 'center'
+        alignItems: 'center',
+        backgroundColor: colors['background']
       }}
     >
       <View
@@ -55,7 +60,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
           style={{
             ...typography.h6,
             fontWeight: '900',
-            color: colors['gray-900']
+            color: colors['primary-text']
           }}
         >
           {`Select Currency`}
@@ -85,16 +90,3 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  containerBtn: {
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['16'],
-    borderRadius: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    flexDirection: 'row',
-    marginTop: spacing['16'],
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-});

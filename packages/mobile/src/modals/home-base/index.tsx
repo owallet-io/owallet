@@ -12,6 +12,7 @@ import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import { useStore } from '../../stores';
+import { useTheme } from '@react-navigation/native';
 
 export const HomeBaseModal: FunctionComponent<{
   isOpen: boolean;
@@ -21,7 +22,6 @@ export const HomeBaseModal: FunctionComponent<{
     const style = useStyle();
     const { modalStore } = useStore();
     const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0;
-
     return (
       <KeyboardAvoidingView
         behavior="position"

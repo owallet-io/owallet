@@ -16,16 +16,11 @@ import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
     const {
-      keyRingStore,
       ledgerInitStore,
       permissionStore,
       signInteractionStore,
       modalStore
     } = useStore();
-
-    // Example usage
-    // modalStore.setOpen()
-    // modalStore.setChildren(<Text>33333</Text>)
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {

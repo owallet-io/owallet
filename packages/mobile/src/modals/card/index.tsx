@@ -17,6 +17,7 @@ import {
   DefaultCloseVelocity,
   DefaultOpenVelocity
 } from '../base/const';
+import { useStore } from '../../stores';
 
 const useAnimatedValueSet = () => {
   const [state] = useState(() => {
@@ -37,7 +38,6 @@ export const CardModal: FunctionComponent<{
   title?: string;
   right?: React.ReactElement;
   childrenContainerStyle?: ViewStyle;
-
   disableGesture?: boolean;
   labelStyle?: TextStyle;
 }> = ({
@@ -49,10 +49,14 @@ export const CardModal: FunctionComponent<{
   labelStyle
 }) => {
   const style = useStyle();
+
   const safeAreaInsets = useSafeAreaInsets();
 
   const [softwareKeyboardBottomPadding, setSoftwareKeyboardBottomPadding] =
     useState(0);
+  const { appInitStore } = useStore();
+
+  const scheme = appInitStore.getInitApp.theme;
 
   useEffect(() => {
     const onKeyboarFrame = (e: KeyboardEvent) => {
@@ -377,20 +381,24 @@ export const CardModal: FunctionComponent<{
 
   return (
     <Animated.View
-      style={StyleSheet.flatten([
-        style.flatten([
-          'background-color-white',
-          'border-radius-top-left-8',
-          'border-radius-top-right-8',
-          'overflow-hidden'
+      style={[
+        StyleSheet.flatten([
+          style.flatten([
+            'border-radius-top-left-8',
+            'border-radius-top-right-8',
+            'overflow-hidden'
+          ]),
+          {
+            paddingBottom: Animated.add(
+              safeAreaInsets.bottom,
+              animatedKeyboardPaddingBottom
+            )
+          }
         ]),
         {
-          paddingBottom: Animated.add(
-            safeAreaInsets.bottom,
-            animatedKeyboardPaddingBottom
-          )
+          backgroundColor: scheme === 'dark' ? '#01040D' : '#F5F5F5'
         }
-      ])}
+      ]}
     >
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
@@ -432,10 +440,12 @@ export const CardModal: FunctionComponent<{
                 {right}
               </View>
               <View
-                style={style.flatten([
-                  'height-1',
-                  'background-color-border-white'
-                ])}
+                style={[
+                  style.flatten(['height-1']),
+                  {
+                    // borderColor: colors['border']
+                  }
+                ]}
               />
             </React.Fragment>
           ) : null}
