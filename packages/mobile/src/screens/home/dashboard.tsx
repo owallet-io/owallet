@@ -217,8 +217,9 @@ export const DashboardCard: FunctionComponent<{
           style={{
             alignSelf: 'center',
             paddingBottom: spacing['16'],
-            fontSize: 17,
-            fontWeight: '300'
+            fontSize: 16,
+            fontWeight: '400',
+            color: colors['text-black-low']
           }}
         >
           {'There is no information for this chain yet'}
