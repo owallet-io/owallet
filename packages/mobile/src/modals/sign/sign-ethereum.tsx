@@ -46,7 +46,7 @@ export const SignEthereumModal: FunctionComponent<{
     const current = chainStore.current;
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
     const [dataSign, setDataSign] = useState(null);
-    const [gasPrice, setGasPrice] = useState('');
+    const [gasPrice, setGasPrice] = useState('0');
     const gasConfig = useGasEthereumConfig(
       chainStore,
       current.chainId,
@@ -54,6 +54,24 @@ export const SignEthereumModal: FunctionComponent<{
     );
     const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
     const decimals = useRef(chainStore.current.feeCurrencies[0].coinDecimals);
+
+    useEffect(() => {
+      const getGasPrice = async () => {
+        const response = await axios.post(chainStore.current.rest, {
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_gasPrice',
+          params: []
+        });
+
+        setGasPrice(
+          new Big(parseInt(response.data.result, 16))
+            .div(new Big(10).pow(decimals.current))
+            .toFixed(decimals.current)
+        );
+      };
+      getGasPrice();
+    }, []);
 
     useEffect(() => {
       const estimateGas = async () => {
@@ -64,18 +82,8 @@ export const SignEthereumModal: FunctionComponent<{
             if (!chainIdSign?.toString()?.startsWith('0x'))
               chainIdSign = '0x' + Number(chainIdSign).toString(16);
             chainStore.selectChain(chainIdSign);
-            const response = await axios.post(chainStore.current.rest, {
-              jsonrpc: '2.0',
-              id: 1,
-              method: 'eth_gasPrice',
-              params: []
-            });
-
-            setGasPrice(
-              new Big(parseInt(response.data.result, 16))
-                .div(new Big(10).pow(decimals.current))
-                .toFixed(decimals.current)
-            );
+          }
+          if (gasPrice !== '') {
             // @ts-ignore
             const web3 = new Web3(chainStore.current.rest);
             const tokenInfo = new web3.eth.Contract(
@@ -111,7 +119,7 @@ export const SignEthereumModal: FunctionComponent<{
         }
       };
       estimateGas();
-    }, [dataSign]);
+    }, [gasPrice, dataSign]);
 
     useEffect(() => {
       if (signInteractionStore.waitingEthereumData) {
@@ -225,14 +233,14 @@ export const SignEthereumModal: FunctionComponent<{
               loading={signInteractionStore.isLoading}
               onPress={async () => {
                 try {
-                  const gasPrice =
-                    '0x' +
-                    parseInt(
-                      new Big(parseFloat(feeConfig.feeRaw))
-                        .mul(new Big(10).pow(decimals.current))
-                        .div(parseFloat(gasConfig.gasRaw))
-                        .toFixed(decimals.current)
-                    ).toString(16);
+                  // const gasPrice =
+                  //   '0x' +
+                  //   parseInt(
+                  //     new Big(parseFloat(feeConfig.feeRaw))
+                  //       .mul(new Big(10).pow(decimals.current))
+                  //       .div(parseFloat(gasConfig.gasRaw))
+                  //       .toFixed(decimals.current)
+                  //   ).toString(16);
                   await signInteractionStore.approveEthereumAndWaitEnd({
                     gasPrice,
                     gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`,

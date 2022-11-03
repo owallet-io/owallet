@@ -71,7 +71,7 @@ export const UndelegationsCard: FunctionComponent<{
               style.flatten(['body2', 'color-text-black-low', 'padding-top-18'])
             ]}
           >
-            {"You don't have any unboniding assets yet"}
+            {"You don't have any unbonding assets yet"}
           </Text>
         )}
         {unbondings.map((unbonding, unbondingIndex) => {

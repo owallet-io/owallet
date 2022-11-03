@@ -138,8 +138,8 @@ export const BlockCard: FunctionComponent<{
                     }
                   ]}
                 >
-                  {data?.market_cap_change_percentage_24h > 0 ? '+' : '-'}
-                  {data?.market_cap_change_percentage_24h}% (24h)
+                  {data?.market_cap_change_percentage_24h > 0 ? '+' : ''}
+                  {data?.market_cap_change_percentage_24h.toFixed(2)}% (24h)
                 </Text>
               </Text>
             </View>
