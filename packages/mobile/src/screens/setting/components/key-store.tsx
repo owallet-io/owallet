@@ -18,7 +18,7 @@ import {
   INRIcon,
   NoteIcon
 } from '../../../components/icon';
-import { colors, spacing, typography } from '../../../themes';
+import { spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useTheme } from '@react-navigation/native';
 
@@ -37,7 +37,7 @@ export const KeyStoreSectionTitle: FunctionComponent<{
       <Text
         style={{
           ...typography['subtitle1'],
-          color: colors['text-black-low'],
+          color: colors['sub-primary-text'],
           marginLeft: spacing['6']
         }}
       >

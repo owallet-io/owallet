@@ -19,7 +19,6 @@ import {
   useNavigation,
   useTheme
 } from '@react-navigation/native';
-import { useColorScheme } from 'react-native';
 import { useStore } from './stores';
 import { observer } from 'mobx-react-lite';
 import { HomeScreen } from './screens/home';
@@ -40,7 +39,6 @@ import { BorderlessButton } from 'react-native-gesture-handler';
 
 import { SettingScreen } from './screens/setting';
 import { SettingSelectAccountScreen } from './screens/setting/screens/select-account';
-import { SettingSelectLangScreen } from './screens/setting/screens/select-lang';
 import { ViewPrivateDataScreen } from './screens/setting/screens/view-private-data';
 import { WebScreen } from './screens/web';
 import { RegisterIntroScreen } from './screens/register';
@@ -120,13 +118,14 @@ import { NftsScreen, NftDetailScreen } from './screens/nfts';
 import { DelegateDetailScreen } from './screens/stake/delegate/delegate-detail';
 import { NetworkModal } from './screens/home/components';
 import { SelectNetworkScreen } from './screens/network';
-import { colors, spacing, typography } from './themes';
+import { spacing, typography } from './themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Hash } from '@owallet/crypto';
 import { useRoute } from '@react-navigation/core';
 import { TransferNFTScreen } from './screens/transfer-nft';
 import { DashBoardScreen } from './screens/dashboard';
 import { lightColors } from './themes/colors';
+import { colors } from './themes';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -219,7 +218,8 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(({}) => {
         profileColor,
         chainStore,
         modalStore,
-        smartNavigation
+        smartNavigation,
+        colors
       })
     );
   };
@@ -304,7 +304,7 @@ export const CustomHeader: FunctionComponent = observer(() => {
           <HomeScreenHeaderTitle />
         </View>
         <View>
-          <HomeScreenHeaderRight color={colors['primary-text']} />
+          <HomeScreenHeaderRight />
         </View>
       </View>
     </React.Fragment>

@@ -1,7 +1,7 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { RectButton } from '../../../components/rect-button';
-import { colors, metrics, spacing, typography } from '../../../themes';
+import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
@@ -12,8 +12,11 @@ export const NetworkModal = ({
   profileColor,
   chainStore,
   modalStore,
-  smartNavigation
+  smartNavigation,
+  colors
 }) => {
+  const styles = styling(colors);
+
   const _renderItem = ({ item }) => {
     return (
       <RectButton
@@ -73,21 +76,13 @@ export const NetworkModal = ({
             <Text
               style={{
                 ...typography.h6,
-                color: colors['gray-900'],
+                color: colors['sub-primary-text'],
                 fontWeight: '900'
               }}
               numberOfLines={1}
             >
               {item.chainName}
             </Text>
-            {/* <Text
-              style={{
-                ...typography.h7,
-                color: colors['gray-300'],
-                fontWeight: '900',
-                fontSize: 12
-              }}
-            >{`$${item.price || 0}`}</Text> */}
           </View>
         </View>
 
@@ -152,7 +147,7 @@ export const NetworkModal = ({
         style={{
           ...typography.h6,
           fontWeight: '900',
-          color: colors['gray-900']
+          color: colors['primary-text']
         }}
       >
         {`Select networks`}
@@ -184,15 +179,16 @@ export const NetworkModal = ({
   );
 };
 
-const styles = StyleSheet.create({
-  containerBtn: {
-    backgroundColor: colors['gray-10'],
-    paddingVertical: spacing['16'],
-    borderRadius: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    flexDirection: 'row',
-    marginTop: spacing['16'],
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    containerBtn: {
+      backgroundColor: colors['sub-primary'],
+      paddingVertical: spacing['16'],
+      borderRadius: spacing['8'],
+      paddingHorizontal: spacing['16'],
+      flexDirection: 'row',
+      marginTop: spacing['16'],
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }
+  });

@@ -6,7 +6,6 @@ import { CText as Text } from '../../../components/text';
 import { KeyStoreItem } from '.';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { ModalStore } from '../../../stores/modal';
-import { useTheme } from '@react-navigation/native';
 
 interface CountryModalProps {
   data: any;
