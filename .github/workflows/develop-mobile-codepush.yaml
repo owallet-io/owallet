@@ -55,7 +55,7 @@ jobs:
       - name: Git Sumbodule Update
         working-directory: packages/background
         run: |
-          git pull origin mobile
+          git pull origin mobile-backup
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
