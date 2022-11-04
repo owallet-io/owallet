@@ -92,7 +92,8 @@ export const AccountCard: FunctionComponent<{
     modalStore.setOpen();
     modalStore.setChildren(
       AddressQRCodeModal({
-        account
+        account,
+        chainStore: chainStore.current
       })
     );
   };
