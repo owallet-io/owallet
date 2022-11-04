@@ -110,8 +110,6 @@ export const SignEthereumModal: FunctionComponent<{
             );
           }
         } catch (error) {
-          console.log('error ===', error);
-
           gasConfig.setGas(21000);
           feeConfig.setFee(
             new Big(21000).mul(new Big(gasPrice)).toFixed(decimals.current)
@@ -233,16 +231,16 @@ export const SignEthereumModal: FunctionComponent<{
               loading={signInteractionStore.isLoading}
               onPress={async () => {
                 try {
-                  // const gasPrice =
-                  //   '0x' +
-                  //   parseInt(
-                  //     new Big(parseFloat(feeConfig.feeRaw))
-                  //       .mul(new Big(10).pow(decimals.current))
-                  //       .div(parseFloat(gasConfig.gasRaw))
-                  //       .toFixed(decimals.current)
-                  //   ).toString(16);
+                  const gasPriceCalculate =
+                    '0x' +
+                    parseFloat(
+                      new Big(gasPrice)
+                        .mul(new Big(10).pow(decimals.current))
+                        .toString()
+                    ).toString(16);
+
                   await signInteractionStore.approveEthereumAndWaitEnd({
-                    gasPrice,
+                    gasPrice: gasPriceCalculate,
                     gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`,
                     memo
                   });
