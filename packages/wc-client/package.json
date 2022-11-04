@@ -17,8 +17,8 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
-    "@cosmjs/proto-signing": "^0.24.0-alpha.25",
+    "@cosmjs/launchpad": "^0.27.1",
+    "@cosmjs/proto-signing": "^0.29.3",
     "@owallet/common": "^0.9.10",
     "@owallet/provider": "^0.9.12",
     "@owallet/types": "^0.9.12",

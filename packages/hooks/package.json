@@ -20,7 +20,7 @@
     "@types/react": "^16.14.4"
   },
   "dependencies": {
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
+    "@cosmjs/launchpad": "^0.27.1",
     "@owallet/background": "^0.9.16",
     "@owallet/common": "^0.9.10",
     "@owallet/cosmos": "^0.9.16",

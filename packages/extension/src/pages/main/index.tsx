@@ -68,6 +68,9 @@ export const MainPage: FunctionComponent = observer(() => {
     }
   }, [chainStore, confirm, chainStore.isInitializing, currentChainId, intl]);
 
+  useEffect(() => {
+    setHasSend(false);
+  }, [chainStore.current]);
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
   // const queryBalances = queriesStore
