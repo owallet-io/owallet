@@ -35,8 +35,11 @@ const styling = colors =>
       fontSize: 16,
       fontWeight: '700',
       lineHeight: 22,
-      color: colors['gray-900'],
+      color: colors['sub-primary-text'],
       marginBottom: spacing['8']
+    },
+    containerStyle: {
+      backgroundColor: colors['primary']
     }
   });
 
@@ -132,6 +135,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             placeHolder="Select Token"
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
+            containerStyle={styles.containerStyle}
           />
           <AddressInput
             placeholder="Enter receiving address"

@@ -12,9 +12,7 @@ import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import Web3 from 'web3';
 import { Button } from '../../components/button';
-import { colors } from '../../themes';
 import Big from 'big.js';
-
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import ERC20_ABI from './erc20.json';
@@ -24,6 +22,7 @@ import { useFeeEthereumConfig, useGasEthereumConfig } from '@owallet/hooks';
 import { FeeEthereumInSign } from './fee-ethereum';
 import { navigationRef } from '../../router/root';
 import axios from 'axios';
+import { colors } from '../../themes';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
@@ -31,15 +30,20 @@ export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
 }> = registerModal(
-  observer(() => {
-    const { chainStore, signInteractionStore, accountStore, sendStore } =
-      useStore();
-
+  observer(({}) => {
+    const {
+      chainStore,
+      signInteractionStore,
+      accountStore,
+      sendStore,
+      appInitStore
+    } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
 
     const chainId = chainStore?.current?.chainId;
+    const scheme = appInitStore.getInitApp.theme;
 
     const account = accountStore.getAccount(chainId);
 
@@ -146,7 +150,7 @@ export const SignEthereumModal: FunctionComponent<{
     };
 
     return (
-      <CardModal>
+      <CardModal title="Confirm Transaction">
         <KeyboardAvoidingView
           behavior="position"
           keyboardVerticalOffset={keyboardVerticalOffset}

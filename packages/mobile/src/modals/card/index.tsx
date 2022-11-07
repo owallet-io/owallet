@@ -18,6 +18,7 @@ import {
   DefaultOpenVelocity
 } from '../base/const';
 import { useStore } from '../../stores';
+import { colors } from '../../themes';
 
 const useAnimatedValueSet = () => {
   const [state] = useState(() => {
@@ -396,7 +397,7 @@ export const CardModal: FunctionComponent<{
           }
         ]),
         {
-          backgroundColor: scheme === 'dark' ? '#01040D' : '#F5F5F5'
+          backgroundColor: scheme === 'dark' ? '#2B2D3B' : '#F5F5F5'
         }
       ]}
     >
@@ -431,7 +432,11 @@ export const CardModal: FunctionComponent<{
               >
                 <Text
                   style={{
-                    ...style.flatten(['h4', 'color-text-black-high']),
+                    ...style.flatten(['h4']),
+                    color:
+                      scheme === 'dark'
+                        ? colors['white']
+                        : colors['text-black-high'],
                     ...labelStyle
                   }}
                 >

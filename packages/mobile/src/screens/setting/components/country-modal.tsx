@@ -47,7 +47,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
     <View
       style={{
         alignItems: 'center',
-        backgroundColor: colors['background']
+        backgroundColor: colors['primary']
       }}
     >
       <View

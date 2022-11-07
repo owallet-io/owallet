@@ -20,19 +20,25 @@ import { useUnmount } from '../../hooks';
 import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
-import { colors } from '../../themes';
 import crashlytics from '@react-native-firebase/crashlytics';
+import { colors } from '../../themes';
 
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
 }> = registerModal(
-  observer(() => {
-    const { chainStore, accountStore, queriesStore, signInteractionStore } =
-      useStore();
+  observer(({}) => {
+    const {
+      chainStore,
+      accountStore,
+      queriesStore,
+      signInteractionStore,
+      appInitStore
+    } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
+    const scheme = appInitStore.getInitApp.theme;
 
     const style = useStyle();
 
@@ -142,7 +148,7 @@ export const SignModal: FunctionComponent<{
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const account = accountStore.getAccount(chainId);
           const chainInfo = chainStore.getChain(chainId);
-          const { title, content, scrollViewHorizontal } = renderAminoMessage(
+          const { content, scrollViewHorizontal } = renderAminoMessage(
             account.msgOpts,
             msg,
             chainInfo.currencies
