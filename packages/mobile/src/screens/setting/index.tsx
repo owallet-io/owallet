@@ -24,12 +24,16 @@ import {
   StatusBar
 } from 'react-native';
 import { CText as Text } from '../../components/text';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';
+import { SettingSwitchModeItem } from './items/switch-mode';
+import { useTheme } from '@react-navigation/native';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const currencyItems = useMemo(() => {
     return Object.keys(priceStore.supportedVsCurrencies).map(key => {
       return {
@@ -186,7 +190,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           />
         ) : null}
         {/* <SettingSectionTitle title="Others" /> */}
-
+        {/* <SettingSwitchModeItem /> */}
         <SettingItem
           label="About OWallet"
           onPress={() => {
@@ -199,40 +203,41 @@ export const SettingScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styles = StyleSheet.create({
-  shadowBox: {
-    shadowColor: '#ccc',
-    shadowOffset: {
-      width: 0,
-      height: 3
+const styling = (colors: object) =>
+  StyleSheet.create({
+    shadowBox: {
+      shadowColor: '#ccc',
+      shadowOffset: {
+        width: 0,
+        height: 3
+      },
+      shadowRadius: 5,
+      shadowOpacity: 1.0
     },
-    shadowRadius: 5,
-    shadowOpacity: 1.0
-  },
-  containerScreen: {
-    padding: 24,
-    paddingTop: 76,
-    paddingBottom: 101,
-    marginBottom: 102,
-    borderTopLeftRadius: Platform.OS === 'ios' ? 32 : 0,
-    borderTopRightRadius: Platform.OS === 'ios' ? 32 : 0
-    // borderBottomLeftRadius: Platform.OS === 'ios' ? 32 : 0,
-    // borderBottomRightRadius: Platform.OS === 'ios' ? 32 : 0
-  },
-  title: {
-    ...typography.h1,
-    color: colors['white'],
-    textAlign: 'center',
-    fontWeight: '700'
-  },
-  containerInfo: {
-    position: 'absolute',
-    backgroundColor: colors['white'],
-    height: 160,
-    margin: 24,
-    marginTop: 150,
-    borderRadius: 12,
-    padding: 20,
-    width: '100%'
-  }
-});
+    containerScreen: {
+      padding: 24,
+      paddingTop: 76,
+      paddingBottom: 101,
+      marginBottom: 102,
+      borderTopLeftRadius: Platform.OS === 'ios' ? 32 : 0,
+      borderTopRightRadius: Platform.OS === 'ios' ? 32 : 0
+      // borderBottomLeftRadius: Platform.OS === 'ios' ? 32 : 0,
+      // borderBottomRightRadius: Platform.OS === 'ios' ? 32 : 0
+    },
+    title: {
+      ...typography.h1,
+      color: colors['white'],
+      textAlign: 'center',
+      fontWeight: '700'
+    },
+    containerInfo: {
+      position: 'absolute',
+      backgroundColor: colors['background'],
+      height: 160,
+      margin: 24,
+      marginTop: 150,
+      borderRadius: 12,
+      padding: 20,
+      width: '100%'
+    }
+  });

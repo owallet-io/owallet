@@ -36,6 +36,7 @@ import { FiatCurrency } from '@owallet/types';
 import { ModalStore } from './modal';
 
 import { version } from '../../package.json';
+import { SendStore } from './send';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -81,6 +82,7 @@ export class RootStore {
   public readonly deepLinkUriStore: DeepLinkStore;
   public readonly browserStore: BrowserStore;
   public readonly modalStore: ModalStore;
+  public readonly sendStore: SendStore;
   public readonly appInitStore: AppInit;
 
   constructor() {
@@ -265,6 +267,7 @@ export class RootStore {
     this.browserStore = browserStore;
     this.appInitStore = appInit;
     this.modalStore = new ModalStore();
+    this.sendStore = new SendStore();
   }
 }
 

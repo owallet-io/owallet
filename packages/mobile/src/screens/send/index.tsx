@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
 });
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
+    useStore();
 
   const [customFee, setCustomFee] = useState(false);
 
@@ -143,38 +144,41 @@ export const SendScreen: FunctionComponent = observer(() => {
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingBottom: 24,
-              alignItems: 'center'
-            }}
-          >
-            <Toggle
-              on={customFee}
-              onChange={value => {
-                setCustomFee(value);
-                if (!value) {
-                  if (
-                    sendConfigs.feeConfig.feeCurrency &&
-                    !sendConfigs.feeConfig.fee
-                  ) {
-                    sendConfigs.feeConfig.setFeeType('average');
-                  }
-                }
-              }}
-            />
-            <Text
+
+          {chainStore.current.networkType !== 'evm' ? (
+            <View
               style={{
-                fontWeight: '700',
-                fontSize: 16,
-                lineHeight: 34,
-                paddingHorizontal: 8
+                flexDirection: 'row',
+                paddingBottom: 24,
+                alignItems: 'center'
               }}
             >
-              Custom Fee
-            </Text>
-          </View>
+              <Toggle
+                on={customFee}
+                onChange={value => {
+                  setCustomFee(value);
+                  if (!value) {
+                    if (
+                      sendConfigs.feeConfig.feeCurrency &&
+                      !sendConfigs.feeConfig.fee
+                    ) {
+                      sendConfigs.feeConfig.setFeeType('average');
+                    }
+                  }
+                }}
+              />
+              <Text
+                style={{
+                  fontWeight: '700',
+                  fontSize: 16,
+                  lineHeight: 34,
+                  paddingHorizontal: 8
+                }}
+              >
+                Custom Fee
+              </Text>
+            </View>
+          ) : null}
 
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput
@@ -184,7 +188,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               labelStyle={styles.sendlabelInput}
               onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getPrecisionDec(6)
+                  DecUtils.getTenExponentNInPrecisionRange(6)
                 );
 
                 sendConfigs.feeConfig.setManualFee({
@@ -221,6 +225,22 @@ export const SendScreen: FunctionComponent = observer(() => {
             onPress={async () => {
               if (account.isReadyToSendMsgs && txStateIsValid) {
                 try {
+                  if (
+                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
+                      'erc20'
+                    )
+                  ) {
+                    sendStore.updateSendObject({
+                      type: 'erc20',
+                      from: account.evmosHexAddress,
+                      contract_addr:
+                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                          ':'
+                        )[1],
+                      recipient: sendConfigs.recipientConfig.recipient,
+                      amount: sendConfigs.amountConfig.amount
+                    });
+                  }
                   await account.sendToken(
                     sendConfigs.amountConfig.amount,
                     sendConfigs.amountConfig.sendCurrency,
@@ -276,6 +296,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                     return;
                   }
                   console.log('send error', e);
+                  alert(e.message);
                   if (smartNavigation.canGoBack) {
                     smartNavigation.goBack();
                   } else {

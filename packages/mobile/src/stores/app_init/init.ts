@@ -5,11 +5,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export class AppInit {
   @persist('object')
   @observable
-  protected initApp: { status: boolean; date_updated: null | number };
+  protected initApp: {
+    status: boolean;
+    date_updated: null | number;
+    theme: string;
+  };
 
   constructor() {
     makeObservable(this);
-    this.initApp = { status: true, date_updated: null };
+    this.initApp = { status: true, date_updated: null, theme: 'light' };
   }
 
   @computed
@@ -25,6 +29,11 @@ export class AppInit {
   @action
   updateDate(date) {
     this.initApp = { ...this.initApp, date_updated: date };
+  }
+
+  @action
+  updateTheme(theme) {
+    this.initApp = { ...this.initApp, theme };
   }
 }
 

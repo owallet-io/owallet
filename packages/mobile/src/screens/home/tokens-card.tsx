@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Card, CardBody } from '../../components/card';
 import { SectionList, StyleSheet, View, ViewStyle, Image } from 'react-native';
 import { CText as Text } from '../../components/text';
@@ -18,6 +18,7 @@ import {
 import { DownArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import ProgressiveImage from '../../components/progessive-image';
+import { useTheme } from '@react-navigation/native';
 
 // hard code data to test UI
 // const nftsData = [
@@ -85,6 +86,18 @@ export const TokensCard: FunctionComponent<{
     queryBalances.nonNativeBalances,
     queryBalances.positiveNativeUnstakables
   );
+
+  const unique = useMemo(() => {
+    const uniqTokens = [];
+    tokens.map(token =>
+      uniqTokens.filter(
+        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+      ).length > 0
+        ? null
+        : uniqTokens.push(token)
+    );
+    return uniqTokens;
+  }, [chainStore.current.chainId]);
 
   // const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
 
@@ -244,7 +257,7 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {tokens.slice(0, 3).map(token => {
+            {unique.slice(0, 3).map(token => {
               const priceBalance = priceStore.calculatePrice(token.balance);
               return (
                 <TokenItem
