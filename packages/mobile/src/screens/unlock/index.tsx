@@ -260,7 +260,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
-  // return <MaintainScreen />;
+  return <MaintainScreen />;
 
   return !routeToRegisterOnce.current &&
     keyRingStore.status === KeyRingStatus.EMPTY ? (

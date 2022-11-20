@@ -25,7 +25,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
-  // return <MaintainScreen />;
+  return <MaintainScreen />;
 
   return (
     <PageWithScrollView
