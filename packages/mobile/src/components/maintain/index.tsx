@@ -38,7 +38,7 @@ export const MaintainScreen: FunctionComponent<{}> = () => {
           paddingBottom: 20
         }}
       >
-        {`To prepare for v0.41.0 Upgrade, services on Oraichain network will be temporarily suspended until our next official announcement. \nTime (estimated): \nFrom 2022-11-20 23:59 to 2022-11-20 09:00 (UTC)`}
+        {`To prepare for v0.41.0 Upgrade, services on Oraichain network will be temporarily suspended until our next official announcement. \nTime (estimated): \nFrom 2022-11-20 23:59 to 2022-11-21 09:00 (UTC)`}
       </Text>
       <Image
         style={{
