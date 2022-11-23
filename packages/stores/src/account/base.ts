@@ -330,6 +330,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions,
         this.broadcastMode
       );
+
       txHash = result.txHash;
     } catch (e: any) {
       runInAction(() => {
@@ -703,6 +704,10 @@ export class AccountSetBase<MsgOpts, Queries> {
         true
       );
 
+      console.log(
+        'this.hasNoLegacyStdFeature() ===',
+        this.hasNoLegacyStdFeature()
+      );
       if (this.hasNoLegacyStdFeature()) {
         const key = await owallet.getKey(this.chainId);
 
@@ -770,6 +775,11 @@ export class AccountSetBase<MsgOpts, Queries> {
 
         signedTx = makeStdTx(signResponse.signed, signResponse.signature);
       }
+
+      console.log(
+        'signedTx ===',
+        Buffer.from(JSON.stringify(signedTx), 'base64')
+      );
 
       return {
         txHash: await owallet.sendTx(

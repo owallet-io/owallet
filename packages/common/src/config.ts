@@ -156,7 +156,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.000025,
       high: 0.00004
     },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
     txExplorer: {
       name: 'Oraiscan',
