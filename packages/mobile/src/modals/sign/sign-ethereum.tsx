@@ -92,7 +92,7 @@ export const SignEthereumModal: FunctionComponent<{
             );
             const estimate = await tokenInfo.methods
               .transfer(
-                account?.evmosHexAddress,
+                sendStore.sendObj?.recipient,
                 '0x' +
                   parseFloat(
                     new Big(sendStore.sendObj?.amount)

@@ -162,8 +162,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Oraiscan',
       txUrl: 'https://scan.orai.io/txs/{txHash}',
       accountUrl: 'https://scan.orai.io/account/{address}'
-    },
-    beta: true // use v1beta1
+    }
+    // beta: true // use v1beta1
   },
   {
     rpc: 'https://testnet-rpc.orai.io',
