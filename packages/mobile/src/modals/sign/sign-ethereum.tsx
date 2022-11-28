@@ -101,7 +101,7 @@ export const SignEthereumModal: FunctionComponent<{
                   ).toString(16)
               )
               .estimateGas({
-                from: sendStore.sendObj?.contract_addr
+                from: sendStore.sendObj?.from
               });
 
             gasConfig.setGas(estimate);

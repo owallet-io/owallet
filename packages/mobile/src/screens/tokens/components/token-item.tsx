@@ -43,7 +43,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   } else {
     const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
     balanceCoinDenom = balance.currency.coinDenom;
-    console.log('denomHelper.contractAddress', denomHelper.contractAddress);
 
     if (denomHelper.contractAddress && denomHelper.contractAddress !== '') {
       name += ` (${Bech32Address.shortenAddress(

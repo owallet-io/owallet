@@ -704,10 +704,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         true
       );
 
-      console.log(
-        'this.hasNoLegacyStdFeature() ===',
-        this.hasNoLegacyStdFeature()
-      );
       if (this.hasNoLegacyStdFeature()) {
         const key = await owallet.getKey(this.chainId);
 
