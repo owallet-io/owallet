@@ -15,13 +15,6 @@ const commonResolve = (dir) => ({
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss'],
   alias: {
     assets: path.resolve(__dirname, dir)
-  },
-  fallback: {
-    http: false,
-    stream: require.resolve('stream-browserify'),
-    buffer: require.resolve('buffer'),
-    crypto: require.resolve('crypto-browserify'),
-    https: require.resolve('https-browserify')
   }
 });
 const sassRule = {
@@ -114,12 +107,6 @@ const extensionConfig = {
   },
   plugins: [
     // Remove all and write anyway
-    new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer']
-    }),
-    new webpack.ProvidePlugin({
-      process: 'process/browser'
-    }),
     // TODO: Optimizing build process
     new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
