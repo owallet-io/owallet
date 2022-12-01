@@ -7,7 +7,8 @@ import {
   renderMsgExecuteContract,
   renderMsgSend,
   renderMsgUndelegate,
-  renderUnknownMessage
+  renderUnknownMessage,
+  renderMsgWithdrawDelegatorReward
 } from './messages';
 import { CoinPrimitive } from '@owallet/stores';
 
@@ -57,14 +58,8 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
     );
   }
 
-  if (msg instanceof cosmwasm.wasm.v1beta1.MsgExecuteContract) {
-    return renderMsgExecuteContract(
-      currencies,
-      msg.sent_funds as CoinPrimitive[],
-      undefined,
-      msg.contract,
-      JSON.parse(fromUtf8(msg.msg))
-    );
+  if (msg instanceof cosmwasm.wasm.v1.MsgWithdrawDelegatorReward) {
+    return renderMsgWithdrawDelegatorReward(msg.validatorAddress);
   }
 
   if (msg instanceof UnknownMessage) {
