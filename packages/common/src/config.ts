@@ -156,14 +156,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.000025,
       high: 0.00004
     },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
     txExplorer: {
       name: 'Oraiscan',
       txUrl: 'https://scan.orai.io/txs/{txHash}',
       accountUrl: 'https://scan.orai.io/account/{address}'
-    },
-    beta: true // use v1beta1
+    }
+    // beta: true // use v1beta1
   },
   {
     rpc: 'https://testnet-rpc.orai.io',

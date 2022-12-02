@@ -330,6 +330,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions,
         this.broadcastMode
       );
+
       txHash = result.txHash;
     } catch (e: any) {
       runInAction(() => {
@@ -676,6 +677,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       } else {
         aminoMsgs = msgs;
       }
+      console.log({ aminoMsgs });
 
       if (aminoMsgs.length === 0) {
         throw new Error('There is no msg to send');
@@ -695,81 +697,73 @@ export class AccountSetBase<MsgOpts, Queries> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
-      let signedTx: Uint8Array | StdTx;
-
       const account = await BaseAccount.fetchFromRest(
         this.instance,
         this.bech32Address,
         true
       );
 
-      if (this.hasNoLegacyStdFeature()) {
-        const key = await owallet.getKey(this.chainId);
+      const signDocAmino = makeSignDoc(
+        aminoMsgs,
+        fee,
+        this.chainId,
+        memo,
+        account.getAccountNumber().toString(),
+        account.getSequence().toString()
+      );
+      const signResponse = await owallet.signAmino(
+        this.chainId,
+        this.bech32Address,
+        signDocAmino,
+        signOptions
+      );
 
-        const signDoc = {
-          bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-            messages: protoMsgs,
-            memo
-          }).finish(),
-          authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-            signerInfos: [
-              {
-                publicKey: {
-                  type_url:
-                    coinType === 60
-                      ? '/ethermint.crypto.v1.ethsecp256k1.PubKey'
-                      : '/cosmos.crypto.secp256k1.PubKey',
-                  value: cosmos.crypto.secp256k1.PubKey.encode({
-                    key: key.pubKey
-                  }).finish()
-                },
-                modeInfo: {
-                  single: {
-                    mode: SignMode.SIGN_MODE_DIRECT
-                  }
-                },
-                sequence: Long.fromString(account.getSequence().toString())
-              }
-            ],
-            fee: {
-              amount: fee.amount as ICoin[],
-              gasLimit: Long.fromString(fee.gas)
+      const signDoc = {
+        bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+          messages: protoMsgs,
+          memo: signResponse.signed.memo
+        }).finish(),
+        authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+          signerInfos: [
+            {
+              publicKey: {
+                type_url:
+                  coinType === 60
+                    ? '/ethermint.crypto.v1.ethsecp256k1.PubKey'
+                    : '/cosmos.crypto.secp256k1.PubKey',
+                value: cosmos.crypto.secp256k1.PubKey.encode({
+                  key: Buffer.from(
+                    signResponse.signature.pub_key.value,
+                    'base64'
+                  )
+                }).finish()
+              },
+              modeInfo: {
+                single: {
+                  mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
+                }
+              },
+              sequence: Long.fromString(signResponse.signed.sequence)
             }
-          }).finish(),
-          accountNumber: Long.fromString(account.getAccountNumber().toString()),
-          chainId: this.chainId
-        };
+          ],
+          fee: {
+            amount: signResponse.signed.fee.amount as ICoin[],
+            gasLimit: Long.fromString(signResponse.signed.fee.gas)
+          }
+        }).finish(),
+        accountNumber: Long.fromString(signResponse.signed.account_number),
+        chainId: this.chainId
+      };
 
-        const signResponse = await owallet.signDirect(
-          this.chainId,
-          this.bech32Address,
-          signDoc,
-          signOptions
-        );
-
-        signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-          bodyBytes: signResponse.signed.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
-          authInfoBytes: signResponse.signed.authInfoBytes,
-          signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
-        }).finish();
-      } else {
-        const signDoc = makeSignDoc(
-          aminoMsgs,
-          fee,
-          this.chainId,
-          memo,
-          account.getAccountNumber().toString(),
-          account.getSequence().toString()
-        );
-        const signResponse = await owallet.signAmino(
-          this.chainId,
-          this.bech32Address,
-          signDoc,
-          signOptions
-        );
-
-        signedTx = makeStdTx(signResponse.signed, signResponse.signature);
-      }
+      const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
+        bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
+        authInfoBytes: signDoc.authInfoBytes,
+        signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
+      }).finish();
+      console.log(
+        'signedTx ===',
+        Buffer.from(JSON.stringify(signedTx), 'base64')
+      );
 
       return {
         txHash: await owallet.sendTx(

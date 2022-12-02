@@ -7,6 +7,7 @@ import {
   renderMsgExecuteContract,
   renderMsgSend,
   renderMsgUndelegate,
+  renderMsgWithdrawDelegatorReward,
   renderUnknownMessage
 } from './messages';
 import { CoinPrimitive } from '@owallet/stores';
@@ -56,17 +57,14 @@ export function renderDirectMessage(
         msg.validatorAddress
       );
     }
-
-    if (
-      msg instanceof cosmwasm.wasm.v1.MsgExecuteContract ||
-      msg instanceof cosmwasm.wasm.v1beta1.MsgExecuteContract
-    ) {
+    if (msg instanceof cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward) {
+      return renderMsgWithdrawDelegatorReward(intl, msg.validatorAddress);
+    }
+    if (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract) {
       return renderMsgExecuteContract(
         currencies,
         intl,
-        (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract
-          ? msg.funds
-          : msg.sent_funds) as CoinPrimitive[],
+        msg.funds as CoinPrimitive[],
         undefined,
         msg.contract,
         JSON.parse(fromUtf8(msg.msg))

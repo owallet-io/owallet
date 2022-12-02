@@ -19,8 +19,8 @@ const { App } = require('./src/app');
 const CodePushApp = __DEV__
   ? App
   : CodePush({
-      // installMode: CodePush.InstallMode.ON_NEXT_RESUME,
-      checkFrequency: CodePush.CheckFrequency.MANUAL
+      installMode: CodePush.InstallMode.IMMEDIATE
+      // checkFrequency: CodePush.CheckFrequency.MANUAL
     })(App);
 
 AppRegistry.registerComponent(appName, () => CodePushApp);
