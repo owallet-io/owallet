@@ -223,6 +223,9 @@ export const SignEthereumModal: FunctionComponent<{
               containerStyle={{
                 width: '40%'
               }}
+              textStyle={{
+                color: colors['white']
+              }}
               style={{
                 backgroundColor: signInteractionStore.isLoading
                   ? colors['gray-400']

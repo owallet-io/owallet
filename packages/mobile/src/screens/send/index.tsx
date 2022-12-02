@@ -296,7 +296,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                     return;
                   }
                   console.log('send error', e);
-                  alert(e.message);
+                  // alert(e.message);
                   if (smartNavigation.canGoBack) {
                     smartNavigation.goBack();
                   } else {
