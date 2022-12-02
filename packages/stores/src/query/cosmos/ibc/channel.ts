@@ -19,7 +19,7 @@ export class ObservableChainQueryIBCChannel extends ObservableChainQuery<Channel
       kvStore,
       chainId,
       chainGetter,
-      `/ibc/core/channel/v1beta1/channels/${channelId}/ports/${portId}`
+      `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}`
     );
 
     autorun(() => {
