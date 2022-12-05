@@ -1,11 +1,12 @@
 import { Currency } from '@owallet/types';
 import { IntlShape } from 'react-intl';
-import { cosmos, cosmwasm, UnknownMessage } from '@owallet/cosmos';
+import { cosmos, cosmwasm, ibc, UnknownMessage } from '@owallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgExecuteContract,
   renderMsgSend,
+  renderMsgTransfer,
   renderMsgUndelegate,
   renderMsgWithdrawDelegatorReward,
   renderUnknownMessage
@@ -36,6 +37,16 @@ export function renderDirectMessage(
         intl,
         msg.amount as CoinPrimitive,
         msg.validatorAddress
+      );
+    }
+
+    if (msg instanceof ibc.applications.transfer.v1.MsgTransfer) {
+      return renderMsgTransfer(
+        currencies,
+        intl,
+        msg.token as CoinPrimitive,
+        msg.receiver,
+        msg.sourceChannel
       );
     }
 

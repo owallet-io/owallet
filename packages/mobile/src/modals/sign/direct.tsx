@@ -58,7 +58,7 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
     );
   }
 
-  if (msg instanceof cosmwasm.wasm.v1.MsgWithdrawDelegatorReward) {
+  if (msg instanceof cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward) {
     return renderMsgWithdrawDelegatorReward(
       msg.validatorAddress
     );
