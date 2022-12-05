@@ -8,6 +8,7 @@ import React, {
 import {
   Image,
   Linking,
+  Platform,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View
@@ -994,13 +995,14 @@ export const MainTabNavigation: FunctionComponent = () => {
         activeTintColor: style.get('color-primary').color,
         inactiveTintColor: style.get('color-text-black-very-very-low').color,
         style: {
+          backgroundColor: '#fff',
           borderTopWidth: 0.5,
           borderTopColor: style.get('border-color-border-white').borderColor,
           shadowColor: style.get('color-transparent').color,
           elevation: 0,
           paddingLeft: 10,
           paddingRight: 10,
-          height: 110
+          height: Platform.OS === 'android' ? 80 : 110
         },
         showLabel: false
       }}
