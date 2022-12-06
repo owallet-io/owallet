@@ -49,6 +49,9 @@ export const TokenPage: FunctionComponent = observer(() => {
     setCoinMinimalDenom(token);
   };
 
+  useEffect(() => {
+    setHasSend(false);
+  }, [chainStore.current]);
   return (
     <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />

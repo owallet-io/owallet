@@ -8,6 +8,7 @@ import {
   renderMsgSend,
   renderMsgTransfer,
   renderMsgUndelegate,
+  renderMsgVote,
   renderMsgWithdrawDelegatorReward,
   renderUnknownMessage
 } from './messages';
@@ -68,20 +69,22 @@ export function renderDirectMessage(
         msg.validatorAddress
       );
     }
-    if(msg instanceof cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward){
-      return renderMsgWithdrawDelegatorReward(intl,msg.validatorAddress);
+    if (msg instanceof cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward) {
+      return renderMsgWithdrawDelegatorReward(intl, msg.validatorAddress);
     }
-    if (
-      msg instanceof cosmwasm.wasm.v1.MsgExecuteContract 
-    ) {
+    if (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract) {
       return renderMsgExecuteContract(
         currencies,
         intl,
-         msg.funds as CoinPrimitive[],
+        msg.funds as CoinPrimitive[],
         undefined,
         msg.contract,
         JSON.parse(fromUtf8(msg.msg))
       );
+    }
+
+    if (msg instanceof cosmos.gov.v1beta1.MsgVote) {
+      return renderMsgVote(intl, msg.proposalId.toString(), msg.option);
     }
 
     if (msg instanceof UnknownMessage) {

@@ -35,8 +35,8 @@ import {
   RequestVerifyADR36AminoSignDoc,
   RequestSignEthereumTypedDataMsg,
   SignEthereumTypedDataObject,
-  RequestSignReEncryptDataMsg,
   RequestSignDecryptDataMsg,
+  RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -342,7 +342,7 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signProxyDecryptionData(
+  async signDecryptData(
     chainId: string,
     data: object
   ): Promise<object> {
@@ -351,7 +351,7 @@ export class Ethereum implements IEthereum {
   }
 
   // thang2
-  async signProxyReEncryptionData(
+  async signReEncryptData(
     chainId: string,
     data: object
   ): Promise<object> {
