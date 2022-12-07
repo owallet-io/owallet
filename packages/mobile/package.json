@@ -21,8 +21,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && yarn patch-package",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.6 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.2 --output-dir build"
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.15 --output-dir build",
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.7 --output-dir build"
   },
   "dependencies": {
     "@amplitude/react-native": "^2.7.0",
@@ -54,9 +54,9 @@
     "@react-native-community/blur": "^3.6.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/netinfo": "^7.1.9",
-    "@react-native-firebase/app": "^15.1.1",
-    "@react-native-firebase/crashlytics": "^15.1.1",
-    "@react-native-firebase/messaging": "^15.1.1",
+    "@react-native-firebase/app": "14.12.0",
+    "@react-native-firebase/crashlytics": "14.12.0",
+    "@react-native-firebase/messaging": "14.12.0",
     "@react-navigation/bottom-tabs": "^5.11.8",
     "@react-navigation/drawer": "^5.12.4",
     "@react-navigation/native": "^5.9.3",

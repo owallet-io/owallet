@@ -6,9 +6,11 @@ import React, {
   useState
 } from 'react';
 import {
+  Alert,
   AppState,
   AppStateStatus,
   Image,
+  Platform,
   Text,
   TouchableOpacity,
   View
@@ -28,7 +30,9 @@ import { colors, spacing } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
 import { ProgressBar } from '../../components/progress-bar';
 import CodePush from 'react-native-code-push';
+import messaging from '@react-native-firebase/messaging';
 import { MaintainScreen } from '../../components/maintain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -259,6 +263,91 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
+
+  // Notification setup section
+  const regisFcmToken = useCallback(async FCMToken => {
+    await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
+  }, []);
+
+  const getToken = useCallback(async () => {
+    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+    if (!fcmToken) {
+      messaging()
+        .getToken()
+        .then(async FCMToken => {
+          if (FCMToken) {
+            regisFcmToken(FCMToken);
+          } else {
+            Alert.alert('[FCMService] User does not have a device token');
+          }
+        })
+        .catch(error => {
+          let err = `FCM token get error: ${error}`;
+          Alert.alert(err);
+          console.log('[FCMService] getToken rejected ', error);
+        });
+    } else {
+      regisFcmToken(fcmToken);
+    }
+  }, [regisFcmToken]);
+
+  const registerAppWithFCM = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      messaging()
+        .registerDeviceForRemoteMessages()
+        .then(register => {
+          getToken();
+        });
+      //await messaging().setAutoInitEnabled(true);
+    } else {
+      getToken();
+    }
+  }, [getToken]);
+
+  const requestPermission = useCallback(() => {
+    messaging()
+      .requestPermission()
+      .then(() => {
+        registerAppWithFCM();
+      })
+      .catch(error => {
+        console.log('[FCMService] Requested persmission rejected ', error);
+      });
+  }, [registerAppWithFCM]);
+
+  const checkPermission = useCallback(() => {
+    messaging()
+      .hasPermission()
+      .then(enabled => {
+        if (enabled) {
+          //user has permission
+          registerAppWithFCM();
+        } else {
+          //user don't have permission
+          requestPermission();
+        }
+      })
+      .catch(error => {
+        requestPermission();
+        let err = `check permission error${error}`;
+        Alert.alert(err);
+        // console.log("[FCMService] Permission rejected", error)
+      });
+  }, [registerAppWithFCM, requestPermission]);
+
+  useEffect(() => {
+    checkPermission();
+  }, [checkPermission]);
+
+  useEffect(() => {
+    requestPermission();
+  }, [requestPermission]);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {});
+
+    return unsubscribe;
+  }, []);
 
   // return <MaintainScreen />;
 
