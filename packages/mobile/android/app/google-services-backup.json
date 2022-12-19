@@ -1,37 +1,37 @@
 {
   "project_info": {
-    "project_number": "570000248707",
-    "project_id": "owallet-829a1",
-    "storage_bucket": "owallet-829a1.appspot.com"
+    "project_number": "413225951063",
+    "project_id": "owallet-8ee97",
+    "storage_bucket": "owallet-8ee97.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:570000248707:android:3e64240b96c49c01b7f0b6",
+        "mobilesdk_app_id": "1:413225951063:android:924d2f59b8f6f463dee812",
         "android_client_info": {
           "package_name": "com.io.owallet"
         }
       },
       "oauth_client": [
         {
-          "client_id": "570000248707-c5jn1p78v65qs32k0r6v4jd95u71lmvv.apps.googleusercontent.com",
+          "client_id": "413225951063-40pg5qfiav0s3j1j3907vjuiqm9rs0b2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCI2UUbUFsQafcA6KVVTQvcK-yawJECS20"
+          "current_key": "AIzaSyCCaS38ypUn0L379IPO9Ms1ry6DAn3Tgus"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "570000248707-c5jn1p78v65qs32k0r6v4jd95u71lmvv.apps.googleusercontent.com",
+              "client_id": "413225951063-40pg5qfiav0s3j1j3907vjuiqm9rs0b2.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "570000248707-h0n8d9fkgf8d69rlbvokfitqopeu45e1.apps.googleusercontent.com",
+              "client_id": "413225951063-dtkplh97kb06affios6p8c4o2e65np9l.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "io.orai.owallet"

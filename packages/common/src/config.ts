@@ -633,6 +633,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
       },
       {
+        coinDecimals: 18,
+        coinDenom: 'USDT',
+        coinMinimalDenom:
+          'erc20:0x55d398326f99059fF775485246999027B3197955:USDT',
+        contractAddress: '0x55d398326f99059fF775485246999027B3197955',
+        type: 'erc20',
+        coinGeckoId: 'tether'
+      },
+      {
         coinDenom: 'ORAI',
         coinMinimalDenom:
           'erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token',

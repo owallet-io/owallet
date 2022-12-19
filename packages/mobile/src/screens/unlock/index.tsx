@@ -271,10 +271,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const getToken = useCallback(async () => {
     const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+    console.log('fcmToken ===', fcmToken);
+
     if (!fcmToken) {
       messaging()
         .getToken()
         .then(async FCMToken => {
+          console.log('FCM_TOKEN ===', FCMToken);
+
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {

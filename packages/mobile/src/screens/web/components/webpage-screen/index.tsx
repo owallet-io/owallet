@@ -33,10 +33,6 @@ export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    console.log(
-      'InjectedProviderUrl',
-      `${InjectedProviderUrl}/injected-provider.bundle.js`
-    );
     fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
       .then(res => {
         return res.text();
