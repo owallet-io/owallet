@@ -9,6 +9,7 @@ import { CText as Text } from '../../components/text';
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   TouchableOpacity,
   View
@@ -131,6 +132,10 @@ export const NotificationScreen: FunctionComponent = () => {
     [indexChildren, loading]
   );
 
+  const _handleRefresh = () => {
+    console.log('refresh');
+  };
+
   return (
     <View style={styles.container}>
       <View
@@ -191,7 +196,7 @@ export const NotificationScreen: FunctionComponent = () => {
               alignItems: 'center'
             }}
           >
-            {['Transactions', 'News'].map((title: string, i: number) => (
+            {/* {['Transactions', 'News'].map((title: string, i: number) => (
               <TouchableOpacity
                 key={i}
                 style={{
@@ -219,7 +224,7 @@ export const NotificationScreen: FunctionComponent = () => {
                   {title}
                 </Text>
               </TouchableOpacity>
-            ))}
+            ))} */}
           </View>
           <TransactionSectionTitle
             title={'Transfer list'}
@@ -241,6 +246,12 @@ export const NotificationScreen: FunctionComponent = () => {
                 showsVerticalScrollIndicator={false}
                 keyExtractor={_keyExtract}
                 data={data}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={loading}
+                    onRefresh={_handleRefresh}
+                  />
+                }
                 renderItem={_renderItem}
                 onEndReached={() => {
                   setLoadMore(true);

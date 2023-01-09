@@ -56,12 +56,13 @@ const data = [
     img: ''
   }
 ];
-const _handleRefresh = () => {
-  console.log('refresh');
-};
 
 export const NewsTab: FunctionComponent<{}> = () => {
   const [loading, setLoading] = useState(false);
+  const _handleRefresh = () => {
+    console.log('refresh');
+  };
+
   const _renderItem = ({ item, index }) => {
     return (
       <View
