@@ -44,3 +44,5 @@ export * from './quantity';
 export * from './add';
 export * from './eye';
 export * from './validator';
+export * from './carbon-notification';
+export * from './notification';
