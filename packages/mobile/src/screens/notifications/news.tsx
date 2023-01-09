@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import { FlatList, View } from 'react-native';
+import React, { FunctionComponent, useState } from 'react';
+import { FlatList, RefreshControl, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
@@ -56,8 +56,12 @@ const data = [
     img: ''
   }
 ];
+const _handleRefresh = () => {
+  console.log('refresh');
+};
 
 export const NewsTab: FunctionComponent<{}> = () => {
+  const [loading, setLoading] = useState(false);
   const _renderItem = ({ item, index }) => {
     return (
       <View
@@ -127,6 +131,9 @@ export const NewsTab: FunctionComponent<{}> = () => {
           keyExtractor={_keyExtract}
           data={data}
           renderItem={_renderItem}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={_handleRefresh} />
+          }
           ListFooterComponent={<View style={{ height: spacing['12'] }} />}
           ListEmptyComponent={
             <View
