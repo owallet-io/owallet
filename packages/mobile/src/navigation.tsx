@@ -124,6 +124,7 @@ import { useRoute } from '@react-navigation/core';
 import { TransferNFTScreen } from './screens/transfer-nft';
 import { DashBoardScreen } from './screens/dashboard';
 import { lightColors } from './themes/colors';
+import { NotificationScreen } from './screens/notifications';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -176,7 +177,8 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Others', {
-              screen: 'Camera'
+              // screen: 'Camera'
+              screen: 'Notifications'
             });
           }}
         >
@@ -558,6 +560,13 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Transactions"
         component={Transactions}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
+        name="Notifications"
+        component={NotificationScreen}
       />
       <Stack.Screen
         options={{
