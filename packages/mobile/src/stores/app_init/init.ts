@@ -10,6 +10,8 @@ export class AppInit {
     date_updated: null | number;
     theme: string;
   };
+  @observable
+  protected notiData: {};
 
   constructor() {
     makeObservable(this);
@@ -24,6 +26,21 @@ export class AppInit {
   @action
   updateInitApp() {
     this.initApp = { ...this.initApp, status: false };
+  }
+
+  @computed
+  get getNotiData() {
+    return this.notiData;
+  }
+
+  @action
+  updateNotidata(data) {
+    this.notiData = data;
+  }
+
+  @action
+  removeNotidata() {
+    this.notiData = {};
   }
 
   @action

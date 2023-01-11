@@ -264,6 +264,36 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage
+      );
+      const data = JSON.parse(remoteMessage?.data?.data);
+
+      appInitStore.updateNotidata(data);
+
+      console.log(
+        'Notification caused app to open from background state with data:',
+        data
+      );
+    });
+    messaging()
+      .getInitialNotification()
+      .then(async remoteMessage => {
+        const data = JSON.parse(remoteMessage?.data?.data);
+        console.log('message', data.message);
+      });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      const formatData = JSON.parse(remoteMessage?.data?.data);
+      console.log('raw', remoteMessage?.data);
+      console.log('formattedData', formatData);
+    });
+
+    return unsubscribe;
+  }, []);
+
   // Notification setup section
   const regisFcmToken = useCallback(async FCMToken => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
@@ -271,14 +301,11 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const getToken = useCallback(async () => {
     const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
-    console.log('fcmToken ===', fcmToken);
 
     if (!fcmToken) {
       messaging()
         .getToken()
         .then(async FCMToken => {
-          console.log('FCM_TOKEN ===', FCMToken);
-
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
@@ -291,7 +318,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           console.log('[FCMService] getToken rejected ', error);
         });
     } else {
-      regisFcmToken(fcmToken);
+      // regisFcmToken(fcmToken);
     }
   }, [regisFcmToken]);
 

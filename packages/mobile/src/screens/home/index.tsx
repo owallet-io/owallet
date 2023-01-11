@@ -25,16 +25,21 @@ import { colors } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import { API } from '../../common/api';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, appInitStore } =
+    useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(
@@ -69,6 +74,12 @@ export const HomeScreen: FunctionComponent = observer(props => {
     };
   }, [checkAndUpdateChainInfo]);
 
+  useEffect(() => {
+    if (Object.keys(appInitStore.getNotiData).length > 0) {
+      // Do something with the notification data here
+    }
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       if (
@@ -93,8 +104,31 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   }, [chainStore.current.chainId]);
 
+  useEffect(() => {
+    onSubscribeToTopic();
+  }, []);
+
+  const onSubscribeToTopic = React.useCallback(async () => {
+    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+
+    if (fcmToken) {
+      const subcriber = await API.subcribeToTopic(
+        {
+          subcriber: fcmToken,
+          topic:
+            chainStore.current.networkType === 'cosmos'
+              ? account.bech32Address.toString()
+              : account.evmosHexAddress.toString()
+        },
+        {
+          baseURL: 'https://tracking-tx.orai.io'
+        }
+      );
+      console.log('subcriber ===', subcriber);
+    }
+  }, []);
+
   const onRefresh = React.useCallback(async () => {
-    const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
     // Because the components share the states related to the queries,

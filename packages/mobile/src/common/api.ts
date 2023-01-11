@@ -5,6 +5,9 @@ export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.post(path, params, config);
   },
+  put: (path: string, params: any, config: AxiosRequestConfig) => {
+    return axios.put(path, params, config);
+  },
   patch: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.patch(path, params, config);
   },
@@ -77,5 +80,13 @@ export const API = {
   getValidatorList: ({}, config: AxiosRequestConfig) => {
     let url = `v1/validators?limit=100`;
     return API.get(url, config);
+  },
+  subcribeToTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
+    let url = `api/v1/topics`;
+    return API.post(url, { topic, subcriber }, config);
+  },
+  unsubcribeTopic: ({ topic, subcriber }, config: AxiosRequestConfig) => {
+    let url = `api/v1/topics`;
+    return API.put(url, { topic, subcriber }, config);
   }
 };

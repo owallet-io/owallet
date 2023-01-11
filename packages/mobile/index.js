@@ -10,7 +10,6 @@ import { AppRegistry } from 'react-native';
 // add router to send message
 import './init';
 import messaging from '@react-native-firebase/messaging';
-
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 
@@ -25,14 +24,18 @@ const config = {
 
 firebase.initializeApp(config);
 
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('remoteMessage background', remoteMessage);
+});
+
 const { App } = require('./src/app');
 
 // not using CodePush for development
 const CodePushApp = __DEV__
   ? App
   : CodePush({
-      installMode: CodePush.InstallMode.IMMEDIATE
-      // checkFrequency: CodePush.CheckFrequency.MANUAL
+      // installMode: CodePush.InstallMode.IMMEDIATE
+      checkFrequency: CodePush.CheckFrequency.MANUAL
     })(App);
 
 AppRegistry.registerComponent(appName, () => CodePushApp);
