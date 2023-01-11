@@ -19,7 +19,7 @@ import { observer } from 'mobx-react-lite';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
@@ -34,6 +34,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   const { chainStore, accountStore, queriesStore, priceStore, appInitStore } =
     useStore();
+  const navigation = useNavigation();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -77,6 +78,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
   useEffect(() => {
     if (Object.keys(appInitStore.getNotiData).length > 0) {
       // Do something with the notification data here
+      navigation.navigate('Others', {
+        screen: 'Notifications'
+      });
+      appInitStore.removeNotidata();
     }
   }, []);
 
