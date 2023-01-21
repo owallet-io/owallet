@@ -256,7 +256,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                         height: 22
                       }}
                       source={{
-                        uri: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fblog.airight.io%2F&psig=AOvVaw3tfmXntLxHVfsvxJcB2JCa&ust=1674210826350000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCLCJ-7630_wCFQAAAAAdAAAAABAD'
+                        uri: 'https://pbs.twimg.com/profile_images/1399316804258832384/WW6ZrspS_400x400.jpg'
                       }}
                       fadeDuration={0}
                     />
