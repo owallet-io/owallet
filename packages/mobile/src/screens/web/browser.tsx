@@ -228,6 +228,49 @@ export const Browser: FunctionComponent<any> = observer(props => {
               <BrowserBookmark />
               <View style={style.flatten(['padding-20'])}>
                 <TouchableOpacity
+                  key={'https://airight.io'}
+                  style={style.flatten([
+                    'height-44',
+                    'margin-bottom-15',
+                    'flex-row'
+                  ])}
+                  onPress={() => {
+                    handleClickUri(
+                      'https://mainnet-airight-staging.web.app',
+                      'aiRight'
+                    );
+                    const tab = {
+                      id: Date.now(),
+                      name: 'aiRight',
+                      uri: 'https://mainnet-airight-staging.web.app'.toLowerCase()
+                    };
+                    browserStore.addTab(tab);
+                    browserStore.updateSelectedTab(tab);
+                    setUrl('https://mainnet-airight-staging.web.app');
+                  }}
+                >
+                  <View style={style.flatten(['padding-top-5'])}>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 22
+                      }}
+                      source={{
+                        uri: 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fblog.airight.io%2F&psig=AOvVaw3tfmXntLxHVfsvxJcB2JCa&ust=1674210826350000&source=images&cd=vfe&ved=0CBAQjRxqFwoTCLCJ-7630_wCFQAAAAAdAAAAABAD'
+                      }}
+                      fadeDuration={0}
+                    />
+                  </View>
+                  <View style={style.flatten(['padding-x-15'])}>
+                    <Text style={style.flatten(['subtitle2'])}>
+                      {'aiRight'}
+                    </Text>
+                    <Text style={{ color: '#636366', fontSize: 14 }}>
+                      {'https://mainnet-airight-staging.web.app'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
                   key={'https://app.orchai.io'}
                   style={style.flatten([
                     'height-44',
@@ -267,6 +310,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                     </Text>
                   </View>
                 </TouchableOpacity>
+
                 {browserStore.getBookmarks?.map(e => (
                   <TouchableOpacity
                     key={e.id ?? e.uri}

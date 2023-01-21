@@ -15,7 +15,7 @@ export type DAppInfo = {
 };
 
 const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
-const balconyLogo = require('../../assets/image/webpage/balcony.png');
+const aiRight = require('../../assets/image/webpage/airight_logo.png');
 
 export const DAppInfos: DAppInfo[] = [
   {
@@ -93,6 +93,18 @@ export const DAppInfos: DAppInfo[] = [
     id: 12,
     name: 'Kawaii App',
     uri: 'https://owallet-kawaii.firebaseapp.com',
+    logo: oraiLogo
+  },
+  {
+    id: 13,
+    name: 'aiRight',
+    uri: 'https://airight.io',
+    logo: oraiLogo
+  },
+  {
+    id: 14,
+    name: 'aiRight',
+    uri: 'https://mainnet-airight-staging.web.app',
     logo: oraiLogo
   }
 ];
