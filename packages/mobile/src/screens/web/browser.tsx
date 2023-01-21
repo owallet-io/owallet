@@ -235,18 +235,15 @@ export const Browser: FunctionComponent<any> = observer(props => {
                     'flex-row'
                   ])}
                   onPress={() => {
-                    handleClickUri(
-                      'https://mainnet-airight-staging.web.app',
-                      'aiRight'
-                    );
+                    handleClickUri('https://airight.io', 'aiRight');
                     const tab = {
                       id: Date.now(),
                       name: 'aiRight',
-                      uri: 'https://mainnet-airight-staging.web.app'.toLowerCase()
+                      uri: 'https://airight.io'.toLowerCase()
                     };
                     browserStore.addTab(tab);
                     browserStore.updateSelectedTab(tab);
-                    setUrl('https://mainnet-airight-staging.web.app');
+                    setUrl('https://airight.io');
                   }}
                 >
                   <View style={style.flatten(['padding-top-5'])}>
@@ -266,7 +263,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                       {'aiRight'}
                     </Text>
                     <Text style={{ color: '#636366', fontSize: 14 }}>
-                      {'https://mainnet-airight-staging.web.app'}
+                      {'https://airight.io'}
                     </Text>
                   </View>
                 </TouchableOpacity>

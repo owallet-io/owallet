@@ -117,19 +117,19 @@ export const HomeScreen: FunctionComponent = observer(props => {
     const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
 
     if (fcmToken) {
-      const subcriber = await API.subcribeToTopic(
-        {
-          subcriber: fcmToken,
-          topic:
-            chainStore.current.networkType === 'cosmos'
-              ? account.bech32Address.toString()
-              : account.evmosHexAddress.toString()
-        },
-        {
-          baseURL: 'https://tracking-tx.orai.io'
-        }
-      );
-      console.log('subcriber ===', subcriber);
+      // const subcriber = await API.subcribeToTopic(
+      //   {
+      //     subcriber: fcmToken,
+      //     topic:
+      //       chainStore.current.networkType === 'cosmos'
+      //         ? account.bech32Address.toString()
+      //         : account.evmosHexAddress.toString()
+      //   },
+      //   {
+      //     baseURL: 'https://tracking-tx.orai.io'
+      //   }
+      // );
+      // console.log('subcriber ===', subcriber);
     }
   }, []);
 

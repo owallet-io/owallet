@@ -31,19 +31,19 @@ export const SettingRemoveAccountItem: FunctionComponent<{
     const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
 
     if (fcmToken) {
-      const unsubcriber = await API.unsubcribeTopic(
-        {
-          subcriber: fcmToken,
-          topic:
-            chainStore.current.networkType === 'cosmos'
-              ? account.bech32Address.toString()
-              : account.evmosHexAddress.toString()
-        },
-        {
-          baseURL: 'https://tracking-tx.orai.io'
-        }
-      );
-      console.log('un-subcriber ===', unsubcriber);
+      // const unsubcriber = await API.unsubcribeTopic(
+      //   {
+      //     subcriber: fcmToken,
+      //     topic:
+      //       chainStore.current.networkType === 'cosmos'
+      //         ? account.bech32Address.toString()
+      //         : account.evmosHexAddress.toString()
+      //   },
+      //   {
+      //     baseURL: 'https://tracking-tx.orai.io'
+      //   }
+      // );
+      // console.log('un-subcriber ===', unsubcriber);
     }
   }, []);
 
