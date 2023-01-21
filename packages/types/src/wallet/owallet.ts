@@ -86,7 +86,7 @@ export interface OWallet {
     mode: BroadcastMode
   ): Promise<Uint8Array>;
 
-  bitrary(
+  signArbitrary(
     chainId: string,
     signer: string,
     data: string | Uint8Array
