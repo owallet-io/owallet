@@ -76,7 +76,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [checkAndUpdateChainInfo]);
 
   useEffect(() => {
-    if (Object.keys(appInitStore.getNotiData).length > 0) {
+    if (Object.keys(appInitStore?.getNotiData ?? {}).length > 0) {
       // Do something with the notification data here
       navigation.navigate('Others', {
         screen: 'Notifications'
