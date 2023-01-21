@@ -5,7 +5,7 @@ import {
   StdSignDoc,
   StdTx,
   OfflineSigner,
-  StdSignature,
+  StdSignature
 } from '@cosmjs/launchpad';
 import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -86,7 +86,7 @@ export interface OWallet {
     mode: BroadcastMode
   ): Promise<Uint8Array>;
 
-  signArbitrary(
+  bitrary(
     chainId: string,
     signer: string,
     data: string | Uint8Array
@@ -158,9 +158,15 @@ export interface Ethereum {
   initChainId: string;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
-  signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  signAndBroadcastEthereum(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void>;
+  signEthereumTypeData(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<void>;
   signProxyReEncryptionData(chainId: string, data: object): Promise<object>;
   signProxyDecryptionData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
