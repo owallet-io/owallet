@@ -3,7 +3,7 @@ import { create, persist } from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
-const aiRight = require('../../assets/image/webpage/airight_logo.png');
+// const aiRight = require('../../assets/image/webpage/airight_logo.png');
 
 export const DAppInfos = [
   {
@@ -54,7 +54,7 @@ export const DAppInfos = [
     id: 13,
     name: 'aiRight',
     uri: ' https://airight.io',
-    logo: aiRight
+    logo: oraiLogo
   }
 ];
 

@@ -15,7 +15,7 @@ export type DAppInfo = {
 };
 
 const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
-const aiRight = require('../../assets/image/webpage/airight_logo.png');
+// const aiRight = require('../../assets/image/webpage/airight_logo.png');
 
 export const DAppInfos: DAppInfo[] = [
   {

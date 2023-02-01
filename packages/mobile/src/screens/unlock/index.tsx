@@ -270,7 +270,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         'Notification caused app to open from background state:',
         remoteMessage
       );
-      const data = JSON.parse(remoteMessage?.data?.data);
+      // const data = JSON.parse(remoteMessage?.data?.data);
+      const data = { data: JSON.stringify(remoteMessage) };
 
       appInitStore.updateNotidata(data);
 
@@ -282,13 +283,13 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     messaging()
       .getInitialNotification()
       .then(async remoteMessage => {
-        const data = JSON.parse(remoteMessage?.data?.data);
-        console.log('message', data.message);
+        // const data = JSON.parse(remoteMessage?.data?.data);
+        // console.log('message', data.message);
       });
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      const formatData = JSON.parse(remoteMessage?.data?.data);
-      console.log('raw', remoteMessage?.data);
-      console.log('formattedData', formatData);
+      // const formatData = JSON.parse(remoteMessage?.data?.data);
+      // console.log('raw', remoteMessage?.data);
+      // console.log('formattedData', formatData);
     });
 
     return unsubscribe;

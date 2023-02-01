@@ -48,6 +48,15 @@ export const API = {
     return API.get(url, config);
   },
 
+  getNews: ({ page = 1, limit = 10 }, config: AxiosRequestConfig) => {
+    let url = `api/v1/news/list`;
+    let params = {
+      page,
+      size: limit
+    };
+    return API.post(url, params, config);
+  },
+
   getMarketChartRange: (
     { id, from, to }: { id: string; from?: number; to?: number },
     config: AxiosRequestConfig

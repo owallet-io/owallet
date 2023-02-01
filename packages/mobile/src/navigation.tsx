@@ -66,7 +66,7 @@ import {
   BrowserFillIcon,
   InvestOutlineIcon,
   InvestFillIcon,
-  HistoryIcon,
+  Notification,
   Scanner,
   GoBack
 } from './components/icon';
@@ -168,17 +168,20 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
       >
         <TouchableOpacity
           onPress={() => {
-            smartNavigation.navigateSmart('Transactions', {});
+            // smartNavigation.navigateSmart('Transactions', {});
+            navigation.navigate('Others', {
+              screen: 'Notifications'
+            });
           }}
           style={{ paddingRight: 8 }}
         >
-          <HistoryIcon size={24} color={colors['purple-700']} />
+          <Notification size={24} color={colors['purple-700']} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Others', {
-              // screen: 'Camera'
-              screen: 'Notifications'
+              screen: 'Camera'
+              // screen: 'Notifications'
             });
           }}
         >

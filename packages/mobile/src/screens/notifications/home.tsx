@@ -133,7 +133,9 @@ export const NotificationScreen: FunctionComponent = () => {
   );
 
   const _handleRefresh = () => {
-    console.log('refresh');
+    page.current = 1;
+    setLoading(true);
+    fetchData();
   };
 
   return (

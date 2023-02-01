@@ -1,67 +1,71 @@
-import React, { FunctionComponent, useState } from 'react';
-import { FlatList, RefreshControl, View } from 'react-native';
+import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  View
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { CText as Text } from '../../components/text';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
+import crashlytics from '@react-native-firebase/crashlytics';
+import { API } from '../../common/api';
+import { useIsFocused } from '@react-navigation/native';
+import moment from 'moment';
 
-const data = [
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  },
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  },
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  },
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  },
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  },
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  },
-  {
-    label: 'OraiDEX is now ready for Ledger users with full options',
-    content:
-      'Claim ORAIX using Ledger x #OWallet extension. Bridge $ATOM from CosmosHub to Oraichain network using Advanced IBC Transfers; ',
-    time: 'Wed 28, 2022',
-    img: ''
-  }
-];
+const limit = 5;
 
 export const NewsTab: FunctionComponent<{}> = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [loadMore, setLoadMore] = useState(false);
   const _handleRefresh = () => {
-    console.log('refresh');
+    page.current = 1;
+    setLoading(true);
+    fetchData();
   };
+
+  const page = useRef(1);
+  const hasMore = useRef(true);
+  const fetchData = async (isLoadMore = false) => {
+    crashlytics().log('transactions - home - fetchData');
+    // const isRecipient = indexChildren === 1;
+    // const isAll = indexChildren === 0;
+    try {
+      const res = await API.getNews(
+        {
+          page: page.current,
+          limit: limit
+        },
+        { baseURL: 'https://tracking-tx.orai.io' }
+      );
+
+      const value = res.data?.news || [];
+      let newData = isLoadMore ? [...data, ...value] : value;
+      hasMore.current = value?.length === limit;
+      let pageCurrent = +page.current;
+      page.current = pageCurrent + 1;
+      if (newData.length === res.data?.count) {
+        hasMore.current = false;
+      }
+      setData(newData);
+      setLoading(false);
+      setLoadMore(false);
+    } catch (error) {
+      crashlytics().recordError(error);
+      setLoading(false);
+      setLoadMore(false);
+      console.error(error);
+    }
+  };
+
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    page.current = 1;
+    fetchData();
+  }, [isFocused]);
 
   const _renderItem = ({ item, index }) => {
     return (
@@ -73,16 +77,17 @@ export const NewsTab: FunctionComponent<{}> = () => {
           marginVertical: 8,
           borderRadius: 8
         }}
+        key={item.id}
       >
         <View>
-          {/* <FastImage  /> */}
-          <View
+          <FastImage
             style={{
               width: 70,
               height: 70,
               borderRadius: 8,
-              backgroundColor: colors['primary']
+              backgroundColor: colors['white']
             }}
+            source={require('../../assets/image/webpage/orai_logo.png')}
           />
         </View>
         <View style={{ paddingLeft: 12, maxWidth: '75%' }}>
@@ -93,7 +98,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
             }}
             numberOfLines={2}
           >
-            {item.label}
+            {item.title}
           </Text>
           <Text
             style={{
@@ -102,7 +107,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
             }}
             numberOfLines={3}
           >
-            {item.content}
+            {item.body}
           </Text>
           <Text
             style={{
@@ -111,7 +116,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
               fontWeight: '700'
             }}
           >
-            {item.time}
+            {moment(item.created_at).format('MMM DD, YYYY [at] HH:mm')}
           </Text>
         </View>
       </View>
@@ -135,6 +140,10 @@ export const NewsTab: FunctionComponent<{}> = () => {
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={_handleRefresh} />
           }
+          onEndReached={() => {
+            setLoadMore(true);
+            fetchData(true);
+          }}
           ListFooterComponent={<View style={{ height: spacing['12'] }} />}
           ListEmptyComponent={
             <View
@@ -150,11 +159,16 @@ export const NewsTab: FunctionComponent<{}> = () => {
                   color: colors['gray-300']
                 }}
               >
-                {'Comming Soon!'}
+                {'Nothing new'}
               </Text>
             </View>
           }
         />
+        {loadMore ? (
+          <View>
+            <ActivityIndicator />
+          </View>
+        ) : null}
       </View>
     </View>
   );

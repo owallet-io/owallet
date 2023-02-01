@@ -76,6 +76,31 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, [checkAndUpdateChainInfo]);
 
   useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage
+      );
+      navigation.navigate('Others', {
+        screen: 'Notifications'
+      });
+    });
+    messaging()
+      .getInitialNotification()
+      .then(async remoteMessage => {
+        // const data = JSON.parse(remoteMessage?.data?.data);
+        // console.log('message', data.message);
+      });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      // const formatData = JSON.parse(remoteMessage?.data?.data);
+      // console.log('raw', remoteMessage?.data);
+      // console.log('formattedData', formatData);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     if (Object.keys(appInitStore?.getNotiData ?? {}).length > 0) {
       // Do something with the notification data here
       navigation.navigate('Others', {
@@ -83,7 +108,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       });
       appInitStore.removeNotidata();
     }
-  }, []);
+  }, [appInitStore]);
 
   useFocusEffect(
     useCallback(() => {
@@ -117,19 +142,18 @@ export const HomeScreen: FunctionComponent = observer(props => {
     const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
 
     if (fcmToken) {
-      // const subcriber = await API.subcribeToTopic(
-      //   {
-      //     subcriber: fcmToken,
-      //     topic:
-      //       chainStore.current.networkType === 'cosmos'
-      //         ? account.bech32Address.toString()
-      //         : account.evmosHexAddress.toString()
-      //   },
-      //   {
-      //     baseURL: 'https://tracking-tx.orai.io'
-      //   }
-      // );
-      // console.log('subcriber ===', subcriber);
+      const subcriber = await API.subcribeToTopic(
+        {
+          subcriber: fcmToken,
+          topic:
+            chainStore.current.networkType === 'cosmos'
+              ? account.bech32Address.toString()
+              : account.evmosHexAddress.toString()
+        },
+        {
+          baseURL: 'https://tracking-tx.orai.io'
+        }
+      );
     }
   }, []);
 
