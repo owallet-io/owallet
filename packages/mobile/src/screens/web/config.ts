@@ -24,6 +24,12 @@ export const DAppInfos: DAppInfo[] = [
     uri: 'https://oraidex.io',
     logo: oraiLogo
   },
+  // {
+  //   id: 19,
+  //   name: 'Oraidex',
+  //   uri: '192.168.0.147',
+  //   logo: oraiLogo
+  // },
   {
     id: 2,
     name: 'Oraidex',
