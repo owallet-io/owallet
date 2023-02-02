@@ -183,7 +183,6 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           ) : (
             <Notification size={24} color={colors['purple-700']} />
           )}
-          <Notification size={24} color={colors['purple-700']} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
