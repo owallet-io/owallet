@@ -68,7 +68,8 @@ import {
   InvestFillIcon,
   Notification,
   Scanner,
-  GoBack
+  GoBack,
+  CarbonNotification
 } from './components/icon';
 import {
   AddAddressBookScreen,
@@ -153,6 +154,7 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
 const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
+  const { notificationStore } = useStore();
 
   return (
     <View
@@ -175,6 +177,12 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           }}
           style={{ paddingRight: 8 }}
         >
+          {notificationStore.getReadNotifications.length >=
+          notificationStore.getTotal ? (
+            <CarbonNotification size={24} color={colors['purple-700']} />
+          ) : (
+            <Notification size={24} color={colors['purple-700']} />
+          )}
           <Notification size={24} color={colors['purple-700']} />
         </TouchableOpacity>
         <TouchableOpacity

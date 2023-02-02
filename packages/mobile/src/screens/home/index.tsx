@@ -32,8 +32,13 @@ import { API } from '../../common/api';
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const { chainStore, accountStore, queriesStore, priceStore, appInitStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    notificationStore
+  } = useStore();
   const navigation = useNavigation();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -101,14 +106,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
   }, []);
 
   useEffect(() => {
-    if (Object.keys(appInitStore?.getNotiData ?? {}).length > 0) {
+    if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
       // Do something with the notification data here
       navigation.navigate('Others', {
         screen: 'Notifications'
       });
-      appInitStore.removeNotidata();
+      notificationStore.removeNotidata();
     }
-  }, [appInitStore]);
+  }, [notificationStore]);
 
   useFocusEffect(
     useCallback(() => {

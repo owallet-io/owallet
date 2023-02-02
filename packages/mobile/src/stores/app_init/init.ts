@@ -28,21 +28,6 @@ export class AppInit {
     this.initApp = { ...this.initApp, status: false };
   }
 
-  @computed
-  get getNotiData() {
-    return this.notiData;
-  }
-
-  @action
-  updateNotidata(data) {
-    this.notiData = data;
-  }
-
-  @action
-  removeNotidata() {
-    this.notiData = {};
-  }
-
   @action
   updateDate(date) {
     this.initApp = { ...this.initApp, date_updated: date };

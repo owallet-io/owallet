@@ -109,7 +109,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     keychainStore,
     accountStore,
     chainStore,
-    appInitStore
+    notificationStore
   } = useStore();
   const navigation = useNavigation();
 
@@ -162,7 +162,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             console.log('DOWNLOADING_PACKAGE');
             // Show "downloading" modal
             // modal.open();
-            appInitStore.updateDate(Date.now());
+            notificationStore.updateDate(Date.now());
             setDownloading(true);
             break;
           case CodePush.SyncStatus.INSTALLING_UPDATE:
@@ -175,7 +175,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             setDownloading(false);
             setInstalling(false);
             setLoaded(true);
-            appInitStore.updateDate(Date.now());
+            notificationStore.updateDate(Date.now());
             // Hide loading modal
             break;
         }
@@ -273,7 +273,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       // const data = JSON.parse(remoteMessage?.data?.data);
       const data = { data: JSON.stringify(remoteMessage) };
 
-      appInitStore.updateNotidata(data);
+      notificationStore.updateNotidata(data);
 
       console.log(
         'Notification caused app to open from background state with data:',

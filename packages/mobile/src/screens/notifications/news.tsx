@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   FlatList,
   RefreshControl,
+  TouchableOpacity,
   View
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -13,10 +14,13 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import { API } from '../../common/api';
 import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
+import { useStore } from '../../stores';
+import { observer } from 'mobx-react-lite';
 
 const limit = 5;
 
-export const NewsTab: FunctionComponent<{}> = () => {
+export const NewsTab: FunctionComponent<{}> = observer(() => {
+  const { notificationStore } = useStore();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const [loadMore, setLoadMore] = useState(false);
@@ -30,8 +34,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
-    // const isRecipient = indexChildren === 1;
-    // const isAll = indexChildren === 0;
+
     try {
       const res = await API.getNews(
         {
@@ -50,6 +53,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
         hasMore.current = false;
       }
       setData(newData);
+      notificationStore.updateTotal(res.data?.count ?? 0);
       setLoading(false);
       setLoadMore(false);
     } catch (error) {
@@ -69,7 +73,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
 
   const _renderItem = ({ item, index }) => {
     return (
-      <View
+      <TouchableOpacity
         style={{
           padding: 8,
           flexDirection: 'row',
@@ -78,6 +82,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
           borderRadius: 8
         }}
         key={item.id}
+        onPress={() => notificationStore.updateReadNotifications(item.id)}
       >
         <View>
           <FastImage
@@ -119,7 +124,7 @@ export const NewsTab: FunctionComponent<{}> = () => {
             {moment(item.created_at).format('MMM DD, YYYY [at] HH:mm')}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
   return (
@@ -172,4 +177,4 @@ export const NewsTab: FunctionComponent<{}> = () => {
       </View>
     </View>
   );
-};
+});
