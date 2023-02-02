@@ -53,7 +53,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
         hasMore.current = false;
       }
       setData(newData);
-      notificationStore.updateTotal(res.data?.count ?? 0);
+      notificationStore?.updateTotal(res.data?.count ?? 0);
       setLoading(false);
       setLoadMore(false);
     } catch (error) {
@@ -82,7 +82,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
           borderRadius: 8
         }}
         key={item.id}
-        onPress={() => notificationStore.updateReadNotifications(item.id)}
+        onPress={() => notificationStore?.updateReadNotifications(item.id)}
       >
         <View>
           <FastImage

@@ -177,8 +177,8 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
           }}
           style={{ paddingRight: 8 }}
         >
-          {notificationStore.getReadNotifications.length >=
-          notificationStore.getTotal ? (
+          {notificationStore?.getReadNotifications?.length >=
+          notificationStore?.getTotal ? (
             <CarbonNotification size={24} color={colors['purple-700']} />
           ) : (
             <Notification size={24} color={colors['purple-700']} />
