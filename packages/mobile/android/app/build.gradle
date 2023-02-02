@@ -199,7 +199,7 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0' // (check what the latest version is!)
-    implementation project(path: ':@react-native-firebase_messaging')
+     implementation project(path: ":@react-native-firebase_messaging")
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
 
