@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export class Notification {
   @persist('list')
   @observable
-  protected readNotifications: Array<any>[];
+  protected readNotifications: Array<any>;
   @observable
   protected notiData: {};
   @observable
@@ -13,6 +13,7 @@ export class Notification {
 
   constructor() {
     makeObservable(this);
+    this.readNotifications = [];
   }
 
   @computed
@@ -47,18 +48,14 @@ export class Notification {
 
   @action
   updateReadNotifications(id) {
-    const tmpRN = [...this.readNotifications];
-    tmpRN.push(id);
-    this.readNotifications = tmpRN;
+    this.readNotifications.push(id);
   }
 
   @action
   removeReadNotification(id) {
-    const tmpRN = [...this.readNotifications];
-    const index = tmpRN.indexOf(id);
+    const index = this.readNotifications.indexOf(id);
     if (index > -1) {
-      tmpRN.splice(index, 1);
-      this.readNotifications = tmpRN;
+      this.readNotifications.splice(index, 1);
     }
   }
 }

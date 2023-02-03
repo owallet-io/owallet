@@ -1,4 +1,10 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -71,62 +77,72 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
     fetchData();
   }, [isFocused]);
 
-  const _renderItem = ({ item, index }) => {
-    return (
-      <TouchableOpacity
-        style={{
-          padding: 8,
-          flexDirection: 'row',
-          backgroundColor: '#F3F1F5',
-          marginVertical: 8,
-          borderRadius: 8
-        }}
-        key={item.id}
-        onPress={() => notificationStore?.updateReadNotifications(item.id)}
-      >
-        <View>
-          <FastImage
-            style={{
-              width: 70,
-              height: 70,
-              borderRadius: 8,
-              backgroundColor: colors['white']
-            }}
-            source={require('../../assets/image/webpage/orai_logo.png')}
-          />
-        </View>
-        <View style={{ paddingLeft: 12, maxWidth: '75%' }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 16
-            }}
-            numberOfLines={2}
-          >
-            {item.title}
-          </Text>
-          <Text
-            style={{
-              color: colors['blue-300'],
-              paddingTop: 8
-            }}
-            numberOfLines={3}
-          >
-            {item.body}
-          </Text>
-          <Text
-            style={{
-              color: colors['blue-300'],
-              paddingTop: 8,
-              fontWeight: '700'
-            }}
-          >
-            {moment(item.created_at).format('MMM DD, YYYY [at] HH:mm')}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
+  const _renderItem = useCallback(
+    ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={{
+            padding: 8,
+            flexDirection: 'row',
+            backgroundColor: notificationStore?.getReadNotifications?.includes(
+              item.id
+            )
+              ? colors['white']
+              : '#F3F1F5',
+            marginVertical: 8,
+            borderRadius: 8
+          }}
+          key={item.id}
+          onPress={() => {
+            notificationStore?.updateReadNotifications(item.id);
+          }}
+        >
+          <View>
+            <FastImage
+              style={{
+                width: 70,
+                height: 70,
+                borderRadius: 8,
+                backgroundColor: colors['white']
+              }}
+              source={require('../../assets/image/webpage/orai_logo.png')}
+            />
+          </View>
+          <View style={{ paddingLeft: 12, maxWidth: '75%' }}>
+            <Text
+              style={{
+                fontWeight: '700',
+                fontSize: 16
+              }}
+              numberOfLines={2}
+            >
+              {item.title}
+            </Text>
+            <Text
+              style={{
+                color: colors['blue-300'],
+                paddingTop: 8
+              }}
+              numberOfLines={3}
+            >
+              {item.body}
+            </Text>
+            <Text
+              style={{
+                color: colors['blue-300'],
+                paddingTop: 8,
+                fontWeight: '700'
+              }}
+            >
+              {moment(item.created_at).format('MMM DD, YYYY [at] HH:mm')}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    },
+    [notificationStore]
+  );
+
   return (
     <View style={{ height: metrics.screenHeight }}>
       <View
