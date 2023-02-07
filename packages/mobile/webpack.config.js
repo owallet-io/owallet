@@ -29,7 +29,14 @@ module.exports = (env, args) => {
       filename: '[name].bundle.js'
     },
     resolve: {
-      extensions: ['.ts', '.js']
+      extensions: ['.ts', '.js'],
+      fallback: {
+        http: false,
+        stream: require.resolve('stream-browserify'),
+        buffer: require.resolve('buffer'),
+        crypto: require.resolve('crypto-browserify'),
+        https: require.resolve('https-browserify')
+      }
     },
     module: {
       rules: [tsRule]
@@ -40,6 +47,12 @@ module.exports = (env, args) => {
       maxAssetSize: 512000
     },
     plugins: [
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer']
+      }),
+      new webpack.ProvidePlugin({
+        process: 'process/browser'
+      }),
       new webpack.EnvironmentPlugin(['NODE_ENV']),
       new BundleAnalyzerPlugin({
         analyzerMode: isEnvAnalyzer ? 'server' : 'disabled'

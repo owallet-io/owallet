@@ -11,8 +11,7 @@ export class ProtoCodec {
     string,
     {
       decode: (r: $protobuf.Reader | Uint8Array, l?: number) => any;
-    }
-  > = new Map();
+    }> = new Map();
 
   /**
    * Unpack the any to the registered message.

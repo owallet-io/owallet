@@ -7,6 +7,7 @@ import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 export function init(
   owallet: OWallet,
   ethereum: Ethereum,
+  eth_owallet: Ethereum,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
   getOfflineSignerAuto: (
@@ -17,6 +18,10 @@ export function init(
   // Give a priority to production build.
   if (!window.owallet) {
     window.owallet = owallet;
+  }
+
+  if (!window.eth_owallet) {
+    window.eth_owallet = eth_owallet;
   }
 
   if (!window.ethereum) {
@@ -43,5 +48,8 @@ export function init(
   //   window.getOfflineSignerAuto = getOfflineSignerAuto;
   //   window.getEnigmaUtils = getEnigmaUtils;
   // }
-  window.keplr = window.keplr || owallet;
+
+  if (!window.keplr) {
+    window.keplr = owallet;
+  }
 }
