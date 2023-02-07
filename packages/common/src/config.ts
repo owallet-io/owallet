@@ -152,9 +152,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.01,
-      high: 0.03
+      low: 0.01,
+      average: 0.03,
+      high: 0.05
     },
     features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
@@ -589,7 +589,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'ethereum',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
-      }
+      },
+      {
+        coinDenom: 'ORAI',
+        coinMinimalDenom:
+          'erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5:Oraichain Token',
+        coinDecimals: 18,
+        coinGeckoId: 'oraichain-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
     ],
     get feeCurrencies() {
       return this.currencies;
