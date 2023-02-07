@@ -22,7 +22,9 @@
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && yarn patch-package",
     "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.16 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.7 --output-dir build"
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.7 --output-dir build",
+    "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --sourcemap-output ios/main.jsbundle.map --assets-dest ios",
+    "bundle:android": "react-native bundle --entry-file index.js --platform android --dev false --bundle-output android/index.android.bundle --sourcemap-output index.android.bundle.map --assets-dest android"
   },
   "dependencies": {
     "@amplitude/react-native": "^2.7.0",
@@ -63,6 +65,7 @@
     "@react-navigation/stack": "^5.14.3",
     "@rneui/base": "^4.0.0-rc.4",
     "@rneui/themed": "^4.0.0-rc.4",
+    "@sentry/react-native": "^4.14.0",
     "@umijs/hooks": "^1.9.3",
     "appcenter": "^4.1.0",
     "appcenter-analytics": "^4.1.0",

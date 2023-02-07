@@ -30,6 +30,13 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 const { App } = require('./src/app');
 
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424',
+  environment: 'production'
+});
+
 // not using CodePush for development
 const CodePushApp = __DEV__
   ? App
