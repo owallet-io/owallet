@@ -1,5 +1,5 @@
 import { AppCurrency } from '@owallet/types';
-import { cosmos, cosmwasm, UnknownMessage } from '@owallet/cosmos';
+import { cosmos, cosmwasm, ibc, UnknownMessage } from '@owallet/cosmos';
 import { fromUtf8 } from '@cosmjs/encoding';
 import {
   renderMsgBeginRedelegate,
@@ -8,7 +8,8 @@ import {
   renderMsgSend,
   renderMsgUndelegate,
   renderUnknownMessage,
-  renderMsgWithdrawDelegatorReward
+  renderMsgWithdrawDelegatorReward,
+  renderMsgIBCMsgTransfer
 } from './messages';
 import { CoinPrimitive } from '@owallet/stores';
 
@@ -59,9 +60,11 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
   }
 
   if (msg instanceof cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward) {
-    return renderMsgWithdrawDelegatorReward(
-      msg.validatorAddress
-    );
+    return renderMsgWithdrawDelegatorReward(msg.validatorAddress);
+  }
+
+  if (msg instanceof ibc.applications.transfer.v1.MsgTransfer) {
+    return renderMsgIBCMsgTransfer(msg);
   }
 
   if (msg instanceof UnknownMessage) {

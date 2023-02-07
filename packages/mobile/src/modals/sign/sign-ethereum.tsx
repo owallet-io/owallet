@@ -32,16 +32,11 @@ export const SignEthereumModal: FunctionComponent<{
   close: () => void;
 }> = registerModal(
   observer(() => {
-    const { chainStore, signInteractionStore, accountStore, sendStore } =
-      useStore();
+    const { chainStore, signInteractionStore, sendStore } = useStore();
 
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
-
-    const chainId = chainStore?.current?.chainId;
-
-    const account = accountStore.getAccount(chainId);
 
     const current = chainStore.current;
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
@@ -83,13 +78,14 @@ export const SignEthereumModal: FunctionComponent<{
               chainIdSign = '0x' + Number(chainIdSign).toString(16);
             chainStore.selectChain(chainIdSign);
           }
-          if (gasPrice !== '') {
+          if (gasPrice !== '' && sendStore.sendObj) {
             // @ts-ignore
             const web3 = new Web3(chainStore.current.rest);
             const tokenInfo = new web3.eth.Contract(
               ERC20_ABI,
               sendStore.sendObj?.contract_addr
             );
+
             const estimate = await tokenInfo.methods
               .transfer(
                 sendStore.sendObj?.recipient,
@@ -104,15 +100,43 @@ export const SignEthereumModal: FunctionComponent<{
                 from: sendStore.sendObj?.from
               });
 
+            console.log('===', estimate);
+
             gasConfig.setGas(estimate);
             feeConfig.setFee(
               new Big(estimate).mul(gasPrice).toFixed(decimals.current)
             );
+          } else {
+            decimals.current = dataSign?.data?.data?.data?.decimals;
+            let chainIdSign = dataSign?.data?.chainId;
+            if (!chainIdSign?.toString()?.startsWith('0x'))
+              chainIdSign = '0x' + Number(chainIdSign).toString(16);
+            chainStore.selectChain(chainIdSign);
+
+            const estimatedGasLimit = parseInt(
+              dataSign?.data?.data?.data?.estimatedGasLimit,
+              16
+            );
+            const estimatedGasPrice = new Big(
+              parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16)
+            )
+              .div(new Big(10).pow(decimals.current))
+              .toFixed(decimals.current);
+
+            if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== 'NaN') {
+              setGasPrice(estimatedGasPrice);
+              gasConfig.setGas(estimatedGasLimit);
+              feeConfig.setFee(
+                new Big(estimatedGasLimit)
+                  .mul(estimatedGasPrice)
+                  .toFixed(decimals.current)
+              );
+            }
           }
         } catch (error) {
-          gasConfig.setGas(21000);
+          gasConfig.setGas(80000);
           feeConfig.setFee(
-            new Big(21000).mul(new Big(gasPrice)).toFixed(decimals.current)
+            new Big(80000).mul(new Big(gasPrice)).toFixed(decimals.current)
           );
         }
       };
@@ -128,14 +152,6 @@ export const SignEthereumModal: FunctionComponent<{
     const [memo, setMemo] = useState<string>('');
 
     const style = useStyle();
-
-    // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
-
-    useEffect(() => {
-      if (signInteractionStore.waitingEthereumData) {
-        const data = signInteractionStore.waitingEthereumData;
-      }
-    }, [signInteractionStore.waitingEthereumData]);
 
     const _onPressReject = () => {
       try {
@@ -223,6 +239,9 @@ export const SignEthereumModal: FunctionComponent<{
               containerStyle={{
                 width: '40%'
               }}
+              textStyle={{
+                color: colors['white']
+              }}
               style={{
                 backgroundColor: signInteractionStore.isLoading
                   ? colors['gray-400']
@@ -231,16 +250,24 @@ export const SignEthereumModal: FunctionComponent<{
               loading={signInteractionStore.isLoading}
               onPress={async () => {
                 try {
-                  const gasPriceCalculate =
+                  // const gasPriceCalculate =
+                  //   '0x' +
+                  //   parseFloat(
+                  //     new Big(gasPrice)
+                  //       .mul(new Big(10).pow(decimals.current))
+                  //       .toString()
+                  //   ).toString(16);
+                  const gasPrice =
                     '0x' +
-                    parseFloat(
-                      new Big(gasPrice)
+                    parseInt(
+                      new Big(parseFloat(feeConfig.feeRaw))
                         .mul(new Big(10).pow(decimals.current))
-                        .toString()
+                        .div(parseFloat(gasConfig.gasRaw))
+                        .toFixed(decimals.current)
                     ).toString(16);
 
                   await signInteractionStore.approveEthereumAndWaitEnd({
-                    gasPrice: gasPriceCalculate,
+                    gasPrice: gasPrice,
                     gasLimit: `0x${parseFloat(gasConfig.gasRaw).toString(16)}`,
                     memo
                   });

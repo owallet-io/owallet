@@ -48,5 +48,8 @@ export function init(
   //   window.getOfflineSignerAuto = getOfflineSignerAuto;
   //   window.getEnigmaUtils = getEnigmaUtils;
   // }
-  window.keplr = window.keplr || owallet;
+
+  if (!window.keplr) {
+    window.keplr = owallet;
+  }
 }

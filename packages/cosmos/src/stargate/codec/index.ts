@@ -1,7 +1,7 @@
 import { google } from '../proto';
 import * as $protobuf from 'protobufjs';
 
-import { cosmos, cosmwasm , ibc } from '../proto';
+import { cosmos, cosmwasm, ibc } from '../proto';
 import { UnknownMessage } from './unknown';
 
 export * from './unknown';
@@ -61,17 +61,20 @@ defaultProtoCodec.registerAny(
   cosmwasm.wasm.v1.MsgExecuteContract
 );
 defaultProtoCodec.registerAny(
-  "/cosmwasm.wasm.v1.MsgInstantiateContract",
+  '/cosmwasm.wasm.v1.MsgInstantiateContract',
   cosmwasm.wasm.v1.MsgInstantiateContract
 );
 defaultProtoCodec.registerAny(
-  "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward",
+  '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
   cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward
 );
 defaultProtoCodec.registerAny(
-  "/ibc.applications.transfer.v1.MsgTransfer",
+  '/ibc.applications.transfer.v1.MsgTransfer',
   ibc.applications.transfer.v1.MsgTransfer
 );
-defaultProtoCodec.registerAny("/cosmos.gov.v1beta1.MsgVote", cosmos.gov.v1beta1.MsgVote);
+defaultProtoCodec.registerAny(
+  '/cosmos.gov.v1beta1.MsgVote',
+  cosmos.gov.v1beta1.MsgVote
+);
 // defaultProtoCodec.registerAny("/cosmos.authz.v1beta1.MsgGrant", cosmos.authz.v1beta1.MsgGrant);
 // defaultProtoCodec.registerAny("/cosmos.authz.v1beta1.MsgRevoke", cosmos.authz.v1beta1.MsgRevoke);

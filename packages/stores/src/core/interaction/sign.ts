@@ -96,6 +96,8 @@ export class SignInteractionStore {
         ? SignDocWrapper.fromAminoSignDoc(data.data.signDoc)
         : SignDocWrapper.fromDirectSignDocBytes(data.data.signDocBytes);
 
+    console.log('wrapper===', wrapper);
+
     return {
       id: data.id,
       type: data.type,
@@ -109,8 +111,8 @@ export class SignInteractionStore {
         isADR36WithString:
           'isADR36WithString' in data.data
             ? data.data.isADR36WithString
-            : undefined,
-      },
+            : undefined
+      }
     };
   }
 
@@ -136,9 +138,9 @@ export class SignInteractionStore {
       data: {
         chainId: data.data.chainId,
         msgOrigin: data.data.msgOrigin,
-        data: data.data,
+        data: data.data
       },
-      isInternal: data.isInternal,
+      isInternal: data.isInternal
     };
   }
 
@@ -163,7 +165,7 @@ export class SignInteractionStore {
       return Promise.resolve();
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const disposer = autorun(() => {
         if (this.isEnded()) {
           resolve();
@@ -179,7 +181,7 @@ export class SignInteractionStore {
       return Promise.resolve();
     }
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const disposer = autorun(() => {
         if (this.isEthereumEnded()) {
           resolve();
@@ -192,7 +194,6 @@ export class SignInteractionStore {
 
   @flow
   *approveAndWaitEnd(newSignDocWrapper: SignDocWrapper) {
-
     if (this.waitingDatas.length === 0) {
       return;
     }
@@ -214,7 +215,12 @@ export class SignInteractionStore {
   }
 
   @flow
-  *approveEthereumAndWaitEnd({ gasPrice = '0x0', memo = '', gasLimit = '0x0', fees = '0x0' }) {
+  *approveEthereumAndWaitEnd({
+    gasPrice = '0x0',
+    memo = '',
+    gasLimit = '0x0',
+    fees = '0x0'
+  }) {
     if (this.waitingEthereumDatas?.length === 0) {
       return;
     }
@@ -264,10 +270,10 @@ export class SignInteractionStore {
     this._isLoading = true;
     try {
       // yield this.interactionStore.rejectAll('request-sign');
-      yield this.waitingDatas?.map((wd) => {
+      yield this.waitingDatas?.map(wd => {
         this.interactionStore.reject('request-sign', wd.id);
       });
-      yield this.waitingEthereumDatas?.map((wed) => {
+      yield this.waitingEthereumDatas?.map(wed => {
         this.interactionStore.reject('request-sign-ethereum', wed.id);
       });
     } finally {

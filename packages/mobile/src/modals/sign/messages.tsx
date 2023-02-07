@@ -222,7 +222,7 @@ export function renderMsgSend(
           <Text style={{ fontWeight: 'bold' }}>
             {hyphen(
               receives
-                .map((coin) => {
+                .map(coin => {
                   return `${coin.amount} ${coin.denom}`;
                 })
                 .join(',')
@@ -508,7 +508,37 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
         >
           <Text style={{ ...styles.textInfo }}>Claim From </Text>
           <Text style={{ fontWeight: 'bold' }}>
-            {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))}
+            {/* {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))} */}
+          </Text>
+        </View>
+        {/* <Text>{' will receive '}</Text> */}
+      </View>
+    )
+    // content: (
+    //   <Text>
+    //     <Text>{'Claim pending staking reward from '}</Text>
+    //     <Text style={{ fontWeight: 'bold' }}>
+    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 34))}
+    //     </Text>
+    //   </Text>
+    // )
+  };
+}
+
+export function renderMsgIBCMsgTransfer(msg: any) {
+  return {
+    title: 'IBC Transfer',
+    content: (
+      <View style={{}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Text style={{ ...styles.textInfo }}>IBC Transfer</Text>
+          <Text style={{ fontWeight: 'bold' }}>
+            {/* {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))} */}
           </Text>
         </View>
         {/* <Text>{' will receive '}</Text> */}
@@ -621,7 +651,7 @@ export function renderMsgExecuteContract(
               <Text> by sending </Text>
               <Text style={{ fontWeight: 'bold' }}>
                 {sent
-                  .map((coin) => {
+                  .map(coin => {
                     return `${coin.amount} ${coin.denom}`;
                   })
                   .join(',')}
