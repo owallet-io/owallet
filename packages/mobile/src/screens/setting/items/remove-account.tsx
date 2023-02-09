@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { colors } from '../../../themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../../../common/api';
+import CodePush from 'react-native-code-push';
 
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
@@ -49,6 +50,57 @@ export const SettingRemoveAccountItem: FunctionComponent<{
 
   return (
     <React.Fragment>
+      <SettingItem
+        label="Check for Update"
+        onPress={() => {
+          CodePush.checkForUpdate().then(update => {
+            if (!update) {
+              console.log('The app is up to date!');
+              alert('The app is up to date!');
+            } else {
+              console.log('An update is available! Should we download it?');
+              alert(
+                'Getting a new update...Please keep this screen on until completion. '
+              );
+              CodePush.sync(
+                {
+                  installMode: CodePush.InstallMode.IMMEDIATE
+                },
+                status => {
+                  switch (status) {
+                    case CodePush.SyncStatus.UP_TO_DATE:
+                      console.log('UP_TO_DATE');
+                      // Show "downloading" modal
+                      // modal.open();
+                      break;
+                    case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
+                      console.log('DOWNLOADING_PACKAGE');
+                      // Show "downloading" modal
+                      // modal.open();
+                      break;
+                    case CodePush.SyncStatus.INSTALLING_UPDATE:
+                      console.log('INSTALLING_UPDATE');
+                      // show installing
+                      break;
+                    case CodePush.SyncStatus.UPDATE_INSTALLED:
+                      console.log('UPDATE_INSTALLED');
+
+                      // Hide loading modal
+                      break;
+                  }
+                },
+                ({ receivedBytes, totalBytes }) => {
+                  /* Update download modal progress */
+                }
+              );
+            }
+          });
+        }}
+        containerStyle={style.flatten(['margin-top-16'])}
+        labelStyle={style.flatten(['subtitle1', 'color-button-primary'])}
+        // style={style.flatten(["justify-center"])}
+        topBorder={topBorder}
+      />
       <SettingItem
         label="Remove current wallet"
         onPress={() => {

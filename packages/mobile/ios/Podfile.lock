@@ -507,6 +507,9 @@ PODS:
     - React-Core
   - RNScrypt (1.2.1):
     - React
+  - RNSentry (4.14.0):
+    - React-Core
+    - Sentry/HybridSDK (= 7.31.5)
   - RNSVG (12.4.3):
     - React-Core
   - RNVectorIcons (9.2.0):
@@ -517,6 +520,10 @@ PODS:
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
+  - Sentry (7.31.5):
+    - Sentry/Core (= 7.31.5)
+  - Sentry/Core (7.31.5)
+  - Sentry/HybridSDK (7.31.5)
   - SSZipArchive (2.2.3)
   - UMAppLoader (2.2.0)
   - UMCore (7.1.2)
@@ -595,8 +602,10 @@ DEPENDENCIES:
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNScrypt (from `../node_modules/react-native-scrypt`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - RNSVG (from `../node_modules/react-native-svg`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
+  - Sentry (from `https://github.com/getsentry/sentry-cocoa.git`, tag `7.31.5`)
   - UMAppLoader (from `../node_modules/unimodules-app-loader/ios`)
   - "UMCore (from `../node_modules/@unimodules/core/ios`)"
   - "UMReactNativeAdapter (from `../node_modules/@unimodules/react-native-adapter/ios`)"
@@ -753,10 +762,15 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNScrypt:
     :path: "../node_modules/react-native-scrypt"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
+  Sentry:
+    :git: https://github.com/getsentry/sentry-cocoa.git
+    :tag: 7.31.5
   UMAppLoader:
     :path: "../node_modules/unimodules-app-loader/ios"
   UMCore:
@@ -767,6 +781,11 @@ EXTERNAL SOURCES:
     :path: "../node_modules/unimodules-task-manager-interface/ios"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
+
+CHECKOUT OPTIONS:
+  Sentry:
+    :git: https://github.com/getsentry/sentry-cocoa.git
+    :tag: 7.31.5
 
 SPEC CHECKSUMS:
   Amplitude: 2904f346250510b9e19a4e2262017bcf1d4368f9
@@ -851,10 +870,12 @@ SPEC CHECKSUMS:
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
+  RNSentry: 7e90aec2633d2fdad8aeb839c9915e4376fd27d1
   RNSVG: f3b60aeeaa81960e2e0536c3a9eef50b667ef3a9
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
+  Sentry: 4c9babff9034785067c896fd580b1f7de44da020
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: ce3a4faa010239063b8343895b29a6d97b01069d
@@ -862,6 +883,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 2f6a78c58dcc2963bd8e34d96a4246d9dff2e3a7
 
-PODFILE CHECKSUM: f1fdfd007ccd95942a369b790938dea156f2f855
+PODFILE CHECKSUM: 3c1b1ed3e3782e6b28c9cb477d55590014d48755
 
 COCOAPODS: 1.11.3
