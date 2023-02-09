@@ -152,9 +152,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
+      low: 0.003,
+      average: 0.005,
+      high: 0.007
     },
     features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
@@ -190,9 +190,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
+      low: 0.003,
+      average: 0.005,
+      high: 0.007
     },
     features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
