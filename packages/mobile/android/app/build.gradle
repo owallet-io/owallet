@@ -80,7 +80,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: true,  // clean and rebuild if changing
     hermesCommand: '../../node_modules/hermes-engine/%OS-BIN%/hermesc',
 
 ]
@@ -123,7 +123,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get('enableHermes', false)
+def enableHermes = project.ext.react.get('enableHermes', true)
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -137,8 +137,8 @@ android {
         applicationId 'com.io.owallet'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 16
-        versionName '0.0.10'
+        versionCode 17
+        versionName '0.0.11'
 
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         // testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
