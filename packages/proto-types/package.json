@@ -1,0 +1,26 @@
+{
+  "name": "@owallet/proto-types",
+  "version": "0.11.20",
+  "author": "oraichain",
+  "license": "Apache-2.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "clean": "zx ./proto-types-gen/scripts/clean.mjs; rm -rf node_modules; rm -rf proto-types-gen/build; rm -rf proto-types-gen/src",
+    "build": "zx ./proto-types-gen/scripts/proto-gen.mjs",
+    "dev": "zx ./proto-types-gen/scripts/proto-gen.mjs",
+    "lint-test": "eslint \"proto-types-gen/scripts/**/*\" && prettier --check \"proto-types-gen/scripts/**/*\"",
+    "lint-fix": "eslint --fix \"proto-types-gen/scripts/**/*\" && prettier --write \"proto-types-gen/scripts/**/*\""
+  },
+  "dependencies": {
+    "folder-hash": "^4.0.4",
+    "long": "^4.0.0",
+    "protobufjs": "^6.11.2"
+  },
+  "devDependencies": {
+    "glob": "^7.2.0",
+    "ts-proto": "^1.106.2"
+  }
+}
