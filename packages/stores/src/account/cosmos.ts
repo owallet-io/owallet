@@ -1,6 +1,6 @@
 import { AccountSetBase, AccountSetOpts, MsgOpt } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
-import { StdFee } from '@cosmjs/launchpad';
+import { StdFee, coin } from '@cosmjs/launchpad';
 import { DenomHelper } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
 import { ChainIdHelper, cosmos, ibc, BaseAccount } from '@owallet/cosmos';
@@ -10,14 +10,7 @@ import { DeepReadonly } from 'utility-types';
 import { ChainGetter } from '../common';
 import Axios, { AxiosInstance } from 'axios';
 import Long from 'long';
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw
-} from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
-import { SignMode } from '@owallet/proto-types/cosmos/tx/signing/v1beta1/signing';
+import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
 export interface HasCosmosAccount {
   cosmos: DeepReadonly<CosmosAccount>;
@@ -146,41 +139,36 @@ export class CosmosAccount {
       true
     );
 
-    const unsignedTx = TxRaw.encode({
-      bodyBytes: TxBody.encode(
-        TxBody.fromPartial({
-          messages: msgs,
-          memo: memo
-        })
-      ).finish(),
-      authInfoBytes: AuthInfo.encode({
+    const unsignTx = cosmos.tx.v1beta1.TxRaw.encode({
+      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+        messages: msgs,
+        memo: memo
+      }).finish(),
+      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
         signerInfos: [
-          SignerInfo.fromPartial({
-            // Pub key is ignored.
-            // It is fine to ignore the pub key when simulating tx.
-            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
+          {
             modeInfo: {
               single: {
                 mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
               },
               multi: undefined
             },
-            sequence: account.getSequence().toString()
-          })
+            sequence: Long.fromString(account.getSequence().toString())
+          }
         ],
-        fee: Fee.fromPartial({
+
+        fee: {
           amount: fee.amount.map(amount => {
             return { amount: amount.amount, denom: amount.denom };
-          })
-        })
+          }),
+          gasLimit: Long.fromString('500000')
+        }
       }).finish(),
-      // Because of the validation of tx itself, the signature must exist.
-      // However, since they do not actually verify the signature, it is okay to use any value.
       signatures: [new Uint8Array(64)]
     }).finish();
 
     const result = await this.instance.post('/cosmos/tx/v1beta1/simulate', {
-      tx_bytes: Buffer.from(unsignedTx).toString('base64')
+      tx_bytes: Buffer.from(unsignTx).toString('base64')
     });
 
     const gasUsed = parseInt(result.data.gas_info.gas_used);
@@ -318,6 +306,56 @@ export class CosmosAccount {
       .get(channel.counterpartyChainId)
       .cosmos.queryBlock.getBlock('latest');
 
+    const msg = {
+      type: this.base.msgOpts.ibcTransfer.type,
+      value: {
+        source_port: channel.portId,
+        source_channel: channel.channelId,
+        token: {
+          denom: currency.coinMinimalDenom,
+          amount: actualAmount
+        },
+        sender: this.base.bech32Address,
+        receiver: recipient,
+        timeout_height: {
+          revision_number: ChainIdHelper.parse(
+            channel.counterpartyChainId
+          ).version.toString() as string | undefined,
+          // Set the timeout height as the current height + 150.
+          revision_height: destinationBlockHeight.height
+            .add(new Int('150'))
+            .toString()
+        }
+      }
+    };
+
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/ibc.applications.transfer.v1.MsgTransfer',
+          value: ibc.applications.transfer.v1.MsgTransfer.encode({
+            sourcePort: msg.value.source_port,
+            sourceChannel: msg.value.source_channel,
+            token: msg.value.token,
+            sender: msg.value.sender,
+            receiver: msg.value.receiver,
+            timeoutHeight: {
+              revisionNumber: msg.value.timeout_height.revision_number
+                ? Long.fromString(msg.value.timeout_height.revision_number)
+                : null,
+              revisionHeight: Long.fromString(
+                msg.value.timeout_height.revision_height
+              )
+            }
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'ibcTransfer',
       async () => {
@@ -384,7 +422,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.ibcTransfer.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -446,6 +486,23 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.staking.v1beta1.MsgDelegate',
+          value: cosmos.staking.v1beta1.MsgDelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+            amount: msg.value.amount
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'delegate',
       {
@@ -466,7 +523,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.delegate.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -526,6 +585,23 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.staking.v1beta1.MsgUndelegate',
+          value: cosmos.staking.v1beta1.MsgUndelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+            amount: msg.value.amount
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'undelegate',
       {
@@ -544,7 +620,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.undelegate.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -610,6 +688,24 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+          value: cosmos.staking.v1beta1.MsgBeginRedelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorSrcAddress: msg.value.validator_src_address,
+            validatorDstAddress: msg.value.validator_dst_address,
+            amount: msg.value.amount
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'redelegate',
       {
@@ -631,7 +727,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.redelegate.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -674,6 +772,22 @@ export class CosmosAccount {
       };
     });
 
+    const simulateTx = await this.simulateTx(
+      msgs.map(msg => {
+        return {
+          type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+          value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address
+          }).finish()
+        };
+      }),
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'withdrawRewards',
       {
@@ -697,11 +811,13 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas:
-          stdFee.gas ??
-          (
-            this.base.msgOpts.withdrawRewards.gas * validatorAddresses.length
-          ).toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3 * validatorAddresses.length).toString()
+          : stdFee.gas
+        // stdFee.gas ??
+        // (
+        //   this.base.msgOpts.withdrawRewards.gas * validatorAddresses.length
+        // ).toString()
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -769,6 +885,40 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.gov.v1beta1.MsgVote',
+          value: cosmos.gov.v1beta1.MsgVote.encode({
+            proposalId: Long.fromString(msg.value.proposal_id),
+            voter: msg.value.voter,
+            option: (() => {
+              switch (msg.value.option) {
+                case 'Yes':
+                case 1:
+                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES;
+                case 'Abstain':
+                case 2:
+                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_ABSTAIN;
+                case 'No':
+                case 3:
+                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO;
+                case 'NoWithVeto':
+                case 4:
+                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO_WITH_VETO;
+                default:
+                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_UNSPECIFIED;
+              }
+            })()
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'govVote',
       {
@@ -809,7 +959,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.govVote.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
