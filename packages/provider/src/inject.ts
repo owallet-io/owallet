@@ -28,7 +28,11 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
-import { NAMESPACE, NAMESPACE_ETHEREUM, NAMESPACE_ETHEREUM_OWALLET } from './constants';
+import {
+  NAMESPACE,
+  NAMESPACE_ETHEREUM,
+  NAMESPACE_ETHEREUM_OWALLET
+} from './constants';
 import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 
 export interface ProxyRequest {
@@ -80,7 +84,7 @@ export class InjectedOWallet implements IOWallet {
       ) {
         return;
       }
-      
+
       try {
         if (!message.id) {
           throw new Error('Empty id');
@@ -531,13 +535,12 @@ export class InjectedEthereum implements Ethereum {
           case 'public_key':
             result = await ethereum.getPublicKey(chainId);
             break;
-          case 'eth_signDecryptData':
-            result = await ethereum.signDecryptData(chainId, message.args[0]);
-            break;
-          // thang1
-          case 'eth_signReEncryptData':
-            result = await ethereum.signReEncryptData(chainId, message.args[0]);
-            break;
+          // case 'eth_signDecryptData':
+          //   result = await ethereum.signDecryptData(chainId, message.args[0]);
+          //   break;
+          // case 'eth_signReEncryptData':
+          //   result = await ethereum.signReEncryptData(chainId, message.args[0]);
+          //   break;
           case 'wallet_addEthereumChain':
             await ethereum.experimentalSuggestChain(message.args[0]);
             break;
@@ -556,9 +559,9 @@ export class InjectedEthereum implements Ethereum {
               result = chainId;
             } else result = '0x0';
             break;
-            case 'eth_initChainId' as any:
-              result = ethereum.initChainId;
-              break;
+          case 'eth_initChainId' as any:
+            result = ethereum.initChainId;
+            break;
           case 'wallet_switchEthereumChain' as any:
             result = await ethereum.request({
               method: message.method as string,
@@ -730,18 +733,12 @@ export class InjectedEthereum implements Ethereum {
     return;
   }
 
-  async signReEncryptData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
+  async signReEncryptData(chainId: string, data: object): Promise<object> {
     console.log('WILL NOT USE');
     return;
   }
 
-  async signDecryptData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
+  async signDecryptData(chainId: string, data: object): Promise<object> {
     console.log('WILL NOT USE');
     return;
   }
@@ -760,7 +757,6 @@ export class InjectedEthereum implements Ethereum {
   //   return await this.requestMethod('getKey', [chainId]);
   // }
 }
-
 
 export class InjectedEthereumOWallet implements Ethereum {
   // we use this chain id for chain id switching from user
@@ -838,13 +834,18 @@ export class InjectedEthereumOWallet implements Ethereum {
           case 'public_key':
             result = await eth_owallet.getPublicKey(chainId);
             break;
-          case 'eth_signDecryptData':
-            result = await eth_owallet.signDecryptData(chainId, message.args[0]);
-            break;
-          // thang1
-          case 'eth_signReEncryptData':
-            result = await eth_owallet.signReEncryptData(chainId, message.args[0]);
-            break;
+          // case 'eth_signDecryptData':
+          //   result = await eth_owallet.signDecryptData(
+          //     chainId,
+          //     message.args[0]
+          //   );
+          //   break;
+          // case 'eth_signReEncryptData':
+          //   result = await eth_owallet.signReEncryptData(
+          //     chainId,
+          //     message.args[0]
+          //   );
+          //   break;
           case 'wallet_addEthereumChain':
             await eth_owallet.experimentalSuggestChain(message.args[0]);
             break;
@@ -1034,21 +1035,18 @@ export class InjectedEthereumOWallet implements Ethereum {
     return;
   }
 
-  async signReEncryptData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    console.log('WILL NOT USE');
-    return;
-  }
+  // async signReEncryptData(
+  //   chainId: string,
+  //   data: object
+  // ): Promise<object> {
+  //   console.log('WILL NOT USE');
+  //   return;
+  // }
 
-  async signDecryptData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    console.log('WILL NOT USE');
-    return;
-  }
+  // async signDecryptData(chainId: string, data: object): Promise<object> {
+  //   console.log('WILL NOT USE');
+  //   return;
+  // }
 
   async getPublicKey(chainId: string): Promise<object> {
     console.log('WILL NOT USE');
