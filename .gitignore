@@ -20,3 +20,6 @@ coverage
 
 .yarn/
 .yarnrc
+
+packages/mobike/android/app/google-services.json
+packages/mobike/ios/GoogleService-Info.plist
