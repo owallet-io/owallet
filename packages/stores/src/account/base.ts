@@ -678,7 +678,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         aminoMsgs = msgs;
       }
       console.log({ aminoMsgs });
-
+      
       if (aminoMsgs.length === 0) {
         throw new Error('There is no msg to send');
       }
@@ -696,6 +696,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
+
+      
 
       const account = await BaseAccount.fetchFromRest(
         this.instance,

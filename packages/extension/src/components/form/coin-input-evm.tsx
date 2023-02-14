@@ -108,7 +108,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
       .currency.coinDenom;
 
     useEffect(() => {
-      if (chainStore.current.networkType === 'evm') {
+      if (chainStore?.current?.networkType === 'evm' && tokenDenom === chainStore?.current?.stakeCurrency?.coinDenom ) {
         if (!accountInfo.evmosHexAddress) return null;
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
