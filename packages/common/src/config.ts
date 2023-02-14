@@ -152,9 +152,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     gasPriceStep: {
-      low: 0.01,
-      average: 0.03,
-      high: 0.05
+      low: 0.003,
+      average: 0.005,
+      high: 0.007
     },
     features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
@@ -190,9 +190,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.01,
-      high: 0.03
+      low: 0.003,
+      average: 0.005,
+      high: 0.007
     },
     features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
@@ -598,7 +598,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-      },
+      }
     ],
     get feeCurrencies() {
       return this.currencies;
@@ -641,6 +641,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'binancecoin',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+      },
+      {
+        coinDecimals: 18,
+        coinDenom: 'USDT',
+        coinMinimalDenom:
+          'erc20:0x55d398326f99059fF775485246999027B3197955:USDT',
+        contractAddress: '0x55d398326f99059fF775485246999027B3197955',
+        type: 'erc20',
+        coinGeckoId: 'tether'
       },
       {
         coinDenom: 'ORAI',

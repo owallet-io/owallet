@@ -18,7 +18,7 @@ import {
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NamespaceModal, AddressQRCodeModal } from './components';
+import { AddressQRCodeModal } from './components';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 

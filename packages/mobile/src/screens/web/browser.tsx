@@ -307,6 +307,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                     </Text>
                   </View>
                 </TouchableOpacity>
+
                 {browserStore.getBookmarks?.map(e => (
                   <TouchableOpacity
                     key={e.id ?? e.uri}

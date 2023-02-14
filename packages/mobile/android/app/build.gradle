@@ -137,8 +137,8 @@ android {
         applicationId 'com.io.owallet'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName '1.0.9'
+        versionCode 17
+        versionName '0.0.11'
 
         testBuildType System.getProperty('testBuildType', 'debug')  // This will later be used to control the test apk build type
         // testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -199,7 +199,7 @@ dependencies {
     implementation 'com.facebook.react:react-native:+'  // From node_modules
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0' // (check what the latest version is!)
-    implementation project(path: ':@react-native-firebase_messaging')
+     implementation project(path: ":@react-native-firebase_messaging")
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-crashlytics'
 

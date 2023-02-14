@@ -5,9 +5,8 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { BackHandler, Platform, View } from 'react-native';
+import { BackHandler, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { useStyle } from '../../../../styles';
 import { OWallet, Ethereum } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import {
@@ -15,7 +14,6 @@ import {
   RNInjectedOWallet
 } from '../../../../injected/injected-provider';
 import EventEmitter from 'eventemitter3';
-// import { PageWithViewInBottomTabView } from "../../../../components/page";
 import { PageWithView } from '../../../../components/page';
 import { OnScreenWebpageScreenHeader } from '../header';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -33,10 +31,6 @@ export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    console.log(
-      'InjectedProviderUrl',
-      `${InjectedProviderUrl}/injected-provider.bundle.js`
-    );
     fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
       .then(res => {
         return res.text();
@@ -55,7 +49,6 @@ export const WebpageScreen: FunctionComponent<
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
-  const style = useStyle();
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {

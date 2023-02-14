@@ -15,7 +15,7 @@ export type DAppInfo = {
 };
 
 const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
-const balconyLogo = require('../../assets/image/webpage/balcony.png');
+// const aiRight = require('../../assets/image/webpage/airight_logo.png');
 
 export const DAppInfos: DAppInfo[] = [
   {
@@ -24,6 +24,12 @@ export const DAppInfos: DAppInfo[] = [
     uri: 'https://oraidex.io',
     logo: oraiLogo
   },
+  // {
+  //   id: 19,
+  //   name: 'Oraidex',
+  //   uri: '192.168.0.147',
+  //   logo: oraiLogo
+  // },
   {
     id: 2,
     name: 'Oraidex',

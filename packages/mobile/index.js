@@ -9,18 +9,40 @@ import 'react-native-url-polyfill/auto';
 import { AppRegistry } from 'react-native';
 // add router to send message
 import './init';
-
+import messaging from '@react-native-firebase/messaging';
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 
+import firebase from '@react-native-firebase/app';
+
+const config = {
+  apiKey: process.env.API_KEY,
+  projectId: 'owallet-829a1',
+  messagingSenderId: process.env.SENDER_ID,
+  appId: process.env.APP_ID
+};
+
+firebase.initializeApp(config);
+
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('remoteMessage background', remoteMessage);
+});
+
 const { App } = require('./src/app');
+
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: 'production'
+});
 
 // not using CodePush for development
 const CodePushApp = __DEV__
   ? App
   : CodePush({
-      installMode: CodePush.InstallMode.IMMEDIATE
-      // checkFrequency: CodePush.CheckFrequency.MANUAL
+      // installMode: CodePush.InstallMode.IMMEDIATE
+      checkFrequency: CodePush.CheckFrequency.MANUAL
     })(App);
 
 AppRegistry.registerComponent(appName, () => CodePushApp);
