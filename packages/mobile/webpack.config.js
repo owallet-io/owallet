@@ -29,14 +29,14 @@ module.exports = (env, args) => {
       filename: '[name].bundle.js'
     },
     resolve: {
-      extensions: ['.ts', '.js'],
-      fallback: {
-        http: false,
-        stream: require.resolve('stream-browserify'),
-        buffer: require.resolve('buffer'),
-        crypto: require.resolve('crypto-browserify'),
-        https: require.resolve('https-browserify')
-      }
+      extensions: ['.ts', '.js']
+      // fallback: {
+      //   http: false,
+      //   stream: require.resolve('stream-browserify'),
+      //   buffer: require.resolve('buffer'),
+      //   crypto: require.resolve('crypto-browserify'),
+      //   https: require.resolve('https-browserify')
+      // }
     },
     module: {
       rules: [tsRule]
