@@ -66,6 +66,8 @@ import { SendEvmPage } from './pages/send-evm';
 import './ledger';
 import { TokenPage } from './pages/token';
 import { Menu } from './pages/main/menu';
+import * as Sentry from "@sentry/react";
+import { BrowserTracing } from "@sentry/tracing";
 
 const owallet = new OWallet(
   manifest.version,
@@ -80,8 +82,19 @@ const ethereum = new Ethereum(
   new InExtensionMessageRequester()
 );
 
+Sentry.init({
+  dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184",
+  integrations: [new BrowserTracing()],
+
+  // We recommend adjusting this value in production, or using tracesSampler
+  // for finer control
+  tracesSampleRate: 1.0,
+});
+
 //@ts-ignore
 window.owallet = owallet;
+//@ts-ignore
+window.eth_owallet = ethereum;
 //@ts-ignore
 window.ethereum = ethereum;
 

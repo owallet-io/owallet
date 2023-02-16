@@ -16,7 +16,6 @@ export const AccountView: FunctionComponent = observer(() => {
   const selected = keyRingStore?.multiKeyStoreInfo?.find(
     (keyStore) => keyStore?.selected
   );
-  const { account, change, addressIndex, coinType } = selected?.bip44HDPath;
   const intl = useIntl();
 
   const notification = useNotification();
@@ -160,13 +159,15 @@ export const AccountView: FunctionComponent = observer(() => {
       <div className={styleAccount.coinType}>
         {' '}
         {`Coin type: m/44'/${
-          (coinType ?? chainStore.current.bip44.coinType) +
+          (selected?.bip44HDPath?.coinType ??
+            chainStore?.current?.bip44?.coinType ??
+            '118') +
           "'/" +
-          (account ?? '0') +
+          (selected?.bip44HDPath?.account ?? '0') +
           "'/" +
-          (change ?? '0') +
+          (selected?.bip44HDPath?.change ?? '0') +
           '/' +
-          (addressIndex ?? '0')
+          (selected?.bip44HDPath?.addressIndex ?? '0')
         }`}
       </div>
     </div>

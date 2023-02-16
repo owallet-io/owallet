@@ -311,6 +311,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 60
     },
+    coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
       return [this.stakeCurrency];
@@ -323,7 +324,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.000025,
       high: 0.00004
     },
-    features: ['ibc-go', 'stargate', 'isEvm']
+    features: ['isEvm']
   },
   {
     rpc: 'https://rpc-cosmoshub.keplr.app',
@@ -588,6 +589,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'ethereum',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+      },
+      {
+        coinDenom: 'ORAI',
+        coinMinimalDenom:
+          'erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5:Oraichain Token',
+        coinDecimals: 18,
+        coinGeckoId: 'oraichain-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
       }
     ],
     get feeCurrencies() {

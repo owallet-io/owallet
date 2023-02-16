@@ -35,8 +35,8 @@ import {
   RequestVerifyADR36AminoSignDoc,
   RequestSignEthereumTypedDataMsg,
   SignEthereumTypedDataObject,
-  RequestSignProxyReEncryptionDataMsg,
-  RequestSignProxyDecryptionDataMsg,
+  // RequestSignDecryptDataMsg,
+  // RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -59,7 +59,7 @@ export class OWallet implements IOWallet {
     public readonly version: string,
     public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
-  ) { }
+  ) {}
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
@@ -326,11 +326,14 @@ export class Ethereum implements IEthereum {
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<any> {
+  async signEthereumTypeData(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<any> {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      console.log("RESULT AFTER ALL!!!!!!!!!!!!")
+      console.log('RESULT AFTER ALL!!!!!!!!!!!!');
       return result;
     } catch (error) {
       console.log(error, 'error on send message!!!!!!!!!!!!!!!');
@@ -342,22 +345,16 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signProxyDecryptionData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    const msg = new RequestSignProxyDecryptionDataMsg(chainId, data);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
+  // async signDecryptData(chainId: string, data: object): Promise<object> {
+  //   const msg = new RequestSignDecryptDataMsg(chainId, data);
+  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  // }
 
-  // thang2
-  async signProxyReEncryptionData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    const msg = new RequestSignProxyReEncryptionDataMsg(chainId, data);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
+  // // thang2
+  // async signReEncryptData(chainId: string, data: object): Promise<object> {
+  //   const msg = new RequestSignReEncryptDataMsg(chainId, data);
+  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  // }
 
   // async sign()
   // async asyncRequest(): Promise<void> {
