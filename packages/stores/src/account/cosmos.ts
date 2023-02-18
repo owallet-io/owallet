@@ -1,6 +1,6 @@
 import { AccountSetBase, AccountSetOpts, MsgOpt } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
-import { StdFee, coin } from '@cosmjs/launchpad';
+import { StdFee } from '@cosmjs/launchpad';
 import { DenomHelper } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
 import { ChainIdHelper, cosmos, ibc, BaseAccount } from '@owallet/cosmos';
@@ -885,39 +885,39 @@ export class CosmosAccount {
       }
     };
 
-    const simulateTx = await this.simulateTx(
-      [
-        {
-          type_url: '/cosmos.gov.v1beta1.MsgVote',
-          value: cosmos.gov.v1beta1.MsgVote.encode({
-            proposalId: Long.fromString(msg.value.proposal_id),
-            voter: msg.value.voter,
-            option: (() => {
-              switch (msg.value.option) {
-                case 'Yes':
-                case 1:
-                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES;
-                case 'Abstain':
-                case 2:
-                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_ABSTAIN;
-                case 'No':
-                case 3:
-                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO;
-                case 'NoWithVeto':
-                case 4:
-                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO_WITH_VETO;
-                default:
-                  return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_UNSPECIFIED;
-              }
-            })()
-          }).finish()
-        }
-      ],
-      {
-        amount: stdFee.amount ?? []
-      },
-      memo
-    );
+    // const simulateTx = await this.simulateTx(
+    //   [
+    //     {
+    //       type_url: '/cosmos.gov.v1beta1.MsgVote',
+    //       value: cosmos.gov.v1beta1.MsgVote.encode({
+    //         proposalId: Long.fromString(msg.value.proposal_id),
+    //         voter: msg.value.voter,
+    //         option: (() => {
+    //           switch (msg.value.option) {
+    //             case 'Yes':
+    //             case 1:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES;
+    //             case 'Abstain':
+    //             case 2:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_ABSTAIN;
+    //             case 'No':
+    //             case 3:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO;
+    //             case 'NoWithVeto':
+    //             case 4:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO_WITH_VETO;
+    //             default:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_UNSPECIFIED;
+    //           }
+    //         })()
+    //       }).finish()
+    //     }
+    //   ],
+    //   {
+    //     amount: stdFee.amount ?? []
+    //   },
+    //   memo
+    // );
 
     await this.base.sendMsgs(
       'govVote',
@@ -958,10 +958,8 @@ export class CosmosAccount {
       },
       memo,
       {
-        amount: stdFee.amount ?? [],
-        gas: simulateTx?.gasUsed
-          ? (simulateTx.gasUsed * 1.3).toString()
-          : stdFee.gas
+        amount: stdFee?.amount ?? [],
+        gas: stdFee?.gas ?? this.base.msgOpts.govVote.gas.toString()
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {

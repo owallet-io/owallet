@@ -96,8 +96,6 @@ export class SignInteractionStore {
         ? SignDocWrapper.fromAminoSignDoc(data.data.signDoc)
         : SignDocWrapper.fromDirectSignDocBytes(data.data.signDocBytes);
 
-    console.log('wrapper===', wrapper);
-
     return {
       id: data.id,
       type: data.type,

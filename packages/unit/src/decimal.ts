@@ -84,13 +84,17 @@ export class Dec {
 
     if (typeof int === 'string') {
       if (int.length === 0) {
-        throw new Error('empty string');
+        int = '0.0';
+        // throw new Error('empty string');
+        console.log('empty string');
       }
       if (!isValidDecimalString(int)) {
         if (isExponentDecString(int)) {
           int = exponentDecStringToDecString(int);
         } else {
-          throw new Error(`invalid decimal: ${int}`);
+          int = '0.0';
+          console.log(`invalid decimal: ${int}`);
+          // throw new Error(`invalid decimal: ${int}`);
         }
       }
       // Even if an input with more than 18 decimals, it does not throw an error and ignores the rest.
