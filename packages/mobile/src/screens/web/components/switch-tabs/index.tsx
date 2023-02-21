@@ -12,8 +12,9 @@ import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
 import { getDomainFromUrl, _keyExtract } from '../../../../utils/helper';
 import { colors, spacing } from '../../../../themes';
+import { XIcon } from '../../../../components/icon';
 
-const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
+// const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
 const COLOR_PRIMARY = colors['purple-700'];
 const COLOR_PRIMARY_LIGHT = colors['primary-100'];
 const DEVICE_WIDTH = Dimensions.get('window').width;
@@ -43,6 +44,8 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
     useEffect(() => {
       setTabs(browserStore.getTabs);
     }, []);
+
+    console.log('tabs', tabs);
 
     const renderItem = ({ item, index }) => {
       const isSelect = item.id === browserStore.getSelectedTab?.id;
@@ -75,7 +78,7 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
                 {item?.name ?? (item?.uri || 'New tab')}
               </Text>
               <TouchableOpacity onPress={onPressDelete(item)}>
-                <Text style={{ fontSize: 20 }}>x</Text>
+                <XIcon color={colors['white']} />
               </TouchableOpacity>
             </View>
             <TouchableWithoutFeedback onPress={onPress(item)}>

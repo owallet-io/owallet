@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { useStyle } from '../../../../styles';
@@ -25,14 +25,12 @@ export const BrowserFooterSection: FunctionComponent<{
 }> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl, typeOf }) => {
   const style = useStyle();
   const { browserStore, modalStore } = useStore();
-  // const [isOpenSetting, setIsOpenSetting] = useState(false);
   const navigation = useNavigation();
   const webViewState = useWebViewState();
 
   const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
 
   const onPressBookmark = () => {
-    // setIsOpenSetting(false);
     modalStore.close();
     if (webViewState.webView) {
       browserStore.addBoorkmark({
@@ -51,15 +49,11 @@ export const BrowserFooterSection: FunctionComponent<{
           if (typeOf === 'webview') {
             modalStore.setOpen();
             modalStore.setChildren(
-              <BrowserSectionModal
-                onPress={onPressBookmark}
-                // onClose={() => setIsOpenSetting(false)}
-              />
+              <BrowserSectionModal onPress={onPressBookmark} />
             );
           }
 
           return;
-        // return setIsOpenSetting(!isOpenSetting);
         case 'back':
           if (typeOf === 'browser') {
             return navigation.navigate('Home', {});
@@ -96,19 +90,19 @@ export const BrowserFooterSection: FunctionComponent<{
     switch (type) {
       case 'back':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
+          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             <LeftLightIcon />
           </TouchableOpacity>
         );
       case 'next':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
+          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             <RightLightIcon />
           </TouchableOpacity>
         );
       case 'tabs':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
+          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             <View
               style={{
                 padding: 1.5,
@@ -130,18 +124,18 @@ export const BrowserFooterSection: FunctionComponent<{
         );
       case 'home':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
+          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             {typeOf === 'browser' ? (
-              <HomeLightIcon color={'white'} size={22} />
+              <HomeLightIcon size={22} />
             ) : (
-              <BrowserIcon color={'white'} size={22} />
+              <BrowserIcon color={'#636366'} size={22} />
             )}
           </TouchableOpacity>
         );
       case 'settings':
         return (
-          <TouchableOpacity onPress={() => onPress(type)}>
-            <ThreeDotIcon color={'white'} size={18} />
+          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
+            <ThreeDotIcon size={18} />
           </TouchableOpacity>
         );
     }

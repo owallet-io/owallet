@@ -107,8 +107,9 @@ export const WebpageScreen: FunctionComponent<
   const onPressItem = ({ name, uri }) => {
     setIsSwitchTab(false);
     if (browserStore.getSelectedTab?.uri !== uri) {
-      browserStore.updateSelectedTab({ name, uri });
+      browserStore.updateSelectedTab({ id: Date.now(), name, uri });
       navigation.navigate('Web.dApp', {
+        id: Date.now(),
         name,
         uri
       });

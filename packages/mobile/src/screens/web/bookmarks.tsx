@@ -30,7 +30,7 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
             color: '#1C1C1E'
           }}
         >
-          Bookmarks
+          All bookmarks
         </Text>
       </View>
       <View
@@ -56,14 +56,8 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   return (
     <PageWithScrollView>
       <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
-        <BrowserSectionTitle title="All bookmarks" />
-        <View
-          style={style.flatten([
-            'height-full',
-            'background-color-white',
-            'margin-y-24'
-          ])}
-        >
+        <BrowserSectionTitle title="" />
+        <View style={style.flatten(['height-full', 'background-color-white'])}>
           <BrowserSection />
           <View style={style.flatten(['height-full', 'padding-20'])}>
             <TouchableOpacity

@@ -119,26 +119,34 @@ export const Browser: FunctionComponent<any> = observer(props => {
     }, 1000);
   }, []);
 
-  const onHandleUrl = () => {
-    if (checkValidDomain(url?.toLowerCase())) {
-      const tab = {
-        id: Date.now(),
-        name: url,
-        uri:
-          url?.toLowerCase().indexOf('http') >= 0
-            ? url?.toLowerCase()
-            : 'https://' + url?.toLowerCase()
-      };
-      browserStore.addTab(tab);
-      browserStore.updateSelectedTab(tab);
-      navigation.navigate('Web.dApp', tab);
-    } else {
-      let uri = `https://www.google.com/search?q=${url ?? ''}`;
-      // if (InjectedProviderUrl) uri = InjectedProviderUrl;
-      navigation.navigate('Web.dApp', {
-        name: 'Google',
-        uri
-      });
+  const onHandleUrl = uri => {
+    let currentUri = uri ?? url;
+    if (currentUri !== '') {
+      if (checkValidDomain(currentUri?.toLowerCase())) {
+        const tab = {
+          id: Date.now(),
+          name: currentUri,
+          uri:
+            currentUri?.toLowerCase().indexOf('http') >= 0
+              ? currentUri?.toLowerCase()
+              : 'https://' + currentUri?.toLowerCase()
+        };
+
+        let tabOpened = browserStore.checkTabOpen(tab);
+
+        browserStore.updateSelectedTab(tabOpened ?? tab);
+        if (!!!tabOpened) {
+          browserStore.addTab(tab);
+        }
+        setUrl(currentUri);
+        navigation.navigate('Web.dApp', tab);
+      } else {
+        let uri = `https://www.google.com/search?q=${currentUri ?? ''}`;
+        navigation.navigate('Web.dApp', {
+          name: 'Google',
+          uri
+        });
+      }
     }
   };
 
@@ -203,17 +211,19 @@ export const Browser: FunctionComponent<any> = observer(props => {
               value={url}
               onChangeText={txt => setUrl(txt.toLowerCase())}
               inputLeft={
-                <TouchableOpacity
-                  style={{ paddingRight: 16 }}
-                  onPress={onHandleUrl}
-                >
+                <TouchableOpacity style={{ paddingRight: 16 }}>
                   <SearchLightIcon />
                 </TouchableOpacity>
               }
               inputRight={
-                <TouchableOpacity onPress={onHandleUrl}>
-                  <XIcon />
-                </TouchableOpacity>
+                url ? (
+                  <TouchableOpacity
+                    style={{ width: 30 }}
+                    onPress={() => setUrl('')}
+                  >
+                    <XIcon />
+                  </TouchableOpacity>
+                ) : null
               }
             />
             <View
@@ -228,17 +238,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                     'margin-bottom-15',
                     'flex-row'
                   ])}
-                  onPress={() => {
-                    handleClickUri('https://airight.io', 'aiRight');
-                    const tab = {
-                      id: Date.now(),
-                      name: 'aiRight',
-                      uri: 'https://airight.io'.toLowerCase()
-                    };
-                    browserStore.addTab(tab);
-                    browserStore.updateSelectedTab(tab);
-                    setUrl('https://airight.io');
-                  }}
+                  onPress={() => onHandleUrl('https://airight.io')}
                 >
                   <View style={style.flatten(['padding-top-5'])}>
                     <Image
@@ -270,17 +270,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                       'margin-bottom-15',
                       'flex-row'
                     ])}
-                    onPress={() => {
-                      handleClickUri(e.uri, e.name);
-                      const tab = {
-                        id: Date.now(),
-                        name: e.name,
-                        uri: e.uri?.toLowerCase()
-                      };
-                      browserStore.addTab(tab);
-                      browserStore.updateSelectedTab(tab);
-                      setUrl(e.uri);
-                    }}
+                    onPress={() => onHandleUrl(e.uri)}
                   >
                     <View style={style.flatten(['padding-top-5'])}>
                       <Image
