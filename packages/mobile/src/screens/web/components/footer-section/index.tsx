@@ -6,15 +6,16 @@ import { useWebViewState } from '../context';
 import { useNavigation } from '@react-navigation/core';
 
 import {
-  RightArrowIcon,
-  HomeIcon,
-  ThreeDotsIcon,
-  TabIcon,
-  BrowserIcon
+  BrowserIcon,
+  RightLightIcon,
+  LeftLightIcon,
+  HomeLightIcon,
+  ThreeDotIcon
 } from '../../../../components/icon';
 import { BrowserSectionModal } from '../section-title';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
+import { colors } from '../../../../themes';
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
@@ -96,13 +97,13 @@ export const BrowserFooterSection: FunctionComponent<{
       case 'back':
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
-            <RightArrowIcon type={'left'} color={'white'} height={18} />
+            <LeftLightIcon />
           </TouchableOpacity>
         );
       case 'next':
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
-            <RightArrowIcon type={'right'} color={'white'} height={18} />
+            <RightLightIcon />
           </TouchableOpacity>
         );
       case 'tabs':
@@ -110,16 +111,16 @@ export const BrowserFooterSection: FunctionComponent<{
           <TouchableOpacity onPress={() => onPress(type)}>
             <View
               style={{
-                padding: 3,
-                borderColor: '#fff',
-                borderWidth: 1,
+                padding: 1.5,
+                borderWidth: 0.5,
                 borderRadius: 4,
                 alignItems: 'center',
-                width: 24,
-                height: 24
+                borderColor: colors['gray-600'],
+                width: 22,
+                height: 22
               }}
             >
-              <Text style={{ color: '#fff' }}>
+              <Text style={{ color: colors['gray-600'] }}>
                 {browserStore.getTabs.length > 9
                   ? '9+'
                   : browserStore.getTabs.length}
@@ -131,7 +132,7 @@ export const BrowserFooterSection: FunctionComponent<{
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
             {typeOf === 'browser' ? (
-              <HomeIcon color={'white'} size={22} />
+              <HomeLightIcon color={'white'} size={22} />
             ) : (
               <BrowserIcon color={'white'} size={22} />
             )}
@@ -140,7 +141,7 @@ export const BrowserFooterSection: FunctionComponent<{
       case 'settings':
         return (
           <TouchableOpacity onPress={() => onPress(type)}>
-            <ThreeDotsIcon color={'white'} size={18} />
+            <ThreeDotIcon color={'white'} size={18} />
           </TouchableOpacity>
         );
     }
@@ -150,12 +151,13 @@ export const BrowserFooterSection: FunctionComponent<{
     <View
       style={[
         {
-          bottom: 0
+          bottom: 0,
+          borderTopColor: colors['gray-300'],
+          borderTopWidth: 0.2
         },
         style.flatten([
           'width-full',
           'height-80',
-          'background-color-text-black-high',
           'flex-row',
           'items-center',
           'padding-40',
@@ -163,28 +165,6 @@ export const BrowserFooterSection: FunctionComponent<{
         ])
       ]}
     >
-      {/* {isOpenSetting && (
-        <View
-          style={{
-            backgroundColor: '#132340',
-            height: 200,
-            width: 200,
-            position: 'absolute',
-            right: 0,
-            bottom: 80,
-            borderTopLeftRadius: 4,
-            borderTopRightRadius: 4,
-            zIndex: 1,
-            padding: 10
-          }}
-        >
-          <BrowserSectionModal
-            onPress={onPressBookmark}
-            onClose={() => setIsOpenSetting(false)}
-          />
-        </View>
-      )} */}
-
       <View
         style={style.flatten([
           'width-full',
