@@ -53,6 +53,7 @@ buck-out/
 
 #App secret
 /ios/AppCenter-Config.plist
+/android/app/src/main/res/values/strings.xml
 
 index.android.bundle
 *.hprof
