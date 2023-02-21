@@ -132,7 +132,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
             'cw20:orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge:OraiDex Token',
           contractAddress: 'orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge',
           coinDecimals: 6,
-          // coinGeckoId: 'oraix',
+          coinGeckoId: 'oraidex',
           coinImageUrl: 'https://i.ibb.co/VmMJtf7/oraix.png'
         },
         {

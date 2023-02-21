@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
-import { colors, spacing, typography } from '../../themes';
+import { colors, metrics, spacing, typography } from '../../themes';
 import { CText as Text } from '../../components/text';
 import { useStore } from '../../stores';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -76,7 +76,8 @@ const GatewayIntroScreen: FunctionComponent = () => {
           fadeDuration={0}
           resizeMode="contain"
           style={{
-            width: '100%'
+            width: '100%',
+            height: metrics.screenHeight * 0.45
           }}
         />
       </View>
