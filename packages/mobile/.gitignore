@@ -52,7 +52,7 @@ buck-out/
 /ios/Pods/
 
 #App secret
-/ios/AppCenter-Config.plist
+/ios/mobile/AppCenter-Config.plist
 /android/app/src/main/res/values/strings.xml
 
 index.android.bundle
