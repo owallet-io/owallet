@@ -51,6 +51,9 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 
+#App secret
+/ios/AppCenter-Config.plist
+
 index.android.bundle
 *.hprof
 
