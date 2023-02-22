@@ -8,6 +8,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
+import { checkValidDomain } from '../../utils/helper';
+import { useNavigation } from '@react-navigation/native';
 
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -48,9 +50,33 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   const style = useStyle();
   const { browserStore } = useStore();
   const [isOpenSetting] = useState(false);
+  const navigation = useNavigation();
 
   const removeBookmark = bm => {
     browserStore.removeBoorkmark(bm);
+  };
+
+  const onHandleUrl = uri => {
+    let currentUri = uri;
+    if (currentUri !== '') {
+      if (checkValidDomain(currentUri?.toLowerCase())) {
+        const tab = {
+          id: Date.now(),
+          name: currentUri,
+          uri:
+            currentUri?.toLowerCase().indexOf('http') >= 0
+              ? currentUri?.toLowerCase()
+              : 'https://' + currentUri?.toLowerCase()
+        };
+
+        let tabOpened = browserStore.checkTabOpen(tab);
+        browserStore.updateSelectedTab(tabOpened ?? tab);
+        if (!!!tabOpened) {
+          browserStore.addTab(tab);
+        }
+        navigation.navigate('Web.dApp', tab);
+      }
+    }
   };
 
   return (
@@ -104,6 +130,9 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
                   'items-center',
                   'justify-between'
                 ])}
+                onPress={() => {
+                  onHandleUrl(e.uri);
+                }}
               >
                 <View style={style.flatten(['flex-row'])}>
                   <View style={style.flatten(['padding-top-5'])}>
