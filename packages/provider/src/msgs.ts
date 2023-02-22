@@ -1,6 +1,6 @@
 import { StdSignature } from '@cosmjs/launchpad';
 import { Message } from '@owallet/router';
-import { OWalletSignOptions } from '@owallet/types';
+import { OWalletSignOptions, ChainInfoWithoutEndpoints } from '@owallet/types';
 
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -88,5 +88,25 @@ export class RequestSignEthereumMsg extends Message<{
 
   type(): string {
     return RequestSignEthereumMsg.type();
+  }
+}
+
+export class GetChainInfosWithoutEndpointsMsg extends Message<{
+  chainInfos: ChainInfoWithoutEndpoints[];
+}> {
+  public static type() {
+    return "get-chain-infos-without-endpoints";
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  route(): string {
+    return "chains";
+  }
+
+  type(): string {
+    return GetChainInfosWithoutEndpointsMsg.type();
   }
 }

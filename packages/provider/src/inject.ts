@@ -9,7 +9,8 @@ import {
   OWalletSignOptions,
   Key,
   EthereumMode,
-  RequestArguments
+  RequestArguments,
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
 import {
@@ -406,6 +407,10 @@ export class InjectedOWallet implements IOWallet {
 
   async getEnigmaPubKey(chainId: string): Promise<Uint8Array> {
     return await this.requestMethod('getEnigmaPubKey', [chainId]);
+  }
+  
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
+    return await this.requestMethod('getChainInfosWithoutEndpoints', []);
   }
 
   async getEnigmaTxEncryptionKey(

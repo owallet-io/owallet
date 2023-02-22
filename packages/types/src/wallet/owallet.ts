@@ -1,4 +1,4 @@
-import { ChainInfo, NetworkType } from '../chain-info';
+import { ChainInfo, ChainInfoWithoutEndpoints, NetworkType } from '../chain-info';
 import {
   BroadcastMode,
   AminoSignResponse,
@@ -103,7 +103,7 @@ export interface OWallet {
   getOfflineSignerAuto(
     chainId: string
   ): Promise<OfflineSigner | OfflineDirectSigner>;
-
+  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   suggestToken(
     chainId: string,
     contractAddress: string,

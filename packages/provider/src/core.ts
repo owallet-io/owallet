@@ -7,7 +7,8 @@ import {
   OWalletSignOptions,
   Key,
   EthereumMode,
-  RequestArguments
+  RequestArguments,
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -48,7 +49,7 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import { RequestSignDirectMsg, RequestSignEthereumMsg } from './msgs';
+import { GetChainInfosWithoutEndpointsMsg, RequestSignDirectMsg, RequestSignEthereumMsg } from './msgs';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -60,6 +61,11 @@ export class OWallet implements IOWallet {
     public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
   ) { }
+  
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> { 
+    const msg = new GetChainInfosWithoutEndpointsMsg();
+    return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).chainInfos;
+  }
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
