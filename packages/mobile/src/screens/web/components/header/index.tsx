@@ -11,6 +11,7 @@ import { metrics } from '../../../../themes';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
+import { checkValidDomain } from '../../../../utils/helper';
 
 const EditIcon: FunctionComponent<{
   size: number;
@@ -88,7 +89,6 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
     const rIndex = browserStore.getBookmarks.findIndex(
       b => b.uri === webViewState.url
     );
-    console.log('rIndex', rIndex);
 
     if (rIndex > -1) {
       // case found
@@ -159,14 +159,34 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
             defaultValue={webViewState.name}
             onChangeText={text => setURL(text)}
             onSubmitEditing={() => {
-              const tab = {
-                id: Date.now(),
-                name: currentUrl,
-                uri: currentUrl
-              };
               browserStore.removeTab(browserStore.getSelectedTab);
-              browserStore.addTab(tab);
-              navigation.navigate('Web.dApp', tab);
+              if (currentUrl !== '') {
+                if (checkValidDomain(currentUrl?.toLowerCase())) {
+                  const tab = {
+                    id: Date.now(),
+                    name: currentUrl,
+                    uri:
+                      currentUrl?.toLowerCase().indexOf('http') >= 0
+                        ? currentUrl?.toLowerCase()
+                        : 'https://' + currentUrl?.toLowerCase()
+                  };
+                  browserStore.addTab(tab);
+                  navigation.navigate('Web.dApp', tab);
+                } else {
+                  let uri = `https://www.google.com/search?q=${
+                    currentUrl ?? ''
+                  }`;
+                  browserStore.addTab({
+                    id: Date.now(),
+                    name: 'Google',
+                    uri
+                  });
+                  navigation.navigate('Web.dApp', {
+                    name: 'Google',
+                    uri
+                  });
+                }
+              }
             }}
             onBlur={() => setOnEdit(false)}
           />
