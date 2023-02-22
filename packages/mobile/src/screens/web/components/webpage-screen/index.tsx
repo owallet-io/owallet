@@ -240,7 +240,7 @@ export const WebpageScreen: FunctionComponent<
               canGoForward
             }}
           >
-            <OnScreenWebpageScreenHeader />
+            <OnScreenWebpageScreenHeader setCurrentURL={setCurrentURL} />
           </WebViewStateContext.Provider>
 
           {sourceCode ? (

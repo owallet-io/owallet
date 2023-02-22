@@ -10,7 +10,8 @@ import {
   RightLightIcon,
   LeftLightIcon,
   HomeLightIcon,
-  ThreeDotIcon
+  ThreeDotIcon,
+  RefreshIcon
 } from '../../../../components/icon';
 import { BrowserSectionModal } from '../section-title';
 import { useStore } from '../../../../stores';
@@ -47,12 +48,10 @@ export const BrowserFooterSection: FunctionComponent<{
       switch (type) {
         case 'settings':
           if (typeOf === 'webview') {
-            modalStore.setOpen();
-            modalStore.setChildren(
-              <BrowserSectionModal onPress={onPressBookmark} />
-            );
+            if (webViewState.webView) {
+              webViewState.webView.reload();
+            }
           }
-
           return;
         case 'back':
           if (typeOf === 'browser') {
@@ -135,7 +134,7 @@ export const BrowserFooterSection: FunctionComponent<{
       case 'settings':
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
-            <ThreeDotIcon size={18} />
+            <RefreshIcon color={'#636366'} size={22} />
           </TouchableOpacity>
         );
     }

@@ -73,15 +73,18 @@ export class BrowserStore {
 
   @action
   removeBoorkmark(boorkmark) {
-    const rIndex = this.bookmarks.findIndex(b => b.id === boorkmark.id);
+    const rIndex = this.bookmarks.findIndex(b => b.uri === boorkmark.uri);
     if (rIndex > -1) {
       this.bookmarks.splice(rIndex, 1);
     }
   }
 
   @action
-  addBoorkmark(boorkmark: object) {
-    this.bookmarks.push(boorkmark);
+  addBoorkmark(boorkmark) {
+    const rIndex = this.bookmarks.findIndex(b => b.uri === boorkmark?.uri);
+    if (rIndex < 0) {
+      this.bookmarks.push(boorkmark);
+    }
   }
 
   @computed

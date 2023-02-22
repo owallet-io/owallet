@@ -45,8 +45,6 @@ export const SwtichTab: FunctionComponent<{ onPressItem: Function }> = observer(
       setTabs(browserStore.getTabs);
     }, []);
 
-    console.log('tabs', tabs);
-
     const renderItem = ({ item, index }) => {
       const isSelect = item.id === browserStore.getSelectedTab?.id;
 
