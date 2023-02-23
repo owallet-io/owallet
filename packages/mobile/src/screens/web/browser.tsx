@@ -121,6 +121,8 @@ export const Browser: FunctionComponent<any> = observer(props => {
 
   const onHandleUrl = uri => {
     let currentUri = uri ?? url;
+    console.log('currentUri', currentUri);
+
     if (currentUri !== '') {
       if (checkValidDomain(currentUri?.toLowerCase())) {
         const tab = {
@@ -207,7 +209,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
               returnKeyType={'next'}
               placeholder={'Search website'}
               placeholderTextColor={'#AEAEB2'}
-              onSubmitEditing={onHandleUrl}
+              onSubmitEditing={e => onHandleUrl(e.nativeEvent.text)}
               value={url}
               onChangeText={txt => setUrl(txt.toLowerCase())}
               inputLeft={
