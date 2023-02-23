@@ -35,7 +35,9 @@ export const useInjectedSourceCode = () => {
       .then(res => {
         return res.text();
       })
-      .then(setCode)
+      .then(res => {
+        setCode(res);
+      })
       .catch(err => console.log(err));
   }, []);
 
@@ -240,7 +242,7 @@ export const WebpageScreen: FunctionComponent<
               canGoForward
             }}
           >
-            <OnScreenWebpageScreenHeader setCurrentURL={setCurrentURL} />
+            <OnScreenWebpageScreenHeader />
           </WebViewStateContext.Provider>
 
           {sourceCode ? (

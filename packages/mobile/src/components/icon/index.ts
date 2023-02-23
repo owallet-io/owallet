@@ -25,6 +25,7 @@ export * from './go-back';
 export * from './wallet';
 export * from './setting';
 export * from './search';
+export * from './swap';
 export * from './contact';
 export * from './icon-search';
 export * from './home';
