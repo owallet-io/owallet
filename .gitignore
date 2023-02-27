@@ -21,5 +21,4 @@ coverage
 .yarn/
 .yarnrc
 
-packages/mobile/android/app/google-services.json
-packages/mobile/ios/GoogleService-Info.plist
+

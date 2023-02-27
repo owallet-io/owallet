@@ -121,8 +121,6 @@ export const Browser: FunctionComponent<any> = observer(props => {
 
   const onHandleUrl = uri => {
     let currentUri = uri ?? url;
-    console.log('currentUri', currentUri);
-
     if (currentUri !== '') {
       if (checkValidDomain(currentUri?.toLowerCase())) {
         const tab = {
