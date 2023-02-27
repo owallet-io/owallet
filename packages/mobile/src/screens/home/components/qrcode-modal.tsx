@@ -5,12 +5,13 @@ import { CardModal } from '../../../modals/card';
 import { AddressCopyable } from '../../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
-import { AccountWithAll } from '@owallet/stores';
+import { AccountWithAll, ChainStore } from '@owallet/stores';
 import { CText as Text } from '../../../components/text';
 
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
-}> = ({ account }) => {
+  chainStore?: any;
+}> = ({ account, chainStore }) => {
   return (
     <View
       style={{
@@ -33,10 +34,24 @@ export const AddressQRCodeModal: FunctionComponent<{
             marginVertical: spacing['16']
           }}
         >{`Scan QR Code or copy below address`}</Text>
-        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+        <AddressCopyable
+          address={
+            chainStore.networkType === 'cosmos'
+              ? account.bech32Address
+              : account.evmosHexAddress
+          }
+          maxCharacters={22}
+        />
         <View style={{ marginVertical: spacing['32'] }}>
           {account.bech32Address ? (
-            <QRCode size={200} value={account.bech32Address} />
+            <QRCode
+              size={200}
+              value={
+                chainStore.networkType === 'cosmos'
+                  ? account.bech32Address
+                  : account.evmosHexAddress
+              }
+            />
           ) : (
             <View
               style={{
@@ -60,7 +75,10 @@ export const AddressQRCodeModal: FunctionComponent<{
             disabled={account.bech32Address === ''}
             onPress={() => {
               Share.share({
-                message: account.bech32Address
+                message:
+                  chainStore.networkType === 'cosmos'
+                    ? account.bech32Address
+                    : account.evmosHexAddress
               }).catch(e => {
                 console.log(e);
               });

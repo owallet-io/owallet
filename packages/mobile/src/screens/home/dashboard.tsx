@@ -148,8 +148,8 @@ export const DashboardCard: FunctionComponent<{
 
   useEffect(() => {
     setActive('price');
-    setChartSuffix('');
-  }, [chainStore.current.chainId]);
+    setChartSuffix(data.suffix);
+  }, [chainStore.current.chainId, data]);
 
   return (
     <Card
@@ -170,7 +170,8 @@ export const DashboardCard: FunctionComponent<{
           color: colors['primary-text']
         }}
       >
-        {chainStore.current.chainName}
+        {chainStore.current.chainName} (
+        {chainStore.current.stakeCurrency.coinDenom})
       </Text>
       <View style={styles.headerWrapper}>
         <View style={styles.headerLeftWrapper}>

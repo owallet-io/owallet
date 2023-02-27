@@ -10,6 +10,8 @@ export class AppInit {
     date_updated: null | number;
     theme: string;
   };
+  @observable
+  protected notiData: {};
 
   constructor() {
     makeObservable(this);

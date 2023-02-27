@@ -4,7 +4,7 @@ import Svg, { Path } from 'react-native-svg';
 export const BrowserIcon: FunctionComponent<{
   color?: string;
   size?: number;
-}> = ({ color = 'none', size = 24 }) => {
+}> = ({ color = '#636366', size = 24 }) => {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
       <Path

@@ -1,6 +1,6 @@
 import Clipboard from 'expo-clipboard';
 import React, { FunctionComponent, useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Divider } from '@rneui/base';
 import { CText as Text } from '../../components/text';
 import { RectButton } from 'react-native-gesture-handler';
@@ -103,7 +103,7 @@ const InfoItems: FunctionComponent<{
               ...typography.body2
             }}
           >
-            {value}
+            {value.length > 20 ? formatContractAddress(value) : value}
             {/* {label !== 'Amount'
               ? bindValueTxInfo(label, value)
               : (title === 'Received Token' ? '+' : '-') +
@@ -118,15 +118,19 @@ const InfoItems: FunctionComponent<{
             }}
           >
             {isTimedOut ? (
-              <CheckIcon />
+              <View style={{ width: 30, height: 30 }}>
+                <CheckIcon />
+              </View>
             ) : (
-              <CopyTransactionIcon
-                size={20}
+              <TouchableOpacity
+                style={{ width: 30, height: 30 }}
                 onPress={() => {
                   Clipboard.setString(value.trim());
                   setTimer(2000);
                 }}
-              />
+              >
+                <CopyTransactionIcon size={20} />
+              </TouchableOpacity>
             )}
           </View>
         )}
@@ -339,15 +343,15 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       return [
         {
           label: 'Contract',
-          value: formatContractAddress(item?.contract_address)
+          value: item?.contract_address
         },
         {
           label: 'Sender',
-          value: formatContractAddress(item?.sender)
+          value: item?.sender
         },
         {
           label: 'Receiver',
-          value: formatContractAddress(item?.receiver)
+          value: item?.receiver
         }
       ];
     }
@@ -355,11 +359,11 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       return [
         {
           label: 'Contract',
-          value: formatContractAddress(item?.messages?.[0]?.contract)
+          value: item?.messages?.[0]?.contract
         },
         {
           label: 'Sender',
-          value: formatContractAddress(item?.messages?.[0]?.sender)
+          value: item?.messages?.[0]?.sender
         }
       ];
     }
@@ -368,11 +372,11 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         return [
           {
             label: 'From',
-            value: formatContractAddress(item?.messages?.[0]?.from_address)
+            value: item?.messages?.[0]?.from_address
           },
           {
             label: 'To',
-            value: formatContractAddress(item?.messages?.[0]?.to_address)
+            value: item?.messages?.[0]?.to_address
           }
         ];
 
@@ -380,32 +384,32 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         return [
           {
             label: 'Signer',
-            value: formatContractAddress(item?.messages?.[0]?.signer)
+            value: item?.messages?.[0]?.signer
           }
         ];
       case 'MsgVote':
         return [
           {
             label: 'Voter',
-            value: formatContractAddress(item?.messages?.[0]?.voter)
+            value: item?.messages?.[0]?.voter
           }
         ];
       case 'MsgSubmitProposal':
         return [
           {
             label: 'Proposer',
-            value: formatContractAddress(item?.messages?.[0]?.proposer)
+            value: item?.messages?.[0]?.proposer
           }
         ];
       default:
         return [
           {
             label: 'Delegator address',
-            value: formatContractAddress(item?.messages?.[0]?.delegator_address)
+            value: item?.messages?.[0]?.delegator_address
           },
           {
             label: 'Validator address',
-            value: formatContractAddress(item?.messages?.[0]?.validator_address)
+            value: item?.messages?.[0]?.validator_address
           }
         ];
     }
@@ -415,7 +419,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     ...txAddresses(),
     {
       label: 'Transaction hash',
-      value: formatContractAddress(tx_hash)
+      value: tx_hash
     },
     {
       label: 'Amount',

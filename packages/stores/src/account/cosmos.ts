@@ -3,12 +3,14 @@ import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
 import { DenomHelper } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
-import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
+import { ChainIdHelper, cosmos, ibc, BaseAccount } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
 import { HasCosmosQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter } from '../common';
+import Axios, { AxiosInstance } from 'axios';
 import Long from 'long';
+import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
 export interface HasCosmosAccount {
   cosmos: DeepReadonly<CosmosAccount>;
@@ -95,6 +97,88 @@ export class CosmosAccount {
     >
   ) {
     this.base.registerSendTokenFn(this.processSendToken.bind(this));
+  }
+
+  get instance(): AxiosInstance {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    return Axios.create({
+      ...{
+        baseURL: chainInfo.rest
+      },
+      ...chainInfo.restConfig
+    });
+  }
+
+  /**
+   * Simulate tx without making state transition on chain or not waiting the tx committed.
+   * Mainly used to estimate the gas needed to process tx.
+   * You should multiply arbitrary number (gas adjustment) for gas before sending tx.
+   *
+   * NOTE: "/cosmos/tx/v1beta1/simulate" returns 400, 500 or (more?) status and error code as a response when tx fails on stimulate.
+   *       Currently, non 200~300 status is handled as error, thus error would be thrown.
+   *
+   * XXX: Uses the simulate request format for cosmos-sdk@0.43+
+   *      Thus, may throw an error if the chain is below cosmos-sdk@0.43
+   *      And, for simplicity, doesn't set the public key to tx bytes.
+   *      Thus, the gas estimated doesn't include the tx bytes size of public key.
+   *
+   * @param msgs
+   * @param fee
+   * @param memo
+   */
+  async simulateTx(
+    msgs: any[],
+    fee: Omit<StdFee, 'gas'>,
+    memo: string = ''
+  ): Promise<{
+    gasUsed: number;
+  }> {
+    const account = await BaseAccount.fetchFromRest(
+      this.instance,
+      this.base.bech32Address,
+      true
+    );
+
+    const unsignTx = cosmos.tx.v1beta1.TxRaw.encode({
+      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+        messages: msgs,
+        memo: memo
+      }).finish(),
+      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+        signerInfos: [
+          {
+            modeInfo: {
+              single: {
+                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
+              },
+              multi: undefined
+            },
+            sequence: Long.fromString(account.getSequence().toString())
+          }
+        ],
+
+        fee: {
+          amount: fee.amount.map(amount => {
+            return { amount: amount.amount, denom: amount.denom };
+          }),
+          gasLimit: Long.fromString('500000')
+        }
+      }).finish(),
+      signatures: [new Uint8Array(64)]
+    }).finish();
+
+    const result = await this.instance.post('/cosmos/tx/v1beta1/simulate', {
+      tx_bytes: Buffer.from(unsignTx).toString('base64')
+    });
+
+    const gasUsed = parseInt(result.data.gas_info.gas_used);
+    if (Number.isNaN(gasUsed)) {
+      throw new Error(`Invalid integer gas: ${result.data.gas_info.gas_used}`);
+    }
+
+    return {
+      gasUsed
+    };
   }
 
   //send token
@@ -222,6 +306,56 @@ export class CosmosAccount {
       .get(channel.counterpartyChainId)
       .cosmos.queryBlock.getBlock('latest');
 
+    const msg = {
+      type: this.base.msgOpts.ibcTransfer.type,
+      value: {
+        source_port: channel.portId,
+        source_channel: channel.channelId,
+        token: {
+          denom: currency.coinMinimalDenom,
+          amount: actualAmount
+        },
+        sender: this.base.bech32Address,
+        receiver: recipient,
+        timeout_height: {
+          revision_number: ChainIdHelper.parse(
+            channel.counterpartyChainId
+          ).version.toString() as string | undefined,
+          // Set the timeout height as the current height + 150.
+          revision_height: destinationBlockHeight.height
+            .add(new Int('150'))
+            .toString()
+        }
+      }
+    };
+
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/ibc.applications.transfer.v1.MsgTransfer',
+          value: ibc.applications.transfer.v1.MsgTransfer.encode({
+            sourcePort: msg.value.source_port,
+            sourceChannel: msg.value.source_channel,
+            token: msg.value.token,
+            sender: msg.value.sender,
+            receiver: msg.value.receiver,
+            timeoutHeight: {
+              revisionNumber: msg.value.timeout_height.revision_number
+                ? Long.fromString(msg.value.timeout_height.revision_number)
+                : null,
+              revisionHeight: Long.fromString(
+                msg.value.timeout_height.revision_height
+              )
+            }
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'ibcTransfer',
       async () => {
@@ -288,7 +422,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.ibcTransfer.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -350,6 +486,23 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.staking.v1beta1.MsgDelegate',
+          value: cosmos.staking.v1beta1.MsgDelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+            amount: msg.value.amount
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'delegate',
       {
@@ -370,7 +523,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.delegate.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -430,6 +585,23 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.staking.v1beta1.MsgUndelegate',
+          value: cosmos.staking.v1beta1.MsgUndelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address,
+            amount: msg.value.amount
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'undelegate',
       {
@@ -448,7 +620,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.undelegate.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -514,6 +688,24 @@ export class CosmosAccount {
       }
     };
 
+    const simulateTx = await this.simulateTx(
+      [
+        {
+          type_url: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+          value: cosmos.staking.v1beta1.MsgBeginRedelegate.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorSrcAddress: msg.value.validator_src_address,
+            validatorDstAddress: msg.value.validator_dst_address,
+            amount: msg.value.amount
+          }).finish()
+        }
+      ],
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'redelegate',
       {
@@ -535,7 +727,9 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.redelegate.gas.toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3).toString()
+          : stdFee.gas
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -578,6 +772,22 @@ export class CosmosAccount {
       };
     });
 
+    const simulateTx = await this.simulateTx(
+      msgs.map(msg => {
+        return {
+          type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+          value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode({
+            delegatorAddress: msg.value.delegator_address,
+            validatorAddress: msg.value.validator_address
+          }).finish()
+        };
+      }),
+      {
+        amount: stdFee.amount ?? []
+      },
+      memo
+    );
+
     await this.base.sendMsgs(
       'withdrawRewards',
       {
@@ -601,11 +811,13 @@ export class CosmosAccount {
       memo,
       {
         amount: stdFee.amount ?? [],
-        gas:
-          stdFee.gas ??
-          (
-            this.base.msgOpts.withdrawRewards.gas * validatorAddresses.length
-          ).toString()
+        gas: simulateTx?.gasUsed
+          ? (simulateTx.gasUsed * 1.3 * validatorAddresses.length).toString()
+          : stdFee.gas
+        // stdFee.gas ??
+        // (
+        //   this.base.msgOpts.withdrawRewards.gas * validatorAddresses.length
+        // ).toString()
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {
@@ -673,6 +885,40 @@ export class CosmosAccount {
       }
     };
 
+    // const simulateTx = await this.simulateTx(
+    //   [
+    //     {
+    //       type_url: '/cosmos.gov.v1beta1.MsgVote',
+    //       value: cosmos.gov.v1beta1.MsgVote.encode({
+    //         proposalId: Long.fromString(msg.value.proposal_id),
+    //         voter: msg.value.voter,
+    //         option: (() => {
+    //           switch (msg.value.option) {
+    //             case 'Yes':
+    //             case 1:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES;
+    //             case 'Abstain':
+    //             case 2:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_ABSTAIN;
+    //             case 'No':
+    //             case 3:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO;
+    //             case 'NoWithVeto':
+    //             case 4:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO_WITH_VETO;
+    //             default:
+    //               return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_UNSPECIFIED;
+    //           }
+    //         })()
+    //       }).finish()
+    //     }
+    //   ],
+    //   {
+    //     amount: stdFee.amount ?? []
+    //   },
+    //   memo
+    // );
+
     await this.base.sendMsgs(
       'govVote',
       {
@@ -712,8 +958,8 @@ export class CosmosAccount {
       },
       memo,
       {
-        amount: stdFee.amount ?? [],
-        gas: stdFee.gas ?? this.base.msgOpts.govVote.gas.toString()
+        amount: stdFee?.amount ?? [],
+        gas: stdFee?.gas ?? this.base.msgOpts.govVote.gas.toString()
       },
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, tx => {

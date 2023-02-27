@@ -8,6 +8,7 @@ import React, {
 import {
   Image,
   Linking,
+  Platform,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View
@@ -67,9 +68,10 @@ import {
   BrowserFillIcon,
   InvestOutlineIcon,
   InvestFillIcon,
-  HistoryIcon,
+  Notification,
   Scanner,
-  GoBack
+  GoBack,
+  CarbonNotification
 } from './components/icon';
 import {
   AddAddressBookScreen,
@@ -126,6 +128,7 @@ import { TransferNFTScreen } from './screens/transfer-nft';
 import { DashBoardScreen } from './screens/dashboard';
 import { lightColors } from './themes/colors';
 import { colors } from './themes';
+import { NotificationScreen } from './screens/notifications';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -155,6 +158,8 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
+  const { notificationStore } = useStore();
+
   return (
     <View
       style={{
@@ -169,16 +174,25 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
       >
         <TouchableOpacity
           onPress={() => {
-            smartNavigation.navigateSmart('Transactions', {});
+            // smartNavigation.navigateSmart('Transactions', {});
+            navigation.navigate('Others', {
+              screen: 'Notifications'
+            });
           }}
           style={{ paddingRight: 8 }}
         >
-          <HistoryIcon size={24} color={colors['purple-700']} />
+          {notificationStore?.getReadNotifications?.length >=
+          notificationStore?.getTotal ? (
+            <CarbonNotification size={24} color={colors['purple-700']} />
+          ) : (
+            <Notification size={24} color={colors['purple-700']} />
+          )}
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('Others', {
               screen: 'Camera'
+              // screen: 'Notifications'
             });
           }}
         >
@@ -562,6 +576,13 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Transactions"
         component={Transactions}
+      />
+      <Stack.Screen
+        options={{
+          header: () => <CustomHeader />
+        }}
+        name="Notifications"
+        component={NotificationScreen}
       />
       <Stack.Screen
         options={{
@@ -1040,13 +1061,14 @@ export const MainTabNavigation: FunctionComponent = () => {
         activeTintColor: style.get('color-primary').color,
         inactiveTintColor: style.get('color-text-black-very-very-low').color,
         style: {
+          backgroundColor: '#fff',
           borderTopWidth: 0.5,
           borderTopColor: colors['primary'],
           shadowColor: style.get('color-transparent').color,
           elevation: 0,
           paddingLeft: 10,
           paddingRight: 10,
-          height: 110
+          height: Platform.OS === 'android' ? 80 : 110
         },
         showLabel: false
       }}

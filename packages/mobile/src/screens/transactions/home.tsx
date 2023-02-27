@@ -79,7 +79,10 @@ export const Transactions: FunctionComponent = () => {
     let msgTracer: TendermintTxTracer | undefined;
 
     if (isFocused) {
-      msgTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
+      msgTracer = new TendermintTxTracer(
+        chainInfo?.rpc ?? chainInfo?.rest,
+        '/websocket'
+      );
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
         .then(tx => {

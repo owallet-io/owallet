@@ -5,9 +5,8 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { BackHandler, Platform, View } from 'react-native';
+import { BackHandler, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { useStyle } from '../../../../styles';
 import { OWallet, Ethereum } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import {
@@ -15,7 +14,6 @@ import {
   RNInjectedOWallet
 } from '../../../../injected/injected-provider';
 import EventEmitter from 'eventemitter3';
-// import { PageWithViewInBottomTabView } from "../../../../components/page";
 import { PageWithView } from '../../../../components/page';
 import { OnScreenWebpageScreenHeader } from '../header';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
@@ -28,20 +26,19 @@ import { InjectedProviderUrl } from '../../config';
 import { BrowserFooterSection } from '../footer-section';
 import { SwtichTab } from '../switch-tabs';
 import { version } from '../../../../../package.json';
+import _debounce from 'lodash/debounce';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    console.log(
-      'InjectedProviderUrl',
-      `${InjectedProviderUrl}/injected-provider.bundle.js`
-    );
     fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
       .then(res => {
         return res.text();
       })
-      .then(setCode)
+      .then(res => {
+        setCode(res);
+      })
       .catch(err => console.log(err));
   }, []);
 
@@ -55,7 +52,6 @@ export const WebpageScreen: FunctionComponent<
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
-  const style = useStyle();
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {
@@ -114,8 +110,9 @@ export const WebpageScreen: FunctionComponent<
   const onPressItem = ({ name, uri }) => {
     setIsSwitchTab(false);
     if (browserStore.getSelectedTab?.uri !== uri) {
-      browserStore.updateSelectedTab({ name, uri });
+      browserStore.updateSelectedTab({ id: Date.now(), name, uri });
       navigation.navigate('Web.dApp', {
+        id: Date.now(),
         name,
         uri
       });
@@ -222,6 +219,18 @@ export const WebpageScreen: FunctionComponent<
       });
     }
   }, [canGoBack, navigation]);
+  let offset = 0;
+
+  const debounceScroll = _debounce(currentOffet => {
+    const direction = currentOffet > offset ? 'down' : 'up';
+    offset = currentOffet;
+    console.log('direction ===', direction);
+  }, 100);
+
+  const _onScroll = syntheticEvent => {
+    const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
+    debounceScroll(currentOffet);
+  };
 
   const sourceCode = useInjectedSourceCode();
 
@@ -252,7 +261,7 @@ export const WebpageScreen: FunctionComponent<
           {sourceCode ? (
             <WebView
               ref={webviewRef}
-              incognito={true}
+              // incognito={true}
               injectedJavaScriptBeforeContentLoaded={sourceCode}
               onMessage={onMessage}
               onNavigationStateChange={e => {
@@ -275,6 +284,7 @@ export const WebpageScreen: FunctionComponent<
               automaticallyAdjustContentInsets={false}
               decelerationRate="normal"
               allowsBackForwardNavigationGestures={true}
+              onScroll={_onScroll}
               {...props}
             />
           ) : null}

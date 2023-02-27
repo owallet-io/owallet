@@ -13,6 +13,7 @@ target 'mobile' do
   pod 'Firebase/Core'
   pod 'Firebase/Messaging'
   pod 'Firebase/Crashlytics'
+  pod 'Sentry', :git => 'https://github.com/getsentry/sentry-cocoa.git', :tag => '7.31.5'
   use_react_native!(
     :path => config["reactNativePath"],
     :hermes_enabled => false

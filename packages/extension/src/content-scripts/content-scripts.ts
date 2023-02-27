@@ -5,7 +5,7 @@ import {
   ExtensionRouter,
   InExtensionMessageRequester
 } from '@owallet/router-extension';
-import { OWallet, InjectedOWallet, Ethereum, InjectedEthereum } from '@owallet/provider';
+import { OWallet, InjectedOWallet, Ethereum, InjectedEthereum, InjectedEthereumOWallet } from '@owallet/provider';
 import { initEvents } from './events';
 
 import manifest from '../manifest.json';
@@ -25,6 +25,10 @@ InjectedOWallet.startProxy(
 );
 
 InjectedEthereum.startProxy(
+  new Ethereum(manifest.version, 'core', "0x38", new InExtensionMessageRequester())
+);
+
+InjectedEthereumOWallet.startProxy(
   new Ethereum(manifest.version, 'core', "0x38", new InExtensionMessageRequester())
 );
 

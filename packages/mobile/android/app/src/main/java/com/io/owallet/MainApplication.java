@@ -16,7 +16,6 @@ import java.util.Arrays;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-
 import com.microsoft.codepush.react.CodePush;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -40,7 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> unimodules = Arrays.<ReactPackage>asList(
             new ModuleRegistryAdapter(mModuleRegistryProvider)
             //remove ReactNativeFirebaseMessagingPackage with rn > 0.60 https://github.com/invertase/react-native-firebase/issues/2417
-           // new ReactNativeFirebaseMessagingPackage()
+            // new ReactNativeFirebaseMessagingPackage()
           );
           packages.addAll(unimodules);
           return packages;

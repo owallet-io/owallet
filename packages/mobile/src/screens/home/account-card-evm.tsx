@@ -103,7 +103,8 @@ export const AccountCardEVM: FunctionComponent<{
     modalStore.setOpen();
     modalStore.setChildren(
       AddressQRCodeModal({
-        account
+        account,
+        chainStore: chainStore.current
       })
     );
   };

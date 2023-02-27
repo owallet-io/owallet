@@ -17,9 +17,9 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "dependencies": {
-    "@cosmjs/encoding": "^0.24.0-alpha.25",
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
-    "@cosmjs/tendermint-rpc": "^0.24.1",
+    "@cosmjs/encoding": "^0.29.3",
+    "@cosmjs/launchpad": "^0.27.1",
+    "@cosmjs/tendermint-rpc": "^0.29.4",
     "@hanchon/ethermint-address-converter": "^1.1.0",
     "@owallet/background": "^0.9.16",
     "@owallet/common": "^0.9.10",
@@ -30,6 +30,7 @@
     "@owallet/unit": "^0.9.12",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "cosmjs-types": "^0.6.1",
     "deepmerge": "^4.2.2",
     "eventemitter3": "^4.0.7",
     "long": "^4.0.0",

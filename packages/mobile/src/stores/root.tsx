@@ -19,6 +19,7 @@ import { RNEnv, RNRouterUI, RNMessageRequesterInternal } from '../router';
 import { ChainStore } from './chain';
 import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import { AppInit, appInit } from './app_init';
+import { Notification, notification } from './notification';
 import EventEmitter from 'eventemitter3';
 import { OWallet, Ethereum } from '@owallet/provider';
 import { KeychainStore } from './keychain';
@@ -84,6 +85,7 @@ export class RootStore {
   public readonly modalStore: ModalStore;
   public readonly sendStore: SendStore;
   public readonly appInitStore: AppInit;
+  public readonly notificationStore: Notification;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -265,8 +267,9 @@ export class RootStore {
     );
     this.deepLinkUriStore = new DeepLinkStore();
     this.browserStore = browserStore;
-    this.appInitStore = appInit;
     this.modalStore = new ModalStore();
+    this.appInitStore = appInit;
+    this.notificationStore = notification;
     this.sendStore = new SendStore();
   }
 }

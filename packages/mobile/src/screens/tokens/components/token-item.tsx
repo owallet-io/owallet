@@ -45,10 +45,11 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   } else {
     const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
     balanceCoinDenom = balance.currency.coinDenom;
-    if (denomHelper.contractAddress) {
+
+    if (denomHelper.contractAddress && denomHelper.contractAddress !== '') {
       name += ` (${Bech32Address.shortenAddress(
         denomHelper.contractAddress,
-        24
+        34
       )})`;
     }
   }
@@ -107,6 +108,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           }}
         >
           <Text
+            numberOfLines={1}
             style={{
               fontSize: 13,
               color: colors['gray-300'],

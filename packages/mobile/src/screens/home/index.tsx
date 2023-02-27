@@ -19,23 +19,27 @@ import { observer } from 'mobx-react-lite';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
-import { useFocusEffect, useTheme } from '@react-navigation/native';
+import { useFocusEffect, useTheme,useNavigation } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+import { API } from '../../common/api';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { colors } = useTheme();
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore,notificationStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
   const currentChain = chainStore.current;
   const currentChainId = currentChain?.chainId;
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(
@@ -70,6 +74,41 @@ export const HomeScreen: FunctionComponent = observer(props => {
     };
   }, [checkAndUpdateChainInfo]);
 
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage
+      );
+      navigation.navigate('Others', {
+        screen: 'Notifications'
+      });
+    });
+    messaging()
+      .getInitialNotification()
+      .then(async remoteMessage => {
+        // const data = JSON.parse(remoteMessage?.data?.data);
+        // console.log('message', data.message);
+      });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      // const formatData = JSON.parse(remoteMessage?.data?.data);
+      // console.log('raw', remoteMessage?.data);
+      // console.log('formattedData', formatData);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
+      // Do something with the notification data here
+      navigation.navigate('Others', {
+        screen: 'Notifications'
+      });
+      notificationStore.removeNotidata();
+    }
+  }, [notificationStore]);
+
   useFocusEffect(
     useCallback(() => {
       if (
@@ -94,8 +133,30 @@ export const HomeScreen: FunctionComponent = observer(props => {
     }
   }, [chainStore.current.chainId]);
 
+  useEffect(() => {
+    onSubscribeToTopic();
+  }, []);
+
+  const onSubscribeToTopic = React.useCallback(async () => {
+    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+
+    if (fcmToken) {
+      const subcriber = await API.subcribeToTopic(
+        {
+          subcriber: fcmToken,
+          topic:
+            chainStore.current.networkType === 'cosmos'
+              ? account.bech32Address.toString()
+              : account.evmosHexAddress.toString()
+        },
+        {
+          baseURL: 'https://tracking-tx.orai.io'
+        }
+      );
+    }
+  }, []);
+
   const onRefresh = React.useCallback(async () => {
-    const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
     // Because the components share the states related to the queries,

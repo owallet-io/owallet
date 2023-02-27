@@ -18,7 +18,7 @@ export const fetchAdapter = async (
 
   if (config.timeout && config.timeout > 0) {
     promiseChain.push(
-      new Promise((res) => {
+      new Promise(res => {
         setTimeout(() => {
           const message = config.timeoutErrorMessage
             ? config.timeoutErrorMessage

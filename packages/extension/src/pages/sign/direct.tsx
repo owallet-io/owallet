@@ -1,12 +1,15 @@
 import { Currency } from '@owallet/types';
 import { IntlShape } from 'react-intl';
-import { cosmos, cosmwasm, UnknownMessage } from '@owallet/cosmos';
+import { cosmos, cosmwasm, ibc, UnknownMessage } from '@owallet/cosmos';
 import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgExecuteContract,
   renderMsgSend,
+  renderMsgTransfer,
   renderMsgUndelegate,
+  renderMsgVote,
+  renderMsgWithdrawDelegatorReward,
   renderUnknownMessage
 } from './messages';
 import { CoinPrimitive } from '@owallet/stores';
@@ -38,6 +41,16 @@ export function renderDirectMessage(
       );
     }
 
+    if (msg instanceof ibc.applications.transfer.v1.MsgTransfer) {
+      return renderMsgTransfer(
+        currencies,
+        intl,
+        msg.token as CoinPrimitive,
+        msg.receiver,
+        msg.sourceChannel
+      );
+    }
+
     if (msg instanceof cosmos.staking.v1beta1.MsgBeginRedelegate) {
       return renderMsgBeginRedelegate(
         currencies,
@@ -56,21 +69,22 @@ export function renderDirectMessage(
         msg.validatorAddress
       );
     }
-
-    if (
-      msg instanceof cosmwasm.wasm.v1.MsgExecuteContract ||
-      msg instanceof cosmwasm.wasm.v1beta1.MsgExecuteContract
-    ) {
+    if (msg instanceof cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward) {
+      return renderMsgWithdrawDelegatorReward(intl, msg.validatorAddress);
+    }
+    if (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract) {
       return renderMsgExecuteContract(
         currencies,
         intl,
-        (msg instanceof cosmwasm.wasm.v1.MsgExecuteContract
-          ? msg.funds
-          : msg.sent_funds) as CoinPrimitive[],
+        msg.funds as CoinPrimitive[],
         undefined,
         msg.contract,
         JSON.parse(fromUtf8(msg.msg))
       );
+    }
+
+    if (msg instanceof cosmos.gov.v1beta1.MsgVote) {
+      return renderMsgVote(intl, msg.proposalId.toString(), msg.option);
     }
 
     if (msg instanceof UnknownMessage) {

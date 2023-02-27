@@ -6,9 +6,11 @@ import React, {
   useState
 } from 'react';
 import {
+  Alert,
   AppState,
   AppStateStatus,
   Image,
+  Platform,
   Text,
   TouchableOpacity,
   View
@@ -32,6 +34,9 @@ import { spacing } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
 import { ProgressBar } from '../../components/progress-bar';
 import CodePush from 'react-native-code-push';
+import messaging from '@react-native-firebase/messaging';
+import { MaintainScreen } from '../../components/maintain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -108,7 +113,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     keychainStore,
     accountStore,
     chainStore,
-    appInitStore
+    appInitStore,
+    notificationStore
   } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -161,7 +167,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             console.log('DOWNLOADING_PACKAGE');
             // Show "downloading" modal
             // modal.open();
-            appInitStore.updateDate(Date.now());
+            appInitStore?.updateDate(Date.now());
             setDownloading(true);
             break;
           case CodePush.SyncStatus.INSTALLING_UPDATE:
@@ -174,7 +180,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             setDownloading(false);
             setInstalling(false);
             setLoaded(true);
-            appInitStore.updateDate(Date.now());
+            appInitStore?.updateDate(Date.now());
             // Hide loading modal
             break;
         }
@@ -263,6 +269,126 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage
+      );
+      // const data = JSON.parse(remoteMessage?.data?.data);
+      const data = { data: JSON.stringify(remoteMessage) };
+
+      notificationStore?.updateNotidata(data);
+
+      console.log(
+        'Notification caused app to open from background state with data:',
+        data
+      );
+    });
+    messaging()
+      .getInitialNotification()
+      .then(async remoteMessage => {
+        // const data = JSON.parse(remoteMessage?.data?.data);
+        // console.log('message', data.message);
+      });
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      // const formatData = JSON.parse(remoteMessage?.data?.data);
+      // console.log('raw', remoteMessage?.data);
+      // console.log('formattedData', formatData);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  // Notification setup section
+  const regisFcmToken = useCallback(async FCMToken => {
+    await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
+  }, []);
+
+  const getToken = useCallback(async () => {
+    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+
+    if (!fcmToken) {
+      messaging()
+        .getToken()
+        .then(async FCMToken => {
+          console.log('FCMToken ===', FCMToken);
+          if (FCMToken) {
+            regisFcmToken(FCMToken);
+          } else {
+            Alert.alert('[FCMService] User does not have a device token');
+          }
+        })
+        .catch(error => {
+          let err = `FCM token get error: ${error}`;
+          Alert.alert(err);
+          console.log('[FCMService] getToken rejected ', error);
+        });
+    } else {
+      // regisFcmToken(fcmToken);
+    }
+  }, [regisFcmToken]);
+
+  const registerAppWithFCM = useCallback(() => {
+    if (Platform.OS === 'ios') {
+      messaging()
+        .registerDeviceForRemoteMessages()
+        .then(register => {
+          getToken();
+        });
+      //await messaging().setAutoInitEnabled(true);
+    } else {
+      getToken();
+    }
+  }, [getToken]);
+
+  const requestPermission = useCallback(() => {
+    messaging()
+      .requestPermission()
+      .then(() => {
+        registerAppWithFCM();
+      })
+      .catch(error => {
+        console.log('[FCMService] Requested persmission rejected ', error);
+      });
+  }, [registerAppWithFCM]);
+
+  const checkPermission = useCallback(() => {
+    messaging()
+      .hasPermission()
+      .then(enabled => {
+        if (enabled) {
+          //user has permission
+          registerAppWithFCM();
+        } else {
+          //user don't have permission
+          requestPermission();
+        }
+      })
+      .catch(error => {
+        requestPermission();
+        let err = `check permission error${error}`;
+        Alert.alert(err);
+        // console.log("[FCMService] Permission rejected", error)
+      });
+  }, [registerAppWithFCM, requestPermission]);
+
+  useEffect(() => {
+    checkPermission();
+  }, [checkPermission]);
+
+  useEffect(() => {
+    requestPermission();
+  }, [requestPermission]);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {});
+
+    return unsubscribe;
+  }, []);
+
+  // return <MaintainScreen />;
+
   return !routeToRegisterOnce.current &&
     keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
@@ -314,15 +440,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         >
           {progress}%
         </Text>
-        {/* <Image
-          style={{
-            width: 300,
-            height: 8
-          }}
-          fadeDuration={0}
-          resizeMode="stretch"
-          source={require('../../assets/image/transactions/process_pedding.gif')}
-        /> */}
         <ProgressBar progress={progress} styles={{ width: 260 }} />
       </View>
       <TouchableOpacity

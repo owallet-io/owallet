@@ -111,7 +111,8 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     modalStore.setOpen();
     modalStore.setChildren(
       AddressQRCodeModal({
-        account
+        account,
+        chainStore: chainStore.current
       })
     );
   };

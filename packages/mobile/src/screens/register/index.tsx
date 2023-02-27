@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OWalletLogo, OWalletUnion } from './owallet-logo';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { colors, metrics } from '../../themes';
+import { MaintainScreen } from '../../components/maintain';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -23,6 +24,8 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const safeAreaInsets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
+
+  // return <MaintainScreen />;
 
   return (
     <PageWithScrollView
@@ -104,17 +107,17 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           borderRadius: 8
         }}
       >
-          <Text
-            style={{
-              color: colors['purple-900'],
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              padding: 16
-            }}
-          >
-            Import Ledger Nano X
-          </Text>
+        <Text
+          style={{
+            color: colors['purple-900'],
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 16
+          }}
+        >
+          Import Ledger Nano X
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
@@ -132,18 +135,17 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           borderRadius: 8
         }}
       >
-       
-          <Text
-            style={{
-              color: colors['purple-900'],
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              padding: 16
-            }}
-          >
-            Import from Mnemonic / Private key 
-          </Text>
+        <Text
+          style={{
+            color: colors['purple-900'],
+            textAlign: 'center',
+            fontWeight: '700',
+            fontSize: 16,
+            padding: 16
+          }}
+        >
+          Import from Mnemonic / Private key
+        </Text>
       </TouchableOpacity>
     </PageWithScrollView>
   );
