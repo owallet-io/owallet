@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import { BackHandler, Platform, Animated } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { OWallet, Ethereum } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '../../../../router';
@@ -52,6 +52,12 @@ export const WebpageScreen: FunctionComponent<
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
+  const scrollY = new Animated.Value(0);
+  const diffClamp = Animated.diffClamp(scrollY, 0, 100);
+  const translateYBottom = diffClamp.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-1, 0]
+  });
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {
@@ -219,27 +225,22 @@ export const WebpageScreen: FunctionComponent<
       });
     }
   }, [canGoBack, navigation]);
-  let offset = 0;
-
-  const debounceScroll = _debounce(currentOffet => {
-    const direction = currentOffet > offset ? 'down' : 'up';
-    offset = currentOffet;
-    console.log('direction ===', direction);
-  }, 100);
 
   const _onScroll = syntheticEvent => {
     const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
-    debounceScroll(currentOffet);
+    scrollY.setValue(currentOffet);
   };
 
   const sourceCode = useInjectedSourceCode();
 
   return (
     <PageWithView
-      style={{
-        padding: 0,
-        paddingBottom: 80
-      }}
+      style={
+        {
+          // padding: 0
+          // paddingBottom: 80
+        }
+      }
       disableSafeArea
     >
       {isSwitchTab ? (
@@ -257,7 +258,6 @@ export const WebpageScreen: FunctionComponent<
           >
             <OnScreenWebpageScreenHeader />
           </WebViewStateContext.Provider>
-
           {sourceCode ? (
             <WebView
               ref={webviewRef}
@@ -303,11 +303,17 @@ export const WebpageScreen: FunctionComponent<
           }
         }}
       >
-        <BrowserFooterSection
-          isSwitchTab={isSwitchTab}
-          setIsSwitchTab={setIsSwitchTab}
-          typeOf={'webview'}
-        />
+        <Animated.View
+          style={{
+            transform: [{ translateY: translateYBottom }]
+          }}
+        >
+          <BrowserFooterSection
+            isSwitchTab={isSwitchTab}
+            setIsSwitchTab={setIsSwitchTab}
+            typeOf={'webview'}
+          />
+        </Animated.View>
       </WebViewStateContext.Provider>
     </PageWithView>
   );

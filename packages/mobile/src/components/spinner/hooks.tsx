@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import Animated, { Clock, Easing } from "react-native-reanimated";
+import { useMemo, useState } from 'react';
+import Animated, { Clock, Easing } from 'react-native-reanimated';
 
 export const useSpinAnimated = (enabled: boolean) => {
   const [spinClock] = useState(() => new Clock());
@@ -8,14 +8,14 @@ export const useSpinAnimated = (enabled: boolean) => {
       finished: new Animated.Value(0),
       position: new Animated.Value(0),
       time: new Animated.Value(0),
-      frameTime: new Animated.Value(0),
+      frameTime: new Animated.Value(0)
     };
   });
   const [animConfig] = useState(() => {
     return {
       duration: 1200,
       toValue: 360,
-      easing: Easing.linear,
+      easing: Easing.linear
     };
   });
 
@@ -43,8 +43,8 @@ export const useSpinAnimated = (enabled: boolean) => {
             Animated.set(spinClockState.time, 0),
             Animated.set(spinClockState.frameTime, 0),
             // and we restart
-            Animated.startClock(spinClock),
-          ]),
+            Animated.startClock(spinClock)
+          ])
         ],
         [
           // Stop and clear
@@ -56,12 +56,12 @@ export const useSpinAnimated = (enabled: boolean) => {
             Animated.set(spinClockState.position, 0),
             // very important to reset this ones
             Animated.set(spinClockState.time, 0),
-            Animated.set(spinClockState.frameTime, 0),
+            Animated.set(spinClockState.frameTime, 0)
           ]),
-          Animated.set(spinClockState.position, 0),
+          Animated.set(spinClockState.position, 0)
         ]
       ),
-      Animated.divide(Animated.multiply(spinClockState.position, Math.PI), 180),
+      Animated.divide(Animated.multiply(spinClockState.position, Math.PI), 180)
     ]);
   }, [animConfig, enabled, spinClock, spinClockState]);
 };
