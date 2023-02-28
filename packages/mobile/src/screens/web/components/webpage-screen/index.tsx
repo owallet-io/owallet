@@ -53,10 +53,10 @@ export const WebpageScreen: FunctionComponent<
   const { keyRingStore, chainStore, browserStore } = useStore();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const scrollY = new Animated.Value(0);
-  const diffClamp = Animated.diffClamp(scrollY, 0, 100);
+  const diffClamp = Animated.diffClamp(scrollY, 0, 80);
   const translateYBottom = diffClamp.interpolate({
-    inputRange: [0, 1],
-    outputRange: [-1, 0]
+    inputRange: [0, 2],
+    outputRange: [-2, 0]
   });
 
   const webviewRef = useRef<WebView | null>(null);
@@ -259,59 +259,62 @@ export const WebpageScreen: FunctionComponent<
             <OnScreenWebpageScreenHeader />
           </WebViewStateContext.Provider>
           {sourceCode ? (
-            <WebView
-              ref={webviewRef}
-              // incognito={true}
-              injectedJavaScriptBeforeContentLoaded={sourceCode}
-              onMessage={onMessage}
-              onNavigationStateChange={e => {
-                // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.canGoBack);
-                setCanGoForward(e.canGoForward);
+            <>
+              <WebView
+                ref={webviewRef}
+                // incognito={true}
+                cacheEnabled={true}
+                injectedJavaScriptBeforeContentLoaded={sourceCode}
+                onMessage={onMessage}
+                onNavigationStateChange={e => {
+                  // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+                  // Use two handlers to measure simultaneously in ios and android.
+                  setCanGoBack(e.canGoBack);
+                  setCanGoForward(e.canGoForward);
 
-                setCurrentURL(e.url);
-              }}
-              onLoadProgress={e => {
-                // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.nativeEvent.canGoBack);
-                setCanGoForward(e.nativeEvent.canGoForward);
+                  setCurrentURL(e.url);
+                }}
+                onLoadProgress={e => {
+                  // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+                  // Use two handlers to measure simultaneously in ios and android.
+                  setCanGoBack(e.nativeEvent.canGoBack);
+                  setCanGoForward(e.nativeEvent.canGoForward);
 
-                setCurrentURL(e.nativeEvent.url);
-              }}
-              contentInsetAdjustmentBehavior="never"
-              automaticallyAdjustContentInsets={false}
-              decelerationRate="normal"
-              allowsBackForwardNavigationGestures={true}
-              onScroll={_onScroll}
-              {...props}
-            />
-          ) : null}
-          <WebViewStateContext.Provider
-            value={{
-              webView: webviewRef.current,
-              name: props.name,
-              url: currentURL,
-              canGoBack,
-              canGoForward,
-              clearWebViewContext: () => {
-                webviewRef.current = null;
-              }
-            }}
-          >
-            <Animated.View
-              style={{
-                transform: [{ translateY: translateYBottom }]
-              }}
-            >
-              <BrowserFooterSection
-                isSwitchTab={isSwitchTab}
-                setIsSwitchTab={setIsSwitchTab}
-                typeOf={'webview'}
+                  setCurrentURL(e.nativeEvent.url);
+                }}
+                contentInsetAdjustmentBehavior="never"
+                automaticallyAdjustContentInsets={false}
+                decelerationRate="normal"
+                allowsBackForwardNavigationGestures={true}
+                onScroll={_onScroll}
+                {...props}
               />
-            </Animated.View>
-          </WebViewStateContext.Provider>
+              <WebViewStateContext.Provider
+                value={{
+                  webView: webviewRef.current,
+                  name: props.name,
+                  url: currentURL,
+                  canGoBack,
+                  canGoForward,
+                  clearWebViewContext: () => {
+                    webviewRef.current = null;
+                  }
+                }}
+              >
+                <Animated.View
+                  style={{
+                    transform: [{ translateY: translateYBottom }]
+                  }}
+                >
+                  <BrowserFooterSection
+                    isSwitchTab={isSwitchTab}
+                    setIsSwitchTab={setIsSwitchTab}
+                    typeOf={'webview'}
+                  />
+                </Animated.View>
+              </WebViewStateContext.Provider>
+            </>
+          ) : null}
         </>
       )}
     </PageWithView>
