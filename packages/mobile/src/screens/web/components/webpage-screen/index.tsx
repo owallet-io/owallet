@@ -288,33 +288,32 @@ export const WebpageScreen: FunctionComponent<
               {...props}
             />
           ) : null}
+          <WebViewStateContext.Provider
+            value={{
+              webView: webviewRef.current,
+              name: props.name,
+              url: currentURL,
+              canGoBack,
+              canGoForward,
+              clearWebViewContext: () => {
+                webviewRef.current = null;
+              }
+            }}
+          >
+            <Animated.View
+              style={{
+                transform: [{ translateY: translateYBottom }]
+              }}
+            >
+              <BrowserFooterSection
+                isSwitchTab={isSwitchTab}
+                setIsSwitchTab={setIsSwitchTab}
+                typeOf={'webview'}
+              />
+            </Animated.View>
+          </WebViewStateContext.Provider>
         </>
       )}
-
-      <WebViewStateContext.Provider
-        value={{
-          webView: webviewRef.current,
-          name: props.name,
-          url: currentURL,
-          canGoBack,
-          canGoForward,
-          clearWebViewContext: () => {
-            webviewRef.current = null;
-          }
-        }}
-      >
-        <Animated.View
-          style={{
-            transform: [{ translateY: translateYBottom }]
-          }}
-        >
-          <BrowserFooterSection
-            isSwitchTab={isSwitchTab}
-            setIsSwitchTab={setIsSwitchTab}
-            typeOf={'webview'}
-          />
-        </Animated.View>
-      </WebViewStateContext.Provider>
     </PageWithView>
   );
 });
