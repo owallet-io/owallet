@@ -121,7 +121,7 @@ export const DelegationsCard: FunctionComponent<{
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {val.description.moniker}
+                  {val?.description?.moniker ?? ''}
                 </Text>
                 <View style={{ flex: 1 }} />
                 <Text

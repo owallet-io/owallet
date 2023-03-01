@@ -229,7 +229,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   color: colors['primary-text']
                 }}
               >
-                {srcValidator ? srcValidator.description.moniker : '...'}
+                {srcValidator ? srcValidator?.description?.moniker : '...'}
               </Text>
               <Text
                 style={{

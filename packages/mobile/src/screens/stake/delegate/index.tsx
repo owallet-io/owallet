@@ -243,7 +243,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                     analyticsStore.logEvent('Delegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
-                      validatorName: validator?.description.moniker,
+                      validatorName: validator?.description.moniker ?? '...',
                       feeType: sendConfigs.feeConfig.feeType
                     });
                     smartNavigation.pushSmart('TxPendingResult', {

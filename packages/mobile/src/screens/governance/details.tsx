@@ -242,7 +242,7 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
             // In IOS, the whole text would be selected, this process is somewhat strange, so it is disabled in IOS.
             selectable={Platform.OS === 'android'}
           >
-            {proposal.description}
+            {proposal?.description ?? ''}
           </Text>
         </View>
       ) : (
@@ -437,7 +437,7 @@ export const GovernanceVoteModal: FunctionComponent<{
                   {},
                   {},
                   {
-                    onBroadcasted: (txHash) => {
+                    onBroadcasted: txHash => {
                       analyticsStore.logEvent('Vote tx broadcasted', {
                         chainId: chainStore.current.chainId,
                         chainName: chainStore.current.chainName,

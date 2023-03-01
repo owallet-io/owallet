@@ -108,7 +108,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                 color: colors['primary-text']
               }}
             >
-              {validator.description.moniker}
+              {validator?.description.moniker ?? '...'}
             </Text>
           </View>
 

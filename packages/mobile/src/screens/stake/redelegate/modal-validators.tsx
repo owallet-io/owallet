@@ -40,7 +40,7 @@ const Validators = ({
             validatorsAddress,
             ValidatorThumbnails[validatorsAddress] ??
               bondedValidators.getValidatorThumbnail(validatorsAddress),
-            item.description?.moniker
+            item?.description?.moniker
           )
         }
       >
@@ -73,7 +73,7 @@ const Validators = ({
               }}
               numberOfLines={1}
             >
-              {item.description?.moniker}
+              {item?.description?.moniker}
             </Text>
             {item.tokens && (
               <Text

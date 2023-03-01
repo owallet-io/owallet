@@ -130,7 +130,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                 { color: colors['primary-text'] }
               ]}
             >
-              {validator ? validator.description.moniker : '...'}
+              {validator ? validator?.description.moniker : '...'}
             </Text>
           </View>
           <CardDivider

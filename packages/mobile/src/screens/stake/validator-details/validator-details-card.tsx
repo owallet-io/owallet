@@ -105,7 +105,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       case 'Website':
         return (
           <Text style={{ ...styles.textDetail }}>
-            {validator.description.website}
+            {validator?.description.website}
           </Text>
         );
       case 'APR':
@@ -170,7 +170,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
                 color: colors['primary-text']
               }}
             >
-              {validator.description.moniker}
+              {validator?.description.moniker}
             </Text>
           </View>
 
@@ -230,7 +230,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               }}
               selectable={true}
             >
-              {validator.description.details}
+              {validator?.description.details}
             </Text>
           </View>
           {/* <DelegatedCard

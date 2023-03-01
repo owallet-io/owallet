@@ -66,7 +66,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
     let data = bondedValidators.validators;
     if (search) {
       data = data.filter(val =>
-        val.description.moniker?.toLowerCase().includes(search.toLowerCase())
+        val?.description?.moniker?.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -82,13 +82,13 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         break;
       case 'Name':
         data.sort((val1, val2) => {
-          if (!val1.description.moniker) {
+          if (!val1?.description.moniker) {
             return 1;
           }
-          if (!val2.description.moniker) {
+          if (!val2?.description.moniker) {
             return -1;
           }
-          return val1.description.moniker > val2.description.moniker ? -1 : 1;
+          return val1?.description.moniker > val2?.description.moniker ? -1 : 1;
         });
         break;
       case 'Voting Power':
@@ -331,7 +331,7 @@ const ValidatorItem: FunctionComponent<{
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {validator.description.moniker}
+          {validator?.description.moniker}
         </Text>
 
         <Text

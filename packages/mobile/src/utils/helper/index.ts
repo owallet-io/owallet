@@ -204,7 +204,7 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
     let typeMsg = typeArr[typeArr.length - 1];
     if (typeMsg === 'MsgExecuteContract' && result === 'Success') {
       let rawLogArr = JSON.parse(rawLog);
-      for (let event of rawLogArr[0].events) {
+      for (let event of rawLogArr?.[0].events) {
         if (event['type'] === 'wasm') {
           for (let att of event['attributes']) {
             if (att['key'] === 'action') {
@@ -239,7 +239,7 @@ export const parseIbcMsgTransfer = (
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' ||
     ibcDemonPackData?.value instanceof String
-      ? JSON.parse(ibcDemonPackData.value)
+      ? JSON.parse(ibcDemonPackData?.value ?? '{}')
       : { denom: '' };
   return ibcDemonObj;
 };

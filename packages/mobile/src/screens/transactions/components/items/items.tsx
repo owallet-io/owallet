@@ -49,7 +49,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
   // });
 
   const amountDataCell = useCallback(() => {
-    let amount;
+    let amount = { amount: 0, denom: 'ORAI' };
     if (
       item?.messages?.find(
         msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
@@ -71,7 +71,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
       if (item?.raw_log.includes('failed')) {
         return;
       }
-      const rawLog = JSON.parse(item?.raw_log);
+      const rawLog = JSON.parse(item?.raw_log ?? {});
       // const rawLogParse = parseIbcMsgTransfer(rawLog);
       // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
