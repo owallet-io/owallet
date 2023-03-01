@@ -201,16 +201,16 @@ export const parseIbcMsgRecvPacket = denom => {
 export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
   if (type) {
     const typeArr = type.split('.');
-    let typeMsg = typeArr[typeArr.length - 1];
+    let typeMsg = typeArr?.[typeArr?.length - 1];
     if (typeMsg === 'MsgExecuteContract' && result === 'Success') {
       let rawLogArr = JSON.parse(rawLog);
       for (let event of rawLogArr?.[0].events) {
-        if (event['type'] === 'wasm') {
-          for (let att of event['attributes']) {
-            if (att['key'] === 'action') {
-              let attValue = att['value']
+        if (event?.['type'] === 'wasm') {
+          for (let att of event?.['attributes']) {
+            if (att?.['key'] === 'action') {
+              let attValue = att?.['value']
                 .split('_')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
               break;
@@ -232,10 +232,10 @@ export const parseIbcMsgTransfer = (
   key = 'packet_data'
 ) => {
   const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find(e => e.type === type);
+    rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
   const ibcDemonPackData =
     arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find(ele => ele.key === key);
+    arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' ||
     ibcDemonPackData?.value instanceof String
