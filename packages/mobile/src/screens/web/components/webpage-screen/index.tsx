@@ -1,3 +1,7 @@
+import { Ethereum, OWallet } from '@owallet/provider';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import EventEmitter from 'eventemitter3';
+import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   useCallback,
@@ -5,28 +9,23 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { BackHandler, Platform, Animated } from 'react-native';
+import { Animated, BackHandler, Platform } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { OWallet, Ethereum } from '@owallet/provider';
-import { RNMessageRequesterExternal } from '../../../../router';
+import { version } from '../../../../../package.json';
+import { PageWithView } from '../../../../components/page';
 import {
   RNInjectedEthereum,
   RNInjectedOWallet
 } from '../../../../injected/injected-provider';
-import EventEmitter from 'eventemitter3';
-import { PageWithView } from '../../../../components/page';
-import { OnScreenWebpageScreenHeader } from '../header';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { WebViewStateContext } from '../context';
-import { URL } from 'react-native-url-polyfill';
-import { observer } from 'mobx-react-lite';
+import { RNMessageRequesterExternal } from '../../../../router';
 import { useStore } from '../../../../stores';
-import DeviceInfo from 'react-native-device-info';
 import { InjectedProviderUrl } from '../../config';
+import { WebViewStateContext } from '../context';
 import { BrowserFooterSection } from '../footer-section';
+import { OnScreenWebpageScreenHeader } from '../header';
 import { SwtichTab } from '../switch-tabs';
-import { version } from '../../../../../package.json';
-import _debounce from 'lodash/debounce';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -150,7 +149,6 @@ export const WebpageScreen: FunctionComponent<
       );
     }
   };
-
   useEffect(() => {
     RNInjectedOWallet.startProxy(
       owallet,
@@ -234,17 +232,9 @@ export const WebpageScreen: FunctionComponent<
   const sourceCode = useInjectedSourceCode();
 
   return (
-    <PageWithView
-      style={
-        {
-          // padding: 0
-          // paddingBottom: 80
-        }
-      }
-      disableSafeArea
-    >
+    <PageWithView disableSafeArea>
       {isSwitchTab ? (
-        <SwtichTab onPressItem={onPressItem} />
+        <SwtichTab onPressItem={onPressItem} setIsSwitchTab={setIsSwitchTab} />
       ) : (
         <>
           <WebViewStateContext.Provider

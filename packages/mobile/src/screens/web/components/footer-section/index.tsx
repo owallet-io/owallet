@@ -1,21 +1,19 @@
+import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
-import { useNavigation } from '@react-navigation/core';
 
+import { observer } from 'mobx-react-lite';
 import {
   BrowserIcon,
-  RightLightIcon,
-  LeftLightIcon,
   HomeLightIcon,
-  ThreeDotIcon,
-  RefreshIcon
+  LeftLightIcon,
+  RefreshIcon,
+  RightLightIcon
 } from '../../../../components/icon';
-import { BrowserSectionModal } from '../section-title';
 import { useStore } from '../../../../stores';
-import { observer } from 'mobx-react-lite';
 import { colors } from '../../../../themes';
 
 export const BrowserFooterSection: FunctionComponent<{
@@ -25,23 +23,9 @@ export const BrowserFooterSection: FunctionComponent<{
   typeOf: string;
 }> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl, typeOf }) => {
   const style = useStyle();
-  const { browserStore, modalStore } = useStore();
+  const { browserStore } = useStore();
   const navigation = useNavigation();
   const webViewState = useWebViewState();
-
-  const oraiLogo = require('../../../../assets/image/webpage/orai_logo.png');
-
-  const onPressBookmark = () => {
-    modalStore.close();
-    if (webViewState.webView) {
-      browserStore.addBoorkmark({
-        id: Date.now(),
-        name: webViewState.name,
-        logo: oraiLogo,
-        uri: webViewState.url
-      });
-    }
-  };
 
   const onPress = (type: any) => {
     try {
@@ -72,7 +56,11 @@ export const BrowserFooterSection: FunctionComponent<{
           }
           return;
         case 'tabs':
-          setIsSwitchTab(!isSwitchTab);
+          if (browserStore.getTabs.length === 0) {
+            setIsSwitchTab(false);
+          } else {
+            setIsSwitchTab(!isSwitchTab);
+          }
           return;
         case 'home':
           if (typeOf === 'browser') {
@@ -85,7 +73,7 @@ export const BrowserFooterSection: FunctionComponent<{
     }
   };
   const arrayIcon = ['back', 'next', 'tabs', 'home', 'settings'];
-  const renderIcon = (type, tabNum = 0) => {
+  const renderIcon = type => {
     switch (type) {
       case 'back':
         return (
