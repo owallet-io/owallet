@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
 import { checkValidDomain } from '../../../../utils/helper';
+import { HeaderBackButtonIcon } from '../../../../components/header/icon';
 
 const EditIcon: FunctionComponent<{
   size: number;
@@ -121,15 +122,6 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
         }
       ])}
     >
-      {/* <View
-        style={StyleSheet.flatten([
-          style.flatten(['width-full', 'justify-center']),
-          {
-            height: actualHeaderHeight,
-            paddingHorizontal: 16
-          }
-        ])}
-      > */}
       {/* Name and refresh icon on center */}
       <View
         style={{
@@ -142,6 +134,19 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
           marginBottom: 16
         }}
       >
+        <RectButton
+          style={{ paddingLeft: 4 }}
+          onPress={() => {
+            if (!webViewState.canGoBack) {
+              webViewState.clearWebViewContext();
+              navigation.goBack();
+            } else if (webViewState.webView) {
+              webViewState.webView.goBack();
+            }
+          }}
+        >
+          <HeaderBackButtonIcon size={24} />
+        </RectButton>
         {onEdit ? (
           <TextInput
             style={{

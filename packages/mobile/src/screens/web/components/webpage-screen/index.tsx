@@ -234,7 +234,7 @@ export const WebpageScreen: FunctionComponent<
   return (
     <PageWithView disableSafeArea>
       {isSwitchTab ? (
-        <SwtichTab onPressItem={onPressItem} setIsSwitchTab={setIsSwitchTab} />
+        <SwtichTab onPressItem={onPressItem} />
       ) : (
         <>
           <WebViewStateContext.Provider
@@ -243,7 +243,10 @@ export const WebpageScreen: FunctionComponent<
               name: props.name,
               url: currentURL,
               canGoBack,
-              canGoForward
+              canGoForward,
+              clearWebViewContext: () => {
+                webviewRef.current = null;
+              }
             }}
           >
             <OnScreenWebpageScreenHeader />

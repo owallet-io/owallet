@@ -24,8 +24,7 @@ const DIMENSION_PADDING_SMALL = 8;
 
 export const SwtichTab: FunctionComponent<{
   onPressItem: Function;
-  setIsSwitchTab: Function;
-}> = observer(({ onPressItem, setIsSwitchTab }) => {
+}> = observer(({ onPressItem }) => {
   const { browserStore } = useStore();
   const [tabs, setTabs] = useState([]);
   const navigation = useNavigation();
@@ -39,7 +38,6 @@ export const SwtichTab: FunctionComponent<{
     }
     setTabs(tmpTabs);
     if (tmpTabs.length < 1) {
-      setIsSwitchTab && setIsSwitchTab(false);
       navigation.navigate('Browser', {});
     }
   };
@@ -156,7 +154,7 @@ export const SwtichTab: FunctionComponent<{
             }}
             onPress={() => {
               browserStore.updateTabs([]);
-              setIsSwitchTab && setIsSwitchTab(false);
+              setTabs([]);
               navigation.navigate('Browser', {});
             }}
           >
