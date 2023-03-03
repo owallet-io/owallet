@@ -258,7 +258,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   const amountDataCell = useCallback(() => {
     let amount = { amount: 0, denom: 'ORAI' };
     let msg = item?.messages?.find(
-      msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
+      msg => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
     );
     if (msg) {
       const msgRec = JSON.parse(
@@ -311,7 +311,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     type === 'cw20'
       ? item.name
       : getTxTypeNew(
-          item?.messages[item?.messages?.length - 1]['@type'],
+          item?.messages?.[item?.messages?.length - 1]?.['@type'],
           item?.raw_log,
           item?.result
         );
@@ -412,7 +412,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       label: 'Amount',
       value:
         type === 'cw20'
-          ? `${formatOrai(item.amount ?? 0, item.decimal)} ${item.symbol ?? ''}`
+          ? `${formatOrai(item?.amount ?? 0, item?.decimal ?? 6)} ${
+              item.symbol ?? ''
+            }`
           : amountDataCell()
     }
   ];
@@ -433,8 +435,8 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     {
       label: 'Fee',
       value: item?.fee?.amount
-        ? `${formatOrai(item.fee.amount[0].amount || 0)} ${
-            item.fee.amount[0].denom
+        ? `${formatOrai(item.fee.amount?.[0]?.amount || 0)} ${
+            item.fee.amount?.[0]?.denom
           }`
         : 0
     },
@@ -446,7 +448,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       label: 'Time',
       value:
         type === 'cw20'
-          ? moment(item.transaction_time).format('MMM DD, YYYY [at] HH:mm')
+          ? moment(item?.transaction_time).format('MMM DD, YYYY [at] HH:mm')
           : date
     }
   ];
