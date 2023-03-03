@@ -23,6 +23,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import { NewsTab } from './news';
 import { useIsFocused } from '@react-navigation/core';
 import { TendermintTxTracer } from '@owallet/cosmos';
+
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -57,6 +58,7 @@ export const Transactions: FunctionComponent = () => {
       if (page.current === res.data?.page.total_page) {
         hasMore.current = false;
       }
+
       setData(newData);
       setLoading(false);
       setLoadMore(false);

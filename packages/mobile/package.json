@@ -21,7 +21,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && yarn patch-package",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.19 --output-dir build",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.21 --output-dir build",
     "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.2 --output-dir build",
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --sourcemap-output ios/main.jsbundle.map --assets-dest ios",
     "bundle:android": "react-native bundle --entry-file index.js --platform android --dev false --bundle-output android/index.android.bundle --sourcemap-output index.android.bundle.map --assets-dest android"
@@ -105,6 +105,7 @@
     "react-native-collapsible": "^1.6.0",
     "react-native-device-info": "^8.3.1",
     "react-native-dotenv": "^3.3.1",
+    "react-native-draggable-flatlist": "3.1.1",
     "react-native-fast-image": "^8.3.7",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-keyboard-aware-scroll-view": "^0.9.4",
@@ -144,10 +145,10 @@
     "detox": "^19.7.1",
     "get-yarn-workspaces": "^1.0.2",
     "metro-react-native-babel-preset": "^0.59.0",
+    "mobx-react-lite": "3.4.0",
     "pod-install": "^0.1.27",
     "react-native-svg-transformer": "^0.14.3",
-    "react-test-renderer": "16.13.1",
-    "mobx-react-lite":"3.4.0"
+    "react-test-renderer": "16.13.1"
   },
   "jest": {
     "preset": "react-native",

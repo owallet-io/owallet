@@ -1,3 +1,7 @@
+import { Ethereum, OWallet } from '@owallet/provider';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import EventEmitter from 'eventemitter3';
+import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   useCallback,
@@ -5,27 +9,23 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import { Animated, BackHandler, Platform } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
+import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { OWallet, Ethereum } from '@owallet/provider';
-import { RNMessageRequesterExternal } from '../../../../router';
+import { version } from '../../../../../package.json';
+import { PageWithView } from '../../../../components/page';
 import {
   RNInjectedEthereum,
   RNInjectedOWallet
 } from '../../../../injected/injected-provider';
-import EventEmitter from 'eventemitter3';
-import { PageWithView } from '../../../../components/page';
-import { OnScreenWebpageScreenHeader } from '../header';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { WebViewStateContext } from '../context';
-import { URL } from 'react-native-url-polyfill';
-import { observer } from 'mobx-react-lite';
+import { RNMessageRequesterExternal } from '../../../../router';
 import { useStore } from '../../../../stores';
-import DeviceInfo from 'react-native-device-info';
 import { InjectedProviderUrl } from '../../config';
+import { WebViewStateContext } from '../context';
 import { BrowserFooterSection } from '../footer-section';
+import { OnScreenWebpageScreenHeader } from '../header';
 import { SwtichTab } from '../switch-tabs';
-import { version } from '../../../../../package.json';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -35,7 +35,9 @@ export const useInjectedSourceCode = () => {
       .then(res => {
         return res.text();
       })
-      .then(setCode)
+      .then(res => {
+        setCode(res);
+      })
       .catch(err => console.log(err));
   }, []);
 
@@ -49,6 +51,12 @@ export const WebpageScreen: FunctionComponent<
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
+  const scrollY = new Animated.Value(0);
+  const diffClamp = Animated.diffClamp(scrollY, 0, 80);
+  const translateYBottom = diffClamp.interpolate({
+    inputRange: [0, 2],
+    outputRange: [-2, 0]
+  });
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {
@@ -107,8 +115,9 @@ export const WebpageScreen: FunctionComponent<
   const onPressItem = ({ name, uri }) => {
     setIsSwitchTab(false);
     if (browserStore.getSelectedTab?.uri !== uri) {
-      browserStore.updateSelectedTab({ name, uri });
+      browserStore.updateSelectedTab({ id: Date.now(), name, uri });
       navigation.navigate('Web.dApp', {
+        id: Date.now(),
         name,
         uri
       });
@@ -140,7 +149,6 @@ export const WebpageScreen: FunctionComponent<
       );
     }
   };
-
   useEffect(() => {
     RNInjectedOWallet.startProxy(
       owallet,
@@ -216,16 +224,15 @@ export const WebpageScreen: FunctionComponent<
     }
   }, [canGoBack, navigation]);
 
+  const _onScroll = syntheticEvent => {
+    const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
+    scrollY.setValue(currentOffet);
+  };
+
   const sourceCode = useInjectedSourceCode();
 
   return (
-    <PageWithView
-      style={{
-        padding: 0,
-        paddingBottom: 80
-      }}
-      disableSafeArea
-    >
+    <PageWithView disableSafeArea>
       {isSwitchTab ? (
         <SwtichTab onPressItem={onPressItem} />
       ) : (
@@ -236,62 +243,73 @@ export const WebpageScreen: FunctionComponent<
               name: props.name,
               url: currentURL,
               canGoBack,
-              canGoForward
+              canGoForward,
+              clearWebViewContext: () => {
+                webviewRef.current = null;
+              }
             }}
           >
             <OnScreenWebpageScreenHeader />
           </WebViewStateContext.Provider>
-
           {sourceCode ? (
-            <WebView
-              ref={webviewRef}
-              incognito={true}
-              injectedJavaScriptBeforeContentLoaded={sourceCode}
-              onMessage={onMessage}
-              onNavigationStateChange={e => {
-                // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.canGoBack);
-                setCanGoForward(e.canGoForward);
+            <>
+              <WebView
+                ref={webviewRef}
+                // incognito={true}
+                cacheEnabled={true}
+                injectedJavaScriptBeforeContentLoaded={sourceCode}
+                onMessage={onMessage}
+                onNavigationStateChange={e => {
+                  // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
+                  // Use two handlers to measure simultaneously in ios and android.
+                  setCanGoBack(e.canGoBack);
+                  setCanGoForward(e.canGoForward);
 
-                setCurrentURL(e.url);
-              }}
-              onLoadProgress={e => {
-                // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
-                // Use two handlers to measure simultaneously in ios and android.
-                setCanGoBack(e.nativeEvent.canGoBack);
-                setCanGoForward(e.nativeEvent.canGoForward);
+                  setCurrentURL(e.url);
+                }}
+                onLoadProgress={e => {
+                  // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
+                  // Use two handlers to measure simultaneously in ios and android.
+                  setCanGoBack(e.nativeEvent.canGoBack);
+                  setCanGoForward(e.nativeEvent.canGoForward);
 
-                setCurrentURL(e.nativeEvent.url);
-              }}
-              contentInsetAdjustmentBehavior="never"
-              automaticallyAdjustContentInsets={false}
-              decelerationRate="normal"
-              allowsBackForwardNavigationGestures={true}
-              {...props}
-            />
+                  setCurrentURL(e.nativeEvent.url);
+                }}
+                contentInsetAdjustmentBehavior="never"
+                automaticallyAdjustContentInsets={false}
+                decelerationRate="normal"
+                allowsBackForwardNavigationGestures={true}
+                onScroll={_onScroll}
+                {...props}
+              />
+              <WebViewStateContext.Provider
+                value={{
+                  webView: webviewRef.current,
+                  name: props.name,
+                  url: currentURL,
+                  canGoBack,
+                  canGoForward,
+                  clearWebViewContext: () => {
+                    webviewRef.current = null;
+                  }
+                }}
+              >
+                <Animated.View
+                  style={{
+                    transform: [{ translateY: translateYBottom }]
+                  }}
+                >
+                  <BrowserFooterSection
+                    isSwitchTab={isSwitchTab}
+                    setIsSwitchTab={setIsSwitchTab}
+                    typeOf={'webview'}
+                  />
+                </Animated.View>
+              </WebViewStateContext.Provider>
+            </>
           ) : null}
         </>
       )}
-
-      <WebViewStateContext.Provider
-        value={{
-          webView: webviewRef.current,
-          name: props.name,
-          url: currentURL,
-          canGoBack,
-          canGoForward,
-          clearWebViewContext: () => {
-            webviewRef.current = null;
-          }
-        }}
-      >
-        <BrowserFooterSection
-          isSwitchTab={isSwitchTab}
-          setIsSwitchTab={setIsSwitchTab}
-          typeOf={'webview'}
-        />
-      </WebViewStateContext.Provider>
     </PageWithView>
   );
 });

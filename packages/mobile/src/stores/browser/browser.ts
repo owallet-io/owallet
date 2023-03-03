@@ -3,7 +3,6 @@ import { create, persist } from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const oraiLogo = require('../../assets/image/webpage/orai_logo.png');
-// const aiRight = require('../../assets/image/webpage/airight_logo.png');
 
 export const DAppInfos = [
   {
@@ -18,20 +17,12 @@ export const DAppInfos = [
     uri: 'https://app.osmosis.zone',
     logo: require('../../assets/image/webpage/osmosis_logo.png')
   },
-
   {
     id: 5,
     name: 'Oraiscan',
     uri: 'https://scan.orai.io',
     logo: oraiLogo
   },
-
-  // {
-  //   id: 6,
-  //   name: 'Balcony Subnet',
-  //   uri: 'https://re.bignft.app',
-  //   logo: balconyLogo
-  // },
   {
     id: 7,
     name: 'OraiDEX Info',
@@ -82,15 +73,18 @@ export class BrowserStore {
 
   @action
   removeBoorkmark(boorkmark) {
-    const rIndex = this.bookmarks.findIndex(b => b.id === boorkmark.id);
+    const rIndex = this.bookmarks.findIndex(b => b.uri === boorkmark.uri);
     if (rIndex > -1) {
       this.bookmarks.splice(rIndex, 1);
     }
   }
 
   @action
-  addBoorkmark(boorkmark: object) {
-    this.bookmarks.push(boorkmark);
+  addBoorkmark(boorkmark) {
+    const rIndex = this.bookmarks.findIndex(b => b.uri === boorkmark?.uri);
+    if (rIndex < 0) {
+      this.bookmarks.push(boorkmark);
+    }
   }
 
   @computed
@@ -106,6 +100,15 @@ export class BrowserStore {
   @computed
   get getTabs() {
     return this.tabs;
+  }
+
+  @action
+  checkTabOpen(tab) {
+    const tabOpen = this.tabs.find(t => {
+      return t?.uri === tab?.uri;
+    });
+
+    return tabOpen;
   }
 
   @action
