@@ -30,9 +30,10 @@ export const BrowserFooterSection: FunctionComponent<{
   const onPress = (type: any) => {
     try {
       switch (type) {
-        case 'settings':
+        case 'reload':
           if (typeOf === 'webview') {
             if (webViewState.webView) {
+              webViewState.webView.clearCache(true);
               webViewState.webView.reload();
             }
           }
@@ -72,7 +73,7 @@ export const BrowserFooterSection: FunctionComponent<{
       console.log({ error });
     }
   };
-  const arrayIcon = ['back', 'next', 'tabs', 'home', 'settings'];
+  const arrayIcon = ['back', 'next', 'tabs', 'home', 'reload'];
   const renderIcon = type => {
     switch (type) {
       case 'back':
@@ -119,7 +120,7 @@ export const BrowserFooterSection: FunctionComponent<{
             )}
           </TouchableOpacity>
         );
-      case 'settings':
+      case 'reload':
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             <RefreshIcon color={'#636366'} size={22} />
