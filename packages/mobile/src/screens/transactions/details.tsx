@@ -272,7 +272,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         msg => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
       )
     ) {
-      if (!item?.raw_log.startsWith('{') || !item?.raw_log.startsWith('[')) {
+      if (!item?.raw_log?.startsWith('{') || !item?.raw_log?.startsWith('[')) {
         return;
       }
       const rawLog = JSON.parse(item?.raw_log ?? {});
@@ -281,7 +281,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       amount = rawLog;
     } else {
       const type = getTxTypeNew(
-        item.messages[item?.messages?.length - 1]['@type'],
+        item.messages?.[item?.messages?.length - 1]?.['@type'],
         item?.raw_log,
         item?.result
       );
@@ -294,7 +294,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     const prefix =
       getTxTypeNew(item?.messages?.[0]?.['@type']) === 'MsgSend' &&
       item?.messages?.[0]?.from_address &&
-      item.address === item.messages[0].from_address
+      item.address === item.messages?.[0]?.from_address
         ? '-'
         : '+';
 
