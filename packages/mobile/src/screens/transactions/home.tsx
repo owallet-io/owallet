@@ -40,6 +40,7 @@ export const Transactions: FunctionComponent = () => {
     // const isRecipient = indexChildren === 1;
     // const isAll = indexChildren === 0;
     try {
+if(hasMore.current){
       const res = await API.getTransactions(
         {
           address: account.bech32Address,
@@ -59,9 +60,14 @@ export const Transactions: FunctionComponent = () => {
         hasMore.current = false;
       }
 
+if(res.data?.data.length < 1){
+ hasMore.current = false;
+}
+
       setData(newData);
       setLoading(false);
       setLoadMore(false);
+}
     } catch (error) {
       crashlytics().recordError(error);
       setLoading(false);
