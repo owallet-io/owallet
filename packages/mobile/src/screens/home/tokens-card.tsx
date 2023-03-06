@@ -371,12 +371,12 @@ const styling = colors =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],
-      color: colors['purple-700']
+      color: colors['colored-label']
     },
     containerBtn: {
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: colors['gray-50'],
+      backgroundColor: colors['primary-background'],
       width: metrics.screenWidth - 48,
       height: spacing['40'],
       paddingVertical: spacing['10'],

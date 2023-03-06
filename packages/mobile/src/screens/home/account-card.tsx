@@ -344,79 +344,6 @@ export const AccountCard: FunctionComponent<{
       </View>
       <NetworkErrorView />
       <View style={{ height: 100 }} />
-      {/* <CardBody>
-        <View
-          style={{
-            height: 75,
-            borderWidth: spacing['0.5'],
-            borderColor: colors['gray-100'],
-            borderRadius: spacing['12'],
-            backgroundColor: colors['white'],
-            shadowColor: colors['gray-150'],
-            shadowOffset: {
-              width: 0,
-              height: 6
-            },
-            shadowOpacity: 0.3,
-            shadowRadius: 4
-          }}
-        >
-          <View
-            style={{
-              display: 'flex',
-              height: 75,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingLeft: spacing['12'],
-              paddingRight: spacing['8']
-            }}
-          >
-            <View
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Text style={{ paddingBottom: spacing['6'] }}>Namespace</Text>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}
-              >
-                <Image
-                  style={{
-                    width: 26,
-                    height: 26
-                  }}
-                  source={require('../../assets/image/namespace_default.png')}
-                  fadeDuration={0}
-                />
-                <Text
-                  style={{
-                    paddingLeft: spacing['6'],
-                    fontWeight: '700',
-                    fontSize: spacing['18'],
-                    lineHeight: 26,
-                    textAlign: 'center',
-                    color: colors['gray-900']
-                  }}
-                >
-                  {account.name || 'Harris.orai'}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={{ paddingTop: spacing['10'] }}
-              onPress={_onPressNamespace}
-            >
-              <SettingDashboardIcon size={30} color={colors['gray-150']} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </CardBody> */}
     </Card>
   );
 });
@@ -425,13 +352,13 @@ const styling = colors =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],
-      color: colors['purple-700']
+      color: colors['colored-label']
     },
     containerBtn: {
       alignItems: 'center',
       marginTop: spacing['18'],
       justifyContent: 'center',
-      backgroundColor: colors['gray-50'],
+      backgroundColor: colors['primary-background'],
       width: metrics.screenWidth - 68,
       height: spacing['40'],
       paddingVertical: spacing['10'],

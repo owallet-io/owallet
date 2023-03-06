@@ -6,8 +6,8 @@ import Clipboard from 'expo-clipboard';
 import { RectButton } from '../rect-button';
 import { CheckIcon, CopyAccountIcon, CopyFillIcon, CopyIcon } from '../icon';
 import { useSimpleTimer } from '../../hooks';
-import { colors } from '../../themes';
 import { formatContractAddress } from '../../utils/helper';
+import { useTheme } from '@react-navigation/native';
 
 export const AddressCopyable: FunctionComponent<{
   style?: ViewStyle;
@@ -16,11 +16,12 @@ export const AddressCopyable: FunctionComponent<{
   maxCharacters: number;
 }> = ({ style: propStyle, address, maxCharacters, networkType }) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
+  const { colors } = useTheme();
 
   return (
     <RectButton
       style={{
-        backgroundColor: '#F8EFFF',
+        backgroundColor: colors['sub-background'],
         paddingLeft: 12,
         paddingRight: 8,
         marginTop: 2,
@@ -41,7 +42,7 @@ export const AddressCopyable: FunctionComponent<{
       activeOpacity={1}
     >
       <Text
-        style={{ fontSize: 14, color: colors['gray-150'], fontWeight: '700' }}
+        style={{ fontSize: 14, color: colors['sub-text'], fontWeight: '700' }}
       >
         {networkType === 'cosmos'
           ? Bech32Address.shortenAddress(address, maxCharacters)
@@ -56,7 +57,7 @@ export const AddressCopyable: FunctionComponent<{
         {isTimedOut ? (
           <CheckIcon />
         ) : (
-          <CopyFillIcon color={colors['gray-150']} />
+          <CopyFillIcon color={colors['sub-text']} />
         )}
       </View>
     </RectButton>

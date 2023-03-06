@@ -258,7 +258,10 @@ export const EarningCard: FunctionComponent<{
                 }}
               >
                 <Text
-                  style={{ textAlign: 'center', color: colors['purple-700'] }}
+                  style={{
+                    textAlign: 'center',
+                    color: colors['colored-label']
+                  }}
                 >
                   Manage my staking
                 </Text>
@@ -324,12 +327,12 @@ const styling = colors =>
       borderRadius: spacing['12']
     },
     'btn-manage': {
-      backgroundColor: '#F3F1F5',
+      backgroundColor: colors['primary-background'],
       borderWidth: 0.5,
       padding: 10,
       width: metrics.screenWidth - 80,
       borderRadius: spacing['12'],
-      borderColor: '#F3F1F5'
+      borderColor: colors['border']
     },
     'view-box-staking': {
       height: 176,
