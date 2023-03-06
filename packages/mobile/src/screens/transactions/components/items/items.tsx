@@ -52,11 +52,11 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
     let amount = { amount: 0, denom: 'ORAI' };
     if (
       item?.messages?.find(
-        msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
+        msg => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
       )
     ) {
       const msg = item?.messages?.find(m => {
-        return getTxTypeNew(m['@type']) === 'MsgRecvPacket';
+        return getTxTypeNew(m?.['@type']) === 'MsgRecvPacket';
       });
 
       const msgRec = JSON.parse(
@@ -66,23 +66,26 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
       // const port = item?.message?.packet?.destination_port;
       // const channel = item?.message?.packet?.destination_channel;
     } else if (
-      item?.messages?.find(msg => getTxTypeNew(msg['@type']) === 'MsgTransfer')
+      item?.messages?.find(
+        msg => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
+      )
     ) {
-      if (item?.raw_log.includes('failed')) {
+      if (!item?.raw_log.startsWith('{') || !item?.raw_log.startsWith('[')) {
         return;
       }
+
       const rawLog = JSON.parse(item?.raw_log ?? {});
       // const rawLogParse = parseIbcMsgTransfer(rawLog);
       // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
       const type = getTxTypeNew(
-        item?.messages?.[item?.messages?.length - 1]['@type'],
+        item?.messages?.[item?.messages?.length - 1]?.['@type'],
         item?.raw_log,
         item?.result
       );
       const msg = item?.messages?.find(
-        msg => getTxTypeNew(msg['@type']) === type
+        msg => getTxTypeNew(msg?.['@type']) === type
       );
 
       amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
@@ -95,14 +98,14 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
           marginTop: spacing['8'],
           textTransform: 'uppercase',
           color:
-            getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
+            getTxTypeNew(item?.messages?.[0]?.['@type']) === 'MsgSend' &&
             item?.messages?.[0]?.from_address &&
             address === item?.messages?.[0]?.from_address
               ? colors['red-500']
               : colors['green-500']
         }}
       >
-        {getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
+        {getTxTypeNew(item?.messages?.[0]?.['@type']) === 'MsgSend' &&
         item?.messages?.[0]?.from_address &&
         address === item?.messages?.[0]?.from_address
           ? '-'
@@ -180,7 +183,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
             }}
           >
             {getTxTypeNew(
-              item?.messages?.[item?.messages?.length - 1]['@type'],
+              item?.messages?.[item?.messages?.length - 1]?.['@type'],
               item?.raw_log,
               item?.result
             )}

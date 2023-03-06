@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
@@ -30,9 +30,12 @@ export const BrowserFooterSection: FunctionComponent<{
   const onPress = (type: any) => {
     try {
       switch (type) {
-        case 'settings':
+        case 'reload':
           if (typeOf === 'webview') {
             if (webViewState.webView) {
+              if (Platform.OS === 'android') {
+                webViewState.webView.clearCache(true);
+              }
               webViewState.webView.reload();
             }
           }
@@ -72,7 +75,7 @@ export const BrowserFooterSection: FunctionComponent<{
       console.log({ error });
     }
   };
-  const arrayIcon = ['back', 'next', 'tabs', 'home', 'settings'];
+  const arrayIcon = ['back', 'next', 'tabs', 'home', 'reload'];
   const renderIcon = type => {
     switch (type) {
       case 'back':
@@ -119,7 +122,7 @@ export const BrowserFooterSection: FunctionComponent<{
             )}
           </TouchableOpacity>
         );
-      case 'settings':
+      case 'reload':
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             <RefreshIcon color={'#636366'} size={22} />

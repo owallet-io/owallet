@@ -41,7 +41,7 @@ const bindStyleTxInfo = (
     case 'Fee':
       return { color: colors['purple-700'], textTransform: 'uppercase' };
     case 'Amount':
-      return value.includes('-')
+      return value?.includes('-')
         ? {
             color: colors['red-500'],
             fontWeight: '800',
@@ -103,7 +103,11 @@ const InfoItems: FunctionComponent<{
               ...typography.body2
             }}
           >
-            {value.length > 20 ? formatContractAddress(value) : value}
+            {value
+              ? value?.length > 20
+                ? formatContractAddress(value)
+                : value
+              : 0}
             {/* {label !== 'Amount'
               ? bindValueTxInfo(label, value)
               : (title === 'Received Token' ? '+' : '-') +
@@ -125,7 +129,7 @@ const InfoItems: FunctionComponent<{
               <TouchableOpacity
                 style={{ width: 30, height: 30 }}
                 onPress={() => {
-                  Clipboard.setString(value.trim());
+                  Clipboard.setString(value?.trim());
                   setTimer(2000);
                 }}
               >
@@ -274,9 +278,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     item || {};
 
   const amountDataCell = useCallback(() => {
-    let amount;
+    let amount = { amount: 0, denom: 'ORAI' };
     let msg = item?.messages?.find(
-      msg => getTxTypeNew(msg['@type']) === 'MsgRecvPacket'
+      msg => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
     );
     if (msg) {
       const msgRec = JSON.parse(
@@ -286,28 +290,33 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       // const port = item?.message?.packet?.destination_port;
       // const channel = item?.message?.packet?.destination_channel;
     } else if (
-      item?.messages?.find(msg => getTxTypeNew(msg['@type']) === 'MsgTransfer')
+      item?.messages?.find(
+        msg => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
+      )
     ) {
-      const rawLog = JSON.parse(item?.raw_log);
+      if (!item?.raw_log?.startsWith('{') || !item?.raw_log?.startsWith('[')) {
+        return;
+      }
+      const rawLog = JSON.parse(item?.raw_log ?? {});
       // const rawLogParse = parseIbcMsgTransfer(rawLog);
       // const rawLogDenomSplit = rawLogParse?.denom?.split('/');
       amount = rawLog;
     } else {
       const type = getTxTypeNew(
-        item.messages[item?.messages?.length - 1]['@type'],
+        item.messages?.[item?.messages?.length - 1]?.['@type'],
         item?.raw_log,
         item?.result
       );
       const msg = item?.messages?.find(
-        msg => getTxTypeNew(msg['@type']) === type
+        msg => getTxTypeNew(msg?.['@type']) === type
       );
 
       amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
     }
     const prefix =
-      getTxTypeNew(item?.messages?.[0]['@type']) === 'MsgSend' &&
+      getTxTypeNew(item?.messages?.[0]?.['@type']) === 'MsgSend' &&
       item?.messages?.[0]?.from_address &&
-      item.address === item.messages[0].from_address
+      item.address === item.messages?.[0]?.from_address
         ? '-'
         : '+';
 
@@ -324,7 +333,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     type === 'cw20'
       ? item.name
       : getTxTypeNew(
-          item?.messages[item?.messages?.length - 1]['@type'],
+          item?.messages?.[item?.messages?.length - 1]?.['@type'],
           item?.raw_log,
           item?.result
         );
@@ -425,7 +434,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       label: 'Amount',
       value:
         type === 'cw20'
-          ? `${formatOrai(item.amount ?? 0, item.decimal)} ${item.symbol ?? ''}`
+          ? `${formatOrai(item?.amount ?? 0, item?.decimal ?? 6)} ${
+              item.symbol ?? ''
+            }`
           : amountDataCell()
     }
   ];
@@ -446,8 +457,8 @@ export const TransactionDetail: FunctionComponent<any> = () => {
     {
       label: 'Fee',
       value: item?.fee?.amount
-        ? `${formatOrai(item.fee.amount[0].amount || 0)} ${
-            item.fee.amount[0].denom
+        ? `${formatOrai(item.fee.amount?.[0]?.amount || 0)} ${
+            item.fee.amount?.[0]?.denom
           }`
         : 0
     },
@@ -459,7 +470,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       label: 'Time',
       value:
         type === 'cw20'
-          ? moment(item.transaction_time).format('MMM DD, YYYY [at] HH:mm')
+          ? moment(item?.transaction_time).format('MMM DD, YYYY [at] HH:mm')
           : date
     }
   ];
