@@ -17,7 +17,6 @@ export const BrowserSectionTitle: FunctionComponent<{
         'padding-x-20',
         'padding-top-16',
         'padding-bottom-16',
-        'background-color-white',
         'flex-row'
       ])}
     >

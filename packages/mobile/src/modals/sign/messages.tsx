@@ -413,7 +413,6 @@ export function renderMsgUndelegate(
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
-        {/* <Text>{' will receive '}</Text> */}
       </View>
     )
     // content: (
@@ -449,8 +448,6 @@ export function renderMsgDelegate(
     denom: parsed.denom
   };
 
-  // Delegate <b>{amount}</b> to <b>{validator}</b>
-
   return {
     title: 'Stake',
     content: (
@@ -477,21 +474,8 @@ export function renderMsgDelegate(
             {hyphen(`${amount.amount} ${amount.denom}`)}
           </Text>
         </View>
-        {/* <Text>{' will receive '}</Text> */}
       </View>
     )
-    // content: (
-    //   <Text>
-    //     <Text>{'Stake '}</Text>
-    //     <Text style={{ fontWeight: 'bold' }}>
-    //       {hyphen(`${amount.amount} ${amount.denom}`)}
-    //     </Text>
-    //     <Text>{' to '}</Text>
-    //     <Text style={{ fontWeight: 'bold' }}>
-    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 24))}
-    //     </Text>
-    //   </Text>
-    // )
   };
 }
 
@@ -508,20 +492,11 @@ export function renderMsgWithdrawDelegatorReward(validatorAddress: string) {
         >
           <Text style={{ ...styles.textInfo }}>Claim From </Text>
           <Text style={{ fontWeight: 'bold' }}>
-            {/* {hyphen(Bech32Address.shortenAddress(validatorAddress, 20))} */}
+            {hyphen(Bech32Address.shortenAddress(validatorAddress ?? '', 20))}
           </Text>
         </View>
-        {/* <Text>{' will receive '}</Text> */}
       </View>
     )
-    // content: (
-    //   <Text>
-    //     <Text>{'Claim pending staking reward from '}</Text>
-    //     <Text style={{ fontWeight: 'bold' }}>
-    //       {hyphen(Bech32Address.shortenAddress(validatorAddress, 34))}
-    //     </Text>
-    //   </Text>
-    // )
   };
 }
 

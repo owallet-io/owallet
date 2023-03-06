@@ -12,7 +12,7 @@ import './init';
 import messaging from '@react-native-firebase/messaging';
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
-
+import DeviceInfo from 'react-native-device-info';
 import firebase from '@react-native-firebase/app';
 
 const config = {
