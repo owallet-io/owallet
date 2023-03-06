@@ -37,37 +37,42 @@ export const Transactions: FunctionComponent = () => {
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
+    console.log('hasMore.current', hasMore.current);
+
     // const isRecipient = indexChildren === 1;
     // const isAll = indexChildren === 0;
     try {
-if(hasMore.current){
-      const res = await API.getTransactions(
-        {
-          address: account.bech32Address,
-          page: page.current,
-          limit: 10,
-          type: indexChildren === 0 ? 'native' : 'cw20'
-        },
-        // { baseURL: chainStore.current.rest }
-        { baseURL: 'https://api.scan.orai.io' }
-      );
+      if (hasMore.current) {
+        const res = await API.getTransactions(
+          {
+            address: account.bech32Address,
+            page: page.current,
+            limit: 10,
+            type: indexChildren === 0 ? 'native' : 'cw20'
+          },
+          // { baseURL: chainStore.current.rest }
+          { baseURL: 'https://api.scan.orai.io' }
+        );
 
-      const value = res.data?.data || [];
-      let newData = isLoadMore ? [...data, ...value] : value;
-      hasMore.current = value?.length === 10;
-      page.current = res.data?.page.page_id + 1;
-      if (page.current === res.data?.page.total_page) {
-        hasMore.current = false;
+        const value = res.data?.data || [];
+        let newData = isLoadMore ? [...data, ...value] : value;
+        hasMore.current = value?.length === 10;
+        page.current = res.data?.page.page_id + 1;
+        if (page.current === res.data?.page.total_page) {
+          hasMore.current = false;
+        }
+
+        if (res.data?.data.length < 1) {
+          hasMore.current = false;
+        }
+
+        setData(newData);
+        setLoading(false);
+        setLoadMore(false);
+      } else {
+        setLoading(false);
+        setLoadMore(false);
       }
-
-if(res.data?.data.length < 1){
- hasMore.current = false;
-}
-
-      setData(newData);
-      setLoading(false);
-      setLoadMore(false);
-}
     } catch (error) {
       crashlytics().recordError(error);
       setLoading(false);
