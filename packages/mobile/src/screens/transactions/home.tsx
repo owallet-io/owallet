@@ -217,6 +217,7 @@ export const Transactions: FunctionComponent = () => {
                   setData([]);
                   setLoading(true);
                   setIndexChildren(i);
+                  hasMore.current = true;
                 }}
               >
                 <Text
