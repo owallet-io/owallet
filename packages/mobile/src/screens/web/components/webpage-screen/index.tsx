@@ -255,8 +255,8 @@ export const WebpageScreen: FunctionComponent<
             <>
               <WebView
                 ref={webviewRef}
-                // incognito={true}
-                cacheEnabled={true}
+                incognito={true}
+                // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onMessage={onMessage}
                 onNavigationStateChange={e => {

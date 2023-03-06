@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
@@ -33,7 +33,9 @@ export const BrowserFooterSection: FunctionComponent<{
         case 'reload':
           if (typeOf === 'webview') {
             if (webViewState.webView) {
-              webViewState.webView.clearCache(true);
+              if (Platform.OS === 'android') {
+                webViewState.webView.clearCache(true);
+              }
               webViewState.webView.reload();
             }
           }
