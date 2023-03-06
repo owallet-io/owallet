@@ -138,7 +138,7 @@ export const BrowserFooterSection: FunctionComponent<{
           bottom: 0,
           borderTopColor: colors['gray-300'],
           borderTopWidth: 0.2,
-          backgroundColor: '#fff'
+          backgroundColor: colors['background']
         },
         style.flatten([
           'width-full',

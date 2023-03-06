@@ -176,6 +176,7 @@ export const Transactions: FunctionComponent = () => {
             }}
             onPress={() => {
               setIndexParent(i);
+              hasMore.current = true;
             }}
           >
             <Text

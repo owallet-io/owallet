@@ -119,7 +119,9 @@ export const colors = {
   //background
   background: '#01040D',
   // item
-  item: '#2B2D3B'
+  item: '#2B2D3B',
+  // text
+  label: '#fff'
 };
 
 export const lightColors = {
@@ -244,5 +246,7 @@ export const lightColors = {
   //background
   background: '#F5F5F5',
   // item
-  item: '#fff'
+  item: '#fff',
+  // text
+  label: '#3A3A3C'
 };

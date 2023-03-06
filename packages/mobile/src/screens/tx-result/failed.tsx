@@ -2,10 +2,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import {
-  PageWithScrollViewInBottomTabView,
-  PageWithView
-} from '../../components/page';
+
 import {
   View,
   Animated,

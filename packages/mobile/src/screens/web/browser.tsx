@@ -1,5 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Image, View, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {
+  Image,
+  View,
+  Keyboard,
+  TouchableWithoutFeedback,
+  StyleSheet
+} from 'react-native';
 import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
@@ -40,7 +46,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
           style={{
             fontSize: 18,
             fontWeight: '700',
-            color: '#3A3A3C'
+            color: colors['label']
           }}
         >
           Bookmarks
@@ -48,7 +54,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
             style={{
               fontSize: 18,
               fontWeight: '400',
-              color: '#3A3A3C'
+              color: colors['label']
             }}
           >
             (recent history)
@@ -197,13 +203,19 @@ export const Browser: FunctionComponent<any> = observer(props => {
                 width: '100%',
                 paddingHorizontal: 20
               }}
-              inputStyle={style.flatten([
-                'flex-row',
-                'items-center',
-                'background-color-white',
-                'padding-16',
-                'border-radius-8'
-              ])}
+              inputStyle={[
+                StyleSheet.flatten([
+                  style.flatten([
+                    'flex-row',
+                    'items-center',
+                    'padding-16',
+                    'border-radius-8'
+                  ])
+                ]),
+                {
+                  backgroundColor: colors['background']
+                }
+              ]}
               returnKeyType={'next'}
               placeholder={'Search website'}
               placeholderTextColor={'#AEAEB2'}
@@ -227,7 +239,10 @@ export const Browser: FunctionComponent<any> = observer(props => {
               }
             />
             <View
-              style={style.flatten(['background-color-white', 'height-full'])}
+              style={{
+                backgroundColor: colors['background'],
+                height: '100%'
+              }}
             >
               <BrowserBookmark />
               <View style={style.flatten(['padding-20'])}>
@@ -256,7 +271,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
                     <Text style={style.flatten(['subtitle2'])}>
                       {'aiRight'}
                     </Text>
-                    <Text style={{ color: '#636366', fontSize: 14 }}>
+                    <Text style={{ color: colors['label'], fontSize: 14 }}>
                       {'https://airight.io'}
                     </Text>
                   </View>
@@ -300,7 +315,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
 
   return (
     <>
-      <PageWithScrollView>
+      <PageWithScrollView backgroundColor={colors['background']}>
         {isSwitchTab ? (
           <SwtichTab onPressItem={handlePressItem} />
         ) : (

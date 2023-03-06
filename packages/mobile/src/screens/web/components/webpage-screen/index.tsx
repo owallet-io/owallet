@@ -1,5 +1,9 @@
 import { Ethereum, OWallet } from '@owallet/provider';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import {
+  useIsFocused,
+  useNavigation,
+  useTheme
+} from '@react-navigation/native';
 import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
 import React, {
@@ -50,6 +54,7 @@ export const WebpageScreen: FunctionComponent<
   }
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
+  const { colors } = useTheme();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const scrollY = new Animated.Value(0);
   const diffClamp = Animated.diffClamp(scrollY, 0, 80);
@@ -232,7 +237,7 @@ export const WebpageScreen: FunctionComponent<
   const sourceCode = useInjectedSourceCode();
 
   return (
-    <PageWithView disableSafeArea>
+    <PageWithView backgroundColor={colors['background']} disableSafeArea>
       {isSwitchTab ? (
         <SwtichTab onPressItem={onPressItem} />
       ) : (
