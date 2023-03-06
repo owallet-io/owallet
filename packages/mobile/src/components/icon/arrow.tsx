@@ -71,7 +71,7 @@ export const DoubleRightArrowIcon: FunctionComponent<
 };
 
 export const LeftArrowIcon: FunctionComponent<IconProps> = ({
-  color = 'none',
+  color = '#5F5E77',
   size = 24
 }) => {
   return (
@@ -116,13 +116,13 @@ export const ArrowOpsiteUpDownIcon: FunctionComponent<IconProps> = ({
 
 export const RightLightIcon: FunctionComponent<IconProps> = ({
   size = 24,
-  color = '#1C1B4B'
+  color = '#5F5E77'
 }) => {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="M8.90991 19.9201L15.4299 13.4001C16.1999 12.6301 16.1999 11.3701 15.4299 10.6001L8.90991 4.08008"
-        stroke="#5F5E77"
+        stroke={color}
         stroke-width="1.5"
         stroke-miterlimit="10"
         stroke-linecap="round"
@@ -134,13 +134,13 @@ export const RightLightIcon: FunctionComponent<IconProps> = ({
 
 export const LeftLightIcon: FunctionComponent<IconProps> = ({
   size = 24,
-  color = '#1C1B4B'
+  color = '#5F5E77'
 }) => {
   return (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="M15.0901 19.9201L8.57009 13.4001C7.80009 12.6301 7.80009 11.3701 8.57009 10.6001L15.0901 4.08008"
-        stroke="#5F5E77"
+        stroke={color}
         stroke-width="1.5"
         stroke-miterlimit="10"
         stroke-linecap="round"

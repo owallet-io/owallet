@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState
 } from 'react';
-import { Image, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { useStyle } from '../../styles';
 import { BrowserSectionTitle } from './components/section-title';
@@ -14,38 +14,46 @@ import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
 import { checkValidDomain } from '../../utils/helper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
+  const { colors } = useTheme();
+
   return (
     <React.Fragment>
       <View
-        style={style.flatten([
-          'width-full',
-          'height-66',
-          'flex-row',
-          'justify-between',
-          'items-center',
-          'padding-20'
+        style={StyleSheet.flatten([
+          style.flatten([
+            'width-full',
+            'height-66',
+            'flex-row',
+            'justify-between',
+            'items-center',
+            'padding-20'
+          ]),
+          {
+            backgroundColor: colors['background']
+          }
         ])}
       >
         <Text
           style={{
             fontSize: 18,
             fontWeight: '500',
-            color: '#1C1C1E'
+            color: colors['label']
           }}
         >
           All bookmarks
         </Text>
       </View>
       <View
-        style={style.flatten([
-          'height-1',
-          'margin-x-20',
-          'background-color-border-white'
+        style={StyleSheet.flatten([
+          style.flatten(['height-1', 'margin-x-20']),
+          {
+            backgroundColor: colors['border']
+          }
         ])}
       />
     </React.Fragment>
@@ -58,6 +66,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   const [isOpenSetting] = useState(false);
   const navigation = useNavigation();
   const [data, setData] = useState([]);
+  const { colors } = useTheme();
 
   const removeBookmark = bm => {
     const tmpData = [...data];
@@ -99,12 +108,17 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   const renderItem = useCallback(({ item, drag, isActive }) => {
     return (
       <TouchableOpacity
-        style={style.flatten([
-          'height-44',
-          'margin-bottom-20',
-          'flex-row',
-          'items-center',
-          'justify-between'
+        style={StyleSheet.flatten([
+          style.flatten([
+            'height-44',
+            'margin-bottom-20',
+            'flex-row',
+            'items-center',
+            'justify-between'
+          ]),
+          {
+            backgroundColor: colors['background']
+          }
         ])}
         onPress={() => {
           onHandleUrl(item.uri);
@@ -123,8 +137,19 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
             />
           </View>
           <View style={style.flatten(['padding-x-15'])}>
-            <Text style={style.flatten(['subtitle2'])}>{item.name}</Text>
-            <Text style={{ color: '#636366', fontSize: 14 }}>{item.uri}</Text>
+            <Text
+              style={StyleSheet.flatten([
+                style.flatten(['subtitle2']),
+                {
+                  color: colors['label']
+                }
+              ])}
+            >
+              {item.name}
+            </Text>
+            <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
+              {item.uri}
+            </Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -141,12 +166,26 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   }, []);
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
         <BrowserSectionTitle title="" />
-        <View style={style.flatten(['height-full', 'background-color-white'])}>
+        <View
+          style={StyleSheet.flatten([
+            style.flatten(['height-full']),
+            {
+              backgroundColor: colors['background']
+            }
+          ])}
+        >
           <BrowserSection />
-          <View style={style.flatten(['height-full', 'padding-20'])}>
+          <View
+            style={StyleSheet.flatten([
+              style.flatten(['height-full', 'padding-20']),
+              {
+                backgroundColor: colors['background']
+              }
+            ])}
+          >
             <DraggableFlatList
               data={data}
               onDragEnd={({ data }) => {

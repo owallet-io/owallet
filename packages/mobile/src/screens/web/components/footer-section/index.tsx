@@ -15,6 +15,7 @@ import {
 } from '../../../../components/icon';
 import { useStore } from '../../../../stores';
 import { colors } from '../../../../themes';
+import { useTheme } from '@react-navigation/native';
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;
@@ -23,6 +24,7 @@ export const BrowserFooterSection: FunctionComponent<{
   typeOf: string;
 }> = observer(({ isSwitchTab, setIsSwitchTab, onHandleUrl, typeOf }) => {
   const style = useStyle();
+  const { colors } = useTheme();
   const { browserStore } = useStore();
   const navigation = useNavigation();
   const webViewState = useWebViewState();
@@ -81,13 +83,13 @@ export const BrowserFooterSection: FunctionComponent<{
       case 'back':
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
-            <LeftLightIcon />
+            <LeftLightIcon color={colors['icon']} />
           </TouchableOpacity>
         );
       case 'next':
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
-            <RightLightIcon />
+            <RightLightIcon color={colors['icon']} />
           </TouchableOpacity>
         );
       case 'tabs':
@@ -99,12 +101,12 @@ export const BrowserFooterSection: FunctionComponent<{
                 borderWidth: 0.5,
                 borderRadius: 4,
                 alignItems: 'center',
-                borderColor: colors['gray-600'],
+                borderColor: colors['icon'],
                 width: 22,
                 height: 22
               }}
             >
-              <Text style={{ color: colors['gray-600'] }}>
+              <Text style={{ color: colors['icon'] }}>
                 {browserStore.getTabs.length > 9
                   ? '9+'
                   : browserStore.getTabs.length}
@@ -116,16 +118,16 @@ export const BrowserFooterSection: FunctionComponent<{
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
             {typeOf === 'browser' ? (
-              <HomeLightIcon size={22} />
+              <HomeLightIcon color={colors['icon']} size={22} />
             ) : (
-              <BrowserIcon color={'#636366'} size={22} />
+              <BrowserIcon color={colors['icon']} size={22} />
             )}
           </TouchableOpacity>
         );
       case 'reload':
         return (
           <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
-            <RefreshIcon color={'#636366'} size={22} />
+            <RefreshIcon color={colors['icon']} size={22} />
           </TouchableOpacity>
         );
     }

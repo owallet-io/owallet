@@ -43,7 +43,6 @@ export const colors = {
   'profile-red': '#FF6D88',
   'profile-orange': '#FEC078',
   'profile-yellow': '#F2ED64',
-  icon: '#2C4163',
   'icon-text': '#E2DEEB',
   card: '#000',
   success: '#2DCE89',
@@ -120,8 +119,10 @@ export const colors = {
   background: '#01040D',
   // item
   item: '#2B2D3B',
+  icon: '#E2DEEB',
   // text
-  label: '#fff'
+  label: '#fff',
+  'sub-text': '#8C93A7'
 };
 
 export const lightColors = {
@@ -169,7 +170,6 @@ export const lightColors = {
   'profile-red': '#FF6D88',
   'profile-orange': '#FEC078',
   'profile-yellow': '#F2ED64',
-  icon: '#2C4163',
   'icon-text': '#8C93A7',
   card: '#000',
   success: '#2DCE89',
@@ -245,8 +245,11 @@ export const lightColors = {
 
   //background
   background: '#F5F5F5',
+  // border
   // item
   item: '#fff',
+  icon: '#E2DEEB',
   // text
-  label: '#3A3A3C'
+  label: '#3A3A3C',
+  'sub-text': '#8C93A7'
 };

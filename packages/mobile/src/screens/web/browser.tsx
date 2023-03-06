@@ -23,14 +23,16 @@ import { BrowserFooterSection } from './components/footer-section';
 import { WebViewStateContext } from './components/context';
 import { observer } from 'mobx-react-lite';
 import { SearchLightIcon, XIcon } from '../../components/icon';
-import { colors } from '../../themes';
+import { useTheme } from '@react-navigation/native';
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
   const navigation = useNavigation();
+  const { colors } = useTheme();
+
   return (
     <View
-      style={{ borderBottomColor: colors['gray-100'], borderBottomWidth: 1 }}
+      style={{ borderBottomColor: colors['border'], borderBottomWidth: 0.2 }}
     >
       <View
         style={style.flatten([
@@ -80,6 +82,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const navigation = useNavigation();
   const { deepLinkUriStore, browserStore } = useStore();
+  const { colors } = useTheme();
 
   useEffect(() => {
     navigation
@@ -213,7 +216,8 @@ export const Browser: FunctionComponent<any> = observer(props => {
                   ])
                 ]),
                 {
-                  backgroundColor: colors['background']
+                  backgroundColor: colors['background'],
+                  borderColor: colors['border']
                 }
               ]}
               returnKeyType={'next'}
@@ -268,10 +272,21 @@ export const Browser: FunctionComponent<any> = observer(props => {
                     />
                   </View>
                   <View style={style.flatten(['padding-x-15'])}>
-                    <Text style={style.flatten(['subtitle2'])}>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: '700',
+                        color: colors['label']
+                      }}
+                    >
                       {'aiRight'}
                     </Text>
-                    <Text style={{ color: colors['label'], fontSize: 14 }}>
+                    <Text
+                      style={{
+                        color: colors['sub-text'],
+                        fontSize: 14
+                      }}
+                    >
                       {'https://airight.io'}
                     </Text>
                   </View>
@@ -298,8 +313,16 @@ export const Browser: FunctionComponent<any> = observer(props => {
                       />
                     </View>
                     <View style={style.flatten(['padding-x-15'])}>
-                      <Text style={style.flatten(['subtitle2'])}>{e.name}</Text>
-                      <Text style={{ color: '#636366', fontSize: 14 }}>
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontWeight: '700',
+                          color: colors['label']
+                        }}
+                      >
+                        {e.name}
+                      </Text>
+                      <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
                         {e.uri}
                       </Text>
                     </View>

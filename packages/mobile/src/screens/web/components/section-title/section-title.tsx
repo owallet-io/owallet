@@ -4,12 +4,14 @@ import { View, TouchableOpacity } from 'react-native';
 import { CText as Text } from '../../../../components/text';
 import { HeaderBackButtonIcon } from '../../../../components/header/icon';
 import { useStyle } from '../../../../styles';
+import { useTheme } from '@react-navigation/native';
 
 export const BrowserSectionTitle: FunctionComponent<{
   title: string;
 }> = ({ title }) => {
   const style = useStyle();
   const navigation = useNavigation();
+  const { colors } = useTheme();
 
   return (
     <View
@@ -21,7 +23,7 @@ export const BrowserSectionTitle: FunctionComponent<{
       ])}
     >
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <HeaderBackButtonIcon />
+        <HeaderBackButtonIcon color={colors['icon']} />
       </TouchableOpacity>
       <Text style={style.flatten(['h4', 'margin-x-10'])}>{title}</Text>
     </View>
