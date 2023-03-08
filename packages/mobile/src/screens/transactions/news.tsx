@@ -33,6 +33,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
   const _handleRefresh = () => {
     page.current = 1;
     setLoading(true);
+    hasMore.current = true;
     fetchData();
   };
 
@@ -41,32 +42,40 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
 
-    try {
-      const res = await API.getNews(
-        {
-          page: page.current,
-          limit: limit
-        },
-        { baseURL: 'https://tracking-tx.orai.io' }
-      );
+    if (hasMore.current) {
+      try {
+        const res = await API.getNews(
+          {
+            page: page.current,
+            limit: limit
+          },
+          { baseURL: 'https://tracking-tx.orai.io' }
+        );
 
-      const value = res.data?.news || [];
-      let newData = isLoadMore ? [...data, ...value] : value;
-      hasMore.current = value?.length === limit;
-      let pageCurrent = +page.current;
-      page.current = pageCurrent + 1;
-      if (newData.length === res.data?.count) {
-        hasMore.current = false;
+        const value = res.data?.news || [];
+        let newData = isLoadMore ? [...data, ...value] : value;
+        hasMore.current = value?.length === limit;
+        let pageCurrent = +page.current;
+        page.current = pageCurrent + 1;
+        if (newData.length === res.data?.count) {
+          hasMore.current = false;
+        }
+        if (res.data?.news.length < 1) {
+          hasMore.current = false;
+        }
+        setData(newData);
+        notificationStore?.updateTotal(res.data?.count ?? 0);
+        setLoading(false);
+        setLoadMore(false);
+      } catch (error) {
+        crashlytics().recordError(error);
+        setLoading(false);
+        setLoadMore(false);
+        console.error(error);
       }
-      setData(newData);
-      notificationStore?.updateTotal(res.data?.count ?? 0);
-      setLoading(false);
+    } else {
       setLoadMore(false);
-    } catch (error) {
-      crashlytics().recordError(error);
       setLoading(false);
-      setLoadMore(false);
-      console.error(error);
     }
   };
 
@@ -85,16 +94,16 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
             padding: 8,
             flexDirection: 'row',
             backgroundColor: notificationStore?.getReadNotifications?.includes(
-              item.id
+              item?.id
             )
               ? colors['white']
               : '#F3F1F5',
             marginVertical: 8,
             borderRadius: 8
           }}
-          key={item.id}
+          key={item?.id}
           onPress={() => {
-            notificationStore?.updateReadNotifications(item.id);
+            notificationStore?.updateReadNotifications(item?.id);
           }}
         >
           <View>
@@ -116,7 +125,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
               }}
               numberOfLines={2}
             >
-              {item.title}
+              {item?.title ?? '-'}
             </Text>
             <Text
               style={{
@@ -125,7 +134,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
               }}
               numberOfLines={3}
             >
-              {item.body}
+              {item?.body ?? '-'}
             </Text>
             <Text
               style={{
@@ -134,7 +143,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
                 fontWeight: '700'
               }}
             >
-              {moment(item.created_at).format('MMM DD, YYYY [at] HH:mm')}
+              {moment(item?.created_at).format('MMM DD, YYYY [at] HH:mm')}
             </Text>
           </View>
         </TouchableOpacity>
@@ -156,7 +165,8 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
         <FlatList
           showsVerticalScrollIndicator={false}
           keyExtractor={_keyExtract}
-          data={data}
+          // data={data}
+          data={[1]}
           renderItem={_renderItem}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={_handleRefresh} />
