@@ -37,10 +37,7 @@ export const Transactions: FunctionComponent = () => {
   const hasMore = useRef(true);
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
-    console.log('hasMore.current', hasMore.current);
 
-    // const isRecipient = indexChildren === 1;
-    // const isAll = indexChildren === 0;
     try {
       if (hasMore.current) {
         const res = await API.getTransactions(
@@ -114,6 +111,7 @@ export const Transactions: FunctionComponent = () => {
 
   useEffect(() => {
     page.current = 1;
+    hasMore.current = true;
     fetchData();
   }, [indexChildren]);
 
@@ -242,6 +240,7 @@ export const Transactions: FunctionComponent = () => {
             }}
             onPress={() => {
               page.current = 1;
+              hasMore.current = true;
               setLoading(true);
               fetchData();
             }}
