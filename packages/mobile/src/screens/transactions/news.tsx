@@ -14,11 +14,11 @@ import {
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { CText as Text } from '../../components/text';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { API } from '../../common/api';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useTheme } from '@react-navigation/native';
 import moment from 'moment';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
@@ -28,6 +28,7 @@ const limit = 5;
 export const NewsTab: FunctionComponent<{}> = observer(() => {
   const { notificationStore } = useStore();
   const [loading, setLoading] = useState(true);
+  const { colors } = useTheme();
   const [data, setData] = useState([]);
   const [loadMore, setLoadMore] = useState(false);
   const _handleRefresh = () => {
@@ -96,8 +97,8 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
             backgroundColor: notificationStore?.getReadNotifications?.includes(
               item?.id
             )
-              ? colors['white']
-              : '#F3F1F5',
+              ? colors['primary']
+              : colors['sub-primary'],
             marginVertical: 8,
             borderRadius: 8
           }}
@@ -121,7 +122,8 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
             <Text
               style={{
                 fontWeight: '700',
-                fontSize: 16
+                fontSize: 16,
+                color: colors['label']
               }}
               numberOfLines={2}
             >
@@ -156,7 +158,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
     <View style={{ height: metrics.screenHeight }}>
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: colors['background'],
           borderRadius: 16,
           padding: 16,
           paddingBottom: metrics.screenHeight / 4.2

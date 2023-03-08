@@ -10,6 +10,7 @@ import { usePageScrollPosition } from '../../providers/page-scroll-position';
 import { useRoute } from '@react-navigation/native';
 import { HeaderLeftBackButton } from './button';
 import { colors } from '../../themes';
+import { useStore } from '../../stores';
 
 export const BlurredHeaderScreenOptionsPreset = {
   headerTitleAlign: 'center' as 'left' | 'center',
@@ -36,6 +37,9 @@ export const BlurredHeaderScreenOptionsPreset = {
 };
 
 export const BlurredHeader: FunctionComponent<StackHeaderProps> = props => {
+  const { appInitStore } = useStore();
+  const scheme = appInitStore.getInitApp.theme;
+
   if (Platform.OS !== 'ios') {
     return <AndroidAlternativeBlurredHeader {...props} />;
   }
@@ -61,7 +65,7 @@ export const BlurredHeader: FunctionComponent<StackHeaderProps> = props => {
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: 'white',
+          backgroundColor: scheme === 'dark' ? '#01040D' : 'white',
           opacity: scrollY.interpolate({
             inputRange: [0, 35],
             outputRange: [1, 0.65],
@@ -77,12 +81,15 @@ export const BlurredHeader: FunctionComponent<StackHeaderProps> = props => {
 const AndroidAlternativeBlurredHeader: FunctionComponent<
   StackHeaderProps
 > = props => {
+  const { appInitStore } = useStore();
+  const scheme = appInitStore.getInitApp.theme;
   return (
     <View>
       <View
         style={{
           ...styles.container,
-          borderColor: colors['border-white']
+          backgroundColor: scheme === 'dark' ? '#01040D' : colors['white'],
+          borderColor: scheme === 'dark' ? '#01040D' : colors['border-white']
         }}
       />
       <Header {...props} />
@@ -97,7 +104,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: colors['white'],
     borderBottomWidth: 0.5
   }
 });

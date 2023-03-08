@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { colors, metrics, typography } from '../../themes';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { useStore } from '../../stores';
 
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
@@ -40,8 +41,10 @@ export const PasswordInputModal: FunctionComponent<{
     textButtonRight = 'Approve',
     buttonRightStyle
   }) => {
+    const { appInitStore } = useStore();
     const [password, setPassword] = useState('');
     const [isInvalidPassword, setIsInvalidPassword] = useState(false);
+    const scheme = appInitStore.getInitApp.theme;
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -77,7 +80,10 @@ export const PasswordInputModal: FunctionComponent<{
                 style={{
                   ...typography['body2'],
                   marginBottom: 32,
-                  color: colors['text-black-medium']
+                  color:
+                    scheme === 'dark'
+                      ? colors['sub-text']
+                      : colors['text-black-medium']
                 }}
               >
                 {paragraph || 'Do not reveal your mnemonic to anyone'}
@@ -88,17 +94,31 @@ export const PasswordInputModal: FunctionComponent<{
             <TextInput
               label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 setPassword(text);
               }}
+              labelStyle={{
+                color:
+                  scheme === 'dark'
+                    ? colors['white']
+                    : colors['text-black-high']
+              }}
               inputStyle={{
-                borderColor: colors['purple-100'],
+                borderColor:
+                  scheme === 'dark' ? colors['border'] : colors['purple-100'],
                 borderWidth: 1,
-                backgroundColor: colors['white'],
+                backgroundColor:
+                  scheme === 'dark'
+                    ? colors['sub-background']
+                    : colors['white'],
                 paddingLeft: 11,
                 paddingRight: 11,
                 paddingTop: 12,
-                borderRadius: 8
+                borderRadius: 8,
+                color:
+                  scheme === 'dark'
+                    ? colors['white']
+                    : colors['text-black-high']
               }}
               value={password}
               returnKeyType="done"
@@ -122,7 +142,10 @@ export const PasswordInputModal: FunctionComponent<{
             >
               <Text
                 style={{
-                  color: colors['white'],
+                  color:
+                    scheme === 'dark'
+                      ? colors['white']
+                      : colors['text-black-high'],
                   textAlign: 'center',
                   fontWeight: '700',
                   fontSize: 16,

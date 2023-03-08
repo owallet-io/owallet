@@ -210,7 +210,7 @@ export const DashboardCard: FunctionComponent<{
           >
             <Text
               style={{
-                color: colors['gray-800']
+                color: colors['label']
               }}
             >
               View detail
@@ -292,7 +292,7 @@ const styling = colors =>
       fontSize: 14
     },
     viewDetail: {
-      backgroundColor: '#F2F2F7',
+      backgroundColor: colors['sub-primary'],
       opacity: 0.6,
       paddingVertical: 4,
       paddingHorizontal: 7,

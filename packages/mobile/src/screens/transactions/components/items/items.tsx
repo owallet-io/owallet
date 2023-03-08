@@ -156,10 +156,8 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
             style={{
               ...styles.textAmount,
               marginTop: spacing['8'],
-              textTransform: 'uppercase'
-              // color:
-              //   amount == 0 || title === 'Received Token' || title === 'Reward'
-              //     : colors['red-500']
+              textTransform: 'uppercase',
+              color: colors['label']
             }}
           >
             {/* {amount == 0 || title === 'Received Token' || title === 'Reward'

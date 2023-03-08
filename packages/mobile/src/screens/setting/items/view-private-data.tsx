@@ -27,7 +27,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
       />
       <PasswordInputModal
         isOpen={isOpenModal}
-        paragraph={"Do not reveal your mnemonic to anyone"}
+        paragraph={'Do not reveal your mnemonic to anyone'}
         close={() => setIsOpenModal(false)}
         title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
         onEnterPassword={async password => {

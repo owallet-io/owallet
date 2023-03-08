@@ -11,11 +11,13 @@ import { useStore } from '../../stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OWalletLogo, OWalletUnion } from './owallet-logo';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { colors, metrics } from '../../themes';
+import { metrics } from '../../themes';
 import { MaintainScreen } from '../../components/maintain';
+import { useTheme } from '@react-navigation/native';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
+  const { colors } = useTheme();
 
   const smartNavigation = useSmartNavigation();
 
@@ -32,7 +34,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{
         display: 'flex'
       }}
-      backgroundColor={colors['white']}
+      backgroundColor={colors['background']}
       style={{
         paddingLeft: 42,
         paddingRight: 42,
@@ -58,7 +60,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
           style={{
             fontWeight: '700',
             fontSize: 24,
-            color: '#1C1C1E',
+            color: colors['label'],
             lineHeight: 34,
             paddingBottom: 8
           }}

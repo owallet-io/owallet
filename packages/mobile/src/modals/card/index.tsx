@@ -397,7 +397,7 @@ export const CardModal: FunctionComponent<{
           }
         ]),
         {
-          backgroundColor: scheme === 'dark' ? '#2B2D3B' : '#F5F5F5'
+          backgroundColor: scheme === 'dark' ? '#171C27' : '#F5F5F5'
         }
       ]}
     >

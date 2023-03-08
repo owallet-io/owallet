@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { PageWithScrollView } from '../../../components/page';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
@@ -18,7 +18,7 @@ import {
   navigate
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
-import { colors, typography } from '../../../themes';
+import { typography } from '../../../themes';
 import { LoadingSpinner } from '../../../components/spinner';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
@@ -84,6 +84,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
     getValues,
     formState: { errors }
   } = useForm<FormData>();
+  const { colors } = useTheme();
+  const styles = styling(colors);
 
   const [isCreating, setIsCreating] = useState(false);
   const [statusPass, setStatusPass] = useState(false);
@@ -144,7 +146,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
         paddingLeft: 20,
         paddingRight: 20
       }}
-      backgroundColor={colors['white']}
+      backgroundColor={colors['background']}
     >
       <View
         style={{
@@ -160,7 +162,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
             fontSize: 24,
             lineHeight: 34,
             fontWeight: '700',
-            color: '#1C1C1E'
+            color: colors['label']
           }}
         >
           Import wallet
@@ -213,7 +215,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
                 paddingLeft: 20,
                 paddingRight: 20,
                 paddingTop: 10,
-                paddingBottom: 10
+                paddingBottom: 10,
+                backgroundColor: colors['sub-background']
               }}
               bottomInInputContainer={
                 <View
@@ -331,7 +334,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
                     setFocus('confirmPassword');
                   }}
                   inputStyle={{
-                    ...styles.borderInput
+                    ...styles.borderInput,
+                    backgroundColor: colors['sub-background']
                   }}
                   inputRight={
                     <TouchableOpacity
@@ -484,15 +488,16 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styles = StyleSheet.create({
-  borderInput: {
-    borderColor: colors['purple-100'],
-    borderWidth: 1,
-    backgroundColor: colors['white'],
-    paddingLeft: 11,
-    paddingRight: 11,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderRadius: 8
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    borderInput: {
+      borderColor: colors['border'],
+      borderWidth: 1,
+      backgroundColor: colors['sub-background'],
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8
+    }
+  });
