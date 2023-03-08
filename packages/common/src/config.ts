@@ -145,6 +145,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tether',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'USDC',
+          coinMinimalDenom:
+            'cw20:orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd:USDC',
+          contractAddress:
+            'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd',
+          coinDecimals: 6,
+          coinGeckoId: 'usd-coin',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
         }
       ];
     },
@@ -598,6 +610,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
+      {
+        coinDenom: 'USDC',
+        coinMinimalDenom:
+          'erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:USDC',
+        coinDecimals: 6,
+        coinGeckoId: 'usd-coin',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
       }
     ],
     get feeCurrencies() {
