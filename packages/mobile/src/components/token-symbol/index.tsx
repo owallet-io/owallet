@@ -81,7 +81,7 @@ export const TokenSymbol: FunctionComponent<{
         ...propStyle
       }}
     >
-      {currency.coinImageUrl ? (
+      {currency?.coinImageUrl ? (
         <FastImage
           style={{
             width: size * imageScale,
