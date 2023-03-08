@@ -19,7 +19,11 @@ import { observer } from 'mobx-react-lite';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
-import { useFocusEffect, useTheme,useNavigation } from '@react-navigation/native';
+import {
+  useFocusEffect,
+  useTheme,
+  useNavigation
+} from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
@@ -33,7 +37,13 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { colors } = useTheme();
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore,notificationStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    priceStore,
+    notificationStore
+  } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -81,7 +91,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
         remoteMessage
       );
       navigation.navigate('Others', {
-        screen: 'Notifications'
+        screen: 'Transactions'
       });
     });
     messaging()

@@ -137,9 +137,6 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Transactions: {
         upperScreenName: 'Others'
       },
-      Notifications: {
-        upperScreenName: 'Others'
-      },
       Dashboard: {
         upperScreenName: 'Others'
       },

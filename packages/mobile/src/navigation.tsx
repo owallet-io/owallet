@@ -128,7 +128,6 @@ import { TransferNFTScreen } from './screens/transfer-nft';
 import { DashBoardScreen } from './screens/dashboard';
 import { lightColors } from './themes/colors';
 import { colors } from './themes';
-import { NotificationScreen } from './screens/notifications';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -174,10 +173,7 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
       >
         <TouchableOpacity
           onPress={() => {
-            // smartNavigation.navigateSmart('Transactions', {});
-            navigation.navigate('Others', {
-              screen: 'Notifications'
-            });
+            smartNavigation.navigateSmart('Transactions', {});
           }}
           style={{ paddingRight: 8 }}
         >
@@ -577,13 +573,7 @@ export const OtherNavigation: FunctionComponent = () => {
         name="Transactions"
         component={Transactions}
       />
-      <Stack.Screen
-        options={{
-          header: () => <CustomHeader />
-        }}
-        name="Notifications"
-        component={NotificationScreen}
-      />
+
       <Stack.Screen
         options={{
           header: () => <CustomHeader />
