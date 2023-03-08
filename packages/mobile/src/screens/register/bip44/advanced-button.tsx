@@ -10,7 +10,7 @@ import { registerModal } from '../../../modals/base';
 import { CardModal } from '../../../modals/card';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { TextInput } from '../../../components/input';
-import { colors, typography } from '../../../themes';
+import { typography, colors } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { CText as Text } from '../../../components/text';
 import { useStore } from '../../../stores';
@@ -35,7 +35,12 @@ export const BIP44AdvancedButton: FunctionComponent<{
         close={() => setIsModalOpen(false)}
         bip44Option={bip44Option}
       />
-      <Text onPress={() => setIsModalOpen(true)}>Advanced Option</Text>
+      <Text
+        style={{ color: colors['label'] }}
+        onPress={() => setIsModalOpen(true)}
+      >
+        Advanced Option
+      </Text>
       {/* <View
         style={{
           marginBottom: 16,
@@ -153,6 +158,10 @@ export const BIP44SelectModal: FunctionComponent<{
 }> = registerModal(
   observer(({ bip44Option, close }) => {
     const { chainStore } = useStore();
+    const { appInitStore } = useStore();
+    const scheme = appInitStore.getInitApp.theme;
+
+    const styles = styling(scheme);
 
     const account = useZeroOrPositiveIntegerString(
       bip44Option.account.toString()
@@ -177,7 +186,7 @@ export const BIP44SelectModal: FunctionComponent<{
           style={{
             ...typography['body2'],
             marginBottom: 18,
-            color: colors['text-black-medium']
+            color: colors['label']
           }}
         >
           Set custom address derivation path by modifying the indexes below:
@@ -193,7 +202,7 @@ export const BIP44SelectModal: FunctionComponent<{
           <Text
             style={{
               ...typography['body2'],
-              color: colors['text-black-medium']
+              color: colors['label']
             }}
           >{`m/44’/`}</Text>
           <TextInput
@@ -275,7 +284,7 @@ export const BIP44SelectModal: FunctionComponent<{
         >
           <Text
             style={{
-              color: 'white',
+              color: colors['label'],
               textAlign: 'center',
               fontWeight: '700',
               fontSize: 16,
@@ -310,15 +319,16 @@ export const BIP44SelectModal: FunctionComponent<{
   }
 );
 
-const styles = StyleSheet.create({
-  borderInput: {
-    borderColor: colors['purple-100'],
-    borderWidth: 1,
-    backgroundColor: colors['white'],
-    paddingLeft: 11,
-    paddingRight: 11,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderRadius: 8
-  }
-});
+const styling = scheme =>
+  StyleSheet.create({
+    borderInput: {
+      borderColor: colors['border'],
+      borderWidth: 1,
+      backgroundColor: colors['sub-background'],
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8
+    }
+  });
