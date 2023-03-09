@@ -117,7 +117,9 @@ export const colors = {
   'blue-300': '#8C93A7',
   //background
   background: '#01040D',
+  'plain-backgound': '#01040D',
   'sub-background': '#2B2D3B',
+  'input-background': '#2B2D3B',
   'primary-background': '#945EF8',
   // item
   item: '#2B2D3B',
@@ -249,7 +251,9 @@ export const lightColors = {
   //background
   background: '#F5F5F5',
   'sub-background': '#F8EFFF',
+  'input-background': '#fff',
   'primary-background': '#F3F1F5',
+  'plain-backgound': '#fff',
   // border
   // item
   item: '#fff',
@@ -257,5 +261,5 @@ export const lightColors = {
   // text
   label: '#3A3A3C',
   'colored-label': '#945EF8',
-  'sub-text': '#8C93A7'
+  'sub-text': '#5F5E77'
 };

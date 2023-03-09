@@ -108,7 +108,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         paddingLeft: 20,
         paddingRight: 20
       }}
-      backgroundColor={colors['white']}
+      backgroundColor={colors['plain-background']}
     >
       <View
         style={{

@@ -93,7 +93,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
         paddingLeft: 20,
         paddingRight: 20
       }}
-      backgroundColor={colors['white']}
+      backgroundColor={colors['plain-background']}
     >
       {/* Mock for flexible margin top */}
       <View

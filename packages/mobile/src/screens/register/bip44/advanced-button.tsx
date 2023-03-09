@@ -19,10 +19,9 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ bip44Option }) => {
+  const { appInitStore } = useStore();
+  const scheme = appInitStore.getInitApp.theme;
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // const isChangeZeroOrOne =
-  //   change.isValid && (change.number === 0 || change.number === 1);
 
   return (
     <KeyboardAvoidingView
@@ -36,87 +35,13 @@ export const BIP44AdvancedButton: FunctionComponent<{
         bip44Option={bip44Option}
       />
       <Text
-        style={{ color: colors['label'] }}
+        style={{
+          color: scheme !== 'dark' ? colors['text-black'] : colors['label']
+        }}
         onPress={() => setIsModalOpen(true)}
       >
         Advanced Option
       </Text>
-      {/* <View
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <Text
-          style={{
-            ...typography['body2'],
-            color: colors['text-black-medium']
-          }}
-        >{`m/44’/`}</Text>
-        <TextInput
-          value={coinType.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          inputStyle={styles.borderInput}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            bip44Option.setCoinType(coinType.number);
-
-            coinType.setValue(text);
-          }}
-        />
-        <Text>’/</Text>
-        <TextInput
-          value={account.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          inputStyle={styles.borderInput}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            account.setValue(text);
-            bip44Option.setAccount(account.number);
-          }}
-        />
-        <Text>’/</Text>
-        <TextInput
-          inputStyle={styles.borderInput}
-          value={change.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            change.setValue(text);
-            bip44Option.setChange(change.number);
-          }}
-        />
-        <Text>/</Text>
-        <TextInput
-          inputStyle={styles.borderInput}
-          value={index.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            index.setValue(text);
-            bip44Option.setIndex(index.number);
-          }}
-        />
-      </View> */}
     </KeyboardAvoidingView>
   );
 });
@@ -157,8 +82,7 @@ export const BIP44SelectModal: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {
-    const { chainStore } = useStore();
-    const { appInitStore } = useStore();
+    const { chainStore, appInitStore } = useStore();
     const scheme = appInitStore.getInitApp.theme;
 
     const styles = styling(scheme);
@@ -186,7 +110,7 @@ export const BIP44SelectModal: FunctionComponent<{
           style={{
             ...typography['body2'],
             marginBottom: 18,
-            color: colors['label']
+            color: scheme === 'dark' ? colors['label'] : colors['sub-text']
           }}
         >
           Set custom address derivation path by modifying the indexes below:
@@ -202,7 +126,7 @@ export const BIP44SelectModal: FunctionComponent<{
           <Text
             style={{
               ...typography['body2'],
-              color: colors['label']
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
             }}
           >{`m/44’/`}</Text>
           <TextInput
@@ -212,39 +136,60 @@ export const BIP44SelectModal: FunctionComponent<{
               paddingBottom: 0
             }}
             inputStyle={styles.borderInput}
-            style={{ textAlign: 'right' }}
+            style={{ textAlign: 'right', color: 'red' }}
             keyboardType="number-pad"
             onChangeText={coinType.setValue}
           />
-          <Text>’/</Text>
+          <Text
+            style={{
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
+            }}
+          >
+            ’/
+          </Text>
           <TextInput
             value={account.value}
             containerStyle={{
               minWidth: 58,
               paddingBottom: 0
             }}
+            inputStyle={styles.borderInput}
             style={{ textAlign: 'right' }}
             keyboardType="number-pad"
             onChangeText={account.setValue}
           />
-          <Text>’/</Text>
+          <Text
+            style={{
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
+            }}
+          >
+            ’/
+          </Text>
           <TextInput
             value={change.value}
             containerStyle={{
               minWidth: 58,
               paddingBottom: 0
             }}
-            style={{ textAlign: 'right' }}
+            inputStyle={styles.borderInput}
+            style={{ textAlign: 'right', color: 'red' }}
             keyboardType="number-pad"
             onChangeText={change.setValue}
           />
-          <Text>/</Text>
+          <Text
+            style={{
+              color: scheme === 'dark' ? colors['label'] : colors['sub-text']
+            }}
+          >
+            /
+          </Text>
           <TextInput
             value={index.value}
             containerStyle={{
               minWidth: 58,
               paddingBottom: 0
             }}
+            inputStyle={styles.borderInput}
             style={{ textAlign: 'right' }}
             keyboardType="number-pad"
             onChangeText={index.setValue}
@@ -253,9 +198,9 @@ export const BIP44SelectModal: FunctionComponent<{
         {change.isValid && !isChangeZeroOrOne ? (
           <Text
             style={{
-              color: colors['color-danger'],
               paddingBottom: 8,
-              ...typography['text-caption2']
+              ...typography['text-caption2'],
+              color: colors['color-danger']
             }}
           >
             Change should be 0 or 1
@@ -322,13 +267,15 @@ export const BIP44SelectModal: FunctionComponent<{
 const styling = scheme =>
   StyleSheet.create({
     borderInput: {
-      borderColor: colors['border'],
+      borderColor: scheme === 'dark' ? colors['border'] : colors['gray-300'],
       borderWidth: 1,
-      backgroundColor: colors['sub-background'],
+      backgroundColor:
+        scheme === 'dark' ? colors['input-background'] : colors['white'],
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,
       paddingBottom: 12,
-      borderRadius: 8
+      borderRadius: 8,
+      color: 'red'
     }
   });

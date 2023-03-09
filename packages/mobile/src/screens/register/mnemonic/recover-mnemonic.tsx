@@ -146,7 +146,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
         paddingLeft: 20,
         paddingRight: 20
       }}
-      backgroundColor={colors['background']}
+      backgroundColor={colors['plain-background']}
     >
       <View
         style={{
@@ -216,7 +216,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
                 paddingRight: 20,
                 paddingTop: 10,
                 paddingBottom: 10,
-                backgroundColor: colors['sub-background']
+                backgroundColor: colors['input-background']
               }}
               bottomInInputContainer={
                 <View
@@ -335,7 +335,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
                   }}
                   inputStyle={{
                     ...styles.borderInput,
-                    backgroundColor: colors['sub-background']
+                    backgroundColor: colors['input-background']
                   }}
                   inputRight={
                     <TouchableOpacity
@@ -493,7 +493,7 @@ const styling = colors =>
     borderInput: {
       borderColor: colors['border'],
       borderWidth: 1,
-      backgroundColor: colors['sub-background'],
+      backgroundColor: colors['input-background'],
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,

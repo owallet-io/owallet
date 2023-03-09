@@ -109,7 +109,7 @@ export const PasswordInputModal: FunctionComponent<{
                 borderWidth: 1,
                 backgroundColor:
                   scheme === 'dark'
-                    ? colors['sub-background']
+                    ? colors['input-background']
                     : colors['white'],
                 paddingLeft: 11,
                 paddingRight: 11,
@@ -142,10 +142,7 @@ export const PasswordInputModal: FunctionComponent<{
             >
               <Text
                 style={{
-                  color:
-                    scheme === 'dark'
-                      ? colors['white']
-                      : colors['text-black-high'],
+                  color: colors['white'],
                   textAlign: 'center',
                   fontWeight: '700',
                   fontSize: 16,
