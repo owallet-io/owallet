@@ -34,7 +34,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
       contentContainerStyle={{
         display: 'flex'
       }}
-      backgroundColor={colors['plain-backgound']}
+      backgroundColor={colors['plain-background']}
       style={{
         paddingLeft: 42,
         paddingRight: 42,

@@ -121,7 +121,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             fontSize: 24,
             lineHeight: 34,
             fontWeight: '700',
-            color: '#1C1C1E'
+            color: colors['label']
           }}
         >
           Import ledger Nano X

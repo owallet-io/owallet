@@ -167,7 +167,9 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
             </View>
           );
         }}
-        ItemSeparatorComponent={() => <CardDivider />}
+        ItemSeparatorComponent={() => (
+          <CardDivider backgroundColor={colors['border']} />
+        )}
         renderSectionHeader={() => {
           return (
             <View>
@@ -254,7 +256,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                         </Text>
                         <ArrowOpsiteUpDownIcon
                           size={24}
-                          color={colors['gray-900']}
+                          color={colors['border']}
                         />
                       </TouchableOpacity>
                     </View>
@@ -379,7 +381,8 @@ const styling = colors =>
       paddingTop: spacing['8'],
       paddingBottom: spacing['8'],
       paddingLeft: spacing['8'],
-      paddingRight: spacing['16']
+      paddingRight: spacing['16'],
+      borderRadius: 8
     },
     containerInfo: {
       marginLeft: spacing['12']
