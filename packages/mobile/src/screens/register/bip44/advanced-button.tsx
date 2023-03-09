@@ -21,9 +21,6 @@ export const BIP44AdvancedButton: FunctionComponent<{
 }> = observer(({ bip44Option }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // const isChangeZeroOrOne =
-  //   change.isValid && (change.number === 0 || change.number === 1);
-
   return (
     <KeyboardAvoidingView
       behavior="padding"
@@ -36,82 +33,6 @@ export const BIP44AdvancedButton: FunctionComponent<{
         bip44Option={bip44Option}
       />
       <Text onPress={() => setIsModalOpen(true)}>Advanced Option</Text>
-      {/* <View
-        style={{
-          marginBottom: 16,
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <Text
-          style={{
-            ...typography['body2'],
-            color: colors['text-black-medium']
-          }}
-        >{`m/44’/`}</Text>
-        <TextInput
-          value={coinType.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          inputStyle={styles.borderInput}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            bip44Option.setCoinType(coinType.number);
-
-            coinType.setValue(text);
-          }}
-        />
-        <Text>’/</Text>
-        <TextInput
-          value={account.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          inputStyle={styles.borderInput}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            account.setValue(text);
-            bip44Option.setAccount(account.number);
-          }}
-        />
-        <Text>’/</Text>
-        <TextInput
-          inputStyle={styles.borderInput}
-          value={change.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            change.setValue(text);
-            bip44Option.setChange(change.number);
-          }}
-        />
-        <Text>/</Text>
-        <TextInput
-          inputStyle={styles.borderInput}
-          value={index.value}
-          containerStyle={{
-            minWidth: 58,
-            paddingBottom: 0
-          }}
-          style={{ textAlign: 'right' }}
-          keyboardType="number-pad"
-          onChangeText={text => {
-            index.setValue(text);
-            bip44Option.setIndex(index.number);
-          }}
-        />
-      </View> */}
     </KeyboardAvoidingView>
   );
 });
@@ -285,23 +206,6 @@ export const BIP44SelectModal: FunctionComponent<{
             Confirm
           </Text>
         </TouchableOpacity>
-        {/* <Button
-          text="Confirm"
-          size="large"
-          disabled={
-            !account.isValid ||
-            !change.isValid ||
-            !index.isValid ||
-            !isChangeZeroOrOne
-          }
-          onPress={() => {
-            bip44Option.setAccount(account.number);
-            bip44Option.setChange(change.number);
-            bip44Option.setIndex(index.number);
-
-            close();
-          }}
-        /> */}
       </CardModal>
     );
   }),
