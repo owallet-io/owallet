@@ -8,49 +8,52 @@ import {
   SendQRCodeIcon,
   SendWithinNetworkIcon
 } from '../../components/icon';
-import { colors, spacing } from '../../themes';
+import { spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
+import { useTheme } from '@react-navigation/native';
 
-const styles = StyleSheet.create({
-  sendTokenCard: {
-    borderRadius: spacing['24']
-  },
-  sendTokenCardbody: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginHorizontal: spacing['-6'],
-    justifyContent: 'space-between'
-  },
-  sendTokenCardContent: {
-    paddingHorizontal: spacing['6'],
-    width: '50%'
-  },
-  sendTokenCardText: {
-    marginBottom: spacing['12'],
-    borderRadius: spacing['12'],
-    height: 130,
-    alignItems: 'center',
-    paddingTop: spacing['16'],
-    paddingHorizontal: spacing['8'],
-    backgroundColor: colors['white'],
-    shadowColor: '#18274B',
-    shadowOffset: {
-      width: 0,
-      height: 12
+const styling = colors =>
+  StyleSheet.create({
+    sendTokenCard: {
+      borderRadius: spacing['24']
     },
-    shadowOpacity: 0.12,
-    shadowRadius: 16.0
-  },
-  iconSendToken: {
-    marginBottom: spacing['6']
-  },
-  textSendToken: {
-    fontWeight: '800',
-    fontSize: 14
-  }
-});
+    sendTokenCardbody: {
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginHorizontal: spacing['-6'],
+      justifyContent: 'space-between'
+    },
+    sendTokenCardContent: {
+      paddingHorizontal: spacing['6'],
+      width: '50%'
+    },
+    sendTokenCardText: {
+      marginBottom: spacing['12'],
+      borderRadius: spacing['12'],
+      height: 130,
+      alignItems: 'center',
+      paddingTop: spacing['16'],
+      paddingHorizontal: spacing['8'],
+      backgroundColor: colors['item'],
+      shadowColor: '#18274B',
+      shadowOffset: {
+        width: 0,
+        height: 12
+      },
+      shadowOpacity: 0.12,
+      shadowRadius: 16.0
+    },
+    iconSendToken: {
+      marginBottom: spacing['6']
+    },
+    textSendToken: {
+      fontWeight: '800',
+      fontSize: 14,
+      color: colors['label']
+    }
+  });
 
 const tokenTransferInfo = [
   {
@@ -82,8 +85,9 @@ const tokenTransferInfo = [
 const TransferTokensOptions: FunctionComponent = () => {
   const smartNavigation = useSmartNavigation();
   const { chainStore } = useStore();
-
-  const onPress = (type) => {
+  const { colors } = useTheme();
+  const styles = styling(colors);
+  const onPress = type => {
     switch (type) {
       case 'send':
         smartNavigation.navigateSmart('Send', {
@@ -105,7 +109,7 @@ const TransferTokensOptions: FunctionComponent = () => {
     <>
       <View style={styles.sendTokenCardbody}>
         {tokenTransferInfo.map((val, i) => (
-          <View style={styles.sendTokenCardContent} key={i} >
+          <View style={styles.sendTokenCardContent} key={i}>
             <TouchableOpacity
               style={styles.sendTokenCardText}
               onPress={() => onPress(val.type)}

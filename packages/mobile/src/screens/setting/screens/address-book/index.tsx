@@ -32,7 +32,7 @@ import {
 } from '../../../../components/header/icon';
 import { AddressBookIcon } from '../../../../components/icon';
 import { useConfirmModal } from '../../../../providers/confirm-modal';
-import { colors, metrics, spacing, typography } from '../../../../themes';
+import { spacing, typography } from '../../../../themes';
 import { TextInput } from '../../../../components/input';
 import { CustomHeader } from '../../../../navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -77,7 +77,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const [nameSearch, setNameSearch] = useState<string>('');
   const [contractList, setContractList] = useState<any[]>([]);
   const { chainStore } = useStore();
-  const { bottom } = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = styling(colors);
   const confirmModal = useConfirmModal();

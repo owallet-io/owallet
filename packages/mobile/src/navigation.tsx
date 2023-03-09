@@ -753,8 +753,7 @@ export const AddressBookStackScreen: FunctionComponent = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset,
-        headerTitleStyle: style.flatten(['h5', 'color-text-black-high'])
+        ...BlurredHeaderScreenOptionsPreset
       }}
       headerMode="screen"
     >
@@ -766,12 +765,15 @@ export const AddressBookStackScreen: FunctionComponent = () => {
         component={AddressBookScreen}
       />
       <Stack.Screen
+        // options={{
+        //   title: 'Add new contact',
+        //   ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
+        //     style.get('color-setting-screen-background-transparent').color
+        //   ),
+        //   headerTitleStyle: style.flatten(['h3', 'color-text-black-high'])
+        // }}
         options={{
-          title: 'Add new contact',
-          ...getPlainHeaderScreenOptionsPresetWithBackgroundColor(
-            style.get('color-setting-screen-background-transparent').color
-          ),
-          headerTitleStyle: style.flatten(['h3', 'color-text-black-high'])
+          header: () => <CustomHeader />
         }}
         name="AddAddressBook"
         component={AddAddressBookScreen}

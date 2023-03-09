@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { View, Image } from 'react-native';
 
-export const OWalletLogo = ({ size }) => {
+export const OWalletLogo = ({ size }: { size?: number }) => {
   return (
     <View
       style={{

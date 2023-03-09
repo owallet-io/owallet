@@ -1,7 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollView } from '../../../../components/page';
 import { useStyle } from '../../../../styles';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import {
+  RouteProp,
+  useNavigation,
+  useRoute,
+  useTheme
+} from '@react-navigation/native';
 import {
   AddressBookConfig,
   RecipientConfig,
@@ -26,7 +31,7 @@ import {
 } from '../../../../components/input';
 import { Button } from '../../../../components/button';
 import { useSmartNavigation } from '../../../../navigation.provider';
-import { colors, spacing } from '../../../../themes';
+import { spacing } from '../../../../themes';
 import { Scanner } from '../../../../components/icon';
 import {
   TouchableOpacity,
@@ -34,27 +39,29 @@ import {
 } from 'react-native-gesture-handler';
 import { AsyncKVStore } from '../../../../common';
 
-const styles = StyleSheet.create({
-  addNewBookRoot: {
-    backgroundColor: colors['white'],
-    // marginTop: spacing['24'],
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    borderRadius: spacing['24']
-  },
-  addNewBookLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors['gray-900'],
-    lineHeight: 22
-  },
-  addNewBookInput: {
-    borderTopLeftRadius: spacing['8'],
-    borderTopRightRadius: spacing['8'],
-    borderBottomLeftRadius: spacing['8'],
-    borderBottomRightRadius: spacing['8'],
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    addNewBookRoot: {
+      backgroundColor: colors['background'],
+      // marginTop: spacing['24'],
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      borderRadius: spacing['24']
+    },
+    addNewBookLabel: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors['label'],
+      lineHeight: 22
+    },
+    addNewBookInput: {
+      borderTopLeftRadius: spacing['8'],
+      borderTopRightRadius: spacing['8'],
+      borderBottomLeftRadius: spacing['8'],
+      borderBottomRightRadius: spacing['8'],
+      color: colors['sub-text']
+    }
+  });
 
 export const AddAddressBookScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -73,6 +80,8 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
   >();
 
   const { chainStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
 
   const recipientConfig = useRecipientConfig(
     chainStore,
@@ -118,13 +127,16 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
 
   return (
     // <PageWithScrollView behavior='position' keyboardVerticalOffset={keyboardVerticalOffset}>
-    <PageWithScrollView style={{ marginTop: spacing['24'] }}>
+    <PageWithScrollView
+      backgroundColor={colors['background']}
+      style={{ marginTop: spacing['24'] }}
+    >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.addNewBookRoot}>
           <TextInput
             label="User name"
             value={name}
-            onChangeText={(text) => setName(text)}
+            onChangeText={text => setName(text)}
             labelStyle={styles.addNewBookLabel}
             inputContainerStyle={styles.addNewBookInput}
             placeholder="Type your user name"

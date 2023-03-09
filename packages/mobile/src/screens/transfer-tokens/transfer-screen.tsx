@@ -21,14 +21,17 @@ const TransferTokensScreen: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   return (
-    <PageWithScrollViewInBottomTabView style={[containerStyle]}>
+    <PageWithScrollViewInBottomTabView
+      style={[containerStyle]}
+      backgroundColor={colors['background']}
+    >
       {/* <TransferTokensHeader /> */}
-      <View style={{ alignItems: 'center',   marginTop: 17 }}>
+      <View style={{ alignItems: 'center', marginTop: 17 }}>
         <Text
           style={{
             fontWeight: '800',
             fontSize: 24,
-            marginBottom: 16,
+            marginBottom: 16
           }}
         >
           Transfer
@@ -37,7 +40,7 @@ const TransferTokensScreen: FunctionComponent<{
       <Card
         style={{
           ...styles.sendTokenCard,
-          backgroundColor: colors['white']
+          backgroundColor: colors['card-background']
         }}
       >
         <CardBody>

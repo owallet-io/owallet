@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { NewMnemonicConfig } from './hook';
 import { RegisterConfig } from '@owallet/hooks';
@@ -17,12 +17,12 @@ import {
   checkRouter,
   checkRouterPaddingBottomBar
 } from '../../../router/root';
-import { colors, typography } from '../../../themes';
+import { typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoadingSpinner } from '../../../components/spinner';
 import { OWalletLogo } from '../owallet-logo';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
+export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -38,6 +38,8 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   >();
 
   const { analyticsStore } = useStore();
+  const { colors } = useTheme();
+
   const smartNavigation = useSmartNavigation();
 
   const registerConfig = route.params.registerConfig;
@@ -57,7 +59,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map((word) => {
+      randomSortedWords.map(word => {
         return {
           word,
           usedIndex: -1
@@ -71,9 +73,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex(
-    (word) => word === undefined
-  );
+  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
 
   const [isCreating, setIsCreating] = useState(false);
 
@@ -264,6 +264,8 @@ const WordButton: FunctionComponent<{
   used: boolean;
   onPress: () => void;
 }> = ({ word, used, onPress }) => {
+  const { colors } = useTheme();
+
   return (
     <RectButton
       style={{
@@ -301,6 +303,8 @@ const WordsCard: FunctionComponent<{
     dashed: boolean;
   }[];
 }> = ({ wordSet }) => {
+  const { colors } = useTheme();
+
   return (
     <View
       style={{
