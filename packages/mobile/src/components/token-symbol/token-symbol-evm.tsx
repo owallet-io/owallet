@@ -63,7 +63,7 @@ export const TokenSymbolEVM: FunctionComponent<{
         ...propStyle
       }}
     >
-      {currency.coinImageUrl ? (
+      {currency?.coinImageUrl ? (
         <FastImage
           style={{
             width: size * imageScale,

@@ -99,7 +99,7 @@ export const BlockCard: FunctionComponent<{
               }}
               resizeMode={FastImage.resizeMode.contain}
               source={{
-                uri: chainStore.current.stakeCurrency.coinImageUrl
+                uri: chainStore.current.stakeCurrency?.coinImageUrl
               }}
             />
           </View>
