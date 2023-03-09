@@ -1,8 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';
-import { useStyle } from '../../../styles';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
@@ -10,7 +9,6 @@ import { TextInput } from '../../../components/input';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { useStore } from '../../../stores';
-import { Button } from '../../../components/button';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import {
   checkRouter,
@@ -18,7 +16,6 @@ import {
   navigate
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
-import { colors } from '../../../themes';
 
 interface FormData {
   name: string;
@@ -38,8 +35,8 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       string
     >
   >();
-
-  const style = useStyle();
+  const { colors } = useTheme();
+  const styles = styling(colors);
 
   const { analyticsStore } = useStore();
 
@@ -330,15 +327,16 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styles = StyleSheet.create({
-  borderInput: {
-    borderColor: colors['purple-100'],
-    borderWidth: 1,
-    backgroundColor: colors['white'],
-    paddingLeft: 11,
-    paddingRight: 11,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderRadius: 8
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    borderInput: {
+      borderColor: colors['purple-100'],
+      borderWidth: 1,
+      backgroundColor: colors['white'],
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8
+    }
+  });

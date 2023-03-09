@@ -14,32 +14,35 @@ import {
   TextInput
 } from '../../components/input';
 import { Button } from '../../components/button';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { spacing, typography } from '../../themes';
 import { CText as Text } from '../../components/text';
 import ProgressiveImage from '../../components/progessive-image';
 
-const styles = StyleSheet.create({
-  sendInputRoot: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    backgroundColor: colors['white'],
-    borderRadius: 24
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      backgroundColor: colors['white'],
+      borderRadius: 24
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      color: colors['gray-900'],
+      marginBottom: spacing['8']
+    }
+  });
 
 export const TransferNFTScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const route = useRoute<
     RouteProp<
       Record<
@@ -106,7 +109,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
   const txStateIsValid = sendConfigError == null;
 
   return (
-    <PageWithScrollView>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
         <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
           <Text

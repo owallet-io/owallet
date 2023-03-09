@@ -4,11 +4,12 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, CardBody } from '../../components/card';
-import { colors, spacing } from '../../themes';
+import { spacing } from '../../themes';
 import TransferTokensHeader from './transfer-header';
 import TransferTokensOptions from './transfer-options';
 import TransferViewBtn from './transfer-view-btn';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { useTheme } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   sendTokenCard: {
@@ -20,6 +21,8 @@ const styles = StyleSheet.create({
 const TransferTokensScreen: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
+  const { colors } = useTheme();
+
   return (
     <PageWithScrollViewInBottomTabView
       style={[containerStyle]}

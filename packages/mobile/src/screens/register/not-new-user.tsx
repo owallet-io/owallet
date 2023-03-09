@@ -11,11 +11,13 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OWalletLogo } from './owallet-logo';
+import { useTheme } from '@react-navigation/native';
 
 export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
 
   const style = useStyle();
+  const { colors } = useTheme();
 
   const smartNavigation = useSmartNavigation();
 
@@ -36,6 +38,7 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
           paddingBottom: Dimensions.get('window').height * 0.11
         }
       ])}
+      backgroundColor={colors['plain-background']}
     >
       <View
         style={style.flatten(['flex-grow-1', 'items-center', 'padding-x-18'])}

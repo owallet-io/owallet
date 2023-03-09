@@ -82,7 +82,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
       contentContainerStyle={{
         display: 'flex'
       }}
-      backgroundColor={colors['white']}
+      backgroundColor={colors['plain-background']}
       style={{
         paddingLeft: 20,
         paddingRight: 20
