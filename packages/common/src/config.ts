@@ -637,6 +637,41 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
+    rpc: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    rest: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    chainId: '0x2b6653dc',
+    networkType: 'evm',
+    chainName: 'Tron',
+    stakeCurrency: {
+      coinDenom: 'TRX',
+      coinMinimalDenom: 'trx',
+      coinDecimals: 18,
+      coinGeckoId: 'trx'
+    },
+    restConfig: {
+      headers: {
+        'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
+      }
+    },
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    bech32Config: Bech32Address.defaultBech32Config('trx'),
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004
+    },
+    features: ['isEvm']
+  },
+  {
     rest: 'https://bsc-dataseed1.ninicoin.io',
     chainId: '0x38',
     chainName: 'BNB Chain',

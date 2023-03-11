@@ -28,6 +28,38 @@ import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
 
+import { Base58 } from '@ethersproject/basex';
+import { sha256 } from '@ethersproject/sha2';
+import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { Wallet } from '@ethersproject/wallet';
+
+const getEvmAddress = base58Address =>
+  '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
+
+const getBase58Address = address => {
+  console.log('address', address);
+
+  const evmAddress = '0x41' + address.substring(2);
+  const hash = sha256(sha256(evmAddress));
+  const checkSum = hash.substring(2, 10);
+  return Base58.encode(evmAddress + checkSum);
+};
+
+const privateKey =
+  '4975143b17cb704090c925ed228d76b90f4c642bcad616439c7b7daa432d9a3f';
+
+const provider = new StaticJsonRpcProvider(
+  {
+    url: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    headers: { 'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c' }
+  },
+  Number('0x2b6653dc')
+);
+
+(async () => {
+  const signer = new Wallet(privateKey, provider);
+})();
+
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -53,6 +85,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   useEffect(() => {
     setEvmAddress(account.evmosHexAddress);
+    console.log('base58', getBase58Address(account.evmosHexAddress));
   }, [account?.evmosHexAddress]);
 
   // const queryStakable = queries.queryBalances.getQueryBech32Address(
@@ -67,6 +100,11 @@ export const AccountCardEVM: FunctionComponent<{
     )?.balance;
 
     if (total) {
+      console.log(
+        ' total.amount.int.value',
+        Number(total.amount.int.value) / 10 ** 18 / 10 ** 6
+      );
+
       totalPrice = priceStore?.calculatePrice(total, 'USD');
     }
   }
@@ -213,9 +251,12 @@ export const AccountCardEVM: FunctionComponent<{
                   lineHeight: 50
                 }}
               >
-                {totalPrice
+                {/* {totalPrice
                   ? totalPrice?.toString()
-                  : total?.shrink(true).maxDecimals(6).toString()}
+                  : total?.shrink(true).maxDecimals(6).toString()} */}
+                {total
+                  ? Number(total.amount.int.value) / 10 ** 18 / 10 ** 6
+                  : null}
               </Text>
             </View>
             <View
@@ -296,6 +337,19 @@ export const AccountCardEVM: FunctionComponent<{
                 maxCharacters={22}
                 networkType={chainStore.current.networkType}
               />
+
+              {/* {evmAddress ? (
+                <AddressCopyable
+                  address={
+                    chainStore.current.networkType === 'cosmos'
+                      ? account.bech32Address
+                      : getBase58Address(evmAddress)
+                  }
+                  maxCharacters={22}
+                  networkType={chainStore.current.networkType}
+                />
+              ) : null} */}
+
               {/* chainInfo.bip44.coinType */}
               <Text
                 style={{

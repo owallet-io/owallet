@@ -111,6 +111,9 @@ export const SendEvmPage: FunctionComponent<{
         jsonrpc: '2.0',
         id: 1,
         method: 'eth_gasPrice',
+        headers: {
+          'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
+        },
         params: []
       });
       setGasPrice(
@@ -130,7 +133,10 @@ export const SendEvmPage: FunctionComponent<{
         let estimate = 21000;
         if (coinMinimalDenom) {
           // @ts-ignore
-          const tokenInfo = new web3.eth.Contract(ERC20_ABI,query?.defaultDenom?.split(':')?.[1]);
+          const tokenInfo = new web3.eth.Contract(
+            ERC20_ABI,
+            query?.defaultDenom?.split(':')?.[1]
+          );
           estimate = await tokenInfo.methods
             .transfer(
               accountInfo?.evmosHexAddress,
@@ -147,7 +153,7 @@ export const SendEvmPage: FunctionComponent<{
         } else {
           estimate = await web3.eth.estimateGas({
             to: accountInfo?.evmosHexAddress,
-            from: query?.defaultDenom?.split(':')?.[1],
+            from: query?.defaultDenom?.split(':')?.[1]
           });
         }
         gasConfig.setGas(estimate ?? 21000);
@@ -167,7 +173,7 @@ export const SendEvmPage: FunctionComponent<{
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find(
-        (cur) => cur.coinMinimalDenom === query.defaultDenom
+        cur => cur.coinMinimalDenom === query.defaultDenom
       );
 
       if (currency) {
@@ -313,7 +319,7 @@ export const SendEvmPage: FunctionComponent<{
                       feeType: sendConfigs.feeConfig.feeType
                     });
                   },
-                  onFulfill: (tx) => {
+                  onFulfill: tx => {
                     console.log(
                       tx,
                       'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
