@@ -55,6 +55,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Send: {
         upperScreenName: 'Others'
       },
+      SendTron: {
+        upperScreenName: 'Others'
+      },
       TransferNFT: {
         upperScreenName: 'Others'
       },

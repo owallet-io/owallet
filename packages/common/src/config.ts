@@ -669,7 +669,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.000025,
       high: 0.00004
     },
-    features: ['isEvm']
+    features: ['isEvm', 'isTron']
   },
   {
     rest: 'https://bsc-dataseed1.ninicoin.io',

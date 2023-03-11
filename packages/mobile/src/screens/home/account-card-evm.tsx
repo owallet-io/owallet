@@ -19,7 +19,7 @@ import {
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { colors, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
@@ -37,16 +37,14 @@ const getEvmAddress = base58Address =>
   '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
 
 const getBase58Address = address => {
-  console.log('address', address);
-
   const evmAddress = '0x41' + address.substring(2);
   const hash = sha256(sha256(evmAddress));
   const checkSum = hash.substring(2, 10);
   return Base58.encode(evmAddress + checkSum);
 };
 
-const privateKey =
-  '4975143b17cb704090c925ed228d76b90f4c642bcad616439c7b7daa432d9a3f';
+// const privateKey =
+//   '4975143b17cb704090c925ed228d76b90f4c642bcad616439c7b7daa432d9a3f';
 
 const provider = new StaticJsonRpcProvider(
   {
@@ -57,7 +55,12 @@ const provider = new StaticJsonRpcProvider(
 );
 
 (async () => {
-  const signer = new Wallet(privateKey, provider);
+  // const signer = new Wallet(privateKey, provider);
+
+  console.log(
+    'getEvmAddress',
+    getEvmAddress('TY5X9ocQACH9YGAyiK3WUxLcLw3t2ethnc')
+  );
 })();
 
 export const AccountCardEVM: FunctionComponent<{
@@ -100,11 +103,6 @@ export const AccountCardEVM: FunctionComponent<{
     )?.balance;
 
     if (total) {
-      console.log(
-        ' total.amount.int.value',
-        Number(total.amount.int.value) / 10 ** 18 / 10 ** 6
-      );
-
       totalPrice = priceStore?.calculatePrice(total, 'USD');
     }
   }
@@ -122,9 +120,15 @@ export const AccountCardEVM: FunctionComponent<{
       _onPressReceiveModal();
     }
     if (name === 'Send') {
-      smartNavigation.navigateSmart('Send', {
-        currency: chainStore.current.stakeCurrency.coinMinimalDenom
-      });
+      if (chainStore.current._chainInfo.features.includes('isTron')) {
+        smartNavigation.navigateSmart('SendTron', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      } else {
+        smartNavigation.navigateSmart('Send', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      }
     }
   };
 
@@ -251,11 +255,16 @@ export const AccountCardEVM: FunctionComponent<{
                   lineHeight: 50
                 }}
               >
-                {/* {totalPrice
-                  ? totalPrice?.toString()
-                  : total?.shrink(true).maxDecimals(6).toString()} */}
-                {total
-                  ? Number(total.amount.int.value) / 10 ** 18 / 10 ** 6
+                {!chainStore.current._chainInfo.features.includes('isTron')
+                  ? totalPrice
+                    ? totalPrice.toString()
+                    : total?.shrink(true).maxDecimals(6).toString()
+                  : null}
+
+                {chainStore.current._chainInfo.features.includes('isTron') &&
+                total
+                  ? Number(total.amount.int.value) / 10 ** 18 / 10 ** 6 +
+                    ` ${chainStore.current?.stakeCurrency.coinMinimalDenom}`
                   : null}
               </Text>
             </View>
