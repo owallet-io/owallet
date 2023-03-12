@@ -23,45 +23,44 @@ import { colors, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
-import { Hash } from '@owallet/crypto';
+// import { Hash } from '@owallet/crypto';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
 
-import { Base58 } from '@ethersproject/basex';
-import { sha256 } from '@ethersproject/sha2';
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
-import { Wallet } from '@ethersproject/wallet';
+// import { Base58 } from '@ethersproject/basex';
+// import { sha256 } from '@ethersproject/sha2';
+// import { StaticJsonRpcProvider } from '@ethersproject/providers';
 
-const getEvmAddress = base58Address =>
-  '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
+// const getEvmAddress = base58Address =>
+//   '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
 
-const getBase58Address = address => {
-  const evmAddress = '0x41' + address.substring(2);
-  const hash = sha256(sha256(evmAddress));
-  const checkSum = hash.substring(2, 10);
-  return Base58.encode(evmAddress + checkSum);
-};
+// const getBase58Address = address => {
+//   const evmAddress = '0x41' + address.substring(2);
+//   const hash = sha256(sha256(evmAddress));
+//   const checkSum = hash.substring(2, 10);
+//   return Base58.encode(evmAddress + checkSum);
+// };
 
 // const privateKey =
 //   '4975143b17cb704090c925ed228d76b90f4c642bcad616439c7b7daa432d9a3f';
 
-const provider = new StaticJsonRpcProvider(
-  {
-    url: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
-    headers: { 'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c' }
-  },
-  Number('0x2b6653dc')
-);
+// const provider = new StaticJsonRpcProvider(
+//   {
+//     url: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+//     headers: { 'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c' }
+//   },
+//   Number('0x2b6653dc')
+// );
 
-(async () => {
-  // const signer = new Wallet(privateKey, provider);
+// (async () => {
+//   // const signer = new Wallet(privateKey, provider);
 
-  console.log(
-    'getEvmAddress',
-    getEvmAddress('TY5X9ocQACH9YGAyiK3WUxLcLw3t2ethnc')
-  );
-})();
+//   console.log(
+//     'getEvmAddress',
+//     getEvmAddress('TY5X9ocQACH9YGAyiK3WUxLcLw3t2ethnc')
+//   );
+// })();
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -86,10 +85,10 @@ export const AccountCardEVM: FunctionComponent<{
     keyStore => keyStore?.selected
   );
 
-  useEffect(() => {
-    setEvmAddress(account.evmosHexAddress);
-    console.log('base58', getBase58Address(account.evmosHexAddress));
-  }, [account?.evmosHexAddress]);
+  // useEffect(() => {
+  //   setEvmAddress(account.evmosHexAddress);
+  //   console.log('base58', getBase58Address(account.evmosHexAddress));
+  // }, [account?.evmosHexAddress]);
 
   // const queryStakable = queries.queryBalances.getQueryBech32Address(
   //   account.bech32Address

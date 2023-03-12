@@ -25,6 +25,10 @@ import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
 import TronWeb from 'tronweb';
+import {
+  TRON_BIP39_PATH_INDEX_0,
+  TRON_BIP39_PATH_PREFIX
+} from '../../utils/helper';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -348,10 +352,32 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               );
 
               console.log('privateData', privateData);
+              console.log('TRON_BIP39_PATH_INDEX_0', TRON_BIP39_PATH_INDEX_0);
 
               const privKey = Mnemonic.generateWalletFromMnemonic(
                 privateData,
-                chainStore.current.bip44HDPath
+                TRON_BIP39_PATH_INDEX_0
+              );
+              let wordlist = 'en';
+              const account = Wallet.fromMnemonic(
+                privateData,
+                TRON_BIP39_PATH_INDEX_0,
+                wordlist
+              );
+
+              const result = {
+                mnemonic: account.mnemonic,
+                privateKey: account.privateKey,
+                publicKey: account.publicKey
+              };
+
+              console.log('account', account);
+              console.log('result', result);
+
+              console.log(
+                ' Buffer.from(privKey).toString()',
+                Buffer.from(privKey).toString('hex'),
+                'TE15PBm8MsyS4cHrW7u1VTjbZDx5MXVQfs'
               );
 
               if (privKey) {
@@ -367,9 +393,9 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   });
 
                   const tradeobj = await tronWeb.transactionBuilder.sendTrx(
-                    'TQKBJqT2jArurWJQBSiJkaeJDZbu126NJz',
+                    'TP744j5fz5Th8ntshJtkyHNttiHGRvY5LT',
                     100,
-                    'TY5X9ocQACH9YGAyiK3WUxLcLw3t2ethnc'
+                    'TE15PBm8MsyS4cHrW7u1VTjbZDx5MXVQfs'
                   );
 
                   const signedtxn = await tronWeb.trx.sign(

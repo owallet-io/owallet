@@ -4,6 +4,8 @@ import { find } from 'lodash';
 import moment from 'moment';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
+export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
+export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {
