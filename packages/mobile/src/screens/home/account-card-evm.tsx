@@ -23,8 +23,7 @@ import { colors, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
-// import { Hash } from '@owallet/crypto';
-import { Dec, DecUtils } from '@owallet/unit';
+import Big from 'big.js';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
@@ -224,7 +223,9 @@ export const AccountCardEVM: FunctionComponent<{
                   : null}
 
                 {chainStore.current.chainId === TRON_ID && total
-                  ? Number(total.amount.int.value) / 10 ** 18 / 10 ** 6 +
+                  ? new Big(parseInt(total.amount.int.value)).div(
+                      new Big(10).pow(24)
+                    ) +
                     ` ${chainStore.current?.stakeCurrency.coinMinimalDenom.toUpperCase()}`
                   : null}
               </Text>
