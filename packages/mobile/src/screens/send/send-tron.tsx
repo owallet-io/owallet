@@ -62,7 +62,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
   );
 
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [reveiveAddress, setReceiveAddress] = useState('');
+  const [receiveAddress, setReceiveAddress] = useState('');
   const [customFee, setCustomFee] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -156,7 +156,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
             placeholder="Enter receiving address"
             label="Send to"
             labelStyle={styles.sendlabelInput}
-            value={reveiveAddress}
+            value={receiveAddress}
             onChange={({ nativeEvent: { eventCount, target, text } }) =>
               setReceiveAddress(text)
             }
@@ -298,7 +298,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   });
 
                   const tradeobj = await tronWeb.transactionBuilder.sendTrx(
-                    reveiveAddress,
+                    receiveAddress,
                     new Dec(
                       Number(
                         (sendConfigs.amountConfig.amount ?? '0').replace(
