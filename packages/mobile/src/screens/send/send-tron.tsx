@@ -6,10 +6,8 @@ import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
-import { Wallet } from '@ethersproject/wallet';
-import { Mnemonic, PrivKeySecp256k1 } from '@owallet/crypto';
+import { Mnemonic } from '@owallet/crypto';
 import {
-  AddressInput,
   AmountInput,
   MemoInput,
   CurrencySelector,
@@ -25,12 +23,7 @@ import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
 import TronWeb from 'tronweb';
-import {
-  BIP44_PATH_PREFIX,
-  getBase58Address,
-  TRON_BIP39_PATH_INDEX_0,
-  TRON_BIP39_PATH_PREFIX
-} from '../../utils/helper';
+import { BIP44_PATH_PREFIX, getBase58Address } from '../../utils/helper';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -102,9 +95,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.type === 'cw20') {
-          return cur.coinDenom == route.params.currency;
-        }
         if (cur.coinDenom === route.params.currency) {
           return cur.coinDenom === route.params.currency;
         }
@@ -122,14 +112,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
-
-  const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError() ??
-    sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError();
-  // ?? sendConfigs.feeConfig.getError();
-  const txStateIsValid = sendConfigError == null;
 
   return (
     <PageWithScrollView>
@@ -235,12 +217,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
             />
           ) : null}
 
-          <MemoInput
-            label="Memo (Optional)"
-            placeholder="Type your memo here"
-            memoConfig={sendConfigs.memoConfig}
-            labelStyle={styles.sendlabelInput}
-          />
           <Button
             text="Send"
             size="large"
@@ -318,7 +294,9 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   const receipt = await tronWeb.trx.sendRawTransaction(
                     signedtxn
                   );
-                  smartNavigation.pushSmart('TxSuccessResult', {});
+                  smartNavigation.pushSmart('TxSuccessResult', {
+                    txHash: receipt.txid
+                  });
                   console.log('sent tron tradeobj', tradeobj.raw_data_hex);
                   console.log('sent tron receipt', receipt);
                   setLoading(false);

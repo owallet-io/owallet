@@ -13,6 +13,7 @@ import {
   capitalizedText,
   convertAmount,
   formatContractAddress,
+  getBase58Address,
   _keyExtract
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
