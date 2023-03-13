@@ -271,7 +271,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                 index,
                 password
               );
-              console.log('privateData', privateData);
 
               if (privateData.split(' ').length > 1) {
                 privateKey = Mnemonic.generateWalletFromMnemonic(
@@ -287,8 +286,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
               } else {
                 privateKey = privateData;
               }
-
-              console.log('privateKey', privateKey);
 
               if (privateKey) {
                 try {

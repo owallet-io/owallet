@@ -91,7 +91,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     const value = res.data?.data || [];
     let newData = isLoadMore ? [...data, ...value] : value;
     hasMore.current = value?.length === 10;
-    page.current = res.data?.page.page_id + 1;
+    page.current = res.data?.page?.page_id + 1;
     if (page.current === res.data?.page.total_page) {
       hasMore.current = false;
     }
