@@ -225,8 +225,7 @@ export const AccountCardEVM: FunctionComponent<{
                 {chainStore.current.chainId === TRON_ID && total
                   ? new Big(parseInt(total.amount.int.value)).div(
                       new Big(10).pow(24)
-                    ) +
-                    ` ${chainStore.current?.stakeCurrency.coinMinimalDenom.toUpperCase()}`
+                    ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
               </Text>
             </View>
