@@ -254,7 +254,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
         </View>
         <PasswordInputModal
           isOpen={isOpenModal}
-          paragraph={'Do not reveal your mnemonic to anyone'}
+          paragraph={'Please confirm your password'}
           close={() => setIsOpenModal(false)}
           title={'Confirm Password'}
           disabled={!account.isReadyToSendMsgs || loading}
@@ -292,7 +292,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   tronWeb = new TronWeb({
                     fullHost: 'https://api.trongrid.io',
                     headers: {
-                      'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
+                      'x-api-key': process.env.X_API_KEY
                     },
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
