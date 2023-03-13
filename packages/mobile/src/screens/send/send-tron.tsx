@@ -156,6 +156,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
             placeholder="Enter receiving address"
             label="Send to"
             labelStyle={styles.sendlabelInput}
+            defaultValue={route?.params?.recipient ?? ''}
             value={receiveAddress}
             onChange={({ nativeEvent: { eventCount, target, text } }) =>
               setReceiveAddress(text)

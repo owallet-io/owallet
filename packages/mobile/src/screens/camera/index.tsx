@@ -18,13 +18,13 @@ import { FullScreenCameraView } from '../../components/camera';
 import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
 import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
-import { checkValidDomain } from '../../utils/helper';
+import { checkValidDomain, TRON_ID } from '../../utils/helper';
 
 interface keyable {
   [key: string]: any;
 }
 
-export const CameraScreen: FunctionComponent = observer((props) => {
+export const CameraScreen: FunctionComponent = observer(props => {
   const { chainStore, keyRingStore } = useStore();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
@@ -87,14 +87,14 @@ export const CameraScreen: FunctionComponent = observer((props) => {
               if (isBech32Address) {
                 const prefix = data.slice(0, data.indexOf('1'));
                 const chainInfo = chainStore.chainInfosInUI.find(
-                  (chainInfo) =>
+                  chainInfo =>
                     chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                 );
                 if (chainInfo) {
                   const routersParam: keyable =
                     smartNavigation?.getState()?.routes;
                   const isParamAddressBook = routersParam.find(
-                    (route) => route?.params?.screenCurrent === 'addressbook'
+                    route => route?.params?.screenCurrent === 'addressbook'
                   );
                   if (isParamAddressBook) {
                     smartNavigation.navigateSmart('AddAddressBook', {
@@ -105,10 +105,16 @@ export const CameraScreen: FunctionComponent = observer((props) => {
                       }
                     });
                   } else {
-                    smartNavigation.pushSmart('Send', {
-                      chainId: chainInfo.chainId,
-                      recipient: data
-                    });
+                    if (chainStore.current.chainId === TRON_ID) {
+                      smartNavigation.pushSmart('SendTron', {
+                        recipient: data
+                      });
+                    } else {
+                      smartNavigation.pushSmart('Send', {
+                        chainId: chainInfo.chainId,
+                        recipient: data
+                      });
+                    }
                   }
                 } else {
                   smartNavigation.navigateSmart('Home', {});
@@ -127,10 +133,8 @@ export const CameraScreen: FunctionComponent = observer((props) => {
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}
         close={() => setIsSelectChainModalOpen(false)}
-        chainIds={chainStore.chainInfosInUI.map(
-          (chainInfo) => chainInfo.chainId
-        )}
-        onSelectChain={(chainId) => {
+        chainIds={chainStore.chainInfosInUI.map(chainInfo => chainInfo.chainId)}
+        onSelectChain={chainId => {
           setShowingAddressQRCodeChainId(chainId);
           setIsAddressQRCodeModalOpen(true);
           setIsSelectChainModalOpen(false);
@@ -200,7 +204,7 @@ export const AddressQRCodeModal: FunctionComponent<{
               onPress={() => {
                 Share.share({
                   message: account.bech32Address
-                }).catch((e) => {
+                }).catch(e => {
                   console.log(e);
                 });
               }}
