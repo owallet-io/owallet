@@ -156,7 +156,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 6,
           coinGeckoId: 'usd-coin',
           coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
         }
       ];
     },
@@ -618,7 +618,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: 'usd-coin',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
       }
     ],
     get feeCurrencies() {
@@ -646,7 +646,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: 'TRX',
       coinMinimalDenom: 'trx',
       coinDecimals: 18,
-      coinGeckoId: 'trx'
+      coinGeckoId: 'tron'
     },
     restConfig: {
       headers: {
@@ -669,7 +669,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.000025,
       high: 0.00004
     },
-    features: ['isEvm', 'isTron']
+    features: ['isEvm']
   },
   {
     rest: 'https://bsc-dataseed1.ninicoin.io',
