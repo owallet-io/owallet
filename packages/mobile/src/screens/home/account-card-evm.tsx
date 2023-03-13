@@ -41,8 +41,6 @@ export const AccountCardEVM: FunctionComponent<{
     keyRingStore
   } = useStore();
 
-  const [evmAddress, setEvmAddress] = useState(null);
-
   const smartNavigation = useSmartNavigation();
   // const navigation = useNavigation();
 
@@ -93,10 +91,10 @@ export const AccountCardEVM: FunctionComponent<{
     }
   };
 
-  const _onPressNamespace = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(NamespaceModal(account));
-  };
+  // const _onPressNamespace = () => {
+  //   modalStore.setOpen();
+  //   modalStore.setChildren(NamespaceModal(account));
+  // };
   const _onPressMyWallet = () => {
     modalStore.setOpen();
     modalStore.setChildren(MyWalletModal());

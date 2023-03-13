@@ -646,8 +646,20 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: 'TRX',
       coinMinimalDenom: 'trx',
       coinDecimals: 18,
-      coinGeckoId: 'tron'
+      coinGeckoId: 'tron',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
     },
+    currencies: [
+      {
+        coinDenom: 'TRX',
+        coinMinimalDenom: 'trx',
+        coinDecimals: 18,
+        coinGeckoId: 'tron',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+      }
+    ],
     restConfig: {
       headers: {
         'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
@@ -657,19 +669,21 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinType: 195
     },
     coinType: 195,
-    bech32Config: Bech32Address.defaultBech32Config('trx'),
-    get currencies() {
-      return [this.stakeCurrency];
-    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
     get feeCurrencies() {
-      return [this.stakeCurrency];
+      return this.currencies;
     },
     gasPriceStep: {
       low: 0,
       average: 0.000025,
       high: 0.00004
     },
-    features: ['isEvm']
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Tronscan',
+      txUrl: 'https://tronscan.org/#/transaction/{txHash}',
+      accountUrl: 'https://tronscan.org/#/address/{address}'
+    }
   },
   {
     rest: 'https://bsc-dataseed1.ninicoin.io',

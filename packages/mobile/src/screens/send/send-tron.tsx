@@ -294,7 +294,9 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                   const receipt = await tronWeb.trx.sendRawTransaction(
                     signedtxn
                   );
-                  smartNavigation.pushSmart('TxSuccessResult', {});
+                  smartNavigation.pushSmart('TxSuccessResult', {
+                    txHash: receipt.txid
+                  });
                   console.log('sent tron tradeobj', tradeobj.raw_data_hex);
                   console.log('sent tron receipt', receipt);
                   setLoading(false);
