@@ -61,6 +61,8 @@ export const AccountCardEVM: FunctionComponent<{
       account.evmosHexAddress
     )?.balance;
 
+    console.log('total.amount.int.value', total);
+
     if (total) {
       totalPrice = priceStore?.calculatePrice(total, 'USD');
     }
