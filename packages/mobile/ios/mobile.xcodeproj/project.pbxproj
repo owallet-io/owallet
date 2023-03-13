@@ -450,7 +450,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-safe-area-context\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-webview\"",
 				);
-				MARKETING_VERSION = 0.0.22;
+				MARKETING_VERSION = 0.0.25;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -541,7 +541,7 @@
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-safe-area-context\"",
 					"\"${PODS_CONFIGURATION_BUILD_DIR}/react-native-webview\"",
 				);
-				MARKETING_VERSION = 0.0.22;
+				MARKETING_VERSION = 0.0.25;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

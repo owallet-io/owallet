@@ -4,8 +4,23 @@ import { find } from 'lodash';
 import moment from 'moment';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
+export const TRON_ID = '0x2b6653dc';
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
+export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
+
+import { Base58 } from '@ethersproject/basex';
+import { sha256 } from '@ethersproject/sha2';
+
+export const getEvmAddress = base58Address =>
+  '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
+
+export const getBase58Address = address => {
+  const evmAddress = '0x41' + address.substring(2);
+  const hash = sha256(sha256(evmAddress));
+  const checkSum = hash.substring(2, 10);
+  return Base58.encode(evmAddress + checkSum);
+};
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {

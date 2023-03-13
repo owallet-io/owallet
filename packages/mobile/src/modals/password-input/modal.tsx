@@ -24,6 +24,7 @@ export const PasswordInputModal: FunctionComponent<{
   textButtonLeft?: string;
   textButtonRight?: string;
   buttonRightStyle?: TextStyle;
+  disabled?: boolean;
   /**
    * If any error thrown in the `onEnterPassword`, the password considered as invalid password.
    * @param password
@@ -38,7 +39,8 @@ export const PasswordInputModal: FunctionComponent<{
     labelStyle,
     textButtonLeft = 'Cancel',
     textButtonRight = 'Approve',
-    buttonRightStyle
+    buttonRightStyle,
+    disabled
   }) => {
     const [password, setPassword] = useState('');
     const [isInvalidPassword, setIsInvalidPassword] = useState(false);
@@ -88,7 +90,7 @@ export const PasswordInputModal: FunctionComponent<{
             <TextInput
               label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 setPassword(text);
               }}
               inputStyle={{
@@ -103,7 +105,7 @@ export const PasswordInputModal: FunctionComponent<{
               value={password}
               returnKeyType="done"
               secureTextEntry={true}
-              onSubmitEditing={submitPassword}
+              // onSubmitEditing={submitPassword}
             />
           </TouchableWithoutFeedback>
           <View
@@ -147,7 +149,7 @@ export const PasswordInputModal: FunctionComponent<{
                   ? colors['purple-900']
                   : colors['purple-900']
               }}
-              disabled={!password}
+              disabled={!password || disabled}
             >
               <Text
                 style={{
