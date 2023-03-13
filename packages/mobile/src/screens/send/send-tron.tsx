@@ -73,6 +73,8 @@ export const SendTronScreen: FunctionComponent = observer(() => {
     >
   >();
 
+  console.log('recipient', route?.params?.recipient);
+
   const smartNavigation = useSmartNavigation();
 
   const chainId = route?.params?.chainId
@@ -110,6 +112,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
+      setReceiveAddress(route?.params?.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
 
@@ -138,7 +141,6 @@ export const SendTronScreen: FunctionComponent = observer(() => {
             placeholder="Enter receiving address"
             label="Send to"
             labelStyle={styles.sendlabelInput}
-            defaultValue={route?.params?.recipient ?? ''}
             value={receiveAddress}
             onChange={({ nativeEvent: { eventCount, target, text } }) =>
               setReceiveAddress(text)

@@ -66,6 +66,12 @@ export const CameraScreen: FunctionComponent = observer(props => {
           if (!isLoading && !isCompleted) {
             setIsLoading(true);
 
+            if (chainStore.current.chainId === TRON_ID && data) {
+              smartNavigation.pushSmart('SendTron', {
+                recipient: data
+              });
+            }
+
             try {
               if (checkValidDomain(data.toLowerCase())) {
                 navigation.navigate('Browser', { url: data.toLowerCase() });
@@ -105,16 +111,10 @@ export const CameraScreen: FunctionComponent = observer(props => {
                       }
                     });
                   } else {
-                    if (chainStore.current.chainId === TRON_ID) {
-                      smartNavigation.pushSmart('SendTron', {
-                        recipient: data
-                      });
-                    } else {
-                      smartNavigation.pushSmart('Send', {
-                        chainId: chainInfo.chainId,
-                        recipient: data
-                      });
-                    }
+                    smartNavigation.pushSmart('Send', {
+                      chainId: chainInfo.chainId,
+                      recipient: data
+                    });
                   }
                 } else {
                   smartNavigation.navigateSmart('Home', {});
