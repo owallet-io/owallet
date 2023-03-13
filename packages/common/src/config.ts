@@ -156,7 +156,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinDecimals: 6,
           coinGeckoId: 'usd-coin',
           coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
         }
       ];
     },
@@ -618,7 +618,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: 'usd-coin',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
       }
     ],
     get feeCurrencies() {
@@ -635,6 +635,41 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://etherscan.io/tx/{txHash}',
       accountUrl: 'https://etherscan.io/address/{address}'
     }
+  },
+  {
+    rpc: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    rest: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    chainId: '0x2b6653dc',
+    networkType: 'evm',
+    chainName: 'Tron',
+    stakeCurrency: {
+      coinDenom: 'TRX',
+      coinMinimalDenom: 'trx',
+      coinDecimals: 18,
+      coinGeckoId: 'tron'
+    },
+    restConfig: {
+      headers: {
+        'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
+      }
+    },
+    bip44: {
+      coinType: 195
+    },
+    coinType: 195,
+    bech32Config: Bech32Address.defaultBech32Config('trx'),
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004
+    },
+    features: ['isEvm']
   },
   {
     rest: 'https://bsc-dataseed1.ninicoin.io',

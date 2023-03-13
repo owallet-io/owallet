@@ -19,14 +19,16 @@ import {
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { colors, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NamespaceModal, AddressQRCodeModal } from './components';
-import { Hash } from '@owallet/crypto';
+// import { Hash } from '@owallet/crypto';
+import { Dec, DecUtils } from '@owallet/unit';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
+import { getBase58Address, TRON_ID } from '../../utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -50,10 +52,6 @@ export const AccountCardEVM: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     keyStore => keyStore?.selected
   );
-
-  useEffect(() => {
-    setEvmAddress(account.evmosHexAddress);
-  }, [account?.evmosHexAddress]);
 
   // const queryStakable = queries.queryBalances.getQueryBech32Address(
   //   account.bech32Address
@@ -84,9 +82,15 @@ export const AccountCardEVM: FunctionComponent<{
       _onPressReceiveModal();
     }
     if (name === 'Send') {
-      smartNavigation.navigateSmart('Send', {
-        currency: chainStore.current.stakeCurrency.coinMinimalDenom
-      });
+      if (chainStore.current.chainId === TRON_ID) {
+        smartNavigation.navigateSmart('SendTron', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      } else {
+        smartNavigation.navigateSmart('Send', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      }
     }
   };
 
@@ -213,9 +217,16 @@ export const AccountCardEVM: FunctionComponent<{
                   lineHeight: 50
                 }}
               >
-                {totalPrice
-                  ? totalPrice?.toString()
-                  : total?.shrink(true).maxDecimals(6).toString()}
+                {chainStore.current.chainId !== TRON_ID
+                  ? totalPrice
+                    ? totalPrice.toString()
+                    : total?.shrink(true).maxDecimals(6).toString()
+                  : null}
+
+                {chainStore.current.chainId === TRON_ID && total
+                  ? Number(total.amount.int.value) / 10 ** 18 / 10 ** 6 +
+                    ` ${chainStore.current?.stakeCurrency.coinMinimalDenom.toUpperCase()}`
+                  : null}
               </Text>
             </View>
             <View
@@ -286,7 +297,7 @@ export const AccountCardEVM: FunctionComponent<{
                   {account.name || '...'}
                 </Text>
               </View>
-
+              {/* 
               <AddressCopyable
                 address={
                   chainStore.current.networkType === 'cosmos'
@@ -295,7 +306,22 @@ export const AccountCardEVM: FunctionComponent<{
                 }
                 maxCharacters={22}
                 networkType={chainStore.current.networkType}
-              />
+              /> */}
+
+              {account.evmosHexAddress ? (
+                <AddressCopyable
+                  address={
+                    chainStore.current.networkType === 'cosmos'
+                      ? account.bech32Address
+                      : chainStore.current.chainId === TRON_ID
+                      ? getBase58Address(account.evmosHexAddress)
+                      : account.evmosHexAddress
+                  }
+                  maxCharacters={22}
+                  networkType={chainStore.current.networkType}
+                />
+              ) : null}
+
               {/* chainInfo.bip44.coinType */}
               <Text
                 style={{

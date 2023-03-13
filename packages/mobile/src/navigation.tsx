@@ -126,6 +126,7 @@ import { TransferNFTScreen } from './screens/transfer-nft';
 import { DashBoardScreen } from './screens/dashboard';
 import { lightColors } from './themes/colors';
 import { NotificationScreen } from './screens/notifications';
+import { SendTronScreen } from './screens/send/send-tron';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -555,6 +556,14 @@ export const OtherNavigation: FunctionComponent = () => {
         }}
         name="Send"
         component={SendScreen}
+      />
+      <Stack.Screen
+        options={{
+          title: 'Send',
+          header: () => <CustomHeader />
+        }}
+        name="SendTron"
+        component={SendTronScreen}
       />
       <Stack.Screen
         options={{
