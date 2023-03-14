@@ -8,6 +8,25 @@ export const TRON_ID = '0x2b6653dc';
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
+export const TRC20_LIST = [
+  {
+    contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
+    tokenName: 'USDC',
+    coinDenom: 'USDC',
+    coinGeckoId: 'usd-coin',
+    coinImageUrl:
+      'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+    coinDecimals: 6
+  },
+  {
+    contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+    tokenName: 'USDT',
+    coinDenom: 'USDT',
+    coinDecimals: 6,
+    coinGeckoId: 'tether',
+    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+  }
+];
 
 import { Base58 } from '@ethersproject/basex';
 import { sha256 } from '@ethersproject/sha2';

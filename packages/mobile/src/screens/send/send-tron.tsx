@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export const SendTronScreen: FunctionComponent = observer(() => {
+export const SendTronScreen: FunctionComponent = observer(props => {
   const {
     chainStore,
     accountStore,
@@ -67,13 +67,16 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           chainId?: string;
           currency?: string;
           recipient?: string;
+          item?: any;
         }
       >,
       string
     >
   >();
 
-  console.log('recipient', route?.params?.recipient);
+  useEffect(() => {
+    setIsOpenModal(true);
+  }, []);
 
   const smartNavigation = useSmartNavigation();
 
@@ -131,11 +134,11 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           </Text>
         </View>
         <View style={styles.sendInputRoot}>
-          <CurrencySelector
-            label="Select a token"
-            placeHolder="Select Token"
-            amountConfig={sendConfigs.amountConfig}
+          <TextInput
+            label="Token"
             labelStyle={styles.sendlabelInput}
+            value={route?.params?.item?.coinDenom ?? 'TRX'}
+            editable={false}
           />
           <TextInput
             placeholder="Enter receiving address"
@@ -236,7 +239,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           paragraph={'Please confirm your password'}
           close={() => setIsOpenModal(false)}
           title={'Confirm Password'}
-          disabled={!account.isReadyToSendMsgs || loading}
+          disabled={loading}
           onEnterPassword={async password => {
             setLoading(true);
             const index = keyRingStore.multiKeyStoreInfo.findIndex(
@@ -275,6 +278,38 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                     },
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
+
+                  // Send TRC20
+                  // const CONTRACT = 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8';
+                  // const ACCOUNT = 'TSRX21uZdCAxKASYBWJVFCye9R5aMUMT6z';
+                  // const { abi } = await tronWeb.trx.getContract(CONTRACT);
+                  // // console.log(JSON.stringify(abi));
+
+                  // const contract = tronWeb.contract(abi.entrys, CONTRACT);
+
+                  // const balance = await contract.methods
+                  //   .balanceOf(getBase58Address(account.evmosHexAddress))
+                  //   .call();
+                  // console.log('balance:', balance.toString());
+
+                  // const resp = await contract.methods
+                  //   .transfer(ACCOUNT, 500000)
+                  //   .send({
+                  //     feeLimit: 70_000_000,
+                  //     callValue: 0
+                  //   });
+                  // console.log('transfer:', resp);
+                  // return;
+
+                  // Send TRX
+
+                  const transaction = await tronWeb.trx.getTransactionInfo(
+                    // '8c97138da96ce6d795b7ad537e1c188a7efe8a75f28f9770c0b69464c6dcd742'
+                    '67b1f6989cf39af309806df812ec7bb5088d58737dacd8af80829c28b6c708f6'
+                  );
+                  console.log('transaction', transaction);
+
+                  return;
 
                   const tradeobj = await tronWeb.transactionBuilder.sendTrx(
                     receiveAddress,

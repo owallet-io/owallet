@@ -57,6 +57,11 @@ export const API = {
     return API.post(url, params, config);
   },
 
+  getTronAccountInfo: ({ address }, config: AxiosRequestConfig) => {
+    let url = `v1/accounts/${address}`;
+    return API.get(url, config);
+  },
+
   getMarketChartRange: (
     { id, from, to }: { id: string; from?: number; to?: number },
     config: AxiosRequestConfig
