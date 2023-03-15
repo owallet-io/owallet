@@ -306,8 +306,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                       .balanceOf(getBase58Address(account.evmosHexAddress))
                       .call();
 
-                    console.log('balance:', balance.toString());
-                    if (balance > 0) {
+                    console.log('balance:', Number(balance.toString()));
+                    if (Number(balance.toString()) > 0) {
                       const resp = await contract.methods
                         .transfer(
                           receiveAddress,
@@ -322,7 +322,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                           feeLimit: 50_000_000, // Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee
                           callValue: 0
                         });
-
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: resp,
                         chainId: chainStore.current.chainId,
