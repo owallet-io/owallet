@@ -60,6 +60,16 @@ export const TRC20_LIST = [
       'https://s2.coinmarketcap.com/static/img/coins/64x64/5488.png',
     type: 'trc20'
   }
+  // {
+  //   contractAddress: 'TWrZRHY9aKQZcyjpovdH6qeCEyYZrRQDZt',
+  //   tokenName: 'SUNOLD',
+  //   coinDenom: 'SUNOLD',
+  //   coinDecimals: 6,
+  //   coinGeckoId: 'sun',
+  //   coinImageUrl:
+  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/6990.png',
+  //   type: 'trc20'
+  // }
 ];
 
 import { Base58 } from '@ethersproject/basex';
