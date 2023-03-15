@@ -46,7 +46,9 @@ export const TronTokensCard: FunctionComponent<{
               let token = res.data?.data[0].trc20.find(
                 t => tk.contractAddress in t
               );
-              tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              if (token) {
+                tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              }
             });
 
             setTokens(tokenArr);
