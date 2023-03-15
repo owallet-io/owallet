@@ -78,7 +78,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 });
               }
             });
-          }, 50000);
+          }, 65000);
         } else {
           smartNavigation.pushSmart('TxFailedResult', {
             chainId: chainStore.current.chainId,

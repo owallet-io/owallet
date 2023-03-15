@@ -35,6 +35,7 @@ export const TronTokensCard: FunctionComponent<{
           },
           {
             baseURL: 'https://api.trongrid.io/'
+            // baseURL: 'https://nile.trongrid.io/' // TRON testnet
           }
         );
 

@@ -283,6 +283,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                 try {
                   tronWeb = new TronWeb({
                     fullHost: 'https://api.trongrid.io',
+                    // fullHost: 'https://nile.trongrid.io', // TRON testnet
                     headers: {
                       'x-api-key': process.env.X_API_KEY
                     },
@@ -306,27 +307,31 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                       .call();
 
                     console.log('balance:', balance.toString());
+                    if (balance > 0) {
+                      const resp = await contract.methods
+                        .transfer(
+                          receiveAddress,
+                          Number(
+                            (sendConfigs.amountConfig.amount ?? '0').replace(
+                              /,/g,
+                              '.'
+                            )
+                          ) * Math.pow(10, 6)
+                        )
+                        .send({
+                          feeLimit: 50_000_000, // Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee
+                          callValue: 0
+                        });
 
-                    const resp = await contract.methods
-                      .transfer(
-                        receiveAddress,
-                        Number(
-                          (sendConfigs.amountConfig.amount ?? '0').replace(
-                            /,/g,
-                            '.'
-                          )
-                        ) * Math.pow(10, 6)
-                      )
-                      .send({
-                        feeLimit: 50_000_000, // Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee
-                        callValue: 0
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: resp,
+                        chainId: chainStore.current.chainId,
+                        tronWeb: tronWeb
                       });
-
-                    smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: resp,
-                      chainId: chainStore.current.chainId,
-                      tronWeb: tronWeb
-                    });
+                    } else {
+                      setIsOpenModal(true);
+                      alert('Not enough balance to send');
+                    }
                   } else {
                     // Send TRX
                     const tradeobj = await tronWeb.transactionBuilder.sendTrx(
