@@ -321,7 +321,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                           ) * Math.pow(10, 6)
                         )
                         .send({
-                          feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee.
+                          feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee. Read more: https://developers.tron.network/docs/set-feelimit
                           callValue: 0
                         });
                       smartNavigation.pushSmart('TxPendingResult', {
