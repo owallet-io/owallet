@@ -23,7 +23,12 @@ import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
 import TronWeb from 'tronweb';
-import { BIP44_PATH_PREFIX, getBase58Address } from '../../utils/helper';
+import {
+  BIP44_PATH_PREFIX,
+  getBase58Address,
+  FAILED,
+  SUCCESS
+} from '../../utils/helper';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -67,16 +72,21 @@ export const SendTronScreen: FunctionComponent = observer(props => {
           chainId?: string;
           currency?: string;
           recipient?: string;
-          item?: any;
+          item?: {
+            amount: string;
+            coinDecimals: number;
+            coinDenom: string;
+            coinGeckoId: string;
+            coinImageUrl: string;
+            contractAddress: string;
+            tokenName: string;
+            type?: string;
+          };
         }
       >,
       string
     >
   >();
-
-  useEffect(() => {
-    setIsOpenModal(true);
-  }, []);
 
   const smartNavigation = useSmartNavigation();
 
@@ -279,64 +289,73 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
 
-                  // Send TRC20
-                  // const CONTRACT = 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8';
-                  // const ACCOUNT = 'TSRX21uZdCAxKASYBWJVFCye9R5aMUMT6z';
-                  // const { abi } = await tronWeb.trx.getContract(CONTRACT);
-                  // // console.log(JSON.stringify(abi));
+                  if (route?.params?.item?.type === 'trc20') {
+                    // Send TRC20
+                    const { abi } = await tronWeb.trx.getContract(
+                      route?.params?.item.contractAddress
+                    );
 
-                  // const contract = tronWeb.contract(abi.entrys, CONTRACT);
+                    const contract = tronWeb.contract(
+                      abi.entrys,
+                      route?.params?.item.contractAddress
+                    );
 
-                  // const balance = await contract.methods
-                  //   .balanceOf(getBase58Address(account.evmosHexAddress))
-                  //   .call();
-                  // console.log('balance:', balance.toString());
+                    const balance = await contract.methods
+                      .balanceOf(getBase58Address(account.evmosHexAddress))
+                      .call();
 
-                  // const resp = await contract.methods
-                  //   .transfer(ACCOUNT, 500000)
-                  //   .send({
-                  //     feeLimit: 70_000_000,
-                  //     callValue: 0
-                  //   });
-                  // console.log('transfer:', resp);
-                  // return;
+                    console.log('balance:', balance.toString());
 
-                  // Send TRX
-
-                  const transaction = await tronWeb.trx.getTransactionInfo(
-                    // '8c97138da96ce6d795b7ad537e1c188a7efe8a75f28f9770c0b69464c6dcd742'
-                    '67b1f6989cf39af309806df812ec7bb5088d58737dacd8af80829c28b6c708f6'
-                  );
-                  console.log('transaction', transaction);
-
-                  return;
-
-                  const tradeobj = await tronWeb.transactionBuilder.sendTrx(
-                    receiveAddress,
-                    new Dec(
-                      Number(
-                        (sendConfigs.amountConfig.amount ?? '0').replace(
-                          /,/g,
-                          '.'
-                        )
+                    const resp = await contract.methods
+                      .transfer(
+                        receiveAddress,
+                        Number(
+                          (sendConfigs.amountConfig.amount ?? '0').replace(
+                            /,/g,
+                            '.'
+                          )
+                        ) * Math.pow(10, 6)
                       )
-                    ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
-                    getBase58Address(account.evmosHexAddress)
-                  );
+                      .send({
+                        feeLimit: 50_000_000,
+                        callValue: 0
+                      });
+                    console.log('transfer:', resp);
 
-                  const signedtxn = await tronWeb.trx.sign(
-                    tradeobj,
-                    Buffer.from(privateKey).toString('hex')
-                  );
-                  const receipt = await tronWeb.trx.sendRawTransaction(
-                    signedtxn
-                  );
-                  smartNavigation.pushSmart('TxSuccessResult', {
-                    txHash: receipt.txid
-                  });
-                  console.log('sent tron tradeobj', tradeobj.raw_data_hex);
-                  console.log('sent tron receipt', receipt);
-                  setLoading(false);
+                    smartNavigation.pushSmart('TxPendingResult', {
+                      txHash: resp,
+                      chainId: chainStore.current.chainId,
+                      tronWeb: tronWeb
+                    });
+                  } else {
+                    // Send TRX
+                    const tradeobj = await tronWeb.transactionBuilder.sendTrx(
+                      receiveAddress,
+                      new Dec(
+                        Number(
+                          (sendConfigs.amountConfig.amount ?? '0').replace(
+                            /,/g,
+                            '.'
+                          )
+                        )
+                      ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
+                      getBase58Address(account.evmosHexAddress)
+                    );
+
+                    const signedtxn = await tronWeb.trx.sign(
+                      tradeobj,
+                      Buffer.from(privateKey).toString('hex')
+                    );
+                    const receipt = await tronWeb.trx.sendRawTransaction(
+                      signedtxn
+                    );
+                    smartNavigation.pushSmart('TxSuccessResult', {
+                      txHash: receipt.txid
+                    });
+                    console.log('sent tron tradeobj', tradeobj.raw_data_hex);
+                    console.log('sent tron receipt', receipt);
+                    setLoading(false);
+                  }
                 } catch (err) {
                   console.log('send tron err', err);
                   setLoading(false);
