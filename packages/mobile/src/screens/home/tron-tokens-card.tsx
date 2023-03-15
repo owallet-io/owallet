@@ -1,20 +1,18 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Card, CardBody } from '../../components/card';
-import { SectionList, StyleSheet, View, ViewStyle, Image } from 'react-native';
+import { StyleSheet, View, ViewStyle, Image } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { TokenItem } from '../tokens/components/token-item';
 import { useSmartNavigation } from '../../navigation.provider';
-import { RectButton } from '../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { getBase58Address, TRC20_LIST, _keyExtract } from '../../utils/helper';
-import { DownArrowIcon, RightArrowIcon } from '../../components/icon';
+import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
-import ProgressiveImage from '../../components/progessive-image';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../components/vector-character';
+import Big from 'big.js';
 
 const size = 44;
 const imageScale = 0.54;
@@ -31,7 +29,6 @@ export const TronTokensCard: FunctionComponent<{
   useEffect(() => {
     (async function get() {
       try {
-        setTokens(TRC20_LIST);
         const res = await API.getTronAccountInfo(
           {
             address: getBase58Address(account.evmosHexAddress)
@@ -41,17 +38,24 @@ export const TronTokensCard: FunctionComponent<{
           }
         );
 
-        console.log('res= ===', res.data?.data);
         if (res.data?.data.length > 0) {
-          console.log('res= ===', res.data?.data?.[0]);
+          if (res.data?.data[0].trc20) {
+            const tokenArr = [];
+            TRC20_LIST.map(tk => {
+              let token = res.data?.data[0].trc20.find(
+                t => tk.contractAddress in t
+              );
+              tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+            });
+
+            setTokens(tokenArr);
+          }
         }
       } catch (error) {}
     })();
   }, [account.evmosHexAddress]);
 
   const _renderFlatlistItem = ({ item }) => {
-    console.log('item', item);
-
     return (
       <TouchableOpacity
         style={styles.containerToken}
@@ -121,7 +125,9 @@ export const TronTokensCard: FunctionComponent<{
                 fontWeight: '700'
               }}
             >
-              {`${1} ${item.coinDenom}`}
+              {`${new Big(parseInt(item.amount)).div(
+                new Big(10).pow(6).toFixed(6)
+              )} ${item.coinDenom}`}
             </Text>
 
             {/* <Text
