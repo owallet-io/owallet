@@ -131,12 +131,13 @@ export const colors = {
   // item
   item: '#2B2D3B',
   icon: '#E2DEEB',
-  'icon-purple-900-gray':'#717177',
+  'icon-purple-700-gray':'#717177',
   // text
   label: '#fff',
   'colored-label': '#fff',
   'sub-text': '#8C93A7',
-  'text-title':colorsCode['white']
+  'text-title':colorsCode['white'],
+  'text-gray-900-purple-700':colorsCode['purple-700']
 };
 
 export const lightColors = {
@@ -163,11 +164,11 @@ export const lightColors = {
   // item
   item: '#fff',
   icon: '#5F5E77',
-  'icon-purple-900-gray':colorsCode['purple-900'],
+  'icon-purple-700-gray':colorsCode['purple-700'],
   // text
   label: '#3A3A3C',
   'colored-label': '#945EF8',
   'sub-text': '#5F5E77',
   'text-title':colorsCode['gray-900'],
-  
+  'text-gray-900-purple-700':colorsCode['gray-900']
 };

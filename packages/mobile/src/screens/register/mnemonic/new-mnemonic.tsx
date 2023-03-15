@@ -324,7 +324,7 @@ const WordsCard: FunctionComponent<{
             {isTimedOut ? (
               <CheckIcon />
             ) : (
-              <CopyFillIcon color={colors['purple-700']} size={20} />
+              <CopyFillIcon color={colors['icon-purple-700-gray']} size={20} />
             )}
           </View>
         </TouchableOpacity>
@@ -339,7 +339,7 @@ const useStyles = () => {
     icon: {
       width: 22,
       height: 22,
-      tintColor:colors['icon-purple-900-gray']
+      tintColor:colors['icon-purple-700-gray']
     },
     containerBtnCopy: {
       width: '100%',
@@ -355,7 +355,7 @@ const useStyles = () => {
       paddingLeft: 16,
       paddingRight: 16,
       paddingBottom: 10,
-      borderColor: colors['purple-100'],
+      borderColor: colors['border-purple-100-gray-800'],
       borderWidth: 1,
       borderRadius: 8,
       display: 'flex',
