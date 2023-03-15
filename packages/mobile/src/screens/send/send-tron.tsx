@@ -294,12 +294,12 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                     // Send TRC20
                     // Get TRC20 contract
                     const { abi } = await tronWeb.trx.getContract(
-                      route?.params?.item.contractAddress
+                      route?.params?.item?.contractAddress
                     );
 
                     const contract = tronWeb.contract(
                       abi.entrys,
-                      route?.params?.item.contractAddress
+                      route?.params?.item?.contractAddress
                     );
 
                     const balance = await contract.methods
@@ -319,7 +319,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                           ) * Math.pow(10, 6)
                         )
                         .send({
-                          feeLimit: 50_000_000, // Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee
+                          feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee.
                           callValue: 0
                         });
                       smartNavigation.pushSmart('TxPendingResult', {
