@@ -65,20 +65,30 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       if (chainId === TRON_ID) {
         // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
         if (retry > 0) {
+          let txResult;
           setTimeout(() => {
             getTronTx(txHash).then(transaction => {
-              if (transaction.result === SUCCESS) {
-                smartNavigation.pushSmart('TxSuccessResult', {
-                  txHash: transaction.id
-                });
-              } else {
-                smartNavigation.pushSmart('TxFailedResult', {
-                  chainId: chainStore.current.chainId,
-                  txHash: transaction.id
-                });
-              }
+              txResult = transaction;
             });
           }, 65000);
+          if (txResult && Object.keys(txResult).length > 0 && retry > 0) {
+            if (txResult.result === SUCCESS) {
+              smartNavigation.pushSmart('TxSuccessResult', {
+                txHash: txResult.id
+              });
+            } else {
+              smartNavigation.pushSmart('TxFailedResult', {
+                chainId: chainStore.current.chainId,
+                txHash: txResult.id
+              });
+            }
+          }
+          if (retry < 0) {
+            smartNavigation.pushSmart('TxFailedResult', {
+              chainId: chainStore.current.chainId,
+              txHash: txHash
+            });
+          }
         } else {
           smartNavigation.pushSmart('TxFailedResult', {
             chainId: chainStore.current.chainId,
