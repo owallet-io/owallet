@@ -63,6 +63,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
     if (isFocused) {
       if (chainId === TRON_ID) {
+        // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
         if (retry > 0) {
           setTimeout(() => {
             getTronTx(txHash).then(transaction => {
