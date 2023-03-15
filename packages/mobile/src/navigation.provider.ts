@@ -55,6 +55,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Send: {
         upperScreenName: 'Others'
       },
+      SendTron: {
+        upperScreenName: 'Others'
+      },
       TransferNFT: {
         upperScreenName: 'Others'
       },
@@ -229,6 +232,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       TxPendingResult: {
         chainId?: string;
         txHash: string;
+        tronWeb?: any;
       };
       TxSuccessResult: {
         chainId?: string;

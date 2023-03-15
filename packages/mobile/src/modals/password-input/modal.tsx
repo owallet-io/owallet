@@ -5,6 +5,7 @@ import { CardModal } from '../card';
 import { TextInput } from '../../components/input';
 import { Button } from '../../components/button';
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -24,6 +25,7 @@ export const PasswordInputModal: FunctionComponent<{
   textButtonLeft?: string;
   textButtonRight?: string;
   buttonRightStyle?: TextStyle;
+  disabled?: boolean;
   /**
    * If any error thrown in the `onEnterPassword`, the password considered as invalid password.
    * @param password
@@ -38,7 +40,8 @@ export const PasswordInputModal: FunctionComponent<{
     labelStyle,
     textButtonLeft = 'Cancel',
     textButtonRight = 'Approve',
-    buttonRightStyle
+    buttonRightStyle,
+    disabled
   }) => {
     const [password, setPassword] = useState('');
     const [isInvalidPassword, setIsInvalidPassword] = useState(false);
@@ -88,7 +91,7 @@ export const PasswordInputModal: FunctionComponent<{
             <TextInput
               label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 setPassword(text);
               }}
               inputStyle={{
@@ -147,20 +150,26 @@ export const PasswordInputModal: FunctionComponent<{
                   ? colors['purple-900']
                   : colors['purple-900']
               }}
-              disabled={!password}
+              disabled={!password || disabled}
             >
-              <Text
-                style={{
-                  color: colors['white'],
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 16,
-                  lineHeight: 22,
-                  padding: 16
-                }}
-              >
-                {textButtonRight}
-              </Text>
+              {isLoading ? (
+                <View style={{ padding: 16 }}>
+                  <ActivityIndicator />
+                </View>
+              ) : (
+                <Text
+                  style={{
+                    color: colors['white'],
+                    textAlign: 'center',
+                    fontWeight: '700',
+                    fontSize: 16,
+                    lineHeight: 22,
+                    padding: 16
+                  }}
+                >
+                  {textButtonRight}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </CardModal>
