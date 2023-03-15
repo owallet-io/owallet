@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../components/page';
-import { View, Dimensions } from 'react-native';
+import { View, Dimensions, StyleSheet } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -14,11 +14,12 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { metrics } from '../../themes';
 import { MaintainScreen } from '../../components/maintain';
 import { useTheme } from '@react-navigation/native';
+import OWButton from '../../components/button/OWButton';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
-  const { keyRingStore, analyticsStore } = useStore();
+  const { keyRingStore, analyticsStore, appInitStore } = useStore();
   const { colors } = useTheme();
-
+  const scheme = appInitStore.getInitApp.theme;
   const smartNavigation = useSmartNavigation();
 
   const registerConfig = useRegisterConfig(keyRingStore, []);
@@ -27,128 +28,88 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
-  // return <MaintainScreen />;
-
+  const handleImportFromMnemonic = () => {
+    analyticsStore.logEvent('Import account started', {
+      registerType: 'seed'
+    });
+    smartNavigation.navigateSmart('Register.RecoverMnemonic', {
+      registerConfig
+    });
+  };
+  const handleImportLedgerNanoX = () => {
+    smartNavigation.navigateSmart('Register.NewLedger', {
+      registerConfig
+    });
+  };
+  const handleCreateANewWallet = () => {
+    analyticsStore.logEvent('Create account started', {
+      registerType: 'seed'
+    });
+    smartNavigation.navigateSmart('Register.NewMnemonic', {
+      registerConfig
+    });
+  };
+  const styles = stylesHaveProps({ colors, actualHeightHeight });
+  
   return (
     <PageWithScrollView
-      contentContainerStyle={{
-        display: 'flex'
-      }}
       backgroundColor={colors['plain-background']}
-      style={{
-        paddingLeft: 42,
-        paddingRight: 42,
-        paddingTop: Dimensions.get('window').height * 0.18 - actualHeightHeight,
-        paddingBottom: Dimensions.get('window').height * 0.11
-      }}
+      style={[styles.container]}
     >
-      <View
-        style={{
-          display: 'flex',
-          flexGrow: 1,
-          alignItems: 'center',
-          padding: 18
-        }}
-      >
+      <View style={styles.containerHeader}>
         <View>
-          <OWalletLogo />
+          <OWalletLogo theme={scheme} />
         </View>
-        <View style={{ paddingTop: 20, paddingBottom: 16 }}>
+        <View style={styles.containerUnion}>
           <OWalletUnion />
         </View>
-        <Text
-          style={{
-            fontWeight: '700',
-            fontSize: 24,
-            color: colors['label'],
-            lineHeight: 34,
-            paddingBottom: 8
-          }}
-        >
-          Sign in to OWallet
-        </Text>
+        <Text style={styles.title}>Sign in to OWallet</Text>
       </View>
-      <TouchableOpacity
-        onPress={() => {
-          analyticsStore.logEvent('Create account started', {
-            registerType: 'seed'
-          });
-          smartNavigation.navigateSmart('Register.NewMnemonic', {
-            registerConfig
-          });
-        }}
-        style={{
-          marginBottom: 16,
-          width: metrics.screenWidth - 86,
-          backgroundColor: colors['purple-900'],
-          borderRadius: 8
-        }}
-      >
-        <Text
-          style={{
-            color: colors['white'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Create a new wallet
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          smartNavigation.navigateSmart('Register.NewLedger', {
-            registerConfig
-          });
-        }}
-        style={{
-          marginBottom: 16,
-          width: metrics.screenWidth - 86,
-          backgroundColor: colors['gray-10'],
-          borderRadius: 8
-        }}
-      >
-        <Text
-          style={{
-            color: colors['purple-900'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Import Ledger Nano X
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          analyticsStore.logEvent('Import account started', {
-            registerType: 'seed'
-          });
-          smartNavigation.navigateSmart('Register.RecoverMnemonic', {
-            registerConfig
-          });
-        }}
-        style={{
-          marginBottom: 16,
-          width: metrics.screenWidth - 86,
-          backgroundColor: colors['gray-10'],
-          borderRadius: 8
-        }}
-      >
-        <Text
-          style={{
-            color: colors['purple-900'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Import from Mnemonic / Private key
-        </Text>
-      </TouchableOpacity>
+      <OWButton label="Create a new wallet" onPress={handleCreateANewWallet} />
+      <OWButton
+        label="Import Ledger Nano X"
+        onPress={handleImportLedgerNanoX}
+        type="secondary"
+      />
+      <OWButton
+        label="Import from Mnemonic / Private key"
+        onPress={handleImportFromMnemonic}
+        type="secondary"
+      />
     </PageWithScrollView>
   );
 });
+
+const stylesHaveProps = ({ colors, actualHeightHeight }) =>
+  StyleSheet.create({
+    containerUnion: { paddingTop: 20, paddingBottom: 16 },
+    title: {
+      fontWeight: '700',
+      fontSize: 24,
+      color: colors['label'],
+      lineHeight: 34,
+      paddingBottom: 8
+    },
+    containerHeader: {
+      alignItems: 'center',
+      padding: 18
+    },
+    containerBtn: {
+      marginBottom: 16,
+      width: metrics.screenWidth - 86,
+
+      borderRadius: 8
+    },
+    textBtn: {
+      textAlign: 'center',
+      fontWeight: '700',
+      fontSize: 16,
+      padding: 16
+    },
+    container: {
+      paddingLeft: 42,
+      paddingRight: 42,
+      paddingBottom: metrics.screenHeight * 0.11,
+      paddingTop: metrics.screenHeight * 0.18 - actualHeightHeight
+    }
+  });

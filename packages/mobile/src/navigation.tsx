@@ -203,7 +203,7 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(({}) => {
   const { chainStore, modalStore } = useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
-  const deterministicNumber = useCallback(chainInfo => {
+  const deterministicNumber = useCallback((chainInfo) => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
     );
@@ -213,7 +213,7 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(({}) => {
   }, []);
 
   const profileColor = useCallback(
-    chainInfo => {
+    (chainInfo) => {
       const random = [colors['purple-400']];
 
       return random[deterministicNumber(chainInfo) % random.length];
@@ -462,12 +462,16 @@ export const SendNavigation: FunctionComponent = () => {
 export const RegisterNavigation: FunctionComponent = () => {
   const style = useStyle();
   const { appInitStore } = useStore();
-
+  const {colors} = useTheme();
+  const theme = appInitStore.getInitApp.theme;
   return (
     <Stack.Navigator
       screenOptions={{
         ...BlurredHeaderScreenOptionsPreset,
         headerTitle: '',
+        headerStyle: {
+          backgroundColor: colors['plain-background']
+        },
         headerTitleStyle: style.flatten(['h5', 'color-text-black-high'])
       }}
       initialRouteName="Register.Intro"
@@ -1026,7 +1030,7 @@ export const MainTabNavigation: FunctionComponent = () => {
               return <RenderTabsBarIcon name={'Settings'} />;
           }
         },
-        tabBarButton: props => (
+        tabBarButton: (props) => (
           <View
             style={{
               display: 'flex',
@@ -1064,7 +1068,7 @@ export const MainTabNavigation: FunctionComponent = () => {
         },
         showLabel: false
       }}
-      tabBar={props => (
+      tabBar={(props) => (
         <BlurredBottomTabBar {...props} enabledScreens={['Home']} />
       )}
     >
@@ -1119,7 +1123,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore, appInitStore } = useStore();
   useEffect(() => {
     Linking.getInitialURL()
-      .then(url => {
+      .then((url) => {
         if (url) {
           const SCHEME_IOS = 'owallet://open_url?url=';
           const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -1128,7 +1132,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn('Deeplinking error', err);
       });
     Linking.addEventListener('url', handleDeepLink);

@@ -8,7 +8,7 @@ export class AppInit {
   protected initApp: {
     status: boolean;
     date_updated: null | number;
-    theme: string;
+    theme: 'dark' | 'light';
   };
   @observable
   protected notiData: {};
