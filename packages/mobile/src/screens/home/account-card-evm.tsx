@@ -61,8 +61,6 @@ export const AccountCardEVM: FunctionComponent<{
       account.evmosHexAddress
     )?.balance;
 
-    console.log('total.amount.int.value', total);
-
     if (total) {
       totalPrice = priceStore?.calculatePrice(total, 'USD');
     }
@@ -223,9 +221,14 @@ export const AccountCardEVM: FunctionComponent<{
                   : null}
 
                 {chainStore.current.chainId === TRON_ID && total
-                  ? new Big(parseInt(total.amount.int.value)).div(
-                      new Big(10).pow(24)
-                    ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+                  ? // Somehow debug mode will show exactly total.amount.int.value, but the defaul mode can not
+                    // So we have to use total.amount.int instead
+                    new Big(
+                      parseInt(total.amount.int ?? total.amount.int.value)
+                    )
+                      .div(new Big(10).pow(24))
+                      .toFixed(6) +
+                    ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
               </Text>
             </View>
