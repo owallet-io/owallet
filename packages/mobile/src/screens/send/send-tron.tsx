@@ -23,7 +23,12 @@ import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
 import TronWeb from 'tronweb';
-import { BIP44_PATH_PREFIX, getBase58Address } from '../../utils/helper';
+import {
+  BIP44_PATH_PREFIX,
+  getBase58Address,
+  FAILED,
+  SUCCESS
+} from '../../utils/helper';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -41,7 +46,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export const SendTronScreen: FunctionComponent = observer(() => {
+export const SendTronScreen: FunctionComponent = observer(props => {
   const {
     chainStore,
     accountStore,
@@ -67,6 +72,16 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           chainId?: string;
           currency?: string;
           recipient?: string;
+          item?: {
+            amount: string;
+            coinDecimals: number;
+            coinDenom: string;
+            coinGeckoId: string;
+            coinImageUrl: string;
+            contractAddress: string;
+            tokenName: string;
+            type?: string;
+          };
         }
       >,
       string
@@ -131,11 +146,11 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           </Text>
         </View>
         <View style={styles.sendInputRoot}>
-          <CurrencySelector
-            label="Select a token"
-            placeHolder="Select Token"
-            amountConfig={sendConfigs.amountConfig}
+          <TextInput
+            label="Token"
             labelStyle={styles.sendlabelInput}
+            value={route?.params?.item?.coinDenom ?? 'TRX'}
+            editable={false}
           />
           <TextInput
             placeholder="Enter receiving address"
@@ -236,7 +251,7 @@ export const SendTronScreen: FunctionComponent = observer(() => {
           paragraph={'Please confirm your password'}
           close={() => setIsOpenModal(false)}
           title={'Confirm Password'}
-          disabled={!account.isReadyToSendMsgs || loading}
+          disabled={loading}
           onEnterPassword={async password => {
             setLoading(true);
             const index = keyRingStore.multiKeyStoreInfo.findIndex(
@@ -276,32 +291,73 @@ export const SendTronScreen: FunctionComponent = observer(() => {
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
 
-                  const tradeobj = await tronWeb.transactionBuilder.sendTrx(
-                    receiveAddress,
-                    new Dec(
-                      Number(
-                        (sendConfigs.amountConfig.amount ?? '0').replace(
-                          /,/g,
-                          '.'
-                        )
-                      )
-                    ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
-                    getBase58Address(account.evmosHexAddress)
-                  );
+                  if (route?.params?.item?.type === 'trc20') {
+                    // Send TRC20
+                    // Get TRC20 contract
+                    const { abi } = await tronWeb.trx.getContract(
+                      route?.params?.item.contractAddress
+                    );
 
-                  const signedtxn = await tronWeb.trx.sign(
-                    tradeobj,
-                    Buffer.from(privateKey).toString('hex')
-                  );
-                  const receipt = await tronWeb.trx.sendRawTransaction(
-                    signedtxn
-                  );
-                  smartNavigation.pushSmart('TxSuccessResult', {
-                    txHash: receipt.txid
-                  });
-                  console.log('sent tron tradeobj', tradeobj.raw_data_hex);
-                  console.log('sent tron receipt', receipt);
-                  setLoading(false);
+                    const contract = tronWeb.contract(
+                      abi.entrys,
+                      route?.params?.item.contractAddress
+                    );
+
+                    const balance = await contract.methods
+                      .balanceOf(getBase58Address(account.evmosHexAddress))
+                      .call();
+
+                    console.log('balance:', balance.toString());
+
+                    const resp = await contract.methods
+                      .transfer(
+                        receiveAddress,
+                        Number(
+                          (sendConfigs.amountConfig.amount ?? '0').replace(
+                            /,/g,
+                            '.'
+                          )
+                        ) * Math.pow(10, 6)
+                      )
+                      .send({
+                        feeLimit: 50_000_000, // Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee
+                        callValue: 0
+                      });
+
+                    smartNavigation.pushSmart('TxPendingResult', {
+                      txHash: resp,
+                      chainId: chainStore.current.chainId,
+                      tronWeb: tronWeb
+                    });
+                  } else {
+                    // Send TRX
+                    const tradeobj = await tronWeb.transactionBuilder.sendTrx(
+                      receiveAddress,
+                      new Dec(
+                        Number(
+                          (sendConfigs.amountConfig.amount ?? '0').replace(
+                            /,/g,
+                            '.'
+                          )
+                        )
+                      ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
+                      getBase58Address(account.evmosHexAddress)
+                    );
+
+                    const signedtxn = await tronWeb.trx.sign(
+                      tradeobj,
+                      Buffer.from(privateKey).toString('hex')
+                    );
+                    const receipt = await tronWeb.trx.sendRawTransaction(
+                      signedtxn
+                    );
+                    smartNavigation.pushSmart('TxSuccessResult', {
+                      txHash: receipt.txid
+                    });
+                    console.log('sent tron tradeobj', tradeobj.raw_data_hex);
+                    console.log('sent tron receipt', receipt);
+                    setLoading(false);
+                  }
                 } catch (err) {
                   console.log('send tron err', err);
                   setLoading(false);
