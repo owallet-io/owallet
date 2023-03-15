@@ -5,6 +5,7 @@ import { CardModal } from '../card';
 import { TextInput } from '../../components/input';
 import { Button } from '../../components/button';
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -105,7 +106,7 @@ export const PasswordInputModal: FunctionComponent<{
               value={password}
               returnKeyType="done"
               secureTextEntry={true}
-              // onSubmitEditing={submitPassword}
+              onSubmitEditing={submitPassword}
             />
           </TouchableWithoutFeedback>
           <View
@@ -151,18 +152,24 @@ export const PasswordInputModal: FunctionComponent<{
               }}
               disabled={!password || disabled}
             >
-              <Text
-                style={{
-                  color: colors['white'],
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 16,
-                  lineHeight: 22,
-                  padding: 16
-                }}
-              >
-                {textButtonRight}
-              </Text>
+              {isLoading ? (
+                <View style={{ padding: 16 }}>
+                  <ActivityIndicator />
+                </View>
+              ) : (
+                <Text
+                  style={{
+                    color: colors['white'],
+                    textAlign: 'center',
+                    fontWeight: '700',
+                    fontSize: 16,
+                    lineHeight: 22,
+                    padding: 16
+                  }}
+                >
+                  {textButtonRight}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </CardModal>

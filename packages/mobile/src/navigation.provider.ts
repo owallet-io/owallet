@@ -232,6 +232,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       TxPendingResult: {
         chainId?: string;
         txHash: string;
+        tronWeb?: any;
       };
       TxSuccessResult: {
         chainId?: string;
