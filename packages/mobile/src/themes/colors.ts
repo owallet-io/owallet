@@ -126,13 +126,17 @@ export const colors = {
   'input-background': '#2B2D3B',
   'primary-background': '#945EF8',
   'btn-primary-background':colorsCode['purple-700'],
+  //border
+  'border-purple-100-gray-800':colorsCode['gray-800'],
   // item
   item: '#2B2D3B',
   icon: '#E2DEEB',
+  'icon-purple-900-gray':'#717177',
   // text
   label: '#fff',
   'colored-label': '#fff',
-  'sub-text': '#8C93A7'
+  'sub-text': '#8C93A7',
+  'text-title':colorsCode['white']
 };
 
 export const lightColors = {
@@ -155,11 +159,15 @@ export const lightColors = {
   'plain-background': '#fff',
   'btn-primary-background':colorsCode['purple-900'],
   // border
+  'border-purple-100-gray-800':colorsCode['purple-100'],
   // item
   item: '#fff',
   icon: '#5F5E77',
+  'icon-purple-900-gray':colorsCode['purple-900'],
   // text
   label: '#3A3A3C',
   'colored-label': '#945EF8',
-  'sub-text': '#5F5E77'
+  'sub-text': '#5F5E77',
+  'text-title':colorsCode['gray-900'],
+  
 };

@@ -15,8 +15,6 @@ export const WordChip: FunctionComponent<{
   return (
     <View
       style={{
-        // paddingLeft: 2,
-        // paddingRight: 2,
         borderRadius: 8,
         backgroundColor: 'white',
         borderWidth: 1,

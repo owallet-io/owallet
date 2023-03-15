@@ -1,7 +1,18 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import {
+  RouteProp,
+  useIsFocused,
+  useRoute,
+  useTheme
+} from '@react-navigation/native';
 import { RegisterConfig } from '@owallet/hooks';
 import { useNewMnemonicConfig } from './hook';
 import { PageWithScrollView } from '../../../components/page';
@@ -21,7 +32,7 @@ import {
   checkRouterPaddingBottomBar
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
-import { colors } from '../../../themes';
+import OWButton from '../../../components/button/OWButton';
 
 interface FormData {
   name: string;
@@ -29,7 +40,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer(props => {
+export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -41,7 +52,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
       string
     >
   >();
-
+  const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
@@ -66,12 +77,6 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
     newMnemonicConfig.setName(getValues('name'));
     newMnemonicConfig.setPassword(getValues('password'));
 
-    // smartNavigation.navigateSmart('Register.VerifyMnemonic', {
-    //   registerConfig,
-    //   newMnemonicConfig,
-    //   bip44HDPath: bip44Option.bip44HDPath,
-    // });
-
     if (checkRouter(props?.route?.name, 'RegisterMain')) {
       navigate('RegisterVerifyMnemonicMain', {
         registerConfig,
@@ -86,35 +91,127 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
       });
     }
   });
+  const onGoBack = () => {
+    if (checkRouter(props?.route?.name, 'RegisterMain')) {
+      smartNavigation.goBack();
+    } else {
+      smartNavigation.navigateSmart('Register.Intro', {});
+    }
+  };
+  const onSubmitEditingUserName = () => {
+    if (mode === 'add') {
+      submit();
+    }
+    if (mode === 'create') {
+      setFocus('password');
+    }
+  };
+  const renderUserName = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label="Username"
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        returnKeyType={mode === 'add' ? 'done' : 'next'}
+        onSubmitEditing={onSubmitEditingUserName}
+        error={errors.name?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
+  const onSubmitEditingPassword = () => {
+    setFocus('confirmPassword');
+  };
+  const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label="Password"
+        returnKeyType="next"
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        secureTextEntry={true}
+        onSubmitEditing={onSubmitEditingPassword}
+        inputRight={
+          <TouchableOpacity onPress={() => setStatusPass(!statusPass)}>
+            <Image
+              style={styles.icon}
+              source={require('../../../assets/image/transactions/eye.png')}
+              resizeMode="contain"
+              
+              fadeDuration={0}
+            />
+          </TouchableOpacity>
+        }
+        secureTextEntry={!statusPass}
+        error={errors.password?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
+  const validatePassword = (value: string) => {
+    if (value.length < 8) {
+      return 'Password must be longer than 8 characters';
+    }
+  };
+
+  const renderConfirmPassword = ({
+    field: { onChange, onBlur, value, ref }
+  }) => {
+    return (
+      <TextInput
+        label="Confirm password"
+        returnKeyType="done"
+        inputRight={
+          <TouchableOpacity
+            onPress={() => setStatusConfirmPass(!statusConfirmPass)}
+          >
+            <Image
+              style={styles.icon}
+              source={require('../../../assets/image/transactions/eye.png')}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+          </TouchableOpacity>
+        }
+        secureTextEntry={!statusConfirmPass}
+        onSubmitEditing={submit}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        error={errors.confirmPassword?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
+  const validateConfirmPassword = (value: string) => {
+    if (value.length < 8) {
+      return 'Password must be longer than 8 characters';
+    }
+    if (getValues('password') !== value) {
+      return "Password doesn't match";
+    }
+  };
+  const styles = useStyles();
 
   return (
     <PageWithScrollView
-      contentContainerStyle={{
-        paddingLeft: 20,
-        paddingRight: 20
-      }}
+      contentContainerStyle={styles.container}
       backgroundColor={colors['plain-background']}
     >
       {/* Mock for flexible margin top */}
-      <View
-        style={{
-          height: 72,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 24,
-            lineHeight: 34,
-            fontWeight: '700',
-            color: colors['gray-900']
-          }}
-        >
-          Create new wallet
-        </Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Create new wallet</Text>
         <View>
           <OWalletLogo size={72} />
         </View>
@@ -125,30 +222,7 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
         rules={{
           required: 'Name is required'
         }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Username"
-              inputStyle={{
-                ...styles.borderInput
-              }}
-              returnKeyType={mode === 'add' ? 'done' : 'next'}
-              onSubmitEditing={() => {
-                if (mode === 'add') {
-                  submit();
-                }
-                if (mode === 'create') {
-                  setFocus('password');
-                }
-              }}
-              error={errors.name?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
+        render={renderUserName}
         name="name"
         defaultValue=""
       />
@@ -158,48 +232,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             control={control}
             rules={{
               required: 'Password is required',
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return 'Password must be longer than 8 characters';
-                }
-              }
+              validate: validatePassword
             }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Password"
-                  returnKeyType="next"
-                  inputStyle={{
-                    ...styles.borderInput
-                  }}
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    setFocus('confirmPassword');
-                  }}
-                  inputRight={
-                    <TouchableOpacity
-                      onPress={() => setStatusPass(!statusPass)}
-                    >
-                      <Image
-                        style={{
-                          width: 22,
-                          height: 22
-                        }}
-                        source={require('../../../assets/image/transactions/eye.png')}
-                        resizeMode="contain"
-                        fadeDuration={0}
-                      />
-                    </TouchableOpacity>
-                  }
-                  secureTextEntry={!statusPass}
-                  error={errors.password?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
+            render={renderPassword}
             name="password"
             defaultValue=""
           />
@@ -207,51 +242,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
             control={control}
             rules={{
               required: 'Confirm password is required',
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return 'Password must be longer than 8 characters';
-                }
-
-                if (getValues('password') !== value) {
-                  return "Password doesn't match";
-                }
-              }
+              validate: validateConfirmPassword
             }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Confirm password"
-                  returnKeyType="done"
-                  inputRight={
-                    <TouchableOpacity
-                      onPress={() => setStatusConfirmPass(!statusConfirmPass)}
-                    >
-                      <Image
-                        style={{
-                          width: 22,
-                          height: 22
-                        }}
-                        source={require('../../../assets/image/transactions/eye.png')}
-                        resizeMode="contain"
-                        fadeDuration={0}
-                      />
-                    </TouchableOpacity>
-                  }
-                  secureTextEntry={!statusConfirmPass}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  inputStyle={{
-                    ...styles.borderInput
-                  }}
-                  error={errors.confirmPassword?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
+            render={renderConfirmPassword}
             name="confirmPassword"
             defaultValue=""
           />
@@ -263,54 +256,18 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
           flex: 1
         }}
       />
-      <TouchableOpacity
-        onPress={submit}
-        style={{
-          marginBottom: 24,
-          marginTop: 32,
-          backgroundColor: colors['purple-900'],
-          borderRadius: 8
-        }}
-      >
-        <Text
-          style={{
-            color: 'white',
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Next
-        </Text>
-      </TouchableOpacity>
-      <View
+      <OWButton onPress={submit} label="Next" />
+      <OWButton
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
             props?.route?.name,
             'RegisterMain'
           )
         }}
-      >
-        <Text
-          style={{
-            color: colors['purple-900'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16
-          }}
-          onPress={() => {
-            if (checkRouter(props?.route?.name, 'RegisterMain')) {
-              smartNavigation.goBack();
-            } else {
-              smartNavigation.navigateSmart('Register.Intro', {});
-            }
-          }}
-        >
-          Go back
-        </Text>
-      </View>
-      {/* Mock element for bottom padding */}
+        onPress={onGoBack}
+        label="Go back"
+        type="link"
+      />
       <View
         style={{
           height: 20
@@ -324,7 +281,7 @@ const WordsCard: FunctionComponent<{
   words: string[];
 }> = ({ words }) => {
   const { isTimedOut, setTimer } = useSimpleTimer();
-
+  const { colors } = useTheme();
   /*
     On IOS, user can peek the words by right side gesture from the verifying mnemonic screen.
     To prevent this, hide the words if the screen lost the focus.
@@ -343,24 +300,13 @@ const WordsCard: FunctionComponent<{
       return () => clearTimeout(timeout);
     }
   }, [isFocused]);
-
+  const onCopy = useCallback(() => {
+    Clipboard.setString(words.join(' '));
+    setTimer(3000);
+  }, [words]);
+  const styles = useStyles();
   return (
-    <View
-      style={{
-        marginTop: 14,
-        marginBottom: 16,
-        paddingTop: 16,
-        paddingLeft: 16,
-        paddingRight: 16,
-        paddingBottom: 10,
-        borderColor: colors['purple-100'],
-        borderWidth: 1,
-        borderRadius: 8,
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap'
-      }}
-    >
+    <View style={styles.containerWord}>
       {words.map((word, i) => {
         return (
           <WordChip
@@ -372,21 +318,8 @@ const WordsCard: FunctionComponent<{
         );
       })}
 
-      <View
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'flex-end',
-          alignItems: 'center'
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => {
-            Clipboard.setString(words.join(' '));
-            setTimer(3000);
-          }}
-        >
+      <View style={styles.containerBtnCopy}>
+        <TouchableOpacity onPress={onCopy}>
           <View style={{ height: 20 }}>
             {isTimedOut ? (
               <CheckIcon />
@@ -400,15 +333,60 @@ const WordsCard: FunctionComponent<{
   );
 };
 
-const styles = StyleSheet.create({
-  borderInput: {
-    borderColor: colors['purple-100'],
-    borderWidth: 1,
-    backgroundColor: colors['white'],
-    paddingLeft: 11,
-    paddingRight: 11,
-    paddingTop: 12,
-    paddingBottom: 12,
-    borderRadius: 8
-  }
-});
+const useStyles = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    icon: {
+      width: 22,
+      height: 22,
+      tintColor:colors['icon-purple-900-gray']
+    },
+    containerBtnCopy: {
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      alignItems: 'center'
+    },
+    containerWord: {
+      marginTop: 14,
+      marginBottom: 16,
+      paddingTop: 16,
+      paddingLeft: 16,
+      paddingRight: 16,
+      paddingBottom: 10,
+      borderColor: colors['purple-100'],
+      borderWidth: 1,
+      borderRadius: 8,
+      display: 'flex',
+      flexDirection: 'row',
+      flexWrap: 'wrap'
+    },
+    title: {
+      fontSize: 24,
+      lineHeight: 34,
+      fontWeight: '700',
+      color: colors['text-title']
+    },
+    headerContainer: {
+      height: 72,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    container: {
+      paddingLeft: 20,
+      paddingRight: 20
+    },
+    borderInput: {
+      borderColor: colors['border-purple-100-gray-800'],
+      borderWidth: 1,
+      backgroundColor: 'transparent',
+      paddingLeft: 11,
+      paddingRight: 11,
+      paddingTop: 12,
+      paddingBottom: 12,
+      borderRadius: 8
+    }
+  });
+};
