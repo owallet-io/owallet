@@ -308,8 +308,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                       .balanceOf(getBase58Address(account.evmosHexAddress))
                       .call();
 
-                    console.log('balance:', balance.toString());
-                    if (balance > 0) {
+                    console.log('balance:', Number(balance.toString()));
+                    if (Number(balance.toString()) > 0) {
                       const resp = await contract.methods
                         .transfer(
                           receiveAddress,
