@@ -34,7 +34,7 @@ export const TronTokensCard: FunctionComponent<{
             address: getBase58Address(account.evmosHexAddress)
           },
           {
-            baseURL: 'https://api.trongrid.io/'
+            baseURL: chainStore.current.rpc
             // baseURL: 'https://nile.trongrid.io/' // TRON testnet
           }
         );
@@ -142,7 +142,7 @@ export const TronTokensCard: FunctionComponent<{
             >
               $
               {`${
-                item.amount
+                item?.amount
                   ? parseFloat(
                       new Big(parseInt(item.amount))
                         .div(new Big(10).pow(6).toFixed(6))
