@@ -58,7 +58,7 @@ export const TokenPage: FunctionComponent = observer(() => {
   const getTokenTron = async () => {
     try {
       fetch(
-        `https://api.trongrid.io/v1/accounts/${getBase58Address(
+        `${chainStore.current.rpc}/accounts/${getBase58Address(
           accountInfo.evmosHexAddress
         )}`
       ).then(async (res) => {

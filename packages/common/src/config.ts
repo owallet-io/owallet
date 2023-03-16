@@ -714,8 +714,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
-    rest: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    rpc: 'https://api.trongrid.io',
+    rest: 'https://api.trongrid.io/jsonrpc',
     chainId: '0x2b6653dc',
     networkType: 'evm',
     chainName: 'Tron',

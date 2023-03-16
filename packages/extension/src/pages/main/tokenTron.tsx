@@ -104,11 +104,13 @@ export const TokensTronView: FunctionComponent<{
                   </div>
                   <div className={styleToken.amount}>{amount}</div>
                   {amount &&
-                    parseFloat(
-                      new Big(parseInt(token.amount))
-                        .div(new Big(10).pow(6).toFixed(3))
-                        .toString()
-                    ) * priceStore?.getPrice(coinGeckoId)}
+                    (
+                      parseFloat(
+                        new Big(parseInt(token.amount))
+                          .div(new Big(10).pow(6).toFixed(3))
+                          .toString()
+                      ) * priceStore?.getPrice(coinGeckoId)
+                    ).toFixed(2)}
                   {' $'}
                 </div>
                 <div style={{ flex: 1 }} />
