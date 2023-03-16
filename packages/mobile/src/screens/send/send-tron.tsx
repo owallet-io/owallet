@@ -328,7 +328,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                         tronWeb: tronWeb
                       });
                     } else {
-                      setIsOpenModal(true);
+                      setIsOpenModal(false);
                       alert('Not enough balance to send');
                     }
                   } else {

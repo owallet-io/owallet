@@ -9,7 +9,8 @@ import {
   renderMsgUndelegate,
   renderUnknownMessage,
   renderMsgWithdrawDelegatorReward,
-  renderMsgIBCMsgTransfer
+  renderMsgIBCMsgTransfer,
+  renderMsgVote
 } from './messages';
 import { CoinPrimitive } from '@owallet/stores';
 
@@ -67,12 +68,16 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
     return renderMsgIBCMsgTransfer(msg);
   }
 
+  if (msg instanceof cosmos.gov.v1beta1.MsgVote) {
+    return renderMsgVote(JSON.parse(msg.proposalId), msg.option);
+  }
+
   if (msg instanceof UnknownMessage) {
     return renderUnknownMessage(msg.toJSON());
   }
 
   return renderUnknownMessage({
     typeUrl: msg.typeUrl || msg.type_url || 'Unknown',
-    value: Buffer.from(msg.value).toString('base64')
+    value: Buffer.from(msg?.value ?? 'Unknown').toString('base64')
   });
 }
