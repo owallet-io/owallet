@@ -282,7 +282,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               if (privateKey) {
                 try {
                   tronWeb = new TronWeb({
-                    fullHost: 'https://api.trongrid.io',
+                    fullHost: chainStore.current.rpc,
                     // fullHost: 'https://nile.trongrid.io', // TRON testnet
                     headers: {
                       'x-api-key': process.env.X_API_KEY
@@ -322,6 +322,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                           feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee. Read more: https://developers.tron.network/docs/set-feelimit
                           callValue: 0
                         });
+
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: resp,
                         chainId: chainStore.current.chainId,
