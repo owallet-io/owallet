@@ -33,6 +33,7 @@ import {
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
 import OWButton from '../../../components/button/OWButton';
+import OWIcon from '../../../components/ow-icon/ow-icon';
 
 interface FormData {
   name: string;
@@ -126,6 +127,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   const onSubmitEditingPassword = () => {
     setFocus('confirmPassword');
   };
+  const showPass = () => setStatusPass(!statusPass);
   const renderPassword = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
@@ -137,15 +139,18 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         secureTextEntry={true}
         onSubmitEditing={onSubmitEditingPassword}
         inputRight={
-          <TouchableOpacity onPress={() => setStatusPass(!statusPass)}>
-            <Image
-              style={styles.icon}
-              source={require('../../../assets/image/transactions/eye.png')}
-              resizeMode="contain"
-              
-              fadeDuration={0}
-            />
-          </TouchableOpacity>
+          <OWButton
+            style={styles.padIcon}
+            type="link"
+            onPress={showPass}
+            icon={
+              <OWIcon
+                name={!statusPass ? 'eye' : 'eye-slash'}
+                color={colors['icon-purple-700-gray']}
+                size={22}
+              />
+            }
+          />
         }
         secureTextEntry={!statusPass}
         error={errors.password?.message}
@@ -161,6 +166,10 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
       return 'Password must be longer than 8 characters';
     }
   };
+  const showConfirmPass = useCallback(
+    () => setStatusConfirmPass(!statusConfirmPass),
+    [statusConfirmPass]
+  );
 
   const renderConfirmPassword = ({
     field: { onChange, onBlur, value, ref }
@@ -170,16 +179,18 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         label="Confirm password"
         returnKeyType="done"
         inputRight={
-          <TouchableOpacity
-            onPress={() => setStatusConfirmPass(!statusConfirmPass)}
-          >
-            <Image
-              style={styles.icon}
-              source={require('../../../assets/image/transactions/eye.png')}
-              resizeMode="contain"
-              fadeDuration={0}
-            />
-          </TouchableOpacity>
+          <OWButton
+            style={styles.padIcon}
+            type="link"
+            onPress={showConfirmPass}
+            icon={
+              <OWIcon
+                name={!statusConfirmPass ? 'eye' : 'eye-slash'}
+                color={colors['icon-purple-700-gray']}
+                size={22}
+              />
+            }
+          />
         }
         secureTextEntry={!statusConfirmPass}
         onSubmitEditing={submit}
@@ -251,11 +262,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         </React.Fragment>
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
-      <View
-        style={{
-          flex: 1
-        }}
-      />
+      <View style={styles.mockView} />
       <OWButton onPress={submit} label="Next" />
       <OWButton
         style={{
@@ -319,15 +326,22 @@ const WordsCard: FunctionComponent<{
       })}
 
       <View style={styles.containerBtnCopy}>
-        <TouchableOpacity onPress={onCopy}>
-          <View style={{ height: 20 }}>
-            {isTimedOut ? (
+        <OWButton
+          style={styles.padIcon}
+          onPress={onCopy}
+          icon={
+            isTimedOut ? (
               <CheckIcon />
             ) : (
-              <CopyFillIcon color={colors['icon-purple-700-gray']} size={20} />
-            )}
-          </View>
-        </TouchableOpacity>
+              <OWIcon
+                name="copy"
+                color={colors['icon-purple-700-gray']}
+                size={20}
+              />
+            )
+          }
+          type="link"
+        />
       </View>
     </View>
   );
@@ -336,10 +350,16 @@ const WordsCard: FunctionComponent<{
 const useStyles = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    mockView: {
+      flex: 1
+    },
+    padIcon: {
+      paddingLeft: 10
+    },
     icon: {
       width: 22,
       height: 22,
-      tintColor:colors['icon-purple-700-gray']
+      tintColor: colors['icon-purple-700-gray']
     },
     containerBtnCopy: {
       width: '100%',

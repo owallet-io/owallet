@@ -56,13 +56,19 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         </View>
         <Text style={styles.title}>Sign in to OWallet</Text>
       </View>
-      <OWButton label="Create a new wallet" onPress={handleCreateANewWallet} />
       <OWButton
+        style={styles.btnOW}
+        label="Create a new wallet"
+        onPress={handleCreateANewWallet}
+      />
+      <OWButton
+        style={styles.btnOW}
         label="Import Ledger Nano X"
         onPress={handleImportLedgerNanoX}
         type="secondary"
       />
       <OWButton
+        style={styles.btnOW}
         label="Import from Mnemonic / Private key"
         onPress={handleImportFromMnemonic}
         type="secondary"
@@ -77,6 +83,9 @@ const useStyles = () => {
   const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
   return StyleSheet.create({
+    btnOW: {
+      marginBottom: 16
+    },
     containerUnion: { paddingTop: 20, paddingBottom: 16 },
     title: {
       fontWeight: '700',

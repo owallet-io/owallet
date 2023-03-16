@@ -105,7 +105,8 @@ const colorsCode = {
   //orange
   'orange-800': '#EF6363',
   //blue
-  'blue-300': '#8C93A7'
+  'blue-300': '#8C93A7',
+  'blue-600': '#5F5E77',
 };
 export const colors = {
   ...colorsCode,
@@ -126,6 +127,7 @@ export const colors = {
   'input-background': '#2B2D3B',
   'primary-background': '#945EF8',
   'btn-primary-background':colorsCode['purple-700'],
+  'btn-disable-background':colorsCode['blue-600'],
   //border
   'border-purple-100-gray-800':colorsCode['gray-800'],
   // item
@@ -137,6 +139,7 @@ export const colors = {
   'colored-label': '#fff',
   'sub-text': '#8C93A7',
   'text-title':colorsCode['white'],
+  'text-btn-disable-color':colorsCode['gray-500'],
   'text-gray-900-purple-700':colorsCode['purple-700']
 };
 
@@ -159,6 +162,7 @@ export const lightColors = {
   'primary-background': '#F3F1F5',
   'plain-background': '#fff',
   'btn-primary-background':colorsCode['purple-900'],
+  'btn-disable-background':colorsCode['purple-900'],
   // border
   'border-purple-100-gray-800':colorsCode['purple-100'],
   // item
@@ -170,5 +174,6 @@ export const lightColors = {
   'colored-label': '#945EF8',
   'sub-text': '#5F5E77',
   'text-title':colorsCode['gray-900'],
+  'text-btn-disable-color':colorsCode['purple-400'],
   'text-gray-900-purple-700':colorsCode['gray-900']
 };

@@ -17,36 +17,57 @@ interface IOWButtonProps extends TouchableOpacityProps {
   label?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  fullWidth?: boolean;
+  circle?: boolean;
+  icon?: React.ReactNode;
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
   label,
   type = 'primary',
-  size,
+  size = 'medium',
   style,
   textStyle,
+  disabled,
+  icon,
+  fullWidth,
   ...props
 }) => {
-  const styleMapped = useMapStyles({ type });
+  const styleMapped = useMapStyles({ type, disabled, size });
   return (
     <TouchableOpacity
       {...props}
-      style={[styles.containerBtn, styleMapped.btn, style]}
+      disabled={disabled}
+      style={[
+        styles.containerBtn,
+        styleMapped.btn,
+        fullWidth && styles.fullWidth,
+        !!icon && !label && styles.hasIcon,
+        style
+      ]}
     >
-      <Text style={[styles.textBtn, styleMapped.text, textStyle]}>{label}</Text>
+      {!!icon && icon}
+      {!!label && (
+        <Text style={[styles.textBtn, styleMapped.text, textStyle]}>
+          {label}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 };
 
 export default OWButton;
 const styles = StyleSheet.create({
+  hasIcon: { height: 'auto' },
+  fullWidth: { width: '100%' },
   containerBtn: {
-    marginBottom: 16
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   textBtn: {
     textAlign: 'center',
     fontWeight: '700',
-    fontSize: 16,
-    padding: 16
+    fontSize: 16
   }
 });
