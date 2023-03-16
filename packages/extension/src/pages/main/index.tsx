@@ -25,6 +25,8 @@ import { SelectChain } from '../../layouts/header';
 import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
 import { SendPage } from '../send';
 import { SendEvmPage } from '../send-evm';
+import { SendTronEvmPage } from '../send-tron';
+import { TRON_ID } from './constants';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -121,7 +123,11 @@ export const MainPage: FunctionComponent = observer(() => {
                 />
                 <LayoutHidePage hidePage={() => setHasSend(false)} />
                 {chainStore.current.networkType === 'evm' ? (
-                  <SendEvmPage />
+                  chainStore?.current.chainId === TRON_ID ? (
+                    <SendTronEvmPage />
+                  ) : (
+                    <SendEvmPage />
+                  )
                 ) : (
                   <SendPage />
                 )}

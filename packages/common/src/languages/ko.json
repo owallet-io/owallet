@@ -261,6 +261,7 @@
 
   "input.recipient.error.invalid-bech32": "잘못된 주소입니다",
   "input.recipient.error.invalid-evm-address": "",
+  "input.recipient.error.invalid-tron-address": "",
   "input.recipient.error.ens-not-supported": "이 체인에는 ENS가 지원되지 않습니다",
   "input.recipient.error.ens-failed-to-fetch": "ENS로부터 주소를 받는데 실패했습니다",
   "input.amount.error.invalid-number": "잘못된 숫자입니",

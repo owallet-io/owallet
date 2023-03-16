@@ -9,6 +9,8 @@ import { ToolTip } from '../../components/tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLanguage } from '@owallet/common';
 import { useHistory } from 'react-router';
+import { TRON_ID } from './constants';
+import Big from 'big.js';
 
 const LazyDoughnut = React.lazy(async () => {
   const module = await import(
@@ -253,16 +255,27 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const balance = queries.evm.queryEvmBalance.getQueryBalance(
     accountInfo.evmosHexAddress
   ).balance;
-
+  const isTronNetwork = chainStore.current.chainId === TRON_ID;
   let totalPrice;
   let total;
   if (accountInfo.evmosHexAddress) {
     total = queries.evm.queryEvmBalance.getQueryBalance(
       accountInfo.evmosHexAddress
     )?.balance;
-    if (total) totalPrice = priceStore?.calculatePrice(total, fiatCurrency);
+    if (total) {
+      totalPrice =
+        isTronNetwork && total
+          ? parseFloat(
+              new Big(parseInt(total.amount.int.value))
+                .div(new Big(10).pow(24))
+                .toString()
+            ) *
+            priceStore?.getPrice(
+              chainStore?.current?.stakeCurrency?.coinGeckoId
+            )
+          : priceStore?.calculatePrice(total, fiatCurrency);
+    }
   }
-
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -271,31 +284,16 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {totalPrice
-              ? totalPrice.toString()
-              : total?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {!isTronNetwork
+              ? totalPrice
+                ? totalPrice.toString()
+                : total?.shrink(true).maxDecimals(6).toString()
+              : null}
+
+            {isTronNetwork &&
+              totalPrice &&
+              parseFloat(totalPrice).toFixed(2) + ' $'}
           </div>
-          {/* <div className={styleAsset.indicatorIcon}>
-            <React.Fragment>
-              {balanceStakableQuery.isFetching ? (
-              <i className="fas fa-spinner fa-spin" />
-            ) : balanceStakableQuery.error ? (
-              <ToolTip
-                tooltip={
-                  balanceStakableQuery.error?.message ||
-                  balanceStakableQuery.error?.statusText
-                }
-                theme="dark"
-                trigger="hover"
-                options={{
-                  placement: 'top'
-                }}
-              >
-                <i className="fas fa-exclamation-triangle text-danger" />
-              </ToolTip>
-            ) : null}
-            </React.Fragment>
-          </div> */}
         </div>
         <React.Suspense fallback={<div style={{ height: '150px' }} />}>
           <img
@@ -319,7 +317,14 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: '#353945E5'
             }}
           >
-            {balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {!isTronNetwork &&
+              balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+
+            {isTronNetwork && total
+              ? new Big(parseInt(total.amount.int.value)).div(
+                  new Big(10).pow(24)
+                ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+              : null}
           </div>
         </div>
       </div>

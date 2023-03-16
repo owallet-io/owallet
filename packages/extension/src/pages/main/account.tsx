@@ -9,6 +9,7 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
+import { getBase58Address, TRON_ID } from './constants';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
@@ -17,7 +18,12 @@ export const AccountView: FunctionComponent = observer(() => {
     (keyStore) => keyStore?.selected
   );
   const intl = useIntl();
-
+  const evmAddress =
+    (accountInfo.hasEvmosHexAddress ||
+      chainStore.current.networkType === 'evm') &&
+    chainStore.current.chainId === TRON_ID
+      ? getBase58Address(accountInfo.evmosHexAddress ?? '')
+      : accountInfo.evmosHexAddress;
   const notification = useNotification();
 
   const copyAddress = useCallback(
@@ -111,20 +117,14 @@ export const AccountView: FunctionComponent = observer(() => {
           <div
             className={styleAccount.address}
             style={{ marginBottom: '6px' }}
-            onClick={() => copyAddress(accountInfo.evmosHexAddress)}
+            onClick={() => copyAddress(evmAddress)}
           >
             <span className={styleAccount.addressText}>
-              <Address
-                isRaw={true}
-                tooltipAddress={accountInfo.evmosHexAddress}
-              >
+              <Address isRaw={true} tooltipAddress={evmAddress}>
                 {accountInfo.walletStatus === WalletStatus.Loaded &&
                 accountInfo.evmosHexAddress
                   ? accountInfo.evmosHexAddress.length === 42
-                    ? `${accountInfo.evmosHexAddress.slice(
-                        0,
-                        10
-                      )}...${accountInfo.evmosHexAddress.slice(-8)}`
+                    ? `${evmAddress.slice(0, 10)}...${evmAddress.slice(-8)}`
                     : accountInfo.evmosHexAddress
                   : '...'}
               </Address>

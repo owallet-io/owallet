@@ -145,6 +145,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tether',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'USDC',
+          coinMinimalDenom:
+            'cw20:orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd:USDC',
+          contractAddress:
+            'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd',
+          coinDecimals: 6,
+          coinGeckoId: 'usd-coin',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
         }
       ];
     },
@@ -252,6 +264,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tether',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        },
+        {
+          coinDenom: 'USDC',
+          coinMinimalDenom:
+            'erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:USDC',
+          coinDecimals: 6,
+          coinGeckoId: 'usd-coin',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
         }
       ];
     },
@@ -598,7 +619,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-      },
+      }
     ],
     get feeCurrencies() {
       return this.currencies;
@@ -690,6 +711,55 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Bsc Scan',
       txUrl: 'https://bscscan.com/tx/${txHash}',
       accountUrl: 'https://bscscan.com/address/{address}'
+    }
+  },
+  {
+    rpc: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    rest: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    chainId: '0x2b6653dc',
+    networkType: 'evm',
+    chainName: 'Tron',
+    stakeCurrency: {
+      coinDenom: 'TRX',
+      coinMinimalDenom: 'trx',
+      coinDecimals: 18,
+      coinGeckoId: 'tron',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+    },
+    currencies: [
+      {
+        coinDenom: 'TRX',
+        coinMinimalDenom: 'trx',
+        coinDecimals: 18,
+        coinGeckoId: 'tron',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+      }
+    ],
+    restConfig: {
+      headers: {
+        'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
+      }
+    },
+    bip44: {
+      coinType: 195
+    },
+    coinType: 195,
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    get feeCurrencies() {
+      return this.currencies;
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004
+    },
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Tronscan',
+      txUrl: 'https://tronscan.org/#/transaction/{txHash}',
+      accountUrl: 'https://tronscan.org/#/address/{address}'
     }
   }
   // {

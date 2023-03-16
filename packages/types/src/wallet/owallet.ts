@@ -1,11 +1,15 @@
-import { ChainInfo, ChainInfoWithoutEndpoints, NetworkType } from '../chain-info';
+import {
+  ChainInfo,
+  ChainInfoWithoutEndpoints,
+  NetworkType
+} from '../chain-info';
 import {
   BroadcastMode,
   AminoSignResponse,
   StdSignDoc,
   StdTx,
   OfflineSigner,
-  StdSignature,
+  StdSignature
 } from '@cosmjs/launchpad';
 import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -158,10 +162,20 @@ export interface Ethereum {
   initChainId: string;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
-  signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  signAndBroadcastEthereum(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void>;
+  signEthereumTypeData(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<void>;
   signReEncryptData(chainId: string, data: object): Promise<object>;
+  signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
   signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
   // asyncRequest(): Promise<void>;

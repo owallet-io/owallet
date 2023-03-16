@@ -378,7 +378,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         wsObject: this.opts.wsObject
       }
     );
-    txTracer.traceTx(txHash).then(tx => {
+    txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
       runInAction(() => {
@@ -390,7 +390,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
           .balances.find(
-            bal => bal.currency.coinMinimalDenom === feeAmount.denom
+            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
           );
 
         if (bal) {
@@ -411,6 +411,38 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill(tx);
       }
     });
+  }
+
+  async sendTronToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    },
+    tokenTrc20?: object
+  ) {
+    try {
+      const ethereum = (await this.getEthereum())!;
+      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+        amount,
+        currency,
+        recipient,
+        address,
+        tokenTrc20
+      });
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(signResponse?.rawTxHex ?? signResponse);
+      }
+      return {
+        txHash: signResponse.rawTxHex
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
   }
 
   async sendEvmMsgs(
@@ -502,8 +534,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    const sleep = (milliseconds) => {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (
@@ -678,7 +710,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         aminoMsgs = msgs;
       }
       console.log({ aminoMsgs });
-      
+
       if (aminoMsgs.length === 0) {
         throw new Error('There is no msg to send');
       }
@@ -696,8 +728,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
-
-      
 
       const account = await BaseAccount.fetchFromRest(
         this.instance,

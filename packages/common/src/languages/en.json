@@ -279,6 +279,7 @@
 
   "input.recipient.error.invalid-bech32": "Invalid address",
   "input.recipient.error.invalid-evm-address": "Invalid EVM address",
+  "input.recipient.error.invalid-tron-address": "Invalid TRON address",
   "input.recipient.error.ens-not-supported": "ENS not supported for this chain",
   "input.recipient.error.ens-failed-to-fetch": "Failed to get address from ENS",
   "input.amount.error.invalid-number": "Invalid number",
