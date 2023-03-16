@@ -69,7 +69,7 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
   }
 
   if (msg instanceof cosmos.gov.v1beta1.MsgVote) {
-    return renderMsgVote(JSON.parse(msg.proposalId), msg.option);
+    return renderMsgVote(JSON.stringify(msg.proposalId), msg.option);
   }
 
   if (msg instanceof UnknownMessage) {
