@@ -191,7 +191,7 @@ export const AccountCardEVM: FunctionComponent<{
           >
             <View
               style={{
-                marginTop: 28,
+                marginTop: 14,
                 marginBottom: 16
               }}
             >
@@ -226,12 +226,31 @@ export const AccountCardEVM: FunctionComponent<{
                     ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
               </Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: colors['gray-400'],
+                  fontSize: 16
+                }}
+              >
+                $
+                {total?.amount
+                  ? parseFloat(
+                      new Big(parseInt(total.amount.int.value))
+                        .div(new Big(10).pow(24))
+                        .toString()
+                    ) *
+                    priceStore?.getPrice(
+                      chainStore?.current?.stakeCurrency?.coinGeckoId
+                    )
+                  : 0}
+              </Text>
             </View>
             <View
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                paddingTop: spacing['6'],
+                // paddingTop: spacing['6'],
                 paddingLeft: spacing['22'],
                 paddingRight: spacing['22'],
                 justifyContent: 'center'
@@ -352,81 +371,7 @@ export const AccountCardEVM: FunctionComponent<{
         </View>
       </CardBody>
 
-      {/* <NetworkErrorViewEVM /> */}
       <View style={{ height: 20 }} />
-      {/* <CardBody>
-        <View
-          style={{
-            height: 75,
-            borderWidth: spacing['0.5'],
-            borderColor: colors['gray-100'],
-            borderRadius: spacing['12'],
-            backgroundColor: colors['white'],
-            shadowColor: colors['gray-150'],
-            shadowOffset: {
-              width: 0,
-              height: 6
-            },
-            shadowOpacity: 0.3,
-            shadowRadius: 4
-          }}
-        >
-          <View
-            style={{
-              display: 'flex',
-              height: 75,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingLeft: spacing['12'],
-              paddingRight: spacing['8']
-            }}
-          >
-            <View
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between'
-              }}
-            >
-              <Text style={{ paddingBottom: spacing['6'] }}>Namespace</Text>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}
-              >
-                <Image
-                  style={{
-                    width: 26,
-                    height: 26
-                  }}
-                  source={require('../../assets/image/namespace_default.png')}
-                  fadeDuration={0}
-                />
-                <Text
-                  style={{
-                    paddingLeft: spacing['6'],
-                    fontWeight: '700',
-                    fontSize: spacing['18'],
-                    lineHeight: 26,
-                    textAlign: 'center',
-                    color: colors['gray-900']
-                  }}
-                >
-                  {account.name || 'Harris.orai'}
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity
-              style={{ paddingTop: spacing['10'] }}
-              onPress={_onPressNamespace}
-            >
-              <SettingDashboardIcon size={30} color={colors['gray-150']} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </CardBody> */}
     </Card>
   );
 });

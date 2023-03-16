@@ -20,7 +20,7 @@ const imageScale = 0.54;
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [tokens, setTokens] = useState([]);
 
@@ -133,15 +133,24 @@ export const TronTokensCard: FunctionComponent<{
               )} ${item.coinDenom}`}
             </Text>
 
-            {/* <Text
+            <Text
               style={{
                 ...typography.subtitle3,
                 color: colors['text-black-low'],
                 marginBottom: spacing['4']
               }}
             >
-              {priceBalance?.toString() || '$0'}
-            </Text> */}
+              $
+              {`${
+                item.amount
+                  ? parseFloat(
+                      new Big(parseInt(item.amount))
+                        .div(new Big(10).pow(6).toFixed(6))
+                        .toString()
+                    ) * priceStore?.getPrice(item.coinGeckoId)
+                  : 0
+              }` || '$0'}
+            </Text>
           </View>
         </View>
         <View
