@@ -1149,7 +1149,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
         <SmartNavigatorProvider>
           <NavigationContainer
             ref={navigationRef}
-            theme={scheme !== 'dark' ? DarkTheme : DefaultTheme}
+            theme={scheme === 'dark' ? DarkTheme : DefaultTheme}
           >
             <Stack.Navigator
               initialRouteName={

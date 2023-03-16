@@ -293,9 +293,6 @@ const useStyles = () => {
       width: 22,
       height: 22
     },
-    btnNext: {
-      marginBottom: 24
-    },
     heightView: { height: 20 },
     titleHeader: {
       fontSize: 24,

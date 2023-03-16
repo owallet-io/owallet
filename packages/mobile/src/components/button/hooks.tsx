@@ -1,31 +1,59 @@
 import { useTheme } from '@react-navigation/native';
-import { ViewStyle } from 'react-native';
+import { TextStyle, ViewStyle } from 'react-native';
 interface IMapStyle {
-  btn: any;
-  text: any;
+  btn: ViewStyle;
+  text: TextStyle;
 }
 
-const useSize = ({ size }): ViewStyle => {
-  let sizeStyle;
+const useSize = ({ size }): IMapStyle => {
+  let sizeStyle: IMapStyle;
   switch (size) {
     case 'small':
       sizeStyle = {
-        borderRadius: 12,
-        height: 40
+        btn: {
+          borderRadius: 8,
+          height: 32
+        },
+        text: {
+          fontSize: 14,
+          fontWeight: '700'
+        }
       };
       break;
     case 'medium':
       sizeStyle = {
-        borderRadius: 8,
-        height: 55
+        btn: {
+          borderRadius: 12,
+          height: 40
+        },
+        text: {
+          fontSize: 14,
+          fontWeight: '400'
+        }
       };
       break;
     case 'large':
+      sizeStyle = {
+        btn: {
+          borderRadius: 8,
+          height: 55
+        },
+        text: {
+          fontSize: 16,
+          fontWeight: '700'
+        }
+      };
       break;
     default:
       sizeStyle = {
-        borderRadius: 8,
-        height: 55
+        btn: {
+          borderRadius: 8,
+          height: 55
+        },
+        text: {
+          fontSize: 16,
+          fontWeight: '700'
+        }
       };
       break;
   }
@@ -39,42 +67,64 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
     case 'primary':
       typeStyleBtn = {
         btn: {
-          borderRadius: formatSize.borderRadius,
-          height: formatSize.height,
-          backgroundColor:disabled?colors['btn-disable-background']: colors['btn-primary-background']
+          borderRadius: formatSize.btn.borderRadius,
+          height: formatSize.btn.height,
+          backgroundColor: disabled
+            ? colors['btn-disable-background']
+            : colors['btn-primary-background']
         },
-        text: { color: disabled?colors['text-btn-disable-color']:colors['white'] }
+        text: {
+          color: disabled ? colors['text-btn-disable-color'] : colors['white'],
+          fontSize: formatSize.text.fontSize,
+          weight: formatSize.text.fontWeight
+        }
       };
       break;
     case 'secondary':
       typeStyleBtn = {
         btn: {
-          borderRadius: formatSize.borderRadius,
-          height: formatSize.height,
-          backgroundColor:disabled?colors['btn-disable-background']: colors['gray-10']
+          borderRadius: formatSize.btn.borderRadius,
+          height: formatSize.btn.height,
+          backgroundColor: disabled
+            ? colors['btn-disable-background']
+            : colors['gray-10']
         },
-        text: { color:disabled?colors['text-btn-disable-color']: colors['purple-900'] }
+        text: {
+          color: disabled
+            ? colors['text-btn-disable-color']
+            : colors['purple-900'],
+          fontSize: formatSize.text.fontSize,
+          weight: formatSize.text.fontWeight
+        }
       };
       break;
     case 'link':
       typeStyleBtn = {
         btn: {
-          borderRadius: formatSize.borderRadius,
-          height: formatSize.height,
+          borderRadius: formatSize.btn.borderRadius,
+          height: formatSize.btn.height,
           backgroundColor: 'transparent'
         },
-        text: { color: colors['btn-primary-background'] }
+        text: {
+          color: colors['btn-primary-background'],
+          fontSize: formatSize.text.fontSize,
+          weight: formatSize.text.fontWeight
+        }
       };
       break;
 
     default:
       typeStyleBtn = {
         btn: {
-          borderRadius: formatSize.borderRadius,
-          height: formatSize.height,
+          borderRadius: formatSize.btn.borderRadius,
+          height: formatSize.btn.height,
           backgroundColor: colors['purple-900']
         },
-        text: { color: colors['white'] }
+        text: {
+          color: colors['white'],
+          fontSize: formatSize.text.fontSize,
+          weight: formatSize.text.fontWeight
+        }
       };
       break;
   }

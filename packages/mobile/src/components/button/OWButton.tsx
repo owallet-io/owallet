@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import React, { FunctionComponent } from 'react';
 import { useMapStyles } from './hooks';
+import { LoadingSpinner } from '../spinner';
+import { useTheme } from '@react-navigation/native';
 
 interface IOWButtonProps extends TouchableOpacityProps {
   type?: 'primary' | 'secondary' | 'link' | 'modal';
@@ -25,7 +27,7 @@ interface IOWButtonProps extends TouchableOpacityProps {
 const OWButton: FunctionComponent<IOWButtonProps> = ({
   label,
   type = 'primary',
-  size = 'medium',
+  size = 'large',
   style,
   textStyle,
   disabled,
@@ -34,6 +36,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   ...props
 }) => {
   const styleMapped = useMapStyles({ type, disabled, size });
+  const { colors } = useTheme();
   return (
     <TouchableOpacity
       {...props}
@@ -46,11 +49,17 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         style
       ]}
     >
-      {!!icon && icon}
-      {!!label && (
-        <Text style={[styles.textBtn, styleMapped.text, textStyle]}>
-          {label}
-        </Text>
+      {disabled ? (
+        <LoadingSpinner color={colors['white']} size={20} />
+      ) : (
+        <>
+          {!!icon && icon}
+          {!!label && (
+            <Text style={[styles.textBtn, styleMapped.text, textStyle]}>
+              {label}
+            </Text>
+          )}
+        </>
       )}
     </TouchableOpacity>
   );
@@ -63,7 +72,8 @@ const styles = StyleSheet.create({
   containerBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingHorizontal: 12
   },
   textBtn: {
     textAlign: 'center',
