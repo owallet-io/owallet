@@ -16,6 +16,9 @@ import {
   navigate
 } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
+import { spacing } from '../../../themes';
+import OWButton from '../../../components/button/OWButton';
+import OWIcon from '../../../components/ow-icon/ow-icon';
 
 interface FormData {
   name: string;
@@ -23,7 +26,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer(props => {
+export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -36,7 +39,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
     >
   >();
   const { colors } = useTheme();
-  const styles = styling(colors);
+  const styles = useStyles();
 
   const { analyticsStore } = useStore();
 
@@ -95,37 +98,127 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       setIsCreating(false);
     }
   });
+  const renderName = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label="Username"
+        returnKeyType={mode === 'add' ? 'done' : 'next'}
+        onSubmitEditing={() => {
+          if (mode === 'add') {
+            submit();
+          }
+          if (mode === 'create') {
+            setFocus('password');
+          }
+        }}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        error={errors.name?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
+  const validatePass = (value: string) => {
+    if (value.length < 8) {
+      return 'Password must be longer than 8 characters';
+    }
+  };
+  const renderPass = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label="Password"
+        returnKeyType="next"
+        secureTextEntry={true}
+        onSubmitEditing={() => {
+          setFocus('confirmPassword');
+        }}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        inputRight={
+          <OWButton
+            style={styles.padIcon}
+            type="link"
+            onPress={() => setStatusPass(!statusPass)}
+            icon={
+              <OWIcon
+                name={!statusPass ? 'eye' : 'eye-slash'}
+                color={colors['icon-purple-700-gray']}
+                size={22}
+              />
+            }
+          />
+        }
+        secureTextEntry={!statusPass}
+        error={errors.password?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
+  const validateConfirmPass = (value: string) => {
+    if (value.length < 8) {
+      return 'Password must be longer than 8 characters';
+    }
 
+    if (getValues('password') !== value) {
+      return "Password doesn't match";
+    }
+  };
+  const onGoBack = () => {
+    if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+      smartNavigation.goBack();
+    } else {
+      smartNavigation.navigateSmart('Register.Intro', {});
+    }
+  };
+  const renderConfirmPass = ({ field: { onChange, onBlur, value, ref } }) => {
+    return (
+      <TextInput
+        label="Confirm password"
+        returnKeyType="done"
+        inputRight={
+          <OWButton
+            style={styles.padIcon}
+            type="link"
+            onPress={() => setStatusConfirmPass(!statusConfirmPass)}
+            icon={
+              <OWIcon
+                name={!statusConfirmPass ? 'eye' : 'eye-slash'}
+                color={colors['icon-purple-700-gray']}
+                size={22}
+              />
+            }
+          />
+        }
+        secureTextEntry={!statusConfirmPass}
+        onSubmitEditing={() => {
+          submit();
+        }}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        error={errors.confirmPassword?.message}
+        onBlur={onBlur}
+        onChangeText={onChange}
+        value={value}
+        ref={ref}
+      />
+    );
+  };
   return (
     <PageWithScrollView
-      contentContainerStyle={{
-        flexGrow: 1
-      }}
-      style={{
-        paddingLeft: 20,
-        paddingRight: 20
-      }}
+      contentContainerStyle={styles.containerContentStyle}
       backgroundColor={colors['plain-background']}
     >
-      <View
-        style={{
-          height: 72,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 24,
-            lineHeight: 34,
-            fontWeight: '700',
-            color: colors['label']
-          }}
-        >
-          Import ledger Nano X
-        </Text>
+      <View style={styles.viewHeader}>
+        <Text style={styles.titleHeader}>Import ledger Nano X</Text>
         <View>
           <OWalletLogo size={72} />
         </View>
@@ -135,82 +228,19 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         rules={{
           required: 'Name is required'
         }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Username"
-              returnKeyType={mode === 'add' ? 'done' : 'next'}
-              onSubmitEditing={() => {
-                if (mode === 'add') {
-                  submit();
-                }
-                if (mode === 'create') {
-                  setFocus('password');
-                }
-              }}
-              inputStyle={{
-                ...styles.borderInput
-              }}
-              error={errors.name?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
+        render={renderName}
         name="name"
         defaultValue=""
       />
-      {/* <BIP44AdvancedButton bip44Option={bip44Option} /> */}
       {mode === 'create' ? (
         <React.Fragment>
           <Controller
             control={control}
             rules={{
               required: 'Password is required',
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return 'Password must be longer than 8 characters';
-                }
-              }
+              validate: validatePass
             }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Password"
-                  returnKeyType="next"
-                  secureTextEntry={true}
-                  onSubmitEditing={() => {
-                    setFocus('confirmPassword');
-                  }}
-                  inputStyle={{
-                    ...styles.borderInput
-                  }}
-                  inputRight={
-                    <TouchableOpacity
-                      onPress={() => setStatusPass(!statusPass)}
-                    >
-                      <Image
-                        style={{
-                          width: 22,
-                          height: 22
-                        }}
-                        source={require('../../../assets/image/transactions/eye.png')}
-                        resizeMode="contain"
-                        fadeDuration={0}
-                      />
-                    </TouchableOpacity>
-                  }
-                  secureTextEntry={!statusPass}
-                  error={errors.password?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
+            render={renderPass}
             name="password"
             defaultValue=""
           />
@@ -218,105 +248,34 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
             control={control}
             rules={{
               required: 'Confirm password is required',
-              validate: (value: string) => {
-                if (value.length < 8) {
-                  return 'Password must be longer than 8 characters';
-                }
-
-                if (getValues('password') !== value) {
-                  return "Password doesn't match";
-                }
-              }
+              validate: validateConfirmPass
             }}
-            render={({ field: { onChange, onBlur, value, ref } }) => {
-              return (
-                <TextInput
-                  label="Confirm password"
-                  returnKeyType="done"
-                  inputRight={
-                    <TouchableOpacity
-                      onPress={() => setStatusConfirmPass(!statusConfirmPass)}
-                    >
-                      <Image
-                        style={{
-                          width: 22,
-                          height: 22
-                        }}
-                        source={require('../../../assets/image/transactions/eye.png')}
-                        resizeMode="contain"
-                        fadeDuration={0}
-                      />
-                    </TouchableOpacity>
-                  }
-                  secureTextEntry={!statusConfirmPass}
-                  onSubmitEditing={() => {
-                    submit();
-                  }}
-                  inputStyle={{
-                    ...styles.borderInput
-                  }}
-                  error={errors.confirmPassword?.message}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  ref={ref}
-                />
-              );
-            }}
+            render={renderConfirmPass}
             name="confirmPassword"
             defaultValue=""
           />
         </React.Fragment>
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
-      <View style={{ height: 20 }} />
-      <TouchableOpacity
+      <View style={styles.heightView} />
+      <OWButton
+        style={styles.btnNext}
         disabled={isCreating}
         onPress={submit}
-        style={{
-          marginBottom: 24,
-          backgroundColor: colors['purple-900'],
-          borderRadius: 8
-        }}
-      >
-        <Text
-          style={{
-            color: 'white',
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16,
-            padding: 16
-          }}
-        >
-          Next
-        </Text>
-      </TouchableOpacity>
-      <View
+        label={'Next'}
+      />
+      <OWButton
+        type="link"
         style={{
           paddingBottom: checkRouterPaddingBottomBar(
             props?.route?.name,
             'RegisterNewLedgerMain'
           )
         }}
-      >
-        <Text
-          style={{
-            color: colors['purple-900'],
-            textAlign: 'center',
-            fontWeight: '700',
-            fontSize: 16
-          }}
-          onPress={() => {
-            if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
-              smartNavigation.goBack();
-            } else {
-              smartNavigation.navigateSmart('Register.Intro', {});
-            }
-          }}
-        >
-          Go back
-        </Text>
-      </View>
+        onPress={onGoBack}
+        label={'Go back'}
+      />
+
       {/* Mock element for bottom padding */}
       <View
         style={{
@@ -327,12 +286,38 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styling = colors =>
-  StyleSheet.create({
+const useStyles = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    padIcon: {
+      width: 22,
+      height: 22
+    },
+    btnNext: {
+      marginBottom: 24
+    },
+    heightView: { height: 20 },
+    titleHeader: {
+      fontSize: 24,
+      lineHeight: 34,
+      fontWeight: '700',
+      color: colors['label']
+    },
+    viewHeader: {
+      height: 72,
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    containerContentStyle: {
+      flexGrow: 1,
+      paddingHorizontal: spacing['page-pad']
+    },
     borderInput: {
-      borderColor: colors['purple-100'],
+      borderColor: colors['border-purple-100-gray-800'],
+      backgroundColor: 'transparent',
       borderWidth: 1,
-      backgroundColor: colors['white'],
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,
@@ -340,3 +325,4 @@ const styling = colors =>
       borderRadius: 8
     }
   });
+};

@@ -34,6 +34,7 @@ import {
 import { OWalletLogo } from '../owallet-logo';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
+import { spacing } from '../../../themes';
 
 interface FormData {
   name: string;
@@ -351,7 +352,7 @@ const useStyles = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     mockView: {
-      flex: 1
+      height: 20
     },
     padIcon: {
       paddingLeft: 10
@@ -395,13 +396,13 @@ const useStyles = () => {
       justifyContent: 'space-between'
     },
     container: {
-      paddingLeft: 20,
-      paddingRight: 20
+      paddingHorizontal:spacing['page-pad'],
+      flexGrow: 1
     },
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],
-      borderWidth: 1,
       backgroundColor: 'transparent',
+      borderWidth: 1,
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,
