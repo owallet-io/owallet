@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import { PageWithScrollView } from '../../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
@@ -22,6 +27,7 @@ import { spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoadingSpinner } from '../../../components/spinner';
 import { OWalletLogo } from '../owallet-logo';
+import OWButton from '@src/components/button/OWButton';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
@@ -80,6 +86,39 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
 
   const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
+  const onVerifyMnemonic = useCallback(async () => {
+    if (isCreating) return;
+    setIsCreating(true);
+    await registerConfig.createMnemonic(
+      newMnemonicConfig.name,
+      newMnemonicConfig.mnemonic,
+      newMnemonicConfig.password,
+      route.params.bip44HDPath
+    );
+    analyticsStore.setUserProperties({
+      registerType: 'seed',
+      accountType: 'mnemonic'
+    });
+    if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
+      navigate('RegisterEnd', {
+        password: newMnemonicConfig.password,
+        type: 'new'
+      });
+    } else {
+      smartNavigation.reset({
+        index: 0,
+        routes: [
+          {
+            name: 'Register.End',
+            params: {
+              password: newMnemonicConfig.password,
+              type: 'new'
+            }
+          }
+        ]
+      });
+    }
+  }, [newMnemonicConfig, isCreating]);
   return (
     <PageWithScrollView
       contentContainerStyle={styles.containerContentScroll}
@@ -94,7 +133,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       <Text
         style={{
           ...typography['h7'],
-          color: colors['text-black-medium'],
+          color: colors['text-label-input'],
           marginTop: 32,
           marginBottom: 4
         }}
@@ -153,82 +192,21 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
           flex: 1
         }}
       />
-      <TouchableOpacity
+      
+      <OWButton
+        label="Next"
+        loading={isCreating}
         disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
-        onPress={async () => {
-          if (isCreating) return;
-          setIsCreating(true);
-          await registerConfig.createMnemonic(
-            newMnemonicConfig.name,
-            newMnemonicConfig.mnemonic,
-            newMnemonicConfig.password,
-            route.params.bip44HDPath
-          );
-          analyticsStore.setUserProperties({
-            registerType: 'seed',
-            accountType: 'mnemonic'
-          });
-          if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
-            navigate('RegisterEnd', {
-              password: newMnemonicConfig.password,
-              type: 'new'
-            });
-          } else {
-            smartNavigation.reset({
-              index: 0,
-              routes: [
-                {
-                  name: 'Register.End',
-                  params: {
-                    password: newMnemonicConfig.password,
-                    type: 'new'
-                  }
-                }
-              ]
-            });
-          }
-        }}
-        style={{
-          marginBottom: 24,
-          marginTop: 32,
-          backgroundColor:
-            wordSet.join(' ') !== newMnemonicConfig.mnemonic
-              ? colors['gray-301']
-              : colors['purple-700'],
-          borderRadius: 8
-        }}
-      >
-        {isCreating ? (
-          <View style={{ padding: 16, alignItems: 'center' }}>
-            <LoadingSpinner color={colors['white']} size={20} />
-          </View>
-        ) : (
-          <Text
-            style={{
-              color: colors['white'],
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              padding: 16
-            }}
-          >
-            Next
-          </Text>
-        )}
-      </TouchableOpacity>
-      <Text
-        style={{
-          color: colors['purple-900'],
-          textAlign: 'center',
-          fontWeight: '700',
-          fontSize: 16
-        }}
+        onPress={onVerifyMnemonic}
+      />
+
+      <OWButton
+        label="Go back"
+        type="link"
         onPress={() => {
           smartNavigation.goBack();
         }}
-      >
-        Go back
-      </Text>
+      />
       {/* Mock element for bottom padding */}
       <View
         style={{
@@ -249,7 +227,7 @@ const WordButton: FunctionComponent<{
   return (
     <RectButton
       style={{
-        backgroundColor: used ? colors['gray-10'] : colors['white'],
+        backgroundColor: used ? colors['background-btn-mnemonic-active'] : colors['background-container'],
         paddingTop: 4,
         paddingBottom: 4,
         paddingLeft: 12,
@@ -258,14 +236,14 @@ const WordButton: FunctionComponent<{
         marginBottom: 12,
         borderRadius: 8,
         borderWidth: used ? 0 : 1,
-        borderColor: used ? colors['gray-10'] : colors['purple-900']
+        borderColor: used ? colors['background-container'] : colors['btn-mnemonic']
       }}
       onPress={onPress}
     >
       <Text
         style={{
           ...typography['subtitle2'],
-          color: colors['purple-900'],
+          color: colors['btn-mnemonic'],
           fontSize: 14,
           fontWeight: '700'
         }}
@@ -294,7 +272,7 @@ const WordsCard: FunctionComponent<{
         paddingBottom: 10,
         paddingLeft: 24,
         paddingRight: 24,
-        borderColor: colors['purple-100'],
+        borderColor: colors['border-input-login'],
         borderWidth: 1,
         borderRadius: 8,
         display: 'flex',
@@ -324,7 +302,7 @@ const useStyles = () => {
       fontSize: 24,
       lineHeight: 34,
       fontWeight: '700',
-      color: colors['label']
+      color: colors['text-title-login']
     },
     headerView: {
       height: 72,

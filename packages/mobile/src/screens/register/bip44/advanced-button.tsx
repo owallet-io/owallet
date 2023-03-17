@@ -36,7 +36,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
       />
       <Text
         style={{
-          color: scheme !== 'dark' ? colors['text-black'] : colors['label']
+          color: colors['text-btn-advance-options']
         }}
         onPress={() => setIsModalOpen(true)}
       >

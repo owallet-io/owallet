@@ -17,7 +17,6 @@ export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
   const style = useStyle();
   const { colors } = useTheme();
-
   const smartNavigation = useSmartNavigation();
 
   const registerConfig = useRegisterConfig(keyRingStore, []);
