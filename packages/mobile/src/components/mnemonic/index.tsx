@@ -16,7 +16,6 @@ export const WordChip: FunctionComponent<{
     <View
       style={{
         borderRadius: 8,
-        // backgroundColor: 'white',
         borderWidth: 1,
         margin: 5,
         borderColor: empty ? colors['primary-100'] : colors['purple-700'],

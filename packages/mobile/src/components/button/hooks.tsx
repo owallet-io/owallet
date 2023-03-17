@@ -76,7 +76,7 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
         text: {
           color: disabled ? colors['text-btn-disable-color'] : colors['white'],
           fontSize: formatSize.text.fontSize,
-          weight: formatSize.text.fontWeight
+          fontWeight: formatSize.text.fontWeight
         }
       };
       break;
@@ -94,7 +94,7 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
             ? colors['text-btn-disable-color']
             : colors['purple-900'],
           fontSize: formatSize.text.fontSize,
-          weight: formatSize.text.fontWeight
+          fontWeight: formatSize.text.fontWeight
         }
       };
       break;
@@ -108,7 +108,7 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
         text: {
           color: colors['btn-primary-background'],
           fontSize: formatSize.text.fontSize,
-          weight: formatSize.text.fontWeight
+          fontWeight: formatSize.text.fontWeight
         }
       };
       break;
@@ -123,7 +123,7 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
         text: {
           color: colors['white'],
           fontSize: formatSize.text.fontSize,
-          weight: formatSize.text.fontWeight
+          fontWeight: formatSize.text.fontWeight
         }
       };
       break;

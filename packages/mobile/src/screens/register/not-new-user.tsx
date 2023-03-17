@@ -15,7 +15,6 @@ import { useTheme } from '@src/themes/theme-provider';
 
 export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
-
   const style = useStyle();
   const { colors } = useTheme();
 

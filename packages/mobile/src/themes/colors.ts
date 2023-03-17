@@ -1,3 +1,7 @@
+import { DarkModeTheme, LightModeTheme } from "./mode-colors";
+console.log('DarkModeTheme: ', DarkModeTheme);
+console.log('LightModeTheme: ', LightModeTheme);
+
 const colorsCode = {
   // primary
   'primary-10': '#F1F3FC',
@@ -110,6 +114,7 @@ const colorsCode = {
 };
 export const colors = {
   ...colorsCode,
+  ...DarkModeTheme,
   primary: '#1A1D25',
   'primary-text': '#E2DEEB',
   'icon-text': '#E2DEEB',
@@ -145,6 +150,7 @@ export const colors = {
 
 export const lightColors = {
   ...colorsCode,
+  ...LightModeTheme,
   primary: '#fff',
   'primary-text': '#1C1C1E',
   'icon-text': '#8C93A7',
