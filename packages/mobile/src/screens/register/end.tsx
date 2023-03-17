@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithView } from '../../components/page';
-import { TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CText as Text } from '../../components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import WelcomeRocket from '../../assets/svg/welcome-rocket.svg';
 import { OWalletLogo, OWalletStar } from './owallet-logo';
 import { colors, typography } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
+import OWButton from '@src/components/button/OWButton';
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
@@ -45,11 +46,12 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <PageWithView
+      disableSafeArea
       style={{
         paddingLeft: 50,
         paddingTop: 140,
         paddingRight: 50,
-        backgroundColor: colors['white']
+        backgroundColor: colors['background-container']
       }}
     >
       <View />
@@ -69,7 +71,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
         <Text
           style={{
             ...typography['h2'],
-            color: colors['text-black-medium'],
+            color: colors['text-title-login'],
             marginTop: 18,
             fontWeight: '700'
           }}
@@ -79,7 +81,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
         <Text
           style={{
             ...typography['subtitle1'],
-            color: colors['text-black-low'],
+            color: colors['text-content-success'],
             textAlign: 'center',
             paddingTop: 20,
             paddingLeft: 8,
@@ -118,22 +120,22 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           />
         </View>
       ) : null}
-      <TouchableOpacity
-        disabled={isLoading}
+      <OWButton
+        label="Done"
+        loading={isLoading}
+        style={styles.btnDone}
         onPress={async () => {
           setIsLoading(true);
           try {
             if (password && isBiometricOn) {
               await keychainStore.turnOnBiometry(password);
             }
-
             // Definetly, the last key is newest keyring.
             if (keyRingStore.multiKeyStoreInfo.length > 0) {
               await keyRingStore.changeKeyRing(
                 keyRingStore.multiKeyStoreInfo.length - 1
               );
             }
-
             smartNavigation.reset({
               index: 0,
               routes: [
@@ -147,32 +149,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             setIsLoading(false);
           }
         }}
-        style={{
-          marginBottom: 24,
-          marginTop: 44,
-          backgroundColor: colors['purple-900'],
-          borderRadius: 8
-        }}
-      >
-        {isLoading ? (
-          <View style={{ padding: 16, alignItems: 'center' }}>
-            <LoadingSpinner color={colors['white']} size={20} />
-          </View>
-        ) : (
-          <Text
-            style={{
-              color: colors['white'],
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              lineHeight: 22,
-              padding: 16
-            }}
-          >
-            Done
-          </Text>
-        )}
-      </TouchableOpacity>
+      />
       <View
         style={{
           flex: 1
@@ -180,4 +157,10 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
       />
     </PageWithView>
   );
+});
+
+const styles = StyleSheet.create({
+  btnDone: {
+    marginTop: 44
+  }
 });
