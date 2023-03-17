@@ -12,9 +12,10 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { colors, metrics, typography } from '../../themes';
+import { metrics, typography } from '../../themes';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
@@ -45,7 +46,7 @@ export const PasswordInputModal: FunctionComponent<{
     const [password, setPassword] = useState('');
     const [isInvalidPassword, setIsInvalidPassword] = useState(false);
     const scheme = appInitStore.getInitApp.theme;
-
+    const { colors } = useTheme();
     const [isLoading, setIsLoading] = useState(false);
 
     const submitPassword = async () => {
@@ -94,7 +95,7 @@ export const PasswordInputModal: FunctionComponent<{
             <TextInput
               label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 setPassword(text);
               }}
               labelStyle={{

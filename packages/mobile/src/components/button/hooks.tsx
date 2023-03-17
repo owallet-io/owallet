@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { TextStyle, ViewStyle } from 'react-native';
 interface IMapStyle {
   btn: ViewStyle;

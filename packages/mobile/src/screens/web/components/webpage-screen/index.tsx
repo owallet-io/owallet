@@ -2,7 +2,6 @@ import { Ethereum, OWallet } from '@owallet/provider';
 import {
   useIsFocused,
   useNavigation,
-  useTheme
 } from '@react-navigation/native';
 import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
@@ -13,6 +12,7 @@ import React, {
   useRef,
   useState
 } from 'react';
+import { useTheme } from '@src/themes/theme-provider';
 import { Animated, BackHandler, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { URL } from 'react-native-url-polyfill';

@@ -28,14 +28,14 @@ import { spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';
 import { SettingSwitchModeItem } from './items/switch-mode';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
+    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
         label: key.toUpperCase()
@@ -43,7 +43,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
     });
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
-    keyStore => keyStore.selected
+    (keyStore) => keyStore.selected
   );
 
   const smartNavigation = useSmartNavigation();

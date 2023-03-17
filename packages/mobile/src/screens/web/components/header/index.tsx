@@ -8,12 +8,12 @@ import { useWebViewState } from '../context';
 import Svg, { Path } from 'react-native-svg';
 import { RectButton } from '../../../../components/rect-button';
 import { metrics } from '../../../../themes';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';
 import { checkValidDomain } from '../../../../utils/helper';
 import { HeaderBackButtonIcon } from '../../../../components/header/icon';
-
+import { useTheme } from '@src/themes/theme-provider';
 const EditIcon: FunctionComponent<{
   size: number;
   color: string;

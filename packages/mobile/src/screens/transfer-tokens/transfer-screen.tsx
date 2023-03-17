@@ -9,7 +9,7 @@ import TransferTokensHeader from './transfer-header';
 import TransferTokensOptions from './transfer-options';
 import TransferViewBtn from './transfer-view-btn';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 const styles = StyleSheet.create({
   sendTokenCard: {

@@ -1,7 +1,8 @@
 import React, { FunctionComponent, useState } from 'react';
 import { PageWithScrollView } from '../../../components/page';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
@@ -387,7 +388,12 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       ) : null}
 
       <BIP44AdvancedButton bip44Option={bip44Option} />
-      <OWButton disabled={isCreating} onPress={submit} label={'Next'} />
+      <OWButton
+        loading={isCreating}
+        disabled={isCreating}
+        onPress={submit}
+        label={'Next'}
+      />
       <OWButton
         type="link"
         style={{

@@ -12,7 +12,7 @@ import {
   parseIbcMsgTransfer
 } from '../../../../utils/helper';
 import moment from 'moment';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 // import { Buffer } from 'buffer';
 
 interface TransactionItemProps {

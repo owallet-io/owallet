@@ -19,10 +19,11 @@ import { observer } from 'mobx-react-lite';
 import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
+import { useTheme } from '@src/themes/theme-provider';
 import {
   useFocusEffect,
-  useTheme,
-  useNavigation
+  
+  
 } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors } from '../../themes';

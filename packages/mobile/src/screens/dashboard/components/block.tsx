@@ -10,7 +10,7 @@ import FastImage from 'react-native-fast-image';
 import { API } from '../../../common/api';
 import { numberWithCommas } from '../../../utils/helper';
 import moment from 'moment';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const BlockCard: FunctionComponent<{
   containerStyle?: ViewStyle;

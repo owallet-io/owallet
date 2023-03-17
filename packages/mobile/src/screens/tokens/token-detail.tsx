@@ -36,7 +36,7 @@ import { API } from '../../common/api';
 import { useLoadingScreen } from '../../providers/loading-screen';
 import { AddressQRCodeModal } from '../home/components';
 import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const TokenDetailScreen: FunctionComponent = observer(props => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();

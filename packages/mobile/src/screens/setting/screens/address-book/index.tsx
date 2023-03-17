@@ -19,7 +19,8 @@ import { AsyncKVStore } from '../../../../common';
 import { useStore } from '../../../../stores';
 import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
 import { Bech32Address } from '@owallet/cosmos';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { RectButton } from '../../../../components/rect-button';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {

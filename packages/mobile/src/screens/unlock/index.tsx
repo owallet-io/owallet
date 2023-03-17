@@ -21,11 +21,7 @@ import { TextInput } from '../../components/input';
 import delay from 'delay';
 import { useStore } from '../../stores';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import {
-  StackActions,
-  useNavigation,
-  useTheme
-} from '@react-navigation/native';
+import { StackActions, useNavigation } from '@react-navigation/native';
 import { KeyRingStatus } from '@owallet/background';
 import { KeychainStore } from '../../stores/keychain';
 import { AccountStore } from '@owallet/stores';
@@ -37,7 +33,7 @@ import CodePush from 'react-native-code-push';
 import messaging from '@react-native-firebase/messaging';
 import { MaintainScreen } from '../../components/maintain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useTheme } from '@src/themes/theme-provider';
 let splashScreenHided = false;
 async function hideSplashScreen() {
   if (!splashScreenHided) {
@@ -55,7 +51,7 @@ async function waitAccountLoad(
     return;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -155,7 +151,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // },
         installMode: CodePush.InstallMode.IMMEDIATE
       },
-      status => {
+      (status) => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             console.log('UP_TO_DATE');
@@ -270,7 +266,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [keyRingStore.status, navigateToHome, downloading]);
 
   useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
+    messaging().onNotificationOpenedApp((remoteMessage) => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage
@@ -287,11 +283,11 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     });
     messaging()
       .getInitialNotification()
-      .then(async remoteMessage => {
+      .then(async (remoteMessage) => {
         // const data = JSON.parse(remoteMessage?.data?.data);
         // console.log('message', data.message);
       });
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       // const formatData = JSON.parse(remoteMessage?.data?.data);
       // console.log('raw', remoteMessage?.data);
       // console.log('formattedData', formatData);
@@ -301,7 +297,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, []);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async FCMToken => {
+  const regisFcmToken = useCallback(async (FCMToken) => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
@@ -311,7 +307,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async FCMToken => {
+        .then(async (FCMToken) => {
           console.log('FCMToken ===', FCMToken);
           if (FCMToken) {
             regisFcmToken(FCMToken);
@@ -319,7 +315,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           let err = `FCM token get error: ${error}`;
           Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
@@ -333,7 +329,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (Platform.OS === 'ios') {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then(register => {
+        .then((register) => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -348,7 +344,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('[FCMService] Requested persmission rejected ', error);
       });
   }, [registerAppWithFCM]);
@@ -356,7 +352,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then(enabled => {
+      .then((enabled) => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -365,7 +361,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch(error => {
+      .catch((error) => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -382,7 +378,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [requestPermission]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {});
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
 
     return unsubscribe;
   }, []);

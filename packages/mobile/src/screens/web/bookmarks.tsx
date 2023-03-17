@@ -14,9 +14,9 @@ import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
 import { checkValidDomain } from '../../utils/helper';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
   const { colors } = useTheme();

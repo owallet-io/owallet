@@ -7,7 +7,7 @@ import { CText as Text } from '../../components/text';
 import { DashboardCard } from '../home/dashboard';
 import { BlockCard } from './components/block';
 import { InfoCard } from './components/info';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const DashBoardScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();

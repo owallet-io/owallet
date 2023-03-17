@@ -12,7 +12,6 @@ import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import { useStore } from '../../stores';
-import { useTheme } from '@react-navigation/native';
 
 export const HomeBaseModal: FunctionComponent<{
   isOpen: boolean;

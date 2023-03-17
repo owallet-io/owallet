@@ -13,6 +13,7 @@ import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
 import crashlytics from '@react-native-firebase/crashlytics';
+import ThemeProvider from './themes/theme-provider';
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -58,7 +59,7 @@ if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
 // Prevent native splash screen from autohiding.
 // UnlockScreen will hide the splash screen
 SplashScreen.preventAutoHideAsync()
-  .then(result =>
+  .then((result) =>
     console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
   )
   .catch(console.warn);
@@ -108,24 +109,26 @@ export const App = () => {
   return (
     <StyleProvider>
       <StoreProvider>
-        <AppIntlProviderWithStorage>
-          <StatusBar
-            translucent={true}
-            backgroundColor="#FFFFFF00"
-            barStyle="dark-content"
-          />
-          <SafeAreaProvider>
-            <ModalsProvider>
-              <LoadingScreenProvider>
-                <ConfirmModalProvider>
-                  <InteractionModalsProivder>
-                    <AppNavigation />
-                  </InteractionModalsProivder>
-                </ConfirmModalProvider>
-              </LoadingScreenProvider>
-            </ModalsProvider>
-          </SafeAreaProvider>
-        </AppIntlProviderWithStorage>
+        <ThemeProvider>
+          <AppIntlProviderWithStorage>
+            <StatusBar
+              translucent={true}
+              backgroundColor="#FFFFFF00"
+              barStyle="dark-content"
+            />
+            <SafeAreaProvider>
+              <ModalsProvider>
+                <LoadingScreenProvider>
+                  <ConfirmModalProvider>
+                    <InteractionModalsProivder>
+                      <AppNavigation />
+                    </InteractionModalsProivder>
+                  </ConfirmModalProvider>
+                </LoadingScreenProvider>
+              </ModalsProvider>
+            </SafeAreaProvider>
+          </AppIntlProviderWithStorage>
+        </ThemeProvider>
       </StoreProvider>
     </StyleProvider>
   );

@@ -7,6 +7,15 @@ module.exports = {
         moduleName: 'react-native-dotenv'
       }
     ],
+    [
+      'module-resolver',
+      {
+        alias: {
+          // This needs to be mirrored in tsconfig.json
+          '@src': './src'
+        }
+      }
+    ],
     ['@babel/plugin-transform-flow-strip-types'],
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     ['@babel/plugin-proposal-class-properties', { loose: true }],

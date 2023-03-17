@@ -1,7 +1,7 @@
 import { ValidatorThumbnails } from '@owallet/common';
 import { BondStatus } from '@owallet/stores';
 // import { Dec } from '@owallet/unit';
-import { useRoute, RouteProp, useTheme } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
@@ -11,7 +11,7 @@ import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
 import { typography, colors, spacing } from '../../../themes';
-
+import { useTheme } from '@src/themes/theme-provider';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =

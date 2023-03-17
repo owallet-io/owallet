@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { BondStatus } from '@owallet/stores';
@@ -24,7 +24,7 @@ import ValidatorsList from './validators-list';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DownArrowIcon } from '../../../components/icon';
 import { Toggle } from '../../../components/toggle';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<

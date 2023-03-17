@@ -15,7 +15,7 @@ import {
 } from '../../../../components/icon';
 import { useStore } from '../../../../stores';
 import { colors } from '../../../../themes';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const BrowserFooterSection: FunctionComponent<{
   isSwitchTab: boolean;

@@ -12,8 +12,7 @@ import { DelegationsCard } from './delegations-card';
 import { useStore } from '../../../stores';
 import { observer } from 'mobx-react-lite';
 import { API } from '../../../common/api';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();

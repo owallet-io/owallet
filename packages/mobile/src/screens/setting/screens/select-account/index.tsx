@@ -11,8 +11,7 @@ import {
 } from '@owallet/background';
 import { View } from 'react-native';
 import { useSmartNavigation } from '../../../../navigation.provider';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
 const CheckIcon: FunctionComponent<{
   color: string;
   height: number;

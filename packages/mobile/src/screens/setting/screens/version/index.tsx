@@ -10,8 +10,7 @@ import { useStyle } from '../../../../styles';
 import { Divider } from '@rneui/base';
 import { useStore } from '../../../../stores';
 import moment from 'moment';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const OWalletVersionScreen: FunctionComponent = observer(() => {
   const [appVersion] = useState(() => DeviceInfo.getVersion());
   const { colors } = useTheme();

@@ -14,12 +14,12 @@ import {
   ValidatorOutlineIcon
 } from '../../../components/icon';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { RectButton } from '../../../components/rect-button';
 import { ValidatorThumbnails } from '@owallet/common';
 import { colors, spacing, typography } from '../../../themes';
 import { API } from '../../../common/api';
-
+import { useTheme } from '@src/themes/theme-provider';
 type Sort = 'APR' | 'Voting Power' | 'Name';
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {

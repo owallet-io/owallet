@@ -5,8 +5,8 @@ import { CText as Text } from '../../../components/text';
 import { RightArrowIcon } from '../../../components/icon';
 import { RectButton } from '../../../components/rect-button';
 import { spacing, typography } from '../../../themes';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
+// useTheme
 export const SettingSectionTitle: FunctionComponent<{
   title: string;
 }> = ({ title }) => {
@@ -167,7 +167,7 @@ export const RightArrow: FunctionComponent<{
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     defaultLabel: {
       ...typography.h6,

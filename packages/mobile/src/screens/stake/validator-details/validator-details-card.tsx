@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { BondStatus } from '@owallet/stores';
 import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
 import { CText as Text } from '../../../components/text';

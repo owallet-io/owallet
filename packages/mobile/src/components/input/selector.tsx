@@ -11,7 +11,7 @@ import { useStyle } from '../../styles';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../rect-button';
 import { spacing, typography } from '../../themes';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;

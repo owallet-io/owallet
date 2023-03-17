@@ -23,7 +23,7 @@ import crashlytics from '@react-native-firebase/crashlytics';
 import { NewsTab } from './news';
 import { useIsFocused } from '@react-navigation/core';
 import { TendermintTxTracer } from '@owallet/cosmos';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();

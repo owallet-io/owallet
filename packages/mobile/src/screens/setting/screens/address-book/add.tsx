@@ -5,8 +5,9 @@ import {
   RouteProp,
   useNavigation,
   useRoute,
-  useTheme
+  
 } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import {
   AddressBookConfig,
   RecipientConfig,

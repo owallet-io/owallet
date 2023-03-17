@@ -10,7 +10,7 @@ import { useStore } from '../../stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OWalletLogo, OWalletUnion } from './owallet-logo';
 import { metrics } from '../../themes';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import OWButton from '../../components/button/OWButton';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {

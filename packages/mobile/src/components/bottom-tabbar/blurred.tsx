@@ -3,7 +3,7 @@ import { BottomTabBar, BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Platform, StyleSheet, View } from 'react-native';
 import { BlurView } from '@react-native-community/blur';
 import { useFocusedScreen } from '../../providers/focused-screen';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const BlurredBottomTabBar: FunctionComponent<
   BottomTabBarProps & {

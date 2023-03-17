@@ -1,10 +1,11 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollView } from '../../../components/page';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { CText as Text } from '../../../components/text';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { NewMnemonicConfig } from './hook';
 import { RegisterConfig } from '@owallet/hooks';
@@ -17,12 +18,12 @@ import {
   checkRouter,
   checkRouterPaddingBottomBar
 } from '../../../router/root';
-import { typography } from '../../../themes';
+import { spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoadingSpinner } from '../../../components/spinner';
 import { OWalletLogo } from '../owallet-logo';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
+export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -59,7 +60,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map(word => {
+      randomSortedWords.map((word) => {
         return {
           word,
           usedIndex: -1
@@ -73,40 +74,19 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
+  const firstEmptyWordSetIndex = wordSet.findIndex(
+    (word) => word === undefined
+  );
 
   const [isCreating, setIsCreating] = useState(false);
-
+  const styles = useStyles();
   return (
     <PageWithScrollView
-      contentContainerStyle={{
-        display: 'flex'
-      }}
+      contentContainerStyle={styles.containerContentScroll}
       backgroundColor={colors['plain-background']}
-      style={{
-        paddingLeft: 20,
-        paddingRight: 20
-      }}
     >
-      <View
-        style={{
-          height: 72,
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 24,
-            lineHeight: 34,
-            fontWeight: '700',
-            color: colors['gray-900']
-          }}
-        >
-          Create new wallet
-        </Text>
+      <View style={styles.headerView}>
+        <Text style={styles.titleHeaderView}>Create new wallet</Text>
         <View>
           <OWalletLogo size={72} />
         </View>
@@ -335,4 +315,27 @@ const WordsCard: FunctionComponent<{
       })}
     </View>
   );
+};
+
+const useStyles = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    titleHeaderView: {
+      fontSize: 24,
+      lineHeight: 34,
+      fontWeight: '700',
+      color: colors['label']
+    },
+    headerView: {
+      height: 72,
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    containerContentScroll: {
+      flexGrow: 1,
+      paddingHorizontal: spacing['page-pad']
+    }
+  });
 };

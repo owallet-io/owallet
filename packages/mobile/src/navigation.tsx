@@ -15,11 +15,8 @@ import {
 } from 'react-native';
 import { CText as Text } from './components/text';
 import { KeyRingStatus } from '@owallet/background';
-import {
-  NavigationContainer,
-  useNavigation,
-  useTheme
-} from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { useStore } from './stores';
 import { observer } from 'mobx-react-lite';
 import { HomeScreen } from './screens/home';
@@ -126,8 +123,6 @@ import { Hash } from '@owallet/crypto';
 import { useRoute } from '@react-navigation/core';
 import { TransferNFTScreen } from './screens/transfer-nft';
 import { DashBoardScreen } from './screens/dashboard';
-import { lightColors } from './themes/colors';
-import { colors } from './themes';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -462,8 +457,7 @@ export const SendNavigation: FunctionComponent = () => {
 export const RegisterNavigation: FunctionComponent = () => {
   const style = useStyle();
   const { appInitStore } = useStore();
-  const {colors} = useTheme();
-  const theme = appInitStore.getInitApp.theme;
+  const { colors } = useTheme();
   return (
     <Stack.Navigator
       screenOptions={{
@@ -1149,7 +1143,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
         <SmartNavigatorProvider>
           <NavigationContainer
             ref={navigationRef}
-            theme={scheme === 'dark' ? DarkTheme : DefaultTheme}
+            // theme={scheme === 'dark' ? MyDarkTheme : MyDefaultTheme}
           >
             <Stack.Navigator
               initialRouteName={
@@ -1179,17 +1173,3 @@ export const AppNavigation: FunctionComponent = observer(() => {
     </PageScrollPositionProvider>
   );
 });
-
-const DarkTheme = {
-  dark: true,
-  colors: {
-    ...colors
-  }
-};
-
-const DefaultTheme = {
-  dark: false,
-  colors: {
-    ...lightColors
-  }
-};

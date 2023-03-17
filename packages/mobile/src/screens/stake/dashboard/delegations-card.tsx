@@ -9,8 +9,7 @@ import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { colors, spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ValidatorThumbnails } from '@owallet/common';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorList: Array<any>;

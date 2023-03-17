@@ -10,7 +10,7 @@ import {
 import { CText as Text } from '../text';
 import { useStyle } from '../../styles';
 import { spacing, typography } from '../../themes';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<

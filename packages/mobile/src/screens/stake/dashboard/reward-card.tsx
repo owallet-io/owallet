@@ -10,8 +10,7 @@ import { Dec } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing, typography } from '../../../themes';
 import { DownArrowIcon } from '../../../components/icon';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {

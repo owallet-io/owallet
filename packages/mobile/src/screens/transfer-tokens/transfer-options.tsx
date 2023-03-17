@@ -11,7 +11,7 @@ import {
 import { spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 const styling = colors =>
   StyleSheet.create({

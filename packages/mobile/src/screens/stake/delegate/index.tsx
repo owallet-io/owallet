@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { StyleSheet, View } from 'react-native';
 import { useStore } from '../../../stores';
 import { useDelegateTxConfig } from '@owallet/hooks';
@@ -19,7 +19,7 @@ import { spacing, typography } from '../../../themes';
 import { CText as Text } from '../../../components/text';
 import { Toggle } from '../../../components/toggle';
 import { Dec, DecUtils } from '@owallet/unit';
-
+import { useTheme } from '@src/themes/theme-provider';
 // import { RectButton } from '../../../components/rect-button';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 // import { DownArrowIcon } from '../../../components/icon';

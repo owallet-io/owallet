@@ -7,12 +7,8 @@ import React, {
 } from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import {
-  RouteProp,
-  useIsFocused,
-  useRoute,
-  useTheme
-} from '@react-navigation/native';
+import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
 import { useNewMnemonicConfig } from './hook';
 import { PageWithScrollView } from '../../../components/page';
@@ -396,7 +392,7 @@ const useStyles = () => {
       justifyContent: 'space-between'
     },
     container: {
-      paddingHorizontal:spacing['page-pad'],
+      paddingHorizontal: spacing['page-pad'],
       flexGrow: 1
     },
     borderInput: {

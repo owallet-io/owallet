@@ -8,7 +8,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../utils/helper';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { TokenItem } from './components/token-item';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();

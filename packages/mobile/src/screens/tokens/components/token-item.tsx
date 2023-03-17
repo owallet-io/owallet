@@ -13,7 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../../utils/helper';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { RightArrowIcon } from '../../../components/icon';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;

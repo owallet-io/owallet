@@ -14,7 +14,8 @@ import {
   formatOrai,
   getTxTypeNew
 } from '../../utils/helper';
-import { useRoute, RouteProp, useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import moment from 'moment';
 import { useSimpleTimer } from '../../hooks';
 interface TransactionInfo {

@@ -20,7 +20,7 @@ import {
 } from '../../../components/icon';
 import { spacing, typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;

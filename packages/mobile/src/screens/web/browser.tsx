@@ -23,7 +23,7 @@ import { BrowserFooterSection } from './components/footer-section';
 import { WebViewStateContext } from './components/context';
 import { observer } from 'mobx-react-lite';
 import { SearchLightIcon, XIcon } from '../../components/icon';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();

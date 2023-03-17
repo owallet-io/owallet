@@ -30,7 +30,7 @@ import {
   FastIconFill
 } from '../icon';
 import { spacing, typography } from '../../themes';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 export interface FeeButtonsProps {
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;

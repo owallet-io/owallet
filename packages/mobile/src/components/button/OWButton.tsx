@@ -11,7 +11,7 @@ import {
 import React, { FunctionComponent } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 interface IOWButtonProps extends TouchableOpacityProps {
   type?: 'primary' | 'secondary' | 'link' | 'modal';
@@ -21,6 +21,7 @@ interface IOWButtonProps extends TouchableOpacityProps {
   textStyle?: StyleProp<TextStyle>;
   fullWidth?: boolean;
   circle?: boolean;
+  loading?: boolean;
   icon?: React.ReactNode;
 }
 
@@ -33,6 +34,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   disabled,
   icon,
   fullWidth,
+  loading,
   ...props
 }) => {
   const styleMapped = useMapStyles({ type, disabled, size });
@@ -49,7 +51,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         style
       ]}
     >
-      {disabled ? (
+      {loading ? (
         <LoadingSpinner color={colors['white']} size={20} />
       ) : (
         <>

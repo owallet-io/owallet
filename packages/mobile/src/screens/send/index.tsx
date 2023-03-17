@@ -16,7 +16,8 @@ import {
   TextInput
 } from '../../components/input';
 import { Button } from '../../components/button';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { spacing } from '../../themes';

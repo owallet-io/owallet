@@ -14,14 +14,14 @@ import {
   TextInput
 } from '../../components/input';
 import { Button } from '../../components/button';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { spacing, typography } from '../../themes';
 import { CText as Text } from '../../components/text';
 import ProgressiveImage from '../../components/progessive-image';
-
+import { useTheme } from '@src/themes/theme-provider';
 const styling = colors =>
   StyleSheet.create({
     sendInputRoot: {

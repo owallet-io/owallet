@@ -17,7 +17,7 @@ import { Dec } from '@owallet/unit';
 import { LoadingSpinner } from '../../components/spinner';
 import { navigate } from '../../router/root';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;

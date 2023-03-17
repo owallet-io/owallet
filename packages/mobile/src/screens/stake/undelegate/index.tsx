@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { useStore } from '../../../stores';
 import { useStyle } from '../../../styles';
 import { useUndelegateTxConfig } from '@owallet/hooks';
@@ -23,7 +23,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { colors, spacing } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
 import { Toggle } from '../../../components/toggle';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<

@@ -7,7 +7,7 @@ import { RectButton } from '../rect-button';
 import { CheckIcon, CopyAccountIcon, CopyFillIcon, CopyIcon } from '../icon';
 import { useSimpleTimer } from '../../hooks';
 import { formatContractAddress } from '../../utils/helper';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const AddressCopyable: FunctionComponent<{
   style?: ViewStyle;

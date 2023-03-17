@@ -11,7 +11,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OWalletLogo } from './owallet-logo';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();

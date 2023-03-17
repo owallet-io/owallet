@@ -10,8 +10,7 @@ import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { ProgressBar } from '../../../components/progress-bar';
 import { BondStatus } from '@owallet/stores';
 import { spacing } from '../../../themes';
-import { useTheme } from '@react-navigation/native';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {

@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { RouteProp, useRoute, useTheme } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
 import { ValidatorDetailsCard } from './validator-details-card';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<

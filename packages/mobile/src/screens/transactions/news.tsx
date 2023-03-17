@@ -18,11 +18,11 @@ import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { API } from '../../common/api';
-import { useIsFocused, useTheme } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
-
+import { useTheme } from '@src/themes/theme-provider';
 const limit = 5;
 
 export const NewsTab: FunctionComponent<{}> = observer(() => {

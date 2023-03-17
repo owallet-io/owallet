@@ -10,7 +10,7 @@ import { useStore } from '../../stores';
 import { API } from '../../common/api';
 import moment from 'moment';
 import { nFormatter } from '../../utils/helper';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 const TWO_HOURS_IN_MINUTES = 24 * 60;
 const DATA_COUNT_DENOM = 4;

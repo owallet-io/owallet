@@ -5,7 +5,7 @@ import { CText as Text } from '../../../components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
 import { useStore } from '../../../stores';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const InfoCard: FunctionComponent<{
   containerStyle?: ViewStyle;

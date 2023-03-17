@@ -14,7 +14,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 // hard code data to test UI
 // const nftsData = [

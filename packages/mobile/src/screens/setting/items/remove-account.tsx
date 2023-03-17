@@ -4,11 +4,11 @@ import { SettingItem } from '../components';
 import { useStyle } from '../../../styles';
 import { PasswordInputModal } from '../../../modals/password-input/modal';
 import { useStore } from '../../../stores';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../../../common/api';
 import CodePush from 'react-native-code-push';
-
+import { useTheme } from '@src/themes/theme-provider';
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
