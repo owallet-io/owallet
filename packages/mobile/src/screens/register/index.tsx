@@ -12,6 +12,7 @@ import { OWalletLogo, OWalletUnion } from './owallet-logo';
 import { metrics } from '../../themes';
 import OWButton from '../../components/button/OWButton';
 import { useTheme } from '@src/themes/theme-provider';
+import OWText from '@src/components/text/ow-text';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -54,7 +55,9 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         <View style={styles.containerUnion}>
           <OWalletUnion />
         </View>
-        <Text style={styles.title}>Sign in to OWallet</Text>
+        <OWText variant='h3' >
+        Sign in to OWallet
+        </OWText>
       </View>
       <OWButton
         style={styles.btnOW}

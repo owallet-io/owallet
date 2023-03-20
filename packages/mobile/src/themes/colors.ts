@@ -1,7 +1,4 @@
 import { DarkModeTheme, LightModeTheme } from "./mode-colors";
-console.log('DarkModeTheme: ', DarkModeTheme);
-console.log('LightModeTheme: ', LightModeTheme);
-
 const colorsCode = {
   // primary
   'primary-10': '#F1F3FC',

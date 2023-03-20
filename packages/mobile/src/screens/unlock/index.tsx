@@ -34,6 +34,7 @@ import messaging from '@react-native-firebase/messaging';
 import { MaintainScreen } from '../../components/maintain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@src/themes/theme-provider';
+import OWButton from '@src/components/button/OWButton';
 let splashScreenHided = false;
 async function hideSplashScreen() {
   if (!splashScreenHided) {
@@ -521,6 +522,9 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               onChangeText={setPassword}
               onSubmitEditing={tryUnlock}
             />
+            {/* <OWButton 
+            label='Sign In'
+            /> */}
             <TouchableOpacity
               disabled={isLoading}
               onPress={tryUnlock}

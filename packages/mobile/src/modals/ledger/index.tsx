@@ -24,6 +24,7 @@ import { RectButton } from '../../components/rect-button';
 import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
+import { colors } from '@src/themes';
 
 const AlertIcon: FunctionComponent<{
   size: number;
@@ -78,7 +79,7 @@ export const LedgerGranterModal: FunctionComponent<{
       // Ledger transport library for BLE seems to cache the transport internally.
       // But this can be small problem when the ledger connection is failed.
       // So, when this modal appears, try to disconnect the bluetooth connection for nano X.
-      getLastUsedLedgerDeviceId().then(deviceId => {
+      getLastUsedLedgerDeviceId().then((deviceId) => {
         if (deviceId) {
           TransportBLE.disconnect(deviceId);
         }
@@ -93,7 +94,7 @@ export const LedgerGranterModal: FunctionComponent<{
     });
 
     useEffect(() => {
-      const subscription = bleManager.onStateChange(newState => {
+      const subscription = bleManager.onStateChange((newState) => {
         if (newState === State.PoweredOn) {
           setIsBLEAvailable(true);
         } else {
@@ -164,7 +165,7 @@ export const LedgerGranterModal: FunctionComponent<{
         if (Platform.OS === 'android') {
           PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-          ).then(granted => {
+          ).then((granted) => {
             if (granted == PermissionsAndroid.RESULTS.GRANTED) {
               setPermissionStatus(BLEPermissionGrantStatus.Granted);
             } else {
@@ -198,7 +199,7 @@ export const LedgerGranterModal: FunctionComponent<{
               if (e.type === 'add') {
                 const device = e.descriptor;
 
-                if (!_devices.find(d => d.id === device.id)) {
+                if (!_devices.find((d) => d.id === device.id)) {
                   console.log(
                     `Ledger device found (id: ${device.id}, name: ${device.name})`
                   );
@@ -271,19 +272,25 @@ export const LedgerGranterModal: FunctionComponent<{
             ) : (
               <React.Fragment>
                 <Text
-                  style={style.flatten(['subtitle3', 'color-text-black-high'])}
+                  style={[
+                    style.flatten(['subtitle3', 'color-text-black-high']),
+                    { color: colors['text-content-onBoarding'] }
+                  ]}
                 >
                   1. Open Cosmos app on Ledger Nano X.
                 </Text>
                 <Text
-                  style={style.flatten(['subtitle3', 'color-text-black-high'])}
+                  style={[
+                    style.flatten(['subtitle3', 'color-text-black-high']),
+                    { color: colors['text-content-onBoarding'] }
+                  ]}
                 >
                   2. Choose your hardware wallet to connect.
                 </Text>
               </React.Fragment>
             )}
 
-            {devices.map(device => {
+            {devices.map((device) => {
               return (
                 <LedgerNanoBLESelector
                   key={device.id}
@@ -311,7 +318,12 @@ export const LedgerGranterModal: FunctionComponent<{
             />
           </LedgerErrorView>
         ) : (
-          <Text style={style.flatten(['subtitle3', 'color-text-black-high'])}>
+          <Text
+            style={[
+              style.flatten(['subtitle3', 'color-text-black-high']),
+              { color: colors['text-content-onBoarding'] }
+            ]}
+          >
             Please turn on Bluetooth
           </Text>
         )}
@@ -333,11 +345,11 @@ const LedgerErrorView: FunctionComponent<{
       <AlertIcon size={100} color={style.get('color-danger').color} />
       <Text style={style.flatten(['h4', 'color-danger'])}>Error</Text>
       <Text
-        style={style.flatten([
+        style={[style.flatten([
           'subtitle3',
           'color-text-black-medium',
           'margin-top-16'
-        ])}
+        ]),{color:colors['text-content-onBoarding']}]}
       >
         {text}
       </Text>
