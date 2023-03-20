@@ -669,9 +669,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return this.currencies;
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
+      low: 420,
+      average: 504,
+      high: 672
     },
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {

@@ -73,6 +73,42 @@ export class SignInteractionStore {
     >('request-sign-ethereum');
   }
 
+  protected get waitingTronDatas() {
+    return this.interactionStore.getDatas<
+      | {
+          msgOrigin: string;
+          chainId: string;
+          mode: 'direct';
+          data: object;
+        }
+      | {
+          msgOrigin: string;
+          chainId: string;
+          mode: 'direct';
+          data: object;
+        }
+    >('request-sign-tron');
+  }
+
+  get waitingTronData() {
+    const datas = this.waitingTronDatas;
+    if (datas.length === 0) {
+      return undefined;
+    }
+    const data: any = datas[0];
+    return {
+      id: data.id,
+      type: data.type,
+      data: {
+        currency: data.data.currency,
+        amount: data.data.amount,
+        recipient: data.data.recipient,
+        address: data.data.address
+      },
+      isInternal: data.isInternal
+    };
+  }
+
   @computed
   get waitingData():
     | InteractionWaitingData<{
@@ -209,6 +245,29 @@ export class SignInteractionStore {
       yield this.waitEnd();
       this._isLoading = false;
       this.interactionStore.removeData('request-sign', id);
+    }
+  }
+
+  @flow
+  *approveTronAndWaitEnd() {
+    if (this.waitingTronDatas?.length === 0) {
+      return;
+    }
+
+    this._isLoading = true;
+    const idTron = this.waitingTronDatas?.[0]?.id;
+    try {
+      if (this.waitingTronDatas?.length > 0) {
+        yield this.interactionStore.approveWithoutRemovingData(idTron, {
+          ...this.waitingTronDatas[0].data
+        });
+      }
+      console.log('yield waitingTronDatas length > 0');
+    } finally {
+      // yield this.waitTronEnd();
+      console.log('yield waitTronEnd length > 0');
+      this._isLoading = false;
+      this.interactionStore.removeData('request-sign-tron', idTron);
     }
   }
 

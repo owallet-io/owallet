@@ -97,7 +97,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
-  let tronWeb;
+  // let tronWeb;
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -125,7 +125,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-      setReceiveAddress(route?.params?.recipient);
+      setReceiveAddress(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
 
@@ -240,11 +240,48 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               borderRadius: 8
             }}
             onPress={async () => {
-              setIsOpenModal(true);
+              let amount;
+              console.log('route?.params?.item', route?.params?.item);
+
+              if (route?.params?.item?.type === 'trc20') {
+                amount = Number(
+                  (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
+                );
+              } else {
+                amount = new Dec(
+                  Number(
+                    (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
+                  )
+                ).mul(DecUtils.getTenExponentNInPrecisionRange(6));
+              }
+              try {
+                console.log('get here');
+
+                await account.sendTronToken(
+                  sendConfigs.amountConfig.amount,
+                  sendConfigs.amountConfig.sendCurrency!,
+                  receiveAddress,
+                  getBase58Address(account.evmosHexAddress),
+                  {
+                    onBroadcasted: txHash => {
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: Buffer.from(txHash).toString('hex')
+                      });
+                    }
+                  },
+                  route?.params?.item
+                );
+              } catch (err) {
+                console.log('send tron err', err);
+                smartNavigation.pushSmart('TxFailedResult', {
+                  chainId: chainStore.current.chainId,
+                  txHash: ''
+                });
+              }
             }}
           />
         </View>
-        <PasswordInputModal
+        {/* <PasswordInputModal
           isOpen={isOpenModal}
           paragraph={'Please confirm your password'}
           close={() => setIsOpenModal(false)}
@@ -372,7 +409,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               }
             }
           }}
-        />
+        /> */}
       </View>
     </PageWithScrollView>
   );

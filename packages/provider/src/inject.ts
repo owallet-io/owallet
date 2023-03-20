@@ -706,6 +706,14 @@ export class InjectedEthereum implements Ethereum {
     ]);
   }
 
+  async signAndBroadcastTron(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<{ rawTxHex: string }> {
+    console.log('WILL NOT USE');
+    return;
+  }
+
   async signAndBroadcastEthereum(
     chainId: string,
     data: object
@@ -1031,6 +1039,14 @@ export class InjectedEthereumOWallet implements Ethereum {
     chainId: string,
     data: SignEthereumTypedDataObject
   ): Promise<void> {
+    console.log('WILL NOT USE');
+    return;
+  }
+
+  async signAndBroadcastTron(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<{ rawTxHex: string }> {
     console.log('WILL NOT USE');
     return;
   }

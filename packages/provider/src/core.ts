@@ -48,7 +48,11 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import { RequestSignDirectMsg, RequestSignEthereumMsg } from './msgs';
+import {
+  RequestSignDirectMsg,
+  RequestSignEthereumMsg,
+  RequestSignTronMsg
+} from './msgs';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -143,6 +147,15 @@ export class OWallet implements IOWallet {
       },
       signature: response.signature
     };
+  }
+
+  async signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async signArbitrary(
@@ -342,6 +355,15 @@ export class Ethereum implements IEthereum {
 
   async getPublicKey(chainId: string): Promise<object> {
     const msg = new RequestPublicKeyMsg(chainId);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
