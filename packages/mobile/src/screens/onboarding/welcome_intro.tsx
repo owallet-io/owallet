@@ -1,76 +1,52 @@
 import React, { FunctionComponent } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { ShootingStarIcon } from '../../components/icon/shooting-star';
-import { colors, metrics, spacing, typography } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { colors, spacing } from '../../themes';
+import OWText from '@src/components/text/ow-text';
 
 const styles = StyleSheet.create({
-  boardingRoot: {},
+  img: {
+    width: '100%'
+  },
+  viewImg: { alignItems: 'center' },
+  container: {
+    paddingHorizontal: spacing['32']
+  },
   boardingTitleContainer: {
     flexDirection: 'row',
     marginBottom: spacing['12']
   },
   boardingIcon: {
     marginLeft: spacing['4']
-  },
-  boardingTitle: {
-    ...typography['h1'],
-    color: colors['purple-h1'],
-    fontWeight: '700',
-    fontSize: 28,
-    lineHeight: spacing['50']
-  },
-  boardingContent: {
-    ...typography['h6'],
-    color: colors['gray-150'],
-    fontWeight: '400',
-    fontSize: 14,
-    lineHeight: spacing['20']
   }
 });
 
 const WelcomeIntroScreen: FunctionComponent = () => {
   return (
-    <View
-      style={{
-        paddingHorizontal: spacing['32'],
-      }}
-    >
+    <View style={styles.container}>
       <View style={styles.boardingTitleContainer}>
         <View>
-          <Text style={{
-            ...styles.boardingTitle,
-            fontSize: 34
-          }}>Welcome to</Text>
-          <Text
-            style={{
-              ...styles.boardingTitle,
-              color: colors['black']
-            }}
-          >
+          <OWText variant="h1" color={colors['purple-h1']}>
+            Welcome to
+          </OWText>
+          <OWText variant="h2" color={colors['black']}>
             OWallet
-          </Text>
+          </OWText>
         </View>
         <View style={styles.boardingIcon}>
           <ShootingStarIcon size={34} />
         </View>
       </View>
-
-      <View>
-        <Text style={styles.boardingContent}>
-          OWallet is a secure wallet, routing you cross the world of
-          blockchains: Oraichain, Cosmos, Ethereum, BNB smart chain, and
-          Bitcoin.
-        </Text>
-      </View>
-      <View style={{ alignItems: 'center' }}>
+      <OWText variant="body2" typo="regular" color={colors['gray-150']}>
+        OWallet is a secure wallet, routing you cross the world of blockchains:
+        Oraichain, Cosmos, Ethereum, BNB smart chain, and Bitcoin.
+      </OWText>
+      <View style={styles.viewImg}>
         <Image
           source={require('../../assets/image/onboarding-welcome.png')}
           fadeDuration={0}
           resizeMode="contain"
-          style={{
-            width: '100%'
-          }}
+          style={styles.img}
         />
       </View>
     </View>

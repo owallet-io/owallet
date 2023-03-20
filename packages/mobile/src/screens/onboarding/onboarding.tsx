@@ -39,11 +39,6 @@ const styles = StyleSheet.create({
 
 
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
-  // const [showRealApp, setShowRealApp] = useState(false)
-
-  // const onDone = () => {
-  //   setShowRealApp(true)
-  // }
 
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;
