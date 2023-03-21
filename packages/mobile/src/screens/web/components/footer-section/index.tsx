@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
 import { Platform, TouchableOpacity, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
 

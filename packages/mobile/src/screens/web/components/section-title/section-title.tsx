@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent } from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { HeaderBackButtonIcon } from '../../../../components/header/icon';
 import { useStyle } from '../../../../styles';
 import { useTheme } from '@src/themes/theme-provider';

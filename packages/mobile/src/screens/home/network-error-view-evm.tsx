@@ -6,7 +6,7 @@ import React, {
   useState
 } from 'react';
 import { View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import Animated, { Easing } from 'react-native-reanimated';
 import { AlertIcon, RefreshIcon } from '../../components/icon';
 import { useStyle } from '../../styles';

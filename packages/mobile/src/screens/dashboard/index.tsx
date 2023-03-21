@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { spacing, typography } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { DashboardCard } from '../home/dashboard';
 import { BlockCard } from './components/block';
 import { InfoCard } from './components/info';

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { IFeeConfig, IGasConfig, NotLoadedFeeError } from '@owallet/hooks';
 import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useStore } from '../../stores';
 import { useStyle } from '../../styles';
 import { CoinPretty, Dec, DecUtils } from '@owallet/unit';

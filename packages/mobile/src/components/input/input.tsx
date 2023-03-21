@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle
 } from 'react-native';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { spacing, typography } from '../../themes';
 import { useTheme } from '@src/themes/theme-provider';
@@ -88,6 +88,10 @@ export const TextInput = React.forwardRef<
                     !(props.editable ?? true) && 'background-color-disabled'
                   ]
                 ),
+                {
+                  backgroundColor: colors['background-container'],
+                  borderColor: colors['border-input-login']
+                },
                 props.inputStyle,
                 props.inputContainerStyle
               ]
@@ -107,8 +111,8 @@ export const TextInput = React.forwardRef<
                   ]
                 ),
                 {
-                  backgroundColor: colors['item'],
-                  borderColor: colors['border']
+                  backgroundColor: colors['background-container'],
+                  borderColor: colors['border-input-login']
                 },
                 props.inputContainerStyle
               ]

@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
 import { colors, typography } from '../../themes';
 import { OWalletLogo } from '../register/owallet-logo';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../components/input';
 import { LoadingSpinner } from '../../components/spinner';

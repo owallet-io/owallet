@@ -17,9 +17,9 @@ interface OWTextProps extends TextProps {
   color?: string;
 }
 const OWText = ({
-  variant = 'h1',
+  variant,
   color = colors['label'],
-  typo = 'bold',
+  typo = 'regular',
   ...props
 }: OWTextProps) => {
   return (

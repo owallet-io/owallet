@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, CardBody } from '../../components/card';
 import { spacing } from '../../themes';

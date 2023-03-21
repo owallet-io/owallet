@@ -6,7 +6,7 @@ import { Governance, ObservableQueryProposal } from '@owallet/stores';
 import { Chip } from '../../components/chip';
 import { CardBody } from '../../components/card';
 import { View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { Text } from '@src/components/text';
 import { LoadingSpinner } from '../../components/spinner';
 import { useIntl } from 'react-intl';
 import { dateToLocalString } from './utils';

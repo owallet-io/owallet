@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';

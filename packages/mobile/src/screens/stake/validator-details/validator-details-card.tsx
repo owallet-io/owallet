@@ -4,7 +4,7 @@ import { useStore } from '../../../stores';
 import { useTheme } from '@src/themes/theme-provider';
 import { BondStatus } from '@owallet/stores';
 import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
 // import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';

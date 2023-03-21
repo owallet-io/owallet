@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
 import { ScrollView, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { AmountInput, MemoInput } from '../../components/input';

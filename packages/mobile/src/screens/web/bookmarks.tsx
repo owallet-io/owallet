@@ -5,7 +5,7 @@ import React, {
   useState
 } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { BrowserSectionTitle } from './components/section-title';
 import { RemoveIcon, SwapIcon } from '../../components/icon';

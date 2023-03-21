@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card } from '../../../components/card';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
 import { useStore } from '../../../stores';

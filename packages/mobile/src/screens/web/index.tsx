@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useRef, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

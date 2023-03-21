@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Image } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { colors, spacing, typography } from '../../../themes';
 import Validators from './modal-validators';
 

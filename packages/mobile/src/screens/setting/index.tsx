@@ -23,7 +23,7 @@ import {
   ImageBackground,
   StatusBar
 } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';

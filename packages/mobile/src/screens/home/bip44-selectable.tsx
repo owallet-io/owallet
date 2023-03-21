@@ -5,7 +5,7 @@ import { KeyRingStatus } from '@owallet/background';
 import { LoadingScreenModal } from '../../providers/loading-screen/modal';
 import { Dec } from '@owallet/unit';
 import { View } from 'react-native';
-import { CText as Text} from "../../components/text";
+import { Text } from '@src/components/text';
 import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
 import { useStyle } from '../../styles';

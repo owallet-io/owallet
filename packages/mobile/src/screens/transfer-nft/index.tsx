@@ -19,7 +19,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { spacing, typography } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
 const styling = colors =>

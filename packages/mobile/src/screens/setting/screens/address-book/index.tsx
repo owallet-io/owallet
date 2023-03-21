@@ -8,7 +8,7 @@ import React, {
 import { observer } from 'mobx-react-lite';
 import { useStyle } from '../../../../styles';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import {
   IMemoConfig,

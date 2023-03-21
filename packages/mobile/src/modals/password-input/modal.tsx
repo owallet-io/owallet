@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { registerModal } from '../base';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { CardModal } from '../card';
 import { TextInput } from '../../components/input';
 import { Button } from '../../components/button';
@@ -16,6 +16,7 @@ import { metrics, typography } from '../../themes';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
+import OWButtonGroup from '@src/components/button/OWButtonGroup';
 
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
@@ -105,13 +106,8 @@ export const PasswordInputModal: FunctionComponent<{
                     : colors['text-black-high']
               }}
               inputStyle={{
-                borderColor:
-                  scheme === 'dark' ? colors['border'] : colors['purple-100'],
                 borderWidth: 1,
-                backgroundColor:
-                  scheme === 'dark'
-                    ? colors['input-background']
-                    : colors['white'],
+                backgroundColor: colors['background-input-modal'],
                 paddingLeft: 11,
                 paddingRight: 11,
                 paddingTop: 12,
@@ -133,56 +129,13 @@ export const PasswordInputModal: FunctionComponent<{
               justifyContent: 'space-between'
             }}
           >
-            <TouchableOpacity
-              onPress={() => close()}
-              style={{
-                backgroundColor: colors['purple-900'],
-                borderRadius: 8,
-                width: '48%'
-              }}
-            >
-              <Text
-                style={{
-                  color: colors['white'],
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 16,
-                  lineHeight: 22,
-                  padding: 16
-                }}
-              >
-                {textButtonLeft}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={submitPassword}
-              style={{
-                borderRadius: 8,
-                width: '48%',
-                ...buttonRightStyle,
-                backgroundColor: !password
-                  ? colors['gray-10']
-                  : buttonRightStyle
-                  ? buttonRightStyle?.backgroundColor
-                  : buttonRightStyle?.backgroundColor
-                  ? colors['purple-900']
-                  : colors['purple-900']
-              }}
-              disabled={!password}
-            >
-              <Text
-                style={{
-                  color: colors['white'],
-                  textAlign: 'center',
-                  fontWeight: '700',
-                  fontSize: 16,
-                  lineHeight: 22,
-                  padding: 16
-                }}
-              >
-                {textButtonRight}
-              </Text>
-            </TouchableOpacity>
+            <OWButtonGroup
+              labelApprove={textButtonRight}
+              onPressApprove={submitPassword}
+              disabledApprove={!password}
+              labelClose={textButtonLeft}
+              onPressClose={close}
+            />
           </View>
         </CardModal>
       </KeyboardAvoidingView>

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   SendBridgeIcon,

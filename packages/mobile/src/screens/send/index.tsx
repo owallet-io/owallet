@@ -21,7 +21,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
 import { spacing } from '../../themes';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
 
 const styling = colors =>

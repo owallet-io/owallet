@@ -200,6 +200,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
               type="secondary"
               label="Paste"
               size="small"
+              fullWidth={false}
               onPress={onPaste}
             />
           </View>

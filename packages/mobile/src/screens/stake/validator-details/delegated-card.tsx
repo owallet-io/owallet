@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { Card, CardBody } from '../../../components/card';
 import { View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../../styles';
 import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';

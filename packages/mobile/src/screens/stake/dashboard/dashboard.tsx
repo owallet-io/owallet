@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { StyleSheet, View, Image } from 'react-native';
 import { typography, spacing, metrics } from '../../../themes';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../../utils/helper';

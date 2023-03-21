@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { colors, spacing, typography } from '../../../themes';
 import { GasInput } from '../../../components/input';
 import { EthereumEndpoint } from '@owallet/common';

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { RefreshIcon } from '../../../../components/icon/refresh';
 import { colors, spacing, typography } from '../../../../themes';
 

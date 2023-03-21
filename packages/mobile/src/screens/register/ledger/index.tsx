@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import {

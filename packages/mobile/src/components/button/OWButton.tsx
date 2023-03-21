@@ -14,8 +14,8 @@ import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import OWText from '../text/ow-text';
 
-interface IOWButtonProps extends TouchableOpacityProps {
-  type?: 'primary' | 'secondary' | 'link' | 'modal';
+export interface IOWButtonProps extends TouchableOpacityProps {
+  type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
   size?: 'medium' | 'small' | 'large';
   label?: string;
   style?: StyleProp<ViewStyle>;
@@ -34,7 +34,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   textStyle,
   disabled,
   icon,
-  fullWidth,
+  fullWidth=true,
   loading,
   ...props
 }) => {
@@ -58,7 +58,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         <>
           {!!icon && icon}
           {!!label && (
-            <OWText style={[styles.textBtn, styleMapped.text, textStyle]}>
+            <OWText variant='body1' style={[styles.textBtn, styleMapped.text, textStyle]}>
               {label}
             </OWText>
           )}

@@ -6,7 +6,7 @@ import React, {
 } from 'react';
 import { PageWithScrollView } from '../../../components/page';
 import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';

@@ -15,6 +15,7 @@ const modeColors = {
   'background-btn-disable-primary': ['#5F5E77', '#8B1BFB'],
   'text-btn-disabled-primary': ['#8E8E93', '#AE94DE'],
   'border-input-login': ['#3A3A3C', '#E2DEEB'],
+  'background-input-modal': ['#0E121D', '#FFFFFF'],
   'text-value-input-login': ['#E2DEEB', '#1C1C1E'], //icon input eyes
   'text-label-input': ['#C7C7CC', '#48484A'], //note under input
   //login-success

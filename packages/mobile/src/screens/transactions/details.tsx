@@ -2,7 +2,7 @@ import Clipboard from 'expo-clipboard';
 import React, { FunctionComponent, useCallback } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Divider } from '@rneui/base';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { RectButton } from 'react-native-gesture-handler';
 import { CheckIcon, CopyTransactionIcon } from '../../components/icon';
 import { PageWithScrollView } from '../../components/page';

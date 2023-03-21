@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle
 } from 'react-native';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../rect-button';

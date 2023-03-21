@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 
 export const ModalComponent = ({
   children,

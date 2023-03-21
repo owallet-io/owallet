@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement } from 'react'
 import { View, ViewStyle } from 'react-native'
-import { CText as Text} from "../text";
+import { Text } from '@src/components/text';
 import { colors, spacing, typography } from '../../themes'
 import { Button } from '../button'
 // import { RightArrowIcon } from "../icon";

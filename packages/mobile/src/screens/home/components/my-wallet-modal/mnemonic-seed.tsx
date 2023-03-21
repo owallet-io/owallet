@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, Image, View } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { useStore } from '../../../../stores';
 import { colors, metrics, spacing, typography } from '../../../../themes';

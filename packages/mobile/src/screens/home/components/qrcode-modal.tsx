@@ -6,7 +6,7 @@ import { AddressCopyable } from '../../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
 import { AccountWithAll, ChainStore } from '@owallet/stores';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;

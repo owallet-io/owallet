@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { useStyle } from '../../../styles';
 import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { RightArrowIcon } from '../../../components/icon';
 import { RectButton } from '../../../components/rect-button';
 import { spacing, typography } from '../../../themes';
@@ -102,11 +102,6 @@ export const SettingItem: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      {/* {topBorder ? (
-        <View
-          style={style.flatten(['height-1', 'background-color-border-white'])}
-        />
-      ) : null} */}
       {onPress ? (
         <RectButton
           style={{
@@ -123,20 +118,10 @@ export const SettingItem: FunctionComponent<{
             ...styles.defaultBtn,
             ...propStyle
           }}
-          // style={StyleSheet.flatten([
-          //   style.flatten([
-
-          //   ]),
-          //   propStyle
-          // ])}
         >
           {renderChildren()}
         </View>
       )}
-
-      {/* <View
-        style={style.flatten(['height-1', 'background-color-border-white'])}
-      /> */}
     </View>
   );
 };

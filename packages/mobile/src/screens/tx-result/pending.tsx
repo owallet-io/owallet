@@ -8,7 +8,7 @@ import {
   PageWithView
 } from '../../components/page';
 import { View, StyleSheet, Image } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
 import { HomeOutlineIcon, RightArrowIcon } from '../../components/icon';

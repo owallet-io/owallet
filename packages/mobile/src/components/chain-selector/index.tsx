@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import { registerModal } from "../../modals/base";
 import { CardModal } from "../../modals/card";
 import { ScrollView, View } from "react-native";
-import { CText as Text} from "../text";
+import { Text } from '@src/components/text';
 import { useStyle } from "../../styles";
 import { observer } from "mobx-react-lite";
 import { useStore } from "../../stores";

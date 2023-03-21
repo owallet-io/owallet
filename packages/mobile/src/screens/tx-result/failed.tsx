@@ -10,7 +10,7 @@ import {
   Image,
   TouchableOpacity
 } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
 import * as WebBrowser from 'expo-web-browser';

@@ -14,7 +14,7 @@ import { useNewMnemonicConfig } from './hook';
 import { PageWithScrollView } from '../../../components/page';
 import { CheckIcon, CopyFillIcon } from '../../../components/icon';
 import { WordChip } from '../../../components/mnemonic';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { Button } from '../../../components/button';
 import Clipboard from 'expo-clipboard';
 import { TextInput } from '../../../components/input';

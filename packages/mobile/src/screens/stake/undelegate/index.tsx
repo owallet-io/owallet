@@ -13,7 +13,7 @@ import {
   TextInput
 } from '../../../components/input';
 import { View } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { Button } from '../../../components/button';
 import { CardBody, CardDivider } from '../../../components/card';
 import { BondStatus } from '@owallet/stores';

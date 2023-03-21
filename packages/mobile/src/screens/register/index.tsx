@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../components/page';
 import { View, StyleSheet } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useRegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
@@ -55,7 +55,7 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         <View style={styles.containerUnion}>
           <OWalletUnion />
         </View>
-        <OWText variant='h3' >
+        <OWText typo = 'bold' variant='h3' >
         Sign in to OWallet
         </OWText>
       </View>

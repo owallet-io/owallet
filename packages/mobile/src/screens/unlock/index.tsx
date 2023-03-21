@@ -11,6 +11,7 @@ import {
   AppStateStatus,
   Image,
   Platform,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View
@@ -396,7 +397,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         height: '100%',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors['splash-background']
+        backgroundColor: colors['background-container']
       }}
     >
       <View
@@ -464,7 +465,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       <View
         style={{
           flex: 1,
-          backgroundColor: colors['splash-background']
+          backgroundColor: colors['background-container']
         }}
       >
         <KeyboardAwareScrollView
@@ -503,16 +504,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               containerStyle={{
                 paddingBottom: 40
               }}
-              inputStyle={{
-                borderColor: colors['border'],
-                borderWidth: 1,
-                backgroundColor: colors['item'],
-                paddingLeft: 11,
-                paddingRight: 11,
-                paddingTop: 12,
-                paddingBottom: 12,
-                borderRadius: 4
-              }}
               label="Password"
               accessibilityLabel="password"
               returnKeyType="done"
@@ -522,66 +513,20 @@ export const UnlockScreen: FunctionComponent = observer(() => {
               onChangeText={setPassword}
               onSubmitEditing={tryUnlock}
             />
-            {/* <OWButton 
-            label='Sign In'
-            /> */}
-            <TouchableOpacity
+            <OWButton
+              label="Sign In"
               disabled={isLoading}
               onPress={tryUnlock}
-              style={{
-                marginBottom: 24,
-                backgroundColor: colors['purple-900'],
-                borderRadius: 8
-              }}
-            >
-              <View
-                style={{
-                  padding: 16,
-                  alignItems: 'center'
-                }}
-              >
-                {isLoading || isBiometricLoading ? (
-                  <LoadingSpinner color={colors['white']} size={20} />
-                ) : (
-                  <Text
-                    style={{
-                      color: colors['white'],
-                      textAlign: 'center',
-                      fontWeight: '700',
-                      fontSize: 16,
-                      lineHeight: 22,
-                      opacity: isLoading ? 0.5 : 1
-                    }}
-                  >
-                    Sign in
-                  </Text>
-                )}
-              </View>
-            </TouchableOpacity>
-            {keychainStore.isBiometryOn ? (
-              <TouchableOpacity
+              loading={isLoading || isBiometricLoading}
+            />
+
+            {keychainStore.isBiometryOn && (
+              <OWButton
+                label="Use Biometric Authentication"
+                style={styles.useBiometric}
                 onPress={tryBiometric}
-                style={{
-                  marginBottom: 24,
-                  marginTop: 44,
-                  backgroundColor: colors['purple-900'],
-                  borderRadius: 8
-                }}
-              >
-                <Text
-                  style={{
-                    color: colors['white'],
-                    textAlign: 'center',
-                    fontWeight: '700',
-                    fontSize: 16,
-                    lineHeight: 22,
-                    padding: 16
-                  }}
-                >
-                  Use Biometric Authentication
-                </Text>
-              </TouchableOpacity>
-            ) : null}
+              />
+            )}
           </View>
           <View
             style={{
@@ -592,4 +537,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       </View>
     </React.Fragment>
   );
+});
+
+const styles = StyleSheet.create({
+  useBiometric: {
+    marginTop: 44
+  }
 });

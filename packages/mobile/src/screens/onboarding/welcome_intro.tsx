@@ -26,10 +26,10 @@ const WelcomeIntroScreen: FunctionComponent = () => {
     <View style={styles.container}>
       <View style={styles.boardingTitleContainer}>
         <View>
-          <OWText variant="h1" color={colors['purple-h1']}>
+          <OWText variant="h1" typo = 'bold' color={colors['purple-h1']}>
             Welcome to
           </OWText>
-          <OWText variant="h2" color={colors['black']}>
+          <OWText variant="h2" typo = 'bold' color={colors['black']}>
             OWallet
           </OWText>
         </View>

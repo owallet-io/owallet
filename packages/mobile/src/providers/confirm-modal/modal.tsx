@@ -2,7 +2,7 @@ import React, { FunctionComponent } from "react";
 import { registerModal } from "../../modals/base";
 import { useStyle } from "../../styles";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
-import { CText as Text} from "../../components/text";
+import { Text } from '@src/components/text';
 import { Button } from "../../components/button";
 
 export const ConfirmModal: FunctionComponent<{

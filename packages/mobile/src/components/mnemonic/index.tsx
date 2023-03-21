@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { View } from 'react-native';
 import { colors } from '../../themes';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 
 export const WordChip: FunctionComponent<{
   index: number;

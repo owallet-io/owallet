@@ -13,20 +13,21 @@ import {
   Image,
   TouchableOpacity
 } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Card } from '../../components/card';
-import { colors, metrics } from '../../themes';
+import { metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
 import { CommonActions } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
   // const [successAnimProgress] = React.useState(new Animated.Value(0));
   // const [pangpareAnimProgress] = React.useState(new Animated.Value(0));
-
+  const { colors } = useTheme();
   const route = useRoute<
     RouteProp<
       Record<

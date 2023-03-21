@@ -64,6 +64,22 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
   const formatSize = useSize({ size });
   let typeStyleBtn;
   switch (type) {
+    case 'danger':
+      typeStyleBtn = {
+        btn: {
+          borderRadius: formatSize.btn.borderRadius,
+          height: formatSize.btn.height,
+          backgroundColor: disabled
+            ? colors['btn-disable-background']
+            : colors['orange-800']
+        },
+        text: {
+          color: disabled ? colors['text-btn-disable-color'] : colors['white'],
+          fontSize: formatSize.text.fontSize,
+          fontWeight: formatSize.text.fontWeight
+        }
+      };
+      break;
     case 'primary':
       typeStyleBtn = {
         btn: {

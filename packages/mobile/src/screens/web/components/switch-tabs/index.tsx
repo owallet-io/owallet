@@ -6,7 +6,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback
 } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../../../stores';
 import { observer } from 'mobx-react-lite';

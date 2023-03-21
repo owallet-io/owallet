@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { NoteIcon, TransactionMinusIcon } from '../../components/icon';
 import { RectButton } from '../../components/rect-button';
 import { colors, spacing } from '../../themes';

@@ -2,7 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { View, FlatList } from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { KeyStoreItem } from '.';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { ModalStore } from '../../../stores/modal';

@@ -6,7 +6,7 @@ import {
   ViewProps,
   ViewStyle
 } from 'react-native';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
 import { action, makeObservable, observable } from 'mobx';

@@ -53,7 +53,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
       <SettingItem
         label="Check for Update"
         onPress={() => {
-          CodePush.checkForUpdate().then(update => {
+          CodePush.checkForUpdate().then((update) => {
             if (!update) {
               console.log('The app is up to date!');
               alert('The app is up to date!');
@@ -66,7 +66,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
                 {
                   installMode: CodePush.InstallMode.IMMEDIATE
                 },
-                status => {
+                (status) => {
                   switch (status) {
                     case CodePush.SyncStatus.UP_TO_DATE:
                       console.log('UP_TO_DATE');
@@ -118,10 +118,9 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         labelStyle={{ color: colors['orange-800'], fontWeight: '700' }}
         paragraph="Please make sure you have saved the correct mnemonic before logging out"
         textButtonRight="Remove"
-        buttonRightStyle={{ backgroundColor: colors['orange-800'] }}
-        onEnterPassword={async password => {
+        onEnterPassword={async (password) => {
           const index = keyRingStore.multiKeyStoreInfo.findIndex(
-            keyStore => keyStore.selected
+            (keyStore) => keyStore.selected
           );
 
           if (index >= 0) {

@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { CoinPretty, Dec, IntPretty, PricePretty } from '@owallet/unit';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Currency } from '@owallet/types';

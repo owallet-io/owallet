@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { PageWithSectionList } from '../../../components/page';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { BondStatus, Validator } from '@owallet/stores';
 import { SelectorModal, TextInput } from '../../../components/input';
 import { CardDivider } from '../../../components/card';

@@ -16,7 +16,7 @@ import { Button } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { BondStatus } from '@owallet/stores';
 import { spacing, typography } from '../../../themes';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { Toggle } from '../../../components/toggle';
 import { Dec, DecUtils } from '@owallet/unit';
 import { useTheme } from '@src/themes/theme-provider';

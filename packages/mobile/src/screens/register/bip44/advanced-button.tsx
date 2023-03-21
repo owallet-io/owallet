@@ -12,7 +12,7 @@ import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { TextInput } from '../../../components/input';
 import { typography, colors } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { CText as Text } from '../../../components/text';
+import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
 

@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
   View
 } from 'react-native';
-import { CText as Text } from './components/text';
+import { Text } from '@src/components/text';
 import { KeyRingStatus } from '@owallet/background';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -140,7 +140,7 @@ const HomeScreenHeaderLeft: FunctionComponent = observer(() => {
       }}
     >
       <View style={style.flatten(['flex-row', 'items-center'])}>
-        <Text style={style.flatten(['h4', 'color-text-black-low'])}>
+        <Text variant="h4" style={style.flatten(['color-text-black-low'])}>
           <HeaderBackButtonIcon />
         </Text>
       </View>

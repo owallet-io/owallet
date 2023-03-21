@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Platform, StyleSheet, View, TextInput } from 'react-native';
-import { CText as Text } from '../../../../components/text';
+import { Text } from '@src/components/text';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { useStyle } from '../../../../styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

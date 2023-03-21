@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactElement, useState } from 'react';
 import { useStyle } from '../../styles';
 import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { CText as Text } from '../text';
+import { Text } from '@src/components/text';
 import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
 import { colors } from '../../themes';

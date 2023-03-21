@@ -2,7 +2,7 @@ import React, { FunctionComponent, ReactElement, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
 import { View, ViewStyle, Image, StyleSheet } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';

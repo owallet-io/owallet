@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react'
 import { StyleSheet, View, Image } from 'react-native'
-import { CText as Text} from "../../../components/text";
+import { Text } from '@src/components/text';
 import { RectButton } from '../../../components/rect-button'
 import { colors, metrics, spacing, typography } from '../../../themes'
 import {

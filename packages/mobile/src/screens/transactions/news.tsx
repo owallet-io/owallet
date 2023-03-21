@@ -13,7 +13,7 @@ import {
   View
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';

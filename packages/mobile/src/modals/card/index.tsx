@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle
 } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PanGestureHandler } from 'react-native-gesture-handler';

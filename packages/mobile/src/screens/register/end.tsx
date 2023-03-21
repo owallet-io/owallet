@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithView } from '../../components/page';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
@@ -11,13 +11,14 @@ import { Toggle } from '../../components/toggle';
 // @ts-ignore
 import WelcomeRocket from '../../assets/svg/welcome-rocket.svg';
 import { OWalletLogo, OWalletStar } from './owallet-logo';
-import { colors, typography } from '../../themes';
+import { typography } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
 import OWButton from '@src/components/button/OWButton';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
-
+  const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
 
   const route = useRoute<

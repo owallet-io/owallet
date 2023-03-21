@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { CText as Text } from '../../components/text';
+import { Text } from '@src/components/text';
 import {
   ActivityIndicator,
   FlatList,
