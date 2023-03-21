@@ -132,7 +132,7 @@
     "stream-browserify": "^3.0.0",
     "string_decoder": "^1.3.0",
     "text-encoding": "^0.7.0",
-    "tronweb": "2.4.0",
+    "tronweb": "3.0.0",
     "utility-types": "^3.10.0"
   },
   "devDependencies": {
