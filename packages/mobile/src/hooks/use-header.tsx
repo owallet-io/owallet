@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import OWHeaderTitle from '@src/components/header/ow-header-title';
@@ -6,52 +6,55 @@ import OWHeaderRight from '@src/components/header/ow-header-right';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { StackNavigationOptions } from '@react-navigation/stack';
-import { useSmartNavigation } from '@src/navigation.provider';
+import { notShowHeader, SCREENS } from '@src/common/constants';
 interface IUseHeaderOptions extends StackNavigationOptions {}
-const useHeaderOptions = (data?: IUseHeaderOptions) => {
-  const navigation = useNavigation();
-  const smartNavigation = useSmartNavigation();
+const useHeaderOptions = (
+  data?: IUseHeaderOptions,
+  navigation?: any
+): IUseHeaderOptions => {
   const { colors } = useTheme();
-  const [options, setOptions] = useState<any>({
+  const onGoBack = () => {
+    navigation.goBack();
+  };
+  const onTransaction = () => {
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.Transactions
+    });
+    return;
+  };
+
+  const onScan = () => {
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.Camera
+    });
+    return;
+  };
+
+  return {
     headerStyle: {
       backgroundColor: colors['background']
     },
-    headerTitle: <OWHeaderTitle title={data?.title} />,
+    headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: 'center',
     headerRight: () => {
       if (!!data?.title == false) {
         return <OWHeaderRight onTransaction={onTransaction} onScan={onScan} />;
       }
     },
-    headerBackTitle: () => (
-      <OWButtonIcon onPress={onGoBack} name="arrow-left" sizeIcon={24} />
-    ),
+    headerLeft: () => {
+      if (navigation.canGoBack())
+        return (
+          <OWButtonIcon
+            colorIcon={colors['primary-text']}
+            onPress={onGoBack}
+            name="arrow-left"
+            sizeIcon={!!data?.title ? 24 : 20}
+          />
+        );
+      return null;
+    },
+    headerShown: data?.title === notShowHeader ? false : true,
     ...data
-  });
-  const onGoBack = () => {
-    if (navigation.canGoBack) {
-        navigation.goBack();
-        return;
-      }
-      if (smartNavigation.canGoBack) {
-        smartNavigation.goBack();
-        return;
-      }
-      navigation.navigate('MainTab');
-  };
-  const onTransaction = () => {
-    navigation.navigate('Others', {
-      screen: 'Transactions'
-    });
-  };
-  const onScan = () => {
-    navigation.navigate('Others', {
-      screen: 'Camera'
-    });
-  };
-
-  return {
-    ...options
   };
 };
 

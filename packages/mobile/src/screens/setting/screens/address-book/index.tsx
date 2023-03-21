@@ -124,25 +124,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
     }
   );
 
-  useEffect(() => {
-    smartNavigation.setOptions({
-      // eslint-disable-next-line react/display-name
-      header: () => <CustomHeader />
-      // headerRight: () => (
-      //   <HeaderRightButton
-      //     onPress={() => {
-      //       smartNavigation.navigateSmart('AddAddressBook', {
-      //         chainId,
-      //         addressBookConfig
-      //       });
-      //     }}
-      //   >
-      //     <HeaderAddIcon />
-      //   </HeaderRightButton>
-      // )
-    });
-  }, [addressBookConfig, chainId, chainStore, smartNavigation, style]);
-
   const isInTransaction = recipientConfig != null || memoConfig != null;
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];

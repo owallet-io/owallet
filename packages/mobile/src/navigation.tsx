@@ -119,8 +119,8 @@ const Tab = createBottomTabNavigator();
 export const MainNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
-      screenOptions={({ route }) => ({
-        ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] })
+      screenOptions={({ route, navigation }) => ({
+        ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation)
       })}
       initialRouteName={SCREENS.Home}
       headerMode="screen"
@@ -170,30 +170,30 @@ export const MainNavigation: FunctionComponent = () => {
         component={NewLedgerScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.Tokens}
         component={TokensScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.Nfts}
         component={NftsScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.TokenDetail}
         component={TokenDetailScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.NftsDetail}
         component={NftDetailScreen}
       />
@@ -204,16 +204,16 @@ export const MainNavigation: FunctionComponent = () => {
 export const SendNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
-      screenOptions={({ route }) => ({
-        ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] })
+      screenOptions={({ route, navigation }) => ({
+        ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation)
       })}
       initialRouteName={SCREENS.TransferTokensScreen}
       headerMode="screen"
     >
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.TransferTokensScreen}
         component={TransferTokensScreen}
       />
@@ -227,13 +227,16 @@ export const RegisterNavigation: FunctionComponent = () => {
   const { colors } = useTheme();
   return (
     <Stack.Navigator
-      screenOptions={({ route }) => ({
-        ...useHeaderOptions({
-          title: SCREENS_TITLE[route?.name],
-          headerStyle: {
-            backgroundColor: colors['plain-background']
-          }
-        })
+      screenOptions={({ route, navigation }) => ({
+        ...useHeaderOptions(
+          {
+            title: SCREENS_TITLE[route?.name],
+            headerStyle: {
+              backgroundColor: colors['plain-background']
+            }
+          },
+          navigation
+        )
       })}
       initialRouteName={SCREENS.RegisterIntro}
       headerMode="screen"
@@ -309,46 +312,49 @@ export const OtherNavigation: FunctionComponent = () => {
 
   return (
     <Stack.Navigator
-      screenOptions={({ route }) => ({
-        ...useHeaderOptions({
-          title: SCREENS_TITLE[route?.name]
-        })
+      screenOptions={({ route, navigation }) => ({
+        ...useHeaderOptions(
+          {
+            title: SCREENS_TITLE[route?.name]
+          },
+          navigation
+        )
       })}
       headerMode="screen"
     >
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.Send}
         component={SendScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.TransferNFT}
         component={TransferNFTScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.Transactions}
         component={Transactions}
       />
 
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.Dashboard}
         component={DashBoardScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.TransactionDetail}
         component={TransactionDetail}
       />
@@ -375,9 +381,9 @@ export const OtherNavigation: FunctionComponent = () => {
         component={GovernanceDetailsScreen}
       />
       <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
+        // options={{
+        //   ...useHeaderOptions()
+        // }}
         name={SCREENS.NetworkSelect}
         component={SelectNetworkScreen}
       />
@@ -509,22 +515,13 @@ export const AddressBookStackScreen: FunctionComponent = () => {
 
   return (
     <Stack.Navigator
-      screenOptions={{
-        ...BlurredHeaderScreenOptionsPreset
-      }}
+      screenOptions={({ route, navigation }) => ({
+        ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation)
+      })}
       headerMode="screen"
     >
+      <Stack.Screen name={SCREENS.AddressBook} component={AddressBookScreen} />
       <Stack.Screen
-        options={{
-          title: 'Address Book'
-        }}
-        name={SCREENS.AddressBook}
-        component={AddressBookScreen}
-      />
-      <Stack.Screen
-        options={{
-          ...useHeaderOptions()
-        }}
         name={SCREENS.AddAddressBook}
         component={AddAddressBookScreen}
       />
@@ -568,10 +565,13 @@ export const WebNavigation: FunctionComponent = () => {
 export const InvestNavigation: FunctionComponent = () => {
   return (
     <Stack.Navigator
-      screenOptions={({ route }) => ({
-        ...useHeaderOptions({
-          title: SCREENS_TITLE[route?.name]
-        })
+      screenOptions={({ route, navigation }) => ({
+        ...useHeaderOptions(
+          {
+            title: SCREENS_TITLE[route?.name]
+          },
+          navigation
+        )
       })}
       initialRouteName="Invest"
       headerMode="screen"
