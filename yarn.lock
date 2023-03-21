@@ -3362,7 +3362,7 @@
     "@ledgerhq/hw-transport" "^6.27.2"
     bip32-path "^0.4.2"
 
-"@ledgerhq/hw-app-eth@5.20.1":
+"@ledgerhq/hw-app-eth@5.27.2":
   version "5.27.2"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-app-eth/-/hw-app-eth-5.27.2.tgz#65a2ed613a69340e0cd69c942147455ec513d006"
   integrity sha512-llNdrE894cCN8j6yxJEUniciyLVcLmu5N0UmIJLOObztG+5rOF4bX54h4SreTWK+E10Z0CzHSeyE5Lz/tVcqqQ==
