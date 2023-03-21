@@ -97,7 +97,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Governance: {
         upperScreenName: 'Others'
       },
-      'Governance Details': {
+      'Governance.Details': {
         upperScreenName: 'Others'
       },
       Setting: {
@@ -205,7 +205,7 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       Redelegate: {
         validatorAddress: string;
       };
-      'Governance Details': {
+      'Governance.Details': {
         proposalId: string;
       };
       'Setting.ViewPrivateData': {

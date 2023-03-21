@@ -149,7 +149,7 @@ export const GovernanceCardBody: FunctionComponent<{
             'padding-y-card-vertical'
           ])}
           onPress={() => {
-            navigation.navigateSmart('Governance Details', {
+            navigation.navigateSmart('Governance.Details', {
               proposalId: proposal.id
             });
           }}

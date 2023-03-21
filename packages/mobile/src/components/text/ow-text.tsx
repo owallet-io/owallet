@@ -7,6 +7,7 @@ interface OWTextProps extends TextProps {
     | 'h2'
     | 'h3'
     | 'h4'
+    | 'h5'
     | 'subtitle'
     | 'body1'
     | 'body2'

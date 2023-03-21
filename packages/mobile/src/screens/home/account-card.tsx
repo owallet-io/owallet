@@ -159,8 +159,7 @@ export const AccountCard: FunctionComponent<{
     >
       <CardBody
         style={{
-          paddingBottom: spacing['0'],
-          paddingTop: safeAreaInsets.top + 10
+          paddingBottom: spacing['0']
         }}
       >
         <View

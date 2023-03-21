@@ -49,7 +49,7 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export const AccountCardEVM: FunctionComponent<{
   // ];
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -167,8 +167,7 @@ export const AccountCardEVM: FunctionComponent<{
     >
       <CardBody
         style={{
-          paddingBottom: spacing['0'],
-          paddingTop: safeAreaInsets.top + 10
+          paddingBottom: spacing['0']
         }}
       >
         <View

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import Icon, { IconProps } from './icomoon';
-interface IOWIconProps extends IconProps {
+export interface IOWIconProps extends IconProps {
   type?: 'images';
   source?: ImageSourcePropType;
 }
