@@ -830,6 +830,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       console.log('Amino Msgs: ', msgs);
 
       const message = {
+        // TODO: need to check kawaii cosmos
+        // 0xf2846a1E4dAFaeA38C1660a618277d67605bd2B5
         to: msgs.value.to_address,
         value: '0x' + parseInt(msgs.value.amount[0].amount).toString(16),
         gas: fee.gas,
@@ -850,7 +852,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash: signResponse.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastEvmMsgs: ', error);
     }
   }
 
@@ -881,7 +883,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash: signResponse.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastErc20Msgs: ', error);
     }
   }
 
