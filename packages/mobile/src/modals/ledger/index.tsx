@@ -15,7 +15,7 @@ import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { State } from 'react-native-ble-plx';
 import TransportBLE, {
-  bleManager
+  bleManagerInstance
 } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
 import { Ledger, LedgerInitErrorOn } from '@owallet/background';
@@ -78,7 +78,7 @@ export const LedgerGranterModal: FunctionComponent<{
       // Ledger transport library for BLE seems to cache the transport internally.
       // But this can be small problem when the ledger connection is failed.
       // So, when this modal appears, try to disconnect the bluetooth connection for nano X.
-      getLastUsedLedgerDeviceId().then(deviceId => {
+      getLastUsedLedgerDeviceId().then((deviceId) => {
         if (deviceId) {
           TransportBLE.disconnect(deviceId);
         }
@@ -93,7 +93,7 @@ export const LedgerGranterModal: FunctionComponent<{
     });
 
     useEffect(() => {
-      const subscription = bleManager.onStateChange(newState => {
+      const subscription = bleManagerInstance().onStateChange((newState) => {
         if (newState === State.PoweredOn) {
           setIsBLEAvailable(true);
         } else {
@@ -111,7 +111,7 @@ export const LedgerGranterModal: FunctionComponent<{
         // If the platform is android and can't use the bluetooth,
         // try to turn on the bluetooth.
         // Below API can be called only in android.
-        bleManager.enable();
+        bleManagerInstance().enable();
       }
     }, [isBLEAvailable]);
 
@@ -164,7 +164,7 @@ export const LedgerGranterModal: FunctionComponent<{
         if (Platform.OS === 'android') {
           PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-          ).then(granted => {
+          ).then((granted) => {
             if (granted == PermissionsAndroid.RESULTS.GRANTED) {
               setPermissionStatus(BLEPermissionGrantStatus.Granted);
             } else {
@@ -198,7 +198,7 @@ export const LedgerGranterModal: FunctionComponent<{
               if (e.type === 'add') {
                 const device = e.descriptor;
 
-                if (!_devices.find(d => d.id === device.id)) {
+                if (!_devices.find((d) => d.id === device.id)) {
                   console.log(
                     `Ledger device found (id: ${device.id}, name: ${device.name})`
                   );
@@ -283,7 +283,7 @@ export const LedgerGranterModal: FunctionComponent<{
               </React.Fragment>
             )}
 
-            {devices.map(device => {
+            {devices.map((device) => {
               return (
                 <LedgerNanoBLESelector
                   key={device.id}

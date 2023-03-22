@@ -3321,7 +3321,7 @@
   dependencies:
     invariant "2"
 
-"@ledgerhq/devices@^6.20.0", "@ledgerhq/devices@^7.0.0":
+"@ledgerhq/devices@^6.20.0", "@ledgerhq/devices@^7.0.0", "@ledgerhq/devices@^8.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@ledgerhq/devices/-/devices-7.0.0.tgz"
   integrity sha512-vq4B33WdU0dRAJIRFWZMj6w1W1yw1i4mekCmhk7N9wPaFrtGWZ2iI9WDihsNOBooCWKQe8Jsb9eD8RVThbSlFQ==
@@ -3421,15 +3421,15 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.1.tgz#5bd16082261d7364eabb511c788f00937dac588d"
   integrity sha512-z+ILK8Q3y+nfUl43ctCPuR4Y2bIxk/ooCQFwZxhtci1EhAtMDzMAx2W25qx8G1PPL9UUOdnUax19+F0OjXoj4w==
 
-"@ledgerhq/react-native-hw-transport-ble@=6.20.0":
-  version "6.20.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/react-native-hw-transport-ble/-/react-native-hw-transport-ble-6.20.0.tgz#b24245ccb5e2bfe179911dd5f7894d51e0ce664c"
-  integrity sha512-EYkhWFlsy6NUbylPju10iK/68cYWBpv3MIE+09SE6r9dRLKcJKlUMdfdgfUVDmcsftTxPsBtDSoqbV2eAZ1GnA==
+"@ledgerhq/react-native-hw-transport-ble@^6.28.3":
+  version "6.28.3"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/react-native-hw-transport-ble/-/react-native-hw-transport-ble-6.28.3.tgz#fea64dcf67ec22453d990efb3d7fb10c4eb4bf97"
+  integrity sha512-5pb8tI9AcdXQ2o8BPPAzdaME03pMHmKdFLHqipjYZbiFAEiu62VAvV8RfNt16rRH+d0Op7crcfBmj4MXvZI79w==
   dependencies:
-    "@ledgerhq/devices" "^6.20.0"
-    "@ledgerhq/errors" "^6.10.0"
-    "@ledgerhq/hw-transport" "^6.20.0"
-    "@ledgerhq/logs" "^6.10.0"
+    "@ledgerhq/devices" "^8.0.0"
+    "@ledgerhq/errors" "^6.12.3"
+    "@ledgerhq/hw-transport" "^6.28.1"
+    "@ledgerhq/logs" "^6.10.1"
     invariant "^2.2.4"
     react-native-ble-plx "2.0.3"
     rxjs "6"

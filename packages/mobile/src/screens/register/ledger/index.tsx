@@ -274,7 +274,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={{ height: 20 }} />
       <TouchableOpacity
-        // disabled={isCreating}
+        disabled={isCreating}
         onPress={submit}
         style={{
           marginBottom: 24,

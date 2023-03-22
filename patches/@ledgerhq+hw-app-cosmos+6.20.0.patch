@@ -47,7 +47,7 @@ index 5673f54..b18f78c 100644
                  chunks = [];
                  chunks.push(serializedPath);
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
-index 0317ca3..e66d990 100644
+index 0317ca3..bfd7417 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/lib/Cosmos.d.ts
 @@ -35,20 +35,20 @@ export default class Cosmos {
@@ -57,7 +57,7 @@ index 0317ca3..e66d990 100644
 -     * get Cosmos address for a given BIP 32 path.
 -     * @param path a path in BIP 32 format
 +     * get Cosmos address for a given BIP 32 path array.
-+     * @param path a path in BIP 32 array format
++     * @param paths a path in BIP 32 array format
       * @param hrp usually cosmos
       * @option boolDisplay optionally enable or not the display
       * @return an object with a publicKey, address and (optionally) chainCode
@@ -66,7 +66,7 @@ index 0317ca3..e66d990 100644
 +     * cosmos.getAddress([44,60,0,0,0], "cosmos").then(o => o.address)
       */
 -    getAddress(path: string, hrp: string, boolDisplay?: boolean): Promise<{
-+    getAddress(path: number[], hrp: string, boolDisplay?: boolean): Promise<{
++    getAddress(paths: number[], hrp: string, boolDisplay?: boolean): Promise<{
          publicKey: string;
          address: string;
      }>;
