@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { NewMnemonicConfig } from './hook';
@@ -47,8 +47,8 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const { analyticsStore } = useStore();
   const { colors } = useTheme();
 
-  const smartNavigation = useSmartNavigation();
-
+  // const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
   const registerConfig = route.params.registerConfig;
   const newMnemonicConfig = route.params.newMnemonicConfig;
 
@@ -105,7 +105,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
         type: 'new'
       });
     } else {
-      smartNavigation.reset({
+      navigation.reset({
         index: 0,
         routes: [
           {
@@ -192,7 +192,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
           flex: 1
         }}
       />
-      
+
       <OWButton
         label="Next"
         loading={isCreating}
@@ -204,7 +204,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
         label="Go back"
         type="link"
         onPress={() => {
-          smartNavigation.goBack();
+          navigation.goBack();
         }}
       />
       {/* Mock element for bottom padding */}
@@ -227,7 +227,9 @@ const WordButton: FunctionComponent<{
   return (
     <RectButton
       style={{
-        backgroundColor: used ? colors['background-btn-mnemonic-active'] : colors['background-container'],
+        backgroundColor: used
+          ? colors['background-btn-mnemonic-active']
+          : colors['background-container'],
         paddingTop: 4,
         paddingBottom: 4,
         paddingLeft: 12,
@@ -236,7 +238,9 @@ const WordButton: FunctionComponent<{
         marginBottom: 12,
         borderRadius: 8,
         borderWidth: used ? 0 : 1,
-        borderColor: used ? colors['background-container'] : colors['btn-mnemonic']
+        borderColor: used
+          ? colors['background-container']
+          : colors['btn-mnemonic']
       }}
       onPress={onPress}
     >
