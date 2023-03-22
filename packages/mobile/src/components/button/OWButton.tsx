@@ -34,7 +34,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   textStyle,
   disabled,
   icon,
-  fullWidth=true,
+  fullWidth = true,
   loading,
   ...props
 }) => {
@@ -47,7 +47,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       style={[
         styles.containerBtn,
         styleMapped.btn,
-        fullWidth && styles.fullWidth,
+        fullWidth ? styles.fullWidth : styles.widthAuto,
         !!icon && !label && styles.hasIcon,
         style
       ]}
@@ -58,7 +58,10 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         <>
           {!!icon && icon}
           {!!label && (
-            <OWText variant='body1' style={[styles.textBtn, styleMapped.text, textStyle]}>
+            <OWText
+              variant="body1"
+              style={[styles.textBtn, styleMapped.text, textStyle]}
+            >
               {label}
             </OWText>
           )}
@@ -82,5 +85,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '700',
     fontSize: 16
+  },
+  widthAuto: {
+    width: 'auto'
   }
 });

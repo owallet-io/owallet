@@ -31,6 +31,7 @@ import { OWalletLogo } from '../owallet-logo';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { spacing } from '../../../themes';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 interface FormData {
   name: string;
@@ -136,17 +137,12 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         secureTextEntry={true}
         onSubmitEditing={onSubmitEditingPassword}
         inputRight={
-          <OWButton
+          <OWButtonIcon
             style={styles.padIcon}
-            type="link"
             onPress={showPass}
-            icon={
-              <OWIcon
-                name={!statusPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
-                size={22}
-              />
-            }
+            name={!statusPass ? 'eye' : 'eye-slash'}
+            colorIcon={colors['icon-purple-700-gray']}
+            sizeIcon={22}
           />
         }
         secureTextEntry={!statusPass}
@@ -259,7 +255,6 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         </React.Fragment>
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
-      <View style={styles.mockView} />
       <OWButton onPress={submit} label="Next" />
       <OWButton
         style={{
@@ -271,11 +266,6 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
         onPress={onGoBack}
         label="Go back"
         type="link"
-      />
-      <View
-        style={{
-          height: 20
-        }}
       />
     </PageWithScrollView>
   );
@@ -323,6 +313,12 @@ const WordsCard: FunctionComponent<{
       })}
 
       <View style={styles.containerBtnCopy}>
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'blue'
+          }}
+        />
         <OWButton
           style={styles.padIcon}
           onPress={onCopy}
@@ -351,7 +347,8 @@ const useStyles = () => {
       height: 20
     },
     padIcon: {
-      paddingLeft: 10
+      paddingLeft: 10,
+      width: 'auto'
     },
     icon: {
       width: 22,

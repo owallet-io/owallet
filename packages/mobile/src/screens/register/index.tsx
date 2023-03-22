@@ -82,9 +82,6 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
 
 const useStyles = () => {
   const { colors } = useTheme();
-  const safeAreaInsets = useSafeAreaInsets();
-  const headerHeight = useHeaderHeight();
-  const actualHeightHeight = headerHeight - safeAreaInsets.top;
   return StyleSheet.create({
     btnOW: {
       marginBottom: 16
@@ -113,8 +110,7 @@ const useStyles = () => {
     container: {
       paddingLeft: 42,
       paddingRight: 42,
-      paddingBottom: metrics.screenHeight * 0.11,
-      paddingTop: metrics.screenHeight * 0.18 - actualHeightHeight
+      paddingTop: metrics.screenHeight * 0.11
     }
   });
 };

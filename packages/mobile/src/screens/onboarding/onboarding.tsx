@@ -6,8 +6,8 @@ import WelcomeIntroScreen from './welcome_intro';
 import AppIntroSlider from 'react-native-app-intro-slider';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { colors, metrics } from '../../themes';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { PageWithScrollView } from '../../components/page';
+import { useGetHeightHeader } from '@src/hooks/use-height-header';
 
 const slides = [
   {
@@ -27,7 +27,7 @@ const slides = [
 const styles = StyleSheet.create({
   onBoardingRoot: {
     position: 'relative',
-    height: metrics.screenHeight - 120,
+    height: metrics.screenHeight - 120
   },
   onBoardingImgFooter: {
     position: 'absolute',
@@ -37,16 +37,15 @@ const styles = StyleSheet.create({
   }
 });
 
-
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
-
+  const height = useGetHeightHeader();
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;
   };
 
   return (
     <PageWithScrollView backgroundColor="white">
-      <View style={{ ...styles.onBoardingRoot }}>
+      <View style={[{ ...styles.onBoardingRoot }, { paddingTop: height }]}>
         <AppIntroSlider
           renderItem={renderItem}
           data={slides}

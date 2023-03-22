@@ -45,14 +45,14 @@ export const RegisterNavigation: FC = () => {
         }
       />
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name={SCREENS.RegisterNewUser}
         component={RegisterNewUserScreen}
-      />
-      <Stack.Screen
+      /> */}
+      {/* <Stack.Screen
         name={SCREENS.RegisterNotNewUser}
         component={RegisterNotNewUserScreen}
-      />
+      /> */}
       <Stack.Screen
         name={SCREENS.RegisterNewMnemonic}
         component={NewMnemonicScreen}

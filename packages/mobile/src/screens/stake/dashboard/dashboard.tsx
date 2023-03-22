@@ -47,9 +47,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View
-        style={{
-          marginTop: safeAreaInsets.top
-        }}
+        
       >
         <Text
           style={{
