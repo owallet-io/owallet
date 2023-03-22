@@ -26,7 +26,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer(props => {
+export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -41,12 +41,12 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
 
   const style = useStyle();
 
-  const { analyticsStore } = useStore();
+  const { analyticsStore, chainStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
-  const bip44Option = useBIP44Option(118);
+  const bip44Option = useBIP44Option(chainStore.current.coinType);
   const [mode] = useState(registerConfig.mode);
 
   const {
@@ -274,7 +274,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={{ height: 20 }} />
       <TouchableOpacity
-        disabled={isCreating}
+        // disabled={isCreating}
         onPress={submit}
         style={{
           marginBottom: 24,
