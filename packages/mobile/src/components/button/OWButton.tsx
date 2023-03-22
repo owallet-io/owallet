@@ -12,11 +12,13 @@ import React, { FunctionComponent } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
-import OWText from '../text/ow-text';
+import OWText, { OWTextProps } from '../text/ow-text';
 
 export interface IOWButtonProps extends TouchableOpacityProps {
   type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
   size?: 'medium' | 'small' | 'large';
+  textVariant?: OWTextProps['variant'];
+  textTypo?: OWTextProps['typo'];
   label?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
@@ -31,6 +33,8 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   type = 'primary',
   size = 'large',
   style,
+  textVariant = 'body1',
+  textTypo,
   textStyle,
   disabled,
   icon,
@@ -60,7 +64,8 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
           {!!icon && icon}
           {!!label && (
             <OWText
-              variant="body1"
+              variant={textVariant}
+              typo={textTypo}
               style={[styles.textBtn, styleMapped.text, textStyle]}
             >
               {label}

@@ -448,6 +448,7 @@ const useStyle = () => {
     },
     container: {
       flexGrow: 1,
+      paddingTop:50,
       paddingHorizontal: spacing['page-pad']
     },
     borderInput: {

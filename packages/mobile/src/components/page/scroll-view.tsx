@@ -38,12 +38,12 @@ export const PageWithScrollView = forwardRef<
     fixed,
     onScroll,
     disableSafeArea,
-    backgroundColor=colors['background'],
+    backgroundColor = colors['background'],
     ...restProps
   } = props;
 
   const ContainerElement = disableSafeArea ? View : SafeAreaView;
-  
+
   return (
     <React.Fragment>
       <View

@@ -2,7 +2,7 @@ import { Text, TextProps, TextStyle } from 'react-native';
 import React from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 
-interface OWTextProps extends TextProps {
+export interface OWTextProps extends TextProps {
   variant?:
     | 'h1'
     | 'h2'

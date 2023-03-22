@@ -29,6 +29,7 @@ const ThemeProvider = observer(({ children }) => {
     >
       <StatusBar
         translucent={true}
+        backgroundColor="transparent"
         barStyle={theme == 'dark' ? 'light-content' : 'dark-content'}
       />
       {children}

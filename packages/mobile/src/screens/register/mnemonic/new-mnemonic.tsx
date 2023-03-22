@@ -316,7 +316,6 @@ const WordsCard: FunctionComponent<{
         <View
           style={{
             flex: 1,
-            backgroundColor: 'blue'
           }}
         />
         <OWButton
@@ -390,7 +389,8 @@ const useStyles = () => {
     },
     container: {
       paddingHorizontal: spacing['page-pad'],
-      flexGrow: 1
+      flexGrow: 1,
+      paddingTop:50
     },
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],

@@ -12,6 +12,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
 import { typography, colors, spacing } from '../../../themes';
 import { useTheme } from '@src/themes/theme-provider';
+import { PageWithView } from '@src/components/page';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -73,7 +74,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     ]);
 
     return (
-      <View>
+      <PageWithView>
         <View>
           <Text
             style={{
@@ -268,7 +269,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             }}
           >{`Unstake`}</Text>
         </RectButton>
-      </View>
+      </PageWithView>
     );
   });
 

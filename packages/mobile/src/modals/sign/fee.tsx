@@ -13,8 +13,9 @@ import { registerModal } from '../base';
 import { CardModal } from '../card';
 import { FeeButtons, getFeeErrorText, TextInput } from '../../components/input';
 import { LoadingSpinner } from '../../components/spinner';
-import { colors, typography } from '../../themes';
+import { typography } from '../../themes';
 import { Toggle } from '../../components/toggle';
+import { useTheme } from '@src/themes/theme-provider';
 
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
@@ -25,7 +26,7 @@ const FeeButtonsModal: FunctionComponent<{
 }> = registerModal(
   observer(({ close, feeConfig, gasConfig }) => {
     const [customFee, setCustomFee] = useState(false);
-
+    const { colors } = useTheme();
     return (
       <CardModal title="Set Fee">
         <View
@@ -37,7 +38,7 @@ const FeeButtonsModal: FunctionComponent<{
         >
           <Toggle
             on={customFee}
-            onChange={value => {
+            onChange={(value) => {
               setCustomFee(value);
               if (!value) {
                 if (feeConfig.feeCurrency && !feeConfig.fee) {
@@ -70,7 +71,7 @@ const FeeButtonsModal: FunctionComponent<{
                 color: colors['gray-900'],
                 marginBottom: 8
               }}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -130,7 +131,7 @@ export const FeeInSign: FunctionComponent<{
   signOptions?: OWalletSignOptions;
 }> = observer(({ isInternal, signOptions, feeConfig, gasConfig }) => {
   const { chainStore, priceStore } = useStore();
-
+  const { colors } = useTheme();
   const style = useStyle();
 
   const preferNoSetFee = signOptions?.preferNoSetFee ?? false;
@@ -175,11 +176,9 @@ export const FeeInSign: FunctionComponent<{
         <View
           style={style.flatten(['flex-row', 'items-center', 'margin-bottom-4'])}
         >
-          <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>
-            Fee
-          </Text>
+          <Text style={style.flatten(['subtitle3'])}>Fee</Text>
           <View style={style.get('flex-1')} />
-          <Text style={style.flatten(['body3', 'color-text-black-low'])}>
+          <Text style={style.flatten(['body3'])}>
             {feePrice ? feePrice.toString() : '-'}
           </Text>
         </View>
@@ -197,7 +196,7 @@ export const FeeInSign: FunctionComponent<{
                 ...typography['subtitle1'],
                 color: canFeeEditable
                   ? colors['purple-700']
-                  : colors['text-black-medium']
+                  : colors['primary-text']
               }}
             >
               {fee.trim(true).toString()}

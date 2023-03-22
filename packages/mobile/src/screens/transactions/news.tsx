@@ -98,7 +98,7 @@ export const NewsTab: FunctionComponent<{}> = observer(() => {
               item?.id
             )
               ? colors['primary']
-              : colors['sub-primary'],
+              : colors['background-item-list'],
             marginVertical: 8,
             borderRadius: 8
           }}

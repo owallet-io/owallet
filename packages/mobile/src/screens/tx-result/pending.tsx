@@ -14,14 +14,15 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { HomeOutlineIcon, RightArrowIcon } from '../../components/icon';
 import { TendermintTxTracer } from '@owallet/cosmos';
 import { Buffer } from 'buffer';
-import { colors, metrics } from '../../themes';
-import { Card, CardBody } from '../../components/card';
+import { metrics } from '../../themes';
+import { Card, CardBody, OWBox } from '../../components/card';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
-
+  const { colors } = useTheme();
   const route = useRoute<
     RouteProp<
       Record<
@@ -35,16 +36,16 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  const chainId = route.params.chainId
-    ? route.params.chainId
-    : chainStore.current.chainId;
+  const chainId = route?.params?.chainId
+    ? route?.params?.chainId
+    : chainStore?.current?.chainId;
 
   const smartNavigation = useSmartNavigation();
 
   const isFocused = useIsFocused();
   const { bottom } = useSafeAreaInsets();
   useEffect(() => {
-    const txHash = route.params.txHash;
+    const txHash = route?.params?.txHash;
     const chainInfo = chainStore.getChain(chainId);
     let txTracer: TendermintTxTracer | undefined;
 
@@ -75,17 +76,11 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         txTracer.close();
       }
     };
-  }, [chainId, chainStore, isFocused, route.params.txHash, smartNavigation]);
+  }, [chainId, chainStore, isFocused, route.params?.txHash, smartNavigation]);
 
   return (
-    <View>
-      <Card
-        style={{
-          backgroundColor: colors['white'],
-          marginTop: 78,
-          borderRadius: 24
-        }}
-      >
+    <PageWithView>
+      <OWBox>
         <View
           style={{
             height: metrics.screenHeight - bottom - 74,
@@ -143,6 +138,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 paddingTop: 44,
                 paddingBottom: 16
               }}
+              color={colors['text-title-login']}
             >
               Transaction Processing...
             </Text>
@@ -151,7 +147,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 fontWeight: '400',
                 fontSize: 14,
                 lineHeight: 20,
-                color: colors['gray-150']
+                color: colors['primary-text']
               }}
             >
               Hang on as the process might take some time to complete.
@@ -173,11 +169,11 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
                 alignItems: 'center'
               }}
             >
-              <HomeOutlineIcon />
+              <HomeOutlineIcon color={colors['background-btn-primary']} />
               <Text
                 style={{
                   paddingLeft: 6,
-                  color: colors['purple-900'],
+                  color: colors['background-btn-primary'],
                   fontWeight: '400',
                   fontSize: 16,
                   lineHeight: 22
@@ -196,7 +192,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             </View>
           </View>
         </View>
-      </Card>
-    </View>
+      </OWBox>
+    </PageWithView>
   );
 });

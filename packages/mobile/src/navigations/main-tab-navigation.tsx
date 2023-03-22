@@ -182,7 +182,7 @@ export const MainTabNavigation: FC = () => {
         activeTintColor: style.get('color-primary').color,
         inactiveTintColor: style.get('color-text-black-very-very-low').color,
         style: {
-          backgroundColor: '#fff',
+          backgroundColor: colors['background-box'],
           borderTopWidth: 0.5,
           borderTopColor: colors['primary'],
           shadowColor: style.get('color-transparent').color,

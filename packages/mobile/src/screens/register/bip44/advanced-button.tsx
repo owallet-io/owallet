@@ -10,10 +10,12 @@ import { registerModal } from '../../../modals/base';
 import { CardModal } from '../../../modals/card';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import { TextInput } from '../../../components/input';
-import { typography, colors } from '../../../themes';
+import { typography } from '../../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
+import { useTheme } from '@src/themes/theme-provider';
+import { OWButton } from '@src/components/button';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
 
 export const BIP44AdvancedButton: FunctionComponent<{
@@ -22,27 +24,29 @@ export const BIP44AdvancedButton: FunctionComponent<{
   const { appInitStore } = useStore();
   const scheme = appInitStore.getInitApp.theme;
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const { colors } = useTheme();
   return (
-    <KeyboardAvoidingView
-      behavior="padding"
-      style={{ flex: 1 }}
-      keyboardVerticalOffset={keyboardVerticalOffset}
+    <View
+    // style={{ width:40, height:40, backgroundColor:'red' }}
+    // keyboardVerticalOffset={keyboardVerticalOffset}
     >
       <BIP44SelectModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
         bip44Option={bip44Option}
       />
-      <Text
+      <OWButton
+        label="Advanced Option"
+        type="link"
+        textStyle={{
+          fontWeight: '400'
+        }}
         style={{
-          color: colors['text-btn-advance-options']
+          justifyContent: 'flex-start'
         }}
         onPress={() => setIsModalOpen(true)}
-      >
-        Advanced Option
-      </Text>
-    </KeyboardAvoidingView>
+      />
+    </View>
   );
 });
 
@@ -103,7 +107,7 @@ export const BIP44SelectModal: FunctionComponent<{
 
     const isChangeZeroOrOne =
       change.isValid && (change.number === 0 || change.number === 1);
-
+    const { colors } = useTheme();
     return (
       <CardModal title="HD Derivation Path">
         <Text
@@ -206,19 +210,14 @@ export const BIP44SelectModal: FunctionComponent<{
             Change should be 0 or 1
           </Text>
         ) : null}
-        <TouchableOpacity
+        <OWButton
+          label="Confirm"
           disabled={
             !account.isValid ||
             !change.isValid ||
             !index.isValid ||
             !isChangeZeroOrOne
           }
-          style={{
-            marginBottom: 240,
-            marginTop: 32,
-            backgroundColor: colors['purple-900'],
-            borderRadius: 8
-          }}
           onPress={() => {
             bip44Option.setCoinType(coinType.number);
             bip44Option.setAccount(account.number);
@@ -226,36 +225,7 @@ export const BIP44SelectModal: FunctionComponent<{
             bip44Option.setIndex(index.number);
             close();
           }}
-        >
-          <Text
-            style={{
-              color: colors['label'],
-              textAlign: 'center',
-              fontWeight: '700',
-              fontSize: 16,
-              padding: 16
-            }}
-          >
-            Confirm
-          </Text>
-        </TouchableOpacity>
-        {/* <Button
-          text="Confirm"
-          size="large"
-          disabled={
-            !account.isValid ||
-            !change.isValid ||
-            !index.isValid ||
-            !isChangeZeroOrOne
-          }
-          onPress={() => {
-            bip44Option.setAccount(account.number);
-            bip44Option.setChange(change.number);
-            bip44Option.setIndex(index.number);
-
-            close();
-          }}
-        /> */}
+        />
       </CardModal>
     );
   }),
@@ -264,8 +234,9 @@ export const BIP44SelectModal: FunctionComponent<{
   }
 );
 
-const styling = scheme =>
-  StyleSheet.create({
+const styling = (scheme) => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
     borderInput: {
       borderColor: scheme === 'dark' ? colors['border'] : colors['gray-300'],
       borderWidth: 1,
@@ -279,3 +250,4 @@ const styling = scheme =>
       color: 'red'
     }
   });
+};

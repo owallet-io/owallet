@@ -160,7 +160,7 @@ export const SignModal: FunctionComponent<{
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
                   <Text
-                    style={style.flatten(['body3', 'color-text-black-low'])}
+                    style={style.flatten(['body3'])}
                   >
                     {content}
                   </Text>

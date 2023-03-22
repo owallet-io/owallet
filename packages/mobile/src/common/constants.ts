@@ -111,7 +111,7 @@ export const SCREENS_TITLE = {
   [SCREENS.SettingViewPrivateData]: 'Mnemonic Seed',
   [SCREENS.SettingVersion]: 'About',
   [SCREENS.AddressBook]: HEADER_KEY.showNetworkHeader,
-  [SCREENS.AddAddressBook]: 'Add new contact',
+  [SCREENS.AddAddressBook]: 'Add new contract',
   [SCREENS.Browser]: 'Browser',
   [SCREENS.BookMarks]: 'Bookmarks',
   [SCREENS.WebIntro]: '',

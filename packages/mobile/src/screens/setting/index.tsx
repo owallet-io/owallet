@@ -62,13 +62,6 @@ export const SettingScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
-      <StatusBar
-        animated={true}
-        backgroundColor="white"
-        barStyle={Platform.OS == 'ios' ? 'light-content' : 'dark-content'}
-        showHideTransition={'fade'}
-        hidden={false}
-      />
       <ImageBackground
         style={{
           ...styles.containerScreen

@@ -310,7 +310,8 @@ const useStyles = () => {
     },
     containerContentStyle: {
       flexGrow: 1,
-      paddingHorizontal: spacing['page-pad']
+      paddingHorizontal: spacing['page-pad'],
+      paddingTop:50
     },
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],

@@ -16,7 +16,7 @@ import {
 import { Text } from '@src/components/text';
 import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
-import { Card } from '../../components/card';
+import { Card, OWBox } from '../../components/card';
 import { metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as WebBrowser from 'expo-web-browser';
@@ -42,9 +42,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const chainId = route.params.chainId
-    ? route.params.chainId
-    : chainStore.current.chainId;
+  const chainId = route.params?.chainId
+    ? route.params?.chainId
+    : chainStore.current?.chainId;
   const txHash = route.params?.txHash;
 
   const smartNavigation = useSmartNavigation();
@@ -52,14 +52,8 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const chainInfo = chainStore.getChain(chainId);
   const { bottom } = useSafeAreaInsets();
   return (
-    <View>
-      <Card
-        style={{
-          backgroundColor: colors['white'],
-          marginTop: 78,
-          borderRadius: 24
-        }}
-      >
+    <PageWithView>
+      <OWBox>
         <View
           style={{
             height: metrics.screenHeight - bottom - 74,
@@ -117,6 +111,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 paddingTop: 44,
                 paddingBottom: 16
               }}
+              color={colors['text-title-login']}
             >
               Transaction Completed!
             </Text>
@@ -125,7 +120,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 fontWeight: '400',
                 fontSize: 14,
                 lineHeight: 20,
-                color: colors['gray-150'],
+
                 paddingTop: 6
               }}
             >
@@ -154,7 +149,8 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 <Image
                   style={{
                     width: 22,
-                    height: 22
+                    height: 22,
+                    tintColor: colors['background-btn-primary']
                   }}
                   fadeDuration={0}
                   resizeMode="stretch"
@@ -163,7 +159,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 <Text
                   style={{
                     paddingLeft: 6,
-                    color: colors['purple-900'],
+                    color: colors['background-btn-primary'],
                     fontWeight: '400',
                     fontSize: 16,
                     lineHeight: 22
@@ -179,7 +175,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               marginTop: 32,
               marginLeft: 25,
               marginRight: 25,
-              backgroundColor: colors['purple-900'],
+              backgroundColor: colors['background-btn-primary'],
               borderRadius: 8
             }}
             onPress={() => {
@@ -204,7 +200,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
             </Text>
           </TouchableOpacity>
         </View>
-      </Card>
-    </View>
+      </OWBox>
+    </PageWithView>
   );
 });

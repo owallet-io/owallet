@@ -45,8 +45,9 @@ const addressBookItemComponent = {
   inSetting: View
 };
 
-const styling = colors =>
-  StyleSheet.create({
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
     addressBookRoot: {
       padding: spacing['22'],
       backgroundColor: colors['primary'],
@@ -55,8 +56,8 @@ const styling = colors =>
     },
     addressBookItem: {
       marginTop: spacing['16'],
-      backgroundColor: colors['gray-10'],
-      paddingVertical: spacing['8'],
+      backgroundColor: colors['background-item-list'],
+      paddingVertical: spacing['12'],
       paddingHorizontal: spacing['16'],
       borderRadius: spacing['8']
     },
@@ -65,6 +66,7 @@ const styling = colors =>
       justifyContent: 'space-between'
     }
   });
+};
 
 const debounce = (fn, delay) => {
   let timerId;
@@ -128,12 +130,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
-  const onNameSearch = txt => {
+  const onNameSearch = (txt) => {
     const searchWord = txt ?? nameSearch;
     if (searchWord) {
       const addressList = addressBookConfig.addressBookDatas;
       if (addressList.length > 0) {
-        const newAdressList = addressList.filter(address =>
+        const newAdressList = addressList.filter((address) =>
           address.name.toLowerCase().includes(searchWord.toLowerCase())
         );
         return setContractList(newAdressList);
@@ -185,7 +187,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
               borderBottomRightRadius: spacing['8']
             }}
             value={nameSearch}
-            onChangeText={text => {
+            onChangeText={(text) => {
               setNameSearch(text);
               debouncedHandler(text);
             }}
@@ -251,15 +253,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                   >
                     <View>
                       <Text
-                        style={{
-                          fontSize: 16,
-                          fontWeight: '700',
-                          color: colors['gray-900']
-                        }}
+                        variant='body1'
+                        typo='bold'
                       >
                         {data.name}
                       </Text>
-                      <Text
+                      {/* <Text
                         style={style.flatten([
                           'body3',
                           'color-text-black-low',
@@ -267,13 +266,11 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                         ])}
                       >
                         {data.memo}
-                      </Text>
+                      </Text> */}
                       <Text
-                        style={{
-                          fontSize: 12,
-                          fontWeight: '700',
-                          color: colors['gray-300']
-                        }}
+                        variant='caption'
+                        typo='bold'
+                        color={colors['gray-300']}
                       >
                         {Bech32Address.shortenAddress(data.address, 30)}
                       </Text>

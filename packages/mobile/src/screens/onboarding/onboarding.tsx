@@ -27,7 +27,7 @@ const slides = [
 const styles = StyleSheet.create({
   onBoardingRoot: {
     position: 'relative',
-    height: metrics.screenHeight - 120
+    height: metrics.screenHeight
   },
   onBoardingImgFooter: {
     position: 'absolute',
@@ -45,7 +45,7 @@ export const OnboardingIntroScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView backgroundColor="white">
-      <View style={[{ ...styles.onBoardingRoot }, { paddingTop: height }]}>
+      <View style={[{ ...styles.onBoardingRoot }, { paddingTop: 50 }]}>
         <AppIntroSlider
           renderItem={renderItem}
           data={slides}

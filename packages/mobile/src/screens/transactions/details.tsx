@@ -162,7 +162,7 @@ const InfoItems: FunctionComponent<{
             ])
           ]),
           {
-            backgroundColor: colors['item']
+            backgroundColor: colors['background-item-list']
           }
         ]}
       >
@@ -478,9 +478,9 @@ export const TransactionDetail: FunctionComponent<any> = () => {
 
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
-      <View style={styles.containerTitle}>
+      {/* <View style={styles.containerTitle}>
         <Text style={styles.textTitle}>Transaction Detail</Text>
-      </View>
+      </View> */}
       <TransactionSectionTitle title={title} right={<></>} />
       <View>
         {txInfos.map((item, index) => (

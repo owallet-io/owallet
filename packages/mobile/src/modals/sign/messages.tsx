@@ -20,7 +20,7 @@ import { observer } from 'mobx-react-lite';
 import { FormattedMessage } from 'react-intl';
 import { Badge } from '../../components/badge';
 import { StyleSheet, View } from 'react-native';
-import { colors, typography } from '../../themes';
+import { typography } from '../../themes';
 
 const h = new Hypher(english);
 
@@ -761,7 +761,6 @@ export function clearDecimals(dec: string): string {
 const styles = StyleSheet.create({
   textInfo: {
     ...typography.h5,
-    fontWeight: '400',
-    color: colors['text-black-medium']
+    fontWeight: '400'
   }
 });

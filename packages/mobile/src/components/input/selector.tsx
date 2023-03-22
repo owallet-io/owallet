@@ -85,7 +85,7 @@ export const SelectorModal: FunctionComponent<{
 
           if (maxItemsToShow) {
             const selectedIndex = items.findIndex(
-              item => item.key === selectedKey
+              (item) => item.key === selectedKey
             );
 
             if (selectedIndex) {
@@ -121,7 +121,7 @@ export const SelectorModal: FunctionComponent<{
           persistentScrollbar={true}
           onLayout={onInit}
         >
-          {items.map(item => {
+          {items.map((item) => {
             return (
               <View
                 style={{
@@ -196,7 +196,7 @@ export const Selector: FunctionComponent<{
   modalPersistent
 }) => {
   const selected = useMemo(() => {
-    return items.find(item => item.key === selectedKey);
+    return items.find((item) => item.key === selectedKey);
   }, [items, selectedKey]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -283,8 +283,8 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
           ]),
           selectorContainerStyle,
           {
-            backgroundColor: colors['item'],
-            borderColor: colors['border']
+            backgroundColor: colors['background-container'],
+            borderColor: colors['border-input-login']
           }
         ])}
         onPress={onPress}

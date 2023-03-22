@@ -317,6 +317,7 @@ const useStyles = () => {
     },
     containerContentScroll: {
       flexGrow: 1,
+      paddingTop:50,
       paddingHorizontal: spacing['page-pad']
     }
   });
