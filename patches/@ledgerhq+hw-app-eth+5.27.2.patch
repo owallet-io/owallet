@@ -1,0 +1,97 @@
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+index b39b8a9..472a924 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+@@ -53,7 +53,7 @@ export default class Eth {
+   }
+   /**
+    * get Ethereum address for a given BIP 32 path.
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @option boolDisplay optionally enable or not the display
+    * @option boolChaincode optionally enable or not the chaincode request
+    * @return an object with a publicKey, address and (optionally) chainCode
+@@ -62,8 +62,7 @@ export default class Eth {
+    */
+ 
+ 
+-  getAddress(path, boolDisplay, boolChaincode) {
+-    let paths = splitPath(path);
++  getAddress(paths, boolDisplay, boolChaincode) {    
+     let buffer = Buffer.alloc(1 + paths.length * 4);
+     buffer[0] = paths.length;
+     paths.forEach((element, index) => {
+@@ -120,8 +119,7 @@ export default class Eth {
+    */
+ 
+ 
+-  signTransaction(path, rawTxHex) {
+-    let paths = splitPath(path);
++  signTransaction(paths, rawTxHex) {    
+     let offset = 0;
+     let rawTx = Buffer.from(rawTxHex, "hex");
+     let toSend = [];
+@@ -203,8 +201,7 @@ export default class Eth {
+    */
+ 
+ 
+-  signPersonalMessage(path, messageHex) {
+-    let paths = splitPath(path);
++  signPersonalMessage(paths, messageHex) {    
+     let offset = 0;
+     let message = Buffer.from(messageHex, "hex");
+     let toSend = [];
+@@ -367,7 +364,7 @@ export default class Eth {
+   }
+   /**
+    * sign a Stark transfer
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @option transferTokenAddress contract address of the token to be transferred (not present for ETH)
+    * @param transferQuantization quantization used for the token to be transferred
+    * @param targetPublicKey target Stark public key
+@@ -380,10 +377,9 @@ export default class Eth {
+    */
+ 
+ 
+-  starkSignTransfer(path, transferTokenAddress, transferQuantization, targetPublicKey, sourceVault, destinationVault, amountTransfer, nonce, timestamp) {
++  starkSignTransfer(paths, transferTokenAddress, transferQuantization, targetPublicKey, sourceVault, destinationVault, amountTransfer, nonce, timestamp) {
+     const transferTokenAddressHex = maybeHexBuffer(transferTokenAddress);
+     const targetPublicKeyHex = hexBuffer(targetPublicKey);
+-    let paths = splitPath(path);
+     let buffer = Buffer.alloc(1 + paths.length * 4 + 20 + 32 + 32 + 4 + 4 + 8 + 4 + 4, 0);
+     let offset = 0;
+     buffer[0] = paths.length;
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib/Eth.js b/node_modules/@ledgerhq/hw-app-eth/lib/Eth.js
+index 0a85d80..debfc9a 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib/Eth.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib/Eth.js
+@@ -63,7 +63,7 @@ class Eth {
+   }
+   /**
+    * get Ethereum address for a given BIP 32 path.
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @option boolDisplay optionally enable or not the display
+    * @option boolChaincode optionally enable or not the chaincode request
+    * @return an object with a publicKey, address and (optionally) chainCode
+@@ -72,8 +72,7 @@ class Eth {
+    */
+ 
+ 
+-  getAddress(path, boolDisplay, boolChaincode) {
+-    let paths = (0, _utils.splitPath)(path);
++  getAddress(paths, boolDisplay, boolChaincode) {    
+     let buffer = Buffer.alloc(1 + paths.length * 4);
+     buffer[0] = paths.length;
+     paths.forEach((element, index) => {
+@@ -130,8 +129,7 @@ class Eth {
+    */
+ 
+ 
+-  signTransaction(path, rawTxHex) {
+-    let paths = (0, _utils.splitPath)(path);
++  signTransaction(paths, rawTxHex) {    
+     let offset = 0;
+     let rawTx = Buffer.from(rawTxHex, "hex");
+     let toSend = [];
