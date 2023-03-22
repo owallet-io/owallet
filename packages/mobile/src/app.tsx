@@ -13,7 +13,7 @@ import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
 import crashlytics from '@react-native-firebase/crashlytics';
-import ThemeProvider from './themes/theme-provider';
+import ThemeProvider, { useTheme } from './themes/theme-provider';
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -111,11 +111,7 @@ export const App = () => {
       <StoreProvider>
         <ThemeProvider>
           <AppIntlProviderWithStorage>
-            <StatusBar
-              translucent={true}
-              backgroundColor="#FFFFFF00"
-              barStyle="dark-content"
-            />
+            
             <SafeAreaProvider>
               <ModalsProvider>
                 <LoadingScreenProvider>

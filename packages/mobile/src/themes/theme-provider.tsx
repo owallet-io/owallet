@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 import React, { createContext, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../stores';
@@ -25,21 +25,20 @@ const ThemeProvider = observer(({ children }) => {
   const theme = appInitStore.getInitApp.theme;
   return (
     <ThemeContext.Provider
-      value={
-        theme == 'dark'
-          ? MyDarkTheme
-          : MyDefaultTheme
-      }
+      value={theme == 'dark' ? MyDarkTheme : MyDefaultTheme}
     >
+      <StatusBar
+        translucent={true}
+        barStyle={theme == 'dark' ? 'light-content' : 'dark-content'}
+      />
       {children}
     </ThemeContext.Provider>
   );
 });
 
-export const useTheme = ()=>{
-   const theme = useContext<TypeTheme>(ThemeContext);
-   return theme;
-}
+export const useTheme = () => {
+  const theme = useContext<TypeTheme>(ThemeContext);
+  return theme;
+};
 
 export default ThemeProvider;
-
