@@ -1,5 +1,5 @@
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts
-index 0317ca3..37ebc29 100644
+index 0317ca3..de028b1 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/lib-es/Cosmos.d.ts
 @@ -43,12 +43,12 @@ export default class Cosmos {
@@ -13,7 +13,7 @@ index 0317ca3..37ebc29 100644
      }>;
      foreach<T, A>(arr: T[], callback: (arg0: T, arg1: number) => Promise<A>): Promise<A[]>;
 -    sign(path: string, message: string): Promise<{
-+    sign(bipPath: number[], message: string): Promise<{
++    sign(bipPath: number[], message: string | Uint8Array): Promise<{
          signature: null | Buffer;
          return_code: number | string;
      }>;
@@ -114,7 +114,7 @@ index 2b17c6a..0fedab8 100644
                  chunks = [];
                  chunks.push(serializedPath);
 diff --git a/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts b/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
-index b8f7f3d..c0843f5 100644
+index b8f7f3d..c833e5e 100644
 --- a/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
 +++ b/node_modules/@ledgerhq/hw-app-cosmos/src/Cosmos.ts
 @@ -65,7 +65,7 @@ export default class Cosmos {
@@ -126,11 +126,21 @@ index b8f7f3d..c0843f5 100644
      const buf = Buffer.alloc(20);
      // HACK : without the >>>,
      // the bitwise implicitly casts the result to be a signed int32,
-@@ -99,14 +99,13 @@ export default class Cosmos {
+@@ -91,22 +91,21 @@ export default class Cosmos {
+ 
+   /**
+    * get Cosmos address for a given BIP 32 path.
+-   * @param path a path in BIP 32 format
++   * @param bipPath a path in BIP 32 format
+    * @param hrp usually cosmos
+    * @option boolDisplay optionally enable or not the display
+    * @return an object with a publicKey, address and (optionally) chainCode
+    * @example
     * cosmos.getAddress("44'/60'/0'/0/0", "cosmos").then(o => o.address)
     */
-   getAddress(
+-  getAddress(
 -    path: string,
++  async getAddress(
 +    bipPath: number[],
      hrp: string,
      boolDisplay?: boolean
