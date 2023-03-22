@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
-import OWButton from '../button/OWButton';
 import OWButtonIcon from '../button/ow-button-icon';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';

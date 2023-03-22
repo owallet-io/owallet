@@ -6,7 +6,7 @@ import OWHeaderRight from '@src/components/header/ow-header-right';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { StackNavigationOptions } from '@react-navigation/stack';
-import { notShowHeader, SCREENS } from '@src/common/constants';
+import { HEADER_KEY, SCREENS } from '@src/common/constants';
 interface IUseHeaderOptions extends StackNavigationOptions {}
 const useHeaderOptions = (
   data?: IUseHeaderOptions,
@@ -37,7 +37,7 @@ const useHeaderOptions = (
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: 'center',
     headerRight: () => {
-      if (!!data?.title == false) {
+      if (data?.title == HEADER_KEY.showNetworkHeader) {
         return <OWHeaderRight onTransaction={onTransaction} onScan={onScan} />;
       }
     },
@@ -48,12 +48,18 @@ const useHeaderOptions = (
             colorIcon={colors['primary-text']}
             onPress={onGoBack}
             name="arrow-left"
+            style={{
+              paddingRight: 20
+            }}
             sizeIcon={!!data?.title ? 24 : 20}
           />
         );
       return null;
     },
-    headerShown: data?.title === notShowHeader ? false : true,
+    headerShown:
+      data?.title === HEADER_KEY.notShowHeader || !!data?.title == false
+        ? false
+        : true,
     ...data
   };
 };
