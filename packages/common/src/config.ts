@@ -288,7 +288,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
-    // evmRpc: 'https://endpoint1.kawaii.global',
+    evmRpc: 'https://endpoint1.kawaii.global',
     rest: 'https://cosmos1.kawaii.global',
     chainId: 'kawaii_6886-1',
     networkType: 'cosmos',
@@ -315,7 +315,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       high: 0.00004
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']
+    features: ['isEvm']
   },
   {
     rpc: 'https://tendermint1.kawaii.global',

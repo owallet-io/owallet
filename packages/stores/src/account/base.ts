@@ -20,7 +20,12 @@ import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator, fetchAdapter } from '@owallet/common';
+import {
+  DenomHelper,
+  toGenerator,
+  fetchAdapter,
+  EVMOS_NETWORKS
+} from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20.json';
 import {
@@ -493,7 +498,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
         txHash = result.txHash;
       } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee);
+        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
         txHash = result.txHash;
       }
     } catch (e: any) {
@@ -812,7 +817,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   // Return the tx hash.
   protected async broadcastEvmMsgs(
     msgs: Msg,
-    fee: StdFeeEthereum
+    fee: StdFeeEthereum,
+    signOptions?: OWalletSignOptions
   ): Promise<{
     txHash: string;
   }> {
@@ -829,8 +835,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       const ethereum = (await this.getEthereum())!;
       console.log('Amino Msgs: ', msgs);
 
+      let toAddress = msgs.value.to_address;
+      if (EVMOS_NETWORKS.includes(signOptions.chainId)) {
+        const decoded = bech32.decode(toAddress);
+        toAddress =
+          '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
+      }
       const message = {
-        to: msgs.value.to_address,
+        // TODO: need to check kawaii cosmos
+        to: toAddress,
         value: '0x' + parseInt(msgs.value.amount[0].amount).toString(16),
         gas: fee.gas,
         gasPrice: fee.gasPrice
@@ -850,7 +863,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash: signResponse.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastEvmMsgs: ', error);
     }
   }
 
@@ -881,7 +894,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash: signResponse.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastErc20Msgs: ', error);
     }
   }
 

@@ -41,6 +41,7 @@ export interface OWalletSignOptions {
 
   readonly disableBalanceCheck?: boolean;
   readonly networkType?: NetworkType;
+  readonly chainId?: string;
 }
 
 export interface OWallet {
