@@ -24,11 +24,11 @@ const OWHeaderRight = observer(
               ? 'history-1'
               : 'history'
           }
-          colorIcon={colors['purple-700']}
+          colorIcon={colors['text-content-success']}
         />
         <OWButtonIcon
           style={styles.btnScan}
-          colorIcon={colors['purple-700']}
+          colorIcon={colors['text-content-success']}
           sizeIcon={24}
           onPress={onScan}
           name="scan"
