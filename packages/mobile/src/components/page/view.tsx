@@ -1,3 +1,4 @@
+import { useTheme } from '@src/themes/theme-provider';
 import React, { FunctionComponent } from 'react';
 import { SafeAreaView, ViewProps, StyleSheet, View } from 'react-native';
 import { useStyle } from '../../styles';
@@ -13,11 +14,11 @@ export const PageWithView: FunctionComponent<
   const style = useStyle();
 
   useSetFocusedScreen();
-
+  const { colors } = useTheme();
   const {
     style: propStyle,
     disableSafeArea,
-    backgroundColor,
+    backgroundColor=colors['background'],
     ...restProps
   } = props;
 

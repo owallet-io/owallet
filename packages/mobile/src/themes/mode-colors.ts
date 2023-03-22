@@ -13,6 +13,8 @@ const modeColors = {
   'background-btn-secondary': ['#F3F1F5', '#F3F1F5'], //1: 2 Purple/10
   'text-placeholder-input-login': ['#717177', '#AEAEB2'],
   'background-btn-disable-primary': ['#5F5E77', '#8B1BFB'],
+  'background-btn-disable-danger': ['#5F5E77', '#D1D1D6'],
+  'text-btn-disable-danger': ['#8E8E93', '#FFFFFF'],
   'text-btn-disabled-primary': ['#8E8E93', '#AE94DE'],
   'border-input-login': ['#3A3A3C', '#E2DEEB'],
   'background-input-modal': ['#0E121D', '#FFFFFF'],
@@ -29,7 +31,9 @@ const modeColors = {
   'text-btn-advance-options': ['#945EF8', '#8B1BFB'],
   //transaction progress
   'background-btn-input-modal': ['#0E121D', '#F3F1F5'],
-  'text-value-input-modal': ['#8C93A7', '#636366']
+  'text-value-input-modal': ['#8C93A7', '#636366'],
+  'background-box': ['#0E121D', '#fff'],
+  'background-item-list': ['#2B2D3B', '#F3F1F5']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

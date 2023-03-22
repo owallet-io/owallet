@@ -70,11 +70,11 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
           backgroundColor: disabled
-            ? colors['btn-disable-background']
+            ? colors['background-btn-disable-danger']
             : colors['orange-800']
         },
         text: {
-          color: disabled ? colors['text-btn-disable-color'] : colors['white'],
+          color: disabled ? colors['text-btn-disable-danger'] : colors['white'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }
@@ -122,7 +122,9 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
           backgroundColor: 'transparent'
         },
         text: {
-          color: colors['btn-primary-background'],
+          color: disabled
+            ? colors['text-btn-disable-color']
+            : colors['btn-primary-background'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }

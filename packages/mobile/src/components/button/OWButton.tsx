@@ -36,6 +36,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   icon,
   fullWidth = true,
   loading,
+  children,
   ...props
 }) => {
   const styleMapped = useMapStyles({ type, disabled, size });

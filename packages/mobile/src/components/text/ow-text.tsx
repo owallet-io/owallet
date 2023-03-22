@@ -1,6 +1,7 @@
 import { Text, TextProps, TextStyle } from 'react-native';
 import React from 'react';
-import { colors } from '@src/themes';
+import { useTheme } from '@src/themes/theme-provider';
+
 interface OWTextProps extends TextProps {
   variant?:
     | 'h1'
@@ -17,14 +18,16 @@ interface OWTextProps extends TextProps {
   typo?: 'bold' | 'regular';
   color?: string;
 }
-const OWText = ({
-  variant,
-  color = colors['label'],
-  typo = 'regular',
-  ...props
-}: OWTextProps) => {
+const OWText = ({ ...props }: OWTextProps) => {
+  const { colors } = useTheme();
+  const {
+    color = colors['primary-text'],
+    variant,
+    typo = 'regular',
+    style
+  } = props;
   return (
-    <Text {...props} style={[useStyle({ variant, color, typo }), props.style]}>
+    <Text {...props} style={[useStyle({ variant, color, typo }), style]}>
       {props.children}
     </Text>
   );
