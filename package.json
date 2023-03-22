@@ -79,7 +79,8 @@
     "@iov/crypto": "2.1.0",
     "libsodium": "file:./etc/noop",
     "libsodium-wrappers": "file:./etc/noop",
-    "node-sass": "file:./etc/noop"
+    "node-sass": "file:./etc/noop",
+    "@ethersproject/bytes": "5.6.0"
   },
   "version": "0.0.0"
 }
