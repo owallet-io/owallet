@@ -108,7 +108,7 @@ export const SCREENS_TITLE = {
   [SCREENS.TxFailedResult]: HEADER_KEY.notShowHeader,
   [SCREENS.Setting]: HEADER_KEY.notShowHeader,
   [SCREENS.SettingSelectAccount]: 'Select Account',
-  [SCREENS.SettingViewPrivateData]: HEADER_KEY.showNetworkHeader,
+  [SCREENS.SettingViewPrivateData]: 'Mnemonic Seed',
   [SCREENS.SettingVersion]: 'About',
   [SCREENS.AddressBook]: HEADER_KEY.showNetworkHeader,
   [SCREENS.AddAddressBook]: 'Add new contact',

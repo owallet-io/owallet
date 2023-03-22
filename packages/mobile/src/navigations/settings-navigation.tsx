@@ -6,12 +6,13 @@ import { useStyle } from '@src/styles';
 import { useTheme } from '@src/themes/theme-provider';
 import { useStore } from '@src/stores';
 import { BlurredHeaderScreenOptionsPreset, getPlainHeaderScreenOptionsPresetWithBackgroundColor, HeaderRightButton, PlainHeaderScreenOptionsPreset } from '@src/components/header';
-import { SCREENS } from '@src/common/constants';
+import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
 import { SettingScreen } from '@src/screens/setting';
 import { OWalletVersionScreen } from '@src/screens/setting/screens/version';
 import { ViewPrivateDataScreen } from '@src/screens/setting/screens/view-private-data';
 import { SettingSelectAccountScreen } from '@src/screens/setting/screens/select-account';
 import { HeaderAddIcon } from '@src/components/header/icon';
+import useHeaderOptions from '@src/hooks/use-header';
 const Stack = createStackNavigator();
 export const SettingStackScreen: FC = () => {
     const style = useStyle();
@@ -24,20 +25,23 @@ export const SettingStackScreen: FC = () => {
   
     return (
       <Stack.Navigator
-        screenOptions={{
-          ...PlainHeaderScreenOptionsPreset,
-          headerTitleStyle: {
-            fontSize: 18,
-            lineHeight: 24,
-            letterSpacing: 0.3,
-            color: colors['primary-text']
-          },
-          headerStyle: {
-            backgroundColor: colors['primary'],
-            shadowColor: 'transparent', // this covers iOS
-            elevation: 0 // this covers Android
-          }
-        }}
+        // screenOptions={{
+        //   ...PlainHeaderScreenOptionsPreset,
+        //   headerTitleStyle: {
+        //     fontSize: 18,
+        //     lineHeight: 24,
+        //     letterSpacing: 0.3,
+        //     color: colors['primary-text']
+        //   },
+        //   headerStyle: {
+        //     backgroundColor: colors['primary'],
+        //     shadowColor: 'transparent', // this covers iOS
+        //     elevation: 0 // this covers Android
+        //   }
+        // }}
+        screenOptions={({ route, navigation }) => ({
+            ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation)
+          })}
         headerMode="screen"
       >
         <Stack.Screen
@@ -55,7 +59,7 @@ export const SettingStackScreen: FC = () => {
         <Stack.Screen
           name={SCREENS.SettingSelectAccount}
           options={{
-            title: 'Select Account',
+            
             headerRight: () => (
               <HeaderRightButton
                 onPress={() => {
@@ -83,9 +87,6 @@ export const SettingStackScreen: FC = () => {
           component={ViewPrivateDataScreen}
         />
         <Stack.Screen
-          options={{
-            title: 'Version'
-          }}
           name={SCREENS.SettingVersion}
           component={OWalletVersionScreen}
         />

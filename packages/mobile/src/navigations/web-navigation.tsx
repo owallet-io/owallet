@@ -12,9 +12,11 @@ export const WebNavigation: FC = () => {
     return (
       <Stack.Navigator
         initialRouteName={SCREENS.Browser}
-        screenOptions={{
+        screenOptions={
+            {
           ...WebpageScreenScreenOptionsPreset
-        }}
+        }
+    }
         headerMode="screen"
       >
         <Stack.Screen
