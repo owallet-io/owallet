@@ -364,7 +364,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
 
     try {
       setIsConnecting(true);
-      const ledger = await Ledger.init('ble', [deviceId]);
+      const ledger = await Ledger.init('ble', [deviceId], 'cosmos');
       await ledger.close();
 
       return true;
