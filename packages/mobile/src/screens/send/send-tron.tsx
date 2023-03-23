@@ -22,13 +22,7 @@ import { colors, spacing } from '../../themes';
 import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
-import TronWeb from 'tronweb';
-import {
-  BIP44_PATH_PREFIX,
-  getBase58Address,
-  FAILED,
-  SUCCESS
-} from '../../utils/helper';
+import { Address } from '@owallet/crypto';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -46,7 +40,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export const SendTronScreen: FunctionComponent = observer(props => {
+export const SendTronScreen: FunctionComponent = observer((props) => {
   const {
     chainStore,
     accountStore,
@@ -56,7 +50,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -109,12 +103,14 @@ export const SendTronScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.coinDenom === route.params.currency) {
-          return cur.coinDenom === route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => {
+          if (cur.coinDenom === route.params.currency) {
+            return cur.coinDenom === route.params.currency;
+          }
+          return cur.coinMinimalDenom == route.params.currency;
         }
-        return cur.coinMinimalDenom == route.params.currency;
-      });
+      );
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -180,7 +176,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -211,7 +207,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -261,9 +257,9 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                   sendConfigs.amountConfig.amount,
                   sendConfigs.amountConfig.sendCurrency!,
                   receiveAddress,
-                  getBase58Address(account.evmosHexAddress),
+                  Address.getBase58Address(account.evmosHexAddress),
                   {
-                    onBroadcasted: txHash => {
+                    onBroadcasted: (txHash) => {
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: Buffer.from(txHash).toString('hex')
                       });
@@ -340,7 +336,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                     );
 
                     const balance = await contract.methods
-                      .balanceOf(getBase58Address(account.evmosHexAddress))
+                      .balanceOf(Address.getBase58Address(account.evmosHexAddress))
                       .call();
 
                     console.log('balance:', Number(balance.toString()));
@@ -381,7 +377,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                           )
                         )
                       ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
-                      getBase58Address(account.evmosHexAddress)
+                      Address.getBase58Address(account.evmosHexAddress)
                     );
 
                     const signedtxn = await tronWeb.trx.sign(

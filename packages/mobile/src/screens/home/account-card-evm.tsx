@@ -26,8 +26,8 @@ import { NamespaceModal, AddressQRCodeModal } from './components';
 import Big from 'big.js';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { NetworkErrorViewEVM } from './network-error-view-evm';
-import { getBase58Address, TRON_ID } from '../../utils/helper';
+import { Address } from '@owallet/crypto';
+import { TRON_ID } from '../../utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -47,7 +47,7 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   // const queryStakable = queries.queryBalances.getQueryBech32Address(
@@ -71,7 +71,7 @@ export const AccountCardEVM: FunctionComponent<{
   // ];
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -331,7 +331,7 @@ export const AccountCardEVM: FunctionComponent<{
                     chainStore.current.networkType === 'cosmos'
                       ? account.bech32Address
                       : chainStore.current.chainId === TRON_ID
-                      ? getBase58Address(account.evmosHexAddress)
+                      ? Address.getBase58Address(account.evmosHexAddress)
                       : account.evmosHexAddress
                   }
                   maxCharacters={22}

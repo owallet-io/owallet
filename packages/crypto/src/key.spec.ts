@@ -1,5 +1,8 @@
 import { Mnemonic } from './mnemonic';
 import { PrivKeySecp256k1 } from './key';
+import bs58 from 'bs58';
+import { Hash } from './hash';
+import { Address } from './address';
 
 describe('Test priv key', () => {
   it('priv key should generate the valid pub key', () => {
@@ -18,5 +21,13 @@ describe('Test priv key', () => {
         1, 33, 204, 94, 63, 13, 85, 74, 99, 22, 126, 219, 49, 140, 234, 232, 188
       ])
     );
+  });
+
+  it('base58 address', () => {
+    const evmAddress = '0x993d06fc97f45f16e4805883b98a6c20bab54964';
+    const tronAddress = 'TPwTVfDDvmWSawsP7Ki1t3ecSBmaFeMMXc';
+
+    expect(Address.getEvmAddress(tronAddress)).toEqual(evmAddress);
+    expect(Address.getBase58Address(evmAddress)).toEqual(tronAddress);
   });
 });

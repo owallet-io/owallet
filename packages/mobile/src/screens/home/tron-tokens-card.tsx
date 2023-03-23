@@ -7,7 +7,8 @@ import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { getBase58Address, TRC20_LIST, _keyExtract } from '../../utils/helper';
+import { TRC20_LIST, _keyExtract } from '../../utils/helper';
+import { Address } from '@owallet/crypto';
 import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import FastImage from 'react-native-fast-image';
@@ -31,7 +32,7 @@ export const TronTokensCard: FunctionComponent<{
       try {
         const res = await API.getTronAccountInfo(
           {
-            address: getBase58Address(account.evmosHexAddress)
+            address: Address.getBase58Address(account.evmosHexAddress)
           },
           {
             baseURL: chainStore.current.rpc
@@ -42,9 +43,9 @@ export const TronTokensCard: FunctionComponent<{
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            TRC20_LIST.map(tk => {
+            TRC20_LIST.map((tk) => {
               let token = res.data?.data[0].trc20.find(
-                t => tk.contractAddress in t
+                (t) => tk.contractAddress in t
               );
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
