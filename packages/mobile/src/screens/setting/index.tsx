@@ -20,8 +20,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
-  ImageBackground,
-  StatusBar
+  ImageBackground
 } from 'react-native';
 import { Text } from '@src/components/text';
 import { spacing, typography } from '../../themes';

@@ -1,7 +1,7 @@
 
 export const HEADER_KEY = {
-  notShowHeader:"NotShowHeader",
-  showNetworkHeader:"showNetworkHeader"
+  notShowHeader:"NOT_SHOW_HEADER",
+  showNetworkHeader:"SHOW_NETWORK_HEADER"
 }
 
 export const SCREENS = {

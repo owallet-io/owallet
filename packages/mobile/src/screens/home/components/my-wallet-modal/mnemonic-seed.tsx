@@ -3,14 +3,19 @@ import { FlatList, Image, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { RectButton } from '../../../../components/rect-button';
 import { useStore } from '../../../../stores';
-import { colors, metrics, spacing, typography } from '../../../../themes';
+import { metrics, spacing, typography } from '../../../../themes';
 import { _keyExtract } from '../../../../utils/helper';
 import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
 import { LoadingSpinner } from '../../../../components/spinner';
+import { useTheme } from '@src/themes/theme-provider';
+import { useStyleMyWallet } from './styles';
 
-const MnemonicSeed = ({ styles }) => {
+
+const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { keyRingStore, analyticsStore, modalStore } = useStore();
+  const styles = useStyleMyWallet();
+  const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
       (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
@@ -75,7 +80,7 @@ const MnemonicSeed = ({ styles }) => {
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['gray-900'],
+                  color: colors['text-title-login'],
                   fontWeight: '900'
                 }}
                 numberOfLines={1}
@@ -127,26 +132,28 @@ const MnemonicSeed = ({ styles }) => {
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height: metrics.screenHeight / 4,
+        height: metrics.screenHeight / 4
       }}
     >
-      <View style={{  position: 'relative' }}>
+      <View style={{ position: 'relative' }}>
         <FlatList
           data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           keyExtractor={_keyExtract}
         />
-         <View
+        <View
           style={{
             position: 'absolute',
             left: '50%',
             top: '50%',
-            zIndex: 1,
-        }}
-      >
-        {isLoading && <LoadingSpinner size={24} color={colors['purple-700']} />}
-      </View>
+            zIndex: 1
+          }}
+        >
+          {isLoading && (
+            <LoadingSpinner size={24} color={colors['purple-700']} />
+          )}
+        </View>
       </View>
     </View>
   );

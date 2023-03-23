@@ -179,7 +179,7 @@ export const MainTabNavigation: FC = () => {
         )
       })}
       tabBarOptions={{
-        activeTintColor: style.get('color-primary').color,
+        activeTintColor: colors['background-btn-primary'],
         inactiveTintColor: style.get('color-text-black-very-very-low').color,
         style: {
           backgroundColor: colors['background-box'],

@@ -12,6 +12,7 @@ import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import { useStore } from '../../stores';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const HomeBaseModal: FunctionComponent<{
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const HomeBaseModal: FunctionComponent<{
   observer(({ children }) => {
     const style = useStyle();
     const { modalStore } = useStore();
+    const { colors } = useTheme();
     const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0;
     return (
       <KeyboardAvoidingView
@@ -31,7 +33,12 @@ export const HomeBaseModal: FunctionComponent<{
             Keyboard.dismiss();
           }}
         >
-          <CardModal title={''}>
+          <CardModal
+            childrenContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
+            title={''}
+          >
             <View style={style.flatten(['margin-bottom-16'])}>
               {children}
               {modalStore.getChildren()}

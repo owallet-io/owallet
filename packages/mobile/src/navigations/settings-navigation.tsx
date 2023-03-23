@@ -50,7 +50,6 @@ export const SettingStackScreen: FC = () => {
       <Stack.Screen
         name={SCREENS.SettingSelectAccount}
         options={{
-          headerLeft: null,
           headerRight: () => (
             <HeaderRightButton
               onPress={() => {

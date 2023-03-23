@@ -18,7 +18,8 @@ import {
   DefaultOpenVelocity
 } from '../base/const';
 import { useStore } from '../../stores';
-import { colors } from '../../themes';
+import { useTheme } from '@src/themes/theme-provider';
+// import { colors } from '../../themes';
 
 const useAnimatedValueSet = () => {
   const [state] = useState(() => {
@@ -50,7 +51,7 @@ export const CardModal: FunctionComponent<{
   labelStyle
 }) => {
   const style = useStyle();
-
+  const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
 
   const [softwareKeyboardBottomPadding, setSoftwareKeyboardBottomPadding] =
@@ -397,7 +398,7 @@ export const CardModal: FunctionComponent<{
           }
         ]),
         {
-          backgroundColor: scheme === 'dark' ? '#171C27' : '#F5F5F5'
+          backgroundColor: colors['background-box']
         }
       ]}
     >

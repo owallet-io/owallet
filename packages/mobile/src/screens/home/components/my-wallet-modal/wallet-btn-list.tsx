@@ -1,58 +1,60 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import {
   ExistingWalletSquareIcon,
   LedgerNanoWalletSquareIcon,
-  NewWalletSquareIcon,
+  NewWalletSquareIcon
 } from '../../../../components/icon/new-wallet';
 import { RectButton } from '../../../../components/rect-button';
-import { useSmartNavigation } from '../../../../navigation.provider';
 import { useStore } from '../../../../stores';
 import { useRegisterConfig } from '@owallet/hooks';
-import { colors, spacing, typography } from '../../../../themes';
-import { useNavigation } from '@react-navigation/native';
+import { spacing, typography } from '../../../../themes';
 import { navigate } from '../../../../router/root';
+import { useTheme } from '@src/themes/theme-provider';
+import { useStyleMyWallet } from './styles';
 
 const objTypeWallet = {
   CREATE_WALLET: 'create',
   IMPORT_EXISTING_WALLET: 'import-existing',
-  IMPORT_LEDGER_WALLET: 'import-ledger',
+  IMPORT_LEDGER_WALLET: 'import-ledger'
 };
 
 const walletBtnList = [
   {
     icon: <NewWalletSquareIcon color="none" size={38} />,
     title: 'Create a new wallet',
-    type: objTypeWallet.CREATE_WALLET,
+    type: objTypeWallet.CREATE_WALLET
   },
   {
     icon: <ExistingWalletSquareIcon color="none" size={38} />,
     title: 'Import existing wallet',
-    type: objTypeWallet.IMPORT_EXISTING_WALLET,
+    type: objTypeWallet.IMPORT_EXISTING_WALLET
   },
   {
     icon: <LedgerNanoWalletSquareIcon color="none" size={38} />,
     title: 'Import Ledger Nano X',
-    type: objTypeWallet.IMPORT_LEDGER_WALLET,
-  },
+    type: objTypeWallet.IMPORT_LEDGER_WALLET
+  }
 ];
 
-const WalletBtnList = ({ styles }) => {
+const WalletBtnList = () => {
   const { keyRingStore, analyticsStore, modalStore } = useStore();
+  const { colors } = useTheme();
+  const styles = useStyleMyWallet();
   const registerConfig = useRegisterConfig(keyRingStore, []);
   const onPressElementWallet = async (type) => {
     await modalStore.close();
     switch (type) {
       case objTypeWallet.CREATE_WALLET:
         analyticsStore.logEvent('Create account started', {
-          registerType: 'seed',
+          registerType: 'seed'
         });
         navigate('RegisterMain', { registerConfig });
         break;
       case objTypeWallet.IMPORT_EXISTING_WALLET:
         analyticsStore.logEvent('Import account started', {
-          registerType: 'seed',
+          registerType: 'seed'
         });
         navigate('RegisterRecoverMnemonicMain', { registerConfig });
         break;
@@ -70,7 +72,7 @@ const WalletBtnList = ({ styles }) => {
           ...styles.containerAccount,
           borderWidth: 1,
           borderStyle: 'dashed',
-          borderColor: colors['purple-700'],
+          borderColor: colors['background-btn-primary']
         }}
         onPress={() => onPressElementWallet(item.type)}
       >
@@ -78,21 +80,21 @@ const WalletBtnList = ({ styles }) => {
           style={{
             justifyContent: 'flex-start',
             flexDirection: 'row',
-            alignItems: 'center',
+            alignItems: 'center'
           }}
         >
           {item.icon}
           <View
             style={{
               justifyContent: 'space-between',
-              marginLeft: spacing['12'],
+              marginLeft: spacing['12']
             }}
           >
             <Text
               style={{
                 ...typography.h6,
-                color: colors['gray-900'],
-                fontWeight: '800',
+                color: colors['text-title-login'],
+                fontWeight: '800'
               }}
               numberOfLines={1}
             >
@@ -107,7 +109,7 @@ const WalletBtnList = ({ styles }) => {
   return (
     <>
       <View>
-        <Text style={{ color: colors['gray-700'],paddingTop: 10 }}>
+        <Text style={{ color: colors['text-content-success'], paddingTop: 10 }}>
           Don’t see your wallet on the list?
         </Text>
       </View>
