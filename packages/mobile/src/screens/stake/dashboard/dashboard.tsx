@@ -46,9 +46,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
-      <View
-        
-      >
+      <View>
         <Text
           style={{
             ...styles.title,
@@ -172,7 +170,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {},
     title: {

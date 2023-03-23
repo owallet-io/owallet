@@ -3,6 +3,7 @@ export const HEADER_KEY = {
   notShowHeader:"NotShowHeader",
   showNetworkHeader:"showNetworkHeader"
 }
+
 export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',

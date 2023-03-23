@@ -21,7 +21,9 @@ export const MainNavigation: FC = () => {
         initialRouteName={SCREENS.Home}
         headerMode="screen"
       >
-        <Stack.Screen name={SCREENS.Home} component={HomeScreen} />
+        <Stack.Screen options={{
+          headerLeft: null
+        }} name={SCREENS.Home} component={HomeScreen} />
         <Stack.Screen
           name={SCREENS.TransactionDetail}
           component={TransactionDetail}

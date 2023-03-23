@@ -50,6 +50,7 @@ export const SettingStackScreen: FC = () => {
       <Stack.Screen
         name={SCREENS.SettingSelectAccount}
         options={{
+          headerLeft: null,
           headerRight: () => (
             <HeaderRightButton
               onPress={() => {
@@ -61,13 +62,13 @@ export const SettingStackScreen: FC = () => {
             >
               <HeaderAddIcon />
             </HeaderRightButton>
-          ),
-        //   ...BlurredHeaderScreenOptionsPreset,
-        //   headerStyle: {
-        //     backgroundColor: colors['primary'],
-        //     shadowColor: 'transparent', // this covers iOS
-        //     elevation: 0 // this covers Android
-        //   }
+          )
+          //   ...BlurredHeaderScreenOptionsPreset,
+          //   headerStyle: {
+          //     backgroundColor: colors['primary'],
+          //     shadowColor: 'transparent', // this covers iOS
+          //     elevation: 0 // this covers Android
+          //   }
         }}
         component={SettingSelectAccountScreen}
       />
