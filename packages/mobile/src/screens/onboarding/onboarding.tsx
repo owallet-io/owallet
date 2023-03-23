@@ -4,7 +4,7 @@ import GatewayIntroScreen from './gateway_intro';
 import ManageIntroScreen from './manage_intro';
 import WelcomeIntroScreen from './welcome_intro';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, Platform } from 'react-native';
 import { colors, metrics } from '../../themes';
 import { PageWithScrollView } from '../../components/page';
 import { useGetHeightHeader } from '@src/hooks/use-height-header';
@@ -24,25 +24,30 @@ const slides = [
   }
 ];
 
-const styles = StyleSheet.create({
-  onBoardingRoot: {
-    position: 'relative',
-    height: metrics.screenHeight
-  },
-  onBoardingImgFooter: {
-    position: 'absolute',
-    bottom: -50,
-    zIndex: -1,
-    alignItems: 'flex-end'
-  }
-});
+const styling = () => {
+  const height = useGetHeightHeader();
+  return StyleSheet.create({
+    onBoardingRoot: {
+      position: 'relative',
+      height:
+        Platform.OS == 'ios'
+          ? metrics.screenHeight - (height + 20)
+          : metrics.screenHeight
+    },
+    onBoardingImgFooter: {
+      position: 'absolute',
+      bottom: -50,
+      zIndex: -1,
+      alignItems: 'flex-end'
+    }
+  });
+};
 
 export const OnboardingIntroScreen: FunctionComponent = observer(() => {
-  const height = useGetHeightHeader();
   const renderItem = ({ item }) => {
     return <View>{item.component}</View>;
   };
-
+  const styles = styling();
   return (
     <PageWithScrollView backgroundColor="white">
       <View style={[{ ...styles.onBoardingRoot }, { paddingTop: 50 }]}>

@@ -45,6 +45,7 @@ import ICoin = cosmos.base.v1beta1.ICoin;
 import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
 import { ETH } from '@hanchon/ethermint-address-converter';
+// can use this request from mobile ?
 import { request } from '@owallet/background/build/tx';
 
 export enum WalletStatus {
@@ -678,7 +679,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         aminoMsgs = msgs;
       }
       console.log({ aminoMsgs });
-      
+
       if (aminoMsgs.length === 0) {
         throw new Error('There is no msg to send');
       }
@@ -696,8 +697,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
-
-      
 
       const account = await BaseAccount.fetchFromRest(
         this.instance,

@@ -108,7 +108,7 @@ export const SelectorModal: FunctionComponent<{
         style={{
           borderRadius: spacing['8'],
           overflow: 'hidden',
-          backgroundColor: colors['background'],
+          backgroundColor: colors['background-box'],
           paddingVertical: spacing['16']
         }}
       >
@@ -125,7 +125,7 @@ export const SelectorModal: FunctionComponent<{
             return (
               <View
                 style={{
-                  backgroundColor: colors['gray-100'],
+                  backgroundColor: colors['background-item-list'],
                   borderRadius: spacing['12'],
                   marginTop: spacing['8'],
                   marginBottom: spacing['8'],

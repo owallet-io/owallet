@@ -29,6 +29,8 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { API } from '../../common/api';
+import { TRON_ID } from '../../utils/helper';
+import { TronTokensCard } from './tron-tokens-card';
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -206,7 +208,12 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       )}
 
       <DashboardCard />
-      <TokensCard />
+      {chainStore.current.chainId === TRON_ID ? (
+        <TronTokensCard />
+      ) : (
+        <TokensCard />
+      )}
+
       {chainStore.current.networkType === 'cosmos' ? (
         <UndelegationsCard />
       ) : null}

@@ -21,7 +21,7 @@ const useHeaderOptions = (
   };
   const onTransaction = () => {
     navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Transactions
+      screen: SCREENS.Notifications
     });
     return;
   };
@@ -38,7 +38,7 @@ const useHeaderOptions = (
       backgroundColor: colors['background'],
       shadowColor: 'transparent',
       shadowRadius: 0,
-      elevation: 0   
+      elevation: 0
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: 'center',
@@ -54,9 +54,7 @@ const useHeaderOptions = (
             colorIcon={colors['primary-text']}
             onPress={onGoBack}
             name="arrow-left"
-            style={{
-              paddingRight: 20
-            }}
+            style={styles.btnIcon}
             sizeIcon={!!data?.title ? 24 : 20}
           />
         );
@@ -73,4 +71,8 @@ const useHeaderOptions = (
 
 export default useHeaderOptions;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  btnIcon: {
+    paddingRight: 20
+  }
+});

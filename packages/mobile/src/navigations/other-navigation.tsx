@@ -22,6 +22,8 @@ import {
   TxPendingResultScreen,
   TxSuccessResultScreen
 } from '@src/screens/tx-result';
+import { SendTronScreen } from '@src/screens/send/send-tron';
+import { NotificationScreen } from '@src/screens/notifications/home';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   return (
@@ -85,6 +87,11 @@ export const OtherNavigation: FC = () => {
         }}
         name={SCREENS.TxSuccessResult}
         component={TxSuccessResultScreen}
+      />
+      <Stack.Screen name={SCREENS.SendTron} component={SendTronScreen} />
+      <Stack.Screen
+        name={SCREENS.Notifications}
+        component={NotificationScreen}
       />
       <Stack.Screen
         options={{

@@ -61,12 +61,20 @@ export const SignEthereumModal: FunctionComponent<{
 
     useEffect(() => {
       const getGasPrice = async () => {
-        const response = await axios.post(chainStore.current.rest, {
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'eth_gasPrice',
-          params: []
-        });
+        const response = await axios.post(
+          chainStore.current.rest,
+          {
+            jsonrpc: '2.0',
+            id: 'eth_gasPrice',
+            method: 'eth_gasPrice',
+            params: []
+          },
+          {
+            headers: {
+              'x-api-key': process.env.X_API_KEY
+            }
+          }
+        );
 
         setGasPrice(
           new Big(parseInt(response.data.result, 16))

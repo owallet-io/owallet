@@ -41,8 +41,6 @@ export const Transactions: FunctionComponent = () => {
   const fetchData = async (isLoadMore = false) => {
     crashlytics().log('transactions - home - fetchData');
 
-    // const isRecipient = indexChildren === 1;
-    // const isAll = indexChildren === 0;
     try {
       if (hasMore.current) {
         const res = await API.getTransactions(
@@ -59,7 +57,7 @@ export const Transactions: FunctionComponent = () => {
         const value = res.data?.data || [];
         let newData = isLoadMore ? [...data, ...value] : value;
         hasMore.current = value?.length === 10;
-        page.current = res.data?.page.page_id + 1;
+        page.current = res.data?.page?.page_id + 1;
         if (page.current === res.data?.page.total_page) {
           hasMore.current = false;
         }
@@ -116,6 +114,7 @@ export const Transactions: FunctionComponent = () => {
 
   useEffect(() => {
     page.current = 1;
+    hasMore.current = true;
     fetchData();
   }, [indexChildren]);
 

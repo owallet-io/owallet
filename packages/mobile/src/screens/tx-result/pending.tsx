@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
@@ -19,9 +19,10 @@ import { Card, CardBody, OWBox } from '../../components/card';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-
+import { SUCCESS, TRON_ID } from '../../utils/helper';
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
+  const [retry, setRetry] = useState(3);
   const { colors } = useTheme();
   const route = useRoute<
     RouteProp<
@@ -31,6 +32,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           chainId?: string;
           // Hex encoded bytes.
           txHash: string;
+          tronWeb?: any;
         }
       >,
       string
@@ -44,31 +46,66 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
 
   const isFocused = useIsFocused();
   const { bottom } = useSafeAreaInsets();
+
+  const getTronTx = async txHash => {
+    const transaction = await route.params.tronWeb?.trx.getTransactionInfo(
+      txHash
+    );
+    setRetry(retry - 1);
+
+    return transaction;
+  };
+
   useEffect(() => {
     const txHash = route?.params?.txHash;
     const chainInfo = chainStore.getChain(chainId);
     let txTracer: TendermintTxTracer | undefined;
 
     if (isFocused) {
-      txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
-      txTracer
-        .traceTx(Buffer.from(txHash, 'hex'))
-        .then((tx) => {
-          if (tx.code == null || tx.code === 0) {
-            smartNavigation.replaceSmart('TxSuccessResult', {
-              chainId,
-              txHash
+      if (chainId === TRON_ID) {
+        // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
+        if (retry > 0) {
+          setTimeout(() => {
+            getTronTx(txHash).then(transaction => {
+              if (transaction.result === SUCCESS) {
+                smartNavigation.pushSmart('TxSuccessResult', {
+                  txHash: transaction.id
+                });
+              } else {
+                smartNavigation.pushSmart('TxFailedResult', {
+                  chainId: chainStore.current.chainId,
+                  txHash: transaction.id
+                });
+              }
             });
-          } else {
-            smartNavigation.replaceSmart('TxFailedResult', {
-              chainId,
-              txHash
-            });
-          }
-        })
-        .catch((e) => {
-          console.log(`Failed to trace the tx (${txHash})`, e);
-        });
+          }, 50000);
+        } else {
+          smartNavigation.pushSmart('TxFailedResult', {
+            chainId: chainStore.current.chainId,
+            txHash: txHash
+          });
+        }
+      } else {
+        txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
+        txTracer
+          .traceTx(Buffer.from(txHash, 'hex'))
+          .then(tx => {
+            if (tx.code == null || tx.code === 0) {
+              smartNavigation.replaceSmart('TxSuccessResult', {
+                chainId,
+                txHash
+              });
+            } else {
+              smartNavigation.replaceSmart('TxFailedResult', {
+                chainId,
+                txHash
+              });
+            }
+          })
+          .catch(e => {
+            console.log(`Failed to trace the tx (${txHash})`, e);
+          });
+      }
     }
 
     return () => {
@@ -76,7 +113,14 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         txTracer.close();
       }
     };
-  }, [chainId, chainStore, isFocused, route.params?.txHash, smartNavigation]);
+  }, [
+    chainId,
+    chainStore,
+    isFocused,
+    route.params.txHash,
+    smartNavigation,
+    retry
+  ]);
 
   return (
     <PageWithView>

@@ -5,6 +5,7 @@ import { CardModal } from '../card';
 import { TextInput } from '../../components/input';
 import { Button } from '../../components/button';
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -27,6 +28,7 @@ export const PasswordInputModal: FunctionComponent<{
   textButtonLeft?: string;
   textButtonRight?: string;
   buttonRightStyle?: TextStyle;
+  disabled?: boolean;
   /**
    * If any error thrown in the `onEnterPassword`, the password considered as invalid password.
    * @param password
@@ -41,7 +43,8 @@ export const PasswordInputModal: FunctionComponent<{
     labelStyle,
     textButtonLeft = 'Cancel',
     textButtonRight = 'Approve',
-    buttonRightStyle
+    buttonRightStyle,
+    disabled
   }) => {
     const { appInitStore } = useStore();
     const [password, setPassword] = useState('');
@@ -96,7 +99,7 @@ export const PasswordInputModal: FunctionComponent<{
             <TextInput
               label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 setPassword(text);
               }}
               labelStyle={{
@@ -132,7 +135,8 @@ export const PasswordInputModal: FunctionComponent<{
             <OWButtonGroup
               labelApprove={textButtonRight}
               onPressApprove={submitPassword}
-              disabledApprove={!password}
+              disabledApprove={!password || disabled}
+              loadingApprove={isLoading}
               labelClose={textButtonLeft}
               onPressClose={close}
             />
