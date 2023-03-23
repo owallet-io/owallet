@@ -78,10 +78,33 @@ index f3b81ac..80b7c66 100644
          var toSend = [];
          var data = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);
 diff --git a/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts b/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts
-index a994e00..f949765 100644
+index a994e00..6f62033 100644
 --- a/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts
 +++ b/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts
-@@ -113,7 +113,7 @@ export default class Trx {
+@@ -66,20 +66,19 @@ export default class Trx {
+ 
+   /**
+    * get Tron address for a given BIP 32 path.
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @option boolDisplay optionally enable or not the display
+    * @return an object with a publicKey and address
+    * @example
+    * const address = await tron.getAddress("44'/195'/0'/0/0").then(o => o.address)
+    */
+   getAddress(
+-    path: string,
++    paths: number[],
+     boolDisplay?: boolean
+   ): Promise<{
+     publicKey: string;
+     address: string;
+   }> {    
+-    const paths = splitPath(path);
+     const buffer = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);
+     buffer[0] = paths.length;
+     paths.forEach((element, index) => {
+@@ -113,7 +112,7 @@ export default class Trx {
    /**
     * sign a Tron transaction with a given BIP 32 path and Token Names
     *
@@ -90,7 +113,7 @@ index a994e00..f949765 100644
     * @param rawTxHex a raw transaction hex string
     * @param tokenSignatures Tokens Signatures array
     * @option version pack message based on ledger firmware version
-@@ -123,11 +123,10 @@ export default class Trx {
+@@ -123,11 +122,10 @@ export default class Trx {
     * const signature = await tron.signTransaction("44'/195'/0'/0/0", "0a02f5942208704dda506d59dceb40f0f4978f802e5a69080112650a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412340a1541978dbd103cfe59c35e753d09dd44ae1ae64621c7121541e2ae49db6a70b9b4757d2137a43b69b24a445780188ef8b5ba0470cbb5948f802e", [], 105);
     */
    signTransaction(
@@ -98,7 +121,7 @@ index a994e00..f949765 100644
 +    paths: number[],
      rawTxHex: string,
      tokenSignatures: string[]
-   ): Promise<string> {    
+   ): Promise<string> {
 -    const paths = splitPath(path);
      let rawTx = Buffer.from(rawTxHex, "hex");
      const toSend: Buffer[] = [];
