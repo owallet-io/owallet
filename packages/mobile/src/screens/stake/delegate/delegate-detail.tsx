@@ -13,6 +13,7 @@ import { useStore } from '../../../stores';
 import { typography, colors, spacing } from '../../../themes';
 import { useTheme } from '@src/themes/theme-provider';
 import { PageWithView } from '@src/components/page';
+import { OWButton } from '@src/components/button';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -65,7 +66,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       return bondedValidators.validators
         .concat(unbondingValidators.validators)
         .concat(unbondedValidators.validators)
-        .find(val => val.operator_address === validatorAddress);
+        .find((val) => val.operator_address === validatorAddress);
     }, [
       bondedValidators.validators,
       unbondingValidators.validators,
@@ -74,7 +75,11 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     ]);
 
     return (
-      <PageWithView>
+      <PageWithView
+        propStyle={{
+          margin: 20
+        }}
+      >
         <View>
           <Text
             style={{
@@ -219,62 +224,51 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
             </TouchableOpacity>
           </View>
         </View>
-        <RectButton
-          style={{ ...styles.containerBtn }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Delegate', {
-              validatorAddress
-            });
-          }}
-        >
-          <Text
-            style={{
-              ...styles.textBtn,
-              textAlign: 'center',
-              color: colors['white']
+
+        <View style={styles.containerAllBtn}>
+          <OWButton
+            style={styles.containerBtn}
+            label="Stake more"
+            onPress={() => {
+              smartNavigation.navigateSmart('Delegate', {
+                validatorAddress
+              });
             }}
-          >{`Stake more`}</Text>
-        </RectButton>
-        <RectButton
-          style={{
-            ...styles.containerBtn,
-            backgroundColor: colors['item']
-          }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Redelegate', { validatorAddress });
-          }}
-        >
-          <Text
-            style={{
-              ...styles.textBtn,
-              textAlign: 'center',
-              color: colors['sub-primary-text']
+          />
+          <OWButton
+            style={styles.containerBtn}
+            type="secondary"
+            label="Switch validator"
+            onPress={() => {
+              smartNavigation.navigateSmart('Redelegate', { validatorAddress });
             }}
-          >{`Switch validator`}</Text>
-        </RectButton>
-        <RectButton
-          style={{
-            ...styles.containerBtn,
-            backgroundColor: colors['purple-50']
-          }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Undelegate', { validatorAddress });
-          }}
-        >
-          <Text
-            style={{
-              ...styles.textBtn,
-              textAlign: 'center',
+          />
+
+          <OWButton
+            style={styles.containerBtn}
+            type="link"
+            label="Unstake"
+            textStyle={{
               color: colors['red-500']
             }}
-          >{`Unstake`}</Text>
-        </RectButton>
+            onPress={() => {
+              smartNavigation.navigateSmart('Undelegate', { validatorAddress });
+            }}
+          />
+        </View>
       </PageWithView>
     );
   });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
+    containerAllBtn: {
+      paddingHorizontal: 20,
+      paddingTop: 20
+    },
+    containerBtn: {
+      marginBottom: 20
+    },
     title: {
       ...typography.h3,
       fontWeight: '700',
@@ -294,14 +288,7 @@ const styling = colors =>
       ...typography.h7,
       fontWeight: '400'
     },
-    containerBtn: {
-      backgroundColor: colors['purple-900'],
-      marginLeft: spacing['24'],
-      marginRight: spacing['24'],
-      borderRadius: spacing['8'],
-      marginTop: spacing['20'],
-      paddingVertical: spacing['16']
-    },
+
     textBtn: {
       ...typography.h6,
       color: colors['white'],

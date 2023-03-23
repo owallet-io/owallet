@@ -36,6 +36,7 @@ const bindStyleTxInfo = (
   label: string,
   value: string
 ): { color?: string; textTransform?: string; fontWeight?: string } => {
+  const { colors } = useTheme();
   switch (label) {
     case 'Transaction hash':
       return { color: colors['purple-700'], textTransform: 'uppercase' };
@@ -54,7 +55,7 @@ const bindStyleTxInfo = (
             textTransform: 'uppercase'
           };
     default:
-      return { color: colors['sub-primary-text'] };
+      return { color: colors['text-title-login'] };
   }
 };
 
@@ -162,7 +163,7 @@ const InfoItems: FunctionComponent<{
             ])
           ]),
           {
-            backgroundColor: colors['background-item-list']
+            backgroundColor: colors['item']
           }
         ]}
       >
@@ -214,7 +215,7 @@ const DetailItems: FunctionComponent<{
                     ? colors['green-500']
                     : value === 'Failed'
                     ? colors['red-500']
-                    : colors['sub-primary-text']
+                    : colors['text-title-login']
               }}
             >
               {bindValueTxInfo(label, value)}
@@ -281,7 +282,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   const amountDataCell = useCallback(() => {
     let amount = { amount: 0, denom: 'ORAI' };
     let msg = item?.messages?.find(
-      msg => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
+      (msg) => getTxTypeNew(msg?.['@type']) === 'MsgRecvPacket'
     );
     if (msg) {
       const msgRec = JSON.parse(
@@ -292,7 +293,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
       // const channel = item?.message?.packet?.destination_channel;
     } else if (
       item?.messages?.find(
-        msg => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
+        (msg) => getTxTypeNew(msg?.['@type']) === 'MsgTransfer'
       )
     ) {
       if (!item?.raw_log?.startsWith('{') || !item?.raw_log?.startsWith('[')) {
@@ -309,7 +310,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
         item?.result
       );
       const msg = item?.messages?.find(
-        msg => getTxTypeNew(msg?.['@type']) === type
+        (msg) => getTxTypeNew(msg?.['@type']) === type
       );
 
       amount = msg?.amount?.length > 0 ? msg?.amount[0] : msg?.amount ?? {};
@@ -511,7 +512,7 @@ export const TransactionDetail: FunctionComponent<any> = () => {
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {},
     containerTitle: {

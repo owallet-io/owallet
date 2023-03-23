@@ -146,11 +146,11 @@ export const MyRewardCard: FunctionComponent<{
                     return;
                   }
 
-                  if (smartNavigation.canGoBack) {
-                    smartNavigation.goBack();
-                  } else {
-                    smartNavigation.navigateSmart('Home', {});
-                  }
+                  // if (smartNavigation.canGoBack) {
+                  //   smartNavigation.goBack();
+                  // } else {
+                  //   smartNavigation.navigateSmart('Home', {});
+                  // }
                 }
               }}
               disabled={isDisable}
