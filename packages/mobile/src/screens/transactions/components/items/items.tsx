@@ -3,7 +3,7 @@ import { FunctionComponent } from 'react';
 import { ActivityIndicator, StyleSheet, View, ViewStyle } from 'react-native';
 import { Text } from '@src/components/text';
 import { RectButton } from '../../../../components/rect-button';
-import { colors, spacing, typography } from '../../../../themes';
+import { spacing, typography } from '../../../../themes';
 import {
   convertAmount,
   formatOrai,

@@ -1,7 +1,7 @@
 import React, { FunctionComponent, ReactElement, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { FlatList, Image, StyleSheet, View, Animated } from 'react-native';
-import { Text } from '@rneui/base';
+
 import { metrics, spacing, typography } from '../../themes';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
@@ -15,52 +15,53 @@ import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
+import { Text } from '@src/components/text';
 
 // hard code data to test UI
 // const nftsData = [
 //   {
-//     title: 'SamORAI Collections',
+//     name: 'SamORAI Collections',
 //     data: [
 //       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
+//         url: 'https://picsum.photos/id/1002/200',
+//         name: 'The Empire State Building',
+//         offer: '49.14 ORAI'
 //       },
 //       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
+//         url: 'https://picsum.photos/id/1002/200',
+//         name: 'The Empire State Building',
+//         offer: '49.14 ORAI'
 //       },
 //       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
+//         url: 'https://picsum.photos/id/1002/200',
+//         name: 'The Empire State Building',
+//         offer: '49.14 ORAI'
 //       }
 //     ]
 //   },
 //   {
-//     title: 'Kawaii Island',
+//     name: 'Kawaii Island',
 //     data: [
 //       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
+//         url: 'https://picsum.photos/id/1002/200',
+//         name: 'The Empire State Building',
+//         offer: '49.14 ORAI'
 //       },
 //       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
+//         url: 'https://picsum.photos/id/1002/200',
+//         name: 'The Empire State Building',
+//         offer: '49.14 ORAI'
 //       },
 //       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
+//         url: 'https://picsum.photos/id/1002/200',
+//         name: 'The Empire State Building',
+//         offer: '49.14 ORAI'
 //       }
 //     ]
 //   }
 // ];
 
-export const NftsScreen: FunctionComponent = observer(props => {
+export const NftsScreen: FunctionComponent = observer((props) => {
   const [index, setIndex] = useState<number>(0);
   const [activeSection, setActiveSection] = useState([0]);
   const smartNavigation = useSmartNavigation();
@@ -69,7 +70,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
   const { nfts } = props.route?.params;
 
   //function shadow
-  const _renderSectionTitle = section => {};
+  const _renderSectionTitle = (section) => {};
   const _renderHeader = (section, _, isActive) => {
     return (
       <View
@@ -95,7 +96,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
       </View>
     );
   };
-  const _renderContent = section => {
+  const _renderContent = (section) => {
     return (
       <View
         style={{
@@ -114,7 +115,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
       </View>
     );
   };
-  const _updateSections = activeSection => {
+  const _updateSections = (activeSection) => {
     setActiveSection(activeSection);
   };
   const _renderFlatlistItem = ({ item }) => (
@@ -142,7 +143,6 @@ export const NftsScreen: FunctionComponent = observer(props => {
         <Text
           style={{
             ...typography.h7,
-            color: colors['gray-900'],
             fontWeight: '700'
           }}
         >
@@ -152,7 +152,6 @@ export const NftsScreen: FunctionComponent = observer(props => {
         <Text
           style={{
             ...typography.h7,
-            color: colors['gray-900'],
             fontWeight: '500'
           }}
         >
@@ -295,7 +294,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {
       backgroundColor: colors['primary'],
@@ -320,7 +319,7 @@ const styling = colors =>
       marginTop: spacing['12']
     },
     flatListItem: {
-      backgroundColor: colors['gray-50'],
+      backgroundColor: colors['background-box'],
       borderRadius: spacing['12'],
       width: (metrics.screenWidth - 60) / 2,
       marginHorizontal: spacing['6'],

@@ -15,14 +15,13 @@ import {
   // TouchableWithoutFeedback,
   // Keyboard
 } from 'react-native';
-import { Text } from '@rneui/base';
-// import { CoinPretty } from '@owallet/unit';
+
 import { useSmartNavigation } from '../../navigation.provider';
 // import { Currency } from '@owallet/types';
 // import { TokenSymbol } from '../../components/token-symbol';
 import { DenomHelper, EthereumEndpoint } from '@owallet/common';
 // import { Bech32Address } from '@owallet/cosmos';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 // import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import {
@@ -50,15 +49,18 @@ import { API } from '../../common/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSendTxConfig } from '@owallet/hooks';
 import ProgressiveImage from '../../components/progessive-image';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
 
 const commonDenom = { ORAI, AIRI };
 
-export const NftDetailScreen: FunctionComponent = observer(props => {
+export const NftDetailScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, modalStore } = useStore();
+  const { colors } = useTheme();
   const route = useRoute<
     RouteProp<
       Record<
@@ -103,7 +105,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
 
   const [prices, setPrices] = useState({});
   const [owner, setOwner] = useState<any>({});
-
+  const styles = styling();
   useEffect(() => {
     (async function get() {
       try {
@@ -132,7 +134,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
         );
 
         const currentOwner = res.data.find(
-          d => d.ownerAddress === account.bech32Address
+          (d) => d.ownerAddress === account.bech32Address
         );
         setLoading(false);
         setOwner(currentOwner);
@@ -207,7 +209,6 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                 <Text
                   style={{
                     ...typography.h6,
-                    color: colors['gray-900'],
                     fontWeight: '700'
                   }}
                 >
@@ -270,7 +271,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                         style={{
                           ...typography['h7'],
                           lineHeight: spacing['20'],
-                          color: colors['white'],
+                          // color: colors['white'],
                           paddingLeft: spacing['6'],
                           fontWeight: '700'
                         }}
@@ -295,7 +296,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                         style={{
                           ...typography['h7'],
                           lineHeight: spacing['20'],
-                          color: colors['white'],
+                          // color: colors['white'],
                           paddingLeft: spacing['6'],
                           fontWeight: '700'
                         }}
@@ -312,7 +313,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
 
       <View
         style={{
-          backgroundColor: colors['white'],
+          backgroundColor: colors['background-box'],
           borderRadius: spacing['24'],
           paddingBottom: spacing['24'],
           height: metrics.screenHeight / 2
@@ -395,59 +396,62 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styles = StyleSheet.create({
-  container: {
-    borderWidth: spacing['0.5'],
-    borderColor: colors['gray-100'],
-    borderRadius: spacing['12'],
-    marginHorizontal: spacing['24'],
-    marginVertical: spacing['12']
-  },
-  containerImage: {
-    marginTop: spacing['8'],
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors['white'],
-    marginHorizontal: 22,
-    borderRadius: spacing['12'],
-    padding: spacing['8'],
-    marginBottom: spacing['24']
-  },
-  containerQuantity: {
-    backgroundColor: colors['red-50'],
-    borderRadius: spacing['6'],
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '50%'
-  },
-  containerBtn: {
-    display: 'flex',
-    flexDirection: 'row',
-    paddingTop: spacing['6'],
-    paddingLeft: spacing[22],
-    paddingRight: spacing['22'],
-    justifyContent: 'center',
-    paddingBottom: spacing['24']
-  },
-  btn: {
-    backgroundColor: colors['purple-900'],
-    borderWidth: 0.5,
-    borderRadius: spacing['8'],
-    borderColor: colors['transparent'],
-    marginLeft: 10,
-    marginRight: 10
-  },
-  btnTransfer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingTop: spacing['6'],
-    paddingBottom: spacing['6'],
-    paddingLeft: spacing['12'],
-    paddingRight: spacing['12']
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-});
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    container: {
+      borderWidth: spacing['0.5'],
+      borderColor: colors['gray-100'],
+      borderRadius: spacing['12'],
+      marginHorizontal: spacing['24'],
+      marginVertical: spacing['12']
+    },
+    containerImage: {
+      marginTop: spacing['8'],
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors['background-box'],
+      marginHorizontal: 22,
+      borderRadius: spacing['12'],
+      padding: spacing['8'],
+      marginBottom: spacing['24']
+    },
+    containerQuantity: {
+      backgroundColor: colors['red-50'],
+      borderRadius: spacing['6'],
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '50%'
+    },
+    containerBtn: {
+      display: 'flex',
+      flexDirection: 'row',
+      paddingTop: spacing['6'],
+      paddingLeft: spacing[22],
+      paddingRight: spacing['22'],
+      justifyContent: 'center',
+      paddingBottom: spacing['24']
+    },
+    btn: {
+      backgroundColor: colors['purple-700'],
+      borderWidth: 0.5,
+      borderRadius: spacing['8'],
+      borderColor: colors['transparent'],
+      marginLeft: 10,
+      marginRight: 10
+    },
+    btnTransfer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: spacing['6'],
+      paddingBottom: spacing['6'],
+      paddingLeft: spacing['12'],
+      paddingRight: spacing['12']
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    }
+  });
+};

@@ -30,6 +30,7 @@ import { spacing, typography } from '../../../themes';
 import { LoadingSpinner } from '../../../components/spinner';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
+import { SCREENS } from '@src/common/constants';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
@@ -128,7 +129,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       });
     }
     if (checkRouter(props?.route?.name, 'RegisterRecoverMnemonicMain')) {
-      navigate('RegisterEnd', {
+      navigate(SCREENS.RegisterEnd, {
         password: getValues('password'),
         type: 'recover'
       });
