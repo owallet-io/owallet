@@ -7,7 +7,13 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import { Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
@@ -266,17 +272,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
         onPress={submit}
         label={'Next'}
       />
-      <OWButton
-        type="link"
-        style={{
-          paddingBottom: checkRouterPaddingBottomBar(
-            props?.route?.name,
-            'RegisterNewLedgerMain'
-          )
-        }}
-        onPress={onGoBack}
-        label={'Go back'}
-      />
+      <OWButton type="link" onPress={onGoBack} label={'Go back'} />
 
       {/* Mock element for bottom padding */}
       <View
@@ -312,7 +308,7 @@ const useStyles = () => {
     containerContentStyle: {
       flexGrow: 1,
       paddingHorizontal: spacing['page-pad'],
-      paddingTop:Platform.OS == "android"? 50:0
+      paddingTop: Platform.OS == 'android' ? 50 : 0
     },
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],

@@ -5,7 +5,7 @@ import React, {
   useState
 } from 'react';
 import { PageWithScrollView } from '../../../components/page';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { WordChip } from '../../../components/mnemonic';
 import { Button } from '../../../components/button';
@@ -317,7 +317,7 @@ const useStyles = () => {
       justifyContent: 'space-between'
     },
     containerContentScroll: {
-      
+      paddingTop: Platform.OS == 'android' ? 50 : 0,
       paddingHorizontal: spacing['page-pad']
     }
   });

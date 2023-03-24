@@ -262,17 +262,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <OWButton onPress={submit} label="Next" />
-      <OWButton
-        style={{
-          paddingBottom: checkRouterPaddingBottomBar(
-            props?.route?.name,
-            'RegisterMain'
-          )
-        }}
-        onPress={onGoBack}
-        label="Go back"
-        type="link"
-      />
+      <OWButton onPress={onGoBack} label="Go back" type="link" />
     </PageWithScrollView>
   );
 });

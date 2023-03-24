@@ -7,7 +7,14 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { Button } from '../../../components/button';
 import Clipboard from 'expo-clipboard';
 import { useStore } from '../../../stores';
@@ -395,17 +402,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
         onPress={submit}
         label={'Next'}
       />
-      <OWButton
-        type="link"
-        style={{
-          paddingBottom: checkRouterPaddingBottomBar(
-            props?.route?.name,
-            'RegisterRecoverMnemonicMain'
-          )
-        }}
-        onPress={onGoBack}
-        label={'Go back'}
-      />
+      <OWButton type="link" onPress={onGoBack} label={'Go back'} />
       {/* Mock element for bottom padding */}
       <View
         style={{
@@ -448,7 +445,7 @@ const useStyle = () => {
     },
     container: {
       flexGrow: 1,
-      paddingTop:Platform.OS == "android"? 50:0,
+      paddingTop: Platform.OS == 'android' ? 50 : 0,
       paddingHorizontal: spacing['page-pad']
     },
     borderInput: {

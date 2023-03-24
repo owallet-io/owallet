@@ -28,10 +28,10 @@ export const BlockCard: FunctionComponent<{
       },
       { baseURL: 'https://api.coingecko.com/api/v3' }
     )
-      .then(res => {
+      .then((res) => {
         setData(res?.data?.[0]);
       })
-      .catch(ex => {
+      .catch((ex) => {
         console.log('exception querying coinGecko', ex);
       });
   }, [chainStore.current.chainId]);
@@ -211,8 +211,9 @@ export const BlockCard: FunctionComponent<{
   );
 });
 
-const styling = (colors: object) =>
-  StyleSheet.create({
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
     headerWrapper: {
       alignItems: 'center',
       paddingBottom: 40
@@ -226,7 +227,7 @@ const styling = (colors: object) =>
     },
     blockWrapper: {
       flexDirection: 'row',
-      borderBottomColor: colors['gray-100'],
+      borderBottomColor: colors['border-input-login'],
       borderBottomWidth: 1,
       width: '100%',
       padding: 24,
@@ -249,3 +250,4 @@ const styling = (colors: object) =>
       color: colors['gray-600']
     }
   });
+};
