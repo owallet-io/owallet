@@ -417,7 +417,7 @@ const styling = () => {
       marginBottom: spacing['24']
     },
     containerQuantity: {
-      backgroundColor: colors['red-50'],
+      backgroundColor: colors['item'],
       borderRadius: spacing['6'],
       flexDirection: 'row',
       alignItems: 'center',

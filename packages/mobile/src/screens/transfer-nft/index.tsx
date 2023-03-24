@@ -27,14 +27,13 @@ const styling = colors =>
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
       paddingVertical: spacing['24'],
-      backgroundColor: colors['white'],
+      backgroundColor: colors['background-box'],
       borderRadius: 24
     },
     sendlabelInput: {
       fontSize: 16,
       fontWeight: '700',
       lineHeight: 22,
-      color: colors['gray-900'],
       marginBottom: spacing['8']
     }
   });
@@ -127,7 +126,6 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             style={{
               ...typography.h6,
               fontWeight: '700',
-              color: colors['gray-900'],
               marginBottom: spacing['3']
             }}
           >
@@ -138,7 +136,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
               marginVertical: spacing['8'],
               padding: spacing['8'],
               flexDirection: 'row',
-              backgroundColor: colors['red-50'],
+              backgroundColor:colors['item'],
               borderRadius: spacing['8']
             }}
           >

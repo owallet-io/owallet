@@ -91,9 +91,10 @@ export const TokensCard: FunctionComponent<{
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
+    tokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -264,7 +265,7 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {unique.slice(0, 3).map(token => {
+            {unique.slice(0, 3).map((token) => {
               const priceBalance = priceStore.calculatePrice(token.balance);
               return (
                 <TokenItem
@@ -303,7 +304,10 @@ export const TokensCard: FunctionComponent<{
                           <Text style={styles.sectionHeader}>
                             {section.title}
                           </Text>
-                          <DownArrowIcon color={colors['black']} height={12} />
+                          <DownArrowIcon
+                            color={colors['text-title-login']}
+                            height={12}
+                          />
                         </View>
 
                         <FlatList
@@ -368,7 +372,7 @@ export const TokensCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],
@@ -385,12 +389,12 @@ const styling = colors =>
     },
     sectionHeader: {
       ...typography.h7,
-      color: colors['gray-800'],
+      // color: colors['gray-800'],
       marginBottom: spacing['8'],
       marginRight: spacing['10']
     },
     flatListItem: {
-      backgroundColor: colors['gray-50'],
+      backgroundColor: colors['background-box'],
       borderRadius: spacing['12'],
       width: (metrics.screenWidth - 60) / 2,
       marginRight: spacing['12'],
@@ -405,7 +409,7 @@ const styling = colors =>
     },
     itemText: {
       ...typography.h7,
-      color: colors['gray-900'],
+      // color: colors['gray-900'],
       fontWeight: '700'
     },
     transactionListEmpty: {
