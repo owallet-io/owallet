@@ -21,8 +21,8 @@ const OWHeaderRight = observer(
           name={
             notificationStore?.getReadNotifications?.length >=
             notificationStore?.getTotal
-              ? 'history-1'
-              : 'history'
+              ? 'carbon_notification'
+              : 'Noti'
           }
           colorIcon={colors['text-content-success']}
         />
