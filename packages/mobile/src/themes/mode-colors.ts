@@ -52,5 +52,5 @@ const handleMode = (isDark): TypeTheme => {
   return data;
 };
 
-export const DarkModeTheme: TypeTheme = { ...handleMode(true) };
-export const LightModeTheme: TypeTheme = { ...handleMode(false) };
+export const DarkModeColorsTheme: TypeTheme = { ...handleMode(true) };
+export const LightModeColorsTheme: TypeTheme = { ...handleMode(false) };

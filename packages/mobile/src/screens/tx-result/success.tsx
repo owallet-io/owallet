@@ -23,12 +23,13 @@ import * as WebBrowser from 'expo-web-browser';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { TRON_ID } from '../../utils/helper';
+import imagesAssets from '@src/assets/images';
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
   // const [successAnimProgress] = React.useState(new Animated.Value(0));
   // const [pangpareAnimProgress] = React.useState(new Animated.Value(0));
-  const { colors } = useTheme();
+  const { colors, images } = useTheme();
   const route = useRoute<
     RouteProp<
       Record<
@@ -75,7 +76,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/line_success_short.png')}
+              source={images.line_success_short}
             />
             <Image
               style={{
@@ -86,7 +87,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/success.png')}
+              source={images.success}
             />
             <Image
               style={{
@@ -95,7 +96,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/line_success_short.png')}
+              source={images.line_success_long}
             />
           </View>
           <View
@@ -157,7 +158,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                   }}
                   fadeDuration={0}
                   resizeMode="stretch"
-                  source={require('../../assets/image/transactions/eye.png')}
+                  source={imagesAssets.eye}
                 />
                 <Text
                   style={{

@@ -23,7 +23,7 @@ import { SUCCESS, TRON_ID } from '../../utils/helper';
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
   const [retry, setRetry] = useState(3);
-  const { colors } = useTheme();
+  const { colors, images } = useTheme();
   const route = useRoute<
     RouteProp<
       Record<
@@ -145,7 +145,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/line_pending_short.png')}
+              source={images.line_pending_short}
             />
             <Image
               style={{
@@ -156,7 +156,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/pending.png')}
+              source={images.pending}
             />
             <Image
               style={{
@@ -165,7 +165,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/line_pending_short.png')}
+              source={images.line_pending_long}
             />
           </View>
           <View

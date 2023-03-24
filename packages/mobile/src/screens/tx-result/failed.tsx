@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { PageWithView } from '@src/components/page';
-
+import imagesAssets from '@src/assets/images';
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
 
@@ -42,7 +42,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
     ? route.params?.chainId
     : chainStore.current.chainId;
   const txHash = route.params?.txHash;
-  const { colors } = useTheme();
+  const { colors, images } = useTheme();
   const smartNavigation = useSmartNavigation();
   const chainInfo = chainStore.getChain(chainId);
   const { bottom } = useSafeAreaInsets();
@@ -70,7 +70,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/line_fail_short.png')}
+              source={images.line_fail_short}
             />
             <Image
               style={{
@@ -81,7 +81,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/fail.png')}
+              source={images.fail}
             />
             <Image
               style={{
@@ -90,7 +90,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
               }}
               fadeDuration={0}
               resizeMode="stretch"
-              source={require('../../assets/image/transactions/line_fail_short.png')}
+              source={images.line_fail_long}
             />
           </View>
           <View
@@ -159,7 +159,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                   }}
                   fadeDuration={0}
                   resizeMode="stretch"
-                  source={require('../../assets/image/transactions/eye.png')}
+                  source={imagesAssets.eye}
                 />
                 <Text
                   style={{
