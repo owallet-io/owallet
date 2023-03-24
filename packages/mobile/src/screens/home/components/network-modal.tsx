@@ -94,7 +94,7 @@ export const NetworkModal = ({
               borderRadius: spacing['32'],
               backgroundColor:
                 item?.chainId === chainStore.current.chainId
-                  ? colors['purple-900']
+                  ? colors['purple-700']
                   : colors['gray-100'],
               justifyContent: 'center',
               alignItems: 'center'

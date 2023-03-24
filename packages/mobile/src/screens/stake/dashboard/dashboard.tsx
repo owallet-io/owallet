@@ -194,7 +194,7 @@ const styling = (colors) =>
       paddingHorizontal: spacing['24'],
       paddingVertical: spacing['10'],
       borderRadius: spacing['8'],
-      backgroundColor: colors['purple-900']
+      backgroundColor: colors['purple-700']
     },
     containerTitle: {
       marginHorizontal: spacing['24'],

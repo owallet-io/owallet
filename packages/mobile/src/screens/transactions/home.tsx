@@ -169,7 +169,7 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center',
               paddingVertical: spacing['12'],
               backgroundColor:
-                indexParent === i ? colors['purple-900'] : colors['primary'],
+                indexParent === i ? colors['purple-700'] : colors['primary'],
               borderRadius: spacing['12']
             }}
             onPress={() => {

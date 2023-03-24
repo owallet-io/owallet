@@ -247,7 +247,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         text="Unstake"
         size="large"
         style={{
-          backgroundColor: isDisable ? colors['disabled'] : colors['purple-900']
+          backgroundColor: isDisable ? colors['disabled'] : colors['purple-700']
         }}
         underlayColor={colors['purple-400']}
         disabled={isDisable}

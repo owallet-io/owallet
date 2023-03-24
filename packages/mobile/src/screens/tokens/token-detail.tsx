@@ -150,10 +150,10 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     return (
       <TouchableOpacity
         style={{
-          backgroundColor: colors['purple-900'],
+          backgroundColor: colors['purple-700'],
           borderWidth: 0.5,
           borderRadius: spacing['8'],
-          borderColor: colors['purple-900'],
+          borderColor: colors['purple-700'],
           marginLeft: 10,
           marginRight: 10
         }}
@@ -362,7 +362,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
 
         <TouchableOpacity
           style={{
-            backgroundColor: colors['purple-900'],
+            backgroundColor: colors['purple-700'],
             borderRadius: spacing['8'],
             marginHorizontal: spacing['24'],
             paddingVertical: spacing['16'],

@@ -175,7 +175,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           <TextInput
             inputRight={
               <RectButton onPress={onNameSearch}>
-                <SearchIcon color={colors['purple-900']} size={20} />
+                <SearchIcon color={colors['purple-700']} size={20} />
               </RectButton>
             }
             placeholder="Search by address, namespace"
@@ -214,14 +214,14 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View style={{ marginTop: 4 }}>
-                <AddIcon color={colors['purple-900']} size={16} />
+                <AddIcon color={colors['purple-700']} size={16} />
               </View>
               <Text
                 style={{
                   fontSize: 14,
                   fontWeight: '400',
                   lineHeight: 20,
-                  color: colors['purple-900']
+                  color: colors['purple-700']
                 }}
               >
                 Add new contract
@@ -298,7 +298,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                             },
                             noBtnStyleCustom: {
                               backgroundColor: colors['gray-10'],
-                              color: colors['purple-900'],
+                              color: colors['purple-700'],
                               borderColor: 'transparent'
                             },
                             yesBtnStyleCustom: {

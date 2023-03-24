@@ -92,7 +92,7 @@ export const MyRewardCard: FunctionComponent<{
               mode="outline"
               rightIcon={
                 <DownArrowIcon
-                  color={isDisable ? colors['gray-300'] : colors['purple-900']}
+                  color={isDisable ? colors['gray-300'] : colors['purple-700']}
                   height={18}
                 />
               }
@@ -105,7 +105,7 @@ export const MyRewardCard: FunctionComponent<{
               textStyle={{
                 ...styles.textInfo,
                 fontWeight: '400',
-                color: isDisable ? colors['gray-300'] : colors['purple-900'],
+                color: isDisable ? colors['gray-300'] : colors['purple-700'],
                 marginRight: 10
               }}
               onPress={async () => {

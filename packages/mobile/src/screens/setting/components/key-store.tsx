@@ -33,7 +33,7 @@ export const KeyStoreSectionTitle: FunctionComponent<{
         ...styles.containerSectionTitle
       }}
     >
-      <NoteIcon color={colors['purple-900']} height={20} />
+      <NoteIcon color={colors['purple-700']} height={20} />
       <Text
         style={{
           ...typography['subtitle1'],
@@ -154,7 +154,7 @@ export const KeyStoreItem: FunctionComponent<{
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor: active
-                ? colors['purple-900']
+                ? colors['purple-700']
                 : colors['gray-100'],
               justifyContent: 'center',
               alignItems: 'center'

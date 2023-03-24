@@ -8,7 +8,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 
 const styles = StyleSheet.create({
   viewBtn: {
-    backgroundColor: colors['purple-900'],
+    backgroundColor: colors['purple-700'],
     borderRadius: spacing['8'],
     display: 'flex',
     flexDirection: 'row',
@@ -49,11 +49,11 @@ const TransferViewBtn = () => {
             smartNavigation.navigateSmart('AddressBook', {});
           }}
         >
-          <NoteIcon color={colors['purple-900']} height={19} />
+          <NoteIcon color={colors['purple-700']} height={19} />
           <Text
             style={{
               ...styles.textBtn,
-              color: colors['purple-900']
+              color: colors['purple-700']
             }}
           >
             Manage address book

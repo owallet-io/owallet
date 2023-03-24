@@ -57,7 +57,7 @@ export const OnboardingIntroScreen: FunctionComponent = observer(() => {
           showNextButton={false}
           dotStyle={{ backgroundColor: colors['purple-100'], marginTop: 60 }}
           activeDotStyle={{
-            backgroundColor: colors['purple-900'],
+            backgroundColor: colors['purple-700'],
             marginTop: 60
           }}
           showDoneButton={false}

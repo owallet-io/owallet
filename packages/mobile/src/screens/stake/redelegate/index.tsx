@@ -503,7 +503,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             style={{
               backgroundColor: isDisable
                 ? colors['disabled']
-                : colors['purple-900']
+                : colors['purple-700']
             }}
             text="Switch"
             size="large"

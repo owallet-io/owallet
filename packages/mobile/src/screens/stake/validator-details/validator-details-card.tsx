@@ -243,7 +243,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
           <TouchableOpacity
             style={{
               marginBottom: 16,
-              backgroundColor: colors['purple-900'],
+              backgroundColor: colors['purple-700'],
               borderRadius: 8
             }}
             onPress={() => {

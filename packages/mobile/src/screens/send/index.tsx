@@ -228,7 +228,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             disabled={!account.isReadyToSendMsgs || !txStateIsValid}
             loading={account.isSendingMsg === 'send'}
             style={{
-              backgroundColor: colors['purple-900'],
+              backgroundColor: colors['purple-700'],
               borderRadius: 8
             }}
             onPress={async () => {

@@ -108,7 +108,7 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
         text: {
           color: disabled
             ? colors['text-btn-disable-color']
-            : colors['purple-900'],
+            : colors['purple-700'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
         }

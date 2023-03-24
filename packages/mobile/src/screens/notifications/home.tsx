@@ -163,7 +163,7 @@ export const NotificationScreen: FunctionComponent = () => {
               paddingVertical: spacing['12'],
               backgroundColor:
                 indexParent === i
-                  ? colors['purple-900']
+                  ? colors['purple-700']
                   : colors['transparent'],
               borderRadius: spacing['12']
             }}

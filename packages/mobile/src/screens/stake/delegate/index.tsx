@@ -181,11 +181,11 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           <Text
             style={{
               ...typography.h7,
-              color: colors['purple-900'],
+              color: colors['purple-700'],
               marginRight: 4
             }}
           >{`Advance options`}</Text>
-          <DownArrowIcon color={colors['purple-900']} height={10} />
+          <DownArrowIcon color={colors['purple-700']} height={10} />
         </TouchableOpacity> */}
 
         <View
@@ -218,7 +218,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
       <Button
         containerStyle={{
           marginHorizontal: spacing['20'],
-          backgroundColor: colors['purple-900'],
+          backgroundColor: colors['purple-700'],
           marginBottom: 20
         }}
         underlayColor={colors['purple-400']}
@@ -280,7 +280,7 @@ const styling = colors =>
       marginBottom: spacing['24']
     },
     containerBtn: {
-      backgroundColor: colors['purple-900'],
+      backgroundColor: colors['purple-700'],
       marginLeft: spacing['24'],
       marginRight: spacing['24'],
       borderRadius: spacing['8'],

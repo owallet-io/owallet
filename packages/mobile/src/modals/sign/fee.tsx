@@ -97,7 +97,7 @@ const FeeButtonsModal: FunctionComponent<{
           style={{
             marginBottom: customFee ? 264 : 14,
             marginTop: 32,
-            backgroundColor: colors['purple-900'],
+            backgroundColor: colors['purple-700'],
             borderRadius: 8
           }}
         >

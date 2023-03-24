@@ -64,7 +64,7 @@ export const AddressQRCodeModal: FunctionComponent<{
         </View>
         <View style={{ flexDirection: 'row' }}>
           <Button
-            containerStyle={{ flex: 1, backgroundColor: colors['purple-900'] }}
+            containerStyle={{ flex: 1, backgroundColor: colors['purple-700'] }}
             textStyle={{
               color: colors['white']
             }}

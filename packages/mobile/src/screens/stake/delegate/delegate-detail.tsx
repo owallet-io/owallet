@@ -218,7 +218,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               <Text
                 style={{
                   ...typography.h7,
-                  color: colors['purple-900']
+                  color: colors['purple-700']
                 }}
               >{`Validator details`}</Text>
             </TouchableOpacity>

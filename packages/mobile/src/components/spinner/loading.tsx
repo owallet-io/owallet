@@ -61,7 +61,7 @@ export const LoadingSpinner: FunctionComponent<{
   size?: number;
 
   enabled?: boolean;
-}> = ({ color = colors['purple-900'], size, enabled }) => {
+}> = ({ color = colors['purple-700'], size, enabled }) => {
   const spinAnimated = useSpinAnimated(enabled ?? true);
 
   return (

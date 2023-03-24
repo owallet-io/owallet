@@ -85,7 +85,7 @@ export const AmountInput: FunctionComponent<{
                 containerStyle={{
                   height: 24,
                   borderRadius: spacing['8'],
-                  backgroundColor: colors['purple-900'],
+                  backgroundColor: colors['purple-700'],
                   justifyContent: 'center',
                   alignItems: 'center'
                 }}

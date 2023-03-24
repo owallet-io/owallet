@@ -159,7 +159,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                   });
                 }}
               >
-                <Scanner color={colors['purple-900']} />
+                <Scanner color={colors['purple-700']} />
               </TouchableOpacity>
             }
             placeholderTextColor={colors['gray-300']}
@@ -181,7 +181,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             size="large"
             style={
               name && {
-                backgroundColor: colors['purple-900']
+                backgroundColor: colors['purple-700']
               }
             }
             disabled={
