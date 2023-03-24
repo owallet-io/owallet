@@ -21,7 +21,7 @@ const useHeaderOptions = (
   };
   const onTransaction = () => {
     navigation.navigate(SCREENS.STACK.Others, {
-      screen: SCREENS.Notifications
+      screen: SCREENS.Transactions
     });
     return;
   };
@@ -35,7 +35,7 @@ const useHeaderOptions = (
 
   return {
     headerStyle: {
-      backgroundColor: colors['background'],
+      backgroundColor: colors['background-box'],
       shadowColor: 'transparent',
       shadowRadius: 0,
       elevation: 0

@@ -28,6 +28,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { LoadingSpinner } from '../../../components/spinner';
 import { OWalletLogo } from '../owallet-logo';
 import OWButton from '@src/components/button/OWButton';
+import { SCREENS } from '@src/common/constants';
 
 export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
@@ -100,7 +101,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       accountType: 'mnemonic'
     });
     if (checkRouter(props?.route?.name, 'RegisterVerifyMnemonicMain')) {
-      navigate('RegisterEnd', {
+      navigate(SCREENS.RegisterEnd, {
         password: newMnemonicConfig.password,
         type: 'new'
       });
@@ -316,8 +317,7 @@ const useStyles = () => {
       justifyContent: 'space-between'
     },
     containerContentScroll: {
-      flexGrow: 1,
-      paddingTop:50,
+      
       paddingHorizontal: spacing['page-pad']
     }
   });

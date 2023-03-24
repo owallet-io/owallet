@@ -7,7 +7,7 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../../components/button';
 import Clipboard from 'expo-clipboard';
 import { useStore } from '../../../stores';
@@ -448,7 +448,7 @@ const useStyle = () => {
     },
     container: {
       flexGrow: 1,
-      paddingTop:50,
+      paddingTop:Platform.OS == "android"? 50:0,
       paddingHorizontal: spacing['page-pad']
     },
     borderInput: {

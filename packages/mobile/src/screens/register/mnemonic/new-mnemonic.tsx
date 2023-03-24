@@ -5,7 +5,13 @@ import React, {
   useMemo,
   useState
 } from 'react';
-import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  Platform
+} from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -315,7 +321,7 @@ const WordsCard: FunctionComponent<{
       <View style={styles.containerBtnCopy}>
         <View
           style={{
-            flex: 1,
+            flex: 1
           }}
         />
         <OWButton
@@ -389,8 +395,8 @@ const useStyles = () => {
     },
     container: {
       paddingHorizontal: spacing['page-pad'],
-      flexGrow: 1,
-      paddingTop:50
+      // flexGrow: 1,
+      paddingTop: Platform.OS == 'android' ? 50 : 0
     },
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],

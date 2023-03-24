@@ -7,7 +7,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
@@ -20,6 +20,7 @@ import { OWalletLogo } from '../owallet-logo';
 import { spacing } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
+import { SCREENS } from '@src/common/constants';
 
 interface FormData {
   name: string;
@@ -77,7 +78,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       });
 
       if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
-        navigate('RegisterEnd', {
+        navigate(SCREENS.RegisterEnd, {
           password: getValues('password')
         });
       } else {
@@ -85,7 +86,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
           index: 0,
           routes: [
             {
-              name: 'Register.End',
+              name: SCREENS.RegisterEnd,
               params: {
                 password: getValues('password')
               }
@@ -311,7 +312,7 @@ const useStyles = () => {
     containerContentStyle: {
       flexGrow: 1,
       paddingHorizontal: spacing['page-pad'],
-      paddingTop:50
+      paddingTop:Platform.OS == "android"? 50:0
     },
     borderInput: {
       borderColor: colors['border-purple-100-gray-800'],
