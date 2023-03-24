@@ -11,6 +11,8 @@ const modeImages = {
   success:[images.success_dark, images.success],
   line_success_long:[images.line_sucess_long_dark, images.line_success_long],
   line_success_short:[images.line_success_short_dark, images.line_success_short],
+  noti:[images.noti_dark, images.noti],
+  carbon_notification:[images.carbon_notification_dark, images.carbon_notification],
 };
 const typeImagesTheme = () => modeImages;
 type TypeTheme = { [P in keyof ReturnType<typeof typeImagesTheme>]: any };
