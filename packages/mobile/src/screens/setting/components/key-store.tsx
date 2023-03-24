@@ -198,7 +198,7 @@ const styling = colors =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      backgroundColor: colors['sub-primary'],
+      backgroundColor: colors['item'],
       borderRadius: spacing['12'],
       marginVertical: spacing['8'],
       marginHorizontal: spacing['20'],

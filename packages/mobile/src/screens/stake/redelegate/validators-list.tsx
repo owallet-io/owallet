@@ -6,7 +6,7 @@ import Validators from './modal-validators';
 
 const styles = StyleSheet.create({
   containerAccount: {
-    backgroundColor: colors['gray-10'],
+    backgroundColor: colors['background-item-list'],
     paddingVertical: spacing['16'],
     borderRadius: spacing['8'],
     paddingHorizontal: spacing['16'],
@@ -29,7 +29,6 @@ const ValidatorsList = ({ onPressSelectValidator, dstValidatorAddress }) => {
         <Text
           style={{
             ...typography.h6,
-            color: colors['gray-900'],
             fontWeight: '800',
             marginBottom: spacing['12']
           }}

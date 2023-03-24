@@ -1,3 +1,4 @@
+import { useTheme } from '@src/themes/theme-provider';
 import React, { FunctionComponent } from 'react';
 import { View, ViewStyle } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -9,6 +10,7 @@ export const ValidatorThumbnail: FunctionComponent<{
   url?: string;
   size: number;
 }> = ({ style: propStyle, url, size }) => {
+  const { colors } = useTheme();
   return (
     <View
       style={{
@@ -33,7 +35,7 @@ export const ValidatorThumbnail: FunctionComponent<{
           resizeMode={FastImage.resizeMode.contain}
         />
       ) : (
-        <PersonIcon size={size} color="black" />
+        <PersonIcon size={size} color={colors['primary-text']} />
       )}
     </View>
   );

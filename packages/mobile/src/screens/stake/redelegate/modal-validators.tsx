@@ -68,7 +68,6 @@ const Validators = ({
             <Text
               style={{
                 ...typography.h6,
-                color: colors['gray-900'],
                 fontWeight: '900'
               }}
               numberOfLines={1}
@@ -104,13 +103,9 @@ const Validators = ({
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                colors[
-                  `${
-                    item.operator_address == dstValidatorAddress
-                      ? 'purple-700'
-                      : 'gray-100'
-                  }`
-                ],
+                item.operator_address == dstValidatorAddress
+                  ? colors['background-btn-primary']
+                  : colors['gray-100'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
