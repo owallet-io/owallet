@@ -13,6 +13,7 @@ import { useStore } from '../../stores';
 import { Bech32Address } from '@owallet/cosmos';
 import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-check-box';
+import { useTheme } from '@src/themes/theme-provider';
 
 interface FormData {
   name: string;
@@ -33,23 +34,32 @@ interface FormData {
 }
 
 export const SelectNetworkType = ({ onChange }) => {
+  const { colors } = useTheme();
   const [radioButtons, setRadioButtons] = useState([
     {
       id: 'cosmos',
       label: 'Cosmos',
       value: 'cosmos',
-      selected: true
+      selected: true,
+      borderColor: colors['primary-text'],
+      labelStyle: {
+        color: colors['primary-text']
+      }
     },
     {
       id: 'evm',
       label: 'EVM',
-      value: 'evm'
+      value: 'evm',
+      borderColor: colors['primary-text'],
+      labelStyle: {
+        color: colors['primary-text']
+      }
     }
   ]);
 
   function onPressRadioButton(radioButtonGroup) {
     setRadioButtons(radioButtonGroup);
-    const selected = radioButtonGroup.find(rb => rb.selected);
+    const selected = radioButtonGroup.find((rb) => rb.selected);
     onChange && onChange(selected);
   }
 
@@ -74,7 +84,7 @@ const features = [
 
 export const SelectFeatures = ({ onChange, networkType }) => {
   const [selected, setSelected] = useState([]);
-
+  const { colors } = useTheme();
   useEffect(() => {
     if (networkType === 'evm') {
       setSelected(['ibc-go', 'stargate', 'isEvm']);
@@ -97,7 +107,7 @@ export const SelectFeatures = ({ onChange, networkType }) => {
         maxHeight: 150
       }}
     >
-      {features.map(f => {
+      {features.map((f) => {
         return (
           <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
             <CheckBox
@@ -107,6 +117,8 @@ export const SelectFeatures = ({ onChange, networkType }) => {
                 (networkType === 'evm' && f === 'cosmwasm')
               }
               style={{ flex: 1, padding: 14 }}
+              checkBoxColor={colors['primary-text']}
+              checkedCheckBoxColor={colors['primary-text']}
               onClick={() => {
                 const tempArr = [...selected];
                 if (selected.includes(f)) {
@@ -237,12 +249,12 @@ export const SelectNetworkScreen = () => {
     }
   });
 
-  const handleChangeNetwork = selected => {
+  const handleChangeNetwork = (selected) => {
     setValue('networkType', selected.value);
     setNetworkType(selected.value);
   };
 
-  const handleSelectFeatures = features => {
+  const handleSelectFeatures = (features) => {
     setValue('features', features);
   };
 
@@ -252,7 +264,6 @@ export const SelectNetworkScreen = () => {
         paddingLeft: 20,
         paddingRight: 20
       }}
-      backgroundColor={colors['white']}
     >
       <View
         style={{
@@ -267,8 +278,7 @@ export const SelectNetworkScreen = () => {
           style={{
             fontSize: 24,
             lineHeight: 34,
-            fontWeight: '700',
-            color: colors['gray-900']
+            fontWeight: '700'
           }}
         >
           New RPC network
@@ -286,7 +296,6 @@ export const SelectNetworkScreen = () => {
         style={{
           ...typography.h3,
           fontWeight: '900',
-          color: colors['gray-900'],
           paddingBottom: 20
         }}
       >
@@ -430,7 +439,6 @@ export const SelectNetworkScreen = () => {
                 style={{
                   ...typography.h6,
                   fontWeight: '600',
-                  color: colors['gray-900'],
                   paddingBottom: 8
                 }}
               >
@@ -478,7 +486,6 @@ export const SelectNetworkScreen = () => {
           style={{
             ...typography.h6,
             fontWeight: '600',
-            color: colors['gray-900'],
             paddingBottom: 8
           }}
         >
@@ -493,7 +500,6 @@ export const SelectNetworkScreen = () => {
         style={{
           ...typography.h3,
           fontWeight: '900',
-          color: colors['gray-900'],
           paddingBottom: 20
         }}
       >
@@ -518,7 +524,7 @@ export const SelectNetworkScreen = () => {
               }}
               error={errors.feeLow?.message}
               onBlur={onBlur}
-              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={(txt) => onChange(txt.replace(/,/g, '.'))}
               value={value.toString()}
               ref={ref}
             />
@@ -546,7 +552,7 @@ export const SelectNetworkScreen = () => {
               }}
               error={errors.feeMedium?.message}
               onBlur={onBlur}
-              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={(txt) => onChange(txt.replace(/,/g, '.'))}
               value={value.toString()}
               ref={ref}
             />
@@ -574,7 +580,7 @@ export const SelectNetworkScreen = () => {
               }}
               error={errors.feeHigh?.message}
               onBlur={onBlur}
-              onChangeText={txt => onChange(txt.replace(/,/g, '.'))}
+              onChangeText={(txt) => onChange(txt.replace(/,/g, '.'))}
               value={value.toString()}
               ref={ref}
             />
@@ -587,7 +593,6 @@ export const SelectNetworkScreen = () => {
         style={{
           ...typography.h3,
           fontWeight: '900',
-          color: colors['gray-900'],
           paddingBottom: 20
         }}
       >
@@ -807,9 +812,7 @@ export const SelectNetworkScreen = () => {
 
 const styles = StyleSheet.create({
   borderInput: {
-    borderColor: colors['purple-100'],
     borderWidth: 1,
-    backgroundColor: colors['white'],
     paddingLeft: 11,
     paddingRight: 11,
     paddingTop: 12,
