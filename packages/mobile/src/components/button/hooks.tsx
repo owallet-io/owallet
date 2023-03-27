@@ -59,10 +59,16 @@ const useSize = ({ size }): IMapStyle => {
   }
   return sizeStyle;
 };
-export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
+
+export const useMapStyles = ({
+  type,
+  disabled,
+  size,
+  contentAlign
+}): IMapStyle => {
   const { colors } = useTheme();
   const formatSize = useSize({ size });
-  let typeStyleBtn;
+  let typeStyleBtn: IMapStyle;
   switch (type) {
     case 'danger':
       typeStyleBtn = {
@@ -144,6 +150,44 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
           color: disabled ? colors['text-btn-disable-color'] : colors['white'],
           fontSize: formatSize.text.fontSize,
           fontWeight: formatSize.text.fontWeight
+        }
+      };
+      break;
+  }
+  switch (contentAlign) {
+    case 'left':
+      typeStyleBtn = {
+        ...typeStyleBtn,
+        btn: {
+          ...typeStyleBtn.btn,
+          justifyContent: 'flex-start'
+        }
+      };
+      break;
+    case 'center':
+      typeStyleBtn = {
+        ...typeStyleBtn,
+        btn: {
+          ...typeStyleBtn.btn,
+          justifyContent: 'center'
+        }
+      };
+      break;
+    case 'right':
+      typeStyleBtn = {
+        ...typeStyleBtn,
+        btn: {
+          ...typeStyleBtn.btn,
+          justifyContent: 'flex-end'
+        }
+      };
+      break;
+    default:
+      typeStyleBtn = {
+        ...typeStyleBtn,
+        btn: {
+          ...typeStyleBtn.btn,
+          justifyContent: 'center'
         }
       };
       break;

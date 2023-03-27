@@ -26,6 +26,8 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   circle?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
+  contentAlign?: 'left' | 'center' | 'right';
+  borderStyle?: 'dashed' | 'none';
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
@@ -41,10 +43,13 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   fullWidth = true,
   loading,
   children,
+  borderStyle,
+  contentAlign,
   ...props
 }) => {
-  const styleMapped = useMapStyles({ type, disabled, size });
+  const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const { colors } = useTheme();
+  const styles = styling();
   return (
     <TouchableOpacity
       {...props}
@@ -53,6 +58,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         styles.containerBtn,
         styleMapped.btn,
         fullWidth ? styles.fullWidth : styles.widthAuto,
+        borderStyle == 'dashed' && styles.dashed,
         !!icon && !label && styles.hasIcon,
         style
       ]}
@@ -78,21 +84,29 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
 };
 
 export default OWButton;
-const styles = StyleSheet.create({
-  hasIcon: { height: 'auto' },
-  fullWidth: { width: '100%' },
-  containerBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 12
-  },
-  textBtn: {
-    textAlign: 'center',
-    fontWeight: '700',
-    fontSize: 16
-  },
-  widthAuto: {
-    width: 'auto'
-  }
-});
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    dashed: {
+      borderWidth: 1,
+      borderStyle: 'dashed',
+      borderColor: colors['background-btn-primary']
+    },
+    hasIcon: { height: 'auto' },
+    fullWidth: { width: '100%' },
+    containerBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 12
+    },
+    textBtn: {
+      textAlign: 'center',
+      fontWeight: '700',
+      fontSize: 16
+    },
+    widthAuto: {
+      width: 'auto'
+    }
+  });
+};

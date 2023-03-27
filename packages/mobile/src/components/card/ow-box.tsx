@@ -1,29 +1,71 @@
-import { StyleSheet, Text, View, ViewProps } from 'react-native';
+import { StyleSheet, Text, View, ViewProps, ViewStyle } from 'react-native';
 import React from 'react';
 import { metrics, spacing } from '@src/themes';
 import { useTheme } from '@src/themes/theme-provider';
-import { useGetHeightHeader } from '@src/hooks/use-height-header';
+import OWLinearGradientBox from './ow-linear-gradient-box';
 
-const OWBox = ({ children, style, ...props }: ViewProps) => {
-  const styles = styling();
+export interface IOWBoxProps extends ViewProps {
+  type?: 'shadow' | 'gradient' | 'normal';
+}
+const useStyleType = ({ type }) => {
+  const { colors } = useTheme();
+  let styles: ViewStyle = {};
+  switch (type) {
+    case 'shadow':
+      styles = {
+        shadowColor: colors['gray-150'],
+        shadowOffset: {
+          width: 0,
+          height: 6
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        borderRadius:spacing['12'],
+        width: '100%',
+        backgroundColor:colors['background-box-shadow']
+      };
+      break;
+    case 'gradient':
+      styles = {
+        marginTop: 24,
+        width: '100%',
+        paddingHorizontal: spacing['20'],
+        paddingVertical: spacing['24'],
+        borderRadius:spacing['12']
+      };
+      break;
+    case 'normal':
+      styles = {
+        marginTop: 24,
+        width: metrics.screenWidth,
+        padding: spacing['24'],
+        borderRadius: spacing['24'],
+        backgroundColor: colors['background-box']
+      };
+      break;
+    default:
+      styles = {
+        marginTop: 24,
+        width: metrics.screenWidth,
+        padding: spacing['24'],
+        borderRadius: spacing['24'],
+        backgroundColor: colors['background-box']
+      };
+      break;
+  }
+  return styles;
+};
+const OWBox = ({ children, style, type = 'normal', ...props }: IOWBoxProps) => {
+  
+  const ContainerElement = type == 'gradient' ? OWLinearGradientBox : View;
+  const stylesType = useStyleType({
+    type
+  });
   return (
-    <View style={[styles.container, style]} {...props}>
+    <ContainerElement style={[ stylesType, style]} {...props}>
       {children}
-    </View>
+    </ContainerElement>
   );
 };
 
 export default OWBox;
-
-const styling = () => {
-  const { colors } = useTheme();
-  return StyleSheet.create({
-    container: {
-      padding: spacing['24'],
-      borderRadius: spacing['24'],
-      backgroundColor: colors['background-box'],
-      width: metrics.screenWidth,
-      marginTop: 24
-    }
-  });
-};

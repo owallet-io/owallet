@@ -127,10 +127,7 @@ const modeColors = {
   'input-background': ['#2B2D3B', '#fff'],
   'primary-background': ['#945EF8', '#F3F1F5'],
   'plain-background': ['#01040D', '#fff'],
-  'btn-primary-background': [
-    '#945EF8',
-    '#945EF8'
-  ],
+  'btn-primary-background': ['#945EF8', '#945EF8'],
   'btn-disable-background': [colorsCode['blue-600'], colorsCode['gray-300']],
   // border
   'border-purple-100-gray-800': [
@@ -186,7 +183,8 @@ const modeColors = {
   'text-value-input-modal': ['#8C93A7', '#636366'],
   'background-box': ['#0E121D', '#fff'],
   'background-item-list': ['#2B2D3B', '#F3F1F5'],
-  'text-place-holder':['#717177','#8C93A7']
+  'text-place-holder': ['#717177', '#8C93A7'],
+  'background-box-shadow': ['#2B2D3B', '#FFFFFF']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

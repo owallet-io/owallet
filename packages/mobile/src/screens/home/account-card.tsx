@@ -1,6 +1,6 @@
 import React, { FunctionComponent, ReactElement, useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card, CardBody } from '../../components/card';
+import { Card, CardBody, OWBox } from '../../components/card';
 import { View, ViewStyle, Image, StyleSheet } from 'react-native';
 import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -22,6 +22,9 @@ import { AddressQRCodeModal } from './components';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWButton } from '@src/components/button';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -38,7 +41,7 @@ export const AccountCard: FunctionComponent<{
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   const smartNavigation = useSmartNavigation();
@@ -69,7 +72,7 @@ export const AccountCard: FunctionComponent<{
   const totalPrice = priceStore.calculatePrice(total);
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -115,240 +118,199 @@ export const AccountCard: FunctionComponent<{
         break;
     }
     return (
-      <TouchableOpacity
-        style={{
-          backgroundColor: colors['purple-700'],
-          borderRadius: spacing['8'],
-          marginLeft: 8,
-          marginRight: 8
-        }}
+      <OWButton
+        style={styles.btnHeaderHome}
+        size="small"
+        type="primary"
         onPress={() => onPressBtnMain(name)}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingTop: spacing['6'],
-            paddingBottom: spacing['6'],
-            paddingLeft: spacing['12'],
-            paddingRight: spacing['12']
-          }}
-        >
-          {icon}
-          <Text
-            style={{
-              ...typography['h7'],
-              lineHeight: spacing['20'],
-              color: colors['white'],
-              paddingLeft: spacing['6'],
-              fontWeight: '700'
-            }}
-          >
-            {name}
-          </Text>
-        </View>
-      </TouchableOpacity>
+        icon={icon}
+        label={name}
+        textStyle={styles.textBtnHeaderDashboard}
+      />
     );
   };
 
   return (
-    <Card
+    <View
       style={{
-        ...containerStyle
+        marginHorizontal: 24,
+        marginBottom: 32
       }}
     >
-      <CardBody
+      <OWBox
         style={{
-          paddingBottom: spacing['0']
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0
         }}
+        type="gradient"
       >
         <View
           style={{
-            height: 256,
-            borderWidth: spacing['0.5'],
-            borderColor: colors['primary'],
-            borderRadius: spacing['12']
+            // marginTop: 28,
+            marginBottom: 16
           }}
         >
-          <LinearGradient
-            colors={['#3B2368', '#7D52D1']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+          <Text
             style={{
-              borderTopLeftRadius: spacing['11'],
-              borderTopRightRadius: spacing['11'],
-              height: 179
+              textAlign: 'center',
+              color: colors['purple-400'],
+              fontSize: 14,
+              lineHeight: 20
             }}
           >
-            <View
-              style={{
-                marginTop: 28,
-                marginBottom: 16
-              }}
-            >
-              <Text
-                style={{
-                  textAlign: 'center',
-                  color: colors['purple-400'],
-                  fontSize: 14,
-                  lineHeight: 20
-                }}
-              >
-                Total Balance
-              </Text>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  color: 'white',
-                  fontWeight: '900',
-                  fontSize: 34,
-                  lineHeight: 50
-                }}
-              >
-                {totalPrice
-                  ? totalPrice.toString()
-                  : total.shrink(true).maxDecimals(6).toString()}
-              </Text>
-            </View>
+            Total Balance
+          </Text>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: 'white',
+              fontWeight: '900',
+              fontSize: 34,
+              lineHeight: 50
+            }}
+          >
+            {totalPrice
+              ? totalPrice.toString()
+              : total.shrink(true).maxDecimals(6).toString()}
+          </Text>
+        </View>
+        <View style={styles.containerBtnHeader}>
+          {['Buy', 'Receive', 'Send'].map((e, i) => (
+            <RenderBtnMain key={i} name={e} />
+          ))}
+        </View>
+      </OWBox>
+
+      <OWBox
+        style={{
+          marginTop: 0,
+          paddingHorizontal: 12,
+          borderTopLeftRadius: 0,
+          paddingVertical: 18,
+          borderTopRightRadius: 0
+        }}
+        type="shadow"
+      >
+        {queryStakable.isFetching ? (
+          <View style={styles.containerLoading}>
+            <LoadingSpinner color={colors['gray-150']} size={22} />
+          </View>
+        ) : null}
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            alignItems: 'center'
+          }}
+        >
+          <View
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between'
+            }}
+          >
             <View
               style={{
                 display: 'flex',
                 flexDirection: 'row',
-                paddingTop: spacing['6'],
-                paddingLeft: spacing['22'],
-                paddingRight: spacing['22'],
-                justifyContent: 'center'
+                alignItems: 'center',
+                paddingBottom: spacing['2']
               }}
             >
-              {['Buy', 'Receive', 'Send'].map((e, i) => (
-                <RenderBtnMain key={i} name={e} />
-              ))}
-            </View>
-          </LinearGradient>
-          <View
-            style={{
-              backgroundColor: colors['primary'],
-              height: 165,
-              borderBottomLeftRadius: spacing['11'],
-              borderBottomRightRadius: spacing['11'],
-              shadowColor: colors['gray-150'],
-              shadowOffset: {
-                width: 0,
-                height: 6
-              },
-              shadowOpacity: 0.3,
-              shadowRadius: 4
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: spacing['12'],
-                paddingRight: spacing['18'],
-                paddingTop: spacing['18'],
-                width: '100%',
-                alignItems: 'center'
-              }}
-            >
-              <View
+              <Image
                 style={{
-                  display: 'flex',
-                  justifyContent: 'space-between'
+                  width: spacing['26'],
+                  height: spacing['26']
+                }}
+                source={require('../../assets/image/address_default.png')}
+                fadeDuration={0}
+              />
+              <Text
+                style={{
+                  paddingLeft: spacing['6'],
+                  fontWeight: '700',
+                  fontSize: 16,
+                  color: colors['primary-text']
                 }}
               >
-                <View
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingBottom: spacing['2']
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: spacing['26'],
-                      height: spacing['26']
-                    }}
-                    source={require('../../assets/image/address_default.png')}
-                    fadeDuration={0}
-                  />
-                  <Text
-                    style={{
-                      paddingLeft: spacing['6'],
-                      fontWeight: '700',
-                      fontSize: 16,
-                      color: colors['primary-text']
-                    }}
-                  >
-                    {account.name || '...'}
-                  </Text>
-                </View>
-
-                <AddressCopyable
-                  address={account.bech32Address}
-                  maxCharacters={22}
-                />
-                <Text
-                  style={{
-                    paddingLeft: spacing['6'],
-                    fontSize: 14,
-                    paddingVertical: spacing['6'],
-                    color: colors['primary-text']
-                  }}
-                >
-                  {`Coin type: ${
-                    selected?.bip44HDPath?.coinType ??
-                    chainStore?.current?.bip44?.coinType
-                  }`}
-                </Text>
-              </View>
-              <TouchableOpacity onPress={_onPressMyWallet}>
-                <DownArrowIcon height={28} color={colors['primary-text']} />
-              </TouchableOpacity>
+                {account.name || '...'}
+              </Text>
             </View>
-          </View>
 
-          {queryStakable.isFetching ? (
-            <View
+            <AddressCopyable
+              address={account.bech32Address}
+              maxCharacters={22}
+            />
+            <Text
               style={{
-                position: 'absolute',
-                bottom: 10,
-                left: '50%'
+                paddingLeft: spacing['6'],
+                fontSize: 14,
+                paddingVertical: spacing['6'],
+                color: colors['primary-text']
               }}
             >
-              <LoadingSpinner color={colors['gray-150']} size={22} />
-            </View>
-          ) : null}
+              {`Coin type: ${
+                selected?.bip44HDPath?.coinType ??
+                chainStore?.current?.bip44?.coinType
+              }`}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={_onPressMyWallet}>
+            <DownArrowIcon height={28} color={colors['primary-text']} />
+          </TouchableOpacity>
         </View>
-      </CardBody>
-      <View
-        style={{
-          alignItems: 'center',
-          position: 'absolute',
-          bottom: 40,
-          left: '8%',
-          zIndex: 999,
-          justifyContent: 'center'
-        }}
-      >
-        <TouchableOpacity
-          style={styles.containerBtn}
+        <NetworkErrorView />
+        <OWButton
+          style={{
+            width: '100%'
+          }}
           onPress={() => {
             smartNavigation.navigateSmart('Transactions', {});
           }}
-        >
-          <Text style={styles.textLoadMore}>{'Transactions history'}</Text>
-        </TouchableOpacity>
-      </View>
-      <NetworkErrorView />
-      <View style={{ height: 100 }} />
-    </Card>
+          textStyle={{
+            paddingLeft: 8
+          }}
+          label="Transactions history"
+          type="secondary"
+          size="medium"
+          icon={
+            <OWIcon color={colors['purple-700']} size={18} name="history" />
+          }
+        />
+        
+      </OWBox>
+    </View>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
+    containerLoading: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1000
+    },
+    containerBtnHeader: {
+      display: 'flex',
+      flexDirection: 'row',
+      paddingTop: spacing['6'],
+      paddingHorizontal: spacing['6'],
+      justifyContent: 'center'
+    },
+    textBtnHeaderDashboard: {
+      paddingLeft: spacing['6']
+    },
+    btnHeaderHome: {
+      width: '33.3%',
+      marginHorizontal: 6
+    },
     textLoadMore: {
       ...typography['h7'],
       color: colors['colored-label']
