@@ -93,7 +93,7 @@ export const DelegationsCard: FunctionComponent<{
                   ...styles.containerItem,
                   marginTop: 8,
                   marginBottom: 8,
-                  backgroundColor: colors['item']
+                  backgroundColor: colors['background-box']
                 }}
                 onPress={() => {
                   smartNavigation.navigate('Delegate.Detail', {
