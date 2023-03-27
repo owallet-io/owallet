@@ -13,7 +13,7 @@ const useStyleType = ({ type }) => {
   switch (type) {
     case 'shadow':
       styles = {
-        shadowColor: colors['gray-150'],
+        shadowColor: colors['background-box-shadow'],
         shadowOffset: {
           width: 0,
           height: 6

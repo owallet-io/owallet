@@ -154,7 +154,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
               style={{
                 marginHorizontal: spacing['24'],
                 marginVertical: spacing['8'],
-                borderRadius: spacing['8']
+                borderRadius: spacing['8'],
               }}
             >
               <ValidatorItem
@@ -168,11 +168,13 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
           );
         }}
         ItemSeparatorComponent={() => (
-          <CardDivider backgroundColor={colors['border']} />
+          <CardDivider backgroundColor={colors['border-input-login']} />
         )}
         renderSectionHeader={() => {
           return (
-            <View>
+            <View style={{
+              paddingTop:24
+            }}>
               <Text
                 style={{
                   ...typography.h3,
@@ -294,8 +296,9 @@ const ValidatorItem: FunctionComponent<{
       style={{
         ...styles.container,
         flexDirection: 'row',
-        backgroundColor: colors['item'],
-        alignItems: 'center'
+        backgroundColor: colors['background-box'],
+        alignItems: 'center',
+        
       }}
       onPress={() => {
         if (onSelectValidator) {

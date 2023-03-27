@@ -28,6 +28,7 @@ import { DownArrowIcon } from '../../components/icon';
 import { CountryModal } from './components/country-modal';
 import { SettingSwitchModeItem } from './items/switch-mode';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
@@ -75,10 +76,10 @@ export const SettingScreen: FunctionComponent = observer(() => {
         >
           Settings
         </Text>
-        <View
+        <OWBox
+          type='shadow'
           style={{
             ...styles.containerInfo,
-            ...styles.shadowBox
           }}
         >
           <TouchableOpacity
@@ -154,16 +155,14 @@ export const SettingScreen: FunctionComponent = observer(() => {
             </View>
             <DownArrowIcon color={colors['primary-text']} height={12} />
           </TouchableOpacity>
-        </View>
+        </OWBox>
       </ImageBackground>
-      {/* <SettingSectionTitle title="General" /> */}
-      <View
-        style={{
-          backgroundColor: colors['primary'],
-          borderBottomLeftRadius: Platform.OS === 'ios' ? 32 : 0,
-          borderBottomRightRadius: Platform.OS === 'ios' ? 32 : 0
-        }}
-      >
+      
+        <OWBox style={{
+          marginTop:0,
+          marginBottom:20,
+          paddingHorizontal:0
+        }}>
         <SettingSectionTitle title="Security" />
         {canShowPrivateData(keyRingStore.keyRingType) && (
           <SettingViewPrivateDataItem />
@@ -190,7 +189,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           }}
         />
         <SettingRemoveAccountItem />
-      </View>
+        </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });
@@ -224,12 +223,12 @@ const styling = (colors: object) =>
     },
     containerInfo: {
       position: 'absolute',
-      backgroundColor: colors['primary'],
       height: 160,
       margin: 24,
       marginTop: 150,
       borderRadius: 12,
       padding: 20,
-      width: '100%'
+      width: '100%',
+      backgroundColor:colors['background-box']
     }
   });

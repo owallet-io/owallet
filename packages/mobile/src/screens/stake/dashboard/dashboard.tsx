@@ -183,7 +183,7 @@ const styling = (colors) =>
     },
     containerMyStaking: {
       marginTop: spacing['32'],
-      backgroundColor: colors['primary'],
+      backgroundColor: colors['background-box'],
       borderRadius: spacing['24'],
       width: metrics.screenWidth,
       paddingVertical: spacing['20'],

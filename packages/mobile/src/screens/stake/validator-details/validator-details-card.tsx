@@ -18,7 +18,7 @@ import {
 } from '../../../components/icon';
 import { ValidatorThumbnails } from '@owallet/common';
 // import { DelegatedCard } from './delegated-card';
-
+import { OWBox } from '@src/components/card';
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
     case 'Website':
@@ -141,7 +141,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
   };
 
   return (
-    <>
+    <View>
       <Text
         style={{
           ...typography.h3,
@@ -153,13 +153,14 @@ export const ValidatorDetailsCard: FunctionComponent<{
       >
         Validator details
       </Text>
+      
       {validator ? (
-        <View style={containerStyle}>
+        <OWBox>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              marginBottom: spacing['16']
+              marginBottom: spacing['16'],
             }}
           >
             <ValidatorThumbnail size={44} url={thumbnail} />
@@ -233,18 +234,18 @@ export const ValidatorDetailsCard: FunctionComponent<{
               {validator?.description.details}
             </Text>
           </View>
-          {/* <DelegatedCard
-            containerStyle={{
-              backgroundColor: colors['white'],
-              width: '100%'
-            }}
-            validatorAddress={validatorAddress}
-          /> */}
-          <TouchableOpacity
+          
+        
+        </OWBox>
+      ) : null}
+      {/* </OWBox> */}
+      <TouchableOpacity
             style={{
               marginBottom: 16,
               backgroundColor: colors['purple-700'],
-              borderRadius: 8
+              borderRadius: 8,
+              marginHorizontal:24,
+              marginTop:20
             }}
             onPress={() => {
               smartNavigation.navigateSmart('Delegate', {
@@ -264,9 +265,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
               Stake now
             </Text>
           </TouchableOpacity>
-        </View>
-      ) : null}
-    </>
+    </View>
   );
 });
 

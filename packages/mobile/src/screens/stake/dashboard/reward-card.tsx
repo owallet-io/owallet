@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
-import { Card, CardBody } from '../../../components/card';
+import { Card, CardBody, OWBox } from '../../../components/card';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../../styles';
@@ -39,12 +39,13 @@ export const MyRewardCard: FunctionComponent<{
     queryReward.pendingRewardValidatorAddresses.length === 0;
 
   return (
-    <View style={containerStyle}>
-      <View
-        style={{
-          backgroundColor: colors['primary']
-        }}
-      >
+    <OWBox
+      style={{
+        padding: 0,
+        margin: 0
+      }}
+    >
+      <View>
         <Text
           style={{
             ...styles.textInfo,
@@ -116,13 +117,13 @@ export const MyRewardCard: FunctionComponent<{
                     {},
                     {},
                     {
-                      onFulfill: tx => {
+                      onFulfill: (tx) => {
                         console.log(
                           tx,
                           'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                         );
                       },
-                      onBroadcasted: txHash => {
+                      onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Claim reward tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName
@@ -159,11 +160,11 @@ export const MyRewardCard: FunctionComponent<{
           </View>
         </View>
       </View>
-    </View>
+    </OWBox>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     textInfo: {
       ...typography.h6,

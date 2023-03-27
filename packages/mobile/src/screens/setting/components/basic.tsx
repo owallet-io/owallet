@@ -159,7 +159,7 @@ const styling = (colors) =>
       color: colors['primary-text']
     },
     defaultBtn: {
-      backgroundColor: colors['primary'],
+      backgroundColor: colors['background-box'],
       height: 62,
       paddingHorizontal: spacing['20'],
       flexDirection: 'row',
