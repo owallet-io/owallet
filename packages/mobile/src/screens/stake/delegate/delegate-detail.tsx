@@ -14,6 +14,7 @@ import { typography, colors, spacing } from '../../../themes';
 import { useTheme } from '@src/themes/theme-provider';
 import { PageWithView } from '@src/components/page';
 import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -84,16 +85,14 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
           <Text
             style={{
               ...styles.title,
-              marginVertical: spacing['16'],
+              marginTop: spacing['16'],
               color: colors['primary-text']
             }}
           >{`Staking details`}</Text>
         </View>
 
-        <View
-          style={{
-            ...styles.containerInfo
-          }}
+        <OWBox
+          
         >
           <View
             style={{
@@ -223,7 +222,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
               >{`Validator details`}</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </OWBox>
 
         <View style={styles.containerAllBtn}>
           <OWButton
@@ -276,7 +275,7 @@ const styling = (colors) =>
       textAlign: 'center'
     },
     containerInfo: {
-      backgroundColor: colors['primary'],
+      backgroundColor: colors['background-box'],
       borderRadius: spacing['24'],
       padding: spacing['24']
     },

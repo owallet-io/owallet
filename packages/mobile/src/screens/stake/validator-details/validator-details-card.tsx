@@ -295,7 +295,7 @@ const styling = colors =>
     textDetail: {
       ...typography.h7,
       fontWeight: '700',
-      color: colors['gray-300'],
+      color: colors['sub-text'],
       textAlign: 'center'
     }
   });

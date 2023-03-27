@@ -20,6 +20,7 @@ import { Text } from '@src/components/text';
 import { Toggle } from '../../../components/toggle';
 import { Dec, DecUtils } from '@owallet/unit';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 // import { RectButton } from '../../../components/rect-button';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 // import { DownArrowIcon } from '../../../components/icon';
@@ -97,10 +98,9 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         Staking
       </Text>
 
-      <View
+      <OWBox
         style={{
-          ...styles.containerStaking,
-          padding: spacing['24']
+          marginBottom:24
         }}
       >
         <AmountInput label={'Amount'} amountConfig={sendConfigs.amountConfig} />
@@ -214,7 +214,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           </View>
           <View />
         </View>
-      </View>
+      </OWBox>
       <Button
         containerStyle={{
           marginHorizontal: spacing['20'],
@@ -309,6 +309,5 @@ const styling = colors =>
       textAlign: 'center',
       color: colors['gray-900'],
       marginTop: spacing['12'],
-      marginBottom: spacing['12']
     }
   });
