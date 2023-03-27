@@ -197,7 +197,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      backgroundColor={colors['background']}
+      // backgroundColor={colors['background']}
       ref={scrollViewRef}
     >
       <BIP44Selectable />
@@ -242,9 +242,9 @@ const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
-      backgroundColor: colors['background']
+      backgroundColor: colors['background-box']
     },
     containerEarnStyle: {
-      backgroundColor: colors['background']
+      backgroundColor: colors['background-box']
     }
   });

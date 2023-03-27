@@ -55,7 +55,7 @@ export const MainTabNavigation: FC = () => {
           <HomeFillIcon color={colors['icon-text']} />
         );
         break;
-      case SCREENS.TABS.Home:
+      case SCREENS.TABS.Browser:
         icon = choosen ? (
           <BrowserFillIcon color={colors['purple-700']} />
         ) : (

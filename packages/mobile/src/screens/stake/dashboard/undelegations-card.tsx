@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
-import { Card, CardBody } from '../../../components/card';
+import { Card, CardBody, OWBox } from '../../../components/card';
 import { ViewStyle, View, StyleSheet } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../../styles';
@@ -40,21 +40,12 @@ export const UndelegationsCard: FunctionComponent<{
   const intl = useIntl();
 
   return (
-    <Card
-      style={{
-        padding: spacing['28'],
-        paddingBottom: spacing['14'],
-        paddingTop: spacing['14'],
-        marginTop: spacing['32'],
-        borderRadius: spacing['24'],
-        backgroundColor: colors['primary']
-      }}
+    <OWBox
+    style={{
+      paddingTop:0
+    }}
     >
-      <CardBody
-        style={{
-          backgroundColor: colors['primary']
-        }}
-      >
+      <CardBody>
         <Text
           style={[
             { color: colors['primary-text'] },
@@ -77,7 +68,7 @@ export const UndelegationsCard: FunctionComponent<{
           const validator = bondedValidators.validators
             .concat(unbondingValidators.validators)
             .concat(unbondedValidators.validators)
-            .find(val => val.operator_address === unbonding.validatorAddress);
+            .find((val) => val.operator_address === unbonding.validatorAddress);
           const thumbnail =
             bondedValidators.getValidatorThumbnail(
               unbonding.validatorAddress
@@ -223,6 +214,6 @@ export const UndelegationsCard: FunctionComponent<{
           );
         })}
       </CardBody>
-    </Card>
+    </OWBox>
   );
 });

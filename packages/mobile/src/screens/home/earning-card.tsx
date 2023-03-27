@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { Card } from '../../components/card';
+import { Card, OWBox } from '../../components/card';
 import {
   Image,
   StyleSheet,
@@ -51,7 +51,7 @@ export const EarningCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: txHash => {
+          onBroadcasted: (txHash) => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
               chainId: chainStore.current.chainId,
               chainName: chainStore.current.chainName
@@ -81,195 +81,193 @@ export const EarningCard: FunctionComponent<{
   };
 
   return (
-    <View style={containerStyle}>
-      <Card style={styles.card}>
-        <View style={styles.cardBody}>
-          <Text
-            style={[
-              { ...styles['text-earn'] },
-              { color: colors['primary-text'] }
-            ]}
-          >
-            Earnings
-          </Text>
-          <Image
-            style={{
-              width: 120,
-              height: 90,
-              marginTop: spacing['24']
-            }}
-            source={require('../../assets/image/money.png')}
-            resizeMode="contain"
-            fadeDuration={0}
-          />
-          <Text
-            style={[
-              {
-                ...styles['text-amount']
-              },
-              { color: colors['primary-text'] }
-            ]}
-          >
-            {stakingReward
-              .shrink(true)
-              .maxDecimals(6)
-              .trim(true)
-              .upperCase(true)
-              .toString()}
-          </Text>
-          <Text style={[styles['amount']]}>
-            {totalStakingReward
-              ? totalStakingReward.toString()
-              : stakingReward.shrink(true).maxDecimals(6).toString()}
-          </Text>
+    <OWBox>
+      <View style={styles.cardBody}>
+        <Text
+          style={[
+            { ...styles['text-earn'] },
+            { color: colors['primary-text'] }
+          ]}
+        >
+          Earnings
+        </Text>
+        <Image
+          style={{
+            width: 120,
+            height: 90,
+            marginTop: spacing['24']
+          }}
+          source={require('../../assets/image/money.png')}
+          resizeMode="contain"
+          fadeDuration={0}
+        />
+        <Text
+          style={[
+            {
+              ...styles['text-amount']
+            },
+            { color: colors['primary-text'] }
+          ]}
+        >
+          {stakingReward
+            .shrink(true)
+            .maxDecimals(6)
+            .trim(true)
+            .upperCase(true)
+            .toString()}
+        </Text>
+        <Text style={[styles['amount']]}>
+          {totalStakingReward
+            ? totalStakingReward.toString()
+            : stakingReward.shrink(true).maxDecimals(6).toString()}
+        </Text>
 
-          <TouchableOpacity
-            style={{
-              ...styles['btn-claim'],
-              borderColor:
-                !account.isReadyToSendMsgs ||
-                stakingReward.toDec().equals(new Dec(0)) ||
-                queryReward.pendingRewardValidatorAddresses.length === 0
-                  ? colors['gray-300']
-                  : colors['purple-700'],
-              backgroundColor:
-                !account.isReadyToSendMsgs ||
-                stakingReward.toDec().equals(new Dec(0)) ||
-                queryReward.pendingRewardValidatorAddresses.length === 0
-                  ? colors['gray-300']
-                  : colors['purple-700']
-            }}
-            disabled={
+        <TouchableOpacity
+          style={{
+            ...styles['btn-claim'],
+            borderColor:
               !account.isReadyToSendMsgs ||
               stakingReward.toDec().equals(new Dec(0)) ||
               queryReward.pendingRewardValidatorAddresses.length === 0
-            }
-            onPress={_onPressClaim}
+                ? colors['gray-300']
+                : colors['purple-700'],
+            backgroundColor:
+              !account.isReadyToSendMsgs ||
+              stakingReward.toDec().equals(new Dec(0)) ||
+              queryReward.pendingRewardValidatorAddresses.length === 0
+                ? colors['gray-300']
+                : colors['purple-700']
+          }}
+          disabled={
+            !account.isReadyToSendMsgs ||
+            stakingReward.toDec().equals(new Dec(0)) ||
+            queryReward.pendingRewardValidatorAddresses.length === 0
+          }
+          onPress={_onPressClaim}
+        >
+          <View
+            style={{
+              ...styles['flex-center'],
+              flexDirection: 'row',
+              padding: spacing['8']
+            }}
+          >
+            {account.isSendingMsg === 'withdrawRewards' ? (
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: 50,
+                  left: '50%'
+                }}
+              >
+                <LoadingSpinner color={colors['gray-150']} size={22} />
+              </View>
+            ) : null}
+            <Image
+              style={{
+                width: 20,
+                height: 20
+              }}
+              source={require('../../assets/image/rewards.png')}
+              resizeMode="contain"
+              fadeDuration={0}
+            />
+            <Text style={styles['text-rewards']}>Claim Rewards</Text>
+          </View>
+        </TouchableOpacity>
+
+        <OWBox type="shadow" style={styles['view-box-staking']}>
+          <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>
+            Total staked
+          </Text>
+          <View
+            style={{
+              marginBottom: 20,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
           >
             <View
               style={{
-                ...styles['flex-center'],
+                display: 'flex',
                 flexDirection: 'row',
-                padding: spacing['8']
+                alignItems: 'center'
               }}
             >
-              {account.isSendingMsg === 'withdrawRewards' ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    bottom: 50,
-                    left: '50%'
-                  }}
-                >
-                  <LoadingSpinner color={colors['gray-150']} size={22} />
-                </View>
-              ) : null}
               <Image
                 style={{
-                  width: 20,
-                  height: 20
+                  width: 44,
+                  height: 44
                 }}
-                source={require('../../assets/image/rewards.png')}
+                source={require('../../assets/image/orai_earning.png')}
                 resizeMode="contain"
                 fadeDuration={0}
               />
-              <Text style={styles['text-rewards']}>Claim Rewards</Text>
-            </View>
-          </TouchableOpacity>
-
-          <View style={styles['view-box-staking']}>
-            <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>
-              Total staked
-            </Text>
-            <View
-              style={{
-                marginBottom: 20,
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between'
-              }}
-            >
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}
-              >
-                <Image
-                  style={{
-                    width: 44,
-                    height: 44
-                  }}
-                  source={require('../../assets/image/orai_earning.png')}
-                  resizeMode="contain"
-                  fadeDuration={0}
-                />
-                <View style={{ paddingLeft: 12 }}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      lineHeight: 22,
-                      color: colors['primary-text'],
-                      fontWeight: '700'
-                    }}
-                  >
-                    {delegated
-                      .shrink(true)
-                      .maxDecimals(6)
-                      .trim(true)
-                      .upperCase(true)
-                      .toString()}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      lineHeight: 20,
-                      fontWeight: '700',
-                      color: colors['gray-300']
-                    }}
-                  >
-                    {totalPrice
-                      ? totalPrice.toString()
-                      : delegated.shrink(true).maxDecimals(6).toString()}
-                  </Text>
-                </View>
-              </View>
-              <AddIcon
-                onPress={() => {
-                  smartNavigation.navigateSmart('Staking.Dashboard', {});
-                }}
-                color={colors['gray-150']}
-                size={24}
-              />
-            </View>
-            <View>
-              <TouchableOpacity
-                style={styles['btn-manage']}
-                onPress={() => {
-                  navigate('MainTab', { screen: 'Invest' });
-                  // smartNavigation.navigateSmart('Staking.Dashboard', {});
-                }}
-              >
+              <View style={{ paddingLeft: 12 }}>
                 <Text
                   style={{
-                    textAlign: 'center',
-                    color: colors['colored-label']
+                    fontSize: 16,
+                    lineHeight: 22,
+                    color: colors['primary-text'],
+                    fontWeight: '700'
                   }}
                 >
-                  Manage my staking
+                  {delegated
+                    .shrink(true)
+                    .maxDecimals(6)
+                    .trim(true)
+                    .upperCase(true)
+                    .toString()}
                 </Text>
-              </TouchableOpacity>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    lineHeight: 20,
+                    fontWeight: '700',
+                    color: colors['gray-300']
+                  }}
+                >
+                  {totalPrice
+                    ? totalPrice.toString()
+                    : delegated.shrink(true).maxDecimals(6).toString()}
+                </Text>
+              </View>
             </View>
+            <AddIcon
+              onPress={() => {
+                smartNavigation.navigateSmart('Staking.Dashboard', {});
+              }}
+              color={colors['gray-150']}
+              size={24}
+            />
           </View>
-        </View>
-      </Card>
-    </View>
+          <View>
+            <TouchableOpacity
+              style={styles['btn-manage']}
+              onPress={() => {
+                navigate('MainTab', { screen: 'Invest' });
+                // smartNavigation.navigateSmart('Staking.Dashboard', {});
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: 'center',
+                  color: colors['colored-label']
+                }}
+              >
+                Manage my staking
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </OWBox>
+      </View>
+    </OWBox>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     card: {
       paddingBottom: spacing['20'],
@@ -280,7 +278,7 @@ const styling = colors =>
       padding: spacing['24']
     },
     cardBody: {
-      backgroundColor: colors['primary'],
+      // backgroundColor: colors['primary'],
       alignItems: 'center'
     },
     'flex-center': {
@@ -332,7 +330,6 @@ const styling = colors =>
     'view-box-staking': {
       height: 176,
       marginTop: 24,
-      backgroundColor: colors['primary'],
       width: metrics.screenWidth - 48,
       borderRadius: spacing['12'],
       padding: 16,

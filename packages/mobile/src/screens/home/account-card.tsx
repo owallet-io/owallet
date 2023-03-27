@@ -134,7 +134,6 @@ export const AccountCard: FunctionComponent<{
     <View
       style={{
         marginHorizontal: 24,
-        marginBottom: 32
       }}
     >
       <OWBox
@@ -187,7 +186,8 @@ export const AccountCard: FunctionComponent<{
           paddingHorizontal: 12,
           borderTopLeftRadius: 0,
           paddingVertical: 18,
-          borderTopRightRadius: 0
+          borderTopRightRadius: 0,
+          backgroundColor:colors['background-box']
         }}
         type="shadow"
       >

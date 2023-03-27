@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card } from '../../components/card';
+import { Card, OWBox } from '../../components/card';
 import { Text } from '@src/components/text';
 import { TouchableOpacity, View, ViewStyle, StyleSheet } from 'react-native';
 import { BarChart, LineChart } from 'react-native-chart-kit';
@@ -77,9 +77,9 @@ export const DashboardCard: FunctionComponent<{
   const { colors } = useTheme();
   const styles = styling(colors);
   const chartConfig = {
-    backgroundColor: colors['primary'],
-    backgroundGradientFrom: colors['primary'],
-    backgroundGradientTo: colors['primary'],
+    backgroundColor: colors['background-box'],
+    backgroundGradientFrom: colors['background-box'],
+    backgroundGradientTo: colors['background-box'],
     color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
     labelColor: (opacity = 1) => `rgba(142, 142, 147, ${opacity})`,
     strokeWidth: 3,
@@ -152,15 +152,7 @@ export const DashboardCard: FunctionComponent<{
   }, [chainStore.current.chainId, data]);
 
   return (
-    <Card
-      style={{
-        padding: spacing['28'],
-        paddingBottom: spacing['14'],
-        marginBottom: spacing['32'],
-        borderRadius: spacing['24'],
-        backgroundColor: colors['primary']
-      }}
-    >
+    <OWBox>
       <Text
         style={{
           alignSelf: 'center',
@@ -253,7 +245,7 @@ export const DashboardCard: FunctionComponent<{
           chartConfig={chartConfig}
         />
       ) : null}
-    </Card>
+    </OWBox>
   );
 });
 

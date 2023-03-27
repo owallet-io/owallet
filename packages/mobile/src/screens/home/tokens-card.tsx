@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { Card, CardBody } from '../../components/card';
+import { Card, CardBody, OWBox } from '../../components/card';
 import { SectionList, StyleSheet, View, ViewStyle, Image } from 'react-native';
 import { Text } from '@src/components/text';
 import { observer } from 'mobx-react-lite';
@@ -210,21 +210,16 @@ export const TokensCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      <Card
-        style={{
-          paddingTop: spacing['8'],
-          paddingBottom: spacing['14'],
-          borderRadius: spacing['24'],
-          backgroundColor: colors['primary']
-        }}
-      >
+      <OWBox style={{
+        paddingTop:12
+      }}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
             alignItems: 'center',
             width: metrics.screenWidth - 64,
-            marginHorizontal: spacing['32']
+            // marginHorizontal: spacing['32']
           }}
         >
           {['Tokens', 'NFTs'].map((title: string, i: number) => (
@@ -367,7 +362,7 @@ export const TokensCard: FunctionComponent<{
             </Text>
           </RectButton>
         </View>
-      </Card>
+      </OWBox>
     </View>
   );
 });
