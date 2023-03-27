@@ -28,7 +28,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
         colors={colors}
         key={index.toString()}
         containerStyle={{
-          backgroundColor: colors['sub-primary'],
+          backgroundColor: colors['background-item-list'],
           flexDirection: 'row',
           justifyContent: 'space-between'
         }}
