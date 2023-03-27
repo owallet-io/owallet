@@ -3,22 +3,27 @@ import { StyleSheet, View, Image } from 'react-native';
 import { Text } from '@src/components/text';
 import { colors, spacing, typography } from '../../../themes';
 import Validators from './modal-validators';
+import { useTheme } from '@src/themes/theme-provider';
 
-const styles = StyleSheet.create({
-  containerAccount: {
-    backgroundColor: colors['background-item-list'],
-    paddingVertical: spacing['16'],
-    borderRadius: spacing['8'],
-    paddingHorizontal: spacing['16'],
-    flexDirection: 'row',
-    marginTop: spacing['16'],
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%'
-  }
-});
+const styling = () => {
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    containerAccount: {
+      backgroundColor: colors['background-item-list'],
+      paddingVertical: spacing['16'],
+      borderRadius: spacing['8'],
+      paddingHorizontal: spacing['16'],
+      flexDirection: 'row',
+      marginTop: spacing['16'],
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%'
+    }
+  });
+};
 
 const ValidatorsList = ({ onPressSelectValidator, dstValidatorAddress }) => {
+  const styles = styling();
   return (
     <View
       style={{

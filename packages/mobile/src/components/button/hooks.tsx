@@ -103,7 +103,7 @@ export const useMapStyles = ({ type, disabled, size }): IMapStyle => {
           height: formatSize.btn.height,
           backgroundColor: disabled
             ? colors['btn-disable-background']
-            : colors['gray-10']
+            : colors['purple-50']
         },
         text: {
           color: disabled
