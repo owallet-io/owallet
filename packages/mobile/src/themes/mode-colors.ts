@@ -185,7 +185,8 @@ const modeColors = {
   'background-btn-input-modal': ['#0E121D', '#F3F1F5'],
   'text-value-input-modal': ['#8C93A7', '#636366'],
   'background-box': ['#0E121D', '#fff'],
-  'background-item-list': ['#2B2D3B', '#F3F1F5']
+  'background-item-list': ['#2B2D3B', '#F3F1F5'],
+  'text-place-holder':['#717177','#8C93A7']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

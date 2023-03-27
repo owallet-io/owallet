@@ -145,7 +145,7 @@ export const TextInput = React.forwardRef<
             ]}
             {...restProps}
             placeholderTextColor={
-              props.placeholderTextColor ?? colors['sub-primary-text']
+              props.placeholderTextColor ?? colors['text-place-holder']
             }
             ref={ref}
           />
