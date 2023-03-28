@@ -16,6 +16,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
 import { Text } from '@src/components/text';
+import { OWBox } from '@src/components/card';
 
 // hard code data to test UI
 // const nftsData = [
@@ -91,7 +92,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
             marginLeft: spacing['14']
           }}
         >
-          <DownArrowIcon color={colors['black']} height={16} />
+          <DownArrowIcon color={colors['text-title-login']} height={16} />
         </View>
       </View>
     );
@@ -185,9 +186,11 @@ export const NftsScreen: FunctionComponent = observer((props) => {
           {`My NFTs`}
         </Text>
 
-        <View
+        <OWBox
           style={{
-            ...styles.container
+            marginTop:0,
+            padding:0
+            
           }}
         >
           <View
@@ -288,7 +291,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
               </Text>
             </View>
           </TouchableOpacity> */}
-        </View>
+        </OWBox>
       </View>
     </PageWithScrollViewInBottomTabView>
   );
