@@ -68,7 +68,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
         <View
           style={[
             styles.containerMnemonicWord,
-            { backgroundColor: colors['background-item-list'] }
+            // { backgroundColor: colors['background-item-list'] }
           ]}
         >
           {privateDataType === 'mnemonic' ? (

@@ -2,6 +2,7 @@ import {
   View,
   Text,
   TouchableOpacityProps,
+  TouchableOpacity,
   StyleSheet,
   StyleProp,
   TextStyle,
@@ -12,7 +13,7 @@ import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import OWText, { OWTextProps } from '../text/ow-text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
 export interface IOWButtonProps extends TouchableOpacityProps {
   type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
   size?: 'medium' | 'small' | 'large';

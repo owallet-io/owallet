@@ -88,7 +88,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
       />
       <TouchableWithoutFeedback
         style={{
-          backgroundColor: colors['primary'],
+          backgroundColor: colors['background-box'],
           borderRadius: spacing['24'],
           marginHorizontal: spacing['20']
         }}
@@ -130,7 +130,7 @@ export const OWalletVersionScreen: FunctionComponent = observer(() => {
       />
       <TouchableWithoutFeedback
         style={{
-          backgroundColor: colors['primary'],
+          backgroundColor: colors['background-box'],
           borderRadius: spacing['24'],
           marginHorizontal: spacing['20']
         }}

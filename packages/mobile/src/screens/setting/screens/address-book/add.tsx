@@ -57,7 +57,7 @@ const styling = (colors) =>
       borderBottomLeftRadius: spacing['8'],
       borderBottomRightRadius: spacing['8'],
       color: colors['sub-text'],
-      backgroundColor:colors['background-box']
+      backgroundColor: colors['background-box']
     }
   });
 
@@ -129,75 +129,73 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
       backgroundColor={colors['background']}
       style={{ marginTop: spacing['24'] }}
     >
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <OWBox>
-          <TextInput
-            label="User name"
-            value={name}
-            onChangeText={(text) => setName(text)}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={styles.addNewBookInput}
-            placeholder="Type your user name"
-          />
-          <AddressInput
-            label="Wallet address"
-            recipientConfig={recipientConfig}
-            memoConfig={memoConfig}
-            disableAddressBook={false}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={styles.addNewBookInput}
-            placeholder="Tap to paste"
-            inputRight={
-              <TouchableOpacity
-                onPress={() => {
-                  smartNavigation.navigateSmart('Camera', {
-                    screenCurrent: 'addressbook',
-                    name
-                  });
-                }}
-              >
-                <Scanner color={colors['purple-700']} />
-              </TouchableOpacity>
-            }
-          />
-          <MemoInput
-            label="Memo (optional)"
-            memoConfig={memoConfig}
-            labelStyle={styles.addNewBookLabel}
-            inputContainerStyle={{
-              ...styles.addNewBookInput,
-              height: 190
-            }}
-            multiline={false}
-            placeholder="Type memo here"
-          />
-          <OWButton
-            label="Save"
-            size="large"
-            type="primary"
-            disabled={
-              !name ||
-              recipientConfig.getError() != null ||
-              memoConfig.getError() != null
-            }
-            onPress={async () => {
-              if (
-                name &&
-                recipientConfig.getError() == null &&
-                memoConfig.getError() == null
-              ) {
-                await addressBookConfig.addAddressBook({
-                  name,
-                  address: recipientConfig.rawRecipient,
-                  memo: memoConfig.memo
+      <OWBox>
+        <TextInput
+          label="User name"
+          value={name}
+          onChangeText={(text) => setName(text)}
+          labelStyle={styles.addNewBookLabel}
+          inputContainerStyle={styles.addNewBookInput}
+          placeholder="Type your user name"
+        />
+        <AddressInput
+          label="Wallet address"
+          recipientConfig={recipientConfig}
+          memoConfig={memoConfig}
+          disableAddressBook={false}
+          labelStyle={styles.addNewBookLabel}
+          inputContainerStyle={styles.addNewBookInput}
+          placeholder="Tap to paste"
+          inputRight={
+            <TouchableOpacity
+              onPress={() => {
+                smartNavigation.navigateSmart('Camera', {
+                  screenCurrent: 'addressbook',
+                  name
                 });
-                // smartNavigation.goBack();
-                smartNavigation.navigateSmart('AddressBook', {});
-              }
-            }}
-          />
-        </OWBox>
-      </TouchableWithoutFeedback>
+              }}
+            >
+              <Scanner color={colors['purple-700']} />
+            </TouchableOpacity>
+          }
+        />
+        <MemoInput
+          label="Memo (optional)"
+          memoConfig={memoConfig}
+          labelStyle={styles.addNewBookLabel}
+          inputContainerStyle={{
+            ...styles.addNewBookInput,
+            height: 190
+          }}
+          multiline={false}
+          placeholder="Type memo here"
+        />
+        <OWButton
+          label="Save"
+          size="large"
+          type="primary"
+          disabled={
+            !name ||
+            recipientConfig.getError() != null ||
+            memoConfig.getError() != null
+          }
+          onPress={async () => {
+            if (
+              name &&
+              recipientConfig.getError() == null &&
+              memoConfig.getError() == null
+            ) {
+              await addressBookConfig.addAddressBook({
+                name,
+                address: recipientConfig.rawRecipient,
+                memo: memoConfig.memo
+              });
+              // smartNavigation.goBack();
+              smartNavigation.navigateSmart('AddressBook', {});
+            }
+          }}
+        />
+      </OWBox>
     </PageWithScrollView>
   );
 });
