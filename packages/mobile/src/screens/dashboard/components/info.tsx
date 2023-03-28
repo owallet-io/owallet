@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card } from '../../../components/card';
+import { Card, OWBox } from '../../../components/card';
 import { Text } from '@src/components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
@@ -14,7 +14,7 @@ export const InfoCard: FunctionComponent<{
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
-    <Card style={styles.card}>
+    <OWBox >
       <View style={styles.headerWrapper}>
         <View
           style={{
@@ -74,14 +74,14 @@ export const InfoCard: FunctionComponent<{
           </Text>
         </Text>
       </View>
-    </Card>
+    </OWBox>
   );
 });
 
 const styling = colors =>
   StyleSheet.create({
     headerWrapper: {
-      paddingBottom: 40
+      paddingBottom: 20
     },
     card: {
       padding: spacing['28'],

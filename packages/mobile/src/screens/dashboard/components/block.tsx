@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card } from '../../../components/card';
+import { Card, OWBox } from '../../../components/card';
 import { Text } from '@src/components/text';
 import { View, ViewStyle, StyleSheet } from 'react-native';
 import { spacing } from '../../../themes';
@@ -78,7 +78,9 @@ export const BlockCard: FunctionComponent<{
   };
 
   return (
-    <Card style={styles.card}>
+    <OWBox style={{
+      marginTop:0
+    }}>
       <View style={styles.headerWrapper}>
         <View style={[styles.blockWrapper, { paddingTop: 0 }]}>
           <View
@@ -207,7 +209,7 @@ export const BlockCard: FunctionComponent<{
           true
         )}
       </View>
-    </Card>
+    </OWBox>
   );
 });
 

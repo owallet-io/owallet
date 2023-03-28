@@ -76,11 +76,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     ]);
 
     return (
-      <PageWithView
-        propStyle={{
-          margin: 20
-        }}
-      >
+      <PageWithView>
         <View>
           <Text
             style={{
@@ -91,9 +87,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
           >{`Staking details`}</Text>
         </View>
 
-        <OWBox
-          
-        >
+        <OWBox>
           <View
             style={{
               flexDirection: 'row',
