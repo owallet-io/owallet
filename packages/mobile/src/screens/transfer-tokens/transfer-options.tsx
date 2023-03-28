@@ -12,8 +12,9 @@ import { spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendTokenCard: {
       borderRadius: spacing['24']
@@ -26,24 +27,13 @@ const styling = colors =>
       justifyContent: 'space-between'
     },
     sendTokenCardContent: {
-      paddingHorizontal: spacing['6'],
-      width: '50%'
+      width: '47%',
+      padding: 0,
     },
     sendTokenCardText: {
-      marginBottom: spacing['12'],
-      borderRadius: spacing['12'],
       height: 130,
       alignItems: 'center',
-      paddingTop: spacing['16'],
-      paddingHorizontal: spacing['8'],
-      backgroundColor: colors['item'],
-      shadowColor: '#18274B',
-      shadowOffset: {
-        width: 0,
-        height: 12
-      },
-      shadowOpacity: 0.12,
-      shadowRadius: 16.0
+      justifyContent: 'center'
     },
     iconSendToken: {
       marginBottom: spacing['6']
@@ -87,7 +77,7 @@ const TransferTokensOptions: FunctionComponent = () => {
   const { chainStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const onPress = type => {
+  const onPress = (type) => {
     switch (type) {
       case 'send':
         smartNavigation.navigateSmart('Send', {
@@ -109,7 +99,8 @@ const TransferTokensOptions: FunctionComponent = () => {
     <>
       <View style={styles.sendTokenCardbody}>
         {tokenTransferInfo.map((val, i) => (
-          <View style={styles.sendTokenCardContent} key={i}>
+          <OWBox type="shadow" style={styles.sendTokenCardContent} key={i}>
+            {/* <View style={styles.sendTokenCardContent} key={i}> */}
             <TouchableOpacity
               style={styles.sendTokenCardText}
               onPress={() => onPress(val.type)}
@@ -118,7 +109,7 @@ const TransferTokensOptions: FunctionComponent = () => {
               <Text style={styles.textSendToken}>{val.titleLine1}</Text>
               <Text style={styles.textSendToken}>{val.titleLine2}</Text>
             </TouchableOpacity>
-          </View>
+          </OWBox>
         ))}
       </View>
       {/* <View style={{ marginTop: spacing['20'], alignItems: 'center' }}>

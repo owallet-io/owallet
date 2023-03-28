@@ -37,8 +37,9 @@ import { useLoadingScreen } from '../../providers/loading-screen';
 import { AddressQRCodeModal } from '../home/components';
 import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 
-export const TokenDetailScreen: FunctionComponent = observer(props => {
+export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
@@ -117,7 +118,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     );
   };
 
-  const _onPressBtnMain = name => {
+  const _onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -189,36 +190,19 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View
         style={{
-          borderWidth: spacing['0.5'],
-          borderColor: colors['border'],
-          borderRadius: spacing['12'],
-          marginHorizontal: spacing['24'],
-          marginVertical: spacing['12']
+          marginHorizontal: 24,
+          marginBottom: 24
         }}
       >
-        <LinearGradient
-          colors={['#161532', '#5E499A']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{
-            borderTopLeftRadius: spacing['11'],
-            borderTopRightRadius: spacing['11'],
-            borderBottomLeftRadius: spacing['11'],
-            borderBottomRightRadius: spacing['11']
-          }}
-        >
+        <OWBox style={{}} type="gradient">
           <View
             style={{
-              marginTop: 24,
               justifyContent: 'center',
               alignItems: 'center'
             }}
           >
             {chainStore.current.networkType === 'evm' ? (
               <TokenSymbolEVM
-                style={{
-                  marginRight: spacing['12']
-                }}
                 size={44}
                 chainInfo={{
                   stakeCurrency: chainStore.current.stakeCurrency
@@ -228,9 +212,6 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               />
             ) : (
               <TokenSymbol
-                style={{
-                  marginRight: spacing['12']
-                }}
                 size={44}
                 chainInfo={{
                   stakeCurrency: chainStore.current.stakeCurrency
@@ -242,7 +223,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
 
             <View
               style={{
-                justifyContent: 'space-between'
+                alignItems: 'center'
               }}
             >
               <Text
@@ -250,8 +231,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
                   ...typography.h3,
                   color: colors['white'],
                   marginTop: spacing['8'],
-                  fontWeight: '800',
-                  textAlign: 'center'
+                  fontWeight: '800'
                 }}
               >
                 {`${amountBalance} ${balanceCoinDenom}`}
@@ -259,8 +239,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               <Text
                 style={{
                   ...typography.h6,
-                  color: colors['purple-400'],
-                  textAlign: 'center'
+                  color: colors['purple-400']
                 }}
               >
                 {`${priceBalance?.toString() ?? '$0'}`}
@@ -273,38 +252,28 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               display: 'flex',
               flexDirection: 'row',
               paddingTop: spacing['6'],
-              justifyContent: 'space-around',
-              paddingBottom: spacing['24']
+              justifyContent: 'space-around'
             }}
           >
             {['Buy', 'Receive', 'Send'].map((e, i) => (
               <RenderBtnMain key={i} name={e} />
             ))}
           </View>
-        </LinearGradient>
-
-        {/* {queryStakable?.isFetching ? (
-        <View
-          style={{
-            position: 'absolute',
-            bottom: 50,
-            left: '50%'
-          }}
-        >
-          <LoadingSpinner color={colors['gray-150']} size={22} />
-        </View>
-         ) : null}  */}
+        </OWBox>
       </View>
-
-      <View
+      <OWBox
         style={{
-          backgroundColor: colors['primary'],
-          borderRadius: spacing['24'],
-          paddingBottom: spacing['24'],
-          height: metrics.screenHeight / 2
+          paddingHorizontal: 0,
+          marginTop: 0,
+          paddingBottom: 24,
+          paddingTop: 0,
+          height: metrics.screenHeight / 2.1
         }}
       >
         <TransactionSectionTitle
+        containerStyle={{
+          paddingTop:0
+        }}
           title={'Transaction list'}
           onPress={async () => {
             await loadingScreen.openAsync();
@@ -392,12 +361,12 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
             </Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerToken: {
       flexDirection: 'row',

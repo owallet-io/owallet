@@ -201,7 +201,7 @@ export const MainTabNavigation: FC = () => {
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
       <Tab.Screen
         options={{
-          title: 'SendNavigation'
+          title: 'SendNavigation',
         }}
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
@@ -215,7 +215,7 @@ export const MainTabNavigation: FC = () => {
         name={SCREENS.TABS.Settings}
         component={SettingStackScreen}
         options={{
-          unmountOnBlur: true
+          unmountOnBlur: true,
         }}
       />
     </Tab.Navigator>

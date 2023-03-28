@@ -16,6 +16,9 @@ export const SendNavigation: FC = () => {
         headerMode="screen"
       >
         <Stack.Screen
+          options={{
+            headerLeft:null
+          }}
           name={SCREENS.TransferTokensScreen}
           component={TransferTokensScreen}
         />

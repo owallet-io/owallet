@@ -3,7 +3,7 @@ import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Text } from '@src/components/text';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, CardBody } from '../../components/card';
+import { Card, CardBody, OWBox } from '../../components/card';
 import { spacing } from '../../themes';
 import TransferTokensHeader from './transfer-header';
 import TransferTokensOptions from './transfer-options';
@@ -40,17 +40,16 @@ const TransferTokensScreen: FunctionComponent<{
           Transfer
         </Text>
       </View>
-      <Card
+      <OWBox
         style={{
-          ...styles.sendTokenCard,
-          backgroundColor: colors['card-background']
+          padding:0
         }}
       >
         <CardBody>
           <TransferTokensOptions />
           <TransferViewBtn />
         </CardBody>
-      </Card>
+      </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });

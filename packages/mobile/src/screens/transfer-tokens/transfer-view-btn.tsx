@@ -30,7 +30,9 @@ const TransferViewBtn = () => {
   const smartNavigation = useSmartNavigation();
   return (
     <>
-      <View>
+      <View style={{
+        marginTop:50
+      }}>
         <RectButton
           style={styles.viewBtn}
           onPress={() => {
