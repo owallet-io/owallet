@@ -1,3 +1,4 @@
+import { useTheme } from '@src/themes/theme-provider';
 import React from 'react';
 import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
 
@@ -15,6 +16,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   }
 });
+const withProgressiveImage = (WrappedComponent) => {
+  return function(props) {
+		const {colors} = useTheme();
+
+		return <WrappedComponent colors={colors} {...props} />
+	}
+};
 
 class ProgressiveImage extends React.Component {
   thumbnailAnimated = new Animated.Value(0);
@@ -41,13 +49,16 @@ class ProgressiveImage extends React.Component {
   };
 
   render() {
-    const { thumbnailSource, source, style, ...props } = this.props;
-
+    const { thumbnailSource, source, style,colors,  ...props } = this.props;
     return (
       <View
         style={[
           styles.container,
-          { backgroundColor: this.state.loading ? '#e1e4e8' : '#fff' }
+          {
+            backgroundColor: this.state.loading
+              ? '#e1e4e8'
+              : colors['background-box']
+          }
         ]}
       >
         {this.state.loading ? (
@@ -77,4 +88,4 @@ class ProgressiveImage extends React.Component {
   }
 }
 
-export default ProgressiveImage;
+export default withProgressiveImage(ProgressiveImage);

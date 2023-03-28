@@ -1,6 +1,5 @@
 import React, {
   FunctionComponent,
-  // ReactElement,
   useEffect,
   useState
 } from 'react';
@@ -9,35 +8,23 @@ import { useStore } from '../../stores';
 import {
   StyleSheet,
   View,
-  // ViewStyle,
   Image,
   ActivityIndicator
-  // TouchableWithoutFeedback,
-  // Keyboard
 } from 'react-native';
 
 import { useSmartNavigation } from '../../navigation.provider';
-// import { Currency } from '@owallet/types';
-// import { TokenSymbol } from '../../components/token-symbol';
 import { DenomHelper, EthereumEndpoint } from '@owallet/common';
-// import { Bech32Address } from '@owallet/cosmos';
 import { metrics, spacing, typography } from '../../themes';
-// import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import {
   convertAmount,
-  // formatContractAddress,
   _keyExtract
 } from '../../utils/helper';
 import {
   QuantityIcon
-  // SendIcon,
-  // TransactionMinusIcon
 } from '../../components/icon';
 import LinearGradient from 'react-native-linear-gradient';
 import {
-  // BuyIcon,
-  // DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
 import {
