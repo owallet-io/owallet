@@ -281,11 +281,11 @@ export const SelectorButtonWithoutModal: FunctionComponent<{
             'border-radius-4',
             'border-width-1'
           ]),
-          selectorContainerStyle,
           {
             backgroundColor: colors['background-container'],
             borderColor: colors['border-input-login']
-          }
+          },
+          selectorContainerStyle
         ])}
         onPress={onPress}
       >

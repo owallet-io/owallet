@@ -23,8 +23,9 @@ import { Buffer } from 'buffer';
 import { spacing } from '../../themes';
 import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
+import { OWBox } from '@src/components/card';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -40,7 +41,7 @@ const styling = colors =>
       marginBottom: spacing['8']
     },
     containerStyle: {
-      backgroundColor: colors['primary']
+      backgroundColor: colors['background-box']
     }
   });
 
@@ -85,15 +86,17 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.type === 'cw20') {
-          return cur.coinDenom == route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => {
+          if (cur.type === 'cw20') {
+            return cur.coinDenom == route.params.currency;
+          }
+          if (cur.coinDenom === route.params.currency) {
+            return cur.coinDenom === route.params.currency;
+          }
+          return cur.coinMinimalDenom == route.params.currency;
         }
-        if (cur.coinDenom === route.params.currency) {
-          return cur.coinDenom === route.params.currency;
-        }
-        return cur.coinMinimalDenom == route.params.currency;
-      });
+      );
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -130,13 +133,20 @@ export const SendScreen: FunctionComponent = observer(() => {
             Send
           </Text>
         </View>
-        <View style={styles.sendInputRoot}>
+        <OWBox
+          style={{
+            margin: 0
+          }}
+        >
           <CurrencySelector
             label="Select a token"
             placeHolder="Select Token"
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
             containerStyle={styles.containerStyle}
+            selectorContainerStyle={{
+              backgroundColor:colors['background-box']
+            }}
           />
           <AddressInput
             placeholder="Enter receiving address"
@@ -144,6 +154,9 @@ export const SendScreen: FunctionComponent = observer(() => {
             recipientConfig={sendConfigs.recipientConfig}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
           />
           <AmountInput
             placeholder="ex. 1000 ORAI"
@@ -151,6 +164,9 @@ export const SendScreen: FunctionComponent = observer(() => {
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
             labelStyle={styles.sendlabelInput}
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
           />
 
           {chainStore.current.networkType !== 'evm' ? (
@@ -163,7 +179,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -192,10 +208,13 @@ export const SendScreen: FunctionComponent = observer(() => {
           {customFee && chainStore.current.networkType !== 'evm' ? (
             <TextInput
               label="Fee"
+              inputContainerStyle={{
+                backgroundColor: colors['background-box']
+              }}
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -219,6 +238,9 @@ export const SendScreen: FunctionComponent = observer(() => {
           <MemoInput
             label="Memo (Optional)"
             placeholder="Type your memo here"
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
@@ -262,13 +284,13 @@ export const SendScreen: FunctionComponent = observer(() => {
                       networkType: chainStore.current.networkType
                     },
                     {
-                      onFulfill: tx => {
+                      onFulfill: (tx) => {
                         console.log(
                           tx,
                           'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                         );
                       },
-                      onBroadcasted: txHash => {
+                      onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
@@ -315,7 +337,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               }
             }}
           />
-        </View>
+        </OWBox>
       </View>
     </PageWithScrollView>
   );
