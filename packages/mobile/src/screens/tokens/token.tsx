@@ -9,6 +9,7 @@ import { _keyExtract } from '../../utils/helper';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { TokenItem } from './components/token-item';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
@@ -34,9 +35,10 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
+    tokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -45,10 +47,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
   }, [chainStore.current.chainId]);
 
   return (
-    <PageWithScrollViewInBottomTabView
-      style={{ flex: 1, marginBottom: 70 }}
-      backgroundColor={colors['background']}
-    >
+    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <Text
         style={{
           ...styles.title,
@@ -58,11 +57,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
         {`My Tokens`}
       </Text>
 
-      <View
-        style={{
-          ...styles.containerTokens
-        }}
-      >
+      <OWBox>
         <FlatList
           data={unique}
           renderItem={({ item }) => {
@@ -81,12 +76,12 @@ export const TokensScreen: FunctionComponent = observer(() => {
           }}
           keyExtractor={_keyExtract}
         />
-      </View>
+      </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {
       flex: 1

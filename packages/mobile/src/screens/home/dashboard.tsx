@@ -272,7 +272,7 @@ const styling = colors =>
     },
     inActive: {
       padding: 7,
-      backgroundColor: colors['primary'],
+      backgroundColor: colors['background-box'],
       borderRadius: 4
     },
     activeText: {
