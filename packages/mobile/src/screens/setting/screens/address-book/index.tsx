@@ -39,6 +39,7 @@ import { CustomHeader } from '../../../../navigation';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../../../components/page';
+import { OWBox } from '@src/components/card';
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -59,7 +60,7 @@ const styling = () => {
       backgroundColor: colors['background-item-list'],
       paddingVertical: spacing['12'],
       paddingHorizontal: spacing['16'],
-      borderRadius: spacing['8']
+      borderRadius: spacing['8'],
     },
     addressBookAdd: {
       flexDirection: 'row',
@@ -166,11 +167,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           Address book
         </Text>
       </View>
-      <View
-        style={{
-          ...styles.addressBookRoot
-        }}
-      >
+      <OWBox>
         <View>
           <TextInput
             inputRight={
@@ -252,10 +249,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                     ])}
                   >
                     <View>
-                      <Text
-                        variant='body1'
-                        typo='bold'
-                      >
+                      <Text variant="body1" typo="bold">
                         {data.name}
                       </Text>
                       {/* <Text
@@ -268,8 +262,8 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                         {data.memo}
                       </Text> */}
                       <Text
-                        variant='caption'
-                        typo='bold'
+                        variant="caption"
+                        typo="bold"
                         color={colors['gray-300']}
                       >
                         {Bech32Address.shortenAddress(data.address, 30)}
@@ -319,19 +313,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                     </TouchableOpacity>
                   </View>
                 </AddressBookItem>
-                {addressBookConfig.addressBookDatas.length - 1 !== i ? (
-                  <View
-                    style={style.flatten([
-                      'height-1',
-                      'background-color-border-white'
-                    ])}
-                  />
-                ) : null}
+                
               </React.Fragment>
             );
           })}
         </View>
-      </View>
+      </OWBox>
     </PageWithScrollView>
   );
 });

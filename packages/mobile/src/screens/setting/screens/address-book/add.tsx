@@ -1,12 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollView } from '../../../../components/page';
 import { useStyle } from '../../../../styles';
-import {
-  RouteProp,
-  useNavigation,
-  useRoute,
-  
-} from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import {
   AddressBookConfig,
@@ -30,7 +25,7 @@ import {
   MemoInput,
   TextInput
 } from '../../../../components/input';
-import { Button } from '../../../../components/button';
+import { Button, OWButton } from '../../../../components/button';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import { spacing } from '../../../../themes';
 import { Scanner } from '../../../../components/icon';
@@ -40,7 +35,7 @@ import {
 } from 'react-native-gesture-handler';
 import { AsyncKVStore } from '../../../../common';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     addNewBookRoot: {
       backgroundColor: colors['background'],
@@ -137,7 +132,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           <TextInput
             label="User name"
             value={name}
-            onChangeText={text => setName(text)}
+            onChangeText={(text) => setName(text)}
             labelStyle={styles.addNewBookLabel}
             inputContainerStyle={styles.addNewBookInput}
             placeholder="Type your user name"
@@ -176,14 +171,10 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             placeholder="Type memo here"
             placeholderTextColor={colors['gray-300']}
           />
-          <Button
-            text="Save"
+          <OWButton
+            label="Save"
             size="large"
-            style={
-              name && {
-                backgroundColor: colors['purple-700']
-              }
-            }
+            type="primary"
             disabled={
               !name ||
               recipientConfig.getError() != null ||
