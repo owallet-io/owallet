@@ -163,7 +163,7 @@ const InfoItems: FunctionComponent<{
             ])
           ]),
           {
-            backgroundColor: colors['item']
+            backgroundColor: colors['background-box']
           }
         ]}
       >
@@ -190,7 +190,7 @@ const DetailItems: FunctionComponent<{
           style={[
             styles.containerDetailHorizontal,
             {
-              backgroundColor: colors['item']
+              backgroundColor: colors['background-box']
             }
           ]}
         >
@@ -245,7 +245,7 @@ const DetailItems: FunctionComponent<{
             ])
           ]),
           {
-            backgroundColor: colors['item']
+            backgroundColor: colors['background-box']
           }
         ]}
         onPress={onPress}

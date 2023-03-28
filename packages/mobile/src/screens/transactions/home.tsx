@@ -24,6 +24,7 @@ import { NewsTab } from './news';
 import { useIsFocused } from '@react-navigation/core';
 import { TendermintTxTracer } from '@owallet/cosmos';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 
 export const Transactions: FunctionComponent = () => {
   const { chainStore, accountStore } = useStore();
@@ -94,13 +95,13 @@ export const Transactions: FunctionComponent = () => {
       );
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
-        .then(tx => {
+        .then((tx) => {
           page.current = 1;
           setTimeout(() => {
             fetchData();
           }, 1500);
         })
-        .catch(e => {
+        .catch((e) => {
           console.log(`Failed to trace the tx ()`, e);
         });
     }
@@ -152,7 +153,7 @@ export const Transactions: FunctionComponent = () => {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: colors['primary'],
+          backgroundColor: colors['background-box'],
           borderRadius: spacing['12'],
           height: 56,
           marginVertical: spacing['12'],
@@ -169,7 +170,7 @@ export const Transactions: FunctionComponent = () => {
               alignItems: 'center',
               paddingVertical: spacing['12'],
               backgroundColor:
-                indexParent === i ? colors['purple-700'] : colors['primary'],
+                indexParent === i ? colors['purple-700'] : colors['background-box'],
               borderRadius: spacing['12']
             }}
             onPress={() => {
@@ -190,10 +191,10 @@ export const Transactions: FunctionComponent = () => {
         ))}
       </View>
       {indexParent == 0 && (
-        <View
+        <OWBox
           style={{
-            backgroundColor: colors['primary'],
-            borderRadius: spacing['24']
+            margin: 0,
+            padding: 0
           }}
         >
           <View
@@ -284,14 +285,14 @@ export const Transactions: FunctionComponent = () => {
               </View>
             ) : null}
           </View>
-        </View>
+        </OWBox>
       )}
       {indexParent == 1 && <NewsTab />}
     </View>
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {
       backgroundColor: colors['background'],
