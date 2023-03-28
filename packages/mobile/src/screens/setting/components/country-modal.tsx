@@ -28,9 +28,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
         colors={colors}
         key={index.toString()}
         containerStyle={{
-          backgroundColor: colors['background-item-list'],
-          flexDirection: 'row',
-          justifyContent: 'space-between'
+          backgroundColor: colors['background-item-list']
         }}
         label={item.label || 'USD'}
         active={current === item.key ? true : false}
@@ -46,7 +44,7 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
     // container
     <View
       style={{
-        alignItems: 'center',
+        alignItems: 'center'
         // backgroundColor: colors['primary']
       }}
     >

@@ -217,7 +217,7 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollView
       contentContainerStyle={styles.container}
-      backgroundColor={colors['plain-background']}
+      // backgroundColor={colors['plain-background']}
     >
       {/* Mock for flexible margin top */}
       <View style={styles.headerContainer}>

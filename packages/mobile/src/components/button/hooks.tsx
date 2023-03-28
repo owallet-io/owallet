@@ -109,7 +109,9 @@ export const useMapStyles = ({
           height: formatSize.btn.height,
           backgroundColor: disabled
             ? colors['btn-disable-background']
-            : colors['purple-50']
+            : 'transparent',
+            borderColor:colors['purple-700'],
+            borderWidth:1
         },
         text: {
           color: disabled

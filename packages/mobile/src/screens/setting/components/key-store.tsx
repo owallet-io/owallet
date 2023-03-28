@@ -42,7 +42,9 @@ export const KeyStoreSectionTitle: FunctionComponent<{
         }}
       >
         {title &&
-          title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
+          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
+            letter.toUpperCase()
+          )}
       </Text>
     </View>
   );
@@ -116,8 +118,9 @@ export const KeyStoreItem: FunctionComponent<{
     return (
       <View
         style={{
-          ...containerStyle,
-          ...styles.containerItem
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between'
         }}
       >
         <View
@@ -178,7 +181,8 @@ export const KeyStoreItem: FunctionComponent<{
   return (
     <TouchableOpacity
       style={{
-        ...styles.containerItem
+        ...styles.containerItem,
+        ...containerStyle
       }}
       onPress={onPress}
     >
@@ -187,7 +191,7 @@ export const KeyStoreItem: FunctionComponent<{
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     selectBtn: {
       height: 54,
@@ -198,11 +202,12 @@ const styling = colors =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      backgroundColor: colors['background-item-list'],
+      backgroundColor: colors['background-box'],
       borderRadius: spacing['12'],
       marginVertical: spacing['8'],
-      marginHorizontal: spacing['20'],
-      paddingVertical: spacing['4']
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['20'],
+      marginHorizontal: spacing['24']
     },
     containerSectionTitle: {
       marginHorizontal: spacing['20'],

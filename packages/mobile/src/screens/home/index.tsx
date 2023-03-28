@@ -221,19 +221,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         <EarningCard containerStyle={styles.containerEarnStyle} />
       ) : null}
 
-      {/* {currentChain.networkType === 'cosmos' && (
-        <>
-          <MyRewardCard
-            containerStyle={style.flatten(['margin-bottom-card-gap'])}
-          />
-          <StakingInfoCard
-            containerStyle={style.flatten(['margin-bottom-card-gap'])}
-          />
-          <GovernanceCard
-            containerStyle={style.flatten(['margin-bottom-card-gap'])}
-          />
-        </>
-      )} */}
     </PageWithScrollViewInBottomTabView>
   );
 });
