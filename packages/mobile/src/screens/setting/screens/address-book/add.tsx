@@ -34,6 +34,7 @@ import {
   TouchableWithoutFeedback
 } from 'react-native-gesture-handler';
 import { AsyncKVStore } from '../../../../common';
+import { OWBox } from '@src/components/card';
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -55,7 +56,8 @@ const styling = (colors) =>
       borderTopRightRadius: spacing['8'],
       borderBottomLeftRadius: spacing['8'],
       borderBottomRightRadius: spacing['8'],
-      color: colors['sub-text']
+      color: colors['sub-text'],
+      backgroundColor:colors['background-box']
     }
   });
 
@@ -128,7 +130,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
       style={{ marginTop: spacing['24'] }}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.addNewBookRoot}>
+        <OWBox>
           <TextInput
             label="User name"
             value={name}
@@ -157,7 +159,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 <Scanner color={colors['purple-700']} />
               </TouchableOpacity>
             }
-            placeholderTextColor={colors['gray-300']}
           />
           <MemoInput
             label="Memo (optional)"
@@ -169,7 +170,6 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
             }}
             multiline={false}
             placeholder="Type memo here"
-            placeholderTextColor={colors['gray-300']}
           />
           <OWButton
             label="Save"
@@ -196,7 +196,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
               }
             }}
           />
-        </View>
+        </OWBox>
       </TouchableWithoutFeedback>
     </PageWithScrollView>
   );
