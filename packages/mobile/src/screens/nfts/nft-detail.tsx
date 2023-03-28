@@ -257,7 +257,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                         style={{
                           ...typography['h7'],
                           lineHeight: spacing['20'],
-                          // color: colors['white'],
+                          color: colors['white'],
                           paddingLeft: spacing['6'],
                           fontWeight: '700'
                         }}

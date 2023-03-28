@@ -178,10 +178,16 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             recipientConfig={sendConfigs.recipientConfig}
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
+            inputContainerStyle={{
+              backgroundColor:colors['background-box']
+            }}
           />
           <TextInput
             placeholder={`Max: ${nft.quantity}`}
             label="Quantity"
+            inputContainerStyle={{
+              backgroundColor:colors['background-box']
+            }}
             error={
               !quantity || quantity > nft.quantity
                 ? 'Please enter valid quantity'
@@ -236,6 +242,9 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           />
           <MemoInput
             label="Memo (Optional)"
+            inputContainerStyle={{
+              backgroundColor:colors['background-box']
+            }}
             placeholder="Type your memo here"
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}

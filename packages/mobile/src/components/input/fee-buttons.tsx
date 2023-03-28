@@ -21,6 +21,7 @@ import { useStore } from '../../stores';
 import { CoinPretty, PricePretty } from '@owallet/unit';
 import { LoadingSpinner } from '../spinner';
 import { RectButton } from '../rect-button';
+import { OWBox } from '@src/components/card';
 import {
   FastIcon,
   LowIcon,
@@ -204,19 +205,19 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       onPress: () => void
     ) => React.ReactElement = (label, price, amount, selected, onPress) => {
       return (
-        <RectButton
-          style={{
-            ...styles.containerBtnFee,
-            ...(selected
-              ? {
-                  borderColor: colors['purple-700'],
-                  borderWidth: 1
-                }
-              : {
-                  borderColor: colors['gray-10'],
-                  borderWidth: 1
-                })
-          }}
+        <OWBox type="shadow" style={{
+          ...styles.containerBtnFee,
+          ...(selected
+            && {
+                borderColor: colors['purple-700'],
+                borderWidth: 1
+              }
+            )
+        }}>
+           <RectButton
+         style={{
+          flex:1
+         }}
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
         >
@@ -253,6 +254,8 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             </Text>
           ) : null}
         </RectButton>
+        </OWBox>
+       
       );
     };
 

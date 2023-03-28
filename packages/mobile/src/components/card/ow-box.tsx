@@ -8,22 +8,31 @@ export interface IOWBoxProps extends ViewProps {
   type?: 'shadow' | 'gradient' | 'normal';
 }
 const useStyleType = ({ type }) => {
-  const { colors } = useTheme();
+  const { colors, dark } = useTheme();
   let styles: ViewStyle = {};
   switch (type) {
     case 'shadow':
-      styles = {
-        shadowColor: colors['gray-150'],
-        shadowOffset: {
-          width: 0,
-          height: 6
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        borderRadius:spacing['12'],
-        width: '100%',
-        backgroundColor:colors['background-box-shadow']
-      };
+      if (!dark) {
+        styles = {
+          shadowColor: colors['gray-150'],
+          shadowOffset: {
+            width: 0,
+            height: 6
+          },
+          shadowOpacity: 0.3,
+          shadowRadius: 4,
+          borderRadius: spacing['12'],
+          width: '100%',
+          backgroundColor: colors['background-box-shadow']
+        };
+      } else {
+        styles = {
+          borderRadius: spacing['12'],
+          width: '100%',
+          backgroundColor: colors['background-box-shadow']
+        };
+      }
+
       break;
     case 'gradient':
       styles = {
@@ -31,7 +40,7 @@ const useStyleType = ({ type }) => {
         width: '100%',
         paddingHorizontal: spacing['20'],
         paddingVertical: spacing['24'],
-        borderRadius:spacing['12']
+        borderRadius: spacing['12']
       };
       break;
     case 'normal':
@@ -56,13 +65,12 @@ const useStyleType = ({ type }) => {
   return styles;
 };
 const OWBox = ({ children, style, type = 'normal', ...props }: IOWBoxProps) => {
-  
   const ContainerElement = type == 'gradient' ? OWLinearGradientBox : View;
   const stylesType = useStyleType({
     type
   });
   return (
-    <ContainerElement style={[ stylesType, style]} {...props}>
+    <ContainerElement style={[stylesType, style]} {...props}>
       {children}
     </ContainerElement>
   );
