@@ -138,7 +138,7 @@ export const Transactions: FunctionComponent = () => {
             })
           }
           containerStyle={{
-            backgroundColor: colors['sub-primary']
+            backgroundColor: colors['background-item-list']
           }} // customize item transaction
         />
       );

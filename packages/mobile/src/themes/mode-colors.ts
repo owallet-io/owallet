@@ -106,7 +106,8 @@ export const colorsCode = {
   'orange-800': '#EF6363',
   //blue
   'blue-300': '#8C93A7',
-  'blue-600': '#5F5E77'
+  'blue-600': '#5F5E77',
+  'blue/Border-50':'#EDEDF8'
 };
 //item 1:Dark, item 2: Light
 const modeColors = {

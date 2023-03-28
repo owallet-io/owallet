@@ -1,32 +1,16 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import {
-  StyleSheet,
-  View,
-  Image,
-  ActivityIndicator
-} from 'react-native';
+import { StyleSheet, View, Image, ActivityIndicator } from 'react-native';
 
 import { useSmartNavigation } from '../../navigation.provider';
 import { DenomHelper, EthereumEndpoint } from '@owallet/common';
 import { metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  convertAmount,
-  _keyExtract
-} from '../../utils/helper';
-import {
-  QuantityIcon
-} from '../../components/icon';
+import { convertAmount, _keyExtract } from '../../utils/helper';
+import { QuantityIcon } from '../../components/icon';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  SendDashboardIcon
-} from '../../components/icon/button';
+import { SendDashboardIcon } from '../../components/icon/button';
 import {
   TransactionItem,
   TransactionSectionTitle
@@ -38,6 +22,7 @@ import { useSendTxConfig } from '@owallet/hooks';
 import ProgressiveImage from '../../components/progessive-image';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
@@ -132,20 +117,9 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView>
       <View style={styles.container}>
-        <LinearGradient
-          colors={['#161532', '#5E499A']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{
-            borderTopLeftRadius: spacing['11'],
-            borderTopRightRadius: spacing['11'],
-            borderBottomLeftRadius: spacing['11'],
-            borderBottomRightRadius: spacing['11']
-          }}
-        >
+        <OWBox type="gradient">
           <View
             style={{
-              marginTop: spacing['24'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -295,7 +269,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                 ))
               : null}
           </View>
-        </LinearGradient>
+        </OWBox>
       </View>
 
       <View
@@ -311,6 +285,9 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
           data={[]}
           renderItem={({ item, index }) => (
             <TransactionItem
+              containerStyle={{
+                backgroundColor: colors['background-item-list']
+              }} // customize item transaction
               type={'native'}
               item={item}
               key={index}
@@ -347,37 +324,6 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
           }
         />
 
-        {/* <TouchableOpacity
-          style={{
-            backgroundColor: colors['purple-700'],
-            borderRadius: spacing['8'],
-            marginHorizontal: spacing['24'],
-            paddingVertical: spacing['16'],
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: spacing['12']
-          }}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <TransactionMinusIcon size={18} color={colors['white']} />
-            <Text
-              style={{
-                ...typography.h6,
-                color: colors['white'],
-                fontWeight: '700',
-                marginLeft: spacing['10']
-              }}
-            >
-              View all transactions
-            </Text>
-          </View>
-        </TouchableOpacity> */}
       </View>
     </PageWithScrollViewInBottomTabView>
   );
@@ -387,29 +333,27 @@ const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     container: {
-      borderWidth: spacing['0.5'],
-      borderColor: colors['gray-100'],
-      borderRadius: spacing['12'],
       marginHorizontal: spacing['24'],
-      marginVertical: spacing['12']
+      marginBottom: spacing['12']
     },
     containerImage: {
       marginTop: spacing['8'],
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: colors['background-box'],
-      marginHorizontal: 22,
+      paddingHorizontal: 12,
       borderRadius: spacing['12'],
       padding: spacing['8'],
       marginBottom: spacing['24']
     },
     containerQuantity: {
-      backgroundColor: colors['item'],
+      backgroundColor: colors['blue/Border-50'],
       borderRadius: spacing['6'],
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      height: '50%'
+      height: '50%',
+      paddingHorizontal:6
     },
     containerBtn: {
       display: 'flex',
@@ -418,13 +362,11 @@ const styling = () => {
       paddingLeft: spacing[22],
       paddingRight: spacing['22'],
       justifyContent: 'center',
-      paddingBottom: spacing['24']
+      // paddingBottom: spacing['24']
     },
     btn: {
       backgroundColor: colors['purple-700'],
-      borderWidth: 0.5,
       borderRadius: spacing['8'],
-      borderColor: colors['transparent'],
       marginLeft: 10,
       marginRight: 10
     },
