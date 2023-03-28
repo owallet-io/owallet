@@ -13,6 +13,7 @@ import { useStore } from '../../../stores';
 import { observer } from 'mobx-react-lite';
 import { API } from '../../../common/api';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();
@@ -56,18 +57,15 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           {`My staking`}
         </Text>
 
-        <View
-          style={{
-            ...styles.containerMyStaking
-          }}
+        <OWBox
+          
         >
           {chainStore.current.networkType === 'cosmos' ? (
             <MyRewardCard />
           ) : (
             <View
               style={{
-                alignItems: 'center',
-                backgroundColor: colors['background']
+                alignItems: 'center'
               }}
             >
               <Image
@@ -134,7 +132,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               />
             ) : null}
           </View>
-        </View>
+        </OWBox>
 
         <View>
           {chainStore.current.networkType === 'cosmos' ? (
