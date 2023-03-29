@@ -19,6 +19,7 @@ import {
 import { ValidatorThumbnails } from '@owallet/common';
 // import { DelegatedCard } from './delegated-card';
 import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
     case 'Website':
@@ -238,33 +239,20 @@ export const ValidatorDetailsCard: FunctionComponent<{
         
         </OWBox>
       ) : null}
-      {/* </OWBox> */}
-      <TouchableOpacity
-            style={{
-              marginBottom: 16,
-              backgroundColor: colors['purple-700'],
-              borderRadius: 8,
-              marginHorizontal:24,
-              marginTop:20
-            }}
-            onPress={() => {
-              smartNavigation.navigateSmart('Delegate', {
-                validatorAddress
-              });
-            }}
-          >
-            <Text
-              style={{
-                color: colors['white'],
-                textAlign: 'center',
-                fontWeight: '700',
-                fontSize: 16,
-                padding: 16
-              }}
-            >
-              Stake now
-            </Text>
-          </TouchableOpacity>
+      <OWButton 
+      label='Stake now'
+      onPress={() => {
+        smartNavigation.navigateSmart('Delegate', {
+          validatorAddress
+        });
+      }}
+      style={{
+        marginTop:20,
+        marginHorizontal:24,
+      }}
+      fullWidth={false}
+      />
+      
     </View>
   );
 });

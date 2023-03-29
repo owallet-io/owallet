@@ -14,7 +14,7 @@ import {
 } from '../../../components/input';
 import { View } from 'react-native';
 import { Text } from '@src/components/text';
-import { Button } from '../../../components/button';
+import { Button, OWButton } from '../../../components/button';
 import { CardBody, CardDivider } from '../../../components/card';
 import { BondStatus } from '@owallet/stores';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
@@ -187,7 +187,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       >
         <Toggle
           on={customFee}
-          onChange={value => {
+          onChange={(value) => {
             setCustomFee(value);
             if (!value) {
               if (
@@ -223,7 +223,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             color: colors['gray-900'],
             marginBottom: spacing['8']
           }}
-          onChangeText={text => {
+          onChangeText={(text) => {
             const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
               DecUtils.getTenExponentNInPrecisionRange(6)
             );
@@ -243,13 +243,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         />
       ) : null}
 
-      <Button
-        text="Unstake"
-        size="large"
-        style={{
-          backgroundColor: isDisable ? colors['disabled'] : colors['purple-700']
-        }}
-        underlayColor={colors['purple-400']}
+      <OWButton
+        label="Unstake"
         disabled={isDisable}
         loading={account.isSendingMsg === 'undelegate'}
         onPress={async () => {
@@ -265,13 +260,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   preferNoSetFee: true
                 },
                 {
-                  onFulfill: tx => {
+                  onFulfill: (tx) => {
                     console.log(
                       tx,
                       'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                     );
                   },
-                  onBroadcasted: txHash => {
+                  onBroadcasted: (txHash) => {
                     analyticsStore.logEvent('Undelegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,

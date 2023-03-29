@@ -87,7 +87,7 @@ export const TextInput = React.forwardRef<
             ]
           ),
           {
-            backgroundColor: colors['background-container'],
+            backgroundColor: 'transparent',
             borderColor: colors['border-input-login']
           },
           props.inputStyle,

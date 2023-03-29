@@ -12,7 +12,7 @@ import {
   MemoInput,
   TextInput
 } from '../../../components/input';
-import { Button } from '../../../components/button';
+import { Button, OWButton } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { BondStatus } from '@owallet/stores';
 import { spacing, typography } from '../../../themes';
@@ -100,7 +100,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
       <OWBox
         style={{
-          marginBottom:24
+          marginBottom: 24
         }}
       >
         <AmountInput label={'Amount'} amountConfig={sendConfigs.amountConfig} />
@@ -120,7 +120,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         >
           <Toggle
             on={customFee}
-            onChange={value => {
+            onChange={(value) => {
               setCustomFee(value);
               if (!value) {
                 if (
@@ -151,7 +151,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             placeholder="Type your Fee here"
             keyboardType={'numeric'}
             labelStyle={styles.sendlabelInput}
-            onChangeText={text => {
+            onChangeText={(text) => {
               const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                 DecUtils.getTenExponentNInPrecisionRange(6)
               );
@@ -215,15 +215,14 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           <View />
         </View>
       </OWBox>
-      <Button
-        containerStyle={{
+
+      <OWButton
+        style={{
           marginHorizontal: spacing['20'],
-          backgroundColor: colors['purple-700'],
           marginBottom: 20
         }}
-        underlayColor={colors['purple-400']}
-        text="Stake"
-        size="large"
+        label="Stake"
+        fullWidth={false}
         disabled={!account.isReadyToSendMsgs || !txStateIsValid}
         loading={account.isSendingMsg === 'delegate'}
         onPress={async () => {
@@ -239,7 +238,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   preferNoSetFee: true
                 },
                 {
-                  onBroadcasted: txHash => {
+                  onBroadcasted: (txHash) => {
                     analyticsStore.logEvent('Delegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
@@ -269,7 +268,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     page: {
       padding: spacing['page']
@@ -308,6 +307,6 @@ const styling = colors =>
       fontWeight: '700',
       textAlign: 'center',
       color: colors['gray-900'],
-      marginTop: spacing['12'],
+      marginTop: spacing['12']
     }
   });

@@ -64,7 +64,7 @@ class FeeButtonState {
 }
 
 export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  props => {
+  (props) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
@@ -205,19 +205,15 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       onPress: () => void
     ) => React.ReactElement = (label, price, amount, selected, onPress) => {
       return (
-        <OWBox type="shadow" style={{
-          ...styles.containerBtnFee,
-          ...(selected
-            && {
-                borderColor: colors['purple-700'],
-                borderWidth: 1
-              }
-            )
-        }}>
-           <RectButton
-         style={{
-          flex:1
-         }}
+        <RectButton
+          style={{
+            ...styles.containerBtnFee,
+            ...(selected ? {
+              borderColor: colors['purple-700'],
+              borderWidth: 1
+            }:{borderColor: colors['border-purple-100-gray-800'],
+            borderWidth: 0.5})
+          }}
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
         >
@@ -254,8 +250,6 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             </Text>
           ) : null}
         </RectButton>
-        </OWBox>
-       
       );
     };
 
@@ -355,7 +349,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
   }
 );
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtnFee: {
       flex: 1,

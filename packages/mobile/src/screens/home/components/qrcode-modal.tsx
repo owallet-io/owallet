@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useMemo } from 'react';
-import { Button } from '../../../components/button';
+import { Button, OWButton } from '../../../components/button';
 import { Share, StyleSheet, View } from 'react-native';
 import { CardModal } from '../../../modals/card';
 import { AddressCopyable } from '../../../components/address-copyable';
@@ -63,20 +63,15 @@ export const AddressQRCodeModal: FunctionComponent<{
           )}
         </View>
         <View style={{ flexDirection: 'row' }}>
-          <Button
-            containerStyle={{ flex: 1, backgroundColor: colors['purple-700'] }}
-            textStyle={{
-              color: colors['white']
-            }}
-            text="Share Address"
-            mode="light"
-            size="large"
+          <OWButton
+            
+            label="Share Address"
             loading={account.bech32Address === ''}
             disabled={account.bech32Address === ''}
             onPress={() => {
               Share.share({
                 message: addressToshow
-              }).catch(e => {
+              }).catch((e) => {
                 console.log(e);
               });
             }}

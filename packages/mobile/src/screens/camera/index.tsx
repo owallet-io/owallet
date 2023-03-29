@@ -4,7 +4,7 @@ import { PageWithView } from '../../components/page';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
-import { Button } from '../../components/button';
+import { Button, OWButton } from '../../components/button';
 import { Share, StyleSheet, View } from 'react-native';
 import { ChainSelectorModal } from '../../components/chain-selector';
 import { registerModal } from '../../modals/base';
@@ -193,13 +193,12 @@ export const AddressQRCodeModal: FunctionComponent<{
               flexDirection: 'row'
             }}
           >
-            <Button
-              containerStyle={{
-                flex: 1
-              }}
-              text="Share Address"
-              mode="light"
-              size="large"
+            <OWButton
+              // containerStyle={{
+              //   flex: 1
+              // }}
+              label="Share Address"
+              
               loading={account.bech32Address === ''}
               onPress={() => {
                 Share.share({
