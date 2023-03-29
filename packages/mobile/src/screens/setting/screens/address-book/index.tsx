@@ -188,7 +188,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
             style={{
               fontWeight: '400',
               fontSize: 16,
-              color: colors['gray-300']
+              color: colors['text-label-list']
             }}
           >
             Contact list

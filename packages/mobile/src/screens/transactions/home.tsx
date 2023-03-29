@@ -228,7 +228,7 @@ export const Transactions: FunctionComponent = () => {
                     color:
                       indexChildren === i
                         ? colors['primary-text']
-                        : colors['gray-300']
+                        : colors['blue-300']
                   }}
                 >
                   {title}

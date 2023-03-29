@@ -72,7 +72,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
     smartNavigation.navigateSmart('TransferNFT', {
       nft: {
         ...item,
-        quantity: item.version === 1 ? 1 : owner.availableQuantity
+        quantity: item?.version === 1 ? 1 : owner?.availableQuantity
       }
     });
   };
@@ -220,7 +220,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
 
           <View style={styles.containerBtn}>
             {loading ? <ActivityIndicator /> : null}
-            {item.version === 1 && item.offer != null
+            {item?.version === 1 && item?.offer != null
               ? ['Transfer'].map((e, i) => (
                   <OWButton
                     key={`transfer-1-${1}`}
@@ -234,7 +234,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
                   />
                 ))
               : null}
-            {item.version === 2 && owner.availableQuantity > 0
+            {item?.version === 2 && owner?.availableQuantity > 0
               ? ['Transfer'].map((e, i) => (
                   <OWButton
                     key={`transfer-2-${i}`}

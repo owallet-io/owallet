@@ -182,7 +182,6 @@ export const NftsScreen: FunctionComponent = observer((props) => {
 
         <OWBox
           style={{
-            marginTop: 0,
             padding: 0
           }}
         >

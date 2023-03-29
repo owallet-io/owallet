@@ -130,7 +130,7 @@ export const TransactionItem: FunctionComponent<TransactionItemProps> = ({
         <View>
           <Text
             style={{
-              ...styles.textInfo
+              ...styles.textInfo,
             }}
           >
             {item.name}

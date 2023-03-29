@@ -22,7 +22,9 @@ import { spacing, typography } from '../../themes';
 import { Text } from '@src/components/text';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
-const styling = colors =>
+import { OWSubTitleHeader } from '@src/components/header';
+import { OWBox } from '@src/components/card';
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -110,18 +112,8 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 24,
-              lineHeight: 34
-            }}
-          >
-            Transfer NFT
-          </Text>
-        </View>
-        <View style={styles.sendInputRoot}>
+        <OWSubTitleHeader title="Transfer NFT" />
+        <OWBox style={styles.sendInputRoot}>
           <Text
             style={{
               ...typography.h6,
@@ -136,7 +128,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
               marginVertical: spacing['8'],
               padding: spacing['8'],
               flexDirection: 'row',
-              backgroundColor:colors['item'],
+              backgroundColor: colors['item'],
               borderRadius: spacing['8']
             }}
           >
@@ -179,14 +171,14 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
             inputContainerStyle={{
-              backgroundColor:colors['background-box']
+              backgroundColor: colors['background-box']
             }}
           />
           <TextInput
             placeholder={`Max: ${nft.quantity}`}
             label="Quantity"
             inputContainerStyle={{
-              backgroundColor:colors['background-box']
+              backgroundColor: colors['background-box']
             }}
             error={
               !quantity || quantity > nft.quantity
@@ -225,7 +217,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
             }
             labelStyle={styles.sendlabelInput}
             value={quantity?.toString() ?? ''}
-            onChangeText={txt => {
+            onChangeText={(txt) => {
               if (Number(txt) > nft.quantity) {
                 setQuantity(nft.quantity);
               } else {
@@ -243,7 +235,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
           <MemoInput
             label="Memo (Optional)"
             inputContainerStyle={{
-              backgroundColor:colors['background-box']
+              backgroundColor: colors['background-box']
             }}
             placeholder="Type your memo here"
             memoConfig={sendConfigs.memoConfig}
@@ -274,7 +266,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
                       networkType: chainStore.current.networkType
                     },
                     {
-                      onBroadcasted: txHash => {
+                      onBroadcasted: (txHash) => {
                         smartNavigation.pushSmart('TxPendingResult', {
                           txHash: Buffer.from(txHash).toString('hex')
                         });
@@ -322,7 +314,7 @@ export const TransferNFTScreen: FunctionComponent = observer(() => {
               Submit
             </Text>
           </TouchableOpacity>
-        </View>
+        </OWBox>
       </View>
     </PageWithScrollView>
   );

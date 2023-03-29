@@ -10,6 +10,7 @@ import TransferTokensOptions from './transfer-options';
 import TransferViewBtn from './transfer-view-btn';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWSubTitleHeader } from '@src/components/header';
 
 const styles = StyleSheet.create({
   sendTokenCard: {
@@ -28,21 +29,10 @@ const TransferTokensScreen: FunctionComponent<{
       style={[containerStyle]}
       backgroundColor={colors['background']}
     >
-      {/* <TransferTokensHeader /> */}
-      <View style={{ alignItems: 'center', marginTop: 17 }}>
-        <Text
-          style={{
-            fontWeight: '800',
-            fontSize: 24,
-            marginBottom: 16
-          }}
-        >
-          Transfer
-        </Text>
-      </View>
+      <OWSubTitleHeader title="Transfer" />
       <OWBox
         style={{
-          padding:0
+          padding: 0
         }}
       >
         <CardBody>

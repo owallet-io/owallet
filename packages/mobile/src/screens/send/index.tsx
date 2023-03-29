@@ -24,6 +24,7 @@ import { spacing } from '../../themes';
 import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
 import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 
 const styling = (colors) =>
   StyleSheet.create({
@@ -121,23 +122,8 @@ export const SendScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 24,
-              lineHeight: 34,
-              color: colors['primary-text']
-            }}
-          >
-            Send
-          </Text>
-        </View>
-        <OWBox
-          style={{
-            margin: 0
-          }}
-        >
+        <OWSubTitleHeader title="Send" />
+        <OWBox>
           <CurrencySelector
             label="Select a token"
             placeHolder="Select Token"
@@ -145,7 +131,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             labelStyle={styles.sendlabelInput}
             containerStyle={styles.containerStyle}
             selectorContainerStyle={{
-              backgroundColor:colors['background-box']
+              backgroundColor: colors['background-box']
             }}
           />
           <AddressInput
@@ -246,10 +232,8 @@ export const SendScreen: FunctionComponent = observer(() => {
           />
           <OWButton
             label="Send"
-            
             disabled={!account.isReadyToSendMsgs || !txStateIsValid}
             loading={account.isSendingMsg === 'send'}
-            
             onPress={async () => {
               if (account.isReadyToSendMsgs && txStateIsValid) {
                 try {
