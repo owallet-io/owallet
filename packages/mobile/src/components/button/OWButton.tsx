@@ -72,7 +72,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
             <OWText
               variant={textVariant}
               typo={textTypo}
-              style={[styles.textBtn, styleMapped.text, textStyle]}
+              style={[styles.textBtn,!!icon && styles.iconInBtn, styleMapped.text, textStyle]}
             >
               {label}
             </OWText>
@@ -87,6 +87,7 @@ export default OWButton;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+iconInBtn: {paddingLeft:6},
     dashed: {
       borderWidth: 1,
       borderStyle: 'dashed',

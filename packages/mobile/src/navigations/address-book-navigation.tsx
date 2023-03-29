@@ -5,11 +5,14 @@ import { AddAddressBookScreen, AddressBookScreen } from '@src/screens/setting/sc
 import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 export const AddressBookStackScreen: FC = () => {
+  
+  const handleScreenOptions = ({ route, navigation })=>{
+    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+    return headerOptions;
+  }
   return (
     <Stack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation)
-      })}
+      screenOptions={handleScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen name={SCREENS.AddressBook} component={AddressBookScreen} />

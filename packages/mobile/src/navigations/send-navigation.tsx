@@ -7,11 +7,13 @@ import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
 import TransferTokensScreen from '@src/screens/transfer-tokens/transfer-screen';
 const Stack = createStackNavigator(); 
 export const SendNavigation: FC = () => {
+  const handleScreenOptions = ({ route, navigation })=>{
+    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+    return headerOptions;
+  }
     return (
       <Stack.Navigator
-        screenOptions={({ route, navigation }) => ({
-          ...useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation)
-        })}
+        screenOptions={handleScreenOptions}
         initialRouteName={SCREENS.TransferTokensScreen}
         headerMode="screen"
       >

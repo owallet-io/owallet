@@ -18,6 +18,9 @@ import { LoadingSpinner } from '../../components/spinner';
 import { navigate } from '../../router/root';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWButton } from '@src/components/button';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -122,7 +125,7 @@ export const EarningCard: FunctionComponent<{
             : stakingReward.shrink(true).maxDecimals(6).toString()}
         </Text>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
             ...styles['btn-claim'],
             borderColor:
@@ -174,8 +177,33 @@ export const EarningCard: FunctionComponent<{
             />
             <Text style={styles['text-rewards']}>Claim Rewards</Text>
           </View>
-        </TouchableOpacity>
-
+        </TouchableOpacity> */}
+        <OWButton
+          label="Claim Rewards"
+          size="medium"
+          onPress={_onPressClaim}
+          textStyle={styles.btnTextClaimStyle}
+          disabled={
+            !account.isReadyToSendMsgs ||
+            stakingReward.toDec().equals(new Dec(0)) ||
+            queryReward.pendingRewardValidatorAddresses.length === 0
+          }
+          loading={account.isSendingMsg === 'withdrawRewards'}
+          style={styles.btnClaimStyle}
+          icon={
+            <OWIcon
+              name="rewards"
+              size={20}
+              color={
+                !account.isReadyToSendMsgs ||
+                stakingReward.toDec().equals(new Dec(0)) ||
+                queryReward.pendingRewardValidatorAddresses.length === 0
+                  ? colors['text-btn-disable-color']
+                  : colors['white']
+              }
+            />
+          }
+        />
         <OWBox type="shadow" style={styles['view-box-staking']}>
           <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>
             Total staked
@@ -235,31 +263,28 @@ export const EarningCard: FunctionComponent<{
                 </Text>
               </View>
             </View>
-            <AddIcon
+            <OWButtonIcon
+              style={{
+                marginRight: -14
+              }}
+              fullWidth={false}
               onPress={() => {
                 smartNavigation.navigateSmart('Staking.Dashboard', {});
               }}
-              color={colors['gray-150']}
-              size={24}
+              name="add"
+              sizeIcon={24}
+              colorIcon={colors['gray-150']}
             />
           </View>
           <View>
-            <TouchableOpacity
-              style={styles['btn-manage']}
+            <OWButton
+              type="secondary"
+              size="medium"
+              label="Manage my staking"
               onPress={() => {
                 navigate('MainTab', { screen: 'Invest' });
-                // smartNavigation.navigateSmart('Staking.Dashboard', {});
               }}
-            >
-              <Text
-                style={{
-                  textAlign: 'center',
-                  color: colors['colored-label']
-                }}
-              >
-                Manage my staking
-              </Text>
-            </TouchableOpacity>
+            />
           </View>
         </OWBox>
       </View>
@@ -269,6 +294,12 @@ export const EarningCard: FunctionComponent<{
 
 const styling = (colors) =>
   StyleSheet.create({
+    btnClaimStyle: {
+      marginTop: 10
+    },
+    btnTextClaimStyle: {
+      paddingLeft: 6
+    },
     card: {
       paddingBottom: spacing['20'],
       marginTop: spacing['32'],

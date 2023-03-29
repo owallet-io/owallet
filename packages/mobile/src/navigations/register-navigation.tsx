@@ -20,19 +20,21 @@ const Stack = createStackNavigator();
 export const RegisterNavigation: FC = () => {
   const { appInitStore } = useStore();
   const { colors } = useTheme();
+  const handleScreenOptions = ({ route, navigation }) => {
+    const headerOptions = useHeaderOptions(
+      {
+        title: SCREENS_TITLE[route?.name],
+        headerStyle: {
+          backgroundColor: colors['plain-background']
+        }
+      },
+      navigation
+    );
+    return headerOptions;
+  };
   return (
     <Stack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        ...useHeaderOptions(
-          {
-            title: SCREENS_TITLE[route?.name],
-            headerStyle: {
-              backgroundColor: colors['plain-background']
-            }
-          },
-          navigation
-        )
-      })}
+      screenOptions={handleScreenOptions}
       initialRouteName={SCREENS.RegisterIntro}
       headerMode="float"
     >

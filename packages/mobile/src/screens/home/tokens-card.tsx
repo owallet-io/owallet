@@ -20,6 +20,7 @@ import { DownArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWButton } from '@src/components/button';
 
 // hard code data to test UI
 // const nftsData = [
@@ -210,15 +211,17 @@ export const TokensCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      <OWBox style={{
-        paddingTop:12
-      }}>
+      <OWBox
+        style={{
+          paddingTop: 12
+        }}
+      >
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
             alignItems: 'center',
-            width: metrics.screenWidth - 64,
+            width: metrics.screenWidth - 64
             // marginHorizontal: spacing['32']
           }}
         >
@@ -344,11 +347,12 @@ export const TokensCard: FunctionComponent<{
           style={{
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: colors['primary']
           }}
         >
-          <RectButton
-            style={styles.containerBtn}
+          <OWButton
+            label={capitalizedText('view all')}
+            size="medium"
+            type="secondary"
             onPress={() => {
               if (index === 0) {
                 smartNavigation.navigateSmart('Tokens', {});
@@ -356,11 +360,8 @@ export const TokensCard: FunctionComponent<{
                 smartNavigation.navigateSmart('Nfts', { nfts });
               }
             }}
-          >
-            <Text style={styles.textLoadMore}>
-              {capitalizedText('view all')}
-            </Text>
-          </RectButton>
+          />
+         
         </View>
       </OWBox>
     </View>

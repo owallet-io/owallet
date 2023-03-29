@@ -181,20 +181,10 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           Animated.not(transition.isPaused)
         ),
         [
-          // Animated.cond(
-          //   Animated.defined(previousDiff.previous),
-          //   Animated.debug('before previous', previousDiff.previous),
-          //   Animated.debug('before previous undefined', new Animated.Value(0))
-          // ),
-          // Animated.debug(
-          //   `modal "isOpen" diff`,
-          //   previousDiff.diff(transition.isOpen)
-          // ),
           Animated.cond(
             Animated.greaterThan(previousDiff.diff(transition.isOpen), 0),
             [
-              // Animated.debug('modal will open', transition.clock),
-              // When the modal is opened,
+              
               [
                 Animated.stopClock(transition.clock),
                 Animated.set(transition.finished, 0),
@@ -242,12 +232,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
                     ],
                     Animated.set(transition.duration, 0)
                   )
-                  // Animated.debug(
-                  //   'open transition initialized',
-                  //   Animated.clockRunning(transition.clock)
-                  // ),
-                  // Animated.debug('transition startY', transition.startY),
-                  // Animated.debug('transition duration is', transition.duration),
+               
                 ]
                 // Animated.debug('duration set on external', transition.duration)
               )

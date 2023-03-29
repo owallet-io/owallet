@@ -152,7 +152,7 @@ export const DashboardCard: FunctionComponent<{
   }, [chainStore.current.chainId, data]);
 
   return (
-    <OWBox>
+    <OWBox >
       <Text
         style={{
           alignSelf: 'center',
@@ -230,7 +230,7 @@ export const DashboardCard: FunctionComponent<{
           withInnerLines={false}
           yAxisLabel={'$'}
           yAxisSuffix={chartSuffix}
-          width={metrics.screenWidth - 56}
+          width={metrics.screenWidth - 48}
           height={256}
           chartConfig={chartConfig}
           bezier
@@ -238,7 +238,7 @@ export const DashboardCard: FunctionComponent<{
       ) : !isNetworkError ? (
         <BarChart
           data={dataVolumes}
-          width={metrics.screenWidth - 98}
+          width={metrics.screenWidth - 48}
           height={220}
           yAxisLabel="$"
           yAxisSuffix={chartSuffix}

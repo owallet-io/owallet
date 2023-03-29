@@ -111,7 +111,7 @@ export const useMapStyles = ({
             ? colors['btn-disable-background']
             : 'transparent',
             borderColor:colors['purple-700'],
-            borderWidth:1
+            borderWidth:0.5
         },
         text: {
           color: disabled

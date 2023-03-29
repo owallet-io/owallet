@@ -13,16 +13,13 @@ import { RedelegateScreen } from '@src/screens/stake/redelegate';
 import { UndelegateScreen } from '@src/screens/stake/undelegate';
 const Stack = createStackNavigator();
 export const InvestNavigation: FC = () => {
+  const handleScreenOptions = ({ route, navigation })=>{
+    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+    return headerOptions;
+  }
   return (
     <Stack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        ...useHeaderOptions(
-          {
-            title: SCREENS_TITLE[route?.name]
-          },
-          navigation
-        )
-      })}
+      screenOptions={handleScreenOptions}
       initialRouteName="Invest"
       headerMode="screen"
     >

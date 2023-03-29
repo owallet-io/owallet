@@ -26,16 +26,13 @@ import { SendTronScreen } from '@src/screens/send/send-tron';
 import { NotificationScreen } from '@src/screens/notifications/home';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
+  const handleScreenOptions = ({ route, navigation })=>{
+    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+    return headerOptions;
+  }
   return (
     <Stack.Navigator
-      screenOptions={({ route, navigation }) => ({
-        ...useHeaderOptions(
-          {
-            title: SCREENS_TITLE[route?.name]
-          },
-          navigation
-        )
-      })}
+      screenOptions={handleScreenOptions}
       headerMode="screen"
     >
       <Stack.Screen name={SCREENS.Send} component={SendScreen} />

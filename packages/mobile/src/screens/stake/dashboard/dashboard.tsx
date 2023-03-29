@@ -14,6 +14,7 @@ import { observer } from 'mobx-react-lite';
 import { API } from '../../../common/api';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();
@@ -57,9 +58,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           {`My staking`}
         </Text>
 
-        <OWBox
-          
-        >
+        <OWBox>
           {chainStore.current.networkType === 'cosmos' ? (
             <MyRewardCard />
           ) : (
@@ -90,26 +89,17 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
               style={{
                 alignItems: 'flex-start',
                 justifyContent: 'center',
-                marginTop: spacing['32']
+                marginTop: spacing['12']
               }}
             >
-              <TouchableOpacity
-                style={{
-                  ...styles.containerBtnClaim,
-                  height: 40
-                }}
+              <OWButton
+                label="Stake now"
                 onPress={() => {
                   smartNavigation.navigate('Validator.List', {});
                 }}
-              >
-                <Text
-                  style={{
-                    ...typography.h7,
-                    fontWeight: '700',
-                    color: colors['white']
-                  }}
-                >{`Stake now`}</Text>
-              </TouchableOpacity>
+                size="small"
+                fullWidth={false}
+              />
             </View>
           ) : null}
 
