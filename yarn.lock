@@ -2327,7 +2327,7 @@
     "@ethersproject/constants" "^5.6.1"
     "@ethersproject/logger" "^5.6.0"
 
-"@ethersproject/transactions@^5.6.0":
+"@ethersproject/transactions@5.6.0", "@ethersproject/transactions@^5.6.0":
   version "5.6.0"
   resolved "https://registry.npmjs.org/@ethersproject/transactions/-/transactions-5.6.0.tgz"
   integrity sha512-4HX+VOhNjXHZyGzER6E/LVI2i6lf9ejYeWD6l4g50AdmimyuStKc39kvKf1bXWQMg7QNVh+uC7dYwtaZ02IXeg==

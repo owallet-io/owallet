@@ -27,7 +27,7 @@ import Big from 'big.js';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
-import { getBase58Address, TRON_ID } from '../../utils/helper';
+import { getBase58Address, getEvmAddress, TRON_ID } from '../../utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -40,6 +40,8 @@ export const AccountCardEVM: FunctionComponent<{
     modalStore,
     keyRingStore
   } = useStore();
+
+  console.log('keyRingStore', keyRingStore);
 
   const smartNavigation = useSmartNavigation();
   // const navigation = useNavigation();
@@ -57,9 +59,19 @@ export const AccountCardEVM: FunctionComponent<{
   let totalPrice;
   let total;
   if (account.evmosHexAddress) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(
-      account.evmosHexAddress
-    )?.balance;
+    if (keyRingStore.keyRingType === 'ledger') {
+      if (keyRingStore.keyRingLedgerAddress) {
+        total = queries.evm.queryEvmBalance.getQueryBalance(
+          chainStore.current.chainId === TRON_ID
+            ? getEvmAddress(keyRingStore.keyRingLedgerAddress)
+            : keyRingStore.keyRingLedgerAddress
+        )?.balance;
+      }
+    } else {
+      total = queries.evm.queryEvmBalance.getQueryBalance(
+        account.evmosHexAddress
+      )?.balance;
+    }
 
     if (total) {
       totalPrice = priceStore?.calculatePrice(total, 'USD');
@@ -325,15 +337,23 @@ export const AccountCardEVM: FunctionComponent<{
                 networkType={chainStore.current.networkType}
               /> */}
 
-              {account.evmosHexAddress ? (
+              {account.evmosHexAddress &&
+              keyRingStore.keyRingType !== 'ledger' ? (
                 <AddressCopyable
                   address={
-                    chainStore.current.networkType === 'cosmos'
-                      ? account.bech32Address
-                      : chainStore.current.chainId === TRON_ID
+                    chainStore.current.chainId === TRON_ID
                       ? getBase58Address(account.evmosHexAddress)
                       : account.evmosHexAddress
                   }
+                  maxCharacters={22}
+                  networkType={chainStore.current.networkType}
+                />
+              ) : null}
+
+              {keyRingStore.keyRingLedgerAddress &&
+              keyRingStore.keyRingType === 'ledger' ? (
+                <AddressCopyable
+                  address={keyRingStore.keyRingLedgerAddress}
                   maxCharacters={22}
                   networkType={chainStore.current.networkType}
                 />

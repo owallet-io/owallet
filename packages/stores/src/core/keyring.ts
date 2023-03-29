@@ -17,6 +17,7 @@ import {
   MultiKeyStoreInfoWithSelected,
   RestoreKeyRingMsg,
   SetKeyStoreCoinTypeMsg,
+  SetKeyStoreLedgerAddressMsg,
   ShowKeyRingMsg,
   UnlockKeyRingMsg,
   KeyRing,
@@ -151,14 +152,23 @@ export class KeyRingStore {
 
   @computed
   get keyRingType(): string {
-    const keyStore = this.multiKeyStoreInfo.find(
-      (keyStore) => keyStore.selected
-    );
+    const keyStore = this.multiKeyStoreInfo.find(keyStore => keyStore.selected);
 
     if (!keyStore) {
       return 'none';
     } else {
       return KeyRing.getTypeOfKeyStore(keyStore);
+    }
+  }
+
+  @computed
+  get keyRingLedgerAddress(): string {
+    const keyStore = this.multiKeyStoreInfo.find(keyStore => keyStore.selected);
+
+    if (!keyStore) {
+      return 'none';
+    } else {
+      return KeyRing.getLedgerAddressOfKeyStore(keyStore);
     }
   }
 
@@ -265,7 +275,7 @@ export class KeyRingStore {
 
     // Emit the key store changed event manually.
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   @flow
@@ -291,7 +301,7 @@ export class KeyRingStore {
     }
 
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   @flow
@@ -317,7 +327,7 @@ export class KeyRingStore {
   @flow
   *deleteKeyRing(index: number, password: string) {
     const selectedIndex = this.multiKeyStoreInfo.findIndex(
-      (keyStore) => keyStore.selected
+      keyStore => keyStore.selected
     );
     const msg = new DeleteKeyRingMsg(index, password);
     const result = yield* toGenerator(
@@ -329,7 +339,7 @@ export class KeyRingStore {
     // Selected keystore may be changed if the selected one is deleted.
     if (selectedIndex === index) {
       this.dispatchKeyStoreChangeEvent();
-      this.selectablesMap.forEach((selectables) => selectables.refresh());
+      this.selectablesMap.forEach(selectables => selectables.refresh());
     }
   }
 
@@ -341,13 +351,29 @@ export class KeyRingStore {
     );
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
     const selectedIndex = this.multiKeyStoreInfo.findIndex(
-      (keyStore) => keyStore.selected
+      keyStore => keyStore.selected
     );
     // If selectedIndex and index are same, name could be changed, so dispatch keystore event
     if (selectedIndex === index) {
       this.dispatchKeyStoreChangeEvent();
     }
   }
+
+  // @flow
+  // *updateLedgerAddressKeyRing(address: string) {
+  //   const msg = new UpdateNameKeyRingMsg(index, name);
+  //   const result = yield* toGenerator(
+  //     this.requester.sendMessage(BACKGROUND_PORT, msg)
+  //   );
+  //   this.multiKeyStoreInfo = result.multiKeyStoreInfo;
+  //   const selectedIndex = this.multiKeyStoreInfo.findIndex(
+  //     keyStore => keyStore.selected
+  //   );
+  //   // If selectedIndex and index are same, name could be changed, so dispatch keystore event
+  //   if (selectedIndex === index) {
+  //     this.dispatchKeyStoreChangeEvent();
+  //   }
+  // }
 
   async checkPassword(password: string): Promise<boolean> {
     return await this.requester.sendMessage(
@@ -394,7 +420,31 @@ export class KeyRingStore {
 
     // Emit the key store changed event manually.
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
+  }
+
+  // Set the coin type to current key store.
+  // And, save it, refresh the key store.
+  @flow
+  *setKeyStoreLedgerAddress(bip44HDPath: string) {
+    console.log('SetKeyStoreLedgerAddressMsg', SetKeyStoreLedgerAddressMsg);
+
+    const status = yield* toGenerator(
+      this.requester.sendMessage(
+        BACKGROUND_PORT,
+        new SetKeyStoreLedgerAddressMsg(bip44HDPath)
+      )
+    );
+
+    this.multiKeyStoreInfo = (yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg())
+    )).multiKeyStoreInfo;
+
+    this.status = status;
+
+    // Emit the key store changed event manually.
+    this.dispatchKeyStoreChangeEvent();
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   async exportKeyRingDatas(password: string): Promise<ExportKeyRingData[]> {

@@ -127,6 +127,8 @@ import { DashBoardScreen } from './screens/dashboard';
 import { lightColors } from './themes/colors';
 import { NotificationScreen } from './screens/notifications';
 import { SendTronScreen } from './screens/send/send-tron';
+import { useRegisterConfig } from '@owallet/hooks';
+import { useBIP44Option } from './screens/register/bip44';
 
 const Stack = createStackNavigator();
 // const Drawer = createDrawerNavigator();
@@ -201,7 +203,9 @@ const HomeScreenHeaderRight: FunctionComponent = observer(() => {
 });
 
 const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
-  const { chainStore, modalStore } = useStore();
+  const { chainStore, modalStore, keyRingStore } = useStore();
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  const bip44Option = useBIP44Option(chainStore.current.coinType);
 
   const smartNavigation = useSmartNavigation();
   const deterministicNumber = useCallback(chainInfo => {
@@ -229,6 +233,8 @@ const HomeScreenHeaderTitle: FunctionComponent = observer(() => {
         profileColor,
         chainStore,
         modalStore,
+        keyStore: keyRingStore,
+        bip44Option,
         smartNavigation
       })
     );

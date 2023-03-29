@@ -261,7 +261,9 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                   sendConfigs.amountConfig.amount,
                   sendConfigs.amountConfig.sendCurrency!,
                   receiveAddress,
-                  getBase58Address(account.evmosHexAddress),
+                  keyRingStore.keyRingType === 'ledger'
+                    ? keyRingStore.keyRingLedgerAddress
+                    : getBase58Address(account.evmosHexAddress),
                   {
                     onBroadcasted: txHash => {
                       smartNavigation.pushSmart('TxPendingResult', {

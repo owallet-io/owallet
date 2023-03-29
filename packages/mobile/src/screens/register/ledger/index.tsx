@@ -26,7 +26,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer((props) => {
+export const NewLedgerScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -65,6 +65,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     setIsCreating(true);
 
     try {
+      // Re-create ledger when change network
       await registerConfig.createLedger(
         getValues('name'),
         getValues('password'),

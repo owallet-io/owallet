@@ -12,6 +12,8 @@ export const NetworkModal = ({
   profileColor,
   chainStore,
   modalStore,
+  keyStore,
+  bip44Option,
   smartNavigation
 }) => {
   const _renderItem = ({ item }) => {
@@ -20,10 +22,20 @@ export const NetworkModal = ({
         style={{
           ...styles.containerBtn
         }}
-        onPress={() => {
+        onPress={async () => {
           chainStore.selectChain(item?.chainId);
           chainStore.saveLastViewChainId();
+          if (keyStore.keyRingType === 'ledger') {
+            keyStore.setKeyStoreLedgerAddress(
+              `44'/${item.bip44.coinType ?? item.coinType}'/${
+                bip44Option.bip44HDPath.account
+              }'/${bip44Option.bip44HDPath.change}/${
+                bip44Option.bip44HDPath.addressIndex
+              }`
+            );
+          }
           modalStore.close();
+          // check if ledger here with keyStore.type
         }}
       >
         <View

@@ -96,6 +96,8 @@ export class SignInteractionStore {
       return undefined;
     }
     const data: any = datas[0];
+    console.log('waitingTronData da===', data);
+
     return {
       id: data.id,
       type: data.type,
@@ -189,8 +191,15 @@ export class SignInteractionStore {
     );
   }
 
+  protected isTronEnded(): boolean {
+    return (
+      this.interactionStore.getEvents<void>('request-sign-tron-end').length > 0
+    );
+  }
+
   protected clearEnded() {
     this.interactionStore.clearEvent('request-sign-end');
+    this.interactionStore.clearEvent('request-sign-tron-end');
     this.interactionStore.clearEvent('request-sign-ethereum-end');
   }
 
@@ -218,6 +227,22 @@ export class SignInteractionStore {
     return new Promise(resolve => {
       const disposer = autorun(() => {
         if (this.isEthereumEnded()) {
+          resolve();
+          this.clearEnded();
+          disposer();
+        }
+      });
+    });
+  }
+
+  protected waitTronEnd(): Promise<void> {
+    if (this.isTronEnded()) {
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve => {
+      const disposer = autorun(() => {
+        if (this.isTronEnded()) {
           resolve();
           this.clearEnded();
           disposer();
@@ -264,8 +289,8 @@ export class SignInteractionStore {
       }
       console.log('yield waitingTronDatas length > 0');
     } finally {
-      // yield this.waitTronEnd();
-      console.log('yield waitTronEnd length > 0');
+      yield this.waitTronEnd();
+      console.log('this.111 ===', this.waitingTronData);
       this._isLoading = false;
       this.interactionStore.removeData('request-sign-tron', idTron);
     }
@@ -307,6 +332,14 @@ export class SignInteractionStore {
       return;
     }
 
+    if (this.waitingEthereumDatas.length === 0) {
+      return;
+    }
+
+    if (this.waitingTronDatas.length === 0) {
+      return;
+    }
+
     this._isLoading = true;
     try {
       yield this.interactionStore.reject(
@@ -314,8 +347,12 @@ export class SignInteractionStore {
         this.waitingDatas[0].id
       );
       yield this.interactionStore.reject(
-        'request-ethereum-sign',
+        'request-sign-ethereum',
         this.waitingEthereumDatas?.[0].id
+      );
+      yield this.interactionStore.reject(
+        'request-sign-tron',
+        this.waitingTronDatas?.[0].id
       );
     } finally {
       this._isLoading = false;
@@ -333,6 +370,9 @@ export class SignInteractionStore {
       yield this.waitingEthereumDatas?.map(wed => {
         this.interactionStore.reject('request-sign-ethereum', wed.id);
       });
+      yield this.waitingTronDatas?.map(wed => {
+        this.interactionStore.reject('request-sign-tron', wed.id);
+      });
     } finally {
       this._isLoading = false;
     }
@@ -342,6 +382,7 @@ export class SignInteractionStore {
   protected *rejectWithId(id: string) {
     yield this.interactionStore.reject('request-sign', id);
     yield this.interactionStore.reject('request-ethereum-sign', id);
+    yield this.interactionStore.reject('request-sign-tron', id);
   }
 
   get isLoading(): boolean {

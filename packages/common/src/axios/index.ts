@@ -143,5 +143,11 @@ function createError(
   request: Request,
   response?: any
 ): AxiosResponse<AxiosError> {
-  return AxiosErrorFn(message, AxiosErrorFn[code], config, request, response);
+  return AxiosErrorFn(
+    message ?? 'Unknown error',
+    AxiosErrorFn[code],
+    config,
+    request,
+    response
+  );
 }
