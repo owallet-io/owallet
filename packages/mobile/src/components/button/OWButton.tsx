@@ -57,7 +57,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       style={[
         styles.containerBtn,
         styleMapped.btn,
-        !fullWidth && !!icon && styles.paddingHaveIconAndNotFullwidth,
+        (!fullWidth || (!!icon && !!label == false)) && styles.paddingHaveIconAndNotFullwidth,
         fullWidth ? styles.fullWidth : styles.widthAuto,
         borderStyle == 'dashed' && styles.dashed,
         !!icon && !label && styles.hasIcon,
