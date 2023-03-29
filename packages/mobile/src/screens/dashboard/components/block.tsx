@@ -78,9 +78,7 @@ export const BlockCard: FunctionComponent<{
   };
 
   return (
-    <OWBox style={{
-      marginTop:0
-    }}>
+    <OWBox>
       <View style={styles.headerWrapper}>
         <View style={[styles.blockWrapper, { paddingTop: 0 }]}>
           <View

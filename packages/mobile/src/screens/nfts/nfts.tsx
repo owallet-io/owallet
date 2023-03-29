@@ -17,6 +17,7 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
 import { Text } from '@src/components/text';
 import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 
 // hard code data to test UI
 // const nftsData = [
@@ -177,20 +178,12 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View>
-        <Text
-          style={{
-            ...styles.title,
-            color: colors['primary-text']
-          }}
-        >
-          {`My NFTs`}
-        </Text>
+        <OWSubTitleHeader title="My NFTs" />
 
         <OWBox
           style={{
-            marginTop:0,
-            padding:0
-            
+            marginTop: 0,
+            padding: 0
           }}
         >
           <View

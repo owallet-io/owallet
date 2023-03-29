@@ -10,6 +10,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { TokenItem } from './components/token-item';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
@@ -48,15 +49,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
-      <Text
-        style={{
-          ...styles.title,
-          color: colors['primary-text']
-        }}
-      >
-        {`My Tokens`}
-      </Text>
-
+      <OWSubTitleHeader title="My Tokens" />
       <OWBox>
         <FlatList
           data={unique}
