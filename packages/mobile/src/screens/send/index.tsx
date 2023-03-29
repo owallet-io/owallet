@@ -15,7 +15,7 @@ import {
   FeeButtons,
   TextInput
 } from '../../components/input';
-import { Button } from '../../components/button';
+import { Button, OWButton } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -244,15 +244,12 @@ export const SendScreen: FunctionComponent = observer(() => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <Button
-            text="Send"
-            size="large"
+          <OWButton
+            label="Send"
+            
             disabled={!account.isReadyToSendMsgs || !txStateIsValid}
             loading={account.isSendingMsg === 'send'}
-            style={{
-              backgroundColor: colors['purple-700'],
-              borderRadius: 8
-            }}
+            
             onPress={async () => {
               if (account.isReadyToSendMsgs && txStateIsValid) {
                 try {

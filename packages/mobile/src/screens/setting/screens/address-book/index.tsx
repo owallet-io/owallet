@@ -40,6 +40,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { PageWithScrollView } from '../../../../components/page';
 import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -60,7 +62,7 @@ const styling = () => {
       backgroundColor: colors['background-item-list'],
       paddingVertical: spacing['12'],
       paddingHorizontal: spacing['16'],
-      borderRadius: spacing['8'],
+      borderRadius: spacing['8']
     },
     addressBookAdd: {
       flexDirection: 'row',
@@ -200,7 +202,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           >
             Contact list
           </Text>
-          <RectButton
+          <OWButton
             onPress={() => {
               smartNavigation.navigateSmart('AddAddressBook', {
                 chainId,
@@ -208,23 +210,15 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                 recipient: ''
               });
             }}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <View style={{ marginTop: 4 }}>
-                <AddIcon color={colors['purple-700']} size={16} />
-              </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: '400',
-                  lineHeight: 20,
-                  color: colors['purple-700']
-                }}
-              >
-                Add new contract
-              </Text>
-            </View>
-          </RectButton>
+            label="Add new contract"
+            fullWidth={false}
+            type="link"
+            style={{
+              height: 'auto'
+            }}
+            size="medium"
+            icon={<OWIcon name="add" color={colors['purple-700']} size={16} />}
+          />
         </View>
 
         <View>
@@ -313,7 +307,6 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
                     </TouchableOpacity>
                   </View>
                 </AddressBookItem>
-                
               </React.Fragment>
             );
           })}

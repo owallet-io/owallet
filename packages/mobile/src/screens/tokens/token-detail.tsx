@@ -38,6 +38,8 @@ import { AddressQRCodeModal } from '../home/components';
 import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
@@ -149,41 +151,14 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         break;
     }
     return (
-      <TouchableOpacity
-        style={{
-          backgroundColor: colors['purple-700'],
-          borderWidth: 0.5,
-          borderRadius: spacing['8'],
-          borderColor: colors['purple-700'],
-          marginLeft: 10,
-          marginRight: 10
-        }}
+      <OWButton
+        size="small"
+        type="primary"
         onPress={() => _onPressBtnMain(name)}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingTop: spacing['6'],
-            paddingBottom: spacing['6'],
-            paddingLeft: spacing['12'],
-            paddingRight: spacing['12']
-          }}
-        >
-          {icon}
-          <Text
-            style={{
-              ...typography['h7'],
-              lineHeight: spacing['20'],
-              color: colors['white'],
-              paddingLeft: spacing['6'],
-              fontWeight: '700'
-            }}
-          >
-            {name}
-          </Text>
-        </View>
-      </TouchableOpacity>
+        icon={icon}
+        label={name}
+        fullWidth={false}
+      />
     );
   };
   return (
@@ -271,9 +246,9 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         }}
       >
         <TransactionSectionTitle
-        containerStyle={{
-          paddingTop:0
-        }}
+          containerStyle={{
+            paddingTop: 0
+          }}
           title={'Transaction list'}
           onPress={async () => {
             await loadingScreen.openAsync();
@@ -328,39 +303,18 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
             </View>
           }
         />
-
-        <TouchableOpacity
-          style={{
-            backgroundColor: colors['purple-700'],
-            borderRadius: spacing['8'],
-            marginHorizontal: spacing['24'],
-            paddingVertical: spacing['16'],
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: spacing['12']
-          }}
+        <OWButton
           onPress={() => smartNavigation.navigateSmart('Transactions', {})}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            <TransactionMinusIcon size={18} color={colors['white']} />
-            <Text
-              style={{
-                ...typography.h6,
-                color: colors['white'],
-                fontWeight: '700',
-                marginLeft: spacing['10']
-              }}
-            >
-              View all transactions
-            </Text>
-          </View>
-        </TouchableOpacity>
+          label="View all transactions"
+          style={{
+            marginHorizontal: spacing['24'],
+            marginTop: 10
+          }}
+          icon={
+            <OWIcon name="transactions" color={colors['white']} size={18} />
+          }
+          fullWidth={false}
+        />
       </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
