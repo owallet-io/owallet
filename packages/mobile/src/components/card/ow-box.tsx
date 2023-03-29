@@ -36,7 +36,7 @@ const useStyleType = ({ type }) => {
       break;
     case 'gradient':
       styles = {
-        marginTop: 24,
+        marginTop: spacing['top-pad'],
         width: '100%',
         paddingHorizontal: spacing['20'],
         paddingVertical: spacing['24'],
@@ -45,10 +45,10 @@ const useStyleType = ({ type }) => {
       break;
     case 'normal':
       styles = {
-        marginTop: 24,
+        marginTop: spacing['top-pad'],
         width: metrics.screenWidth,
-        padding: spacing['24'],
-        borderRadius: spacing['24'],
+        padding: spacing['horizontal-pad'],
+        borderRadius: spacing['horizontal-pad'],
         backgroundColor: colors['background-box']
       };
       break;

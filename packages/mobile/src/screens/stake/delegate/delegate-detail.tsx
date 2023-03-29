@@ -15,6 +15,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { PageWithView } from '@src/components/page';
 import { OWButton } from '@src/components/button';
 import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -77,16 +78,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
 
     return (
       <PageWithView>
-        <View>
-          <Text
-            style={{
-              ...styles.title,
-              marginTop: spacing['16'],
-              color: colors['primary-text']
-            }}
-          >{`Staking details`}</Text>
-        </View>
-
+        <OWSubTitleHeader title="Staking detail" />
         <OWBox>
           <View
             style={{

@@ -20,6 +20,7 @@ import { ValidatorThumbnails } from '@owallet/common';
 import { colors, spacing, typography } from '../../../themes';
 import { API } from '../../../common/api';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWSubTitleHeader } from '@src/components/header';
 type Sort = 'APR' | 'Voting Power' | 'Name';
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
@@ -65,7 +66,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const data = useMemo(() => {
     let data = bondedValidators.validators;
     if (search) {
-      data = data.filter(val =>
+      data = data.filter((val) =>
         val?.description?.moniker?.toLowerCase().includes(search.toLowerCase())
       );
     }
@@ -110,7 +111,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   }, []);
 
   const sortItem = useMemo(() => {
-    const item = items.find(item => item.key === sort);
+    const item = items.find((item) => item.key === sort);
     if (!item) {
       throw new Error(`Can't find the item for sort (${sort})`);
     }
@@ -126,7 +127,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         isOpen={isSortModalOpen}
         items={items}
         selectedKey={sort}
-        setSelectedKey={key => setSort(key as Sort)}
+        setSelectedKey={(key) => setSort(key as Sort)}
       />
 
       <PageWithSectionList
@@ -146,7 +147,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         }}
         renderItem={({ item, index }: { item: Validator; index: number }) => {
           const foundValidator = validators.find(
-            v => v.operator_address === item.operator_address
+            (v) => v.operator_address === item.operator_address
           );
 
           return (
@@ -154,7 +155,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
               style={{
                 marginHorizontal: spacing['24'],
                 marginVertical: spacing['8'],
-                borderRadius: spacing['8'],
+                borderRadius: spacing['8']
               }}
             >
               <ValidatorItem
@@ -172,23 +173,12 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         )}
         renderSectionHeader={() => {
           return (
-            <View style={{
-              paddingTop:24
-            }}>
-              <Text
-                style={{
-                  ...typography.h3,
-                  fontWeight: '700',
-                  textAlign: 'center',
-                  color: colors['primary-text']
-                }}
-              >
-                {`Active validators`}
-              </Text>
+            <View>
+              <OWSubTitleHeader title="Active validators" />
               <View
                 style={{
                   paddingHorizontal: spacing['24'],
-                  paddingTop: spacing['12'],
+                  paddingTop: spacing['24'],
                   paddingBottom: spacing['4']
                 }}
               >
@@ -202,7 +192,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                     padding: 0
                   }}
                   value={search}
-                  onChangeText={text => {
+                  onChangeText={(text) => {
                     setSearch(text);
                   }}
                   paragraph={
@@ -297,8 +287,7 @@ const ValidatorItem: FunctionComponent<{
         ...styles.container,
         flexDirection: 'row',
         backgroundColor: colors['background-box'],
-        alignItems: 'center',
-        
+        alignItems: 'center'
       }}
       onPress={() => {
         if (onSelectValidator) {
@@ -371,7 +360,7 @@ const ValidatorItem: FunctionComponent<{
   ) : null;
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     title: {
       ...typography.h7,

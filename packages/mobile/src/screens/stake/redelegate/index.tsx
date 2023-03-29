@@ -25,6 +25,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { DownArrowIcon } from '../../../components/icon';
 import { Toggle } from '../../../components/toggle';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWSubTitleHeader } from '@src/components/header';
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -178,22 +179,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
       }}
       backgroundColor={colors['background']}
     >
-      <View style={style.flatten(['height-page-pad'])} />
-      <Text
-        style={{
-          fontSize: 24,
-          lineHeight: 34,
-          fontWeight: '700',
-          textAlign: 'center',
-          color: colors['primary-text']
-        }}
-      >
-        Switch validator
-      </Text>
+      <OWSubTitleHeader title="Switch validator" />
       <View
         style={{
           borderRadius: spacing['8'],
-          marginTop: 24,
+          marginTop: spacing['top-pad'],
           backgroundColor: colors['primary'],
           marginLeft: 20,
           marginRight: 20
@@ -246,21 +236,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           </View>
         </View>
       </View>
-      {/*
-        // The recipient validator is selected by the route params, so no need to show the address input.
-        <AddressInput
-          label="Recipient"
-          recipientConfig={sendConfigs.recipientConfig}
-        />
-      */}
-      {/*
-      Undelegate tx only can be sent with just stake currency. So, it is not needed to show the currency selector because the stake currency is one.
-      <CurrencySelector
-        label="Token"
-        placeHolder="Select Token"
-        amountConfig={sendConfigs.amountConfig}
-      />
-      */}
       <View
         style={{
           paddingTop: 5,
@@ -291,7 +266,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             borderRadius: 8,
             padding: 10,
             borderWidth: 0.5,
-            borderColor: colors['white']
+            borderColor: colors['border-input-login']
           }}
           onPress={() => {
             modalStore.setOpen();
@@ -340,7 +315,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                     height: 40,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: '#F3F1F5',
+                    backgroundColor: colors['background-item-list'],
                     borderRadius: 8
                   }}
                 >

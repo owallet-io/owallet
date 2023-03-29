@@ -19,6 +19,7 @@ import {
 import { ValidatorThumbnails } from '@owallet/common';
 import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
+import { OWSubTitleHeader } from '@src/components/header';
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
     case 'Website':
@@ -86,7 +87,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
       .concat(unbondedValidators.validators)
-      .find(val => val.operator_address === validatorAddress);
+      .find((val) => val.operator_address === validatorAddress);
   }, [
     bondedValidators.validators,
     unbondingValidators.validators,
@@ -142,25 +143,14 @@ export const ValidatorDetailsCard: FunctionComponent<{
 
   return (
     <View>
-      <Text
-        style={{
-          ...typography.h3,
-          fontWeight: '700',
-          color: colors['primary-text'],
-          textAlign: 'center',
-          marginTop: spacing['16']
-        }}
-      >
-        Validator details
-      </Text>
-      
+      <OWSubTitleHeader title="Validator detail" />
       {validator ? (
         <OWBox>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              marginBottom: spacing['16'],
+              marginBottom: spacing['16']
             }}
           >
             <ValidatorThumbnail size={44} url={thumbnail} />
@@ -234,29 +224,26 @@ export const ValidatorDetailsCard: FunctionComponent<{
               {validator?.description.details}
             </Text>
           </View>
-          
-        
         </OWBox>
       ) : null}
-      <OWButton 
-      label='Stake now'
-      onPress={() => {
-        smartNavigation.navigateSmart('Delegate', {
-          validatorAddress
-        });
-      }}
-      style={{
-        marginTop:20,
-        marginHorizontal:24,
-      }}
-      fullWidth={false}
+      <OWButton
+        label="Stake now"
+        onPress={() => {
+          smartNavigation.navigateSmart('Delegate', {
+            validatorAddress
+          });
+        }}
+        style={{
+          marginTop: 20,
+          marginHorizontal: 24
+        }}
+        fullWidth={false}
       />
-      
     </View>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerIcon: {
       borderRadius: spacing['8'],
@@ -271,7 +258,7 @@ const styling = colors =>
     },
     containerItem: {
       borderWidth: 1,
-      borderColor: colors['purple-50'],
+      borderColor: colors['border-input-login'],
       borderRadius: spacing['8'],
       width: (metrics.screenWidth - 60) / 2,
       marginVertical: spacing['6'],

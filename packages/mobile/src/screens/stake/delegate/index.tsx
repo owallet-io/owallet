@@ -21,6 +21,7 @@ import { Toggle } from '../../../components/toggle';
 import { Dec, DecUtils } from '@owallet/unit';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 // import { RectButton } from '../../../components/rect-button';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 // import { DownArrowIcon } from '../../../components/icon';
@@ -89,15 +90,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
-      <Text
-        style={{
-          ...styles.title,
-          color: colors['primary-text']
-        }}
-      >
-        Staking
-      </Text>
-
+      <OWSubTitleHeader title="Staking" />
       <OWBox
         style={{
           marginBottom: 24

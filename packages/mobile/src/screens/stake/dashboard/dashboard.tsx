@@ -15,6 +15,7 @@ import { API } from '../../../common/api';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
+import { OWSubTitleHeader } from '@src/components/header';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();
@@ -49,15 +50,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View>
-        <Text
-          style={{
-            ...styles.title,
-            color: colors['primary-text']
-          }}
-        >
-          {`My staking`}
-        </Text>
-
+        <OWSubTitleHeader title="My staking" />
         <OWBox>
           {chainStore.current.networkType === 'cosmos' ? (
             <MyRewardCard />

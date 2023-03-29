@@ -25,7 +25,8 @@ import { RectButton } from '../../../../components/rect-button';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {
   HeaderLeftButton,
-  HeaderRightButton
+  HeaderRightButton,
+  OWSubTitleHeader
 } from '../../../../components/header';
 import {
   HeaderAddIcon,
@@ -158,17 +159,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
-      <View style={{ alignItems: 'center', marginTop: spacing['16'] }}>
-        <Text
-          style={{
-            ...typography.h3,
-            fontWeight: '700',
-            color: colors['primary-text']
-          }}
-        >
-          Address book
-        </Text>
-      </View>
+      <OWSubTitleHeader title="Address book" />
       <OWBox>
         <View>
           <TextInput
