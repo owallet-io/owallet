@@ -57,6 +57,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       style={[
         styles.containerBtn,
         styleMapped.btn,
+        !fullWidth && !!icon && styles.paddingHaveIconAndNotFullwidth,
         fullWidth ? styles.fullWidth : styles.widthAuto,
         borderStyle == 'dashed' && styles.dashed,
         !!icon && !label && styles.hasIcon,
@@ -72,7 +73,12 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
             <OWText
               variant={textVariant}
               typo={textTypo}
-              style={[styles.textBtn,!!icon && styles.iconInBtn, styleMapped.text, textStyle]}
+              style={[
+                styles.textBtn,
+                !!icon && styles.iconInBtn,
+                styleMapped.text,
+                textStyle
+              ]}
             >
               {label}
             </OWText>
@@ -87,7 +93,8 @@ export default OWButton;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
-iconInBtn: {paddingLeft:6},
+    paddingHaveIconAndNotFullwidth: { paddingHorizontal: 12 },
+    iconInBtn: { paddingLeft: 6 },
     dashed: {
       borderWidth: 1,
       borderStyle: 'dashed',
@@ -98,8 +105,7 @@ iconInBtn: {paddingLeft:6},
     containerBtn: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: 12
+      justifyContent: 'center'
     },
     textBtn: {
       textAlign: 'center',

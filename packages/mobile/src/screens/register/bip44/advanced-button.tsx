@@ -38,12 +38,8 @@ export const BIP44AdvancedButton: FunctionComponent<{
       <OWButton
         label="Advanced Option"
         type="link"
-        textStyle={{
-          fontWeight: '400'
-        }}
-        style={{
-          justifyContent: 'flex-start'
-        }}
+        size='medium'
+        contentAlign='left'
         onPress={() => setIsModalOpen(true)}
       />
     </View>

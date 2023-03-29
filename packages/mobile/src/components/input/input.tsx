@@ -71,52 +71,28 @@ export const TextInput = React.forwardRef<
         ) : null}
       </View>
       <View
-        style={StyleSheet.flatten(
-          props.inputStyle
-            ? [
-                style.flatten(
-                  [
-                    'background-color-white',
-                    'padding-x-11',
-                    'padding-y-12',
-                    'border-radius-4',
-                    'border-width-1',
-                    'border-color-border-white'
-                  ],
-                  [
-                    props.error ? 'border-color-error' : undefined,
-                    !(props.editable ?? true) && 'background-color-disabled'
-                  ]
-                ),
-                {
-                  backgroundColor: colors['background-container'],
-                  borderColor: colors['border-input-login']
-                },
-                props.inputStyle,
-                props.inputContainerStyle
-              ]
-            : [
-                style.flatten(
-                  [
-                    'background-color-white',
-                    'padding-x-11',
-                    'padding-y-12',
-                    'border-radius-4',
-                    'border-width-1',
-                    'border-color-border-white'
-                  ],
-                  [
-                    props.error ? 'border-color-error' : undefined,
-                    !(props.editable ?? true) && 'background-color-disabled'
-                  ]
-                ),
-                {
-                  backgroundColor: colors['background-container'],
-                  borderColor: colors['border-input-login']
-                },
-                props.inputContainerStyle
-              ]
-        )}
+        style={StyleSheet.flatten([
+          style.flatten(
+            [
+              'background-color-white',
+              'padding-x-11',
+              'padding-y-12',
+              'border-radius-4',
+              'border-width-1',
+              'border-color-border-white'
+            ],
+            [
+              props.error ? 'border-color-error' : undefined,
+              !(props.editable ?? true) && 'background-color-disabled'
+            ]
+          ),
+          {
+            backgroundColor: colors['background-container'],
+            borderColor: colors['border-input-login']
+          },
+          props.inputStyle,
+          props.inputContainerStyle
+        ])}
       >
         {props.topInInputContainer}
         <View style={style.flatten(['flex-row', 'items-center'])}>
