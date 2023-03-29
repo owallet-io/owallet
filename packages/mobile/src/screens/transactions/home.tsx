@@ -193,7 +193,7 @@ export const Transactions: FunctionComponent = () => {
       {indexParent == 0 && (
         <OWBox
           style={{
-            margin: 0,
+            marginTop: 0,
             padding: 0
           }}
         >
