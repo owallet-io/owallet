@@ -17,7 +17,6 @@ import {
   ValidatorVotingIcon
 } from '../../../components/icon';
 import { ValidatorThumbnails } from '@owallet/common';
-// import { DelegatedCard } from './delegated-card';
 import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
 const renderIconValidator = (label: string, size?: number, styles?: any) => {

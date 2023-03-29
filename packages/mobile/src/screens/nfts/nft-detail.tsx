@@ -23,6 +23,8 @@ import ProgressiveImage from '../../components/progessive-image';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
@@ -220,52 +222,30 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
             {loading ? <ActivityIndicator /> : null}
             {item.version === 1 && item.offer != null
               ? ['Transfer'].map((e, i) => (
-                  <TouchableOpacity
-                    style={{
-                      ...styles.btn
-                    }}
-                    onPress={() => _onPressTransfer()}
-                  >
-                    <View style={{ ...styles.btnTransfer }}>
-                      <SendDashboardIcon />
-                      <Text
-                        style={{
-                          ...typography['h7'],
-                          lineHeight: spacing['20'],
-                          // color: colors['white'],
-                          paddingLeft: spacing['6'],
-                          fontWeight: '700'
-                        }}
-                      >
-                        {`Transfer`}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                  <OWButton
+                    key={`transfer-1-${1}`}
+                    label="Transfer"
+                    size="small"
+                    fullWidth={false}
+                    icon={
+                      <OWIcon color={colors['white']} size={20} name="send" />
+                    }
+                    onPress={_onPressTransfer}
+                  />
                 ))
               : null}
             {item.version === 2 && owner.availableQuantity > 0
               ? ['Transfer'].map((e, i) => (
-                  <TouchableOpacity
-                    style={{
-                      ...styles.btn
-                    }}
-                    onPress={() => _onPressTransfer()}
-                  >
-                    <View style={{ ...styles.btnTransfer }}>
-                      <SendDashboardIcon />
-                      <Text
-                        style={{
-                          ...typography['h7'],
-                          lineHeight: spacing['20'],
-                          color: colors['white'],
-                          paddingLeft: spacing['6'],
-                          fontWeight: '700'
-                        }}
-                      >
-                        {`Transfer`}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+                  <OWButton
+                    key={`transfer-2-${i}`}
+                    label="Transfer"
+                    size="small"
+                    fullWidth={false}
+                    icon={
+                      <OWIcon color={colors['white']} size={20} name="send" />
+                    }
+                    onPress={_onPressTransfer}
+                  />
                 ))
               : null}
           </View>
@@ -323,7 +303,6 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
             </View>
           }
         />
-
       </View>
     </PageWithScrollViewInBottomTabView>
   );
@@ -353,7 +332,7 @@ const styling = () => {
       alignItems: 'center',
       justifyContent: 'center',
       height: '50%',
-      paddingHorizontal:6
+      paddingHorizontal: 6
     },
     containerBtn: {
       display: 'flex',
@@ -361,7 +340,7 @@ const styling = () => {
       paddingTop: spacing['6'],
       paddingLeft: spacing[22],
       paddingRight: spacing['22'],
-      justifyContent: 'center',
+      justifyContent: 'center'
       // paddingBottom: spacing['24']
     },
     btn: {
