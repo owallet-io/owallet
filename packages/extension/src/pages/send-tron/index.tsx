@@ -17,8 +17,8 @@ import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 import { useFeeEthereumConfig, useSendTxConfig } from '@owallet/hooks';
 import { fitPopupWindow } from '@owallet/popup';
-import { EthereumEndpoint } from '@owallet/common';
-import { getBase58Address } from '../main/constants';
+import { EthereumEndpoint, getBase58Address } from '@owallet/common';
+
 export const SendTronEvmPage: FunctionComponent<{
   coinMinimalDenom?: string;
   tokensTrc20Tron?: Array<any>;
@@ -53,7 +53,7 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, queriesStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);

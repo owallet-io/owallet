@@ -12,15 +12,13 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { TokensView } from '../main/token';
 import { TokensTronView } from '../main/tokenTron';
-import { useIntl } from 'react-intl';
-import { useConfirm } from '../../components/confirm';
 import { IBCTransferView } from '../main/ibc-transfer';
 import { IBCTransferPage } from '../../pages/ibc-transfer';
 import { SendPage } from '../send';
 import { SelectChain } from '../../layouts/header';
 import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
-import { getBase58Address, TRC20_LIST, TRON_ID } from '../main/constants';
+import { getBase58Address, TRC20_LIST, TRON_ID } from '@owallet/common';
 
 export const TokenPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
@@ -58,7 +56,7 @@ export const TokenPage: FunctionComponent = observer(() => {
   const getTokenTron = async () => {
     try {
       fetch(
-        `${chainStore.current.rpc}/accounts/${getBase58Address(
+        `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
           accountInfo.evmosHexAddress
         )}`
       ).then(async (res) => {

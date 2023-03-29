@@ -21,6 +21,7 @@ import {
 import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
 import { ObservableEnsFetcher } from '@owallet/ens';
+import { TRON_ID } from '@owallet/common';
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
@@ -140,7 +141,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
 
     try {
       if (this.chainInfo.networkType === 'evm') {
-        if (this.chainInfo.chainId === '0x2b6653dc') {
+        if (this.chainInfo.chainId === TRON_ID) {
           const checkAddress = /T[A-Za-z1-9]{33}/g.exec(this.recipient);
           if (!checkAddress) {
             return new InvalidTronAddressError(`Invalid tron address`);

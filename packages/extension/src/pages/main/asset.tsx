@@ -7,10 +7,8 @@ import { useStore } from '../../stores';
 import styleAsset from './asset.module.scss';
 import { ToolTip } from '../../components/tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLanguage } from '@owallet/common';
+import { useLanguage, toDisplay, TRON_ID } from '@owallet/common';
 import { useHistory } from 'react-router';
-import { TRON_ID } from './constants';
-import Big from 'big.js';
 
 const LazyDoughnut = React.lazy(async () => {
   const module = await import(
@@ -265,11 +263,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     if (total) {
       totalPrice =
         isTronNetwork && total
-          ? parseFloat(
-              new Big(parseInt(total.amount.int.value))
-                .div(new Big(10).pow(24))
-                .toString()
-            ) *
+          ? toDisplay(total.amount.int.value, 24) *
             priceStore?.getPrice(
               chainStore?.current?.stakeCurrency?.coinGeckoId
             )
@@ -321,9 +315,8 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               balance?.trim(true).shrink(true).maxDecimals(6).toString()}
 
             {isTronNetwork && total
-              ? new Big(parseInt(total.amount.int.value)).div(
-                  new Big(10).pow(24)
-                ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+              ? toDisplay(total.amount.int.value, 24) +
+                ` ${chainStore.current?.stakeCurrency.coinDenom}`
               : null}
           </div>
         </div>

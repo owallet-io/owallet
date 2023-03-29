@@ -735,6 +735,24 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'tron',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+      },
+      {
+        contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
+        coinDenom: 'USDC',
+        coinMinimalDenom: 'usdc',
+        coinGeckoId: 'usd-coin',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+        coinDecimals: 6
+      },
+      {
+        contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+        coinDenom: 'USDT',
+        coinMinimalDenom: 'usdt',
+        coinDecimals: 6,
+        coinGeckoId: 'tether',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
       }
     ],
     restConfig: {
@@ -751,9 +769,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return this.currencies;
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
+      low: 420,
+      average: 504,
+      high: 672
     },
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {

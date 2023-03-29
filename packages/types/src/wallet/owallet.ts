@@ -182,3 +182,12 @@ export interface Ethereum {
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }
+
+export interface TronWeb {
+  readonly version: string;
+  readonly mode: EthereumMode;
+  defaultAddress?: object;
+  initChainId: string;
+  sign(transaction: object): Promise<object>;
+  getDefaultAddress(): object;
+}

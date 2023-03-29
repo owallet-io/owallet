@@ -7,7 +7,7 @@ import { Button, Tooltip, Modal, ModalBody } from 'reactstrap';
 import { observer } from 'mobx-react-lite';
 
 import { useStore } from '../../stores';
-
+import { getBase58Address } from '@owallet/common';
 // import Modal from 'react-modal';
 
 import { FormattedMessage } from 'react-intl';
@@ -15,8 +15,7 @@ import { useHistory } from 'react-router';
 
 import classnames from 'classnames';
 import { Dec } from '@owallet/unit';
-import { getBase58Address, TRON_ID } from './constants';
-import Big from 'big.js';
+import { toDisplay, TRON_ID } from '@owallet/common';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QrCode = require('qrcode');
 
@@ -160,10 +159,7 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
 
     const isTronNetwork = chainStore.current.chainId === TRON_ID;
     const hasAssets = isTronNetwork
-      ? evmBalance &&
-        new Big(parseInt(evmBalance.amount.int.value))
-          .div(new Big(10).pow(24))
-          .toString()
+      ? evmBalance && toDisplay(evmBalance.amount.int.value, 24)
       : parseFloat(
           evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()
         ) > 0;

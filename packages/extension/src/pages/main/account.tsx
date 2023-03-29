@@ -9,7 +9,7 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
-import { getBase58Address, TRON_ID } from './constants';
+import { getBase58Address, TRON_ID } from '@owallet/common';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();

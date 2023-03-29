@@ -6,7 +6,7 @@ import { useStore } from '../../stores';
 import { useHistory } from 'react-router';
 import classmames from 'classnames';
 import { Input } from '../../components/form';
-import Big from 'big.js';
+import { toDisplay } from '@owallet/common';
 
 export const TokensTronView: FunctionComponent<{
   tokens: {
@@ -17,9 +17,8 @@ export const TokensTronView: FunctionComponent<{
   };
   handleClickToken?: (token) => void;
   coinMinimalDenom?: string;
-}> = observer(({ tokens, handleClickToken }) => {
+}> = observer(({ tokens, handleClickToken, coinMinimalDenom }) => {
   const { priceStore } = useStore();
-  // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const history = useHistory();
   const [search, setSearch] = useState('');
   return (
@@ -57,11 +56,7 @@ export const TokensTronView: FunctionComponent<{
           const minimalDenom = token?.coinDenom;
           const coinImageUrl = token?.coinImageUrl;
           const amount =
-            token.amount &&
-            `${new Big(parseInt(token.amount)).div(
-              new Big(10).pow(6).toFixed(6)
-            )} ${minimalDenom}`;
-
+            token.amount && `${toDisplay(token.amount, 6)} ${minimalDenom}`;
           return (
             <div
               key={token.coinDenom}
@@ -97,21 +92,21 @@ export const TokensTronView: FunctionComponent<{
                 <div className={styleToken.content}>
                   <div
                     className={classmames(styleToken.name, {
-                      // activeToken: active
+                      activeToken:
+                        `?defaultDenom=${token.coinDenom}` == coinMinimalDenom
                     })}
                   >
                     {name}
                   </div>
                   <div className={styleToken.amount}>{amount}</div>
-                  {amount &&
-                    (
-                      parseFloat(
-                        new Big(parseInt(token.amount))
-                          .div(new Big(10).pow(6).toFixed(3))
-                          .toString()
-                      ) * priceStore?.getPrice(coinGeckoId)
-                    ).toFixed(2)}
-                  {' $'}
+                  <div className={classmames(styleToken.price)}>
+                    {amount &&
+                      (
+                        toDisplay(token.amount, 6) *
+                        priceStore?.getPrice(coinGeckoId)
+                      ).toFixed(2)}
+                    {' $'}
+                  </div>
                 </div>
                 <div style={{ flex: 1 }} />
                 <div className={styleToken.rightIcon}>

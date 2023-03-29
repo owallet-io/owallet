@@ -28,8 +28,7 @@ import {
 import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStore } from '../../stores';
-import { DenomHelper } from '@owallet/common';
-import Big from 'big.js';
+import { DenomHelper, toDisplay } from '@owallet/common';
 export interface CoinInputTronProps {
   amountConfig: IAmountConfig;
   feeConfig?: any;
@@ -108,7 +107,6 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
       new CoinPretty(amountConfig.sendCurrency, new Int(0))
     );
 
-    // let balance = new CoinPretty(amountConfig.sendCurrency, new Int(0));
     const tokenDenom = new CoinPretty(amountConfig.sendCurrency, new Int(0))
       .currency.coinDenom;
 
@@ -123,17 +121,6 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
           accountInfo.evmosHexAddress
         ).balance;
         setBalance(evmBalance);
-      } else {
-        const queryBalance = queryBalances.balances.find(
-          (bal) =>
-            amountConfig.sendCurrency.coinMinimalDenom ===
-            bal.currency.coinMinimalDenom
-        );
-        setBalance(
-          queryBalance
-            ? queryBalance.balance
-            : new CoinPretty(amountConfig.sendCurrency, new Int(0))
-        );
       }
     }, [tokenDenom, chainStore.current.chainId]);
 
@@ -150,7 +137,6 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
       amountConfig.sendCurrency.coinMinimalDenom
     );
 
-    const ba = balance?.trim(true)?.maxDecimals(6)?.toString()?.split(' ');
     useEffect(() => {}, [parseFloat(feeConfig)]);
     return (
       <React.Fragment>
@@ -180,7 +166,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
                 : denomHelper.contractAddress &&
                   ` (${denomHelper.contractAddress})`}
             </DropdownToggle>
-            {/* <DropdownMenu>
+            <DropdownMenu>
               {selectableCurrencies.map((currency) => {
                 const denomHelper = new DenomHelper(currency.coinMinimalDenom);
                 return (
@@ -202,7 +188,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
                   </DropdownItem>
                 );
               })}
-            </DropdownMenu> */}
+            </DropdownMenu>
           </ButtonDropdown>
         </FormGroup>
         <FormGroup className={className}>
@@ -229,13 +215,12 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
                     amountConfig.setAmount(
                       parseFloat(
                         tokenTrc20
-                          ? new Big(parseInt(tokenTrc20.amount))
-                              .div(new Big(10).pow(6))
-                              .toString()
-                          : //@ts-ignore
-                            new Big(parseInt(balance?.amount?.int?.value))
-                              .div(new Big(10).pow(24))
-                              .toString()
+                          ? toDisplay(tokenTrc20.amount, 6).toString()
+                          : toDisplay(
+                              //@ts-ignore
+                              balance?.amount?.int?.value,
+                              24
+                            ).toString()
                       )
                         .toFixed(6)
                         .toString()
@@ -245,17 +230,16 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
                   <span>{`Total: ${
                     tokenTrc20
                       ? reduceStringAssets(
-                          //@ts-ignore
-                          new Big(parseInt(tokenTrc20.amount))
-                            .div(new Big(10).pow(6))
-                            .toString() + ` ${tokenTrc20.coinDenom}`
+                          toDisplay(tokenTrc20.amount, 6).toString() +
+                            ` ${tokenTrc20.coinDenom}`
                         )
                       : (balance &&
                           reduceStringAssets(
-                            //@ts-ignore
-                            new Big(parseInt(balance.amount.int.value))
-                              .div(new Big(10).pow(24))
-                              .toString() +
+                            toDisplay(
+                              //@ts-ignore
+                              balance?.amount?.int?.value,
+                              24
+                            ).toString() +
                               ` ${chainStore.current?.stakeCurrency.coinDenom}`
                           )) ||
                         0

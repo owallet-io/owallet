@@ -105,7 +105,9 @@ export const SignTronPage: FunctionComponent = observer(() => {
             })}
           >
             {tab === Tab.Data && <TronDataTab data={dataSign} />}
-            {tab === Tab.Details && <TronDetailsTab dataSign={dataSign} />}
+            {tab === Tab.Details && (
+              <TronDetailsTab intl={intl} dataSign={dataSign} />
+            )}
           </div>
           <div style={{ flex: 1 }} />
           <div className={style.buttons}>

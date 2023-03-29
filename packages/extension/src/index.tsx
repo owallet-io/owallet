@@ -56,7 +56,7 @@ import {
 } from '@owallet/common';
 
 import manifest from './manifest.json';
-import { Ethereum, OWallet } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { InExtensionMessageRequester } from '@owallet/router-extension';
 import { ExportToMobilePage } from './pages/setting/export-to-mobile';
 import { LogPageViewWrapper } from './components/analytics';
@@ -84,6 +84,13 @@ const ethereum = new Ethereum(
   new InExtensionMessageRequester()
 );
 
+const tronWeb = new TronWeb(
+  manifest.version,
+  'core',
+  '0x2b6653dc',
+  new InExtensionMessageRequester()
+);
+
 Sentry.init({
   dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
   integrations: [new BrowserTracing()],
@@ -99,6 +106,8 @@ window.owallet = owallet;
 window.eth_owallet = ethereum;
 //@ts-ignore
 window.ethereum = ethereum;
+//@ts-ignore
+window.tronWeb = tronWeb;
 
 // Make sure that icon file will be included in bundle
 require('./public/assets/orai_wallet_logo.png');

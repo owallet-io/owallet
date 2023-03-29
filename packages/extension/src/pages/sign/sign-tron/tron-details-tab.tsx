@@ -1,15 +1,13 @@
 import React, { FunctionComponent } from 'react';
 
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
 
 import styleDetailsTab from '../details-tab.module.scss';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Badge, Label } from 'reactstrap';
 import classnames from 'classnames';
-
-export const TronDetailsTab: FunctionComponent<{ dataSign }> = observer(
-  ({ dataSign }) => {
+export const TronDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(
+  ({ dataSign, intl }) => {
     return (
       <div className={styleDetailsTab.container}>
         <Label
@@ -22,15 +20,34 @@ export const TronDetailsTab: FunctionComponent<{ dataSign }> = observer(
             {JSON.stringify(dataSign).length}
           </Badge>
         </Label>
-        <div
-          id="signing-messages"
-          style={{
-            overflow: 'auto',
-            height: 80
-          }}
-          className={styleDetailsTab.msgContainer}
-        >
-          {JSON.stringify(dataSign, null, 2)}
+        <div id="signing-messages" className={styleDetailsTab.msgContainer}>
+          <React.Fragment>
+            {dataSign?.data?.currency && (
+              <MsgRender
+                icon={'fas fa-paper-plane'}
+                title={intl.formatMessage({
+                  id: 'sign.list.message.cosmos-sdk/MsgSend.title'
+                })}
+              >
+                <FormattedMessage
+                  id="sign.list.message.cosmos-sdk/MsgSend.content"
+                  values={{
+                    b: (...chunks: any[]) => <b>{chunks}</b>,
+                    recipient: dataSign?.data?.recipient,
+                    amount:
+                      dataSign?.data?.amount +
+                      ' ' +
+                      dataSign?.data?.currency?.coinDenom
+                  }}
+                />
+              </MsgRender>
+            )}
+            {!dataSign?.data?.currency && (
+              <div style={{ width: 375 }}>{JSON.stringify(dataSign, null)}</div>
+            )}
+
+            <hr />
+          </React.Fragment>
         </div>
       </div>
     );
