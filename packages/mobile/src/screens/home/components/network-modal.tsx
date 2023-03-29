@@ -1,5 +1,5 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
 import { RectButton } from '../../../components/rect-button';
 import { colors, metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
@@ -7,6 +7,12 @@ import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { CText as Text } from '../../../components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
+const COINTYPE_NETWORK = {
+  118: 'Cosmos',
+  60: 'Ethereum',
+  195: 'Tron'
+};
 
 export const NetworkModal = ({
   profileColor,
@@ -16,6 +22,47 @@ export const NetworkModal = ({
   bip44Option,
   smartNavigation
 }) => {
+  const handleSwitchNetwork = item => {
+    if (keyStore.keyRingType === 'ledger') {
+      Alert.alert(
+        'Switch network',
+        `You are switching to ${
+          COINTYPE_NETWORK[item.bip44.coinType]
+        } network. Please confirm that you have ${
+          COINTYPE_NETWORK[item.bip44.coinType]
+        } App opened before switch network`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              modalStore.close();
+            },
+            style: 'cancel'
+          },
+          {
+            text: 'Switch',
+            onPress: () => {
+              chainStore.selectChain(item?.chainId);
+              chainStore.saveLastViewChainId();
+              keyStore.setKeyStoreLedgerAddress(
+                `44'/${item.bip44.coinType ?? item.coinType}'/${
+                  bip44Option.bip44HDPath.account
+                }'/${bip44Option.bip44HDPath.change}/${
+                  bip44Option.bip44HDPath.addressIndex
+                }`
+              );
+              modalStore.close();
+            }
+          }
+        ]
+      );
+    } else {
+      chainStore.selectChain(item?.chainId);
+      chainStore.saveLastViewChainId();
+      modalStore.close();
+    }
+  };
+
   const _renderItem = ({ item }) => {
     return (
       <RectButton
@@ -23,19 +70,7 @@ export const NetworkModal = ({
           ...styles.containerBtn
         }}
         onPress={async () => {
-          chainStore.selectChain(item?.chainId);
-          chainStore.saveLastViewChainId();
-          if (keyStore.keyRingType === 'ledger') {
-            keyStore.setKeyStoreLedgerAddress(
-              `44'/${item.bip44.coinType ?? item.coinType}'/${
-                bip44Option.bip44HDPath.account
-              }'/${bip44Option.bip44HDPath.change}/${
-                bip44Option.bip44HDPath.addressIndex
-              }`
-            );
-          }
-          modalStore.close();
-          // check if ledger here with keyStore.type
+          handleSwitchNetwork(item);
         }}
       >
         <View
