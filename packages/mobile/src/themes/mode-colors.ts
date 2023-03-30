@@ -187,6 +187,7 @@ const modeColors = {
   'text-place-holder': ['#717177', '#8C93A7'],
   'background-box-shadow': ['#2B2D3B', '#FFFFFF'],
   'text-label-list':[colorsCode['gray-300'], colorsCode['blue-300']],
+  'label-bottom-bar':['#E2DEEB','#5F5E77']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

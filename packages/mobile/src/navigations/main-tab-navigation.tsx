@@ -5,8 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';
 import { useFocusedScreen } from '@src/providers/focused-screen';
-import { SCREENS } from '@src/common/constants';
-import { BrowserFillIcon, DotsIcon, HomeFillIcon, InvestFillIcon, SettingFillIcon } from '@src/components/icon';
+import { ICONS_TITLE, SCREENS, SCREENS_TITLE } from '@src/common/constants';
 import { BlurredBottomTabBar } from '@src/components/bottom-tabbar';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainNavigation } from './main-navigation';
@@ -14,11 +13,10 @@ import { WebNavigation } from './web-navigation';
 import { SendNavigation } from './send-navigation';
 import { InvestNavigation } from './invest-navigation';
 import { SettingStackScreen } from './settings-navigation';
-import { BorderlessButton } from 'react-native-gesture-handler';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { observer } from 'mobx-react-lite';
 const Tab = createBottomTabNavigator();
-export const MainTabNavigation: FC = () => {
-  const style = useStyle();
-
+export const MainTabNavigation: FC = observer(() => {
   const navigation = useNavigation();
   const { chainStore } = useStore();
 
@@ -28,170 +26,48 @@ export const MainTabNavigation: FC = () => {
 
   useEffect(() => {}, [focusedScreen.name, navigation]);
 
-  const checkActiveTabBottom = (name: string) => {
-    return name.includes(focusedScreen.name);
-  };
-
-  const RenderTabsBarIcon = ({ name }) => {
-    let choosen = checkActiveTabBottom(name);
-
-    if (name === SCREENS.TABS.Settings) {
-      choosen = checkActiveTabBottom('Setting');
-    }
-    let icon;
-    let nameRoute = name;
-    switch (name) {
-      case SCREENS.TABS.Main:
-        icon = choosen ? (
-          <HomeFillIcon color={colors['purple-700']} />
-        ) : (
-          <HomeFillIcon color={colors['icon-text']} />
-        );
-        break;
-      case SCREENS.TABS.Home:
-        icon = choosen ? (
-          <HomeFillIcon color={colors['purple-700']} />
-        ) : (
-          <HomeFillIcon color={colors['icon-text']} />
-        );
-        break;
-      case SCREENS.TABS.Browser:
-        icon = choosen ? (
-          <BrowserFillIcon color={colors['purple-700']} />
-        ) : (
-          <BrowserFillIcon color={colors['icon-text']} />
-        );
-        break;
-      case SCREENS.TABS.Invest:
-        icon = choosen ? (
-          <InvestFillIcon color={colors['purple-700']} />
-        ) : (
-          <InvestFillIcon color={colors['icon-text']} />
-        );
-        break;
-      case SCREENS.TABS.Settings:
-        icon = choosen ? (
-          <SettingFillIcon color={colors['purple-700']} />
-        ) : (
-          <SettingFillIcon color={colors['icon-text']} />
-        );
-        break;
-      default:
-        icon = choosen ? (
-          <SettingFillIcon color={colors['purple-700']} />
-        ) : (
-          <SettingFillIcon color={colors['icon-text']} />
-        );
-        break;
-    }
-
-    return (
-      <View
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          paddingTop: choosen ? 30 : 12
-        }}
-      >
-        {icon}
-        {!!nameRoute && (
-          <Text
-            style={{
-              fontSize: 12,
-              lineHeight: 16,
-              color: choosen ? colors['purple-700'] : colors['icon-text']
-            }}
-          >
-            {nameRoute}
-          </Text>
-        )}
-
-        {choosen && (
-          <View style={{ paddingTop: 10 }}>
-            <DotsIcon />
-          </View>
-        )}
-      </View>
-    );
-  };
-
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          switch (route.name) {
-            case SCREENS.TABS.Main:
-              return <RenderTabsBarIcon name={SCREENS.TABS.Home} />;
-            case SCREENS.TABS.Browser:
-              return <RenderTabsBarIcon name={SCREENS.TABS.Browser} />;
-            case SCREENS.TABS.SendNavigation:
-              return (
-                <View
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    paddingTop: checkActiveTabBottom(route.name) ? 30 : 8
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: 50,
-                      height: 50
-                    }}
-                    source={require('@src/assets/image/push.png')}
-                    resizeMode="contain"
-                    fadeDuration={0}
-                  />
-                  {checkActiveTabBottom(route.name) && (
-                    <View style={{ paddingTop: 10 }}>
-                      <DotsIcon />
-                    </View>
-                  )}
-                </View>
-              );
-            case SCREENS.TABS.Invest:
-              return <RenderTabsBarIcon name={SCREENS.TABS.Invest} />;
-            case SCREENS.TABS.Settings:
-              return <RenderTabsBarIcon name={SCREENS.TABS.Settings} />;
+        tabBarIcon: ({ color, focused }) => {
+          if (route?.name === SCREENS.TABS.SendNavigation) {
+            return (
+              <View style={styles.paddingIcon}>
+                <OWIcon
+                  type="images"
+                  source={require('@src/assets/image/push.png')}
+                  size={44}
+                />
+              </View>
+            );
           }
-        },
-        tabBarButton: (props) => (
-          <View
-            style={{
-              display: 'flex',
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-            {/* @ts-ignore */}
-            <BorderlessButton
-              {...props}
-              activeOpacity={1}
-              style={{
-                height: '100%',
-                aspectRatio: 1.9,
-                maxWidth: '100%'
-              }}
+          return (
+            <OWIcon
+              name={`${ICONS_TITLE[route.name]}-${
+                focused ? 'bold' : 'outline'
+              }`}
+              size={22}
+              color={color}
             />
-          </View>
-        )
+          );
+        },
+        tabBarLabel: `${SCREENS_TITLE[route.name]}`
       })}
       tabBarOptions={{
-        activeTintColor: colors['background-btn-primary'],
-        inactiveTintColor: style.get('color-text-black-very-very-low').color,
+        activeTintColor: colors['purple-700'],
+        labelStyle: {
+          fontSize: 12
+        },
+        inactiveTintColor: colors['label-bottom-bar'],
         style: {
           backgroundColor: colors['background-box'],
           borderTopWidth: 0.5,
           borderTopColor: colors['primary'],
-          shadowColor: style.get('color-transparent').color,
-          elevation: 0,
+
           paddingLeft: 10,
           paddingRight: 10,
-          height: Platform.OS === 'android' ? 80 : 110
-        },
-        showLabel: false
+          paddingTop: Platform.OS === 'ios' ? 10 : 0
+        }
       }}
       tabBar={(props) => (
         <BlurredBottomTabBar {...props} enabledScreens={['Home']} />
@@ -200,9 +76,6 @@ export const MainTabNavigation: FC = () => {
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
       <Tab.Screen
-        options={{
-          title: 'SendNavigation',
-        }}
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
         initialParams={{
@@ -215,10 +88,14 @@ export const MainTabNavigation: FC = () => {
         name={SCREENS.TABS.Settings}
         component={SettingStackScreen}
         options={{
-          unmountOnBlur: true,
+          unmountOnBlur: true
         }}
       />
     </Tab.Navigator>
   );
-};
-
+});
+const styles = StyleSheet.create({
+  paddingIcon: {
+    paddingTop: 15
+  }
+});
