@@ -109,7 +109,13 @@ export const AccountCard: FunctionComponent<{
           : total.shrink(true).maxDecimals(6).toString()
       }
       onPressBtnMain={onPressBtnMain}
-      address={account.bech32Address}
+      addressComponent={
+        <AddressCopyable
+          address={account.bech32Address}
+          maxCharacters={22}
+          networkType={chainStore.current.networkType}
+        />
+      }
       name={account.name}
       networkType={'cosmos'}
       coinType={

@@ -15,11 +15,13 @@ import { Hash } from '@owallet/crypto';
 import { NetworkModal } from '@src/screens/home/components';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { HEADER_KEY } from '@src/common/constants';
+import { useRegisterConfig } from '@owallet/hooks';
+import { useBIP44Option } from '@src/screens/register/bip44';
 interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
 }
 const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
-  const { chainStore, modalStore } = useStore();
+  const { chainStore, modalStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
   const deterministicNumber = useCallback((chainInfo) => {
@@ -39,6 +41,8 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
     },
     [deterministicNumber]
   );
+  const registerConfig = useRegisterConfig(keyRingStore, []);
+  const bip44Option = useBIP44Option(chainStore.current.coinType);
   // const navigation = useNavigation();
   const _onPressNetworkModal = () => {
     modalStore.setOpen();
@@ -47,6 +51,8 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
         profileColor,
         chainStore,
         modalStore,
+        keyStore: keyRingStore,
+        bip44Option,
         smartNavigation,
         colors
       })

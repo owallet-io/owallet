@@ -2123,17 +2123,10 @@
     "@ethersproject/logger" "^5.6.0"
     bn.js "^5.2.1"
 
-"@ethersproject/bytes@5.6.0":
+"@ethersproject/bytes@5.6.0", "@ethersproject/bytes@^5.6.0", "@ethersproject/bytes@^5.6.1":
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/@ethersproject/bytes/-/bytes-5.6.0.tgz#81652f2a0e04533575befadce555213c11d8aa20"
   integrity sha512-3hJPlYemb9V4VLfJF5BfN0+55vltPZSHU3QKUyP9M3Y2TcajbiRrz65UG+xVHOzBereB1b9mn7r12o177xgN7w==
-  dependencies:
-    "@ethersproject/logger" "^5.6.0"
-
-"@ethersproject/bytes@^5.6.0", "@ethersproject/bytes@^5.6.1":
-  version "5.6.1"
-  resolved "https://registry.npmjs.org/@ethersproject/bytes/-/bytes-5.6.1.tgz"
-  integrity sha512-NwQt7cKn5+ZE4uDn+X5RAXLp46E1chXoaMmrxAyA0rblpxz8t58lVkrHXoRIn0lz1joQElQ8410GqhTqMOwc6g==
   dependencies:
     "@ethersproject/logger" "^5.6.0"
 
@@ -3321,7 +3314,7 @@
   resolved "https://registry.npmjs.org/@jsdevtools/ono/-/ono-7.1.3.tgz"
   integrity sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==
 
-"@ledgerhq/devices@^6.20.0", "@ledgerhq/devices@^7.0.0":
+"@ledgerhq/devices@^6.20.0", "@ledgerhq/devices@^7.0.0", "@ledgerhq/devices@^8.0.0":
   version "7.0.0"
   resolved "https://registry.npmjs.org/@ledgerhq/devices/-/devices-7.0.0.tgz"
   integrity sha512-vq4B33WdU0dRAJIRFWZMj6w1W1yw1i4mekCmhk7N9wPaFrtGWZ2iI9WDihsNOBooCWKQe8Jsb9eD8RVThbSlFQ==
@@ -3335,6 +3328,11 @@
   version "6.10.1"
   resolved "https://registry.npmjs.org/@ledgerhq/errors/-/errors-6.10.1.tgz"
   integrity sha512-92d1zRQleR1AQ4CAXgWgDtKUms+8EwShLVUcajI+BLWvgJ1Vclmq6PsBIDEQbsm+riVu/Ji3LcHdmgFgmi0VGw==
+
+"@ledgerhq/errors@^6.12.3":
+  version "6.12.3"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.12.3.tgz#a610caae1eeeb7cb038525e5212fe03217dda683"
+  integrity sha512-djiMSgB/7hnK3aLR/c5ZMMivxjcI7o2+y3VKcsZZpydPoVf9+FXqeJPRfOwmJ0JxbQ//LinUfWpIfHew8LkaVw==
 
 "@ledgerhq/hw-app-cosmos@6.27.2":
   version "6.27.2"
@@ -3365,7 +3363,7 @@
     "@ledgerhq/hw-transport" "^6.20.0"
     "@ledgerhq/logs" "^6.10.0"
 
-"@ledgerhq/hw-transport@6.27.2", "@ledgerhq/hw-transport@^6.20.0", "@ledgerhq/hw-transport@^6.27.2":
+"@ledgerhq/hw-transport@6.27.2", "@ledgerhq/hw-transport@^6.20.0", "@ledgerhq/hw-transport@^6.27.2", "@ledgerhq/hw-transport@^6.28.1":
   version "6.27.2"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.27.2.tgz#318e24b13b4bc392277d0b3b6fbc568f86b41f01"
   integrity sha512-GF4pmK78rEKhZfbmunwQ131c+0MGa6L5IoYlwgFcg6CaFpUjjPiTCKUFsm4flsE0Z0Ltn9QuKoe+xEHULo7rGA==
@@ -3379,15 +3377,20 @@
   resolved "https://registry.npmjs.org/@ledgerhq/logs/-/logs-6.10.0.tgz"
   integrity sha512-lLseUPEhSFUXYTKj6q7s2O3s2vW2ebgA11vMAlKodXGf5AFw4zUoEbTz9CoFOC9jS6xY4Qr8BmRnxP/odT4Uuw==
 
-"@ledgerhq/react-native-hw-transport-ble@=6.20.0":
-  version "6.20.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/react-native-hw-transport-ble/-/react-native-hw-transport-ble-6.20.0.tgz#b24245ccb5e2bfe179911dd5f7894d51e0ce664c"
-  integrity sha512-EYkhWFlsy6NUbylPju10iK/68cYWBpv3MIE+09SE6r9dRLKcJKlUMdfdgfUVDmcsftTxPsBtDSoqbV2eAZ1GnA==
+"@ledgerhq/logs@^6.10.1":
+  version "6.10.1"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.1.tgz#5bd16082261d7364eabb511c788f00937dac588d"
+  integrity sha512-z+ILK8Q3y+nfUl43ctCPuR4Y2bIxk/ooCQFwZxhtci1EhAtMDzMAx2W25qx8G1PPL9UUOdnUax19+F0OjXoj4w==
+
+"@ledgerhq/react-native-hw-transport-ble@^6.28.3":
+  version "6.28.3"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/react-native-hw-transport-ble/-/react-native-hw-transport-ble-6.28.3.tgz#fea64dcf67ec22453d990efb3d7fb10c4eb4bf97"
+  integrity sha512-5pb8tI9AcdXQ2o8BPPAzdaME03pMHmKdFLHqipjYZbiFAEiu62VAvV8RfNt16rRH+d0Op7crcfBmj4MXvZI79w==
   dependencies:
-    "@ledgerhq/devices" "^6.20.0"
-    "@ledgerhq/errors" "^6.10.0"
-    "@ledgerhq/hw-transport" "^6.20.0"
-    "@ledgerhq/logs" "^6.10.0"
+    "@ledgerhq/devices" "^8.0.0"
+    "@ledgerhq/errors" "^6.12.3"
+    "@ledgerhq/hw-transport" "^6.28.1"
+    "@ledgerhq/logs" "^6.10.1"
     invariant "^2.2.4"
     react-native-ble-plx "2.0.3"
     rxjs "6"
@@ -7048,13 +7051,12 @@ axios@0.21.1:
   dependencies:
     follow-redirects "^1.10.0"
 
-axios@^0.18.0:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.1.tgz#ff3f0de2e7b5d180e757ad98000f1081b87bcea3"
-  integrity sha512-0BfJq4NSfQXd+SkFdrvFbG7addhYSBA2mQwISr46pD6E5iqkWg02RAs8vyTT/j0RTnoYmeXauBuSv1qKwR179g==
+axios@^0.19.0:
+  version "0.19.2"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.2.tgz#3ea36c5d8818d0d5f8a8a97a6d36b86cdc00cb27"
+  integrity sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==
   dependencies:
     follow-redirects "1.5.10"
-    is-buffer "^2.0.2"
 
 axios@^0.21.2, axios@^0.21.4:
   version "0.21.4"
@@ -14048,6 +14050,11 @@ init-package-json@^1.10.3:
     validate-npm-package-license "^3.0.1"
     validate-npm-package-name "^3.0.0"
 
+injectpromise@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/injectpromise/-/injectpromise-1.0.0.tgz#c621f7df2bbfc1164d714f1fb229adec2079da39"
+  integrity sha512-qNq5wy4qX4uWHcVFOEU+RqZkoVG65FhvGkyDWbuBxILMjK6A1LFf5A1mgXZkD4nRx5FCorD81X/XvPKp/zVfPA==
+
 inquirer@8.2.0:
   version "8.2.0"
   resolved "https://registry.npmjs.org/inquirer/-/inquirer-8.2.0.tgz"
@@ -14283,11 +14290,6 @@ is-buffer@^1.0.2, is-buffer@^1.1.5, is-buffer@^1.1.6, is-buffer@~1.1.1:
   version "1.1.6"
   resolved "https://registry.npmjs.org/is-buffer/-/is-buffer-1.1.6.tgz"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
-
-is-buffer@^2.0.2:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-2.0.5.tgz#ebc252e400d22ff8d77fa09888821a24a658c191"
-  integrity sha512-i2R6zNFDwgEHJyQUtJEk0XFi1i0dPFn/oqjK3/vPCcDeJvW5NQ83V8QbicfF1SupOaB0h8ntgBC2YiE7dfyctQ==
 
 is-callable@^1.1.3, is-callable@^1.1.4, is-callable@^1.2.4:
   version "1.2.4"
@@ -23931,18 +23933,20 @@ triple-beam@^1.3.0:
   resolved "https://registry.npmjs.org/triple-beam/-/triple-beam-1.3.0.tgz"
   integrity sha512-XrHUvV5HpdLmIj4uVMxHggLbFSZYIn7HEWsqePZcI50pco+MPqJ50wMGY794X7AOOhxOBAjbkqfAbEe/QMp2Lw==
 
-tronweb@2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/tronweb/-/tronweb-2.4.0.tgz#a2dd9f52374977b3b5ddf50a8a82f37578e84384"
-  integrity sha512-73XTje1S0mEsltEVTB5DC5F+y7g1U6wcK0/ZHlVQRA6hoASJCuxW02O3qzgCjA6gntREmTyu6ldjb8GlgeFqFQ==
+tronweb@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/tronweb/-/tronweb-3.0.0.tgz#d69589cc6ad7be5ec574ed4b55bf52986942e417"
+  integrity sha512-aaiHuFMXbMfO3QrlbyxGXsxfosEoJS2gJ6s7VXnLirkEFkSXs5a/u/rsMXpVXTRtoQpI7R5ux5zYKqMG5L+fgw==
   dependencies:
     "@babel/runtime" "^7.0.0"
-    axios "^0.18.0"
+    axios "^0.19.0"
     babel-runtime "^6.26.0"
     bignumber.js "^7.2.1"
     elliptic "^6.4.1"
     ethers "^4.0.7"
     eventemitter3 "^3.1.0"
+    injectpromise "^1.0.0"
+    lodash "^4.17.14"
     semver "^5.6.0"
     validator "^10.7.1"
 

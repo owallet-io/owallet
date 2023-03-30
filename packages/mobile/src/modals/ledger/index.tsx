@@ -15,7 +15,7 @@ import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { State } from 'react-native-ble-plx';
 import TransportBLE, {
-  bleManager
+  bleManagerInstance
 } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
 import { Ledger, LedgerInitErrorOn } from '@owallet/background';
@@ -94,7 +94,7 @@ export const LedgerGranterModal: FunctionComponent<{
     });
 
     useEffect(() => {
-      const subscription = bleManager.onStateChange((newState) => {
+      const subscription = bleManagerInstance().onStateChange((newState) => {
         if (newState === State.PoweredOn) {
           setIsBLEAvailable(true);
         } else {
@@ -112,7 +112,7 @@ export const LedgerGranterModal: FunctionComponent<{
         // If the platform is android and can't use the bluetooth,
         // try to turn on the bluetooth.
         // Below API can be called only in android.
-        bleManager.enable();
+        bleManagerInstance().enable();
       }
     }, [isBLEAvailable]);
 
@@ -345,11 +345,14 @@ const LedgerErrorView: FunctionComponent<{
       <AlertIcon size={100} color={style.get('color-danger').color} />
       <Text style={style.flatten(['h4', 'color-danger'])}>Error</Text>
       <Text
-        style={[style.flatten([
-          'subtitle3',
-          'color-text-black-medium',
-          'margin-top-16'
-        ]),{color:colors['text-content-onBoarding']}]}
+        style={[
+          style.flatten([
+            'subtitle3',
+            'color-text-black-medium',
+            'margin-top-16'
+          ]),
+          { color: colors['text-content-onBoarding'] }
+        ]}
       >
         {text}
       </Text>
@@ -376,7 +379,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
 
     try {
       setIsConnecting(true);
-      const ledger = await Ledger.init('ble', [deviceId]);
+      const ledger = await Ledger.init('ble', [deviceId], 'cosmos');
       await ledger.close();
 
       return true;

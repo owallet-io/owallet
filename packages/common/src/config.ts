@@ -497,84 +497,84 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
 
-  // {
-  //   rest: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-  //   evmRpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-  //   chainId: "0x61",
-  //   chainName: "BNB Chain Testnet",
-  //   bip44: {
-  //     coinType: 60,
-  //   },
-  //   coinType: 60,
-  //   stakeCurrency: {
-  //     coinDenom: "BNB",
-  //     coinMinimalDenom: "bnb",
-  //     coinDecimals: 18,
-  //     coinGeckoId: "bnb",
-  //     coinImageUrl:
-  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("evmos"),
-  //   networkType: "evm",
-  //   currencies: [
-  //     {
-  //       coinDenom: "BNB",
-  //       coinMinimalDenom: "bnb",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "bnb",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-  //     },
-  //     {
-  //       coinDenom: "ORAI",
-  //       coinMinimalDenom:
-  //         "erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "oraichain-token",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-  //     },
-  //     {
-  //       coinDenom: "AIRI",
-  //       coinMinimalDenom:
-  //         "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "airight",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
-  //     },
-  //     {
-  //       coinDenom: "KWT",
-  //       coinMinimalDenom:
-  //         "erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "kawaii-islands",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "BNB",
-  //       coinMinimalDenom: "bnb",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "bnb",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-  //     },
-  //   ],
-  //   gasPriceStep: {
-  //     low: 10000000000,
-  //     average: 25000000000,
-  //     high: 40000000000,
-  //   },
-  //   features: ["isEvm"],
-  //   txExplorer: {
-  //     name: "Bsc Scan Testnet",
-  //     txUrl: "https://testnet.bscscan.com/tx/${txHash}",
-  //     accountUrl: "https://testnet.bscscan.com/address/{address}",
-  //   },
-  // },
+  {
+    rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    chainId: '0x61',
+    chainName: 'BNB Chain Testnet',
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: 'BNB',
+      coinMinimalDenom: 'bnb',
+      coinDecimals: 18,
+      coinGeckoId: 'bnb',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
+    currencies: [
+      {
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
+        coinDecimals: 18,
+        coinGeckoId: 'bnb',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+      },
+      {
+        coinDenom: 'ORAI',
+        coinMinimalDenom:
+          'erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token',
+        coinDecimals: 18,
+        coinGeckoId: 'oraichain-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
+      {
+        coinDenom: 'AIRI',
+        coinMinimalDenom:
+          'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
+        coinDecimals: 18,
+        coinGeckoId: 'airight',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+      },
+      {
+        coinDenom: 'KWT',
+        coinMinimalDenom:
+          'erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands',
+        coinDecimals: 18,
+        coinGeckoId: 'kawaii-islands',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+      }
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
+        coinDecimals: 18,
+        coinGeckoId: 'bnb',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+      }
+    ],
+    gasPriceStep: {
+      low: 10000000000,
+      average: 25000000000,
+      high: 40000000000
+    },
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Bsc Scan Testnet',
+      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
+      accountUrl: 'https://testnet.bscscan.com/address/{address}'
+    }
+  },
   {
     rest: 'https://rpc.ankr.com/eth',
     chainId: '0x01',
@@ -637,8 +637,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
-    rest: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    rpc: 'https://api.trongrid.io',
+    rest: 'https://api.trongrid.io/jsonrpc',
     chainId: '0x2b6653dc',
     networkType: 'evm',
     chainName: 'Tron',
@@ -660,11 +660,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
       }
     ],
-    restConfig: {
-      headers: {
-        'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
-      }
-    },
     bip44: {
       coinType: 195
     },
@@ -674,9 +669,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return this.currencies;
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
+      low: 420,
+      average: 504,
+      high: 672
     },
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
@@ -687,6 +682,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rest: 'https://bsc-dataseed1.ninicoin.io',
+    // rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
     chainId: '0x38',
     chainName: 'BNB Chain',
     bip44: {

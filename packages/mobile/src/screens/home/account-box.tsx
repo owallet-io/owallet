@@ -27,11 +27,12 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 export const AccountBox: FunctionComponent<{
   totalBalance?: string;
   coinType?: any;
-  address?: string;
+  // address?: string;
   networkType?: 'cosmos' | 'evm';
   name?: string;
+  addressComponent?: React.ReactNode ;
   onPressBtnMain?: (name?: string) => void;
-}> = observer(({ totalBalance, coinType, address, networkType, name, onPressBtnMain }) => {
+}> = observer(({ totalBalance, coinType, addressComponent,  networkType, name, onPressBtnMain }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const {
@@ -190,7 +191,7 @@ export const AccountBox: FunctionComponent<{
               </Text>
             </View>
 
-            <AddressCopyable address={address} maxCharacters={22} networkType={chainStore.current.networkType} />
+            {addressComponent || null}
             <Text
               style={{
                 paddingLeft: spacing['6'],

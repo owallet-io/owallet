@@ -414,6 +414,40 @@ export class AccountSetBase<MsgOpts, Queries> {
     });
   }
 
+  async sendTronToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    },
+    tokenTrc20?: object
+  ) {
+    console.log('tokenTrc20 ===', tokenTrc20);
+
+    try {
+      const ethereum = (await this.getEthereum())!;
+      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+        amount,
+        currency,
+        recipient,
+        address,
+        tokenTrc20
+      });
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(signResponse?.rawTxHex ?? signResponse);
+      }
+      return {
+        txHash: signResponse.rawTxHex
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
+  }
+
   async sendEvmMsgs(
     type: string | 'unknown',
     msgs: Msg,

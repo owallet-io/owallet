@@ -6,6 +6,7 @@ import { LedgerGranterModal } from '../../modals/ledger';
 import { navigationRef } from '../../router/root';
 import { HomeBaseModal } from '../../modals/home-base';
 import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
+import { SignTronModal } from '../../modals/sign/sign-tron';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -48,6 +49,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
               signInteractionStore.rejectAll();
               navigationRef.current.goBack();
             }}
+          />
+        ) : null}
+        {signInteractionStore.waitingTronData ? (
+          <SignTronModal
+            isOpen={true}
+            close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
         {modalStore.getState ? (

@@ -20,7 +20,7 @@ const imageScale = 0.54;
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [tokens, setTokens] = useState([]);
 
@@ -31,10 +31,14 @@ export const TronTokensCard: FunctionComponent<{
       try {
         const res = await API.getTronAccountInfo(
           {
-            address: getBase58Address(account.evmosHexAddress)
+            address:
+              keyRingStore.keyRingType === 'ledger'
+                ? keyRingStore.keyRingLedgerAddress
+                : getBase58Address(account.evmosHexAddress)
           },
           {
-            baseURL: 'https://api.trongrid.io/'
+            baseURL: chainStore.current.rpc
+            // baseURL: 'https://nile.trongrid.io/' // TRON testnet
           }
         );
 
@@ -45,7 +49,9 @@ export const TronTokensCard: FunctionComponent<{
               let token = res.data?.data[0].trc20.find(
                 t => tk.contractAddress in t
               );
-              tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              if (token) {
+                tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              }
             });
 
             setTokens(tokenArr);
@@ -130,15 +136,24 @@ export const TronTokensCard: FunctionComponent<{
               )} ${item.coinDenom}`}
             </Text>
 
-            {/* <Text
+            <Text
               style={{
                 ...typography.subtitle3,
                 color: colors['text-black-low'],
                 marginBottom: spacing['4']
               }}
             >
-              {priceBalance?.toString() || '$0'}
-            </Text> */}
+              $
+              {`${
+                item?.amount
+                  ? parseFloat(
+                      new Big(parseInt(item.amount))
+                        .div(new Big(10).pow(6).toFixed(6))
+                        .toString()
+                    ) * priceStore?.getPrice(item.coinGeckoId)
+                  : 0
+              }` || '$0'}
+            </Text>
           </View>
         </View>
         <View

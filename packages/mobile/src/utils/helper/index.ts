@@ -30,6 +30,46 @@ export const TRC20_LIST = [
     coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
     type: 'trc20'
   }
+  // {
+  //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
+  //   tokenName: 'USDD',
+  //   coinDenom: 'USDD',
+  //   coinDecimals: 6,
+  //   coinGeckoId: 'usdd',
+  //   coinImageUrl:
+  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/19891.png',
+  //   type: 'trc20'
+  // },
+  // {
+  //   contractAddress: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
+  //   tokenName: 'USDJ',
+  //   coinDenom: 'USDJ',
+  //   coinDecimals: 6,
+  //   coinGeckoId: 'usdj',
+  //   coinImageUrl:
+  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5446.png',
+  //   type: 'trc20'
+  // },
+  // {
+  //   contractAddress: 'TF17BgPaZYbz8oxbjhriubPDsA7ArKoLX3',
+  //   tokenName: 'JST',
+  //   coinDenom: 'JST',
+  //   coinDecimals: 6,
+  //   coinGeckoId: 'just',
+  //   coinImageUrl:
+  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5488.png',
+  //   type: 'trc20'
+  // },
+  // {
+  //   contractAddress: 'TWrZRHY9aKQZcyjpovdH6qeCEyYZrRQDZt',
+  //   tokenName: 'SUNOLD',
+  //   coinDenom: 'SUNOLD',
+  //   coinDecimals: 6,
+  //   coinGeckoId: 'sun',
+  //   coinImageUrl:
+  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/6990.png',
+  //   type: 'trc20'
+  // }
 ];
 
 import { Base58 } from '@ethersproject/basex';

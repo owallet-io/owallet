@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
 import { RectButton } from '../../../components/rect-button';
 import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
@@ -8,14 +8,62 @@ import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+const COINTYPE_NETWORK = {
+  118: 'Cosmos',
+  60: 'Ethereum',
+  195: 'Tron'
+};
+
 export const NetworkModal = ({
   profileColor,
   chainStore,
   modalStore,
+  keyStore,
+  bip44Option,
   smartNavigation,
   colors
 }) => {
   const styles = styling(colors);
+  const handleSwitchNetwork = item => {
+    if (keyStore.keyRingType === 'ledger') {
+      Alert.alert(
+        'Switch network',
+        `You are switching to ${
+          COINTYPE_NETWORK[item.bip44.coinType]
+        } network. Please confirm that you have ${
+          COINTYPE_NETWORK[item.bip44.coinType]
+        } App opened before switch network`,
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              modalStore.close();
+            },
+            style: 'cancel'
+          },
+          {
+            text: 'Switch',
+            onPress: () => {
+              chainStore.selectChain(item?.chainId);
+              chainStore.saveLastViewChainId();
+              keyStore.setKeyStoreLedgerAddress(
+                `44'/${item.bip44.coinType ?? item.coinType}'/${
+                  bip44Option.bip44HDPath.account
+                }'/${bip44Option.bip44HDPath.change}/${
+                  bip44Option.bip44HDPath.addressIndex
+                }`
+              );
+              modalStore.close();
+            }
+          }
+        ]
+      );
+    } else {
+      chainStore.selectChain(item?.chainId);
+      chainStore.saveLastViewChainId();
+      modalStore.close();
+    }
+  };
 
   const _renderItem = ({ item }) => {
     return (
@@ -23,10 +71,8 @@ export const NetworkModal = ({
         style={{
           ...styles.containerBtn
         }}
-        onPress={() => {
-          chainStore.selectChain(item?.chainId);
-          chainStore.saveLastViewChainId();
-          modalStore.close();
+        onPress={async () => {
+          handleSwitchNetwork(item);
         }}
       >
         <View
