@@ -35,7 +35,7 @@ export const AddressQRCodeModal: FunctionComponent<{
       <Text
         style={{
           ...typography.h6,
-          color: colors['gray-900'],
+          color: colors['primary-text'],
           fontWeight: '900'
         }}
       >{`Receive`}</Text>
