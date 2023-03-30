@@ -316,10 +316,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                 try {
                   tronWeb = new TronWeb({
                     fullHost: chainStore.current.rpc,
-                    // fullHost: 'https://nile.trongrid.io', // TRON testnet
-                    headers: {
-                      'x-api-key': process.env.X_API_KEY
-                    },
+                    // fullHost: 'https://nile.trongrid.io', // TRON testnet                    
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
 
