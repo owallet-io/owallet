@@ -46,7 +46,6 @@ export const AccountCardEVM: FunctionComponent<{
   const { colors } = useTheme();
   const [evmAddress, setEvmAddress] = useState(null);
 
-  console.log('keyRingStore', keyRingStore);
 
   const smartNavigation = useSmartNavigation();
   // const navigation = useNavigation();
