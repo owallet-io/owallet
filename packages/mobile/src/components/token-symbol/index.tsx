@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useMemo } from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View, ViewStyle, Image } from 'react-native';
 import { AppCurrency, Currency } from '@owallet/types';
 import {
   Circle,
@@ -13,8 +13,7 @@ import FastImage from 'react-native-fast-image';
 import { Hash } from '@owallet/crypto';
 import { Buffer } from 'buffer';
 import { VectorCharacter } from '../vector-character';
-import { spacing } from '../../themes';
-import { useTheme } from '@src/themes/theme-provider';
+import { colors, spacing } from '../../themes';
 
 export const StakedTokenSymbol: FunctionComponent<{
   size: number;
@@ -51,7 +50,6 @@ export const TokenSymbol: FunctionComponent<{
   chainInfo,
   imageScale = 32 / 44
 }) => {
-  const { colors } = useTheme();
   const isStakeCurrency =
     currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom;
 
@@ -84,17 +82,30 @@ export const TokenSymbol: FunctionComponent<{
       }}
     >
       {currency?.coinImageUrl ? (
-        <FastImage
-          style={{
-            width: size * imageScale,
-            height: size * imageScale,
-            backgroundColor: colors['background-item-list']
-          }}
-          resizeMode={FastImage.resizeMode.contain}
-          source={{
-            uri: currency.coinImageUrl
-          }}
-        />
+        currency?.coinImageUrl?.includes('white') ? (
+          <Image
+            style={{
+              width: size * imageScale,
+              height: size * imageScale,
+              tintColor:colors['black']
+            }}
+            resizeMode={'contain'}
+            source={{
+              uri: currency.coinImageUrl
+            }}
+          />
+        ) : (
+          <FastImage
+            style={{
+              width: size * imageScale,
+              height: size * imageScale
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+            source={{
+              uri: currency.coinImageUrl
+            }}
+          />
+        )
       ) : (
         <VectorCharacter
           char={currency.coinDenom[0]}

@@ -80,6 +80,7 @@ export const colorsCode = {
   'gray-50': '#F2F2F7',
   'gray-100': '#F2F6FA',
   'gray-150': '#5F5E77',
+  'gray-200':'#D1D1D6',
   'gray-300': '#C7C7CC',
   'gray-301': '#C7C7CC',
   'gray-400': '#AEAEB2',
@@ -107,9 +108,9 @@ export const colorsCode = {
   //blue
   'blue-300': '#8C93A7',
   'blue-600': '#5F5E77',
-  'blue/Border-50':'#EDEDF8',
-  'on-background-toggle':'#9AE796',
-  'off-background-toggle':'#E9E9EA'
+  'blue/Border-50': '#EDEDF8',
+  'off-background-toggle': '#E9E9EA',
+  'bg-icon-coin':'#D3D3DA'
 };
 //item 1:Dark, item 2: Light
 const modeColors = {
@@ -188,9 +189,10 @@ const modeColors = {
   'background-item-list': ['#2B2D3B', '#F3F1F5'],
   'text-place-holder': ['#717177', '#8C93A7'],
   'background-box-shadow': ['#2B2D3B', '#FFFFFF'],
-  'text-label-list':[colorsCode['gray-300'], colorsCode['blue-300']],
-  'label-bottom-bar':['#E2DEEB','#5F5E77'],
-  'border-bottom-tab':['#3B2368','#F0F0F0']
+  'text-label-list': [colorsCode['gray-300'], colorsCode['blue-300']],
+  'label-bottom-bar': ['#E2DEEB', '#5F5E77'],
+  'border-bottom-tab': ['#3B2368', '#F0F0F0'],
+  'on-background-toggle': ['#9AE796', '#A0F29B']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
