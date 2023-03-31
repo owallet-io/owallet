@@ -39,7 +39,7 @@ export const MainTabNavigation: FC = observer(() => {
               name={`${ICONS_TITLE[route.name]}-${
                 focused ? 'bold' : 'outline'
               }`}
-              size={25}
+              size={22}
               color={color}
             />
           );
