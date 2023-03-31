@@ -14,6 +14,7 @@ import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../components/vector-character';
 import Big from 'big.js';
 import { Text } from '@src/components/text';
+import { OWEmpty } from '@src/components/empty';
 
 const size = 44;
 const imageScale = 0.54;
@@ -210,23 +211,7 @@ export const TronTokensCard: FunctionComponent<{
               showsHorizontalScrollIndicator={false}
             />
           ) : (
-            <View style={styles.transactionListEmpty}>
-              <Image
-                source={require('../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.subtitle2,
-                  color: colors['gray-300'],
-                  marginTop: spacing['8']
-                }}
-              >
-                {`No result found`}
-              </Text>
-            </View>
+            <OWEmpty />
           )}
         </CardBody>
       </OWBox>

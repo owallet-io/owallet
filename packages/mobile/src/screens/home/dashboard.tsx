@@ -11,10 +11,11 @@ import { API } from '../../common/api';
 import moment from 'moment';
 import { nFormatter } from '../../utils/helper';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWEmpty } from '@src/components/empty';
 
 const TWO_HOURS_IN_MINUTES = 24 * 60;
 const DATA_COUNT_DENOM = 4;
-const transformData = data => {
+const transformData = (data) => {
   if (Array.isArray(data)) {
     return data
       .filter(
@@ -23,13 +24,13 @@ const transformData = data => {
           index === 0 ||
           index === arr.length - 1
       )
-      .map(item => [item[0], Math.round(item[1] * 100) / 100]);
+      .map((item) => [item[0], Math.round(item[1] * 100) / 100]);
   }
 
   return [];
 };
 
-const formater = value => {
+const formater = (value) => {
   if (value > 1000) {
     return nFormatter(value, 1).value;
   } else {
@@ -37,7 +38,7 @@ const formater = value => {
   }
 };
 
-const formatData = data => {
+const formatData = (data) => {
   const labels = [];
   const dataChart = [];
   let suffix = '';
@@ -124,20 +125,20 @@ export const DashboardCard: FunctionComponent<{
       },
       { baseURL: 'https://api.coingecko.com/api/v3' }
     )
-      .then(res => {
+      .then((res) => {
         if (typeof res.data === 'object') {
           setNetworkError(false);
           setData(formatData(transformData(res?.data?.prices)));
           setDataVolumes(formatData(transformData(res?.data?.total_volumes)));
         }
       })
-      .catch(ex => {
+      .catch((ex) => {
         setNetworkError(true);
         console.log('exception querying coinGecko', ex);
       });
   }, [chainStore.current.chainId]);
 
-  const handleChartState = type => {
+  const handleChartState = (type) => {
     setActive(type);
     if (type === 'price') {
       setChartSuffix(data.suffix);
@@ -152,7 +153,7 @@ export const DashboardCard: FunctionComponent<{
   }, [chainStore.current.chainId, data]);
 
   return (
-    <OWBox >
+    <OWBox>
       <Text
         style={{
           alignSelf: 'center',
@@ -211,17 +212,11 @@ export const DashboardCard: FunctionComponent<{
         ) : null}
       </View>
       {isNetworkError ? (
-        <Text
-          style={{
-            alignSelf: 'center',
-            paddingBottom: spacing['16'],
-            fontSize: 16,
-            fontWeight: '400',
-            color: colors['text-black-low']
-          }}
-        >
-          {'There is no information for this chain yet'}
-        </Text>
+        <OWEmpty
+          style={styles.emptyChart}
+          type="crash"
+          label={`Something went wrong with the chart.\nPlease pull to refresh.`}
+        />
       ) : null}
       {!isNetworkError && active === 'price' ? (
         <LineChart
@@ -239,7 +234,7 @@ export const DashboardCard: FunctionComponent<{
         <BarChart
           data={dataVolumes}
           width={metrics.screenWidth - 48}
-          height={220}
+          height={256}
           yAxisLabel="$"
           yAxisSuffix={chartSuffix}
           chartConfig={chartConfig}
@@ -249,8 +244,12 @@ export const DashboardCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
+    emptyChart: {
+      height: 256,
+      paddingBottom: 80
+    },
     headerWrapper: {
       flexDirection: 'row',
       justifyContent: 'space-between',

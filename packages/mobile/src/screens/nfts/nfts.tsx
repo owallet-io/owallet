@@ -18,6 +18,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { Text } from '@src/components/text';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
+import { OWEmpty } from '@src/components/empty';
 
 // hard code data to test UI
 // const nftsData = [
@@ -232,23 +233,9 @@ export const NftsScreen: FunctionComponent = observer((props) => {
                 underlayColor={colors['transparent']}
               />
             ) : (
-              <View style={styles.transactionListEmpty}>
-                <Image
-                  source={require('../../assets/image/not_found.png')}
-                  resizeMode="contain"
-                  height={142}
-                  width={142}
-                />
-                <Text
-                  style={{
-                    ...typography.subtitle2,
-                    color: colors['gray-300'],
-                    marginTop: spacing['8']
-                  }}
-                >
-                  {`No result found`}
-                </Text>
-              </View>
+             <OWEmpty style={{
+              paddingBottom:60
+             }} />
             )}
           </View>
 

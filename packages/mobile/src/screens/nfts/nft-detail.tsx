@@ -24,6 +24,7 @@ import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
+import { OWEmpty } from '@src/components/empty';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const ORAI = 'oraichain-token';
@@ -283,25 +284,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
               }}
             />
           )}
-          ListEmptyComponent={
-            <View style={styles.transactionListEmpty}>
-              <Image
-                source={require('../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.subtitle2,
-                  color: colors['gray-300'],
-                  marginTop: spacing['8']
-                }}
-              >
-                {`No result found`}
-              </Text>
-            </View>
-          }
+          ListEmptyComponent={<OWEmpty />}
         />
       </View>
     </PageWithScrollViewInBottomTabView>
