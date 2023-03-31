@@ -22,13 +22,13 @@ import { colors, spacing } from '../../themes';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
 import TronWeb from 'tronweb';
-import { Text } from '@src/components/text';
 import {
   BIP44_PATH_PREFIX,
   getBase58Address,
   FAILED,
   SUCCESS
 } from '../../utils/helper';
+import { Text } from '@src/components/text';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export const SendTronScreen: FunctionComponent = observer(props => {
+export const SendTronScreen: FunctionComponent = observer((props) => {
   const {
     chainStore,
     accountStore,
@@ -56,7 +56,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -109,12 +109,14 @@ export const SendTronScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.coinDenom === route.params.currency) {
-          return cur.coinDenom === route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => {
+          if (cur.coinDenom === route.params.currency) {
+            return cur.coinDenom === route.params.currency;
+          }
+          return cur.coinMinimalDenom == route.params.currency;
         }
-        return cur.coinMinimalDenom == route.params.currency;
-      });
+      );
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -180,7 +182,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -211,7 +213,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -236,7 +238,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             text="Send"
             size="large"
             style={{
-              backgroundColor: colors['purple-700'],
+              backgroundColor: colors['purple-900'],
               borderRadius: 8
             }}
             onPress={async () => {
@@ -265,7 +267,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                     ? keyRingStore.keyRingLedgerAddress
                     : getBase58Address(account.evmosHexAddress),
                   {
-                    onBroadcasted: txHash => {
+                    onBroadcasted: (txHash) => {
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: Buffer.from(txHash).toString('hex')
                       });
@@ -294,15 +296,12 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             const index = keyRingStore.multiKeyStoreInfo.findIndex(
               keyStore => keyStore.selected
             );
-
             let privateKey;
-
             if (index >= 0) {
               const privateData = await keyRingStore.showKeyRing(
                 index,
                 password
               );
-
               if (privateData.split(' ').length > 1) {
                 privateKey = Mnemonic.generateWalletFromMnemonic(
                   privateData,
@@ -317,7 +316,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               } else {
                 privateKey = privateData;
               }
-
               if (privateKey) {
                 try {
                   tronWeb = new TronWeb({
@@ -328,23 +326,19 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                     },
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
-
                   if (route?.params?.item?.type === 'trc20') {
                     // Send TRC20
                     // Get TRC20 contract
                     const { abi } = await tronWeb.trx.getContract(
                       route?.params?.item?.contractAddress
                     );
-
                     const contract = tronWeb.contract(
                       abi.entrys,
                       route?.params?.item?.contractAddress
                     );
-
                     const balance = await contract.methods
                       .balanceOf(getBase58Address(account.evmosHexAddress))
                       .call();
-
                     console.log('balance:', Number(balance.toString()));
                     if (Number(balance.toString()) > 0) {
                       const resp = await contract.methods
@@ -361,7 +355,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                           feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee. Read more: https://developers.tron.network/docs/set-feelimit
                           callValue: 0
                         });
-
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: resp,
                         chainId: chainStore.current.chainId,
@@ -385,7 +378,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                       ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
                       getBase58Address(account.evmosHexAddress)
                     );
-
                     const signedtxn = await tronWeb.trx.sign(
                       tradeobj,
                       Buffer.from(privateKey).toString('hex')
