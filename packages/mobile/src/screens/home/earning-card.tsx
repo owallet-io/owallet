@@ -84,7 +84,9 @@ export const EarningCard: FunctionComponent<{
   };
 
   return (
-    <OWBox>
+    <OWBox style={{
+      marginBottom:spacing['page-pad']
+    }}>
       <View style={styles.cardBody}>
         <Text
           style={[
