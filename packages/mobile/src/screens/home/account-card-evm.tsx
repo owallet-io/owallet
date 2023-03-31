@@ -27,7 +27,8 @@ import Big from 'big.js';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
-import { getBase58Address, getEvmAddress, TRON_ID } from '../../utils/helper';
+import { TRON_ID } from '@owallet/common';
+import { Address } from '@owallet/crypto';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -63,7 +64,7 @@ export const AccountCardEVM: FunctionComponent<{
       if (keyRingStore.keyRingLedgerAddress) {
         total = queries.evm.queryEvmBalance.getQueryBalance(
           chainStore.current.chainId === TRON_ID
-            ? getEvmAddress(keyRingStore.keyRingLedgerAddress)
+            ? Address.getEvmAddress(keyRingStore.keyRingLedgerAddress)
             : keyRingStore.keyRingLedgerAddress
         )?.balance;
       }
@@ -342,7 +343,7 @@ export const AccountCardEVM: FunctionComponent<{
                 <AddressCopyable
                   address={
                     chainStore.current.chainId === TRON_ID
-                      ? getBase58Address(account.evmosHexAddress)
+                      ? Address.getBase58Address(account.evmosHexAddress)
                       : account.evmosHexAddress
                   }
                   maxCharacters={22}

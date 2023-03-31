@@ -52,20 +52,12 @@ export const SignEthereumModal: FunctionComponent<{
 
     useEffect(() => {
       const getGasPrice = async () => {
-        const response = await axios.post(
-          chainStore.current.rest,
-          {
-            jsonrpc: '2.0',
-            id: 'eth_gasPrice',
-            method: 'eth_gasPrice',
-            params: []
-          },
-          {
-            headers: {
-              'x-api-key': process.env.X_API_KEY
-            }
-          }
-        );
+        const response = await axios.post(chainStore.current.rest, {
+          jsonrpc: '2.0',
+          id: 'eth_gasPrice',
+          method: 'eth_gasPrice',
+          params: []
+        });
 
         setGasPrice(
           new Big(parseInt(response.data.result, 16))
@@ -90,7 +82,7 @@ export const SignEthereumModal: FunctionComponent<{
             // @ts-ignore
             const web3 = new Web3(chainStore.current.rest);
             const tokenInfo = new web3.eth.Contract(
-              ERC20_ABI,
+              ERC20_ABI as any,
               sendStore.sendObj?.contract_addr
             );
 
@@ -204,7 +196,7 @@ export const SignEthereumModal: FunctionComponent<{
           </View>
           <TextInput
             label="Memo"
-            onChangeText={txt => {
+            onChangeText={(txt) => {
               setMemo(txt);
             }}
             defaultValue={''}

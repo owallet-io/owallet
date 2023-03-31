@@ -13,9 +13,9 @@ import {
   capitalizedText,
   convertAmount,
   formatContractAddress,
-  getBase58Address,
   _keyExtract
 } from '../../utils/helper';
+import { Address } from '@owallet/crypto';
 import { DownArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import ProgressiveImage from '../../components/progessive-image';
@@ -90,9 +90,10 @@ export const TokensCard: FunctionComponent<{
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
+    tokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -262,7 +263,7 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {unique.slice(0, 3).map(token => {
+            {unique.slice(0, 3).map((token) => {
               const priceBalance = priceStore.calculatePrice(token.balance);
               return (
                 <TokenItem

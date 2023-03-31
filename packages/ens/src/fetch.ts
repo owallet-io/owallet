@@ -1,59 +1,10 @@
 import { action, flow, makeObservable, observable } from 'mobx';
-import { Buffer } from 'buffer/';
-import { Interface } from '@ethersproject/abi';
+import { rawEncode, rawDecode } from 'ethereumjs-abi';
 import Axios, { AxiosInstance } from 'axios';
 import { toGenerator } from '@owallet/common';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { hash as nameHash } from '@ensdomains/eth-ens-namehash';
-
-const ensRegistryInterface: Interface = new Interface([
-  {
-    constant: true,
-    inputs: [
-      {
-        name: 'node',
-        type: 'bytes32'
-      }
-    ],
-    name: 'resolver',
-    outputs: [
-      {
-        name: '',
-        type: 'address'
-      }
-    ],
-    type: 'function'
-  }
-]);
-
-const ensResolverInterface: Interface = new Interface([
-  // Resolver for multi coin.
-  // https://eips.ethereum.org/EIPS/eip-2304
-  {
-    constant: true,
-    inputs: [
-      {
-        name: 'node',
-        type: 'bytes32'
-      },
-      {
-        name: 'coinType',
-        type: 'uint256'
-      }
-    ],
-    name: 'addr',
-    outputs: [
-      {
-        name: '',
-        type: 'bytes'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  }
-]);
 
 export class ObservableEnsFetcher {
   static isValidENS(name: string): boolean {
@@ -141,7 +92,7 @@ export class ObservableEnsFetcher {
       params: [
         {
           to: this.ensRegistryContract,
-          data: ensRegistryInterface.encodeFunctionData('resolver', [node])
+          data: rawEncode(['bytes32'], [node])
         },
         'latest'
       ]
@@ -155,9 +106,9 @@ export class ObservableEnsFetcher {
       throw new Error('Unknown error');
     }
 
-    return ensRegistryInterface.decodeFunctionResult(
-      'resolver',
-      result.data.result
+    return rawDecode(
+      ['address'],
+      Buffer.from(result.data.result.slice(2), 'hex')
     )[0];
   }
 
@@ -182,10 +133,7 @@ export class ObservableEnsFetcher {
       params: [
         {
           to: resolver,
-          data: ensResolverInterface.encodeFunctionData('addr', [
-            node,
-            coinType
-          ])
+          data: rawEncode(['bytes32', 'uint256'], [node, coinType])
         },
         'latest'
       ]
@@ -199,9 +147,9 @@ export class ObservableEnsFetcher {
       throw new Error('Unknown error');
     }
 
-    return ensResolverInterface.decodeFunctionResult(
-      'addr',
-      result.data.result
+    return rawDecode(
+      ['bytes'],
+      Buffer.from(result.data.result.slice(2), 'hex')
     )[0];
   }
 
