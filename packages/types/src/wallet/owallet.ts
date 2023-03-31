@@ -141,6 +141,8 @@ export type EthereumMode =
   | 'mobile-web'
   | 'walletconnect';
 
+export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
+
 export interface RequestArguments {
   method: string;
   params?: any;
@@ -182,4 +184,13 @@ export interface Ethereum {
   ): Promise<{ rawTxHex: string }>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
+}
+
+export interface TronWeb {
+  readonly version: string;
+  readonly mode: TronWebMode;
+  defaultAddress?: object;
+  initChainId: string;
+  sign(transaction: object): Promise<object>;
+  getDefaultAddress(): object;
 }

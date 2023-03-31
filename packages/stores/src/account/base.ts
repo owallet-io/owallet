@@ -14,7 +14,8 @@ import {
   AppCurrency,
   OWallet,
   OWalletSignOptions,
-  Ethereum
+  Ethereum,
+  TronWeb
 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
@@ -87,6 +88,7 @@ export interface AccountSetOpts<MsgOpts> {
   };
   readonly getOWallet: () => Promise<OWallet | undefined>;
   readonly getEthereum: () => Promise<Ethereum | undefined>;
+  readonly getTronWeb: () => Promise<TronWeb | undefined>;
   readonly msgOpts: MsgOpts;
   readonly wsObject?: new (
     url: string,
@@ -438,10 +440,10 @@ export class AccountSetBase<MsgOpts, Queries> {
       });
 
       if (onTxEvents?.onFulfill) {
-        onTxEvents?.onFulfill(signResponse?.rawTxHex ?? signResponse);
+        onTxEvents?.onFulfill(signResponse);
       }
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse
       };
     } catch (error) {
       console.log('error sendTronToken', error);

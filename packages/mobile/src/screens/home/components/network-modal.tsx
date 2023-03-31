@@ -49,7 +49,8 @@ export const NetworkModal = ({
                   bip44Option.bip44HDPath.account
                 }'/${bip44Option.bip44HDPath.change}/${
                   bip44Option.bip44HDPath.addressIndex
-                }`
+                }`,
+                item?.chainId
               );
               modalStore.close();
             }
