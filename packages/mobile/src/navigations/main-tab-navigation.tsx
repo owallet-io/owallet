@@ -1,10 +1,7 @@
 import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import React, { FC, useEffect } from 'react';
-import { useStyle } from '@src/styles';
-import { useNavigation } from '@react-navigation/native';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';
-import { useFocusedScreen } from '@src/providers/focused-screen';
 import { ICONS_TITLE, SCREENS, SCREENS_TITLE } from '@src/common/constants';
 import { BlurredBottomTabBar } from '@src/components/bottom-tabbar';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,17 +12,13 @@ import { InvestNavigation } from './invest-navigation';
 import { SettingStackScreen } from './settings-navigation';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { observer } from 'mobx-react-lite';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
-  const navigation = useNavigation();
   const { chainStore } = useStore();
-
   const { colors } = useTheme();
-
-  const focusedScreen = useFocusedScreen();
-
-  useEffect(() => {}, [focusedScreen.name, navigation]);
-
+  const insets = useSafeAreaInsets();
+  const isNorthSafe = insets.bottom > 0;
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -46,7 +39,7 @@ export const MainTabNavigation: FC = observer(() => {
               name={`${ICONS_TITLE[route.name]}-${
                 focused ? 'bold' : 'outline'
               }`}
-              size={22}
+              size={25}
               color={color}
             />
           );
@@ -56,7 +49,12 @@ export const MainTabNavigation: FC = observer(() => {
       tabBarOptions={{
         activeTintColor: colors['purple-700'],
         labelStyle: {
-          fontSize: 12
+          fontSize: 12,
+          textAlign: 'center'
+        },
+        tabStyle: {
+          paddingTop: isNorthSafe ? 10 : 3,
+          paddingBottom: isNorthSafe ? 0 : 3
         },
         inactiveTintColor: colors['label-bottom-bar'],
         style: {
@@ -64,8 +62,7 @@ export const MainTabNavigation: FC = observer(() => {
           borderTopWidth: 0.5,
           borderTopColor: colors['border-bottom-tab'],
           paddingLeft: 10,
-          paddingRight: 10,
-          paddingTop: Platform.OS === 'ios' ? 10 : 0
+          paddingRight: 10
         }
       }}
       tabBar={(props) => (
@@ -94,6 +91,9 @@ export const MainTabNavigation: FC = observer(() => {
   );
 });
 const styles = StyleSheet.create({
+  paddingStyleIcon: {
+    paddingVertical: 5
+  },
   paddingIcon: {
     paddingTop: 15
   }
