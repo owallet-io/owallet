@@ -109,7 +109,6 @@ export const colorsCode = {
   'blue-300': '#8C93A7',
   'blue-600': '#5F5E77',
   'blue/Border-50': '#EDEDF8',
-  'off-background-toggle': '#E9E9EA',
   'bg-icon-coin':'#D3D3DA'
 };
 //item 1:Dark, item 2: Light
@@ -192,7 +191,9 @@ const modeColors = {
   'text-label-list': [colorsCode['gray-300'], colorsCode['blue-300']],
   'label-bottom-bar': ['#E2DEEB', '#5F5E77'],
   'border-bottom-tab': ['#3B2368', '#F0F0F0'],
-  'on-background-toggle': ['#9AE796', '#A0F29B']
+  'on-background-toggle': ['#9AE796', '#A0F29B'],
+  'off-background-toggle': ['#6F6F76','#E9E9EA'],
+  'bg-icon-token':['#E5E5EA','#F3F1F5']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
