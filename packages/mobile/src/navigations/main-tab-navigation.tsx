@@ -62,8 +62,7 @@ export const MainTabNavigation: FC = observer(() => {
         style: {
           backgroundColor: colors['background-box'],
           borderTopWidth: 0.5,
-          borderTopColor: colors['primary'],
-
+          borderTopColor: colors['border-bottom-tab'],
           paddingLeft: 10,
           paddingRight: 10,
           paddingTop: Platform.OS === 'ios' ? 10 : 0
