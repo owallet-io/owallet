@@ -95,7 +95,8 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       >
         <TokenSymbol
           style={{
-            marginRight: spacing['12']
+            marginRight: spacing['12'],
+            backgroundColor: colors['background-item-list']
           }}
           size={44}
           chainInfo={chainInfo}

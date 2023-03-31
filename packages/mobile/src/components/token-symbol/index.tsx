@@ -13,7 +13,8 @@ import FastImage from 'react-native-fast-image';
 import { Hash } from '@owallet/crypto';
 import { Buffer } from 'buffer';
 import { VectorCharacter } from '../vector-character';
-import { colors, spacing } from '../../themes';
+import { spacing } from '../../themes';
+import { useTheme } from '@src/themes/theme-provider';
 
 export const StakedTokenSymbol: FunctionComponent<{
   size: number;
@@ -50,6 +51,7 @@ export const TokenSymbol: FunctionComponent<{
   chainInfo,
   imageScale = 32 / 44
 }) => {
+  const { colors } = useTheme();
   const isStakeCurrency =
     currency.coinMinimalDenom === chainInfo.stakeCurrency.coinMinimalDenom;
 
@@ -86,7 +88,7 @@ export const TokenSymbol: FunctionComponent<{
           style={{
             width: size * imageScale,
             height: size * imageScale,
-            backgroundColor: colors['gray-10']
+            backgroundColor: colors['background-item-list']
           }}
           resizeMode={FastImage.resizeMode.contain}
           source={{
