@@ -107,7 +107,9 @@ export const colorsCode = {
   //blue
   'blue-300': '#8C93A7',
   'blue-600': '#5F5E77',
-  'blue/Border-50':'#EDEDF8'
+  'blue/Border-50':'#EDEDF8',
+  'on-background-toggle':'#9AE796',
+  'off-background-toggle':'#E9E9EA'
 };
 //item 1:Dark, item 2: Light
 const modeColors = {
