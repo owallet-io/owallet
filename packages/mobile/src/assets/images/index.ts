@@ -25,6 +25,9 @@ const images = {
    pending_dark: require('./pending-dark.png'),
    pending: require('./pending.png'),
    process_pending: require('./process_pending.png'),
+   push: require('./push.png'),
+   push_inactive: require('./push_inactive.png'),
+   push_inactive_dark: require('./push_inactive_dark.png'),
    success: require('./success.png'),
    success_dark: require('./success_dark.png'),
 };
