@@ -1,0 +1,222 @@
+diff --git a/node_modules/@ledgerhq/hw-app-eth/.DS_Store b/node_modules/@ledgerhq/hw-app-eth/.DS_Store
+new file mode 100644
+index 0000000..daee31d
+Binary files /dev/null and b/node_modules/@ledgerhq/hw-app-eth/.DS_Store differ
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.d.ts b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.d.ts
+index 2cb3d4d..f8e1b3a 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.d.ts
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.d.ts
+@@ -33,14 +33,14 @@ export default class Eth {
+     constructor(transport: Transport, scrambleKey?: string, loadConfig?: LoadConfig);
+     /**
+      * get Ethereum address for a given BIP 32 path.
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @option boolDisplay optionally enable or not the display
+      * @option boolChaincode optionally enable or not the chaincode request
+      * @return an object with a publicKey, address and (optionally) chainCode
+      * @example
+      * eth.getAddress("44'/60'/0'/0/0").then(o => o.address)
+      */
+-    getAddress(path: string, boolDisplay?: boolean, boolChaincode?: boolean): Promise<{
++    getAddress(paths: number[], boolDisplay?: boolean, boolChaincode?: boolean): Promise<{
+         publicKey: string;
+         address: string;
+         chainCode?: string;
+@@ -48,7 +48,7 @@ export default class Eth {
+     /**
+      * You can sign a transaction and retrieve v, r, s given the raw transaction and the BIP 32 path of the account to sign.
+      *
+-     * @param path: the BIP32 path to sign the transaction on
++     * @param paths: the BIP32 path to sign the transaction on
+      * @param rawTxHex: the raw ethereum transaction in hexadecimal to sign
+      * @param resolution: resolution is an object with all "resolved" metadata necessary to allow the device to clear sign information. This includes: ERC20 token information, plugins, contracts, NFT signatures,... You must explicitly provide something to avoid having a warning. By default, you can use Ledger's service or your own resolution service. See services/types.js for the contract. Setting the value to "null" will fallback everything to blind signing but will still allow the device to sign the transaction.
+      * @example
+@@ -58,7 +58,7 @@ export default class Eth {
+      const result = eth.signTransaction("44'/60'/0'/0/0", tx, resolution);
+      console.log(result);
+      */
+-    signTransaction(path: string, rawTxHex: string, resolution?: LedgerEthTransactionResolution | null): Promise<{
++    signTransaction(paths: number[], rawTxHex: string, resolution?: LedgerEthTransactionResolution | null): Promise<{
+         s: string;
+         v: string;
+         r: string;
+@@ -84,7 +84,7 @@ export default class Eth {
+     console.log("Signature 0x" + result['r'] + result['s'] + v);
+     })
+      */
+-    signPersonalMessage(path: string, messageHex: string): Promise<{
++    signPersonalMessage(paths: number[], messageHex: string): Promise<{
+         v: number;
+         s: string;
+         r: string;
+@@ -101,7 +101,7 @@ export default class Eth {
+     console.log("Signature 0x" + result['r'] + result['s'] + v);
+     })
+      */
+-    signEIP712HashedMessage(path: string, domainSeparatorHex: string, hashStructMessageHex: string): Promise<{
++    signEIP712HashedMessage(paths: number[], domainSeparatorHex: string, hashStructMessageHex: string): Promise<{
+         v: number;
+         s: string;
+         r: string;
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+index 27682ef..469c670 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+@@ -125,15 +125,14 @@ var Eth = /** @class */ (function () {
+     };
+     /**
+      * get Ethereum address for a given BIP 32 path.
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @option boolDisplay optionally enable or not the display
+      * @option boolChaincode optionally enable or not the chaincode request
+      * @return an object with a publicKey, address and (optionally) chainCode
+      * @example
+      * eth.getAddress("44'/60'/0'/0/0").then(o => o.address)
+      */
+-    Eth.prototype.getAddress = function (path, boolDisplay, boolChaincode) {
+-        var paths = splitPath(path);
++    Eth.prototype.getAddress = function (paths, boolDisplay, boolChaincode) {
+         var buffer = Buffer.alloc(1 + paths.length * 4);
+         buffer[0] = paths.length;
+         paths.forEach(function (element, index) {
+@@ -161,7 +160,7 @@ var Eth = /** @class */ (function () {
+     /**
+      * You can sign a transaction and retrieve v, r, s given the raw transaction and the BIP 32 path of the account to sign.
+      *
+-     * @param path: the BIP32 path to sign the transaction on
++     * @param paths: the BIP32 path to sign the transaction on
+      * @param rawTxHex: the raw ethereum transaction in hexadecimal to sign
+      * @param resolution: resolution is an object with all "resolved" metadata necessary to allow the device to clear sign information. This includes: ERC20 token information, plugins, contracts, NFT signatures,... You must explicitly provide something to avoid having a warning. By default, you can use Ledger's service or your own resolution service. See services/types.js for the contract. Setting the value to "null" will fallback everything to blind signing but will still allow the device to sign the transaction.
+      * @example
+@@ -171,7 +170,7 @@ var Eth = /** @class */ (function () {
+      const result = eth.signTransaction("44'/60'/0'/0/0", tx, resolution);
+      console.log(result);
+      */
+-    Eth.prototype.signTransaction = function (path, rawTxHex, resolution) {
++    Eth.prototype.signTransaction = function (paths, rawTxHex, resolution) {
+         return __awaiter(this, void 0, void 0, function () {
+             var _a, _b, plugin, e_1_1, _c, _d, _e, payload, signature, e_2_1, _f, _g, nft, e_3_1, _h, _j, data, e_4_1, rawTx, _k, vrsOffset, txType, chainId, chainIdTruncated, paths, response, offset, _loop_1, this_1, response_byte, v, oneByteChainId, ecc_parity, r, s;
+             var e_1, _l, e_2, _m, e_3, _o, e_4, _p;
+@@ -304,7 +303,6 @@ var Eth = /** @class */ (function () {
+                     case 31:
+                         rawTx = Buffer.from(rawTxHex, "hex");
+                         _k = decodeTxInfo(rawTx), vrsOffset = _k.vrsOffset, txType = _k.txType, chainId = _k.chainId, chainIdTruncated = _k.chainIdTruncated;
+-                        paths = splitPath(path);
+                         offset = 0;
+                         _loop_1 = function () {
+                             var first, maxChunkSize, chunkSize, buffer;
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib/Eth.d.ts b/node_modules/@ledgerhq/hw-app-eth/lib/Eth.d.ts
+index 2cb3d4d..f8e1b3a 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib/Eth.d.ts
++++ b/node_modules/@ledgerhq/hw-app-eth/lib/Eth.d.ts
+@@ -33,14 +33,14 @@ export default class Eth {
+     constructor(transport: Transport, scrambleKey?: string, loadConfig?: LoadConfig);
+     /**
+      * get Ethereum address for a given BIP 32 path.
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @option boolDisplay optionally enable or not the display
+      * @option boolChaincode optionally enable or not the chaincode request
+      * @return an object with a publicKey, address and (optionally) chainCode
+      * @example
+      * eth.getAddress("44'/60'/0'/0/0").then(o => o.address)
+      */
+-    getAddress(path: string, boolDisplay?: boolean, boolChaincode?: boolean): Promise<{
++    getAddress(paths: number[], boolDisplay?: boolean, boolChaincode?: boolean): Promise<{
+         publicKey: string;
+         address: string;
+         chainCode?: string;
+@@ -48,7 +48,7 @@ export default class Eth {
+     /**
+      * You can sign a transaction and retrieve v, r, s given the raw transaction and the BIP 32 path of the account to sign.
+      *
+-     * @param path: the BIP32 path to sign the transaction on
++     * @param paths: the BIP32 path to sign the transaction on
+      * @param rawTxHex: the raw ethereum transaction in hexadecimal to sign
+      * @param resolution: resolution is an object with all "resolved" metadata necessary to allow the device to clear sign information. This includes: ERC20 token information, plugins, contracts, NFT signatures,... You must explicitly provide something to avoid having a warning. By default, you can use Ledger's service or your own resolution service. See services/types.js for the contract. Setting the value to "null" will fallback everything to blind signing but will still allow the device to sign the transaction.
+      * @example
+@@ -58,7 +58,7 @@ export default class Eth {
+      const result = eth.signTransaction("44'/60'/0'/0/0", tx, resolution);
+      console.log(result);
+      */
+-    signTransaction(path: string, rawTxHex: string, resolution?: LedgerEthTransactionResolution | null): Promise<{
++    signTransaction(paths: number[], rawTxHex: string, resolution?: LedgerEthTransactionResolution | null): Promise<{
+         s: string;
+         v: string;
+         r: string;
+@@ -84,7 +84,7 @@ export default class Eth {
+     console.log("Signature 0x" + result['r'] + result['s'] + v);
+     })
+      */
+-    signPersonalMessage(path: string, messageHex: string): Promise<{
++    signPersonalMessage(paths: number[], messageHex: string): Promise<{
+         v: number;
+         s: string;
+         r: string;
+@@ -101,7 +101,7 @@ export default class Eth {
+     console.log("Signature 0x" + result['r'] + result['s'] + v);
+     })
+      */
+-    signEIP712HashedMessage(path: string, domainSeparatorHex: string, hashStructMessageHex: string): Promise<{
++    signEIP712HashedMessage(paths: number[], domainSeparatorHex: string, hashStructMessageHex: string): Promise<{
+         v: number;
+         s: string;
+         r: string;
+diff --git a/node_modules/@ledgerhq/hw-app-eth/src/Eth.ts b/node_modules/@ledgerhq/hw-app-eth/src/Eth.ts
+index d17db80..f8532b1 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/src/Eth.ts
++++ b/node_modules/@ledgerhq/hw-app-eth/src/Eth.ts
+@@ -129,7 +129,7 @@ export default class Eth {
+ 
+   /**
+    * get Ethereum address for a given BIP 32 path.
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @option boolDisplay optionally enable or not the display
+    * @option boolChaincode optionally enable or not the chaincode request
+    * @return an object with a publicKey, address and (optionally) chainCode
+@@ -137,7 +137,7 @@ export default class Eth {
+    * eth.getAddress("44'/60'/0'/0/0").then(o => o.address)
+    */
+   getAddress(
+-    path: string,
++    paths: number[],
+     boolDisplay?: boolean,
+     boolChaincode?: boolean
+   ): Promise<{
+@@ -145,7 +145,6 @@ export default class Eth {
+     address: string;
+     chainCode?: string;
+   }> {
+-    const paths = splitPath(path);
+     const buffer = Buffer.alloc(1 + paths.length * 4);
+     buffer[0] = paths.length;
+     paths.forEach((element, index) => {
+@@ -188,7 +187,7 @@ export default class Eth {
+   /**
+    * You can sign a transaction and retrieve v, r, s given the raw transaction and the BIP 32 path of the account to sign.
+    * 
+-   * @param path: the BIP32 path to sign the transaction on
++   * @param paths: the BIP32 path to sign the transaction on
+    * @param rawTxHex: the raw ethereum transaction in hexadecimal to sign
+    * @param resolution: resolution is an object with all "resolved" metadata necessary to allow the device to clear sign information. This includes: ERC20 token information, plugins, contracts, NFT signatures,... You must explicitly provide something to avoid having a warning. By default, you can use Ledger's service or your own resolution service. See services/types.js for the contract. Setting the value to "null" will fallback everything to blind signing but will still allow the device to sign the transaction.
+    * @example
+@@ -199,7 +198,7 @@ export default class Eth {
+    console.log(result);
+    */
+   async signTransaction(
+-    path: string,
++    paths: number[],
+     rawTxHex: string,
+     resolution?: LedgerEthTransactionResolution | null
+   ): Promise<{
+@@ -255,7 +254,6 @@ export default class Eth {
+       rawTx
+     );
+ 
+-    const paths = splitPath(path);
+     let response;
+     let offset = 0;
+     while (offset !== rawTx.length) {
