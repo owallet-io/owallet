@@ -18,8 +18,11 @@ import TransportBLE, {
   bleManagerInstance
 } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
-import { Ledger, LedgerInitErrorOn } from '@owallet/background';
-import { getLastUsedLedgerDeviceId } from '../../utils/ledger';
+import { Ledger, LedgerAppType, LedgerInitErrorOn } from '@owallet/background';
+import {
+  getLastUsedLedgerDeviceId,
+  formatNeworkTypeToLedgerAppName
+} from '../../utils/ledger';
 import { RectButton } from '../../components/rect-button';
 import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
@@ -66,7 +69,7 @@ export const LedgerGranterModal: FunctionComponent<{
   close: () => void;
 }> = registerModal(
   observer(() => {
-    const { ledgerInitStore } = useStore();
+    const { ledgerInitStore, chainStore } = useStore();
 
     const style = useStyle();
 
@@ -78,7 +81,7 @@ export const LedgerGranterModal: FunctionComponent<{
       // Ledger transport library for BLE seems to cache the transport internally.
       // But this can be small problem when the ledger connection is failed.
       // So, when this modal appears, try to disconnect the bluetooth connection for nano X.
-      getLastUsedLedgerDeviceId().then((deviceId) => {
+      getLastUsedLedgerDeviceId().then(deviceId => {
         if (deviceId) {
           TransportBLE.disconnect(deviceId);
         }
@@ -93,7 +96,7 @@ export const LedgerGranterModal: FunctionComponent<{
     });
 
     useEffect(() => {
-      const subscription = bleManagerInstance().onStateChange((newState) => {
+      const subscription = bleManagerInstance().onStateChange(newState => {
         if (newState === State.PoweredOn) {
           setIsBLEAvailable(true);
         } else {
@@ -164,7 +167,7 @@ export const LedgerGranterModal: FunctionComponent<{
         if (Platform.OS === 'android') {
           PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-          ).then((granted) => {
+          ).then(granted => {
             if (granted == PermissionsAndroid.RESULTS.GRANTED) {
               setPermissionStatus(BLEPermissionGrantStatus.Granted);
             } else {
@@ -198,7 +201,7 @@ export const LedgerGranterModal: FunctionComponent<{
               if (e.type === 'add') {
                 const device = e.descriptor;
 
-                if (!_devices.find((d) => d.id === device.id)) {
+                if (!_devices.find(d => d.id === device.id)) {
                   console.log(
                     `Ledger device found (id: ${device.id}, name: ${device.name})`
                   );
@@ -273,7 +276,7 @@ export const LedgerGranterModal: FunctionComponent<{
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
                 >
-                  1. Open Cosmos app on Ledger Nano X.
+                  {`1. Open app on Ledger Nano X.`}
                 </Text>
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
@@ -283,12 +286,16 @@ export const LedgerGranterModal: FunctionComponent<{
               </React.Fragment>
             )}
 
-            {devices.map((device) => {
+            {devices.map(device => {
               return (
                 <LedgerNanoBLESelector
                   key={device.id}
                   deviceId={device.id}
                   name={device.name}
+                  ledgerType={formatNeworkTypeToLedgerAppName(
+                    chainStore.current.networkType,
+                    chainStore.current.chainId
+                  )}
                   onCanResume={async () => {
                     resumed.current = true;
                     await ledgerInitStore.resumeAll(device.id);
@@ -349,9 +356,9 @@ const LedgerErrorView: FunctionComponent<{
 const LedgerNanoBLESelector: FunctionComponent<{
   deviceId: string;
   name: string;
-
+  ledgerType: LedgerAppType;
   onCanResume: () => void;
-}> = ({ deviceId, name, onCanResume }) => {
+}> = ({ deviceId, name, ledgerType, onCanResume }) => {
   const style = useStyle();
 
   const [isConnecting, setIsConnecting] = useState(false);
@@ -364,7 +371,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
 
     try {
       setIsConnecting(true);
-      const ledger = await Ledger.init('ble', [deviceId], 'cosmos');
+      const ledger = await Ledger.init('ble', [deviceId], ledgerType);
       await ledger.close();
 
       return true;
@@ -410,7 +417,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
         ) : null}
         {!isConnecting && initErrorOn === LedgerInitErrorOn.App ? (
           <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>
-            Please open Cosmos App
+            {`Please open ${ledgerType.toUpperCase()} App`}
           </Text>
         ) : null}
         {!isConnecting && initErrorOn === LedgerInitErrorOn.Unknown ? (

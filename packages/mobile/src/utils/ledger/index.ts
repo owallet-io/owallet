@@ -1,3 +1,5 @@
+import { LedgerAppType } from '@owallet/background';
+import { TRON_ID } from '@owallet/common';
 import { AsyncKVStore } from '../../common';
 
 export const getLastUsedLedgerDeviceId = async (): Promise<
@@ -13,3 +15,20 @@ export const setLastUsedLedgerDeviceId = async (
   const kvStore = new AsyncKVStore('__owallet_ledger_nano_x');
   await kvStore.set<string>('last_device_id', deviceId);
 };
+
+export function formatNeworkTypeToLedgerAppName(
+  network: string,
+  chainId?: string | number
+): LedgerAppType {
+  switch (network) {
+    case 'cosmos':
+      return 'cosmos';
+    case 'evm':
+      if (chainId && chainId === TRON_ID) {
+        return 'trx';
+      }
+      return 'eth';
+    default:
+      return 'cosmos';
+  }
+}
