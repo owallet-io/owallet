@@ -1,8 +1,8 @@
-name: Extension Workflow
+name: Extension release workflow
 on:
   push:
     branches:
-      - release/extensions/v[0-9].[0-9]
+      - release/extensions/v[0-9].[0-9].[0-9]
   workflow_dispatch:
 
 jobs:
@@ -79,6 +79,7 @@ jobs:
           client-id: ${{ secrets.EXT_CLIENT_ID }}
           client-secret: ${{ secrets.EXT_CLIENT_SECRET }}
           refresh-token: ${{ secrets.EXT_REFRESH_TOKEN }}
+          publish: false
 
       - name: Send discord message
         uses: appleboy/discord-action@master
@@ -86,7 +87,7 @@ jobs:
           webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
           webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           username: "GitBot"
-          message: Success! comment=${{ github.event.head_commit.message }}
+          message: Extension released successe! comment=${{ github.event.head_commit.message }}
 
       - name: Send discord message
         if: ${{ failure() }}
@@ -95,4 +96,4 @@ jobs:
           webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
           webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           username: "GitBot"
-          message: ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+          message: Extension released fail! ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
