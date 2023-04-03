@@ -96,16 +96,12 @@ export class SignInteractionStore {
       return undefined;
     }
     const data: any = datas[0];
-    console.log('waitingTronData da===', data);
 
     return {
       id: data.id,
       type: data.type,
       data: {
-        currency: data.data.currency,
-        amount: data.data.amount,
-        recipient: data.data.recipient,
-        address: data.data.address
+        ...data.data
       },
       isInternal: data.isInternal
     };

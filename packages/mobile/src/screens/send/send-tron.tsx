@@ -21,6 +21,7 @@ import { Buffer } from 'buffer';
 import { colors, spacing } from '../../themes';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
+<<<<<<< HEAD
 import TronWeb from 'tronweb';
 import {
   BIP44_PATH_PREFIX,
@@ -29,6 +30,9 @@ import {
   SUCCESS
 } from '../../utils/helper';
 import { Text } from '@src/components/text';
+=======
+import { Address } from '@owallet/crypto';
+>>>>>>> feat/tron-network
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -265,7 +269,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                   receiveAddress,
                   keyRingStore.keyRingType === 'ledger'
                     ? keyRingStore.keyRingLedgerAddress
-                    : getBase58Address(account.evmosHexAddress),
+                    : Address.getBase58Address(account.evmosHexAddress),
                   {
                     onBroadcasted: (txHash) => {
                       smartNavigation.pushSmart('TxPendingResult', {
@@ -320,10 +324,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                 try {
                   tronWeb = new TronWeb({
                     fullHost: chainStore.current.rpc,
-                    // fullHost: 'https://nile.trongrid.io', // TRON testnet
-                    headers: {
-                      'x-api-key': process.env.X_API_KEY
-                    },
+                    // fullHost: 'https://nile.trongrid.io', // TRON testnet                    
                     privateKey: Buffer.from(privateKey).toString('hex')
                   });
                   if (route?.params?.item?.type === 'trc20') {
@@ -337,7 +338,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                       route?.params?.item?.contractAddress
                     );
                     const balance = await contract.methods
-                      .balanceOf(getBase58Address(account.evmosHexAddress))
+                      .balanceOf(Address.getBase58Address(account.evmosHexAddress))
                       .call();
                     console.log('balance:', Number(balance.toString()));
                     if (Number(balance.toString()) > 0) {
@@ -376,7 +377,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                           )
                         )
                       ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
-                      getBase58Address(account.evmosHexAddress)
+                      Address.getBase58Address(account.evmosHexAddress)
                     );
                     const signedtxn = await tronWeb.trx.sign(
                       tradeobj,

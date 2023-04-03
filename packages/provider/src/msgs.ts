@@ -87,6 +87,30 @@ export class RequestSignTronMsg extends Message<{
   }
 }
 
+export class GetDefaultAddressTronMsg extends Message<{}> {
+  public static type() {
+    return 'get-default-address-tron';
+  }
+
+  constructor(public readonly chainId: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return GetDefaultAddressTronMsg.type();
+  }
+}
+
 // request sign ethereum goes here
 export class RequestSignEthereumMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
@@ -97,9 +121,8 @@ export class RequestSignEthereumMsg extends Message<{
 
   constructor(
     public readonly chainId: string,
-    public readonly data: object
-  ) // public readonly signOptions: OWalletSignOptions = {}
-  {
+    public readonly data: object // public readonly signOptions: OWalletSignOptions = {}
+  ) {
     super();
   }
 

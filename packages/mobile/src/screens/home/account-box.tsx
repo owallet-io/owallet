@@ -25,210 +25,224 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 export const AccountBox: FunctionComponent<{
-  totalBalance?: string;
+  totalBalance?: string | React.ReactNode;
+  totalAmount?:string | React.ReactNode;
   coinType?: any;
   // address?: string;
   networkType?: 'cosmos' | 'evm';
   name?: string;
-  addressComponent?: React.ReactNode ;
+  addressComponent?: React.ReactNode;
   onPressBtnMain?: (name?: string) => void;
-}> = observer(({ totalBalance, coinType, addressComponent,  networkType, name, onPressBtnMain }) => {
-  const { colors } = useTheme();
-  const styles = styling(colors);
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
+}> = observer(
+  ({
+    totalBalance,
+    coinType,
+    addressComponent,
+    networkType,
+    name,
+    totalAmount,
+    onPressBtnMain
+  }) => {
+    const { colors } = useTheme();
+    const styles = styling(colors);
+    const {
+      chainStore,
+      accountStore,
+      queriesStore,
 
-    modalStore
-  } = useStore();
+      modalStore
+    } = useStore();
 
-  const smartNavigation = useSmartNavigation();
+    const smartNavigation = useSmartNavigation();
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+    const account = accountStore.getAccount(chainStore.current.chainId);
+    const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
+    const queryStakable = queries.queryBalances.getQueryBech32Address(
+      account.bech32Address
+    ).stakable;
 
+    const _onPressMyWallet = () => {
+      modalStore.setOpen();
+      modalStore.setChildren(MyWalletModal());
+    };
 
-  const _onPressMyWallet = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(MyWalletModal());
-  };
+    const RenderBtnMain = ({ name }) => {
+      let icon: ReactElement;
+      switch (name) {
+        case 'Buy':
+          icon = <BuyIcon />;
+          break;
+        case 'Receive':
+          icon = <DepositIcon />;
+          break;
+        case 'Send':
+          icon = <SendDashboardIcon />;
+          break;
+      }
+      return (
+        <OWButton
+          style={styles.btnHeaderHome}
+          size="small"
+          type="primary"
+          onPress={() => onPressBtnMain(name)}
+          icon={icon}
+          label={name}
+          textStyle={styles.textBtnHeaderDashboard}
+        />
+      );
+    };
 
-  const RenderBtnMain = ({ name }) => {
-    let icon: ReactElement;
-    switch (name) {
-      case 'Buy':
-        icon = <BuyIcon />;
-        break;
-      case 'Receive':
-        icon = <DepositIcon />;
-        break;
-      case 'Send':
-        icon = <SendDashboardIcon />;
-        break;
-    }
     return (
-      <OWButton
-        style={styles.btnHeaderHome}
-        size="small"
-        type="primary"
-        onPress={() => onPressBtnMain(name)}
-        icon={icon}
-        label={name}
-        textStyle={styles.textBtnHeaderDashboard}
-      />
-    );
-  };
-
-  return (
-    <View
-      style={{
-        marginHorizontal: 24
-      }}
-    >
-      <OWBox
+      <View
         style={{
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0
+          marginHorizontal: 24
         }}
-        type="gradient"
       >
-        <View
+        <OWBox
           style={{
-            // marginTop: 28,
-            marginBottom: 16
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0
           }}
-        >
-          <Text
-            style={{
-              textAlign: 'center',
-              color: colors['purple-400'],
-              fontSize: 14,
-              lineHeight: 20
-            }}
-          >
-            Total Balance
-          </Text>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: 'white',
-              fontWeight: '900',
-              fontSize: 34,
-              lineHeight: 50
-            }}
-          >
-            {totalBalance}
-          </Text>
-        </View>
-        <View style={styles.containerBtnHeader}>
-          {['Buy', 'Receive', 'Send'].map((e, i) => (
-            <RenderBtnMain key={i} name={e} />
-          ))}
-        </View>
-      </OWBox>
-
-      <OWBox
-        style={{
-          marginTop: 0,
-          paddingHorizontal: 12,
-          borderTopLeftRadius: 0,
-          paddingVertical: 18,
-          borderTopRightRadius: 0,
-          backgroundColor: colors['background-box']
-        }}
-        type="shadow"
-      >
-        {networkType == 'cosmos' && queryStakable.isFetching && (
-          <View style={styles.containerLoading}>
-            <LoadingSpinner color={colors['gray-150']} size={22} />
-          </View>
-        )}
-
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-            alignItems: 'center'
-          }}
+          type="gradient"
         >
           <View
             style={{
-              display: 'flex',
-              justifyContent: 'space-between'
+              // marginTop: 28,
+              marginBottom: 16
+            }}
+          >
+            <Text
+              style={{
+                textAlign: 'center',
+                color: colors['purple-400'],
+                fontSize: 14,
+                lineHeight: 20
+              }}
+            >
+              Total Balance
+            </Text>
+            {!!totalBalance && typeof totalBalance == 'string' ? (
+              <Text variant="h1" color={colors['white']}>{totalBalance || 0}</Text>
+            ) : (
+              totalBalance
+            )}
+            {!!totalAmount && typeof totalAmount == "string" && <Text
+                style={{
+                  textAlign: 'center',
+                  color: colors['gray-400'],
+                  fontSize: 16
+                }}
+              >
+                $
+                {totalAmount}
+              </Text>}
+          </View>
+          <View style={styles.containerBtnHeader}>
+            {['Buy', 'Receive', 'Send'].map((e, i) => (
+              <RenderBtnMain key={i} name={e} />
+            ))}
+          </View>
+        </OWBox>
+
+        <OWBox
+          style={{
+            marginTop: 0,
+            paddingHorizontal: 12,
+            borderTopLeftRadius: 0,
+            paddingVertical: 18,
+            borderTopRightRadius: 0,
+            backgroundColor: colors['background-box']
+          }}
+          type="shadow"
+        >
+          {networkType == 'cosmos' && queryStakable.isFetching && (
+            <View style={styles.containerLoading}>
+              <LoadingSpinner color={colors['gray-150']} size={22} />
+            </View>
+          )}
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              width: '100%',
+              alignItems: 'center'
             }}
           >
             <View
               style={{
                 display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                paddingBottom: spacing['2']
+                justifyContent: 'space-between'
               }}
             >
-              <Image
+              <View
                 style={{
-                  width: spacing['26'],
-                  height: spacing['26']
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingBottom: spacing['2']
                 }}
-                source={require('../../assets/image/address_default.png')}
-                fadeDuration={0}
-              />
+              >
+                <Image
+                  style={{
+                    width: spacing['26'],
+                    height: spacing['26']
+                  }}
+                  source={require('../../assets/image/address_default.png')}
+                  fadeDuration={0}
+                />
+                <Text
+                  style={{
+                    paddingLeft: spacing['6'],
+                    fontWeight: '700',
+                    fontSize: 16,
+                    color: colors['primary-text']
+                  }}
+                >
+                  {name || '...'}
+                </Text>
+              </View>
+
+              {addressComponent || null}
               <Text
                 style={{
                   paddingLeft: spacing['6'],
-                  fontWeight: '700',
-                  fontSize: 16,
+                  fontSize: 14,
+                  paddingVertical: spacing['6'],
                   color: colors['primary-text']
                 }}
               >
-                {name || '...'}
+                {`Coin type: ${coinType}`}
               </Text>
             </View>
-
-            {addressComponent || null}
-            <Text
-              style={{
-                paddingLeft: spacing['6'],
-                fontSize: 14,
-                paddingVertical: spacing['6'],
-                color: colors['primary-text']
-              }}
-            >
-              {`Coin type: ${coinType}`}
-            </Text>
+            <TouchableOpacity onPress={_onPressMyWallet}>
+              <DownArrowIcon height={28} color={colors['primary-text']} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={_onPressMyWallet}>
-            <DownArrowIcon height={28} color={colors['primary-text']} />
-          </TouchableOpacity>
-        </View>
-        {/* <NetworkErrorView /> */}
-        <OWButton
-          style={{
-            width: '100%'
-          }}
-          onPress={() => {
-            smartNavigation.navigateSmart('Transactions', {});
-          }}
-          textStyle={{
-            paddingLeft: 8
-          }}
-          label="Transactions history"
-          type="secondary"
-          size="medium"
-          icon={
-            <OWIcon color={colors['purple-700']} size={18} name="history" />
-          }
-        />
-      </OWBox>
-    </View>
-  );
-});
+          {/* <NetworkErrorView /> */}
+          <OWButton
+            style={{
+              width: '100%'
+            }}
+            onPress={() => {
+              smartNavigation.navigateSmart('Transactions', {});
+            }}
+            textStyle={{
+              paddingLeft: 8
+            }}
+            label="Transactions history"
+            type="secondary"
+            size="medium"
+            icon={
+              <OWIcon color={colors['purple-700']} size={18} name="history" />
+            }
+          />
+        </OWBox>
+      </View>
+    );
+  }
+);
 
 const styling = (colors) =>
   StyleSheet.create({

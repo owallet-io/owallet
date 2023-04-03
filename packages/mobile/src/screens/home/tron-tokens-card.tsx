@@ -7,7 +7,8 @@ import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { getBase58Address, TRC20_LIST, _keyExtract } from '../../utils/helper';
+import { TRC20_LIST, _keyExtract } from '../../utils/helper';
+import { Address } from '@owallet/crypto';
 import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import FastImage from 'react-native-fast-image';
@@ -36,7 +37,7 @@ export const TronTokensCard: FunctionComponent<{
             address:
               keyRingStore.keyRingType === 'ledger'
                 ? keyRingStore.keyRingLedgerAddress
-                : getBase58Address(account.evmosHexAddress)
+                : Address.getBase58Address(account.evmosHexAddress)
           },
           {
             baseURL: chainStore.current.rpc

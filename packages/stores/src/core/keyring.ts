@@ -359,22 +359,6 @@ export class KeyRingStore {
     }
   }
 
-  // @flow
-  // *updateLedgerAddressKeyRing(address: string) {
-  //   const msg = new UpdateNameKeyRingMsg(index, name);
-  //   const result = yield* toGenerator(
-  //     this.requester.sendMessage(BACKGROUND_PORT, msg)
-  //   );
-  //   this.multiKeyStoreInfo = result.multiKeyStoreInfo;
-  //   const selectedIndex = this.multiKeyStoreInfo.findIndex(
-  //     keyStore => keyStore.selected
-  //   );
-  //   // If selectedIndex and index are same, name could be changed, so dispatch keystore event
-  //   if (selectedIndex === index) {
-  //     this.dispatchKeyStoreChangeEvent();
-  //   }
-  // }
-
   async checkPassword(password: string): Promise<boolean> {
     return await this.requester.sendMessage(
       BACKGROUND_PORT,
@@ -426,13 +410,13 @@ export class KeyRingStore {
   // Set the coin type to current key store.
   // And, save it, refresh the key store.
   @flow
-  *setKeyStoreLedgerAddress(bip44HDPath: string) {
+  *setKeyStoreLedgerAddress(bip44HDPath: string, chainId: string | number) {
     console.log('SetKeyStoreLedgerAddressMsg', SetKeyStoreLedgerAddressMsg);
 
     const status = yield* toGenerator(
       this.requester.sendMessage(
         BACKGROUND_PORT,
-        new SetKeyStoreLedgerAddressMsg(bip44HDPath)
+        new SetKeyStoreLedgerAddressMsg(bip44HDPath, chainId)
       )
     );
 

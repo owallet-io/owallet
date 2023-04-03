@@ -1,20 +1,17 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { HeaderLayout } from '../../../../layouts';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router';
-import Web3 from 'web3';
-import { useIntl, FormattedMessage } from 'react-intl';
 
-import style from './style.module.scss';
+import { useInteractionInfo } from '@owallet/hooks';
+import { ERC20Currency, Secret20Currency } from '@owallet/types';
+import { observer } from 'mobx-react-lite';
+import useForm from 'react-hook-form';
 import { Button, Form } from 'reactstrap';
 import { Input } from '../../../../components/form';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../../stores';
-import useForm from 'react-hook-form';
-import { Bech32Address } from '@owallet/cosmos';
-import { CW20Currency, ERC20Currency, Secret20Currency } from '@owallet/types';
-import { useInteractionInfo } from '@owallet/hooks';
 import { useLoadingIndicator } from '../../../../components/loading-indicator';
 import { useNotification } from '../../../../components/notification';
+import { useStore } from '../../../../stores';
+import style from './style.module.scss';
 
 interface FormData {
   contractAddress: string;
@@ -224,8 +221,7 @@ export const AddEvmTokenPage: FunctionComponent = observer(() => {
             required: 'Contract address is required',
             validate: (value: string): string | undefined => {
               try {
-                if (!Web3.utils.isAddress(value))
-                  throw new Error('Invalid address');
+                if (!value.startsWith('0x')) throw new Error('Invalid address');
               } catch {
                 return 'Invalid address';
               }

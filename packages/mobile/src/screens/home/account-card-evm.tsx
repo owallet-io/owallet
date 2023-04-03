@@ -29,8 +29,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
 import { useTheme } from '@src/themes/theme-provider';
-import { getBase58Address, getEvmAddress, TRON_ID } from '../../utils/helper';
 import { AccountBox } from './account-box';
+import OWText from '@src/components/text/ow-text';
+import { TRON_ID } from '@owallet/common';
+import { Address } from '@owallet/crypto';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -45,7 +47,6 @@ export const AccountCardEVM: FunctionComponent<{
   } = useStore();
   const { colors } = useTheme();
   const [evmAddress, setEvmAddress] = useState(null);
-
 
   const smartNavigation = useSmartNavigation();
   // const navigation = useNavigation();
@@ -67,7 +68,7 @@ export const AccountCardEVM: FunctionComponent<{
       if (keyRingStore.keyRingLedgerAddress) {
         total = queries.evm.queryEvmBalance.getQueryBalance(
           chainStore.current.chainId === TRON_ID
-            ? getEvmAddress(keyRingStore.keyRingLedgerAddress)
+            ? Address.getEvmAddress(keyRingStore.keyRingLedgerAddress)
             : keyRingStore.keyRingLedgerAddress
         )?.balance;
       }
@@ -112,38 +113,26 @@ export const AccountCardEVM: FunctionComponent<{
     );
   };
 
-  const handleTotalBalance = useMemo(() => {
-    if (chainStore.current.chainId !== TRON_ID) {
-      if (totalPrice) {
-        return totalPrice.toString();
-      } else {
-        return total?.shrink(true).maxDecimals(6).toString();
-      }
-    } else if (chainStore.current.chainId === TRON_ID && total) {
-      return (
-        new Big(parseInt(total.amount.int.value)).div(new Big(10).pow(24)) +
-        ` ${chainStore.current?.stakeCurrency.coinDenom}`
-      );
-    }
-  }, [
-    total?.amount?.int?.value,
-    chainStore?.current?.chainId,
-    totalPrice,
-    total,
-    chainStore.current?.stakeCurrency?.coinDenom
-  ]);
   return (
     <AccountBox
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
-      totalBalance={handleTotalBalance}
+      totalBalance={
+        <OWText variant="h1" color={colors['white']}>
+          {chainStore.current.chainId === TRON_ID && total
+            ? new Big(parseInt(total.amount.int.value)).div(
+                new Big(10).pow(24)
+              ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+            : null}
+        </OWText>
+      }
       addressComponent={
         <>
           {account.evmosHexAddress && keyRingStore.keyRingType !== 'ledger' ? (
             <AddressCopyable
               address={
                 chainStore.current.chainId === TRON_ID
-                  ? getBase58Address(account.evmosHexAddress)
+                  ? Address.getBase58Address(account.evmosHexAddress)
                   : account.evmosHexAddress
               }
               maxCharacters={22}
@@ -160,6 +149,18 @@ export const AccountCardEVM: FunctionComponent<{
             />
           ) : null}
         </>
+      }
+      totalAmount={
+        total?.amount
+          ? parseFloat(
+              new Big(parseInt(total.amount.int.value))
+                .div(new Big(10).pow(24))
+                .toString()
+            ) *
+            priceStore?.getPrice(
+              chainStore?.current?.stakeCurrency?.coinGeckoId
+            )
+          : 0
       }
       coinType={
         selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
