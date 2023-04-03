@@ -1,3 +1,16 @@
+diff --git a/node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js b/node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js
+index f9ffc73..e00e8d0 100644
+--- a/node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js
++++ b/node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js
+@@ -66,7 +66,7 @@ var __read = (this && this.__read) || function (o, n) {
+     return ar;
+ };
+ import Transport from "@ledgerhq/hw-transport";
+-import hidFraming from "@ledgerhq/devices/hid-framing";
++import hidFraming from "@ledgerhq/devices/lib-es/hid-framing";
+ import { identifyUSBProductId, ledgerUSBVendorId } from "@ledgerhq/devices";
+ import { log } from "@ledgerhq/logs";
+ import { TransportOpenUserCancelled, DisconnectedDeviceDuringOperation, DisconnectedDevice, TransportError, } from "@ledgerhq/errors";
 diff --git a/node_modules/@ledgerhq/hw-transport-webhid/lib/TransportWebHID.js b/node_modules/@ledgerhq/hw-transport-webhid/lib/TransportWebHID.js
 index 5dbe29b..50fa199 100644
 --- a/node_modules/@ledgerhq/hw-transport-webhid/lib/TransportWebHID.js

@@ -234,7 +234,11 @@ export const WebpageScreen: FunctionComponent<
     scrollY.setValue(currentOffet);
   };
 
-  const sourceCode = useInjectedSourceCode();
+  // const sourceCode = useInjectedSourceCode();
+  const sourceCode = `
+    var s = document.createElement("script");
+    s.type = 
+  `;
 
   return (
     <PageWithView backgroundColor={colors['background']} disableSafeArea>
