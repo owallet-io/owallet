@@ -20,7 +20,7 @@ export const InvestNavigation: FC = () => {
   return (
     <Stack.Navigator
       screenOptions={handleScreenOptions}
-      initialRouteName="Invest"
+      initialRouteName={SCREENS.Invest}
       headerMode="screen"
     >
       <Stack.Screen

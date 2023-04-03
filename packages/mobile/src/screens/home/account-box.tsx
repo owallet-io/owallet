@@ -123,7 +123,9 @@ export const AccountBox: FunctionComponent<{
               Total Balance
             </Text>
             {!!totalBalance && typeof totalBalance == 'string' ? (
-              <Text variant="h1" color={colors['white']}>{totalBalance || 0}</Text>
+              <Text variant="h1" style={{
+                textAlign:"center"
+              }} color={colors['white']}>{totalBalance || 0}</Text>
             ) : (
               totalBalance
             )}

@@ -21,18 +21,14 @@ import { Buffer } from 'buffer';
 import { colors, spacing } from '../../themes';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
-<<<<<<< HEAD
 import TronWeb from 'tronweb';
 import {
   BIP44_PATH_PREFIX,
-  getBase58Address,
   FAILED,
   SUCCESS
 } from '../../utils/helper';
 import { Text } from '@src/components/text';
-=======
 import { Address } from '@owallet/crypto';
->>>>>>> feat/tron-network
 
 const styles = StyleSheet.create({
   sendInputRoot: {
