@@ -21,6 +21,7 @@ import { API } from '../../common/api';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWButton } from '@src/components/button';
+import { OWEmpty } from '@src/components/empty';
 
 // hard code data to test UI
 // const nftsData = [
@@ -322,23 +323,7 @@ export const TokensCard: FunctionComponent<{
                 renderItem={() => <View />}
               />
             ) : (
-              <View style={styles.transactionListEmpty}>
-                <Image
-                  source={require('../../assets/image/not_found.png')}
-                  resizeMode="contain"
-                  height={142}
-                  width={142}
-                />
-                <Text
-                  style={{
-                    ...typography.subtitle2,
-                    color: colors['gray-300'],
-                    marginTop: spacing['8']
-                  }}
-                >
-                  {`No result found`}
-                </Text>
-              </View>
+            <OWEmpty />
             )}
           </CardBody>
         )}

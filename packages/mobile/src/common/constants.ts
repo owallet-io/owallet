@@ -58,7 +58,7 @@ export const SCREENS = {
     Main:'Main',
     Home:'Home',
     Browser:'Browser',
-    Invest:'Invest',
+    Invest:'Invest_Tab',
     Settings:'Settings',
     SendNavigation:'SendNavigation'
   },
@@ -70,10 +70,16 @@ export const SCREENS = {
     AddressBooks:'AddressBooks'
   }
 };
-
+export const ICONS_TITLE = {
+  [SCREENS.TABS.Invest]: 'invest',
+  [SCREENS.TABS.Main]: 'home',
+  [SCREENS.TABS.Browser]: 'browser',
+  [SCREENS.TABS.Settings]: 'setting',
+  [SCREENS.TABS.SendNavigation]: '',
+}
 export const SCREENS_TITLE = {
-  [SCREENS.TABS.Home]: HEADER_KEY.showNetworkHeader,
-  [SCREENS.TABS.Main]: 'Main',
+  [SCREENS.TABS.Invest]: 'Invest',
+  [SCREENS.TABS.Main]: 'Home',
   [SCREENS.TABS.Browser]: 'Browser',
   [SCREENS.TABS.Settings]: 'Settings',
   [SCREENS.TABS.SendNavigation]: '',

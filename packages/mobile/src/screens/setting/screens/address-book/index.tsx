@@ -165,7 +165,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
           <TextInput
             inputRight={
               <RectButton onPress={onNameSearch}>
-                <SearchIcon color={colors['purple-700']} size={20} />
+                <SearchIcon color={colors['text-place-holder']} size={20} />
               </RectButton>
             }
             placeholder="Search by address, namespace"

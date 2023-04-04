@@ -16,6 +16,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
 import { OWSubTitleHeader } from '@src/components/header';
+import { OWEmpty } from '@src/components/empty';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const safeAreaInsets = useSafeAreaInsets();
@@ -55,26 +56,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           {chainStore.current.networkType === 'cosmos' ? (
             <MyRewardCard />
           ) : (
-            <View
-              style={{
-                alignItems: 'center'
-              }}
-            >
-              <Image
-                source={require('../../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.h4,
-                  fontWeight: '400',
-                  marginVertical: spacing['52'],
-                  color: colors['sub-primary-text']
-                }}
-              >{`No result found`}</Text>
-            </View>
+           <OWEmpty />
           )}
 
           {chainStore.current.networkType === 'cosmos' ? (

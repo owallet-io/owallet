@@ -190,8 +190,8 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
                 address: recipientConfig.rawRecipient,
                 memo: memoConfig.memo
               });
-              // smartNavigation.goBack();
-              smartNavigation.navigateSmart('AddressBook', {});
+              smartNavigation.goBack();
+              // smartNavigation.navigateSmart('AddressBook', {});
             }
           }}
         />

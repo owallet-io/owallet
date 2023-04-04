@@ -11,6 +11,7 @@ import { ProgressBar } from '../../../components/progress-bar';
 import { BondStatus } from '@owallet/stores';
 import { spacing } from '../../../themes';
 import { useTheme } from '@src/themes/theme-provider';
+import { OWEmpty } from '@src/components/empty';
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -41,9 +42,9 @@ export const UndelegationsCard: FunctionComponent<{
 
   return (
     <OWBox
-    style={{
-      paddingTop:0
-    }}
+      style={{
+        paddingTop: 0
+      }}
     >
       <CardBody>
         <Text
@@ -55,14 +56,7 @@ export const UndelegationsCard: FunctionComponent<{
           My Unstaking
         </Text>
         {unbondings.length > 0 ? null : (
-          <Text
-            style={[
-              { color: colors['primary-text'] },
-              style.flatten(['body2', 'color-text-black-low', 'padding-top-18'])
-            ]}
-          >
-            {"You don't have any unbonding assets yet"}
-          </Text>
+          <OWEmpty style={{ paddingBottom: 20 }} />
         )}
         {unbondings.map((unbonding, unbondingIndex) => {
           const validator = bondedValidators.validators
