@@ -13,10 +13,11 @@ import { SettingStackScreen } from './settings-navigation';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { observer } from 'mobx-react-lite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import imagesGlobal from '@src/assets/images';
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { chainStore } = useStore();
-  const { colors } = useTheme();
+  const { colors, images } = useTheme();
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
   return (
@@ -28,7 +29,9 @@ export const MainTabNavigation: FC = observer(() => {
               <View style={styles.paddingIcon}>
                 <OWIcon
                   type="images"
-                  source={require('@src/assets/image/push.png')}
+                  source={
+                    focused ? imagesGlobal.push : images.btn_center_bottom_tab
+                  }
                   size={44}
                 />
               </View>

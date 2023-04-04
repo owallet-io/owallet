@@ -21,6 +21,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import { SCREENS } from '@src/common/constants';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -84,7 +85,9 @@ export const EarningCard: FunctionComponent<{
   };
 
   return (
-    <OWBox>
+    <OWBox style={{
+      marginBottom:spacing['page-pad']
+    }}>
       <View style={styles.cardBody}>
         <Text
           style={[
@@ -282,7 +285,7 @@ export const EarningCard: FunctionComponent<{
               size="medium"
               label="Manage my staking"
               onPress={() => {
-                navigate('MainTab', { screen: 'Invest' });
+                navigate('MainTab', { screen: SCREENS.TABS.Invest });
               }}
             />
           </View>

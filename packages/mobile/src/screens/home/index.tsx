@@ -22,7 +22,7 @@ import { BIP44Selectable } from './bip44-selectable';
 import { useTheme } from '@src/themes/theme-provider';
 import { useFocusEffect } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
-import { colors } from '../../themes';
+import { colors, spacing } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
@@ -220,7 +220,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       {chainStore.current.networkType === 'cosmos' ? (
         <EarningCard containerStyle={styles.containerEarnStyle} />
       ) : null}
-
     </PageWithScrollViewInBottomTabView>
   );
 });

@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Card, CardBody } from '../../components/card';
+import { Card, CardBody, OWBox } from '../../components/card';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
-import { Text } from '@src/components/text';
+
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -13,6 +13,8 @@ import { API } from '../../common/api';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../components/vector-character';
 import Big from 'big.js';
+import { Text } from '@src/components/text';
+import { OWEmpty } from '@src/components/empty';
 
 const size = 44;
 const imageScale = 0.54;
@@ -20,7 +22,7 @@ const imageScale = 0.54;
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [tokens, setTokens] = useState([]);
 
@@ -31,21 +33,27 @@ export const TronTokensCard: FunctionComponent<{
       try {
         const res = await API.getTronAccountInfo(
           {
-            address: getBase58Address(account.evmosHexAddress)
+            address:
+              keyRingStore.keyRingType === 'ledger'
+                ? keyRingStore.keyRingLedgerAddress
+                : getBase58Address(account.evmosHexAddress)
           },
           {
-            baseURL: 'https://api.trongrid.io/'
+            baseURL: chainStore.current.rpc
+            // baseURL: 'https://nile.trongrid.io/' // TRON testnet
           }
         );
 
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            TRC20_LIST.map(tk => {
+            TRC20_LIST.map((tk) => {
               let token = res.data?.data[0].trc20.find(
-                t => tk.contractAddress in t
+                (t) => tk.contractAddress in t
               );
-              tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              if (token) {
+                tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              }
             });
 
             setTokens(tokenArr);
@@ -130,15 +138,24 @@ export const TronTokensCard: FunctionComponent<{
               )} ${item.coinDenom}`}
             </Text>
 
-            {/* <Text
+            <Text
               style={{
                 ...typography.subtitle3,
                 color: colors['text-black-low'],
                 marginBottom: spacing['4']
               }}
             >
-              {priceBalance?.toString() || '$0'}
-            </Text> */}
+              $
+              {`${
+                item?.amount
+                  ? parseFloat(
+                      new Big(parseInt(item.amount))
+                        .div(new Big(10).pow(6).toFixed(6))
+                        .toString()
+                    ) * priceStore?.getPrice(item.coinGeckoId)
+                  : 0
+              }` || '$0'}
+            </Text>
           </View>
         </View>
         <View
@@ -156,20 +173,13 @@ export const TronTokensCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      <Card
-        style={{
-          paddingTop: spacing['8'],
-          paddingBottom: spacing['14'],
-          borderRadius: spacing['24'],
-          backgroundColor: colors['white']
-        }}
-      >
+      <OWBox>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
             alignItems: 'center',
-            width: metrics.screenWidth - 64,
+
             marginHorizontal: spacing['32']
           }}
         >
@@ -183,8 +193,8 @@ export const TronTokensCard: FunctionComponent<{
             <Text
               style={{
                 fontSize: 18,
-                fontWeight: '500',
-                color: colors['gray-900']
+                fontWeight: '500'
+                // color: colors['gray-900']
               }}
             >
               {'Tokens'}
@@ -201,26 +211,10 @@ export const TronTokensCard: FunctionComponent<{
               showsHorizontalScrollIndicator={false}
             />
           ) : (
-            <View style={styles.transactionListEmpty}>
-              <Image
-                source={require('../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.subtitle2,
-                  color: colors['gray-300'],
-                  marginTop: spacing['8']
-                }}
-              >
-                {`No result found`}
-              </Text>
-            </View>
+            <OWEmpty />
           )}
         </CardBody>
-      </Card>
+      </OWBox>
     </View>
   );
 });
