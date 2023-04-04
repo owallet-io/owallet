@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Card, CardBody } from '../../components/card';
+import { Card, CardBody, OWBox } from '../../components/card';
 import { StyleSheet, View, ViewStyle, Image } from 'react-native';
-import { CText as Text } from '../../components/text';
+// import { CText as Text } from '../../components/text';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -13,6 +13,8 @@ import { API } from '../../common/api';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../components/vector-character';
 import Big from 'big.js';
+import { Text } from '@src/components/text';
+import { OWEmpty } from '@src/components/empty';
 
 const size = 44;
 const imageScale = 0.54;
@@ -42,9 +44,9 @@ export const TronTokensCard: FunctionComponent<{
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            TRC20_LIST.map(tk => {
+            TRC20_LIST.map((tk) => {
               let token = res.data?.data[0].trc20.find(
-                t => tk.contractAddress in t
+                (t) => tk.contractAddress in t
               );
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
@@ -168,12 +170,9 @@ export const TronTokensCard: FunctionComponent<{
 
   return (
     <View style={containerStyle}>
-      <Card
+      <OWBox
         style={{
-          paddingTop: spacing['8'],
-          paddingBottom: spacing['14'],
-          borderRadius: spacing['24'],
-          backgroundColor: colors['white']
+          marginBottom: spacing['24']
         }}
       >
         <View
@@ -213,26 +212,10 @@ export const TronTokensCard: FunctionComponent<{
               showsHorizontalScrollIndicator={false}
             />
           ) : (
-            <View style={styles.transactionListEmpty}>
-              <Image
-                source={require('../../assets/image/not_found.png')}
-                resizeMode="contain"
-                height={142}
-                width={142}
-              />
-              <Text
-                style={{
-                  ...typography.subtitle2,
-                  color: colors['gray-300'],
-                  marginTop: spacing['8']
-                }}
-              >
-                {`No result found`}
-              </Text>
-            </View>
+            <OWEmpty />
           )}
         </CardBody>
-      </Card>
+      </OWBox>
     </View>
   );
 });

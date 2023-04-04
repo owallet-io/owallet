@@ -29,6 +29,8 @@ import {
   FAILED,
   SUCCESS
 } from '../../utils/helper';
+import { OWSubTitleHeader } from '@src/components/header';
+import { OWBox } from '@src/components/card';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -46,7 +48,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export const SendTronScreen: FunctionComponent = observer(props => {
+export const SendTronScreen: FunctionComponent = observer((props) => {
   const {
     chainStore,
     accountStore,
@@ -56,7 +58,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -111,12 +113,14 @@ export const SendTronScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.coinDenom === route.params.currency) {
-          return cur.coinDenom === route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
+        (cur) => {
+          if (cur.coinDenom === route.params.currency) {
+            return cur.coinDenom === route.params.currency;
+          }
+          return cur.coinMinimalDenom == route.params.currency;
         }
-        return cur.coinMinimalDenom == route.params.currency;
-      });
+      );
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -134,28 +138,18 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   return (
     <PageWithScrollView>
       <View style={{ marginBottom: 99 }}>
-        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
-          <Text
-            style={{
-              fontWeight: '700',
-              fontSize: 24,
-              lineHeight: 34
-            }}
-          >
-            Send
-          </Text>
-        </View>
-        <View style={styles.sendInputRoot}>
+        <OWSubTitleHeader title="Send" />
+        <OWBox>
           <TextInput
             label="Token"
-            labelStyle={styles.sendlabelInput}
+            // labelStyle={styles.sendlabelInput}
             value={route?.params?.item?.coinDenom ?? 'TRX'}
             editable={false}
           />
           <TextInput
             placeholder="Enter receiving address"
             label="Send to"
-            labelStyle={styles.sendlabelInput}
+            // labelStyle={styles.sendlabelInput}
             value={receiveAddress}
             onChange={({ nativeEvent: { eventCount, target, text } }) =>
               setReceiveAddress(text)
@@ -169,7 +163,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             label="Amount"
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
-            labelStyle={styles.sendlabelInput}
+            // labelStyle={styles.sendlabelInput}
           />
 
           {chainStore.current.networkType !== 'evm' ? (
@@ -182,7 +176,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -213,7 +207,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -245,17 +239,17 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               setIsOpenModal(true);
             }}
           />
-        </View>
+        </OWBox>
         <PasswordInputModal
           isOpen={isOpenModal}
           paragraph={'Please confirm your password'}
           close={() => setIsOpenModal(false)}
           title={'Confirm Password'}
           disabled={loading}
-          onEnterPassword={async password => {
+          onEnterPassword={async (password) => {
             setLoading(true);
             const index = keyRingStore.multiKeyStoreInfo.findIndex(
-              keyStore => keyStore.selected
+              (keyStore) => keyStore.selected
             );
 
             let privateKey;
