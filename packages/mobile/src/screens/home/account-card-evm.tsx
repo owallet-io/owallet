@@ -117,15 +117,15 @@ export const AccountCardEVM: FunctionComponent<{
         >
           {/* {console.log(total?.amount?.int?.value,"valueeee")} */}
           {chainStore.current.chainId !== TRON_ID && total
-            ? new Big(parseInt(total?.amount?.int?.value))
-                .div(new Big(10).pow(36))
-                .toFixed(8) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+            ? `${new Big(parseInt(total?.amount?.int))
+              .div(new Big(10).pow(36))
+              .toFixed(8)}` + ` ${chainStore.current?.stakeCurrency.coinDenom}`
             : null}
 
           {chainStore.current.chainId === TRON_ID && total
-            ? new Big(parseInt(total?.amount?.int?.value))
-                .div(new Big(10).pow(24))
-                .toFixed(6) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+            ? `${new Big(parseInt(total?.amount?.int))
+              .div(new Big(10).pow(24))
+              .toFixed(6)}` + ` ${chainStore.current?.stakeCurrency.coinDenom}`
             : null}
         </Text>
       }
@@ -139,7 +139,7 @@ export const AccountCardEVM: FunctionComponent<{
         total?.amount
           ? (
               parseFloat(
-                new Big(parseInt(total?.amount?.int?.value))
+                new Big(parseInt(total?.amount?.int))
                   .div(new Big(10).pow(36))
                   .toString()
               ) *
