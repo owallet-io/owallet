@@ -74,11 +74,15 @@ export const TRC20_LIST = [
 
 import { Base58 } from '@ethersproject/basex';
 import { sha256 } from '@ethersproject/sha2';
+import bs58 from 'bs58';
 
-export const getEvmAddress = base58Address =>
-  '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
+export const getEvmAddress = (base58Address) =>
+  base58Address
+    ? '0x' +
+      Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex')
+    : '-';
 
-export const getBase58Address = address => {
+export const getBase58Address = (address) => {
   const evmAddress = '0x41' + address.substring(2);
   const hash = sha256(sha256(evmAddress));
   const checkSum = hash.substring(2, 10);
@@ -262,7 +266,7 @@ export const convertAmount = (amount: any) => {
   }
 };
 
-export const getDomainFromUrl = url => {
+export const getDomainFromUrl = (url) => {
   if (!url) {
     return '';
   }
@@ -274,7 +278,7 @@ export const getDomainFromUrl = url => {
     .replace('http://', '');
 };
 
-export const parseIbcMsgRecvPacket = denom => {
+export const parseIbcMsgRecvPacket = (denom) => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
 
@@ -290,7 +294,7 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
             if (att?.['key'] === 'action') {
               let attValue = att?.['value']
                 .split('_')
-                .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
               break;
@@ -312,10 +316,10 @@ export const parseIbcMsgTransfer = (
   key = 'packet_data'
 ) => {
   const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
+    rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
   const ibcDemonPackData =
     arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
+    arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' ||
     ibcDemonPackData?.value instanceof String
