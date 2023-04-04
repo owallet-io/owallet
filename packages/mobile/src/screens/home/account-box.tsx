@@ -202,7 +202,7 @@ export const AccountBox: FunctionComponent<{
                     color: colors['primary-text']
                   }}
                 >
-                  {name || '...'}
+                  {name}
                 </Text>
               </View>
 

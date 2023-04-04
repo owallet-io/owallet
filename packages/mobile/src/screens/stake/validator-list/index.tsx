@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
-import { PageWithSectionList } from '../../../components/page';
+import { PageWithSectionList, PageWithView, PageWithViewInBottomTabView } from '../../../components/page';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { BondStatus, Validator } from '@owallet/stores';
@@ -119,7 +119,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   }, [items, sort]);
 
   return (
-    <React.Fragment>
+    <PageWithViewInBottomTabView>
       <SelectorModal
         close={() => {
           setIsSortModalOpen(false);
@@ -132,7 +132,6 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
 
       <PageWithSectionList
         style={{
-          marginBottom: 70,
           backgroundColor: colors['background']
         }}
         sections={[
@@ -259,7 +258,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
           );
         }}
       />
-    </React.Fragment>
+    </PageWithViewInBottomTabView>
   );
 });
 
