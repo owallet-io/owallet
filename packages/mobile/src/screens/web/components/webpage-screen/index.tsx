@@ -232,7 +232,9 @@ export const WebpageScreen: FunctionComponent<
   // const sourceCode = useInjectedSourceCode();
   const sourceCode = `
     var s = document.createElement("script");
-    s.type = 
+    s.type = "text/javascript";
+    s.src = "${InjectedProviderUrl}/injected-provider.bundle.js";
+    document.head.appendChild(script);
   `;
 
   return (
