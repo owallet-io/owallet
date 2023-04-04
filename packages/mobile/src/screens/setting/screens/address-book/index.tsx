@@ -215,7 +215,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
 
         <View
           style={{
-            flex: 1
+            // flex: 1
           }}
         >
           {contractData?.length > 0 ? (
