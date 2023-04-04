@@ -30,16 +30,16 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 
 const { App } = require('./src/app');
 
-import * as Sentry from '@sentry/react-native';
+// import * as Sentry from '@sentry/react-native';
 
-if (!__DEV__) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: 'production',
-    release: DeviceInfo.getBundleId() + '-' + DeviceInfo.getVersion(),
-    dist: DeviceInfo.getBuildNumber()
-  });
-}
+// if (!__DEV__) {
+//   Sentry.init({
+//     dsn: process.env.SENTRY_DSN,
+//     environment: 'production',
+//     release: DeviceInfo.getBundleId() + '-' + DeviceInfo.getVersion(),
+//     dist: DeviceInfo.getBuildNumber()
+//   });
+// }
 
 // not using CodePush for development
 const CodePushApp = __DEV__

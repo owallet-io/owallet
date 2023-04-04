@@ -34,8 +34,6 @@
     "@owallet/stores": "^0.9.16",
     "@owallet/types": "^0.9.12",
     "@owallet/unit": "^0.9.12",
-    "@sentry/react": "^7.36.0",
-    "@sentry/tracing": "^7.36.0",
     "@walletconnect/client": "^1.6.4",
     "aes-js": "^3.1.2",
     "amplitude-js": "^8.16.0",
