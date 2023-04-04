@@ -276,7 +276,10 @@ export const LedgerGranterModal: FunctionComponent<{
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
                 >
-                  {`1. Open app on Ledger Nano X.`}
+                  {`1. Open ${formatNeworkTypeToLedgerAppName(
+                    chainStore.current.networkType,
+                    chainStore.current.chainId
+                  )} app on Ledger Nano X.`}
                 </Text>
                 <Text
                   style={style.flatten(['subtitle3', 'color-text-black-high'])}
