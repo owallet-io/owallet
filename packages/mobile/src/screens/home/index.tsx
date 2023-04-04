@@ -148,6 +148,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   const onSubscribeToTopic = React.useCallback(async () => {
     const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+    console.log('fcmToken ===', fcmToken);
 
     if (fcmToken) {
       const subcriber = await API.subcribeToTopic(

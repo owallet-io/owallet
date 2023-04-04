@@ -637,8 +637,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
-    rest: 'https://trx.getblock.io/mainnet/fullnode/jsonrpc',
+    rpc: 'https://api.trongrid.io',
+    rest: 'https://api.trongrid.io/jsonrpc',
     chainId: '0x2b6653dc',
     networkType: 'evm',
     chainName: 'Tron',
@@ -660,11 +660,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
       }
     ],
-    restConfig: {
-      headers: {
-        'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
-      }
-    },
     bip44: {
       coinType: 195
     },

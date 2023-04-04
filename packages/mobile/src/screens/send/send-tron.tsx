@@ -88,6 +88,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
     >
   >();
 
+  console.log('recipient', route?.params?.recipient);
+
   const smartNavigation = useSmartNavigation();
 
   const chainId = route?.params?.chainId
@@ -282,7 +284,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               if (privateKey) {
                 try {
                   tronWeb = new TronWeb({
-                    fullHost: 'https://api.trongrid.io',
+                    fullHost: chainStore.current.rpc,
+                    // fullHost: 'https://nile.trongrid.io', // TRON testnet
                     headers: {
                       'x-api-key': process.env.X_API_KEY
                     },
@@ -293,40 +296,45 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                     // Send TRC20
                     // Get TRC20 contract
                     const { abi } = await tronWeb.trx.getContract(
-                      route?.params?.item.contractAddress
+                      route?.params?.item?.contractAddress
                     );
 
                     const contract = tronWeb.contract(
                       abi.entrys,
-                      route?.params?.item.contractAddress
+                      route?.params?.item?.contractAddress
                     );
 
                     const balance = await contract.methods
                       .balanceOf(getBase58Address(account.evmosHexAddress))
                       .call();
 
-                    console.log('balance:', balance.toString());
+                    console.log('balance:', Number(balance.toString()));
+                    if (Number(balance.toString()) > 0) {
+                      const resp = await contract.methods
+                        .transfer(
+                          receiveAddress,
+                          Number(
+                            (sendConfigs.amountConfig.amount ?? '0').replace(
+                              /,/g,
+                              '.'
+                            )
+                          ) * Math.pow(10, 6)
+                        )
+                        .send({
+                          feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee. Read more: https://developers.tron.network/docs/set-feelimit
+                          callValue: 0
+                        });
 
-                    const resp = await contract.methods
-                      .transfer(
-                        receiveAddress,
-                        Number(
-                          (sendConfigs.amountConfig.amount ?? '0').replace(
-                            /,/g,
-                            '.'
-                          )
-                        ) * Math.pow(10, 6)
-                      )
-                      .send({
-                        feeLimit: 50_000_000, // Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee
-                        callValue: 0
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: resp,
+                        chainId: chainStore.current.chainId,
+                        tronWeb: tronWeb
                       });
-
-                    smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: resp,
-                      chainId: chainStore.current.chainId,
-                      tronWeb: tronWeb
-                    });
+                    } else {
+                      setIsOpenModal(false);
+                      setLoading(false);
+                      alert('Not enough balance to send');
+                    }
                   } else {
                     // Send TRX
                     const tradeobj = await tronWeb.transactionBuilder.sendTrx(

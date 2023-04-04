@@ -70,7 +70,7 @@ export const AccountCardEVM: FunctionComponent<{
       totalPrice = priceStore?.calculatePrice(total, 'USD');
     }
   }
-  
+
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
@@ -91,7 +91,6 @@ export const AccountCardEVM: FunctionComponent<{
     }
   };
 
-  
   const _onPressReceiveModal = () => {
     modalStore.setOpen();
     modalStore.setChildren(
@@ -126,16 +125,58 @@ export const AccountCardEVM: FunctionComponent<{
     <AccountBox
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
-      totalBalance={handleTotalBalance}
-      address={
-        account.evmosHexAddress
-          ? chainStore.current.networkType === 'cosmos'
-            ? account.bech32Address
-            : chainStore.current.chainId === TRON_ID
-            ? getBase58Address(account.evmosHexAddress)
-            : account.evmosHexAddress
-          : '..'
+      totalBalance={
+        <Text
+          style={{
+            textAlign: 'center',
+            color: 'white',
+            fontWeight: '900',
+            fontSize: 34,
+            lineHeight: 50
+          }}
+        >
+          {chainStore.current.chainId !== TRON_ID
+            ? totalPrice
+              ? totalPrice.toString()
+              : total?.shrink(true).maxDecimals(6).toString()
+            : null}
+
+          {chainStore.current.chainId === TRON_ID && total
+            ? // Somehow debug mode will show exactly total.amount.int.value, but the defaul mode can not
+              // So we have to use total.amount.int instead
+              new Big(parseInt(total.amount.int ?? total.amount.int.value))
+                .div(new Big(10).pow(24))
+                .toFixed(6) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+            : null}
+        </Text>
       }
+      addressComponent={
+        account.evmosHexAddress ? (
+          <AddressCopyable
+            address={
+              chainStore.current.networkType === 'cosmos'
+                ? account.bech32Address
+                : chainStore.current.chainId === TRON_ID
+                ? getBase58Address(account.evmosHexAddress)
+                : account.evmosHexAddress
+            }
+            maxCharacters={22}
+            networkType={chainStore.current.networkType}
+          />
+        ) : null
+      }
+      totalAmount={`${
+        total?.amount
+          ? parseFloat(
+              new Big(parseInt(total.amount.int ?? total.amount.int.value))
+                .div(new Big(10).pow(24))
+                .toString()
+            ) *
+            priceStore?.getPrice(
+              chainStore?.current?.stakeCurrency?.coinGeckoId
+            )
+          : 0
+      }`}
       coinType={
         selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }
