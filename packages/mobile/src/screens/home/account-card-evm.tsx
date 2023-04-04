@@ -63,7 +63,8 @@ export const AccountCardEVM: FunctionComponent<{
     if (keyRingStore.keyRingType === 'ledger') {
       if (keyRingStore.keyRingLedgerAddress) {
         total = queries.evm.queryEvmBalance.getQueryBalance(
-          chainStore.current.chainId === TRON_ID
+          chainStore.current.chainId === TRON_ID &&
+            !keyRingStore.keyRingLedgerAddress.startsWith('0x')
             ? Address.getEvmAddress(keyRingStore.keyRingLedgerAddress)
             : keyRingStore.keyRingLedgerAddress
         )?.balance;
@@ -75,7 +76,8 @@ export const AccountCardEVM: FunctionComponent<{
     }
 
     if (total) {
-      totalPrice = priceStore?.calculatePrice(total, 'USD');
+      totalPrice = priceStore.calculatePrice(total, 'USD');
+      console.log('totalPrice', totalPrice, total);
     }
   }
   // const data: [number, number] = [
@@ -227,16 +229,18 @@ export const AccountCardEVM: FunctionComponent<{
                   lineHeight: 50
                 }}
               >
-                {chainStore.current.chainId !== TRON_ID
-                  ? totalPrice
-                    ? totalPrice.toString()
-                    : total?.shrink(true).maxDecimals(6).toString()
+                {chainStore.current.chainId !== TRON_ID && total
+                  ? new Big(parseInt(total.amount.int.value))
+                      .div(new Big(10).pow(36))
+                      .toFixed(2) +
+                    ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
 
                 {chainStore.current.chainId === TRON_ID && total
-                  ? new Big(parseInt(total.amount.int.value)).div(
-                      new Big(10).pow(24)
-                    ) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+                  ? new Big(parseInt(total.amount.int.value))
+                      .div(new Big(10).pow(24))
+                      .toFixed(2) +
+                    ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
               </Text>
               <Text
@@ -247,7 +251,19 @@ export const AccountCardEVM: FunctionComponent<{
                 }}
               >
                 $
-                {total?.amount
+                {chainStore.current.chainId !== TRON_ID && total?.amount
+                  ? (
+                      parseFloat(
+                        new Big(parseInt(total.amount.int.value))
+                          .div(new Big(10).pow(36))
+                          .toString()
+                      ) *
+                      priceStore?.getPrice(
+                        chainStore?.current?.stakeCurrency?.coinGeckoId
+                      )
+                    ).toFixed(5)
+                  : 0}
+                {chainStore.current.chainId === TRON_ID && total?.amount
                   ? parseFloat(
                       new Big(parseInt(total.amount.int.value))
                         .div(new Big(10).pow(24))

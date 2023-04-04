@@ -28,7 +28,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     defaultVsCurrency: string
   ) {
     const instance = Axios.create({
-      baseURL: 'https://api.coingecko.com/api/v3',
+      baseURL: 'https://price.market.orai.io',
       adapter: fetchAdapter
     });
 
@@ -155,6 +155,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     coin: CoinPretty,
     vsCurrrency?: string
   ): PricePretty | undefined {
+    console.log('coin.currency.coinGeckoId ===', coin.currency.coinGeckoId);
+
     if (!coin.currency.coinGeckoId) {
       return undefined;
     }
@@ -163,7 +165,11 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       vsCurrrency = this.defaultVsCurrency;
     }
 
-    const fiatCurrency = this.supportedVsCurrencies[vsCurrrency];
+    console.log('vsCurrrency ===', vsCurrrency.toLocaleLowerCase());
+
+    const fiatCurrency =
+      this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
+    console.log('fiatCurrency ===', fiatCurrency);
     if (!fiatCurrency) {
       return undefined;
     }
@@ -172,6 +178,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (price === undefined) {
       return new PricePretty(fiatCurrency, new Int(0)).ready(false);
     }
+
+    console.log('price ===', price);
 
     const dec = coin.toDec();
     const priceDec = new Dec(price.toString());

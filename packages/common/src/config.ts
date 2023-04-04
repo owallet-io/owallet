@@ -510,7 +510,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: 'BNB',
       coinMinimalDenom: 'bnb',
       coinDecimals: 18,
-      coinGeckoId: 'bnb',
+      coinGeckoId: 'binancecoin',
       coinImageUrl:
         'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
     },
@@ -521,7 +521,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'BNB',
         coinMinimalDenom: 'bnb',
         coinDecimals: 18,
-        coinGeckoId: 'bnb',
+        coinGeckoId: 'binancecoin',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
       },
@@ -558,7 +558,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'BNB',
         coinMinimalDenom: 'bnb',
         coinDecimals: 18,
-        coinGeckoId: 'bnb',
+        coinGeckoId: 'binancecoin',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
       }
