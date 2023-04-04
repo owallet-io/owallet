@@ -180,22 +180,22 @@ export const TronTokensCard: FunctionComponent<{
             flexDirection: 'row',
             justifyContent: 'space-around',
             alignItems: 'center',
-            width: metrics.screenWidth - 64,
-            marginHorizontal: spacing['32']
+            // width: metrics.screenWidth - 64,
+            // marginHorizontal: spacing['32']
           }}
         >
           <View
             style={{
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop: spacing['12']
+              // marginTop: spacing['12']
             }}
           >
             <Text
               style={{
                 fontSize: 18,
                 fontWeight: '500',
-                color: colors['gray-900']
+                // color: colors['gray-900']
               }}
             >
               {'Tokens'}
