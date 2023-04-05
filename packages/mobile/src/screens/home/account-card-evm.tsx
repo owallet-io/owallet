@@ -30,6 +30,9 @@ import { NetworkErrorViewEVM } from './network-error-view-evm';
 import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 
+const isBase58 = (value: string): boolean =>
+  /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
+
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -64,7 +67,7 @@ export const AccountCardEVM: FunctionComponent<{
       if (keyRingStore.keyRingLedgerAddress) {
         total = queries.evm.queryEvmBalance.getQueryBalance(
           chainStore.current.chainId === TRON_ID &&
-            !keyRingStore.keyRingLedgerAddress.startsWith('0x')
+            isBase58(keyRingStore.keyRingLedgerAddress)
             ? Address.getEvmAddress(keyRingStore.keyRingLedgerAddress)
             : keyRingStore.keyRingLedgerAddress
         )?.balance;
