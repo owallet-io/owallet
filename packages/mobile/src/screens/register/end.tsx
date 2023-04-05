@@ -114,7 +114,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           />
           <Toggle
             on={isBiometricOn}
-            onChange={(value) => setIsBiometricOn(value)}
+            onChange={value => setIsBiometricOn(value)}
           />
         </View>
       ) : null}
@@ -124,6 +124,9 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           setIsLoading(true);
           try {
             if (password && isBiometricOn) {
+              console.log('password', password);
+              console.log('isBiometricOn', isBiometricOn);
+
               await keychainStore.turnOnBiometry(password);
             }
 
@@ -144,6 +147,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             });
           } catch (e) {
             console.log(e);
+            alert(JSON.stringify(e));
             setIsLoading(false);
           }
         }}

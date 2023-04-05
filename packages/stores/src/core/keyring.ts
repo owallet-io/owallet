@@ -360,6 +360,8 @@ export class KeyRingStore {
   }
 
   async checkPassword(password: string): Promise<boolean> {
+    console.log('password 3', password);
+
     return await this.requester.sendMessage(
       BACKGROUND_PORT,
       new CheckPasswordMsg(password)

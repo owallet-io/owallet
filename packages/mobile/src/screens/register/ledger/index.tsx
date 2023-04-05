@@ -46,7 +46,7 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
-  const bip44Option = useBIP44Option(chainStore.current.coinType);
+  const bip44Option = useBIP44Option(chainStore.current.coinType ?? 118);
   const [mode] = useState(registerConfig.mode);
 
   const {
@@ -69,7 +69,11 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       await registerConfig.createLedger(
         getValues('name'),
         getValues('password'),
-        bip44Option.bip44HDPath
+        {
+          ...bip44Option.bip44HDPath,
+          coinType:
+            bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
+        }
       );
       analyticsStore.setUserProperties({
         registerType: 'ledger',
