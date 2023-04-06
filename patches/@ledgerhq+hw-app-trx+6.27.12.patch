@@ -1,0 +1,175 @@
+diff --git a/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.d.ts b/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.d.ts
+index 3ebd0cf..f3eb949 100644
+--- a/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.d.ts
++++ b/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.d.ts
+@@ -26,7 +26,7 @@ export default class Trx {
+     /**
+      * sign a Tron transaction with a given BIP 32 path and Token Names
+      *
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @param rawTxHex a raw transaction hex string
+      * @param tokenSignatures Tokens Signatures array
+      * @option version pack message based on ledger firmware version
+@@ -35,7 +35,7 @@ export default class Trx {
+      * @example
+      * const signature = await tron.signTransaction("44'/195'/0'/0/0", "0a02f5942208704dda506d59dceb40f0f4978f802e5a69080112650a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412340a1541978dbd103cfe59c35e753d09dd44ae1ae64621c7121541e2ae49db6a70b9b4757d2137a43b69b24a445780188ef8b5ba0470cbb5948f802e", [], 105);
+      */
+-    signTransaction(path: string, rawTxHex: string, tokenSignatures: string[]): Promise<string>;
++    signTransaction(paths: number[], rawTxHex: string, tokenSignatures: string[]): Promise<string>;
+     /**
+      * sign a Tron transaction hash with a given BIP 32 path
+      *
+diff --git a/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.js b/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.js
+index c6cabba..c48f12c 100644
+--- a/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.js
++++ b/node_modules/@ledgerhq/hw-app-trx/lib-es/Trx.js
+@@ -90,7 +90,7 @@ var Trx = /** @class */ (function () {
+     /**
+      * sign a Tron transaction with a given BIP 32 path and Token Names
+      *
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @param rawTxHex a raw transaction hex string
+      * @param tokenSignatures Tokens Signatures array
+      * @option version pack message based on ledger firmware version
+@@ -99,9 +99,8 @@ var Trx = /** @class */ (function () {
+      * @example
+      * const signature = await tron.signTransaction("44'/195'/0'/0/0", "0a02f5942208704dda506d59dceb40f0f4978f802e5a69080112650a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412340a1541978dbd103cfe59c35e753d09dd44ae1ae64621c7121541e2ae49db6a70b9b4757d2137a43b69b24a445780188ef8b5ba0470cbb5948f802e", [], 105);
+      */
+-    Trx.prototype.signTransaction = function (path, rawTxHex, tokenSignatures) {
++    Trx.prototype.signTransaction = function (paths, rawTxHex, tokenSignatures) {
+         var _this = this;        
+-        var paths = splitPath(path);
+         var rawTx = Buffer.from(rawTxHex, "hex");
+         var toSend = [];
+         var data = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);
+diff --git a/node_modules/@ledgerhq/hw-app-trx/lib/Trx.d.ts b/node_modules/@ledgerhq/hw-app-trx/lib/Trx.d.ts
+index 3ebd0cf..05329fe 100644
+--- a/node_modules/@ledgerhq/hw-app-trx/lib/Trx.d.ts
++++ b/node_modules/@ledgerhq/hw-app-trx/lib/Trx.d.ts
+@@ -12,13 +12,13 @@ export default class Trx {
+     constructor(transport: Transport, scrambleKey?: string);
+     /**
+      * get Tron address for a given BIP 32 path.
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @option boolDisplay optionally enable or not the display
+      * @return an object with a publicKey and address
+      * @example
+      * const address = await tron.getAddress("44'/195'/0'/0/0").then(o => o.address)
+      */
+-    getAddress(path: string, boolDisplay?: boolean): Promise<{
++    getAddress(paths: number[], boolDisplay?: boolean): Promise<{
+         publicKey: string;
+         address: string;
+     }>;
+@@ -26,7 +26,7 @@ export default class Trx {
+     /**
+      * sign a Tron transaction with a given BIP 32 path and Token Names
+      *
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @param rawTxHex a raw transaction hex string
+      * @param tokenSignatures Tokens Signatures array
+      * @option version pack message based on ledger firmware version
+@@ -35,7 +35,7 @@ export default class Trx {
+      * @example
+      * const signature = await tron.signTransaction("44'/195'/0'/0/0", "0a02f5942208704dda506d59dceb40f0f4978f802e5a69080112650a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412340a1541978dbd103cfe59c35e753d09dd44ae1ae64621c7121541e2ae49db6a70b9b4757d2137a43b69b24a445780188ef8b5ba0470cbb5948f802e", [], 105);
+      */
+-    signTransaction(path: string, rawTxHex: string, tokenSignatures: string[]): Promise<string>;
++    signTransaction(paths: number[], rawTxHex: string, tokenSignatures: string[]): Promise<string>;
+     /**
+      * sign a Tron transaction hash with a given BIP 32 path
+      *
+diff --git a/node_modules/@ledgerhq/hw-app-trx/lib/Trx.js b/node_modules/@ledgerhq/hw-app-trx/lib/Trx.js
+index f3b81ac..73d3dee 100644
+--- a/node_modules/@ledgerhq/hw-app-trx/lib/Trx.js
++++ b/node_modules/@ledgerhq/hw-app-trx/lib/Trx.js
+@@ -56,14 +56,13 @@ var Trx = /** @class */ (function () {
+     }
+     /**
+      * get Tron address for a given BIP 32 path.
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @option boolDisplay optionally enable or not the display
+      * @return an object with a publicKey and address
+      * @example
+      * const address = await tron.getAddress("44'/195'/0'/0/0").then(o => o.address)
+      */
+-    Trx.prototype.getAddress = function (path, boolDisplay) {
+-        var paths = (0, utils_1.splitPath)(path);
++    Trx.prototype.getAddress = function (paths, boolDisplay) {        
+         var buffer = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);
+         buffer[0] = paths.length;
+         paths.forEach(function (element, index) {
+@@ -92,7 +91,7 @@ var Trx = /** @class */ (function () {
+     /**
+      * sign a Tron transaction with a given BIP 32 path and Token Names
+      *
+-     * @param path a path in BIP 32 format
++     * @param paths a path in BIP 32 format
+      * @param rawTxHex a raw transaction hex string
+      * @param tokenSignatures Tokens Signatures array
+      * @option version pack message based on ledger firmware version
+@@ -101,9 +100,8 @@ var Trx = /** @class */ (function () {
+      * @example
+      * const signature = await tron.signTransaction("44'/195'/0'/0/0", "0a02f5942208704dda506d59dceb40f0f4978f802e5a69080112650a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412340a1541978dbd103cfe59c35e753d09dd44ae1ae64621c7121541e2ae49db6a70b9b4757d2137a43b69b24a445780188ef8b5ba0470cbb5948f802e", [], 105);
+      */
+-    Trx.prototype.signTransaction = function (path, rawTxHex, tokenSignatures) {
++    Trx.prototype.signTransaction = function (paths, rawTxHex, tokenSignatures) {
+         var _this = this;        
+-        var paths = (0, utils_1.splitPath)(path);
+         var rawTx = Buffer.from(rawTxHex, "hex");
+         var toSend = [];
+         var data = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);
+diff --git a/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts b/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts
+index a994e00..de03eb2 100644
+--- a/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts
++++ b/node_modules/@ledgerhq/hw-app-trx/src/Trx.ts
+@@ -66,20 +66,19 @@ export default class Trx {
+ 
+   /**
+    * get Tron address for a given BIP 32 path.
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @option boolDisplay optionally enable or not the display
+    * @return an object with a publicKey and address
+    * @example
+    * const address = await tron.getAddress("44'/195'/0'/0/0").then(o => o.address)
+    */
+-  getAddress(
+-    path: string,
++  async getAddress(
++    paths: number[],
+     boolDisplay?: boolean
+   ): Promise<{
+     publicKey: string;
+     address: string;
+   }> {    
+-    const paths = splitPath(path);
+     const buffer = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);
+     buffer[0] = paths.length;
+     paths.forEach((element, index) => {
+@@ -113,7 +112,7 @@ export default class Trx {
+   /**
+    * sign a Tron transaction with a given BIP 32 path and Token Names
+    *
+-   * @param path a path in BIP 32 format
++   * @param paths a path in BIP 32 format
+    * @param rawTxHex a raw transaction hex string
+    * @param tokenSignatures Tokens Signatures array
+    * @option version pack message based on ledger firmware version
+@@ -123,11 +122,10 @@ export default class Trx {
+    * const signature = await tron.signTransaction("44'/195'/0'/0/0", "0a02f5942208704dda506d59dceb40f0f4978f802e5a69080112650a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412340a1541978dbd103cfe59c35e753d09dd44ae1ae64621c7121541e2ae49db6a70b9b4757d2137a43b69b24a445780188ef8b5ba0470cbb5948f802e", [], 105);
+    */
+   signTransaction(
+-    path: string,
++    paths: number[],
+     rawTxHex: string,
+     tokenSignatures: string[]
+   ): Promise<string> {    
+-    const paths = splitPath(path);
+     let rawTx = Buffer.from(rawTxHex, "hex");
+     const toSend: Buffer[] = [];
+     let data = Buffer.alloc(PATHS_LENGTH_SIZE + paths.length * PATH_SIZE);

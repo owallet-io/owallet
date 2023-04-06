@@ -1,31 +1,28 @@
-import CosmosApp from '@ledgerhq/hw-app-cosmos';
-import Transport from '@ledgerhq/hw-transport';
-import { TransportIniter } from '@owallet/background/src/ledger/options';
-import { InteractionStore } from './interaction';
-import { computed, flow, makeObservable, observable } from 'mobx';
-import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
   LedgerGetWebHIDFlagMsg,
-  LedgerSetWebHIDFlagMsg,
+  LedgerSetWebHIDFlagMsg
 } from '@owallet/background';
 import { toGenerator } from '@owallet/common';
+import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
+import { computed, flow, makeObservable, observable } from 'mobx';
+import { InteractionStore } from './interaction';
 
 export type LedgerInitDataType =
   | {
-    event: 'get-pubkey';
-    success: boolean;
-  }
+      event: 'get-pubkey';
+      success: boolean;
+    }
   | {
-    event: 'sign';
-    success: boolean;
-  }
+      event: 'sign';
+      success: boolean;
+    }
   | {
-    // Should interact to resume the ledger initing on the background.
-    event: 'init-failed';
-  }
+      // Should interact to resume the ledger initing on the background.
+      event: 'init-failed';
+    }
   | {
-    event: 'init-aborted';
-  };
+      event: 'init-aborted';
+    };
 
 export class LedgerInitStore {
   @observable
@@ -90,7 +87,10 @@ export class LedgerInitStore {
     const datas =
       this.interactionStore.getEvents<LedgerInitDataType>('ledger-init');
 
-    console.log(datas, 'SIGN DATAS SUCCESS INTERACTION LEDGER ????????????????')
+    console.log(
+      datas,
+      'SIGN DATAS SUCCESS INTERACTION LEDGER ????????????????'
+    );
 
     for (const data of datas) {
       if (data.data.event === 'sign' && data.data.success) {
@@ -106,7 +106,10 @@ export class LedgerInitStore {
     const datas =
       this.interactionStore.getEvents<LedgerInitDataType>('ledger-init');
 
-    console.log(datas, 'SIGN DATAS REJECTED INTERACTION LEDGER ????????????????')
+    console.log(
+      datas,
+      'SIGN DATAS REJECTED INTERACTION LEDGER ????????????????'
+    );
 
     for (const data of datas) {
       if (data.data.event === 'sign' && !data.data.success) {
@@ -152,12 +155,12 @@ export class LedgerInitStore {
     try {
       const datas =
         this.interactionStore.getDatas<LedgerInitDataType>('ledger-init');
-      console.log(datas, "DATAS WHEN RESUME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      console.log(datas, 'DATAS WHEN RESUME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
 
       for (const data of datas) {
         if (data.data.event === 'init-failed') {
           // Approve resuming the initing ledger.
-          console.log("APPROVE RESUMING!!!")
+          console.log('APPROVE RESUMING!!!');
           yield this.interactionStore.approve('ledger-init', data.id, {
             initArgs
           });
