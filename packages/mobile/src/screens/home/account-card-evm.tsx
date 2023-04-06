@@ -235,14 +235,14 @@ export const AccountCardEVM: FunctionComponent<{
                 {chainStore.current.chainId !== TRON_ID && total
                   ? new Big(parseInt(total.amount.int.value))
                       .div(new Big(10).pow(36))
-                      .toFixed(2) +
+                      .toFixed(6) +
                     ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
 
                 {chainStore.current.chainId === TRON_ID && total
                   ? new Big(parseInt(total.amount.int.value))
                       .div(new Big(10).pow(24))
-                      .toFixed(2) +
+                      .toFixed(6) +
                     ` ${chainStore.current?.stakeCurrency.coinDenom}`
                   : null}
               </Text>
@@ -265,17 +265,19 @@ export const AccountCardEVM: FunctionComponent<{
                         chainStore?.current?.stakeCurrency?.coinGeckoId
                       )
                     ).toFixed(5)
-                  : 0}
+                  : null}
                 {chainStore.current.chainId === TRON_ID && total?.amount
-                  ? parseFloat(
-                      new Big(parseInt(total.amount.int.value))
-                        .div(new Big(10).pow(24))
-                        .toString()
-                    ) *
-                    priceStore?.getPrice(
-                      chainStore?.current?.stakeCurrency?.coinGeckoId
-                    )
-                  : 0}
+                  ? (
+                      parseFloat(
+                        new Big(parseInt(total.amount.int.value))
+                          .div(new Big(10).pow(24))
+                          .toString()
+                      ) *
+                      priceStore?.getPrice(
+                        chainStore?.current?.stakeCurrency?.coinGeckoId
+                      )
+                    ).toFixed(6)
+                  : null}
               </Text>
             </View>
             <View
@@ -386,10 +388,12 @@ export const AccountCardEVM: FunctionComponent<{
                   fontSize: 14
                 }}
               >
-                {`Coin type: ${
-                  selected?.bip44HDPath?.coinType ??
-                  chainStore?.current?.bip44?.coinType
-                }`}
+                {keyRingStore.keyRingType === 'ledger'
+                  ? `Coin type: ${chainStore?.current?.bip44?.coinType}`
+                  : `Coin type: ${
+                      selected?.bip44HDPath?.coinType ??
+                      chainStore?.current?.bip44?.coinType
+                    }`}
               </Text>
             </View>
             <TouchableOpacity onPress={_onPressMyWallet}>

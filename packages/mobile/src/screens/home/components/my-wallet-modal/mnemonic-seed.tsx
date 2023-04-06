@@ -10,22 +10,22 @@ import { LoadingSpinner } from '../../../../components/spinner';
 
 const MnemonicSeed = ({ styles }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const { keyRingStore, analyticsStore, modalStore } = useStore();
+  const { keyRingStore, analyticsStore, modalStore, chainStore } = useStore();
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
+      keyStore => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
+      keyStore => keyStore.type === 'privateKey' && !keyStore.meta?.email
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'ledger'
+      keyStore => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -91,7 +91,9 @@ const MnemonicSeed = ({ styles }) => {
                     fontSize: 12
                   }}
                 >
-                  {item.address}
+                  {chainStore.current.networkType === 'cosmos'
+                    ? null
+                    : item.address}
                 </Text>
               )}
             </View>
@@ -127,26 +129,28 @@ const MnemonicSeed = ({ styles }) => {
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height: metrics.screenHeight / 4,
+        height: metrics.screenHeight / 4
       }}
     >
-      <View style={{  position: 'relative' }}>
+      <View style={{ position: 'relative' }}>
         <FlatList
           data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           keyExtractor={_keyExtract}
         />
-         <View
+        <View
           style={{
             position: 'absolute',
             left: '50%',
             top: '50%',
-            zIndex: 1,
-        }}
-      >
-        {isLoading && <LoadingSpinner size={24} color={colors['purple-700']} />}
-      </View>
+            zIndex: 1
+          }}
+        >
+          {isLoading && (
+            <LoadingSpinner size={24} color={colors['purple-700']} />
+          )}
+        </View>
       </View>
     </View>
   );
