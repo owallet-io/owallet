@@ -7,7 +7,12 @@ import { useStore } from '../../stores';
 import styleAsset from './asset.module.scss';
 import { ToolTip } from '../../components/tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLanguage, toDisplay, TRON_ID } from '@owallet/common';
+import {
+  useLanguage,
+  toDisplay,
+  TRON_ID,
+  getEvmAddress
+} from '@owallet/common';
 import { useHistory } from 'react-router';
 
 const LazyDoughnut = React.lazy(async () => {
@@ -236,7 +241,8 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 });
 
 export const AssetChartViewEvm: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
 
   const language = useLanguage();
 
@@ -249,17 +255,23 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(current.chainId);
   // wait for account to be
   if (!accountInfo.evmosHexAddress) return null;
-
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(
-    accountInfo.evmosHexAddress
-  ).balance;
+  let evmosAddress = accountInfo.evmosHexAddress;
+  if (
+    keyRingStore.keyRingType === 'ledger' &&
+    chainStore.current.networkType === 'evm'
+  ) {
+    evmosAddress = keyRingStore?.keyRingLedgerAddress;
+    if (keyRingStore?.keyRingLedgerAddress?.startsWith('T')) {
+      evmosAddress = getEvmAddress(keyRingStore?.keyRingLedgerAddress);
+    }
+  }
+  const balance =
+    queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
   const isTronNetwork = chainStore.current.chainId === TRON_ID;
   let totalPrice;
   let total;
-  if (accountInfo.evmosHexAddress) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(
-      accountInfo.evmosHexAddress
-    )?.balance;
+  if (evmosAddress) {
+    total = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
     if (total) {
       totalPrice =
         isTronNetwork && total

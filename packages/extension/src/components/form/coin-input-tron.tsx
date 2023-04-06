@@ -28,7 +28,7 @@ import {
 import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStore } from '../../stores';
-import { DenomHelper, toDisplay } from '@owallet/common';
+import { DenomHelper, getEvmAddress, toDisplay } from '@owallet/common';
 export interface CoinInputTronProps {
   amountConfig: IAmountConfig;
   feeConfig?: any;
@@ -97,7 +97,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
     }, [intl, error]);
 
     const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
-    const { queriesStore, chainStore, accountStore } = useStore();
+    const { queriesStore, chainStore, accountStore, keyRingStore } = useStore();
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
     const queryBalances = queriesStore
@@ -118,7 +118,9 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
         if (!accountInfo.evmosHexAddress) return null;
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-          accountInfo.evmosHexAddress
+          keyRingStore.keyRingType === 'ledger'
+            ? getEvmAddress(keyRingStore?.keyRingLedgerAddress)
+            : accountInfo.evmosHexAddress
         ).balance;
         setBalance(evmBalance);
       }

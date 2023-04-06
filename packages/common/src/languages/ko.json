@@ -112,6 +112,9 @@
   "register.name": "계정 이름",
   "register.name.error.required": "계정 이름을 입력하세요",
   "register.button.back": "뒤로",
+  "register.button.trx-ledger": "Tron Ledger",
+  "register.button.cosmos-ledger": "Cosmos Ledger",
+  "register.button.eth-ledger": "Eth Ledger",
 
   "register.bip44.button.advanced": "고급",
   "register.bip44.input.hd-path": "BIP44 HD 경로",

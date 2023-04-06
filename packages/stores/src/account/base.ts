@@ -893,7 +893,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       );
 
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse?.rawTxHex
       };
     } catch (error) {
       console.log('Error on broadcastErc20Msgs: ', error);

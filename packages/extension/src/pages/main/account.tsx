@@ -117,17 +117,37 @@ export const AccountView: FunctionComponent = observer(() => {
           <div
             className={styleAccount.address}
             style={{ marginBottom: '6px' }}
-            onClick={() => copyAddress(evmAddress)}
+            onClick={() =>
+              copyAddress(
+                keyRingStore.keyRingType !== 'ledger'
+                  ? evmAddress
+                  : keyRingStore.keyRingLedgerAddress
+              )
+            }
           >
             <span className={styleAccount.addressText}>
-              <Address isRaw={true} tooltipAddress={evmAddress}>
-                {accountInfo.walletStatus === WalletStatus.Loaded &&
-                accountInfo.evmosHexAddress
-                  ? accountInfo.evmosHexAddress.length === 42
-                    ? `${evmAddress.slice(0, 10)}...${evmAddress.slice(-8)}`
-                    : accountInfo.evmosHexAddress
-                  : '...'}
-              </Address>
+              {keyRingStore.keyRingType !== 'ledger' ? (
+                <Address isRaw={true} tooltipAddress={evmAddress}>
+                  {accountInfo.walletStatus === WalletStatus.Loaded &&
+                  accountInfo.evmosHexAddress
+                    ? accountInfo.evmosHexAddress.length === 42
+                      ? `${evmAddress.slice(0, 10)}...${evmAddress.slice(-8)}`
+                      : accountInfo.evmosHexAddress
+                    : '...'}
+                </Address>
+              ) : (
+                <Address
+                  isRaw={true}
+                  tooltipAddress={keyRingStore?.keyRingLedgerAddress}
+                >
+                  {keyRingStore.keyRingLedgerAddress
+                    ? `${keyRingStore.keyRingLedgerAddress.slice(
+                        0,
+                        10
+                      )}...${keyRingStore.keyRingLedgerAddress.slice(-8)}`
+                    : '...'}
+                </Address>
+              )}
             </span>
             <div style={{ width: 6 }} />
             <img

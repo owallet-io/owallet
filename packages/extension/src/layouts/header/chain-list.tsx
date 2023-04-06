@@ -8,16 +8,18 @@ import style from './chain-list.module.scss';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { useConfirm } from '../../components/confirm';
 import { useIntl } from 'react-intl';
-
+import { COINTYPE_NETWORK } from '@owallet/common';
+import { useNotification } from '../../components/notification';
 const ChainElement: FunctionComponent<{
   chainInfo: ChainInfoWithEmbed;
 }> = observer(({ chainInfo }) => {
   const { chainStore, analyticsStore, keyRingStore } = useStore();
-
+  const selected = keyRingStore?.multiKeyStoreInfo?.find(
+    (keyStore) => keyStore?.selected
+  );
   const intl = useIntl();
-
   const confirm = useConfirm();
-
+  const notification = useNotification();
   return (
     <div
       className={classnames({
@@ -36,11 +38,51 @@ const ChainElement: FunctionComponent<{
             chainId: chainInfo.chainId,
             chainName: chainInfo.chainName,
             networkType: chainInfo.networkType,
-            rpc: chainInfo?.rpc ?? chainInfo?.rest,
+            rpc: chainInfo?.rpc ?? chainInfo?.rest
             // ...chainInfo
           });
           chainStore.selectChain(chainInfo.chainId);
           chainStore.saveLastViewChainId();
+          if (selected?.type === 'ledger') {
+            const getDevices = await window.navigator.hid.getDevices();
+            // cosmos productId 16401 ,trx productId 16389 ,eth productId 16405
+            if (getDevices.length) {
+              notification.push({
+                placement: 'top-center',
+                type: 'warning',
+                duration: 5,
+                content: `You are switching to ${
+                  COINTYPE_NETWORK[
+                    chainInfo.coinType ?? chainInfo.bip44.coinType
+                  ]
+                } network. Please confirm that you have ${
+                  COINTYPE_NETWORK[
+                    chainInfo.coinType ?? chainInfo.bip44.coinType
+                  ]
+                } App opened before switch network`,
+                canDelete: true,
+                transition: {
+                  duration: 0.25
+                }
+              });
+              await keyRingStore.setKeyStoreLedgerAddress(
+                `44'/${chainInfo.bip44.coinType ?? chainInfo.coinType}'/${
+                  selected.bip44HDPath.account
+                }'/${selected.bip44HDPath.change}/${
+                  selected.bip44HDPath.addressIndex
+                }`,
+                chainInfo.chainId
+              );
+            } else {
+              browser.tabs.create({
+                url: `/popup.html#/confirm-ledger/${
+                  COINTYPE_NETWORK[
+                    chainInfo.bip44.coinType ?? chainInfo.coinType
+                  ]
+                }`
+              });
+            }
+          }
         }
       }}
     >

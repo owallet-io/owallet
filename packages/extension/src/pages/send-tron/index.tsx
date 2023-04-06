@@ -53,7 +53,7 @@ export const SendTronEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, keyRingStore } = useStore();
   const current = chainStore.current;
 
   const accountInfo = accountStore.getAccount(current.chainId);
@@ -104,7 +104,10 @@ export const SendTronEvmPage: FunctionComponent<{
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError();
   const txStateIsValid = sendConfigError == null;
-  const addressTron = getBase58Address(accountInfo.evmosHexAddress);
+  const addressTron =
+    keyRingStore?.keyRingType !== 'ledger'
+      ? getBase58Address(accountInfo.evmosHexAddress)
+      : keyRingStore.keyRingLedgerAddress;
   const tokenTrc20 =
     (tokensTrc20Tron &&
       query &&
@@ -145,6 +148,9 @@ export const SendTronEvmPage: FunctionComponent<{
               },
               tokenTrc20
             );
+            if (!isDetachedPage) {
+              history.replace('/');
+            }
           } catch (error) {
             if (!isDetachedPage) {
               history.replace('/');

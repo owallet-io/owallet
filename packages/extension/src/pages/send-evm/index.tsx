@@ -69,8 +69,13 @@ export const SendEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    keyRingStore
+  } = useStore();
   const current = chainStore.current;
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
 
@@ -82,12 +87,16 @@ export const SendEvmPage: FunctionComponent<{
     chainStore,
     current.chainId,
     accountInfo.msgOpts.send,
-    accountInfo.evmosHexAddress,
+    keyRingStore?.keyRingType !== 'ledger'
+      ? accountInfo.evmosHexAddress
+      : keyRingStore.keyRingLedgerAddress,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
     chainStore.current.networkType === 'evm' &&
       queriesStore.get(current.chainId).evm.queryEvmBalance,
-    chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
+    keyRingStore?.keyRingType !== 'ledger'
+      ? accountInfo.evmosHexAddress
+      : keyRingStore.keyRingLedgerAddress
   );
 
   const gasConfig = useGasEthereumConfig(
@@ -129,8 +138,11 @@ export const SendEvmPage: FunctionComponent<{
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
         if (coinMinimalDenom) {
-          // @ts-ignore
-          const tokenInfo = new web3.eth.Contract(ERC20_ABI,query?.defaultDenom?.split(':')?.[1]);
+          const tokenInfo = new web3.eth.Contract(
+            // @ts-ignore
+            ERC20_ABI,
+            query?.defaultDenom?.split(':')?.[1]
+          );
           estimate = await tokenInfo.methods
             .transfer(
               accountInfo?.evmosHexAddress,
@@ -147,7 +159,7 @@ export const SendEvmPage: FunctionComponent<{
         } else {
           estimate = await web3.eth.estimateGas({
             to: accountInfo?.evmosHexAddress,
-            from: query?.defaultDenom?.split(':')?.[1],
+            from: query?.defaultDenom?.split(':')?.[1]
           });
         }
         gasConfig.setGas(estimate ?? 21000);
@@ -156,9 +168,9 @@ export const SendEvmPage: FunctionComponent<{
         );
       } catch (error) {
         console.log(error, 'zzz');
-        gasConfig.setGas(21000);
+        gasConfig.setGas(50000);
         feeConfig.setFee(
-          new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
+          new Big(50000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       }
     })();
@@ -338,7 +350,10 @@ export const SendEvmPage: FunctionComponent<{
                 )
                   ? {
                       type: 'erc20',
-                      from: accountInfo.evmosHexAddress,
+                      from:
+                        keyRingStore.keyRingType !== 'ledger'
+                          ? accountInfo.evmosHexAddress
+                          : keyRingStore.keyRingLedgerAddress,
                       contract_addr:
                         sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
                           ':'

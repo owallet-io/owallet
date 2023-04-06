@@ -173,10 +173,7 @@ export interface Ethereum {
     data: SignEthereumTypedDataObject
   ): Promise<void>;
   signReEncryptData(chainId: string, data: object): Promise<object>;
-  signAndBroadcastTron(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }>;
+  signAndBroadcastTron(chainId: string, data: object): Promise<object>;
   signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
   // asyncRequest(): Promise<void>;

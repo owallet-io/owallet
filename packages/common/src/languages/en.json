@@ -123,6 +123,9 @@
   "register.name": "Account name",
   "register.name.error.required": "Account name is required",
   "register.button.back": "Back",
+  "register.button.trx-ledger": "Tron Ledger",
+  "register.button.cosmos-ledger": "Cosmos Ledger",
+  "register.button.eth-ledger": "Eth Ledger",
 
   "register.bip44.button.advanced": "Advanced",
   "register.bip44.input.hd-path": "HD Derivation Path",

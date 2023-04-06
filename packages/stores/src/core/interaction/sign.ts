@@ -30,6 +30,13 @@ export class SignInteractionStore {
           this.rejectWithId(datasEthereum[i].id);
         }
       }
+
+      const datasTron = this.waitingTronDatas?.slice();
+      if (datasTron.length > 1) {
+        for (let i = 1; i < datasTron.length; i++) {
+          this.rejectWithId(datasTron[i].id);
+        }
+      }
     });
   }
 
@@ -317,7 +324,7 @@ export class SignInteractionStore {
       }
       console.log('yield waitingTronDatas length > 0');
     } finally {
-      // yield this.waitTronEnd();
+      yield this.waitTronEnd();
       console.log('yield waitTronEnd length > 0');
       this._isLoading = false;
       this.interactionStore.removeData('request-sign-tron', idTron);

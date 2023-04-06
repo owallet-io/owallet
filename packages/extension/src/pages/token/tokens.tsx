@@ -18,10 +18,21 @@ import { SendPage } from '../send';
 import { SelectChain } from '../../layouts/header';
 import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
-import { getBase58Address, TRC20_LIST, TRON_ID } from '@owallet/common';
+import {
+  getBase58Address,
+  getEvmAddress,
+  TRC20_LIST,
+  TRON_ID
+} from '@owallet/common';
 
 export const TokenPage: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    uiConfigStore,
+    keyRingStore
+  } = useStore();
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
@@ -31,7 +42,9 @@ export const TokenPage: FunctionComponent = observer(() => {
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       chainStore.current.networkType === 'evm'
-        ? accountInfo.evmosHexAddress
+        ? keyRingStore.keyRingType !== 'ledger'
+          ? accountInfo.evmosHexAddress
+          : keyRingStore.keyRingLedgerAddress
         : accountInfo.bech32Address
     );
 
@@ -57,7 +70,9 @@ export const TokenPage: FunctionComponent = observer(() => {
     try {
       fetch(
         `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
-          accountInfo.evmosHexAddress
+          keyRingStore.keyRingType !== 'ledger'
+            ? accountInfo.evmosHexAddress
+            : getEvmAddress(keyRingStore.keyRingLedgerAddress)
         )}`
       ).then(async (res) => {
         const data = await res.json();

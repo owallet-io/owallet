@@ -28,7 +28,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     defaultVsCurrency: string
   ) {
     const instance = Axios.create({
-      baseURL: 'https://api.coingecko.com/api/v3',
+      // baseURL: 'https://api.coingecko.com/api/v3',
+      baseURL: 'https://price.market.orai.io',
       adapter: fetchAdapter
     });
 

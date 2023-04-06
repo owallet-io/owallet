@@ -7,6 +7,7 @@ import { HashRouter, Route } from 'react-router-dom';
 
 import { AccessPage, Secret20ViewingKeyAccessPage } from './pages/access';
 import { RegisterPage } from './pages/register';
+import { ConfirmLedgerPage } from './pages/register/ledger/confirm';
 import { MainPage } from './pages/main';
 import { LockPage } from './pages/lock';
 import { SendPage } from './pages/send';
@@ -222,6 +223,11 @@ ReactDOM.render(
                     component={Secret20ViewingKeyAccessPage}
                   />
                   <Route exact path="/register" component={RegisterPage} />
+                  <Route
+                    exact
+                    path="/confirm-ledger/:chain"
+                    component={ConfirmLedgerPage}
+                  />
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
                   <Route exact path="/send-tron" component={SendTronEvmPage} />
