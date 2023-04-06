@@ -165,11 +165,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       vsCurrrency = this.defaultVsCurrency;
     }
 
-    console.log('vsCurrrency ===', vsCurrrency.toLocaleLowerCase());
-
     const fiatCurrency =
       this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
-    console.log('fiatCurrency ===', fiatCurrency);
     if (!fiatCurrency) {
       return undefined;
     }

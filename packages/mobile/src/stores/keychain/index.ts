@@ -53,8 +53,6 @@ export class KeychainStore {
 
   @flow
   *turnOnBiometry(password: string) {
-    console.log('password 2 ', password);
-
     const valid = yield* toGenerator(this.keyRingStore.checkPassword(password));
     if (valid) {
       const result = yield* toGenerator(
