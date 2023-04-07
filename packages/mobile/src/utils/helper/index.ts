@@ -2,6 +2,7 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
+import { getNetworkTypeByChainId } from '@owallet/common';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -249,7 +250,7 @@ export const convertAmount = (amount: any) => {
   }
 };
 
-export const getDomainFromUrl = (url) => {
+export const getDomainFromUrl = url => {
   if (!url) {
     return '';
   }
@@ -261,7 +262,7 @@ export const getDomainFromUrl = (url) => {
     .replace('http://', '');
 };
 
-export const parseIbcMsgRecvPacket = (denom) => {
+export const parseIbcMsgRecvPacket = denom => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
 
@@ -277,7 +278,7 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
             if (att?.['key'] === 'action') {
               let attValue = att?.['value']
                 .split('_')
-                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
               break;
@@ -299,10 +300,10 @@ export const parseIbcMsgTransfer = (
   key = 'packet_data'
 ) => {
   const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
+    rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
   const ibcDemonPackData =
     arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
+    arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' ||
     ibcDemonPackData?.value instanceof String
@@ -353,4 +354,20 @@ export function nFormatter(num, digits: 1) {
 
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
+  let address;
+
+  if (chainId === TRON_ID) {
+    address = ledgerAddresses.trx;
+  } else {
+    const networkType = getNetworkTypeByChainId(chainId);
+    if (networkType === 'evm') {
+      address = ledgerAddresses.eth;
+    } else {
+      address = ledgerAddresses.cosmos;
+    }
+  }
+  return address;
 }

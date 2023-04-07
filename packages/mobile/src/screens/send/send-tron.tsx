@@ -23,6 +23,7 @@ import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
 import { PasswordInputModal } from '../../modals/password-input/modal';
 import { Address } from '@owallet/crypto';
+import { findLedgerAddressWithChainId } from '../../utils/helper';
 
 const styles = StyleSheet.create({
   sendInputRoot: {
@@ -256,7 +257,10 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                   sendConfigs.amountConfig.sendCurrency!,
                   receiveAddress,
                   keyRingStore.keyRingType === 'ledger'
-                    ? keyRingStore.keyRingLedgerAddress
+                    ? findLedgerAddressWithChainId(
+                        keyRingStore.keyRingLedgerAddresses,
+                        chainStore.current.chainId
+                      )
                     : Address.getBase58Address(account.evmosHexAddress),
                   {
                     onBroadcasted: txHash => {

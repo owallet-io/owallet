@@ -29,6 +29,7 @@ import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
 import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
+import { findLedgerAddressWithChainId } from '../../utils/helper';
 
 const isBase58 = (value: string): boolean =>
   /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
@@ -64,12 +65,15 @@ export const AccountCardEVM: FunctionComponent<{
   let total;
   if (account.evmosHexAddress) {
     if (keyRingStore.keyRingType === 'ledger') {
-      if (keyRingStore.keyRingLedgerAddress) {
+      if (keyRingStore.keyRingLedgerAddresses) {
+        const address = findLedgerAddressWithChainId(
+          keyRingStore.keyRingLedgerAddresses,
+          chainStore.current.chainId
+        );
         total = queries.evm.queryEvmBalance.getQueryBalance(
-          chainStore.current.chainId === TRON_ID &&
-            isBase58(keyRingStore.keyRingLedgerAddress)
-            ? Address.getEvmAddress(keyRingStore.keyRingLedgerAddress)
-            : keyRingStore.keyRingLedgerAddress
+          chainStore.current.chainId === TRON_ID && isBase58(address)
+            ? Address.getEvmAddress(address)
+            : address
         )?.balance;
       }
     } else {
@@ -372,10 +376,13 @@ export const AccountCardEVM: FunctionComponent<{
                 />
               ) : null}
 
-              {keyRingStore.keyRingLedgerAddress &&
+              {keyRingStore.keyRingLedgerAddresses &&
               keyRingStore.keyRingType === 'ledger' ? (
                 <AddressCopyable
-                  address={keyRingStore.keyRingLedgerAddress}
+                  address={findLedgerAddressWithChainId(
+                    keyRingStore.keyRingLedgerAddresses,
+                    chainStore.current.chainId
+                  )}
                   maxCharacters={22}
                   networkType={chainStore.current.networkType}
                 />
