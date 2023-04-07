@@ -1,7 +1,7 @@
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { NetworkType } from '@owallet/types';
-import { EmbedChainInfos } from 'src/config';
+import { EmbedChainInfos } from '../config';
 
 export const getAddressFromBech32 = bech32address => {
   const address = Buffer.from(fromWords(bech32.decode(bech32address).words));

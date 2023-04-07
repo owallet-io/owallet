@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, ReactElement } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
 import { View, ViewStyle, Image } from 'react-native';
@@ -13,7 +7,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
 import { useSmartNavigation } from '../../navigation.provider';
-import { DownArrowIcon, SettingDashboardIcon } from '../../components/icon';
+import { DownArrowIcon } from '../../components/icon';
 import {
   BuyIcon,
   DepositIcon,
@@ -22,11 +16,10 @@ import {
 import { colors, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NamespaceModal, AddressQRCodeModal } from './components';
+import { AddressQRCodeModal } from './components';
 import Big from 'big.js';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { NetworkErrorViewEVM } from './network-error-view-evm';
 import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import { findLedgerAddressWithChainId } from '../../utils/helper';
