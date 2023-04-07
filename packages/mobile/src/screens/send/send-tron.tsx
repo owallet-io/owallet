@@ -14,7 +14,6 @@ import { Buffer } from 'buffer';
 import { colors, spacing } from '../../themes';
 import { CText as Text } from '../../components/text';
 import { Toggle } from '../../components/toggle';
-import { PasswordInputModal } from '../../modals/password-input/modal';
 import { Address } from '@owallet/crypto';
 import { findLedgerAddressWithChainId } from '../../utils/helper';
 
@@ -43,14 +42,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
     keyRingStore
   } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
-  );
-
-  const [isOpenModal, setIsOpenModal] = useState(false);
   const [receiveAddress, setReceiveAddress] = useState('');
   const [customFee, setCustomFee] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const route = useRoute<
     RouteProp<
@@ -85,7 +78,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
-  // let tronWeb;
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -229,8 +221,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             }}
             onPress={async () => {
               let amount;
-              console.log('route?.params?.item', route?.params?.item);
-
               if (route?.params?.item?.type === 'trc20') {
                 amount = Number(
                   (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
@@ -243,8 +233,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                 ).mul(DecUtils.getTenExponentNInPrecisionRange(6));
               }
               try {
-                console.log('get here');
-
                 await account.sendTronToken(
                   sendConfigs.amountConfig.amount,
                   sendConfigs.amountConfig.sendCurrency!,

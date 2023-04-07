@@ -30,6 +30,17 @@ export const TRC20_LIST = [
     coinGeckoId: 'tether',
     coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
     type: 'trc20'
+  },
+  {
+    type: 'cw20',
+    coinDenom: 'wTRX',
+    coinMinimalDenom:
+      'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
+    contractAddress:
+      'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+    coinDecimals: 6,
+    coinGeckoId: 'tron',
+    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
   }
   // {
   //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
