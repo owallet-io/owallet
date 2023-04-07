@@ -1,3 +1,4 @@
+import { handleError } from '@src/utils/helper';
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 
@@ -17,7 +18,38 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
-
+  getTransactionsByAddress: async ({
+    address,
+    page = '1',
+    per_page = '10',
+    order_by = 'asc',
+    match_events = true,
+    prove = true,
+    rpcUrl = 'https://rpc.orai.io',
+    method = 'tx_search'
+  }) => {
+    try {
+      let url = rpcUrl;
+      let rpcConfig = {
+        method,
+        params: {
+          query: `message.sender='${address}'`,
+          page,
+          per_page,
+          order_by,
+          prove,
+          match_events
+        },
+        id: 1,
+        jsonrpc: '2.0'
+      };
+      const rs = await axios.post(url, rpcConfig);
+      return Promise.resolve(rs);
+    } catch (error) {
+      handleError(error, rpcUrl);
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig

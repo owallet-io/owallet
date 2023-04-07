@@ -1,10 +1,22 @@
+import {
+  TITLE_TYPE_ACTIONS_COSMOS_HISTORY,
+  TYPE_ACTIONS_COSMOS_HISTORY,
+  TYPE_EVENT
+} from './../../common/constants';
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
+import { Base58 } from '@ethersproject/basex';
+import { sha256 } from '@ethersproject/sha2';
+import bs58 from 'bs58';
+import get from 'lodash/get';
+import Big from 'big.js';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
+const truncDecimals = 6;
+const atomic = 10 ** truncDecimals;
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = 'FAILED';
@@ -71,10 +83,14 @@ export const TRC20_LIST = [
   //   type: 'trc20'
   // }
 ];
-
-import { Base58 } from '@ethersproject/basex';
-import { sha256 } from '@ethersproject/sha2';
-import bs58 from 'bs58';
+export const handleError = (error, url) => {
+  if (__DEV__) {
+    console.log(`[1;34m: ---------------------------------------`);
+    console.log(`[1;34m: handleError -> url`, url);
+    console.log(`[1;34m: handleError -> error`, JSON.stringify(error));
+    console.log(`[1;34m: ---------------------------------------`);
+  }
+};
 
 export const getEvmAddress = (base58Address) =>
   base58Address
@@ -123,7 +139,13 @@ export const formatContractAddress = (address: string) => {
 
   return `${fristLetter}...${lastLetter}`;
 };
-
+export function limitString(str, limit) {
+  if (str.length > limit) {
+    return str.slice(0, limit) + '...';
+  } else {
+    return str;
+  }
+}
 // capital first letter of string
 export const capitalizedText = (text: string) => {
   return text.slice(0, 1).toUpperCase() + text.slice(1, text.length);
@@ -138,7 +160,73 @@ export const TRANSACTION_TYPE = {
   INSTANTIATE_CONTRACT: 'MsgInstantiateContract',
   EXECUTE_CONTRACT: 'MsgExecuteContract'
 };
+export function getStringAfterMsg(str) {
+  const msgIndex = str.indexOf('Msg');
+  if (msgIndex === -1) {
+    return '';
+  }
+  return str.substring(msgIndex + 3);
+}
+export const getValueTransactionHistory = ({
+  item,
+  address
+}): IDataTransaction => {
+  let isRecipient = false;
+  let amount = '';
+  let denom = '';
+  let eventType, countEvent;
+  const transfer = 'transfer';
+  if (item?.tx_result?.code === 0) {
+    const logs = JSON.parse(get(item, 'tx_result.log'));
+    const event = logs && find(get(logs, `[0].events`), { type: 'message' });
+    const action = event && find(get(event, 'attributes'), { key: 'action' });
+    const actionValue = action?.value;
+    eventType =
+      actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
+        ? getStringAfterMsg(addSpacesToString(actionValue))
+        : convertString(actionValue);
+    countEvent = countKeywords(`${logs}`, actionValue);
+    const value = find(get(logs, `[0].events`), {
+      type: transfer
+    });
+    const amountValue = value && find(value?.attributes, { key: 'amount' });
+    const recipient = value && find(value?.attributes, { key: 'recipient' });
+    if (recipient?.value === address && actionValue === transfer) {
+      isRecipient = true;
+    }
+    const matchesAmount = amountValue?.value?.match(/\d+/g);
+    const matchesDenom = amountValue?.value?.match(/[^0-9\.]+/g);
+    amount = matchesAmount?.length > 0 && matchesAmount[0];
+    denom = matchesDenom?.length > 0 && removeSpecialChars(matchesDenom[0]);
+  }
 
+  return {
+    status: item?.tx_result?.code === 0 ? 'success' : 'failed',
+    eventType,
+    countEvent,
+    amount,
+    denom,
+    isRecipient
+  };
+};
+function convertString(str) {
+  const words = str.split('_');
+  const capitalizedWords = words.map(
+    (word) => word.charAt(0).toUpperCase() + word.slice(1)
+  );
+  return capitalizedWords.join(' ');
+}
+export function removeSpecialChars(str) {
+  return str.replace(/[^\w\s]/gi, '');
+}
+function addSpacesToString(str) {
+  return str.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
+function countKeywords(text, keyword) {
+  const words = text?.split(/\W+/);
+  return words?.filter((word) => word?.toLowerCase() === keyword?.toLowerCase())
+    ?.length;
+}
 export const getTransactionValue = ({ data, address, logs }) => {
   const transactionType = data?.[0]?.type;
   let valueAmount = data?.[0]?.value?.amount;
@@ -266,6 +354,18 @@ export const convertAmount = (amount: any) => {
   }
 };
 
+export const formatAmount = (amount, decimals = 6) => {
+  if (amount?.length < 12) {
+    const divisor = new Big(10).pow(decimals);
+    const amountFormat = new Big(amount).div(divisor);
+    return amountFormat.toFixed(decimals);
+  } else {
+    const divisor = new Big(10).pow(16);
+    const amountFormat = new Big(amount).div(divisor);
+    return amountFormat.toFixed(decimals);
+  }
+};
+
 export const getDomainFromUrl = (url) => {
   if (!url) {
     return '';
@@ -371,3 +471,4 @@ export function nFormatter(num, digits: 1) {
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+export { get };
