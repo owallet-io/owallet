@@ -15,8 +15,6 @@ import Big from 'big.js';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
-const truncDecimals = 6;
-const atomic = 10 ** truncDecimals;
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = 'FAILED';
@@ -186,11 +184,15 @@ export const getValueTransactionHistory = ({
         ? getStringAfterMsg(addSpacesToString(actionValue))
         : convertString(actionValue);
     countEvent = countKeywords(`${logs}`, actionValue);
-    const value = find(get(logs, `[0].events`), {
+    const valueTransfer = find(get(logs, `[0].events`), {
       type: transfer
     });
-    const amountValue = value && find(value?.attributes, { key: 'amount' });
-    const recipient = value && find(value?.attributes, { key: 'recipient' });
+
+    const amountValue = valueTransfer
+      ? find(valueTransfer?.attributes, { key: 'amount' })
+      : getAmount(logs);
+    const recipient =
+      valueTransfer && find(valueTransfer?.attributes, { key: 'recipient' });
     if (recipient?.value === address && actionValue === transfer) {
       isRecipient = true;
     }
@@ -208,6 +210,18 @@ export const getValueTransactionHistory = ({
     denom,
     isRecipient
   };
+};
+const getAmount = (logs) => {
+  for (let i = 0; i < get(logs, `[0].events`)?.length; i++) {
+    const elementEvent = get(logs, `[0].events`)[i];
+    const valueAmount = find(elementEvent?.attributes, {
+      key: 'amount'
+    });
+    if (valueAmount) {
+      return valueAmount;
+    }
+  }
+  return null;
 };
 function convertString(str) {
   const words = str.split('_');
