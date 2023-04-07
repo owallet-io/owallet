@@ -6,14 +6,7 @@ import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
-import { Mnemonic } from '@owallet/crypto';
-import {
-  AmountInput,
-  MemoInput,
-  CurrencySelector,
-  FeeButtons,
-  TextInput
-} from '../../components/input';
+import { AmountInput, FeeButtons, TextInput } from '../../components/input';
 import { Button } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -281,132 +274,6 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             }}
           />
         </View>
-        {/* <PasswordInputModal
-          isOpen={isOpenModal}
-          paragraph={'Please confirm your password'}
-          close={() => setIsOpenModal(false)}
-          title={'Confirm Password'}
-          disabled={loading}
-          onEnterPassword={async password => {
-            setLoading(true);
-            const index = keyRingStore.multiKeyStoreInfo.findIndex(
-              keyStore => keyStore.selected
-            );
-
-            let privateKey;
-
-            if (index >= 0) {
-              const privateData = await keyRingStore.showKeyRing(
-                index,
-                password
-              );
-
-              if (privateData.split(' ').length > 1) {
-                privateKey = Mnemonic.generateWalletFromMnemonic(
-                  privateData,
-                  BIP44_PATH_PREFIX +
-                    `/${
-                      selected?.bip44HDPath?.coinType ??
-                      chainStore?.current?.bip44?.coinType
-                    }'/${selected?.bip44HDPath?.account}'/${
-                      selected?.bip44HDPath?.change
-                    }/${selected?.bip44HDPath?.addressIndex}`
-                );
-              } else {
-                privateKey = privateData;
-              }
-
-              if (privateKey) {
-                try {
-                  tronWeb = new TronWeb({
-                    fullHost: chainStore.current.rpc,
-                    // fullHost: 'https://nile.trongrid.io', // TRON testnet                    
-                    privateKey: Buffer.from(privateKey).toString('hex')
-                  });
-
-                  if (route?.params?.item?.type === 'trc20') {
-                    // Send TRC20
-                    // Get TRC20 contract
-                    const { abi } = await tronWeb.trx.getContract(
-                      route?.params?.item?.contractAddress
-                    );
-
-                    const contract = tronWeb.contract(
-                      abi.entrys,
-                      route?.params?.item?.contractAddress
-                    );
-
-                    const balance = await contract.methods
-                      .balanceOf(Address.getBase58Address(account.evmosHexAddress))
-                      .call();
-
-                    console.log('balance:', Number(balance.toString()));
-                    if (Number(balance.toString()) > 0) {
-                      const resp = await contract.methods
-                        .transfer(
-                          receiveAddress,
-                          Number(
-                            (sendConfigs.amountConfig.amount ?? '0').replace(
-                              /,/g,
-                              '.'
-                            )
-                          ) * Math.pow(10, 6)
-                        )
-                        .send({
-                          feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee. Read more: https://developers.tron.network/docs/set-feelimit
-                          callValue: 0
-                        });
-
-                      smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: resp,
-                        chainId: chainStore.current.chainId,
-                        tronWeb: tronWeb
-                      });
-                    } else {
-                      setIsOpenModal(false);
-                      alert('Not enough balance to send');
-                    }
-                  } else {
-                    // Send TRX
-                    const tradeobj = await tronWeb.transactionBuilder.sendTrx(
-                      receiveAddress,
-                      new Dec(
-                        Number(
-                          (sendConfigs.amountConfig.amount ?? '0').replace(
-                            /,/g,
-                            '.'
-                          )
-                        )
-                      ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
-                      Address.getBase58Address(account.evmosHexAddress)
-                    );
-
-                    const signedtxn = await tronWeb.trx.sign(
-                      tradeobj,
-                      Buffer.from(privateKey).toString('hex')
-                    );
-                    const receipt = await tronWeb.trx.sendRawTransaction(
-                      signedtxn
-                    );
-                    smartNavigation.pushSmart('TxSuccessResult', {
-                      txHash: receipt.txid
-                    });
-                    console.log('sent tron tradeobj', tradeobj.raw_data_hex);
-                    console.log('sent tron receipt', receipt);
-                    setLoading(false);
-                  }
-                } catch (err) {
-                  console.log('send tron err', err);
-                  setLoading(false);
-                  smartNavigation.pushSmart('TxFailedResult', {
-                    chainId: chainStore.current.chainId,
-                    txHash: ''
-                  });
-                }
-              }
-            }
-          }}
-        /> */}
       </View>
     </PageWithScrollView>
   );
