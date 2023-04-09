@@ -18,20 +18,53 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
+  requestRpc: async ({ method, params, url }) => {
+    try {
+      let rpcConfig = {
+        method,
+        params,
+        id: 1,
+        jsonrpc: '2.0'
+      };
+      const rs = await axios.post(url, rpcConfig);
+      if(rs?.data?.result){
+        return Promise.resolve(rs?.data?.result);
+      }
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      handleError(error, url, method);
+      return Promise.reject(error);
+    }
+  },
+  getBlockResultByHeight: async ({
+    height,
+    rpcUrl = 'https://rpc.orai.io'
+  }) => {
+    try {
+      const rs = await API.requestRpc({
+        url: rpcUrl,
+        method: 'block',
+        params: {
+          height
+        }
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
   getTransactionsByAddress: async ({
     address,
     page = '1',
     per_page = '10',
-    order_by = 'asc',
+    order_by = 'desc',
     match_events = true,
     prove = true,
     rpcUrl = 'https://rpc.orai.io',
-    method = 'tx_search'
   }) => {
     try {
-      let url = rpcUrl;
-      let rpcConfig = {
-        method,
+      const rs = await API.requestRpc({
+        url: rpcUrl,
         params: {
           query: `message.sender='${address}'`,
           page,
@@ -40,13 +73,10 @@ export const API = {
           prove,
           match_events
         },
-        id: 1,
-        jsonrpc: '2.0'
-      };
-      const rs = await axios.post(url, rpcConfig);
+        method: 'tx_search'
+      });
       return Promise.resolve(rs);
     } catch (error) {
-      handleError(error, rpcUrl);
       return Promise.reject(error);
     }
   },

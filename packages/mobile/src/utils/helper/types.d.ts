@@ -2,9 +2,11 @@ interface IDataTransaction {
   eventType?: string;
   amount?: string;
   denom?: string;
-  countEvent?:string;
-  hash?:string;
-  timestamp?:string;
-  isRecipient?:boolean;
-  status?:'success' | 'failed';
+  countEvent?: number;
+  hash?: string;
+  timestamp?: string;
+  isRecipient?: boolean;
+  status?: 'success' | 'failed';
+  isPlus?: boolean;
+  isMinus?: boolean;
 }

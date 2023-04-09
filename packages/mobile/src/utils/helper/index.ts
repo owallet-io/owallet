@@ -81,10 +81,11 @@ export const TRC20_LIST = [
   //   type: 'trc20'
   // }
 ];
-export const handleError = (error, url) => {
+export const handleError = (error, url, method) => {
   if (__DEV__) {
     console.log(`[1;34m: ---------------------------------------`);
     console.log(`[1;34m: handleError -> url`, url);
+    console.log(`[1;34m: handleError -> method`, method);
     console.log(`[1;34m: handleError -> error`, JSON.stringify(error));
     console.log(`[1;34m: ---------------------------------------`);
   }
@@ -131,8 +132,8 @@ export const checkValidDomain = (url: string) => {
 
 export const _keyExtract = (item, index) => index.toString();
 
-export const formatContractAddress = (address: string) => {
-  const fristLetter = address?.slice(0, 10) ?? '';
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  const fristLetter = address?.slice(0, limitFirst) ?? '';
   const lastLetter = address?.slice(-5) ?? '';
 
   return `${fristLetter}...${lastLetter}`;
@@ -159,7 +160,7 @@ export const TRANSACTION_TYPE = {
   EXECUTE_CONTRACT: 'MsgExecuteContract'
 };
 export function getStringAfterMsg(str) {
-  const msgIndex = str.indexOf('Msg');
+  const msgIndex = str?.toUpperCase().indexOf('MSG');
   if (msgIndex === -1) {
     return '';
   }
@@ -169,7 +170,9 @@ export const getValueTransactionHistory = ({
   item,
   address
 }): IDataTransaction => {
-  let isRecipient = false;
+  let isRecipient,
+    isPlus,
+    isMinus = false;
   let amount = '';
   let denom = '';
   let eventType, countEvent;
@@ -183,7 +186,7 @@ export const getValueTransactionHistory = ({
       actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
         ? getStringAfterMsg(addSpacesToString(actionValue))
         : convertString(actionValue);
-    countEvent = countKeywords(`${logs}`, actionValue);
+    countEvent = logs?.length > 1 ? logs?.length - 1 : 0;
     const valueTransfer = find(get(logs, `[0].events`), {
       type: transfer
     });
@@ -193,13 +196,29 @@ export const getValueTransactionHistory = ({
       : getAmount(logs);
     const recipient =
       valueTransfer && find(valueTransfer?.attributes, { key: 'recipient' });
-    if (recipient?.value === address && actionValue === transfer) {
+    const sender =
+      valueTransfer && find(valueTransfer?.attributes, { key: 'sender' });
+    if (
+      recipient?.value === address &&
+      (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
+        actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send)
+    ) {
       isRecipient = true;
     }
+
     const matchesAmount = amountValue?.value?.match(/\d+/g);
     const matchesDenom = amountValue?.value?.match(/[^0-9\.]+/g);
     amount = matchesAmount?.length > 0 && matchesAmount[0];
     denom = matchesDenom?.length > 0 && removeSpecialChars(matchesDenom[0]);
+    if (recipient?.value === address && !!denom) {
+      isPlus = true;
+    } else if (
+      recipient?.value !== address &&
+      !!denom &&
+      sender?.value === address
+    ) {
+      isMinus = true;
+    }
   }
 
   return {
@@ -208,7 +227,9 @@ export const getValueTransactionHistory = ({
     countEvent,
     amount,
     denom,
-    isRecipient
+    isRecipient,
+    isPlus,
+    isMinus
   };
 };
 const getAmount = (logs) => {
@@ -367,16 +388,26 @@ export const convertAmount = (amount: any) => {
       return 0;
   }
 };
-
+function formatNumberSeparate(num) {
+  const numSplit = num && num.split('.');
+  if (numSplit?.length > 1) {
+    return (
+      numSplit[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +
+      '.' +
+      numSplit[1]
+    );
+  }
+  return null;
+}
 export const formatAmount = (amount, decimals = 6) => {
   if (amount?.length < 12) {
     const divisor = new Big(10).pow(decimals);
     const amountFormat = new Big(amount).div(divisor);
-    return amountFormat.toFixed(decimals);
+    return formatNumberSeparate(amountFormat.toFixed(decimals));
   } else {
     const divisor = new Big(10).pow(16);
     const amountFormat = new Big(amount).div(divisor);
-    return amountFormat.toFixed(decimals);
+    return formatNumberSeparate(amountFormat.toFixed(decimals));
   }
 };
 
