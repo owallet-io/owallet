@@ -214,7 +214,6 @@ export const getValueTransactionHistory = ({
 
     const matchesAmount = amountValue?.value?.match(/\d+/g);
     const matchesDenom = amountValue?.value?.match(/[^0-9\.]+/g);
-    console.log('matchesDenom: ', matchesDenom);
     amount = matchesAmount?.length > 0 && matchesAmount[0];
     denom = matchesDenom?.length > 0 && splitSpecialCharacter(matchesDenom[0]);
     if (recipient?.value === address && !!denom) {
@@ -244,11 +243,11 @@ function hasSpecialChar(str) {
   return regex.test(str);
 }
 function splitSpecialCharacter(str) {
-  if(hasSpecialChar(str)){
+  if (hasSpecialChar(str)) {
     let arr = str.split(/[^\w\s]/); // sử dụng regex để tách chuỗi
     return arr[0];
   }
-  
+
   return str;
 }
 const getAmount = (logs) => {

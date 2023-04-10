@@ -193,7 +193,8 @@ const modeColors = {
   'border-bottom-tab': ['#3B2368', '#F0F0F0'],
   'on-background-toggle': ['#9AE796', '#A0F29B'],
   'off-background-toggle': ['#6F6F76','#E9E9EA'],
-  'bg-icon-token':['#E5E5EA','#F3F1F5']
+  'bg-icon-token':['#E5E5EA','#F3F1F5'],
+  'bg-circle-select-modal':[colorsCode['gray-400'],colorsCode['purple-100']]
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

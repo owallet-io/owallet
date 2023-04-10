@@ -77,7 +77,7 @@ export const NetworkModal = ({
               style={{
                 ...typography.h6,
                 color: colors['sub-primary-text'],
-                fontWeight: '900'
+                fontWeight: '900',
               }}
               numberOfLines={1}
             >
@@ -95,7 +95,7 @@ export const NetworkModal = ({
               backgroundColor:
                 item?.chainId === chainStore.current.chainId
                   ? colors['purple-700']
-                  : colors['gray-100'],
+                  : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -105,7 +105,7 @@ export const NetworkModal = ({
                 width: 12,
                 height: 12,
                 borderRadius: spacing['32'],
-                backgroundColor: colors['white']
+                backgroundColor: colors['background-item-list']
               }}
             />
           </View>
@@ -147,7 +147,9 @@ export const NetworkModal = ({
         style={{
           ...typography.h6,
           fontWeight: '900',
-          color: colors['primary-text']
+          color: colors['primary-text'],
+          width: '100%',
+          textAlign: 'center'
         }}
       >
         {`Select networks`}
@@ -179,10 +181,10 @@ export const NetworkModal = ({
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
-      backgroundColor: colors['sub-primary'],
+      backgroundColor: colors['background-item-list'],
       paddingVertical: spacing['16'],
       borderRadius: spacing['8'],
       paddingHorizontal: spacing['16'],
