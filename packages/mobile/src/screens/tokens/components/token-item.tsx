@@ -39,9 +39,11 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
   let name = balance.currency.coinDenom;
+  
 
   if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
     balanceCoinDenom = balance.currency.originCurrency.coinDenom;
+    console.log('balanceCoinDenom: ', balanceCoinDenom);
   } else {
     const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
     balanceCoinDenom = balance.currency.coinDenom;

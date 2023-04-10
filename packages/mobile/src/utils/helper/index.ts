@@ -138,6 +138,12 @@ export const formatContractAddress = (address: string, limitFirst = 10) => {
 
   return `${fristLetter}...${lastLetter}`;
 };
+export function getLastWord(str) {
+  // Tách chuỗi thành mảng các từ
+  const words = str.split(' ');
+  // Trả về từ cuối cùng trong mảng
+  return words[words.length - 1];
+}
 export function limitString(str, limit) {
   if (str.length > limit) {
     return str.slice(0, limit) + '...';
@@ -208,8 +214,9 @@ export const getValueTransactionHistory = ({
 
     const matchesAmount = amountValue?.value?.match(/\d+/g);
     const matchesDenom = amountValue?.value?.match(/[^0-9\.]+/g);
+    console.log('matchesDenom: ', matchesDenom);
     amount = matchesAmount?.length > 0 && matchesAmount[0];
-    denom = matchesDenom?.length > 0 && removeSpecialChars(matchesDenom[0]);
+    denom = matchesDenom?.length > 0 && splitSpecialCharacter(matchesDenom[0]);
     if (recipient?.value === address && !!denom) {
       isPlus = true;
     } else if (
@@ -232,6 +239,18 @@ export const getValueTransactionHistory = ({
     isMinus
   };
 };
+function hasSpecialChar(str) {
+  let regex = /[^\w\s]/; // sử dụng regex để tìm kiếm ký tự đặc biệt
+  return regex.test(str);
+}
+function splitSpecialCharacter(str) {
+  if(hasSpecialChar(str)){
+    let arr = str.split(/[^\w\s]/); // sử dụng regex để tách chuỗi
+    return arr[0];
+  }
+  
+  return str;
+}
 const getAmount = (logs) => {
   for (let i = 0; i < get(logs, `[0].events`)?.length; i++) {
     const elementEvent = get(logs, `[0].events`)[i];

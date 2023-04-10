@@ -34,20 +34,32 @@ import { TouchableOpacity as TouchGesture } from 'react-native-gesture-handler';
 import Big from 'big.js';
 import { OWEmpty } from '@src/components/empty';
 import moment from 'moment';
+import { useLoadingScreen } from '@src/providers/loading-screen';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
+  const loadingScreen = useLoadingScreen();
   const fetchData = async (rpc, address) => {
     try {
+      await loadingScreen.openAsync();
       const rs = await API.getTransactionsByAddress({
         rpcUrl: rpc,
         address,
         page: '1',
         per_page: '10'
       });
-      let txs = rs?.txs;
+      setData(rs?.txs);
+      loadingScreen.setIsLoading(false);
+      const txsNew = await getBlockByHeight(rs?.txs, rpc);
+      setData([...txsNew]);
+    } catch (error) {
+      loadingScreen.setIsLoading(false);
+    }
+  };
+  const getBlockByHeight = async (txs, rpc) => {
+    try {
       if (txs.length > 0) {
         for (let i = 0; i < txs.length; i++) {
           const height = txs[i]?.height;
@@ -57,13 +69,14 @@ const HistoryTransactionsScreen = observer(() => {
               rpcUrl: rpc
             });
             txs[i].time = rsBlockResult?.block?.header?.time;
-            // console.log(rsBlockResult, 'rsBlockResult');
           }
         }
+        return txs;
       }
-      setData(rs?.txs);
-      //   console.log(rs?.data?.result?.txs, 'rssssss');
-    } catch (error) {}
+      return [];
+    } catch (error) {
+        loadingScreen.setIsLoading(false);
+    }
   };
   const { colors } = useTheme();
   useEffect(() => {
@@ -160,7 +173,7 @@ const HistoryTransactionsScreen = observer(() => {
                       }}
                       color={colors['blue-600']}
                     >
-                      {item?.time && moment(item?.time).format('LL')}
+                      {(item?.time && moment(item?.time).format('LL')) || '--'}
                     </Text>
                   </View>
                 </View>

@@ -80,6 +80,34 @@ export const API = {
       return Promise.reject(error);
     }
   },
+  getTransactionsByToken: async ({
+    address,
+    page = '1',
+    per_page = '10',
+    order_by = 'desc',
+    match_events = true,
+    prove = true,
+    rpcUrl = 'https://rpc.orai.io',
+    token
+  }) => {
+    try {
+      const rs = await API.requestRpc({
+        url: rpcUrl,
+        params: {
+          query: `message.sender='${address}' AND transfer.amount contains '${token}'`,
+          page,
+          per_page,
+          order_by,
+          prove,
+          match_events
+        },
+        method: 'tx_search'
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig

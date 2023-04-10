@@ -162,6 +162,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       />
     );
   };
+  console.log(balanceCoinDenom)
   return (
     <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
       <View
@@ -286,7 +287,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           )}
           ListEmptyComponent={<OWEmpty />}
         />
-        <OWButton
+        {/* <OWButton
           onPress={() => smartNavigation.navigateSmart('Transactions', {})}
           label="View all transactions"
           style={{
@@ -297,7 +298,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
             <OWIcon name="transactions" color={colors['white']} size={18} />
           }
           fullWidth={false}
-        />
+        /> */}
       </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
