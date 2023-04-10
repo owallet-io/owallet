@@ -50,20 +50,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
     props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
-  // const queries = queriesStore.get(chainStore.current.chainId);
-
-  // const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-  //   account.bech32Address
-  // );
-  // const delegated = queryDelegated.total;
-
-  // const queryUnbonding =
-  //   queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-  //     account.bech32Address
-  //   );
-
-  // const unbonding = queryUnbonding.total;
-  // const stakedSum = delegated.add(unbonding);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(

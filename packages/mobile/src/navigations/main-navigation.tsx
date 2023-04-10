@@ -64,6 +64,7 @@ export const MainNavigation: FC = () => {
         <Stack.Screen
           name={SCREENS.TokenDetail}
           component={TokenDetailScreen}
+          
         />
         <Stack.Screen
           name={SCREENS.NftsDetail}

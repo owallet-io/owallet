@@ -158,7 +158,7 @@ export const KeyStoreItem: FunctionComponent<{
               borderRadius: spacing['32'],
               backgroundColor: active
                 ? colors['purple-700']
-                : colors['gray-100'],
+                : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -168,7 +168,7 @@ export const KeyStoreItem: FunctionComponent<{
                 width: 12,
                 height: 12,
                 borderRadius: spacing['32'],
-                backgroundColor: colors['white']
+                backgroundColor: colors['background-item-list']
               }}
             />
           </View>
