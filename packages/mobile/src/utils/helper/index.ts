@@ -1,7 +1,5 @@
 import {
-  TITLE_TYPE_ACTIONS_COSMOS_HISTORY,
   TYPE_ACTIONS_COSMOS_HISTORY,
-  TYPE_EVENT
 } from './../../common/constants';
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';

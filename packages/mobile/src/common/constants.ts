@@ -66,7 +66,7 @@ export const SCREENS = {
     MainTab: 'MainTab',
     Register: 'Register',
     Others: 'Others',
-    AddressBooks: 'AddressBooks'
+    AddressBooks: 'AddressBooks',
   }
 };
 export const ICONS_TITLE = {
@@ -152,41 +152,9 @@ export const TYPE_ACTIONS_COSMOS_HISTORY = {
     '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
   ['staking/MsgDelegate']: '/cosmos.staking.v1beta1.MsgDelegate',
   ['staking/MsgUndelegate']: '/cosmos.staking.v1beta1.MsgUndelegate',
-  ['submit_proposal']:'submit_proposal',
-  ['gov/MsgSubmitProposal']:'/cosmos.gov.v1beta1.MsgSubmitProposal'
+  ['submit_proposal']: 'submit_proposal',
+  ['gov/MsgSubmitProposal']: '/cosmos.gov.v1beta1.MsgSubmitProposal'
 };
 export const TITLE_TYPE_ACTIONS_COSMOS_HISTORY = {
-  [TYPE_ACTIONS_COSMOS_HISTORY.delegate]: 'Delegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY.send]: 'Send',
-  [TYPE_ACTIONS_COSMOS_HISTORY.receive]: 'Receive',
-  [TYPE_ACTIONS_COSMOS_HISTORY.withdraw_delegator_reward]: 'Get Reward',
-  [TYPE_ACTIONS_COSMOS_HISTORY.begin_redelegate]: 'Redelegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY.begin_unbonding]: 'Undelegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY.transfer]: 'IBC Transfer',
-  [TYPE_ACTIONS_COSMOS_HISTORY.execute]: 'Execute',
-  [TYPE_ACTIONS_COSMOS_HISTORY['wasm/MsgExecuteContract']]: 'Execute',
-  [TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend']]: 'Send',
-  [TYPE_ACTIONS_COSMOS_HISTORY['distribution/MsgWithdrawDelegatorReward']]:
-    'Get Reward',
-  [TYPE_ACTIONS_COSMOS_HISTORY['staking/MsgDelegate']]: 'Delegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY['staking/MsgUndelegate']]: 'Undelegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY.submit_proposal]:'Submit Proposal',
-  [TYPE_ACTIONS_COSMOS_HISTORY["gov/MsgSubmitProposal"]]:'Submit Proposal'
-};
-
-export const TYPE_EVENT = {
-  [TYPE_ACTIONS_COSMOS_HISTORY.delegate]: 'delegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY.send]: 'transfer',
-  [TYPE_ACTIONS_COSMOS_HISTORY.withdraw_delegator_reward]: 'withdraw_rewards',
-  [TYPE_ACTIONS_COSMOS_HISTORY.begin_redelegate]: 'redelegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY.begin_unbonding]: 'unbond',
-  [TYPE_ACTIONS_COSMOS_HISTORY.transfer]: 'transfer',
-  [TYPE_ACTIONS_COSMOS_HISTORY.execute]: 'execute',
-  [TYPE_ACTIONS_COSMOS_HISTORY['wasm/MsgExecuteContract']]: 'execute',
-  [TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend']]: 'transfer',
-  [TYPE_ACTIONS_COSMOS_HISTORY['distribution/MsgWithdrawDelegatorReward']]:
-    'withdraw_rewards',
-  [TYPE_ACTIONS_COSMOS_HISTORY['staking/MsgDelegate']]: 'delegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY['staking/MsgUndelegate']]: 'undelegate',
-  [TYPE_ACTIONS_COSMOS_HISTORY["gov/MsgSubmitProposal"]]:'submit_proposal'
+  [TYPE_ACTIONS_COSMOS_HISTORY.receive]: 'Receive'
 };

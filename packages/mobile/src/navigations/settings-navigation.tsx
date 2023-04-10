@@ -27,15 +27,15 @@ export const SettingStackScreen: FC = () => {
   const { colors } = useTheme();
 
   const { analyticsStore } = useStore();
-  const handleScreenOptions = ({ route, navigation })=>{
-    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+  const handleScreenOptions = ({ route, navigation }) => {
+    const headerOptions = useHeaderOptions(
+      { title: SCREENS_TITLE[route?.name] },
+      navigation
+    );
     return headerOptions;
-  }
+  };
   return (
-    <Stack.Navigator
-      screenOptions={handleScreenOptions}
-      headerMode="screen"
-    >
+    <Stack.Navigator screenOptions={handleScreenOptions} headerMode="screen">
       <Stack.Screen
         options={{
           headerShown: false,

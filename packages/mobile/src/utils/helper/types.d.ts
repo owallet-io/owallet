@@ -10,3 +10,8 @@ interface IDataTransaction {
   isPlus?: boolean;
   isMinus?: boolean;
 }
+interface IOWTransactionItem {
+    data?:any;
+    time?:string;
+}
+declare var isCancel: boolean = false;

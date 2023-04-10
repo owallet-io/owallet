@@ -14,11 +14,14 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { observer } from 'mobx-react-lite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import imagesGlobal from '@src/assets/images';
+import { useRoute } from '@react-navigation/native';
 const Tab = createBottomTabNavigator();
 export const MainTabNavigation: FC = observer(() => {
   const { chainStore } = useStore();
   const { colors, images } = useTheme();
   const insets = useSafeAreaInsets();
+  const routes = useRoute();
+  console.log('routes: ', routes);
   const isNorthSafe = insets.bottom > 0;
   return (
     <Tab.Navigator

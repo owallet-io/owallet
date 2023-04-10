@@ -30,7 +30,10 @@ import {
   TransactionItem,
   TransactionSectionTitle
 } from '../transactions/components';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import {
+  PageWithScrollViewInBottomTabView,
+  PageWithViewInBottomTabView
+} from '../../components/page';
 import { navigate } from '../../router/root';
 import { API } from '../../common/api';
 import { useLoadingScreen } from '../../providers/loading-screen';
@@ -41,6 +44,7 @@ import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { OWEmpty } from '@src/components/empty';
+import OWTransactionItem from '../transactions/components/items/transaction-item';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
@@ -68,33 +72,29 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const [data, setData] = useState([]);
   const offset = useRef(0);
   const hasMore = useRef(true);
-  const fetchData = async (isLoadMore = false) => {
-    const res = await API.getTransactions(
-      {
-        address: account.bech32Address,
-        page: page.current,
-        limit: 10,
-        type: 'native'
-      },
-      // { baseURL: chainStore.current.rest }
-      { baseURL: 'https://api.scan.orai.io' }
-    );
+  const fetchData = async (isLoadMore = false, denom, rpc) => {
+    const res = await API.getTransactionsByToken({
+      address: account.bech32Address,
+      page: `${page.current}`,
+      per_page: '10',
+      rpcUrl: rpc,
+      token: denom && denom.toLowerCase()
+    });
 
-    const value = res.data?.data || [];
-    let newData = isLoadMore ? [...data, ...value] : value;
-    hasMore.current = value?.length === 10;
-    page.current = res.data?.page?.page_id + 1;
-    if (page.current === res.data?.page.total_page) {
+    console.log('res: ', res);
+    let newData = isLoadMore ? [...data, ...res?.txs] : res;
+    hasMore.current = res?.txs?.length === 10;
+    page.current += 1;
+    if (page.current === res?.total_count) {
       hasMore.current = false;
     }
-
     setData(newData);
   };
 
   useEffect(() => {
     offset.current = 0;
-    fetchData();
-  }, [account.bech32Address, chainStore.current.chainId]);
+    fetchData(true, balanceCoinDenom, chainStore.current.rpc);
+  }, [account.bech32Address, chainStore.current.rpc, balanceCoinDenom]);
   const loadingScreen = useLoadingScreen();
 
   const _onPressReceiveModal = () => {
@@ -148,132 +148,118 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       />
     );
   };
-  console.log(balanceCoinDenom)
+  console.log(balanceCoinDenom);
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+    <PageWithViewInBottomTabView>
       <View
         style={{
-          marginHorizontal: 24,
-          marginBottom: 24
+          flex: 1
         }}
       >
-        <OWBox style={{}} type="gradient">
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {chainStore.current.networkType === 'evm' ? (
-              <TokenSymbolEVM
-                size={44}
-                chainInfo={{
-                  stakeCurrency: chainStore.current.stakeCurrency
-                }}
-                currency={tokens?.[0]?.balance?.currency}
-                imageScale={0.54}
-              />
-            ) : (
-              <TokenSymbol
-                size={44}
-                chainInfo={{
-                  stakeCurrency: chainStore.current.stakeCurrency
-                }}
-                currency={tokens?.[0]?.balance?.currency}
-                imageScale={0.54}
-              />
-            )}
-
+        <View
+          style={{
+            marginHorizontal: 24
+          }}
+        >
+          <OWBox type="gradient">
             <View
               style={{
+                justifyContent: 'center',
                 alignItems: 'center'
               }}
             >
-              <Text
-                style={{
-                  ...typography.h3,
-                  color: colors['white'],
-                  marginTop: spacing['8'],
-                  fontWeight: '800'
-                }}
-              >
-                {`${amountBalance} ${balanceCoinDenom}`}
-              </Text>
-              <Text
-                style={{
-                  ...typography.h6,
-                  color: colors['purple-400']
-                }}
-              >
-                {`${priceBalance?.toString() ?? '$0'}`}
-              </Text>
-            </View>
-          </View>
+              {chainStore.current.networkType === 'evm' ? (
+                <TokenSymbolEVM
+                  size={44}
+                  chainInfo={{
+                    stakeCurrency: chainStore.current.stakeCurrency
+                  }}
+                  currency={tokens?.[0]?.balance?.currency}
+                  imageScale={0.54}
+                />
+              ) : (
+                <TokenSymbol
+                  size={44}
+                  chainInfo={{
+                    stakeCurrency: chainStore.current.stakeCurrency
+                  }}
+                  currency={tokens?.[0]?.balance?.currency}
+                  imageScale={0.54}
+                />
+              )}
 
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              paddingTop: spacing['6'],
-              justifyContent: 'space-around'
-            }}
-          >
-            {['Buy', 'Receive', 'Send'].map((e, i) => (
-              <RenderBtnMain key={i} name={e} />
-            ))}
-          </View>
-        </OWBox>
-      </View>
-      <OWBox
-        style={{
-          paddingHorizontal: 0,
-          marginTop: 0,
-          paddingBottom: 24,
-          paddingTop: 0,
-          height: metrics.screenHeight / 2.1
-        }}
-      >
-        <TransactionSectionTitle
-          containerStyle={{
-            paddingTop: 0
-          }}
-          title={'Transaction list'}
-          onPress={async () => {
-            await loadingScreen.openAsync();
-            await fetchData();
-            loadingScreen.setIsLoading(false);
-          }}
-        />
-        <FlatList
-          data={data}
-          renderItem={({ item, index }) => (
-            <TransactionItem
-              type={'native'}
-              item={item}
-              address={account.bech32Address}
-              key={index}
-              onPress={() =>
-                smartNavigation.navigateSmart('Transactions.Detail', {
-                  item: {
-                    ...item,
-                    address: account.bech32Address
-                  }
-                })
-              }
-            />
-          )}
-          keyExtractor={_keyExtract}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (
+              <View
+                style={{
+                  alignItems: 'center'
+                }}
+              >
+                <Text
+                  style={{
+                    ...typography.h3,
+                    color: colors['white'],
+                    marginTop: spacing['8'],
+                    fontWeight: '800'
+                  }}
+                >
+                  {`${amountBalance} ${balanceCoinDenom}`}
+                </Text>
+                <Text
+                  style={{
+                    ...typography.h6,
+                    color: colors['purple-400']
+                  }}
+                >
+                  {`${priceBalance?.toString() ?? '$0'}`}
+                </Text>
+              </View>
+            </View>
+
             <View
               style={{
-                height: 12
+                display: 'flex',
+                flexDirection: 'row',
+                paddingTop: spacing['6'],
+                justifyContent: 'space-around'
               }}
-            />
-          )}
-          ListEmptyComponent={<OWEmpty />}
-        />
-        {/* <OWButton
+            >
+              {['Buy', 'Receive', 'Send'].map((e, i) => (
+                <RenderBtnMain key={i} name={e} />
+              ))}
+            </View>
+          </OWBox>
+        </View>
+        <OWBox
+          style={{
+            flex: 1
+          }}
+        >
+          <TransactionSectionTitle
+            containerStyle={{
+              paddingTop: 0
+            }}
+            title={'Transaction list'}
+            onPress={async () => {
+              await loadingScreen.openAsync();
+              // await fetchData();
+              loadingScreen.setIsLoading(false);
+            }}
+          />
+          <FlatList
+            data={data}
+            renderItem={({item}) => <OWTransactionItem data={item}/>}
+            keyExtractor={_keyExtract}
+            showsVerticalScrollIndicator={false}
+            // ListFooterComponent={() => (
+            //   <View
+            //     style={{
+            //       height: 12
+            //     }}
+            //   />
+            // )}
+            
+            ListEmptyComponent={<OWEmpty />}
+          />
+          {/* <OWButton
           onPress={() => smartNavigation.navigateSmart('Transactions', {})}
           label="View all transactions"
           style={{
@@ -285,8 +271,9 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           }
           fullWidth={false}
         /> */}
-      </OWBox>
-    </PageWithScrollViewInBottomTabView>
+        </OWBox>
+      </View>
+    </PageWithViewInBottomTabView>
   );
 });
 

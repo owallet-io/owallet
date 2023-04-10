@@ -1,7 +1,6 @@
 import { handleError } from '@src/utils/helper';
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
-
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.post(path, params, config);
@@ -18,7 +17,10 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
-  requestRpc: async ({ method, params, url }) => {
+  requestRpc: async (
+    { method, params, url },
+    config: AxiosRequestConfig = null
+  ) => {
     try {
       let rpcConfig = {
         method,
@@ -26,13 +28,14 @@ export const API = {
         id: 1,
         jsonrpc: '2.0'
       };
-      const rs = await axios.post(url, rpcConfig);
-      if(rs?.data?.result){
+      const rs = await axios.post(url, rpcConfig, config);
+      if (rs?.data?.result) {
         return Promise.resolve(rs?.data?.result);
       }
       return Promise.resolve(rs?.data);
     } catch (error) {
       handleError(error, url, method);
+
       return Promise.reject(error);
     }
   },
@@ -60,7 +63,7 @@ export const API = {
     order_by = 'desc',
     match_events = true,
     prove = true,
-    rpcUrl = 'https://rpc.orai.io',
+    rpcUrl = 'https://rpc.orai.io'
   }) => {
     try {
       const rs = await API.requestRpc({
