@@ -31,7 +31,7 @@ export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    fetch(`${InjectedProviderUrl}/injected-provider.bundle.js`)
+    fetch(`${InjectedProviderUrl}/injected-provider-test.bundle.js`)
       .then(res => {
         return res.text();
       })
@@ -229,13 +229,13 @@ export const WebpageScreen: FunctionComponent<
     scrollY.setValue(currentOffet);
   };
 
-  // const sourceCode = useInjectedSourceCode();
-  const sourceCode = `
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "${InjectedProviderUrl}/injected-provider.bundle.js";
-    document.head.appendChild(script);
-  `;
+  const sourceCode = useInjectedSourceCode();
+  // const sourceCode = `
+  // var sc = document.createElement("script");
+  // sc.setAttribute("src", "${InjectedProviderUrl}/injected-provider.bundle.js");
+  // sc.setAttribute("type", "text/javascript");
+  // document.head.appendChild(sc);
+  // `;
 
   return (
     <PageWithView disableSafeArea>
