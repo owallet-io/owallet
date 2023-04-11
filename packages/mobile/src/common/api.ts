@@ -57,24 +57,20 @@ export const API = {
     }
   },
   getTransactionsByAddress: async ({
-    address,
     page = '1',
     per_page = '10',
     order_by = 'desc',
-    match_events = true,
-    prove = true,
-    rpcUrl = 'https://rpc.orai.io'
+    rpcUrl = 'https://rpc.orai.io',
+    query
   }) => {
     try {
       const rs = await API.requestRpc({
         url: rpcUrl,
         params: {
-          query: `message.sender='${address}'`,
+          query,
           page,
           per_page,
-          order_by,
-          prove,
-          match_events
+          order_by
         },
         method: 'tx_search'
       });

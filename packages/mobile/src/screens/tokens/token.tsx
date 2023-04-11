@@ -2,7 +2,6 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { StyleSheet, View } from 'react-native';
-import { Text } from '@rneui/base';
 import { spacing, typography } from '../../themes';
 import { FlatList } from 'react-native-gesture-handler';
 import { _keyExtract } from '../../utils/helper';
@@ -17,10 +16,6 @@ export const TokensScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const account = accountStore.getAccount(chainStore.current.chainId);
-  // const queryBalances = queriesStore
-  //   .get(chainStore.current.chainId)
-  //   .queryBalances.getQueryBech32Address(account.bech32Address);
-
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(

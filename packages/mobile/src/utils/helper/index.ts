@@ -1,6 +1,4 @@
-import {
-  TYPE_ACTIONS_COSMOS_HISTORY,
-} from './../../common/constants';
+import { TYPE_ACTIONS_COSMOS_HISTORY } from './../../common/constants';
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
@@ -170,6 +168,11 @@ export function getStringAfterMsg(str) {
   }
   return str.substring(msgIndex + 3);
 }
+export const convertTypeEvent = (actionValue) => {
+  return actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
+    ? getStringAfterMsg(addSpacesToString(actionValue))
+    : convertString(actionValue);
+};
 export const getValueTransactionHistory = ({
   item,
   address
@@ -186,10 +189,7 @@ export const getValueTransactionHistory = ({
     const event = logs && find(get(logs, `[0].events`), { type: 'message' });
     const action = event && find(get(event, 'attributes'), { key: 'action' });
     const actionValue = action?.value;
-    eventType =
-      actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
-        ? getStringAfterMsg(addSpacesToString(actionValue))
-        : convertString(actionValue);
+    eventType = convertTypeEvent(actionValue);
     countEvent = logs?.length > 1 ? logs?.length - 1 : 0;
     const valueTransfer = find(get(logs, `[0].events`), {
       type: transfer
@@ -445,12 +445,12 @@ export const parseIbcMsgRecvPacket = (denom) => {
 export function addTimeProperty(array1, array2) {
   // Create a new object with heightId as the key and time as the value
   const timeMap = {};
-  array1.forEach(obj => {
+  array1.forEach((obj) => {
     timeMap[obj?.block?.header?.height] = obj?.block?.header?.time;
   });
 
   // Add time property to each object in array2 based on heightId
-  array2.forEach(obj => {
+  array2.forEach((obj) => {
     obj.time = timeMap[obj?.height];
   });
 

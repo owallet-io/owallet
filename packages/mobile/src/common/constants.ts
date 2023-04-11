@@ -103,7 +103,7 @@ export const SCREENS_TITLE = {
   [SCREENS.RegisterNewLedger]: HEADER_KEY.notShowHeader,
   [SCREENS.Send]: HEADER_KEY.showNetworkHeader,
   [SCREENS.TransferNFT]: HEADER_KEY.showNetworkHeader,
-  [SCREENS.Transactions]: HEADER_KEY.showNetworkHeader,
+  [SCREENS.Transactions]: 'Transaction History',
   [SCREENS.Camera]: HEADER_KEY.notShowHeader,
   [SCREENS.Governance]: HEADER_KEY.showNetworkHeader,
   [SCREENS.GovernanceDetails]: HEADER_KEY.showNetworkHeader,

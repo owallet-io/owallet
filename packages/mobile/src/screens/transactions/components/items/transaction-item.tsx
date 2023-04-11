@@ -42,7 +42,7 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
   return (
     <TouchableOpacity>
       <View style={styles.item}>
-        <View>
+        <View style={styles.flex}>
           <Text color="#8C93A7" size={12}>
             {formatContractAddress(item?.hash, 5)}
           </Text>
@@ -70,7 +70,7 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
                 ? '-'
                 : ''
             }${(amount && formatAmount(amount)) || '--'}`}{' '}
-            {denom}
+            {limitString(denom, 5)}
           </Text>
         </View>
         <View style={styles.centerItem}>
@@ -85,7 +85,7 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
               </Text>{' '}
               {isRecipient
                 ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
-                : limitString(eventType, 20)}
+                : limitString(eventType, 15)}
               <View style={styles.iconstyle}>
                 <OWIcon
                   size={12}
@@ -102,7 +102,7 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
             <Text>--</Text>
           )}
 
-          <Text style={styles.timeStyle} color={colors['blue-600']}>
+          <Text style={styles.timeStyle} color={'#8C93A7'}>
             {(time && moment(time).format('LL')) || '--'}
           </Text>
         </View>
@@ -116,6 +116,9 @@ export default OWTransactionItem;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    flex: {
+      flex: 1
+    },
     timeStyle: {
       paddingTop: 8
     },
@@ -124,7 +127,8 @@ const styling = () => {
     },
     centerItem: {
       justifyContent: 'center',
-      alignItems: 'flex-end'
+      alignItems: 'flex-end',
+      flex:1
     },
     item: {
       flexDirection: 'row',
