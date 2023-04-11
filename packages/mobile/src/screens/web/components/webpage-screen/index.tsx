@@ -197,7 +197,7 @@ export const WebpageScreen: FunctionComponent<
       eventListener,
       RNInjectedTronWeb.parseWebviewMessage
     );
-  }, [eventEmitter, owallet]);
+  }, [eventEmitter, tronWeb]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {
@@ -264,6 +264,7 @@ export const WebpageScreen: FunctionComponent<
   };
 
   const sourceCode = useInjectedSourceCode();
+
   // const sourceCode = `
   // var sc = document.createElement("script");
   // sc.setAttribute("src", "${InjectedProviderUrl}/injected-provider.bundle.js");

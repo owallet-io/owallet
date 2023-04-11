@@ -102,7 +102,7 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
         }
       },
-      RNInjectedOWallet.parseWebviewMessage
+      RNInjectedTronWeb.parseWebviewMessage
     );
   }
 }

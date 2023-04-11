@@ -5,12 +5,14 @@ import {
   Ethereum,
   Ethereum as IEthereum,
   TronWeb,
+  TronWeb as ITronWeb,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
   Key,
   EthereumMode,
-  RequestArguments
+  RequestArguments,
+  TronWebMode
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
 import {
@@ -1180,7 +1182,7 @@ export class InjectedTronWebOWallet implements TronWeb {
   }
 
   protected requestMethod(
-    method: keyof IEthereum | string,
+    method: keyof ITronWeb | string,
     args: any[]
   ): Promise<any> {
     const bytes = new Uint8Array(8);
@@ -1238,7 +1240,7 @@ export class InjectedTronWebOWallet implements TronWeb {
 
   constructor(
     public readonly version: string,
-    public readonly mode: EthereumMode,
+    public readonly mode: TronWebMode,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
