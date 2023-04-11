@@ -32,8 +32,14 @@ export const DAppInfos: DAppInfo[] = [
   // },
   {
     id: 2,
-    name: 'Oraidex',
+    name: 'Staging Oraidex',
     uri: 'https://staging.oraidex.io',
+    logo: oraiLogo
+  },
+  {
+    id: 15,
+    name: 'Staging V2 Oraidex',
+    uri: 'https://staging-v2.oraidex.io/',
     logo: oraiLogo
   },
   {
