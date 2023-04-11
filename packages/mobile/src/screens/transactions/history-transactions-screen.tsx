@@ -40,6 +40,7 @@ const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
+  console.log('data: ', data);
   const loadingScreen = useLoadingScreen();
   const [loading, setLoading] = useState(true);
   const [loadMore, setLoadMore] = useState(false);
@@ -47,7 +48,8 @@ const HistoryTransactionsScreen = observer(() => {
   const hasMore = useRef(true);
   const perPage = 10;
   const fetchData = useCallback(
-    async (rpc, address, isLoadMore = false, loading) => {
+    async (rpc, address, isLoadMore = false, loading=false) => {
+      console.log('rpc: ', rpc);
       try {
         crashlytics().log('transactions - home - fetchData');
         if (hasMore.current) {
@@ -87,7 +89,7 @@ const HistoryTransactionsScreen = observer(() => {
         loadingScreen.setIsLoading(false);
       }
     },
-    [data, loading]
+    [data]
   );
   const getBlockByHeight = async (txs, rpc) => {
     try {
@@ -116,10 +118,9 @@ const HistoryTransactionsScreen = observer(() => {
   };
   const { colors } = useTheme();
   useEffect(() => {
-    setData([]);
     page.current = 1;
     hasMore.current = true;
-    fetchData(chainStore?.current?.rpc, account?.bech32Address, true, true);
+    fetchData(chainStore?.current?.rpc, account?.bech32Address, false, true);
     return () => {
       setData([]);
     };
