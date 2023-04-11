@@ -10,11 +10,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { PageWithView } from '@src/components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
-import { API, source } from '@src/common/api';
+import { API } from '@src/common/api';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 import {
   _keyExtract,
+  addTimeProperty,
   capitalizedText,
   convertAmount,
   formatAmount,
@@ -46,10 +47,9 @@ const HistoryTransactionsScreen = observer(() => {
   const hasMore = useRef(true);
   const perPage = 10;
   const fetchData = useCallback(
-    async (rpc, address, isLoadMore = false) => {
-      crashlytics().log('transactions - home - fetchData');
-
+    async (rpc, address, isLoadMore = false, loading) => {
       try {
+        crashlytics().log('transactions - home - fetchData');
         if (hasMore.current) {
           if (loading) {
             await loadingScreen.openAsync();
@@ -60,10 +60,6 @@ const HistoryTransactionsScreen = observer(() => {
             page: `${page.current}`,
             per_page: `${perPage}`
           });
-
-          if (loading) {
-            setData(rs?.txs);
-          }
           const txsNew = await getBlockByHeight(rs?.txs, rpc);
           const newData = isLoadMore ? [...data, ...txsNew] : txsNew;
           loadingScreen.setIsLoading(false);
@@ -95,19 +91,24 @@ const HistoryTransactionsScreen = observer(() => {
   );
   const getBlockByHeight = async (txs, rpc) => {
     try {
+      let arrPromises = [];
       if (txs.length > 0) {
         for (let i = 0; i < txs.length; i++) {
           const height = txs[i]?.height;
           if (height) {
-            const rsBlockResult = await API.getBlockResultByHeight({
-              height,
-              rpcUrl: rpc
-            });
-            txs[i].time = rsBlockResult?.block?.header?.time;
+            arrPromises.push(
+              API.getBlockResultByHeight({
+                height,
+                rpcUrl: rpc
+              })
+            );
           }
         }
-        return txs;
+        const rsBlock = await Promise.all(arrPromises);
+        const newData = addTimeProperty(rsBlock, txs);
+        return newData;
       }
+
       return [];
     } catch (error) {
       loadingScreen.setIsLoading(false);
@@ -115,10 +116,10 @@ const HistoryTransactionsScreen = observer(() => {
   };
   const { colors } = useTheme();
   useEffect(() => {
+    setData([]);
     page.current = 1;
     hasMore.current = true;
-    setLoading(true);
-    fetchData(chainStore?.current?.rpc, account?.bech32Address, true);
+    fetchData(chainStore?.current?.rpc, account?.bech32Address, true, true);
     return () => {
       setData([]);
     };
@@ -144,7 +145,12 @@ const HistoryTransactionsScreen = observer(() => {
           onEndReached={() => {
             setLoadMore(true);
             setLoading(false);
-            fetchData(chainStore?.current?.rpc, account?.bech32Address, true);
+            fetchData(
+              chainStore?.current?.rpc,
+              account?.bech32Address,
+              true,
+              false
+            );
           }}
         />
         {loadMore ? (

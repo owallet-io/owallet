@@ -442,7 +442,20 @@ export const getDomainFromUrl = (url) => {
 export const parseIbcMsgRecvPacket = (denom) => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
+export function addTimeProperty(array1, array2) {
+  // Create a new object with heightId as the key and time as the value
+  const timeMap = {};
+  array1.forEach(obj => {
+    timeMap[obj?.block?.header?.height] = obj?.block?.header?.time;
+  });
 
+  // Add time property to each object in array2 based on heightId
+  array2.forEach(obj => {
+    obj.time = timeMap[obj?.height];
+  });
+
+  return array2;
+}
 export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
   if (type) {
     const typeArr = type.split('.');
