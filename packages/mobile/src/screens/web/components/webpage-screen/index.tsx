@@ -1,4 +1,4 @@
-import { Ethereum, OWallet } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
@@ -17,7 +17,8 @@ import { version } from '../../../../../package.json';
 import { PageWithView } from '../../../../components/page';
 import {
   RNInjectedEthereum,
-  RNInjectedOWallet
+  RNInjectedOWallet,
+  RNInjectedTronWeb
 } from '../../../../injected/injected-provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import { useStore } from '../../../../stores';
@@ -112,6 +113,29 @@ export const WebpageScreen: FunctionComponent<
       )
   );
 
+  const [tronWeb] = useState(
+    () =>
+      new TronWeb(
+        version,
+        'core',
+        chainStore.current.chainId,
+        new RNMessageRequesterExternal(() => {
+          if (!webviewRef.current) {
+            throw new Error('Webview not initialized yet');
+          }
+
+          if (!currentURL) {
+            throw new Error('Current URL is empty');
+          }
+
+          return {
+            url: currentURL,
+            origin: new URL(currentURL).origin
+          };
+        })
+      )
+  );
+
   const onPressItem = ({ name, uri }) => {
     setIsSwitchTab(false);
     if (browserStore.getSelectedTab?.uri !== uri) {
@@ -149,6 +173,8 @@ export const WebpageScreen: FunctionComponent<
       );
     }
   };
+
+  // Start proxy for webview
   useEffect(() => {
     RNInjectedOWallet.startProxy(
       owallet,
@@ -164,6 +190,14 @@ export const WebpageScreen: FunctionComponent<
       RNInjectedEthereum.parseWebviewMessage
     );
   }, [eventEmitter, ethereum]);
+
+  useEffect(() => {
+    RNInjectedTronWeb.startProxy(
+      tronWeb,
+      eventListener,
+      RNInjectedTronWeb.parseWebviewMessage
+    );
+  }, [eventEmitter, owallet]);
 
   useEffect(() => {
     const keyStoreChangedListener = () => {
@@ -261,8 +295,8 @@ export const WebpageScreen: FunctionComponent<
             <>
               <WebView
                 ref={webviewRef}
-                // incognito={true}
-                cacheEnabled={true}
+                incognito={true}
+                // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onMessage={onMessage}
                 onNavigationStateChange={e => {
