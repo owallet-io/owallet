@@ -8,7 +8,8 @@ import {
   OWalletSignOptions,
   Key,
   EthereumMode,
-  RequestArguments
+  RequestArguments,
+  TronWebMode
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -394,7 +395,7 @@ export class Ethereum implements IEthereum {
 export class TronWeb implements ITronWeb {
   constructor(
     public readonly version: string,
-    public readonly mode: EthereumMode,
+    public readonly mode: TronWebMode,
     public initChainId: string,
     protected readonly requester: MessageRequester
   ) {
