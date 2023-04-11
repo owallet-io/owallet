@@ -1,8 +1,10 @@
+import images from "@src/assets/images";
+
 export const HEADER_KEY = {
   notShowHeader: 'NOT_SHOW_HEADER',
   showNetworkHeader: 'SHOW_NETWORK_HEADER'
 };
-
+export const defaultAll = { label: 'All', value: 'All', image: images.crypto };
 export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',

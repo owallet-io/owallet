@@ -273,11 +273,7 @@ export function removeSpecialChars(str) {
 function addSpacesToString(str) {
   return str.replace(/([a-z])([A-Z])/g, '$1 $2');
 }
-function countKeywords(text, keyword) {
-  const words = text?.split(/\W+/);
-  return words?.filter((word) => word?.toLowerCase() === keyword?.toLowerCase())
-    ?.length;
-}
+
 export const getTransactionValue = ({ data, address, logs }) => {
   const transactionType = data?.[0]?.type;
   let valueAmount = data?.[0]?.value?.amount;
@@ -545,4 +541,15 @@ export function nFormatter(num, digits: 1) {
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+const truncDecimals = 6;
+const atomic = 10 ** truncDecimals;
+export const toDisplay = (amount: string | bigint, sourceDecimals = 6, desDecimals = 6): number => {
+  if (!amount) return 0;
+  // guarding conditions to prevent crashing
+  const validatedAmount = typeof amount === 'string' ? BigInt(amount || '0') : amount;
+  const displayDecimals = Math.min(truncDecimals, desDecimals);
+  const returnAmount = validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));
+  // save calculation by using cached atomic
+  return Number(returnAmount) / (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals);
+};
 export { get };

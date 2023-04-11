@@ -58,10 +58,7 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
                 ? colors['orange-800']
                 : colors['title-modal-login-failed']
             }
-            style={{
-              paddingTop: 8,
-              textTransform: 'uppercase'
-            }}
+            style={styles.amount}
           >
             {`${
               amount && formatAmount(amount) && isPlus
@@ -101,7 +98,6 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
           ) : (
             <Text>--</Text>
           )}
-
           <Text style={styles.timeStyle} color={'#8C93A7'}>
             {(time && moment(time).format('LL')) || '--'}
           </Text>
@@ -116,6 +112,10 @@ export default OWTransactionItem;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    amount: {
+      paddingTop: 8,
+      textTransform: 'uppercase'
+    },
     flex: {
       flex: 1
     },
@@ -128,7 +128,7 @@ const styling = () => {
     centerItem: {
       justifyContent: 'center',
       alignItems: 'flex-end',
-      flex:1
+      flex: 1.3
     },
     item: {
       flexDirection: 'row',

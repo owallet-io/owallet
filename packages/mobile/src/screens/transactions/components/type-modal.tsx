@@ -7,7 +7,6 @@ import { metrics, spacing } from '@src/themes';
 import { OWEmpty } from '@src/components/empty';
 
 const TypeModal = ({ transactions, active, actionType }) => {
-  const { colors } = useTheme();
   const getUniqueActions = (dataAction) => {
     const actions = new Set();
     actions.add('All');
@@ -46,7 +45,7 @@ const TypeModal = ({ transactions, active, actionType }) => {
     actionType(item);
   };
   const renderItem = ({ item }) => (
-    <ItemModal onPress={onActionType} item={item} active={active} />
+    <ItemModal value={item?.value} label={item?.label} onPress={onActionType} item={item} active={active} />
   );
   return (
     <ContainerModal
@@ -56,7 +55,11 @@ const TypeModal = ({ transactions, active, actionType }) => {
     />
   );
 };
-const ContainerModal = ({ data, renderItem, title }) => {
+export const ContainerModal = ({
+  data,
+  renderItem,
+  title
+}: IContainerModal) => {
   const styles = styling();
   return (
     <View style={styles.container}>
@@ -72,7 +75,14 @@ const ContainerModal = ({ data, renderItem, title }) => {
     </View>
   );
 };
-const ItemModal = ({ item, active, onPress, iconComponent }) => {
+export const ItemModal = ({
+  item,
+  active,
+  onPress,
+  iconComponent,
+  label,
+  value
+}: IItemModal) => {
   const { colors } = useTheme();
   const styles = styling();
   return (
@@ -80,10 +90,13 @@ const ItemModal = ({ item, active, onPress, iconComponent }) => {
       style={styles.containerItem}
       onPress={() => onPress(item)}
     >
-      <View>
+      <View style={{
+        flexDirection:"row",
+        alignItems:"center"
+      }}>
         {iconComponent && iconComponent}
         <Text variant="body1" typo="bold">
-          {item?.label}
+          {label}
         </Text>
       </View>
       <View
@@ -91,7 +104,7 @@ const ItemModal = ({ item, active, onPress, iconComponent }) => {
           styles.iconCircle,
           {
             backgroundColor:
-              item?.value === active
+              value === active
                 ? colors['purple-700']
                 : colors['bg-circle-select-modal']
           }

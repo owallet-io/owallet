@@ -5,6 +5,7 @@ const images = {
    noti_dark: require('./Noti_dark.png'),
    carbon_notification: require('./carbon_notification.png'),
    carbon_notification_dark: require('./carbon_notification_dark.png'),
+   crypto: require('./crypto.png'),
    empty: require('./empty.png'),
    empty_dark: require('./empty_dark.png'),
    eye: require('./eye.png'),
