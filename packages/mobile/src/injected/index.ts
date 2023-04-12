@@ -6,9 +6,9 @@ import {
 import { init } from './init';
 
 // TODO: Set the OWallet version properly
-const owallet = new RNInjectedOWallet('0.9.20', 'mobile-web');
-const ethereum = new RNInjectedEthereum('0.9.20', 'mobile-web');
-const tronWeb = new RNInjectedTronWeb('0.9.20', 'mobile-web');
+const owallet = new RNInjectedOWallet('0.9.21', 'mobile-web');
+const ethereum = new RNInjectedEthereum('0.9.21', 'mobile-web');
+const tronWeb = new RNInjectedTronWeb('0.9.21', 'mobile-web');
 
 init(
   owallet,

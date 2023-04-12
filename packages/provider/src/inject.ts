@@ -1142,14 +1142,15 @@ export class InjectedTronWebOWallet implements TronWeb {
             break;
           case 'tron_requestAccounts':
             const account = await tronweb.getDefaultAddress();
-            result = {
-              code: 200,
-              message: 'The site is already in the whitelist'
-            };
-            window.localStorage.setItem(
-              'tronWeb.defaultAddress',
-              JSON.stringify(account)
-            );
+            // result = {
+            //   code: 200,
+            //   message: 'The site is already in the whitelist'
+            // };
+            // window.localStorage.setItem(
+            //   'tronWeb.defaultAddress',
+            //   JSON.stringify(account)
+            // );
+            result = account;
             break;
           default:
             result = await tronweb.sign(message.args[0]);
