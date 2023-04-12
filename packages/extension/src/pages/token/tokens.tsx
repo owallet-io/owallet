@@ -38,13 +38,20 @@ export const TokenPage: FunctionComponent = observer(() => {
   const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
   const [hasSend, setHasSend] = React.useState(false);
   const [coinMinimalDenom, setCoinMinimalDenom] = React.useState('');
+  const checkTronNetwork = chainStore.current.chainId === TRON_ID;
+  const addressLedger =
+    keyRingStore.keyRingType === 'ledger'
+      ? checkTronNetwork
+        ? keyRingStore?.keyRingLedgerAddress?.trx
+        : keyRingStore?.keyRingLedgerAddress?.eth
+      : '';
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       chainStore.current.networkType === 'evm'
         ? keyRingStore.keyRingType !== 'ledger'
           ? accountInfo.evmosHexAddress
-          : keyRingStore.keyRingLedgerAddress
+          : addressLedger
         : accountInfo.bech32Address
     );
 
@@ -72,7 +79,7 @@ export const TokenPage: FunctionComponent = observer(() => {
         `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
           keyRingStore.keyRingType !== 'ledger'
             ? accountInfo.evmosHexAddress
-            : getEvmAddress(keyRingStore.keyRingLedgerAddress)
+            : getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
         )}`
       ).then(async (res) => {
         const data = await res.json();

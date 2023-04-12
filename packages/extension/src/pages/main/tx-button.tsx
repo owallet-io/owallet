@@ -7,7 +7,7 @@ import { Button, Tooltip, Modal, ModalBody } from 'reactstrap';
 import { observer } from 'mobx-react-lite';
 
 import { useStore } from '../../stores';
-import { getBase58Address } from '@owallet/common';
+import { getBase58Address, getEvmAddress } from '@owallet/common';
 // import Modal from 'react-modal';
 
 import { FormattedMessage } from 'react-intl';
@@ -135,7 +135,7 @@ export const TxButtonView: FunctionComponent<TxButtonViewProps> = observer(
 
 export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
   ({ setHasSend, hasSend }) => {
-    const { accountStore, chainStore, queriesStore } = useStore();
+    const { accountStore, chainStore, queriesStore, keyRingStore } = useStore();
 
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -154,7 +154,11 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
     if (!accountInfo.evmosHexAddress) return null;
     let evmBalance;
     evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-      accountInfo.evmosHexAddress
+      keyRingStore?.keyRingType === 'ledger'
+        ? chainStore.current.chainId === ''
+          ? getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
+          : keyRingStore?.keyRingLedgerAddress?.eth
+        : accountInfo.evmosHexAddress
     ).balance;
 
     const isTronNetwork = chainStore.current.chainId === TRON_ID;

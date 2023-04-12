@@ -20,6 +20,23 @@ const ChainElement: FunctionComponent<{
   const intl = useIntl();
   const confirm = useConfirm();
   const notification = useNotification();
+  const handeUpdateChain = async () => {
+    analyticsStore.logEvent('Chain changed', {
+      chainId: chainStore.current.chainId,
+      chainName: chainStore.current.chainName,
+      toChainId: chainInfo.chainId,
+      toChainName: chainInfo.chainName
+    });
+    await keyRingStore.changeChain({
+      chainId: chainInfo.chainId,
+      chainName: chainInfo.chainName,
+      networkType: chainInfo.networkType,
+      rpc: chainInfo?.rpc ?? chainInfo?.rest
+      // ...chainInfo
+    });
+    chainStore.selectChain(chainInfo.chainId);
+    chainStore.saveLastViewChainId();
+  };
   return (
     <div
       className={classnames({
@@ -28,51 +45,64 @@ const ChainElement: FunctionComponent<{
       })}
       onClick={async () => {
         if (chainInfo.chainId !== chainStore.current.chainId) {
-          analyticsStore.logEvent('Chain changed', {
-            chainId: chainStore.current.chainId,
-            chainName: chainStore.current.chainName,
-            toChainId: chainInfo.chainId,
-            toChainName: chainInfo.chainName
-          });
-          await keyRingStore.changeChain({
-            chainId: chainInfo.chainId,
-            chainName: chainInfo.chainName,
-            networkType: chainInfo.networkType,
-            rpc: chainInfo?.rpc ?? chainInfo?.rest
-            // ...chainInfo
-          });
-          chainStore.selectChain(chainInfo.chainId);
-          chainStore.saveLastViewChainId();
           if (selected?.type === 'ledger') {
-            const getDevices = await window.navigator.hid.getDevices();
+            const [getDevicesHID, getDevicesUSB] = await Promise.all([
+              window.navigator.hid.getDevices(),
+              window.navigator.usb.getDevices()
+            ]);
             // cosmos productId 16401 ,trx productId 16389 ,eth productId 16405
-            if (getDevices.length) {
-              notification.push({
-                placement: 'top-center',
-                type: 'warning',
-                duration: 5,
-                content: `You are switching to ${
-                  COINTYPE_NETWORK[
-                    chainInfo.coinType ?? chainInfo.bip44.coinType
-                  ]
-                } network. Please confirm that you have ${
-                  COINTYPE_NETWORK[
-                    chainInfo.coinType ?? chainInfo.bip44.coinType
-                  ]
-                } App opened before switch network`,
-                canDelete: true,
-                transition: {
-                  duration: 0.25
-                }
-              });
-              await keyRingStore.setKeyStoreLedgerAddress(
-                `44'/${chainInfo.bip44.coinType ?? chainInfo.coinType}'/${
-                  selected.bip44HDPath.account
-                }'/${selected.bip44HDPath.change}/${
-                  selected.bip44HDPath.addressIndex
-                }`,
-                chainInfo.chainId
-              );
+            if (getDevicesHID.length || getDevicesUSB.length) {
+              if (
+                await confirm.confirm({
+                  paragraph: `You are switching to ${
+                    COINTYPE_NETWORK[
+                      chainInfo.coinType ?? chainInfo.bip44.coinType
+                    ]
+                  } network. Please confirm that you have ${
+                    COINTYPE_NETWORK[
+                      chainInfo.coinType ?? chainInfo.bip44.coinType
+                    ]
+                  } App opened before switch network`,
+                  styleParagraph: {
+                    color: '#A6A6B0'
+                  },
+                  yes: 'Yes',
+                  no: 'No',
+                  styleNoBtn: {
+                    background: '#F5F5FA',
+                    border: '1px solid #3B3B45',
+                    color: '#3B3B45'
+                  }
+                })
+              ) {
+                notification.push({
+                  placement: 'top-center',
+                  type: 'warning',
+                  duration: 5,
+                  content: `You are switching to ${
+                    COINTYPE_NETWORK[
+                      chainInfo.coinType ?? chainInfo.bip44.coinType
+                    ]
+                  } network. Please confirm that you have ${
+                    COINTYPE_NETWORK[
+                      chainInfo.coinType ?? chainInfo.bip44.coinType
+                    ]
+                  } App opened before switch network`,
+                  canDelete: true,
+                  transition: {
+                    duration: 0.25
+                  }
+                });
+                await keyRingStore.setKeyStoreLedgerAddress(
+                  `44'/${chainInfo.bip44.coinType ?? chainInfo.coinType}'/${
+                    selected.bip44HDPath.account
+                  }'/${selected.bip44HDPath.change}/${
+                    selected.bip44HDPath.addressIndex
+                  }`,
+                  chainInfo.chainId
+                );
+                await handeUpdateChain();
+              }
             } else {
               browser.tabs.create({
                 url: `/popup.html#/confirm-ledger/${
@@ -82,6 +112,10 @@ const ChainElement: FunctionComponent<{
                 }`
               });
             }
+          }
+
+          if (selected?.type !== 'ledger') {
+            await handeUpdateChain();
           }
         }
       }}

@@ -24,7 +24,8 @@ import {
   ExportKeyRingData,
   ExportKeyRingDatasMsg,
   ChangeChainMsg,
-  SetKeyStoreLedgerAddressMsg
+  SetKeyStoreLedgerAddressMsg,
+  AddressesLedger
 } from '@owallet/background';
 
 import { computed, flow, makeObservable, observable, runInAction } from 'mobx';
@@ -164,7 +165,7 @@ export class KeyRingStore {
   }
 
   @computed
-  get keyRingLedgerAddress(): string {
+  get keyRingLedgerAddress(): AddressesLedger {
     const keyStore = this.multiKeyStoreInfo.find(
       (keyStore) => keyStore.selected
     );
@@ -172,7 +173,7 @@ export class KeyRingStore {
     console.log('multiKeyStoreInfo =======', this.multiKeyStoreInfo);
 
     if (!keyStore) {
-      return 'none';
+      return {};
     } else {
       return KeyRing.getLedgerAddressOfKeyStore(keyStore);
     }

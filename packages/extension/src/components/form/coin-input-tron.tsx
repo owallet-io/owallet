@@ -119,7 +119,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
           keyRingStore.keyRingType === 'ledger'
-            ? getEvmAddress(keyRingStore?.keyRingLedgerAddress)
+            ? getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
             : accountInfo.evmosHexAddress
         ).balance;
         setBalance(evmBalance);

@@ -18,10 +18,18 @@ export const AccountView: FunctionComponent = observer(() => {
     (keyStore) => keyStore?.selected
   );
   const intl = useIntl();
+  const checkTronNetwork = chainStore.current.chainId === TRON_ID;
+  const addressLedger =
+    keyRingStore.keyRingType == 'ledger'
+      ? checkTronNetwork
+        ? keyRingStore?.keyRingLedgerAddress?.trx
+        : keyRingStore?.keyRingLedgerAddress?.eth
+      : '';
+
   const evmAddress =
     (accountInfo.hasEvmosHexAddress ||
       chainStore.current.networkType === 'evm') &&
-    chainStore.current.chainId === TRON_ID
+    checkTronNetwork
       ? getBase58Address(accountInfo.evmosHexAddress ?? '')
       : accountInfo.evmosHexAddress;
   const notification = useNotification();
@@ -121,7 +129,7 @@ export const AccountView: FunctionComponent = observer(() => {
               copyAddress(
                 keyRingStore.keyRingType !== 'ledger'
                   ? evmAddress
-                  : keyRingStore.keyRingLedgerAddress
+                  : addressLedger
               )
             }
           >
@@ -136,15 +144,11 @@ export const AccountView: FunctionComponent = observer(() => {
                     : '...'}
                 </Address>
               ) : (
-                <Address
-                  isRaw={true}
-                  tooltipAddress={keyRingStore?.keyRingLedgerAddress}
-                >
-                  {keyRingStore.keyRingLedgerAddress
-                    ? `${keyRingStore.keyRingLedgerAddress.slice(
-                        0,
-                        10
-                      )}...${keyRingStore.keyRingLedgerAddress.slice(-8)}`
+                <Address isRaw={true} tooltipAddress={addressLedger}>
+                  {addressLedger
+                    ? `${addressLedger?.slice(0, 10)}...${addressLedger?.slice(
+                        -8
+                      )}`
                     : '...'}
                 </Address>
               )}

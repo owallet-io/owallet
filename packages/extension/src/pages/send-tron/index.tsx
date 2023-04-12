@@ -107,7 +107,7 @@ export const SendTronEvmPage: FunctionComponent<{
   const addressTron =
     keyRingStore?.keyRingType !== 'ledger'
       ? getBase58Address(accountInfo.evmosHexAddress)
-      : keyRingStore.keyRingLedgerAddress;
+      : keyRingStore?.keyRingLedgerAddress?.trx;
   const tokenTrc20 =
     (tokensTrc20Tron &&
       query &&

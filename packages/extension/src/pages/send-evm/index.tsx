@@ -80,23 +80,21 @@ export const SendEvmPage: FunctionComponent<{
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  const accountEthInfo = accountStore.getAccount(current.chainId);
   const [gasPrice, setGasPrice] = useState('0');
-
+  const address =
+    keyRingStore.keyRingType === 'ledger'
+      ? keyRingStore?.keyRingLedgerAddress?.eth
+      : accountInfo.evmosHexAddress;
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
     accountInfo.msgOpts.send,
-    keyRingStore?.keyRingType !== 'ledger'
-      ? accountInfo.evmosHexAddress
-      : keyRingStore.keyRingLedgerAddress,
+    address,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
     chainStore.current.networkType === 'evm' &&
       queriesStore.get(current.chainId).evm.queryEvmBalance,
-    keyRingStore?.keyRingType !== 'ledger'
-      ? accountInfo.evmosHexAddress
-      : keyRingStore.keyRingLedgerAddress
+    address
   );
 
   const gasConfig = useGasEthereumConfig(
@@ -350,10 +348,7 @@ export const SendEvmPage: FunctionComponent<{
                 )
                   ? {
                       type: 'erc20',
-                      from:
-                        keyRingStore.keyRingType !== 'ledger'
-                          ? accountInfo.evmosHexAddress
-                          : keyRingStore.keyRingLedgerAddress,
+                      from: address,
                       contract_addr:
                         sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
                           ':'

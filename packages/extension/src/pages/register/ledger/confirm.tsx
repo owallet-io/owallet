@@ -38,10 +38,12 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
     setDisable(true);
     let transport;
     try {
-      transport = ledgerInitStore.isWebHID
-        ? await TransportWebHID.create()
-        : await TransportWebUSB.create();
+      // transport = ledgerInitStore.isWebHID
+      //   ? await TransportWebHID.create()
+      //   : await TransportWebUSB.create();
 
+      // TODO: hardcode support WEB HID
+      transport = await TransportWebHID.create();
       let app;
       let address;
       let content;
