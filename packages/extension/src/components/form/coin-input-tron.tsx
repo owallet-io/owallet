@@ -121,7 +121,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
           keyRingStore.keyRingType === 'ledger'
             ? getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
             : accountInfo.evmosHexAddress
-        ).balance;
+        )?.balance;
         setBalance(evmBalance);
       }
     }, [tokenDenom, chainStore.current.chainId]);
