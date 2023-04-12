@@ -71,6 +71,7 @@ export const ContainerModal = ({
         renderItem={renderItem}
         keyExtractor={_keyExtract}
         ListEmptyComponent={<OWEmpty />}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );

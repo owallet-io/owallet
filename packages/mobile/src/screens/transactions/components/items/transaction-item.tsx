@@ -42,10 +42,41 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
   return (
     <TouchableOpacity>
       <View style={styles.item}>
-        <View style={styles.flex}>
+        <View
+          style={styles.flexRow}
+        >
           <Text color="#8C93A7" size={12}>
             {formatContractAddress(item?.hash, 5)}
           </Text>
+          {!!eventType ? (
+            <Text
+              variant="body2"
+              typo="regular"
+              color={colors['title-modal-login-failed']}
+            >
+              <Text color={colors['purple-700']}>
+                {countEvent > 0 ? `+${countEvent}` : null}
+              </Text>{' '}
+              {isRecipient
+                ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
+                : limitString(eventType, 30)}
+              <View style={styles.iconstyle}>
+                <OWIcon
+                  size={12}
+                  color={
+                    status === 'success'
+                      ? colors['green-500']
+                      : colors['orange-800']
+                  }
+                  name={status === 'success' ? 'check_stroke' : 'close_shape'}
+                />
+              </View>
+            </Text>
+          ) : (
+            <Text>--</Text>
+          )}
+        </View>
+        <View style={styles.flexRow}>
           <Text
             variant="body1"
             typo="bold"
@@ -69,35 +100,6 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
             }${(amount && formatAmount(amount)) || '--'}`}{' '}
             {limitString(denom, 5)}
           </Text>
-        </View>
-        <View style={styles.centerItem}>
-          {!!eventType ? (
-            <Text
-              variant="body2"
-              typo="regular"
-              color={colors['title-modal-login-failed']}
-            >
-              <Text color={colors['purple-700']}>
-                {countEvent > 0 ? `+${countEvent}` : null}
-              </Text>{' '}
-              {isRecipient
-                ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
-                : limitString(eventType, 15)}
-              <View style={styles.iconstyle}>
-                <OWIcon
-                  size={12}
-                  color={
-                    status === 'success'
-                      ? colors['green-500']
-                      : colors['orange-800']
-                  }
-                  name={status === 'success' ? 'check_stroke' : 'close_shape'}
-                />
-              </View>
-            </Text>
-          ) : (
-            <Text>--</Text>
-          )}
           <Text style={styles.timeStyle} color={'#8C93A7'}>
             {(time && moment(time).format('LL')) || '--'}
           </Text>
@@ -112,6 +114,10 @@ export default OWTransactionItem;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    flexRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
     amount: {
       paddingTop: 8,
       textTransform: 'uppercase'
@@ -131,13 +137,13 @@ const styling = () => {
       flex: 1.3
     },
     item: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
+      // flexDirection: 'row',
+      // justifyContent: 'space-between',
       paddingHorizontal: spacing['page-pad'],
       height: 65,
       backgroundColor: colors['background-item-list'],
       marginVertical: 8,
-      alignItems: 'center',
+      justifyContent: 'center',
       borderRadius: 8
     }
   });

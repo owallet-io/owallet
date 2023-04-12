@@ -8,6 +8,7 @@ import { sha256 } from '@ethersproject/sha2';
 import bs58 from 'bs58';
 import get from 'lodash/get';
 import Big from 'big.js';
+import { isNumber } from 'util';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -415,12 +416,26 @@ export const formatAmount = (amount, decimals = 6) => {
   if (amount?.length < 12) {
     const divisor = new Big(10).pow(decimals);
     const amountFormat = new Big(amount).div(divisor);
-    return formatNumberSeparate(amountFormat.toFixed(decimals));
+    return removeZeroNumberLast(
+      formatNumberSeparate(amountFormat.toFixed(decimals))
+    );
   } else {
     const divisor = new Big(10).pow(16);
     const amountFormat = new Big(amount).div(divisor);
-    return formatNumberSeparate(amountFormat.toFixed(decimals));
+    return removeZeroNumberLast(
+      formatNumberSeparate(amountFormat.toFixed(decimals))
+    );
   }
+};
+const replaceZero = (str) => {
+  return parseFloat(str.replace(/^0+|\.?0+$/g, ''));
+};
+export const removeZeroNumberLast = (str) => {
+  return isNaN(replaceZero(str))
+    ? str
+    : `${replaceZero(str)}`.indexOf('.') == -1
+    ? replaceZero(str).toFixed(1)
+    : replaceZero(str);
 };
 
 export const getDomainFromUrl = (url) => {
@@ -543,13 +558,22 @@ export function numberWithCommas(x) {
 }
 const truncDecimals = 6;
 const atomic = 10 ** truncDecimals;
-export const toDisplay = (amount: string | bigint, sourceDecimals = 6, desDecimals = 6): number => {
+export const toDisplay = (
+  amount: string | bigint,
+  sourceDecimals = 6,
+  desDecimals = 6
+): number => {
   if (!amount) return 0;
   // guarding conditions to prevent crashing
-  const validatedAmount = typeof amount === 'string' ? BigInt(amount || '0') : amount;
+  const validatedAmount =
+    typeof amount === 'string' ? BigInt(amount || '0') : amount;
   const displayDecimals = Math.min(truncDecimals, desDecimals);
-  const returnAmount = validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));
+  const returnAmount =
+    validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));
   // save calculation by using cached atomic
-  return Number(returnAmount) / (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals);
+  return (
+    Number(returnAmount) /
+    (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals)
+  );
 };
 export { get };

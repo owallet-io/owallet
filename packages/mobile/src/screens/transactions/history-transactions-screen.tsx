@@ -35,7 +35,7 @@ const HistoryTransactionsScreen = observer(() => {
   const loadingScreen = useLoadingScreen();
   const [loadMore, setLoadMore] = useState(false);
   const page = useRef(1);
-  
+
   const [activeType, setActiveType] = useState(defaultAll);
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
@@ -139,39 +139,46 @@ const HistoryTransactionsScreen = observer(() => {
   };
   const { colors } = useTheme();
   useEffect(() => {
-    refreshData();
+    refreshData({ activeType: defaultAll, activeCoin: defaultAll });
     return () => {
       setData([]);
     };
   }, [chainStore?.current?.rpc, account?.bech32Address]);
-  const refreshData = useCallback(() => {
-    page.current = 1;
-    hasMore.current = true;
-    fetchData(
-      chainStore?.current?.rpc,
-      {
-        address: account?.bech32Address,
-        action: activeType?.value,
-        token: activeCoin?.value ? activeCoin?.value : getCoinDenom(activeCoin)
-      },
-      false
-    );
-  }, [
-    chainStore?.current?.rpc,
-    account?.bech32Address,
-    activeType,
-    activeCoin
-  ]);
+  const refreshData = useCallback(
+    ({ activeType, activeCoin }) => {
+      page.current = 1;
+      hasMore.current = true;
+      fetchData(
+        chainStore?.current?.rpc,
+        {
+          address: account?.bech32Address,
+          action: activeType?.value,
+          token: activeCoin?.value
+            ? activeCoin?.value
+            : getCoinDenom(activeCoin)
+        },
+        false
+      );
+    },
+    [chainStore?.current?.rpc, account?.bech32Address]
+  );
   const styles = styling();
-  const onActionType = (item) => {
-    setActiveType(item);
-    modalStore.close();
-  };
-  useEffect(() => {
-    refreshData();
+  const onActionType = useCallback(
+    (item) => {
+      setActiveType(item);
+      modalStore.close();
+      refreshData({
+        activeType: item,
+        activeCoin: activeCoin
+      });
+    },
+    [activeCoin]
+  );
+  // useEffect(() => {
+  //   refreshData();
 
-    return () => {};
-  }, [activeType, activeCoin]);
+  //   return () => {};
+  // }, [activeType, activeCoin]);
 
   const onType = useCallback(() => {
     modalStore.setOpen();
@@ -184,28 +191,41 @@ const HistoryTransactionsScreen = observer(() => {
     );
   }, [activeType, dataType]);
   const onEndReached = useCallback(() => {
-    setLoadMore(true);
-    fetchData(
-      chainStore?.current?.rpc,
-      {
-        address: account?.bech32Address,
-        action: activeType?.value,
-        token: activeCoin?.value ? activeCoin?.value : getCoinDenom(activeCoin)
-      },
-      true
-    );
-  }, [account?.bech32Address, data]);
+    if (page.current !== 1) {
+      setLoadMore(true);
+      fetchData(
+        chainStore?.current?.rpc,
+        {
+          address: account?.bech32Address,
+          action: activeType?.value,
+          token: activeCoin?.value
+            ? activeCoin?.value
+            : getCoinDenom(activeCoin)
+        },
+        true
+      );
+    }
+  }, [account?.bech32Address, data, activeCoin, activeType]);
   const onRefresh = () => {
-    setActiveType(defaultActiveType);
-    refreshData();
+    setActiveType(defaultAll);
+    setActiveCoin(defaultAll);
+    refreshData({ activeType: defaultAll, activeCoin: defaultAll });
   };
   const renderItem = ({ item, index }) => {
     return <OWTransactionItem time={item?.time} data={item} />;
   };
-  const onActionCoin = (item) => {
-    modalStore.close();
-    setActiveCoin(item);
-  };
+
+  const onActionCoin = useCallback(
+    (item) => {
+      setActiveCoin(item);
+      modalStore.close();
+      refreshData({
+        activeType: activeType,
+        activeCoin: item
+      });
+    },
+    [activeType]
+  );
   const onCoin = () => {
     modalStore.setOpen();
     modalStore.setChildren(
@@ -255,15 +275,17 @@ const HistoryTransactionsScreen = observer(() => {
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           onEndReached={onEndReached}
+          ListFooterComponent={
+            <View
+              style={{
+                height: 20
+              }}
+            >
+              {loadMore ? <ActivityIndicator /> : null}
+            </View>
+          }
           refreshControl={
             <RefreshControl refreshing={false} onRefresh={onRefresh} />
-          }
-          ListFooterComponent={
-            loadMore ? (
-              <View>
-                <ActivityIndicator />
-              </View>
-            ) : null
           }
         />
       </OWBox>
