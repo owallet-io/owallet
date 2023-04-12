@@ -14,13 +14,19 @@ import {
   AppCurrency,
   OWallet,
   OWalletSignOptions,
-  Ethereum
+  Ethereum,
+  TronWeb
 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator, fetchAdapter } from '@owallet/common';
+import {
+  DenomHelper,
+  toGenerator,
+  fetchAdapter,
+  EVMOS_NETWORKS
+} from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20.json';
 import {
@@ -86,6 +92,7 @@ export interface AccountSetOpts<MsgOpts> {
   };
   readonly getOWallet: () => Promise<OWallet | undefined>;
   readonly getEthereum: () => Promise<Ethereum | undefined>;
+  readonly getTronWeb: () => Promise<TronWeb | undefined>;
   readonly msgOpts: MsgOpts;
   readonly wsObject?: new (
     url: string,
@@ -330,6 +337,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions,
         this.broadcastMode
       );
+
       txHash = result.txHash;
     } catch (e: any) {
       runInAction(() => {
@@ -377,7 +385,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         wsObject: this.opts.wsObject
       }
     );
-    txTracer.traceTx(txHash).then(tx => {
+    txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
       runInAction(() => {
@@ -389,7 +397,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
           .balances.find(
-            bal => bal.currency.coinMinimalDenom === feeAmount.denom
+            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
           );
 
         if (bal) {
@@ -410,6 +418,38 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill(tx);
       }
     });
+  }
+
+  async sendTronToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    },
+    tokenTrc20?: object
+  ) {
+    try {
+      const ethereum = (await this.getEthereum())!;
+      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+        amount,
+        currency,
+        recipient,
+        address,
+        tokenTrc20
+      });
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(signResponse);
+      }
+      return {
+        txHash: signResponse
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
   }
 
   async sendEvmMsgs(
@@ -460,7 +500,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
         txHash = result.txHash;
       } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee);
+        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
         txHash = result.txHash;
       }
     } catch (e: any) {
@@ -501,8 +541,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    const sleep = (milliseconds) => {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (
@@ -676,6 +716,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       } else {
         aminoMsgs = msgs;
       }
+      console.log({ aminoMsgs });
 
       if (aminoMsgs.length === 0) {
         throw new Error('There is no msg to send');
@@ -695,81 +736,73 @@ export class AccountSetBase<MsgOpts, Queries> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
-      let signedTx: Uint8Array | StdTx;
-
       const account = await BaseAccount.fetchFromRest(
         this.instance,
         this.bech32Address,
         true
       );
 
-      if (this.hasNoLegacyStdFeature()) {
-        const key = await owallet.getKey(this.chainId);
+      const signDocAmino = makeSignDoc(
+        aminoMsgs,
+        fee,
+        this.chainId,
+        memo,
+        account.getAccountNumber().toString(),
+        account.getSequence().toString()
+      );
+      const signResponse = await owallet.signAmino(
+        this.chainId,
+        this.bech32Address,
+        signDocAmino,
+        signOptions
+      );
 
-        const signDoc = {
-          bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-            messages: protoMsgs,
-            memo
-          }).finish(),
-          authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-            signerInfos: [
-              {
-                publicKey: {
-                  type_url:
-                    coinType === 60
-                      ? '/ethermint.crypto.v1.ethsecp256k1.PubKey'
-                      : '/cosmos.crypto.secp256k1.PubKey',
-                  value: cosmos.crypto.secp256k1.PubKey.encode({
-                    key: key.pubKey
-                  }).finish()
-                },
-                modeInfo: {
-                  single: {
-                    mode: SignMode.SIGN_MODE_DIRECT
-                  }
-                },
-                sequence: Long.fromString(account.getSequence().toString())
-              }
-            ],
-            fee: {
-              amount: fee.amount as ICoin[],
-              gasLimit: Long.fromString(fee.gas)
+      const signDoc = {
+        bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+          messages: protoMsgs,
+          memo: signResponse.signed.memo
+        }).finish(),
+        authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+          signerInfos: [
+            {
+              publicKey: {
+                type_url:
+                  coinType === 60
+                    ? '/ethermint.crypto.v1.ethsecp256k1.PubKey'
+                    : '/cosmos.crypto.secp256k1.PubKey',
+                value: cosmos.crypto.secp256k1.PubKey.encode({
+                  key: Buffer.from(
+                    signResponse.signature.pub_key.value,
+                    'base64'
+                  )
+                }).finish()
+              },
+              modeInfo: {
+                single: {
+                  mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
+                }
+              },
+              sequence: Long.fromString(signResponse.signed.sequence)
             }
-          }).finish(),
-          accountNumber: Long.fromString(account.getAccountNumber().toString()),
-          chainId: this.chainId
-        };
+          ],
+          fee: {
+            amount: signResponse.signed.fee.amount as ICoin[],
+            gasLimit: Long.fromString(signResponse.signed.fee.gas)
+          }
+        }).finish(),
+        accountNumber: Long.fromString(signResponse.signed.account_number),
+        chainId: this.chainId
+      };
 
-        const signResponse = await owallet.signDirect(
-          this.chainId,
-          this.bech32Address,
-          signDoc,
-          signOptions
-        );
-
-        signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-          bodyBytes: signResponse.signed.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
-          authInfoBytes: signResponse.signed.authInfoBytes,
-          signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
-        }).finish();
-      } else {
-        const signDoc = makeSignDoc(
-          aminoMsgs,
-          fee,
-          this.chainId,
-          memo,
-          account.getAccountNumber().toString(),
-          account.getSequence().toString()
-        );
-        const signResponse = await owallet.signAmino(
-          this.chainId,
-          this.bech32Address,
-          signDoc,
-          signOptions
-        );
-
-        signedTx = makeStdTx(signResponse.signed, signResponse.signature);
-      }
+      const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
+        bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
+        authInfoBytes: signDoc.authInfoBytes,
+        signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
+      }).finish();
+      console.log(
+        'signedTx ===',
+        Buffer.from(JSON.stringify(signedTx), 'base64')
+      );
 
       return {
         txHash: await owallet.sendTx(
@@ -786,7 +819,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   // Return the tx hash.
   protected async broadcastEvmMsgs(
     msgs: Msg,
-    fee: StdFeeEthereum
+    fee: StdFeeEthereum,
+    signOptions?: OWalletSignOptions
   ): Promise<{
     txHash: string;
   }> {
@@ -803,8 +837,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       const ethereum = (await this.getEthereum())!;
       console.log('Amino Msgs: ', msgs);
 
+      let toAddress = msgs.value.to_address;
+      if (EVMOS_NETWORKS.includes(signOptions.chainId)) {
+        const decoded = bech32.decode(toAddress);
+        toAddress =
+          '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
+      }
       const message = {
-        to: msgs.value.to_address,
+        // TODO: need to check kawaii cosmos
+        to: toAddress,
         value: '0x' + parseInt(msgs.value.amount[0].amount).toString(16),
         gas: fee.gas,
         gasPrice: fee.gasPrice
@@ -824,7 +865,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash: signResponse.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastEvmMsgs: ', error);
     }
   }
 
@@ -852,10 +893,10 @@ export class AccountSetBase<MsgOpts, Queries> {
       );
 
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse?.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastErc20Msgs: ', error);
     }
   }
 

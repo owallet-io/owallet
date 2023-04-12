@@ -91,7 +91,7 @@ export const FeeEthereumInSign: FunctionComponent<{
   gasConfig: IGasConfig;
   gasPrice: string;
   decimals: number;
-}> = ({ feeConfig, gasConfig, gasPrice, decimals }) => {
+}> = observer(({ feeConfig, gasConfig, gasPrice, decimals }) => {
   return (
     <View>
       <GasInput label={'Gas'} gasConfig={gasConfig} />
@@ -104,4 +104,4 @@ export const FeeEthereumInSign: FunctionComponent<{
       />
     </View>
   );
-};
+});

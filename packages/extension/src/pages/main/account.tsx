@@ -9,6 +9,7 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
+import { getBase58Address, TRON_ID } from '@owallet/common';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
@@ -16,9 +17,21 @@ export const AccountView: FunctionComponent = observer(() => {
   const selected = keyRingStore?.multiKeyStoreInfo?.find(
     (keyStore) => keyStore?.selected
   );
-  const { account, change, addressIndex, coinType } = selected?.bip44HDPath;
   const intl = useIntl();
+  const checkTronNetwork = chainStore.current.chainId === TRON_ID;
+  const addressLedger =
+    keyRingStore.keyRingType == 'ledger'
+      ? checkTronNetwork
+        ? keyRingStore?.keyRingLedgerAddress?.trx
+        : keyRingStore?.keyRingLedgerAddress?.eth
+      : '';
 
+  const evmAddress =
+    (accountInfo.hasEvmosHexAddress ||
+      chainStore.current.networkType === 'evm') &&
+    checkTronNetwork
+      ? getBase58Address(accountInfo.evmosHexAddress ?? '')
+      : accountInfo.evmosHexAddress;
   const notification = useNotification();
 
   const copyAddress = useCallback(
@@ -112,23 +125,33 @@ export const AccountView: FunctionComponent = observer(() => {
           <div
             className={styleAccount.address}
             style={{ marginBottom: '6px' }}
-            onClick={() => copyAddress(accountInfo.evmosHexAddress)}
+            onClick={() =>
+              copyAddress(
+                keyRingStore.keyRingType !== 'ledger'
+                  ? evmAddress
+                  : addressLedger
+              )
+            }
           >
             <span className={styleAccount.addressText}>
-              <Address
-                isRaw={true}
-                tooltipAddress={accountInfo.evmosHexAddress}
-              >
-                {accountInfo.walletStatus === WalletStatus.Loaded &&
-                accountInfo.evmosHexAddress
-                  ? accountInfo.evmosHexAddress.length === 42
-                    ? `${accountInfo.evmosHexAddress.slice(
-                        0,
-                        10
-                      )}...${accountInfo.evmosHexAddress.slice(-8)}`
-                    : accountInfo.evmosHexAddress
-                  : '...'}
-              </Address>
+              {keyRingStore.keyRingType !== 'ledger' ? (
+                <Address isRaw={true} tooltipAddress={evmAddress}>
+                  {accountInfo.walletStatus === WalletStatus.Loaded &&
+                  accountInfo.evmosHexAddress
+                    ? accountInfo.evmosHexAddress.length === 42
+                      ? `${evmAddress.slice(0, 10)}...${evmAddress.slice(-8)}`
+                      : accountInfo.evmosHexAddress
+                    : '...'}
+                </Address>
+              ) : (
+                <Address isRaw={true} tooltipAddress={addressLedger}>
+                  {addressLedger
+                    ? `${addressLedger?.slice(0, 10)}...${addressLedger?.slice(
+                        -8
+                      )}`
+                    : '...'}
+                </Address>
+              )}
             </span>
             <div style={{ width: 6 }} />
             <img
@@ -160,13 +183,15 @@ export const AccountView: FunctionComponent = observer(() => {
       <div className={styleAccount.coinType}>
         {' '}
         {`Coin type: m/44'/${
-          (coinType ?? chainStore.current.bip44.coinType) +
+          (selected?.bip44HDPath?.coinType ??
+            chainStore?.current?.bip44?.coinType ??
+            '118') +
           "'/" +
-          (account ?? '0') +
+          (selected?.bip44HDPath?.account ?? '0') +
           "'/" +
-          (change ?? '0') +
+          (selected?.bip44HDPath?.change ?? '0') +
           '/' +
-          (addressIndex ?? '0')
+          (selected?.bip44HDPath?.addressIndex ?? '0')
         }`}
       </div>
     </div>

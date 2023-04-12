@@ -28,6 +28,7 @@ import { colors, spacing } from '../../themes';
 import { LoadingSpinner } from '../../components/spinner';
 import { ProgressBar } from '../../components/progress-bar';
 import CodePush from 'react-native-code-push';
+import { MaintainScreen } from '../../components/maintain';
 
 let splashScreenHided = false;
 async function hideSplashScreen() {
@@ -259,6 +260,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
+  // return <MaintainScreen />;
+
   return !routeToRegisterOnce.current &&
     keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
@@ -309,15 +312,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         >
           {progress}%
         </Text>
-        {/* <Image
-          style={{
-            width: 300,
-            height: 8
-          }}
-          fadeDuration={0}
-          resizeMode="stretch"
-          source={require('../../assets/image/transactions/process_pedding.gif')}
-        /> */}
         <ProgressBar progress={progress} styles={{ width: 260 }} />
       </View>
       <TouchableOpacity

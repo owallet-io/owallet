@@ -123,6 +123,9 @@
   "register.name": "Account name",
   "register.name.error.required": "Account name is required",
   "register.button.back": "Back",
+  "register.button.trx-ledger": "Tron Ledger",
+  "register.button.cosmos-ledger": "Cosmos Ledger",
+  "register.button.eth-ledger": "Eth Ledger",
 
   "register.bip44.button.advanced": "Advanced",
   "register.bip44.input.hd-path": "HD Derivation Path",
@@ -279,6 +282,7 @@
 
   "input.recipient.error.invalid-bech32": "Invalid address",
   "input.recipient.error.invalid-evm-address": "Invalid EVM address",
+  "input.recipient.error.invalid-tron-address": "Invalid TRON address",
   "input.recipient.error.ens-not-supported": "ENS not supported for this chain",
   "input.recipient.error.ens-failed-to-fetch": "Failed to get address from ENS",
   "input.amount.error.invalid-number": "Invalid number",

@@ -1,6 +1,6 @@
 import { StdSignature } from '@cosmjs/launchpad';
 import { Message } from '@owallet/router';
-import { OWalletSignOptions } from '@owallet/types';
+import { OWalletSignOptions, ChainInfoWithoutEndpoints } from '@owallet/types';
 
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -62,8 +62,7 @@ export class RequestSignEthereumMsg extends Message<{
 
   constructor(
     public readonly chainId: string,
-    public readonly data: object,
-    // public readonly signOptions: OWalletSignOptions = {}
+    public readonly data: object // public readonly signOptions: OWalletSignOptions = {}
   ) {
     super();
   }
@@ -88,5 +87,82 @@ export class RequestSignEthereumMsg extends Message<{
 
   type(): string {
     return RequestSignEthereumMsg.type();
+  }
+}
+
+// request sign tron
+export class RequestSignTronMsg extends Message<object> {
+  public static type() {
+    return 'request-sign-tron';
+  }
+
+  constructor(public readonly chainId: string, public readonly data: object) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return RequestSignTronMsg.type();
+  }
+}
+
+export class GetDefaultAddressTronMsg extends Message<{}> {
+  public static type() {
+    return 'get-default-address-tron';
+  }
+
+  constructor(public readonly chainId: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return GetDefaultAddressTronMsg.type();
+  }
+}
+
+export class GetChainInfosWithoutEndpointsMsg extends Message<{
+  chainInfos: ChainInfoWithoutEndpoints[];
+}> {
+  public static type() {
+    return 'get-chain-infos-without-endpoints';
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  route(): string {
+    return 'chains';
+  }
+
+  type(): string {
+    return GetChainInfosWithoutEndpointsMsg.type();
   }
 }

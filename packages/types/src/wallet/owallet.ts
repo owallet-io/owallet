@@ -1,11 +1,15 @@
-import { ChainInfo, NetworkType } from '../chain-info';
+import {
+  ChainInfo,
+  ChainInfoWithoutEndpoints,
+  NetworkType
+} from '../chain-info';
 import {
   BroadcastMode,
   AminoSignResponse,
   StdSignDoc,
   StdTx,
   OfflineSigner,
-  StdSignature,
+  StdSignature
 } from '@cosmjs/launchpad';
 import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -37,6 +41,7 @@ export interface OWalletSignOptions {
 
   readonly disableBalanceCheck?: boolean;
   readonly networkType?: NetworkType;
+  readonly chainId?: string;
 }
 
 export interface OWallet {
@@ -103,7 +108,7 @@ export interface OWallet {
   getOfflineSignerAuto(
     chainId: string
   ): Promise<OfflineSigner | OfflineDirectSigner>;
-
+  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   suggestToken(
     chainId: string,
     contractAddress: string,
@@ -158,12 +163,28 @@ export interface Ethereum {
   initChainId: string;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
-  signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  signAndBroadcastEthereum(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void>;
-  signProxyReEncryptionData(chainId: string, data: object): Promise<object>;
-  signProxyDecryptionData(chainId: string, data: object): Promise<object>;
+  signEthereumTypeData(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<void>;
+  signReEncryptData(chainId: string, data: object): Promise<object>;
+  signAndBroadcastTron(chainId: string, data: object): Promise<object>;
+  signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
+}
+
+export interface TronWeb {
+  readonly version: string;
+  readonly mode: EthereumMode;
+  defaultAddress?: object;
+  initChainId: string;
+  sign(transaction: object): Promise<object>;
+  getDefaultAddress(): object;
 }

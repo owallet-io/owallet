@@ -85,7 +85,8 @@ export const LanguageToFiatCurrency: TypeLanguageToFiatCurrency = {
 export const AdditonalIntlMessages: IntlMessages = {};
 
 // coingecko api for both evm and cosmos based networks
-export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
+// export const CoinGeckoAPIEndPoint = 'https://api.coingecko.com/api/v3';
+export const CoinGeckoAPIEndPoint = 'https://price.market.orai.io';
 
 export const EthereumEndpoint =
   'https://mainnet.infura.io/v3/eeb00e81cdb2410098d5a270eff9b341';
@@ -145,6 +146,30 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tether',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'USDC',
+          coinMinimalDenom:
+            'cw20:orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd:USDC',
+          contractAddress:
+            'orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd',
+          coinDecimals: 6,
+          coinGeckoId: 'usd-coin',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'wTRX',
+          coinMinimalDenom:
+            'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
+          contractAddress:
+            'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+          coinDecimals: 6,
+          coinGeckoId: 'tron',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
         }
       ];
     },
@@ -152,18 +177,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
+      low: 0.003,
+      average: 0.005,
+      high: 0.007
     },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm'],
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
     txExplorer: {
       name: 'Oraiscan',
       txUrl: 'https://scan.orai.io/txs/{txHash}',
       accountUrl: 'https://scan.orai.io/account/{address}'
-    },
-    beta: true // use v1beta1
+    }
+    // beta: true // use v1beta1
   },
   {
     rpc: 'https://testnet-rpc.orai.io',
@@ -191,8 +216,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     gasPriceStep: {
       low: 0,
-      average: 0.000025,
-      high: 0.00004
+      average: 0.01,
+      high: 0.03
     },
     features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
@@ -252,6 +277,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tether',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+        },
+        {
+          coinDenom: 'USDC',
+          coinMinimalDenom:
+            'erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:USDC',
+          coinDecimals: 6,
+          coinGeckoId: 'usd-coin',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
         }
       ];
     },
@@ -267,7 +301,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
-    // evmRpc: 'https://endpoint1.kawaii.global',
+    evmRpc: 'https://endpoint1.kawaii.global',
     rest: 'https://cosmos1.kawaii.global',
     chainId: 'kawaii_6886-1',
     networkType: 'cosmos',
@@ -294,7 +328,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       high: 0.00004
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx']
+    features: ['isEvm']
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
@@ -311,6 +345,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 60
     },
+    coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
       return [this.stakeCurrency];
@@ -323,7 +358,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       average: 0.000025,
       high: 0.00004
     },
-    features: ['ibc-go', 'stargate', 'isEvm']
+    features: ['isEvm']
   },
   {
     rpc: 'https://rpc-cosmoshub.keplr.app',
@@ -484,84 +519,84 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
 
-  // {
-  //   rest: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-  //   evmRpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-  //   chainId: "0x61",
-  //   chainName: "BNB Chain Testnet",
-  //   bip44: {
-  //     coinType: 60,
-  //   },
-  //   coinType: 60,
-  //   stakeCurrency: {
-  //     coinDenom: "BNB",
-  //     coinMinimalDenom: "bnb",
-  //     coinDecimals: 18,
-  //     coinGeckoId: "bnb",
-  //     coinImageUrl:
-  //       "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config("evmos"),
-  //   networkType: "evm",
-  //   currencies: [
-  //     {
-  //       coinDenom: "BNB",
-  //       coinMinimalDenom: "bnb",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "bnb",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-  //     },
-  //     {
-  //       coinDenom: "ORAI",
-  //       coinMinimalDenom:
-  //         "erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "oraichain-token",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png",
-  //     },
-  //     {
-  //       coinDenom: "AIRI",
-  //       coinMinimalDenom:
-  //         "erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "airight",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png",
-  //     },
-  //     {
-  //       coinDenom: "KWT",
-  //       coinMinimalDenom:
-  //         "erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "kawaii-islands",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png",
-  //     },
-  //   ],
-  //   feeCurrencies: [
-  //     {
-  //       coinDenom: "BNB",
-  //       coinMinimalDenom: "bnb",
-  //       coinDecimals: 18,
-  //       coinGeckoId: "bnb",
-  //       coinImageUrl:
-  //         "https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png",
-  //     },
-  //   ],
-  //   gasPriceStep: {
-  //     low: 10000000000,
-  //     average: 25000000000,
-  //     high: 40000000000,
-  //   },
-  //   features: ["isEvm"],
-  //   txExplorer: {
-  //     name: "Bsc Scan Testnet",
-  //     txUrl: "https://testnet.bscscan.com/tx/${txHash}",
-  //     accountUrl: "https://testnet.bscscan.com/address/{address}",
-  //   },
-  // },
+  {
+    rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    chainId: '0x61',
+    chainName: 'BNB Chain Testnet',
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: 'BNB',
+      coinMinimalDenom: 'bnb',
+      coinDecimals: 18,
+      coinGeckoId: 'binancecoin',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
+    currencies: [
+      {
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
+        coinDecimals: 18,
+        coinGeckoId: 'binancecoin',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+      },
+      {
+        coinDenom: 'ORAI',
+        coinMinimalDenom:
+          'erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token',
+        coinDecimals: 18,
+        coinGeckoId: 'oraichain-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
+      {
+        coinDenom: 'AIRI',
+        coinMinimalDenom:
+          'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
+        coinDecimals: 18,
+        coinGeckoId: 'airight',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+      },
+      {
+        coinDenom: 'KWT',
+        coinMinimalDenom:
+          'erc20:0x9da6e8a2065d5f09b9994ebc330a962721069a68:Kawaii Islands',
+        coinDecimals: 18,
+        coinGeckoId: 'kawaii-islands',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+      }
+    ],
+    feeCurrencies: [
+      {
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
+        coinDecimals: 18,
+        coinGeckoId: 'binancecoin',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+      }
+    ],
+    gasPriceStep: {
+      low: 10000000000,
+      average: 25000000000,
+      high: 40000000000
+    },
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Bsc Scan Testnet',
+      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
+      accountUrl: 'https://testnet.bscscan.com/address/{address}'
+    }
+  },
   {
     rest: 'https://rpc.ankr.com/eth',
     chainId: '0x01',
@@ -588,6 +623,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'ethereum',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+      },
+      {
+        coinDenom: 'ORAI',
+        coinMinimalDenom:
+          'erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5:Oraichain Token',
+        coinDecimals: 18,
+        coinGeckoId: 'oraichain-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
       }
     ],
     get feeCurrencies() {
@@ -680,6 +724,73 @@ export const EmbedChainInfos: AppChainInfo[] = [
       name: 'Bsc Scan',
       txUrl: 'https://bscscan.com/tx/${txHash}',
       accountUrl: 'https://bscscan.com/address/{address}'
+    }
+  },
+  {
+    rpc: 'https://api.trongrid.io',
+    rest: 'https://api.trongrid.io/jsonrpc',
+    chainId: '0x2b6653dc',
+    networkType: 'evm',
+    chainName: 'Tron',
+    stakeCurrency: {
+      coinDenom: 'TRX',
+      coinMinimalDenom: 'trx',
+      coinDecimals: 18,
+      coinGeckoId: 'tron',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+    },
+    currencies: [
+      {
+        coinDenom: 'TRX',
+        coinMinimalDenom: 'trx',
+        coinDecimals: 18,
+        coinGeckoId: 'tron',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+      },
+      {
+        contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
+        coinDenom: 'USDC',
+        coinMinimalDenom: 'usdc',
+        coinGeckoId: 'usd-coin',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+        coinDecimals: 6
+      },
+      {
+        contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+        coinDenom: 'USDT',
+        coinMinimalDenom: 'usdt',
+        coinDecimals: 6,
+        coinGeckoId: 'tether',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+      }
+    ],
+    restConfig: {
+      headers: {
+        'x-api-key': 'e2e3f401-2137-409c-b821-bd8c29f2141c'
+      }
+    },
+    bip44: {
+      coinType: 195
+    },
+    coinType: 195,
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    get feeCurrencies() {
+      return this.currencies;
+    },
+    gasPriceStep: {
+      low: 420,
+      average: 504,
+      high: 672
+    },
+    features: ['ibc-go', 'stargate', 'isEvm'],
+    txExplorer: {
+      name: 'Tronscan',
+      txUrl: 'https://tronscan.org/#/transaction/{txHash}',
+      accountUrl: 'https://tronscan.org/#/address/{address}'
     }
   }
   // {

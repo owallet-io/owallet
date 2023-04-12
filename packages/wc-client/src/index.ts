@@ -9,7 +9,8 @@ import {
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
-  Key
+  Key,
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import {
@@ -428,6 +429,10 @@ export class OWalletConnectV1 implements OWallet {
     }
 
     throw new Error('send tx is not delivered by options');
+  }
+
+  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
+    throw new Error("Not yet implemented");
   }
 
   async signAmino(

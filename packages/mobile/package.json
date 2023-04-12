@@ -22,13 +22,13 @@
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && yarn patch-package",
     "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.6 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.7 --output-dir build"
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.2 --output-dir build"
   },
   "dependencies": {
     "@amplitude/react-native": "^2.7.0",
     "@babel/plugin-syntax-bigint": "^7.8.3",
-    "@cosmjs/launchpad": "^0.24.0-alpha.25",
-    "@cosmjs/proto-signing": "^0.24.0-alpha.25",
+    "@cosmjs/launchpad": "^0.27.1",
+    "@cosmjs/proto-signing": "^0.29.3",
     "@formatjs/intl-datetimeformat": "^4.1.6",
     "@formatjs/intl-displaynames": "^5.1.6",
     "@formatjs/intl-getcanonicallocales": "^1.7.1",

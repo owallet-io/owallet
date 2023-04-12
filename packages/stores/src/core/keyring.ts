@@ -23,7 +23,9 @@ import {
   CheckPasswordMsg,
   ExportKeyRingData,
   ExportKeyRingDatasMsg,
-  ChangeChainMsg
+  ChangeChainMsg,
+  SetKeyStoreLedgerAddressMsg,
+  AddressesLedger
 } from '@owallet/background';
 
 import { computed, flow, makeObservable, observable, runInAction } from 'mobx';
@@ -159,6 +161,21 @@ export class KeyRingStore {
       return 'none';
     } else {
       return KeyRing.getTypeOfKeyStore(keyStore);
+    }
+  }
+
+  @computed
+  get keyRingLedgerAddress(): AddressesLedger {
+    const keyStore = this.multiKeyStoreInfo.find(
+      (keyStore) => keyStore.selected
+    );
+    console.log('keyStore =======', keyStore);
+    console.log('multiKeyStoreInfo =======', this.multiKeyStoreInfo);
+
+    if (!keyStore) {
+      return {};
+    } else {
+      return KeyRing.getLedgerAddressOfKeyStore(keyStore);
     }
   }
 
@@ -383,6 +400,30 @@ export class KeyRingStore {
       this.requester.sendMessage(
         BACKGROUND_PORT,
         new SetKeyStoreCoinTypeMsg(chainId, coinType)
+      )
+    );
+
+    this.multiKeyStoreInfo = (yield* toGenerator(
+      this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg())
+    )).multiKeyStoreInfo;
+
+    this.status = status;
+
+    // Emit the key store changed event manually.
+    this.dispatchKeyStoreChangeEvent();
+    this.selectablesMap.forEach((selectables) => selectables.refresh());
+  }
+
+  // Set the coin type to current key store.
+  // And, save it, refresh the key store.
+  @flow
+  *setKeyStoreLedgerAddress(bip44HDPath: string, chainId: number | string) {
+    console.log('SetKeyStoreLedgerAddressMsg', bip44HDPath);
+
+    const status = yield* toGenerator(
+      this.requester.sendMessage(
+        BACKGROUND_PORT,
+        new SetKeyStoreLedgerAddressMsg(bip44HDPath, chainId)
       )
     );
 

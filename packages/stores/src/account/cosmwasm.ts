@@ -242,25 +242,15 @@ export class CosmwasmAccount {
 
     const protoMsgs = this.hasNoLegacyStdFeature()
       ? [
-          chainInfo.beta
-            ? {
-                type_url: '/cosmwasm.wasm.v1beta1.MsgExecuteContract',
-                value: cosmwasm.wasm.v1beta1.MsgExecuteContract.encode({
-                  sender: msg.value.sender,
-                  contract: msg.value.contract,
-                  msg: Buffer.from(JSON.stringify(msg.value.msg)),
-                  sent_funds: funds
-                }).finish()
-              }
-            : {
-                type_url: '/cosmwasm.wasm.v1.MsgExecuteContract',
-                value: cosmwasm.wasm.v1.MsgExecuteContract.encode({
-                  sender: msg.value.sender,
-                  contract: msg.value.contract,
-                  msg: Buffer.from(JSON.stringify(msg.value.msg)),
-                  funds: funds
-                }).finish()
-              }
+          {
+            type_url: '/cosmwasm.wasm.v1.MsgExecuteContract',
+            value: cosmwasm.wasm.v1.MsgExecuteContract.encode({
+              sender: msg.value.sender,
+              contract: msg.value.contract,
+              msg: Buffer.from(JSON.stringify(msg.value.msg)),
+              funds: funds
+            }).finish()
+          }
         ]
       : undefined;
 

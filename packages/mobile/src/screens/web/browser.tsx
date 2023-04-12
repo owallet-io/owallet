@@ -228,6 +228,46 @@ export const Browser: FunctionComponent<any> = observer(props => {
               <BrowserBookmark />
               <View style={style.flatten(['padding-20'])}>
                 <TouchableOpacity
+                  key={'https://airight.io'}
+                  style={style.flatten([
+                    'height-44',
+                    'margin-bottom-15',
+                    'flex-row'
+                  ])}
+                  onPress={() => {
+                    handleClickUri('https://airight.io', 'aiRight');
+                    const tab = {
+                      id: Date.now(),
+                      name: 'aiRight',
+                      uri: 'https://airight.io'.toLowerCase()
+                    };
+                    browserStore.addTab(tab);
+                    browserStore.updateSelectedTab(tab);
+                    setUrl('https://airight.io');
+                  }}
+                >
+                  <View style={style.flatten(['padding-top-5'])}>
+                    <Image
+                      style={{
+                        width: 20,
+                        height: 22
+                      }}
+                      source={{
+                        uri: 'https://pbs.twimg.com/profile_images/1399316804258832384/WW6ZrspS_400x400.jpg'
+                      }}
+                      fadeDuration={0}
+                    />
+                  </View>
+                  <View style={style.flatten(['padding-x-15'])}>
+                    <Text style={style.flatten(['subtitle2'])}>
+                      {'aiRight'}
+                    </Text>
+                    <Text style={{ color: '#636366', fontSize: 14 }}>
+                      {'https://airight.io'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
                   key={'https://app.orchai.io'}
                   style={style.flatten([
                     'height-44',

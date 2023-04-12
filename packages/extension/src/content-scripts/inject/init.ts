@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { OWallet, Ethereum } from '@owallet/types';
+import { OWallet, Ethereum, TronWeb } from '@owallet/types';
 import { OfflineSigner } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
@@ -7,6 +7,8 @@ import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 export function init(
   owallet: OWallet,
   ethereum: Ethereum,
+  eth_owallet: Ethereum,
+  tronWeb: TronWeb,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getOfflineSignerOnlyAmino: (chainId: string) => OfflineSigner,
   getOfflineSignerAuto: (
@@ -19,8 +21,20 @@ export function init(
     window.owallet = owallet;
   }
 
+  if (!window.eth_owallet) {
+    window.eth_owallet = eth_owallet;
+  }
+
   if (!window.ethereum) {
     window.ethereum = ethereum;
+  }
+
+  if (!window.tronWeb) {
+    window.tronWeb = tronWeb;
+  }
+
+  if (!window.tronLink) {
+    window.tronLink = tronWeb;
   }
 
   if (!window.getOfflineSigner) {
@@ -43,5 +57,8 @@ export function init(
   //   window.getOfflineSignerAuto = getOfflineSignerAuto;
   //   window.getEnigmaUtils = getEnigmaUtils;
   // }
-  window.keplr = window.keplr || owallet;
+
+  if (!window.keplr) {
+    window.keplr = owallet;
+  }
 }

@@ -101,6 +101,7 @@ export const EthereumDetailsTab: FunctionComponent<{
           feeConfig={feeConfig}
           gasPrice={gasPrice}
           decimals={decimals}
+          denom={chainStore?.current?.stakeCurrency?.coinDenom}
           // defaultValue={
           //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit, 16) *
           //     parseInt(dataSign?.data?.data?.data?.estimatedGasPrice, 16) || 0

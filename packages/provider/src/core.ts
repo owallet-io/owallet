@@ -2,12 +2,14 @@ import {
   ChainInfo,
   OWallet as IOWallet,
   Ethereum as IEthereum,
+  TronWeb as ITronWeb,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
   Key,
   EthereumMode,
-  RequestArguments
+  RequestArguments,
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -35,8 +37,8 @@ import {
   RequestVerifyADR36AminoSignDoc,
   RequestSignEthereumTypedDataMsg,
   SignEthereumTypedDataObject,
-  RequestSignProxyReEncryptionDataMsg,
-  RequestSignProxyDecryptionDataMsg,
+  RequestSignDecryptDataMsg,
+  RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -48,7 +50,14 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import { RequestSignDirectMsg, RequestSignEthereumMsg } from './msgs';
+import {
+  GetChainInfosWithoutEndpointsMsg,
+  GetDefaultAddressTronMsg,
+  RequestSignDirectMsg,
+  RequestSignEthereumMsg,
+  RequestSignTronMsg
+} from './msgs';
+import { TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -59,7 +68,12 @@ export class OWallet implements IOWallet {
     public readonly version: string,
     public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
-  ) { }
+  ) {}
+
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
+    const msg = new GetChainInfosWithoutEndpointsMsg();
+    return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).chainInfos;
+  }
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
@@ -317,6 +331,12 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
+  async signAndBroadcastTron(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
     console.log(
@@ -326,11 +346,14 @@ export class Ethereum implements IEthereum {
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<any> {
+  async signEthereumTypeData(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<any> {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      console.log("RESULT AFTER ALL!!!!!!!!!!!!")
+      console.log('RESULT AFTER ALL!!!!!!!!!!!!');
       return result;
     } catch (error) {
       console.log(error, 'error on send message!!!!!!!!!!!!!!!');
@@ -342,20 +365,14 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signProxyDecryptionData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    const msg = new RequestSignProxyDecryptionDataMsg(chainId, data);
+  async signDecryptData(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignDecryptDataMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   // thang2
-  async signProxyReEncryptionData(
-    chainId: string,
-    data: object
-  ): Promise<object> {
-    const msg = new RequestSignProxyReEncryptionDataMsg(chainId, data);
+  async signReEncryptData(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignReEncryptDataMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -367,4 +384,25 @@ export class Ethereum implements IEthereum {
   //   const msg = new GetKeyMsg(chainId);
   //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   // }
+}
+
+export class TronWeb implements ITronWeb {
+  constructor(
+    public readonly version: string,
+    public readonly mode: EthereumMode,
+    public initChainId: string,
+    protected readonly requester: MessageRequester
+  ) {
+    this.initChainId = initChainId;
+  }
+
+  async sign(transaction: object): Promise<object> {
+    const msg = new RequestSignTronMsg(TRON_ID, transaction);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async getDefaultAddress(): Promise<object> {
+    const msg = new GetDefaultAddressTronMsg(TRON_ID);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
 }

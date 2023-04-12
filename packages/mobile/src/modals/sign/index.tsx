@@ -295,7 +295,7 @@ export const SignModal: FunctionComponent<{
                 : colors['purple-900']
             }}
             textStyle={{
-              color: !isDisable ? colors['gray-400'] : colors['white']
+              color: isDisable ? colors['gray-10'] : colors['white']
             }}
             underlayColor={colors['purple-400']}
             size="large"

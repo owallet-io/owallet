@@ -45,7 +45,8 @@
     "@octokit/core": "^3.5.1",
     "@types/jest": "^26.0.22",
     "@types/node": "^16.6.2",
-    "@types/webpack": "^4.39.1",
+    "webpack": "^4.0.0",
+    "@types/webpack": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.13.0",
     "@typescript-eslint/parser": "^4.13.0",
     "cross-env": "^5.2.0",
@@ -72,6 +73,7 @@
   },
   "resolutions": {
     "@types/react": "^16.14.4",
+    "@ledgerhq/hw-transport": "6.27.8",
     "@cosmjs/crypto": "^0.24.0-alpha.25",
     "@iov/crypto": "2.1.0",
     "libsodium": "file:./etc/noop",

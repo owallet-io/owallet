@@ -112,6 +112,9 @@
   "register.name": "계정 이름",
   "register.name.error.required": "계정 이름을 입력하세요",
   "register.button.back": "뒤로",
+  "register.button.trx-ledger": "Tron Ledger",
+  "register.button.cosmos-ledger": "Cosmos Ledger",
+  "register.button.eth-ledger": "Eth Ledger",
 
   "register.bip44.button.advanced": "고급",
   "register.bip44.input.hd-path": "BIP44 HD 경로",
@@ -261,6 +264,7 @@
 
   "input.recipient.error.invalid-bech32": "잘못된 주소입니다",
   "input.recipient.error.invalid-evm-address": "",
+  "input.recipient.error.invalid-tron-address": "",
   "input.recipient.error.ens-not-supported": "이 체인에는 ENS가 지원되지 않습니다",
   "input.recipient.error.ens-failed-to-fetch": "ENS로부터 주소를 받는데 실패했습니다",
   "input.amount.error.invalid-number": "잘못된 숫자입니",

@@ -97,7 +97,11 @@ export const TokensCard: FunctionComponent<{
         : uniqTokens.push(token)
     );
     return uniqTokens;
-  }, [chainStore.current.chainId]);
+  }, [
+    chainStore.current.chainId,
+    account.bech32Address,
+    account.evmosHexAddress
+  ]);
 
   // const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
 

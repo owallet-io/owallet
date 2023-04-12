@@ -20,6 +20,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useNotification } from '../../components/notification';
 import delay from 'delay';
 import { useInteractionInfo } from '@owallet/hooks';
+import { formatNeworkTypeToLedgerAppName } from '@owallet/common';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 
@@ -27,7 +28,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
   // Force to fit the screen size.
   useInteractionInfo();
 
-  const { ledgerInitStore } = useStore();
+  const { ledgerInitStore, chainStore } = useStore();
 
   const intl = useIntl();
 
@@ -82,9 +83,14 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
 
     try {
       const ledger = await Ledger.init(
-        ledgerInitStore.isWebHID ? 'webhid' : 'webusb'
+        ledgerInitStore.isWebHID ? 'webhid' : 'webusb',
+        [],
+        formatNeworkTypeToLedgerAppName(
+          chainStore.current.networkType,
+          chainStore.current.chainId
+        )
       );
-      // await ledger.close();
+      await ledger.close();
       // Unfortunately, closing ledger blocks the writing to Ledger on background process.
       // I'm not sure why this happens. But, not closing reduce this problem if transport is webhid.
       if (!ledgerInitStore.isWebHID) {
@@ -321,7 +327,7 @@ const Instruction: FunctionComponent<{
             />
           ) : null}
         </h1>
-        <p style={{ color: '#777e90'}}>{paragraph}</p>
+        <p style={{ color: '#777e90' }}>{paragraph}</p>
         {children}
       </div>
     </div>
