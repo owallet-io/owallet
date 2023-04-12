@@ -2,7 +2,7 @@ name: Extension release workflow
 on:
   push:
     branches:
-      - release/extensions/v[0-9].[0-9].[0-9]
+      - release/extensions/v[0-9].[0-9]+.[0-9]+
   workflow_dispatch:
 
 jobs:
