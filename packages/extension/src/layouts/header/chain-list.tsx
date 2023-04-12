@@ -20,7 +20,7 @@ const ChainElement: FunctionComponent<{
   const intl = useIntl();
   const confirm = useConfirm();
   const notification = useNotification();
-  const handeUpdateChain = async () => {
+  const handleUpdateChain = async () => {
     analyticsStore.logEvent('Chain changed', {
       chainId: chainStore.current.chainId,
       chainName: chainStore.current.chainName,
@@ -46,12 +46,11 @@ const ChainElement: FunctionComponent<{
       onClick={async () => {
         if (chainInfo.chainId !== chainStore.current.chainId) {
           if (selected?.type === 'ledger') {
-            const [getDevicesHID, getDevicesUSB] = await Promise.all([
-              window.navigator.hid.getDevices(),
-              window.navigator.usb.getDevices()
+            const [getDevicesHID] = await Promise.all([
+              window.navigator.hid.getDevices()
+              // window.navigator.usb.getDevices()
             ]);
-            // cosmos productId 16401 ,trx productId 16389 ,eth productId 16405
-            if (getDevicesHID.length || getDevicesUSB.length) {
+            if (getDevicesHID.length) {
               if (
                 await confirm.confirm({
                   paragraph: `You are switching to ${
@@ -101,7 +100,7 @@ const ChainElement: FunctionComponent<{
                   }`,
                   chainInfo.chainId
                 );
-                await handeUpdateChain();
+                await handleUpdateChain();
               }
             } else {
               browser.tabs.create({
@@ -115,7 +114,7 @@ const ChainElement: FunctionComponent<{
           }
 
           if (selected?.type !== 'ledger') {
-            await handeUpdateChain();
+            await handleUpdateChain();
           }
         }
       }}

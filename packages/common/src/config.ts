@@ -107,7 +107,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'oraichain-token',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
+      gasPriceStep: {
+        low: 0.003,
+        average: 0.005,
+        high: 0.007
+      }
     },
     bip44: {
       coinType: 118
@@ -176,11 +181,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    gasPriceStep: {
-      low: 0.003,
-      average: 0.005,
-      high: 0.007
-    },
     features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
     txExplorer: {
@@ -202,7 +202,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 6,
       coinGeckoId: 'oraichain-token',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
+      gasPriceStep: {
+        low: 0.003,
+        average: 0.005,
+        high: 0.007
+      }
     },
     bip44: {
       coinType: 118
@@ -213,11 +218,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
-    },
-    gasPriceStep: {
-      low: 0,
-      average: 0.01,
-      high: 0.03
     },
     features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
     chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
@@ -237,7 +237,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: 'ORAIB',
       coinMinimalDenom: 'uoraib',
-      coinDecimals: 6
+      coinDecimals: 6,
+      gasPriceStep: {
+        low: 0,
+        average: 0,
+        high: 0
+      }
     },
     bip44: {
       coinType: 118
@@ -292,11 +297,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    gasPriceStep: {
-      low: 0,
-      average: 0,
-      high: 0
-    },
     features: ['stargate', 'ibc-transfer', 'cosmwasm']
   },
   {
@@ -310,7 +310,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: 'ORAIE',
       coinMinimalDenom: 'oraie',
       coinDecimals: 18,
-      coinGeckoId: 'oraie'
+      coinGeckoId: 'oraie',
+      gasPriceStep: {
+        low: 0,
+        average: 0.000025,
+        high: 0.00004
+      }
     },
     bip44: {
       coinType: 60
@@ -321,11 +326,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
-    },
-    gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
     features: ['isEvm']
@@ -340,7 +340,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDenom: 'ORAIE',
       coinMinimalDenom: 'oraie',
       coinDecimals: 18,
-      coinGeckoId: 'oraie'
+      coinGeckoId: 'oraie',
+      gasPriceStep: {
+        low: 0,
+        average: 0.000025,
+        high: 0.00004
+      }
     },
     bip44: {
       coinType: 60
@@ -352,11 +357,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
-    },
-    gasPriceStep: {
-      low: 0,
-      average: 0.000025,
-      high: 0.00004
     },
     features: ['isEvm']
   },
@@ -371,7 +371,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uatom',
       coinDecimals: 6,
       coinGeckoId: 'cosmos',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
     },
     bip44: {
       coinType: 118
@@ -386,21 +391,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
       }
     ],
-    feeCurrencies: [
-      {
-        coinDenom: 'ATOM',
-        coinMinimalDenom: 'uatom',
-        coinDecimals: 6,
-        coinGeckoId: 'cosmos',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
-      }
-    ],
-    coinType: 118,
-    gasPriceStep: {
-      low: 0,
-      average: 0.025,
-      high: 0.04
+    get feeCurrencies() {
+      return [this.stakeCurrency];
     },
+    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
     txExplorer: {
@@ -420,7 +414,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
       coinGeckoId: 'osmosis',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
     },
     bip44: {
       coinType: 118
@@ -443,21 +442,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
           'https://dhj8dql1kzq2v.cloudfront.net/white/osmosis-ion.png'
       }
     ],
-    feeCurrencies: [
-      {
-        coinDenom: 'OSMO',
-        coinMinimalDenom: 'uosmo',
-        coinDecimals: 6,
-        coinGeckoId: 'osmosis',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
-      }
-    ],
-    coinType: 118,
-    gasPriceStep: {
-      low: 0,
-      average: 0.025,
-      high: 0.04
+    get feeCurrencies() {
+      return [this.stakeCurrency];
     },
+    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
     txExplorer: {
@@ -476,7 +464,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'ujuno',
       coinDecimals: 6,
       coinGeckoId: 'juno-network',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png',
+      gasPriceStep: {
+        low: 0.001,
+        average: 0.0025,
+        high: 0.004
+      }
     },
     bip44: {
       coinType: 118
@@ -491,19 +484,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png'
       }
     ],
-    feeCurrencies: [
-      {
-        coinDenom: 'JUNO',
-        coinMinimalDenom: 'ujuno',
-        coinDecimals: 6,
-        coinGeckoId: 'juno-network',
-        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/juno.png'
-      }
-    ],
-    gasPriceStep: {
-      low: 0.001,
-      average: 0.0025,
-      high: 0.004
+    get feeCurrencies() {
+      return [this.stakeCurrency];
     },
     features: [
       'stargate',
@@ -534,7 +516,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'binancecoin',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000
+      }
     },
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     networkType: 'evm',
@@ -575,20 +562,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
           'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
       }
     ],
-    feeCurrencies: [
-      {
-        coinDenom: 'BNB',
-        coinMinimalDenom: 'bnb',
-        coinDecimals: 18,
-        coinGeckoId: 'binancecoin',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-      }
-    ],
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
+    get feeCurrencies() {
+      return [this.stakeCurrency];
     },
     features: ['isEvm'],
     txExplorer: {
@@ -611,7 +586,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'ethereum',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png',
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000
+      }
     },
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     networkType: 'evm',
@@ -635,13 +615,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       }
     ],
     get feeCurrencies() {
-      return this.currencies;
+      return [this.stakeCurrency];
     },
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
-    },
+
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
       name: 'Etherscan',
@@ -663,7 +639,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'binancecoin',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000
+      }
     },
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     networkType: 'evm',
@@ -704,20 +685,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
           'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
       }
     ],
-    feeCurrencies: [
-      {
-        coinDenom: 'BNB',
-        coinMinimalDenom: 'bnb',
-        coinDecimals: 18,
-        coinGeckoId: 'binancecoin',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-      }
-    ],
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
+    get feeCurrencies() {
+      return [this.stakeCurrency];
     },
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
@@ -738,7 +707,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'tron',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png',
+      gasPriceStep: {
+        low: 420,
+        average: 504,
+        high: 672
+      }
     },
     currencies: [
       {
@@ -779,13 +753,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 195,
     bech32Config: Bech32Address.defaultBech32Config('evmos'),
     get feeCurrencies() {
-      return this.currencies;
+      return [this.stakeCurrency];
     },
-    gasPriceStep: {
-      low: 420,
-      average: 504,
-      high: 672
-    },
+
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
       name: 'Tronscan',

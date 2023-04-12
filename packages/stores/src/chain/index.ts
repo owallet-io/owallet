@@ -81,7 +81,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   @action
   addUnknownCurrencies(...coinMinimalDenoms: string[]) {
     for (const coinMinimalDenom of coinMinimalDenoms) {
-      if (this.unknownDenoms.find(denom => denom === coinMinimalDenom)) {
+      if (this.unknownDenoms.find((denom) => denom === coinMinimalDenom)) {
         continue;
       }
 
@@ -98,7 +98,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
           runInAction(() => {
             if (currency) {
               const index = this.unknownDenoms.findIndex(
-                denom => denom === coinMinimalDenom
+                (denom) => denom === coinMinimalDenom
               );
               if (index >= 0) {
                 this.unknownDenoms.splice(index, 1);
@@ -171,7 +171,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
     }
 
     this.registeredCurrencies = this.registeredCurrencies.filter(
-      currency => !map.get(currency.coinMinimalDenom)
+      (currency) => !map.get(currency.coinMinimalDenom)
     );
   }
 
@@ -208,7 +208,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   protected addOrReplaceCurrency(currency: AppCurrency) {
     if (this.currencyMap.has(currency.coinMinimalDenom)) {
       const index = this.registeredCurrencies.findIndex(
-        cur => cur.coinMinimalDenom === currency.coinMinimalDenom
+        (cur) => cur.coinMinimalDenom === currency.coinMinimalDenom
       );
       if (index >= 0) {
         this.registeredCurrencies.splice(index, 1, currency);
@@ -256,7 +256,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get gasPriceStep():
     | { low: number; average: number; high: number }
     | undefined {
-    return this.raw.gasPriceStep;
+    return this.raw.stakeCurrency.gasPriceStep;
   }
 
   get rest(): string {
@@ -308,7 +308,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
     }
     const chainIdentifier = ChainIdHelper.parse(chainId);
 
-    const find = this.chainInfos.find(info => {
+    const find = this.chainInfos.find((info) => {
       return (
         ChainIdHelper.parse(info.chainId).identifier ===
         chainIdentifier.identifier
@@ -325,7 +325,7 @@ export class ChainStore<C extends ChainInfo = ChainInfo>
   hasChain(chainId: string): boolean {
     const chainIdentifier = ChainIdHelper.parse(chainId);
 
-    const find = this.chainInfos.find(info => {
+    const find = this.chainInfos.find((info) => {
       return (
         ChainIdHelper.parse(info.chainId).identifier ===
         chainIdentifier.identifier
