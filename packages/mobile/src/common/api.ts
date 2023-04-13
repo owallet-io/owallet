@@ -1,4 +1,4 @@
-import { handleError } from '@src/utils/helper';
+import { handleError, parseObjectToQueryString } from '@src/utils/helper';
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 export const API = {
@@ -39,6 +39,7 @@ export const API = {
       return Promise.reject(error);
     }
   },
+
   getBlockResultByHeight: async ({
     height,
     rpcUrl = 'https://rpc.orai.io'
@@ -103,6 +104,21 @@ export const API = {
         method: 'tx_search'
       });
       return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTransactionsByLCD: async ({
+    lcdUrl = 'https://lcd.orai.io',
+    prefix = '/cosmos/tx/v1beta1',
+    method = '/txs',
+    params = null
+  }) => {
+    try {
+      let qs = params ? parseObjectToQueryString(params):'';
+      let url = `${prefix}${method}${qs}`;
+      const rs = await API.get(url, { baseURL: lcdUrl });
+      return Promise.resolve(rs?.data);
     } catch (error) {
       return Promise.reject(error);
     }

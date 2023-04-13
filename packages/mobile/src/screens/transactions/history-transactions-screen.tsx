@@ -13,7 +13,11 @@ import { useTheme } from '@src/themes/theme-provider';
 import { API } from '@src/common/api';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
-import { _keyExtract, addTimeProperty } from '@src/utils/helper';
+import {
+  _keyExtract,
+  addTimeProperty,
+  removeEmptyElements
+} from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { OWBox } from '@src/components/card';
 import { spacing } from '@src/themes';
@@ -24,42 +28,48 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import TypeModal from './components/type-modal';
 import TokenModal, { getCoinDenom } from './components/token-modal';
 import images from '@src/assets/images';
-import { defaultAll } from '@src/common/constants';
+import { SCREENS, defaultAll } from '@src/common/constants';
+import { navigate } from '@src/router/root';
+import { useNavigation } from '@react-navigation/native';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
-
   const [dataType, setDataType] = useState([]);
   const loadingScreen = useLoadingScreen();
   const [loadMore, setLoadMore] = useState(false);
   const page = useRef(1);
-
+  const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
   const perPage = 10;
   const fetchData = useCallback(
-    async (rpc, params, isLoadMore = false) => {
+    async (url, params, isLoadMore = false) => {
       try {
         crashlytics().log('transactions - history - fetchData');
+        if (!isLoadMore) {
+          getTypeAction(url, params);
+        }
         if (hasMore.current) {
-          const query = `message.sender='${params?.address}'${
+          const query = [
+            `message.sender='${params?.address}'`,
             params?.action !== 'All'
-              ? ` AND message.action='${params?.action}'`
-              : ''
-          }${
+              ? `message.action='${params?.action}'`
+              : '',
             params?.token !== 'All'
-              ? ` AND transfer.amount CONTAINS '${params?.token?.toLowerCase()}'`
+              ? `transfer.amount CONTAINS '${params?.token?.toLowerCase()}'`
               : ''
-          }`;
-          const rs = await requestData(isLoadMore, query, rpc, params);
-          const txsNew = await getBlockByHeight(rs?.txs, rpc);
-          const newData = isLoadMore ? [...data, ...txsNew] : txsNew;
+          ];
+          const events = removeEmptyElements(query);
+          const rs = await requestData(isLoadMore, events, url);
+          const newData = isLoadMore
+            ? [...data, ...rs?.tx_responses]
+            : rs?.tx_responses;
           hasMore.current = rs?.txs?.length === perPage;
           page.current = page.current + 1;
-          if (page.current === rs?.total_count / perPage) {
+          if (page.current === rs?.pagination?.total / perPage) {
             hasMore.current = false;
           }
           if (rs?.txs.length < 1) {
@@ -79,62 +89,50 @@ const HistoryTransactionsScreen = observer(() => {
     },
     [data]
   );
-  const requestData = async (isLoadMore, query, rpc, params) => {
+  const getTypeAction = async (url, params) => {
+    try {
+      const types = await API.getTransactionsByLCD({
+        lcdUrl: url,
+        params: {
+          events: [`message.sender='${params?.address}'`],
+          ['pagination.count_total']: true,
+          ['pagination.limit']: 100,
+          ['pagination.offset']: 1,
+          order_by: 'ORDER_BY_DESC'
+        }
+      });
+      setDataType(types);
+    } catch (error) {}
+  };
+  const requestData = async (isLoadMore, query, url) => {
     try {
       if (!isLoadMore) {
         await loadingScreen.openAsync();
-        const data = await Promise.all([
-          API.getTransactionsByAddress({
-            rpcUrl: rpc,
-            page: '1',
-            per_page: `${perPage}`,
-            query
-          }),
-          API.getTransactionsByAddress({
-            rpcUrl: rpc,
-            page: '1',
-            per_page: '100',
-            query: `message.sender='${params?.address}'`
-          })
-        ]);
-        setDataType(data[1]);
-        return data[0];
+        const data: any = await API.getTransactionsByLCD({
+          lcdUrl: url,
+          params: {
+            events: query,
+            ['pagination.count_total']: true,
+            ['pagination.limit']: perPage,
+            ['pagination.offset']: 1,
+            order_by: 'ORDER_BY_DESC'
+          }
+        });
+        return data;
       } else {
-        return await API.getTransactionsByAddress({
-          rpcUrl: rpc,
-          page: `${page.current}`,
-          per_page: `${perPage}`,
-          query
+        return await API.getTransactionsByLCD({
+          lcdUrl: url,
+          params: {
+            events: query,
+            ['pagination.count_total']: true,
+            ['pagination.limit']: perPage,
+            ['pagination.offset']: page.current,
+            order_by: 'ORDER_BY_DESC'
+          }
         });
       }
     } catch (error) {
-      console.log('error: ', error);
       loadingScreen.setIsLoading(false);
-    }
-  };
-  const getBlockByHeight = async (txs, rpc) => {
-    try {
-      let arrPromises = [];
-      if (txs.length > 0) {
-        for (let i = 0; i < txs.length; i++) {
-          const height = txs[i]?.height;
-          if (height) {
-            arrPromises.push(
-              API.getBlockResultByHeight({
-                height,
-                rpcUrl: rpc
-              })
-            );
-          }
-        }
-        const rsBlock = await Promise.all(arrPromises);
-        const newData = addTimeProperty(rsBlock, txs);
-        return newData;
-      }
-      return [];
-    } catch (error) {
-      loadingScreen.setIsLoading(false);
-      setLoadMore(false);
     }
   };
   const { colors } = useTheme();
@@ -143,13 +141,13 @@ const HistoryTransactionsScreen = observer(() => {
     return () => {
       setData([]);
     };
-  }, [chainStore?.current?.rpc, account?.bech32Address]);
+  }, [chainStore?.current?.rest, account?.bech32Address]);
   const refreshData = useCallback(
     ({ activeType, activeCoin }) => {
       page.current = 1;
       hasMore.current = true;
       fetchData(
-        chainStore?.current?.rpc,
+        chainStore?.current?.rest,
         {
           address: account?.bech32Address,
           action: activeType?.value,
@@ -160,7 +158,7 @@ const HistoryTransactionsScreen = observer(() => {
         false
       );
     },
-    [chainStore?.current?.rpc, account?.bech32Address]
+    [chainStore?.current?.rest, account?.bech32Address]
   );
   const styles = styling();
   const onActionType = useCallback(
@@ -174,11 +172,6 @@ const HistoryTransactionsScreen = observer(() => {
     },
     [activeCoin]
   );
-  // useEffect(() => {
-  //   refreshData();
-
-  //   return () => {};
-  // }, [activeType, activeCoin]);
 
   const onType = useCallback(() => {
     modalStore.setOpen();
@@ -186,7 +179,7 @@ const HistoryTransactionsScreen = observer(() => {
       <TypeModal
         actionType={onActionType}
         active={activeType?.value}
-        transactions={dataType?.txs}
+        transactions={dataType?.tx_responses}
       />
     );
   }, [activeType, dataType]);
@@ -194,7 +187,7 @@ const HistoryTransactionsScreen = observer(() => {
     if (page.current !== 1) {
       setLoadMore(true);
       fetchData(
-        chainStore?.current?.rpc,
+        chainStore?.current?.rest,
         {
           address: account?.bech32Address,
           action: activeType?.value,
@@ -211,8 +204,21 @@ const HistoryTransactionsScreen = observer(() => {
     setActiveCoin(defaultAll);
     refreshData({ activeType: defaultAll, activeCoin: defaultAll });
   };
+  const onTransactionDetail = (item) => {
+    navigation.navigate(SCREENS.TransactionDetail, {
+      txHash: item?.txhash ? item?.txhash : item?.hash
+    });
+    return;
+  };
   const renderItem = ({ item, index }) => {
-    return <OWTransactionItem time={item?.time} data={item} />;
+    return (
+      <OWTransactionItem
+        key={`item-${index}`}
+        onPress={() => onTransactionDetail(item)}
+        time={item?.timestamp}
+        data={item}
+      />
+    );
   };
 
   const onActionCoin = useCallback(
@@ -239,11 +245,7 @@ const HistoryTransactionsScreen = observer(() => {
   };
   return (
     <PageWithView>
-      <OWBox
-        style={{
-          flex: 1
-        }}
-      >
+      <OWBox style={styles.container}>
         <View style={styles.containerFilter}>
           <View style={styles.containerType}>
             <Text color="#8C93A7">Type</Text>
@@ -276,11 +278,7 @@ const HistoryTransactionsScreen = observer(() => {
           renderItem={renderItem}
           onEndReached={onEndReached}
           ListFooterComponent={
-            <View
-              style={{
-                height: 20
-              }}
-            >
+            <View style={styles.footer}>
               {loadMore ? <ActivityIndicator /> : null}
             </View>
           }
@@ -298,6 +296,12 @@ export default HistoryTransactionsScreen;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    footer: {
+      height: 20
+    },
+    container: {
+      flex: 1
+    },
     containerFilter: {
       flexDirection: 'row',
       paddingBottom: spacing['page-pad']

@@ -19,8 +19,9 @@ import { TITLE_TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
 import { useStore } from '@src/stores';
 import moment from 'moment';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import { IOWTransactionItem } from '@src/utils/helper/types';
 
-const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
+const OWTransactionItem = observer(({ data, time, ...props }: IOWTransactionItem) => {
   const { chainStore, accountStore } = useStore();
   const item = data;
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -32,21 +33,20 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
     denom,
     isRecipient,
     isPlus,
-    isMinus
+    isMinus,
+    txHash
   } = getValueTransactionHistory({
-    item,
+    item:item?.tx_result?item?.tx_result:item,
     address: account?.bech32Address
   });
   const { colors } = useTheme();
   const styles = styling();
   return (
-    <TouchableOpacity>
+    <TouchableOpacity {...props}>
       <View style={styles.item}>
-        <View
-          style={styles.flexRow}
-        >
-          <Text color="#8C93A7" size={12}>
-            {formatContractAddress(item?.hash, 5)}
+        <View style={[styles.flexRow,{paddingBottom:5}]}>
+          <Text color={colors['blue-300']} size={12}>
+            {formatContractAddress(txHash, 5)}
           </Text>
           {!!eventType ? (
             <Text
@@ -59,7 +59,7 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
               </Text>{' '}
               {isRecipient
                 ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
-                : limitString(eventType, 30)}
+                : limitString(eventType, 14)}
               <View style={styles.iconstyle}>
                 <OWIcon
                   size={12}
@@ -98,10 +98,10 @@ const OWTransactionItem = observer(({ data, time }: IOWTransactionItem) => {
                 ? '-'
                 : ''
             }${(amount && formatAmount(amount)) || '--'}`}{' '}
-            {limitString(denom, 5)}
+            {denom}
           </Text>
-          <Text style={styles.timeStyle} color={'#8C93A7'}>
-            {(time && moment(time).format('LL')) || '--'}
+          <Text style={styles.timeStyle} color={colors['blue-300']}>
+            {(time && moment(time).format('LL')) || item?.height || '--'}
           </Text>
         </View>
       </View>
@@ -116,17 +116,18 @@ const styling = () => {
   return StyleSheet.create({
     flexRow: {
       flexDirection: 'row',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      alignItems:"center"
     },
     amount: {
-      paddingTop: 8,
+      // paddingTop: 8,
       textTransform: 'uppercase'
     },
     flex: {
       flex: 1
     },
     timeStyle: {
-      paddingTop: 8
+      // paddingTop: 8
     },
     iconstyle: {
       paddingLeft: 8

@@ -164,6 +164,7 @@ const modeColors = {
   // 'text-btn-secondary':["#8B1BFB","#8B1BFB"], //1:Purple/900  2 gray-900
   'background-btn-secondary': ['#F3F1F5', '#F3F1F5'], //1: 2 Purple/10
   'text-placeholder-input-login': ['#717177', '#AEAEB2'],
+  'text-label-transaction-detail':['#AEAEB2','#636366'],
   'background-btn-disable-primary': ['#5F5E77', colorsCode['gray-300']],
   'background-btn-disable-danger': ['#5F5E77', '#D1D1D6'],
   'text-btn-disable-danger': ['#8E8E93', '#FFFFFF'],
@@ -194,7 +195,8 @@ const modeColors = {
   'on-background-toggle': ['#9AE796', '#A0F29B'],
   'off-background-toggle': ['#6F6F76','#E9E9EA'],
   'bg-icon-token':['#E5E5EA','#F3F1F5'],
-  'bg-circle-select-modal':[colorsCode['gray-400'],colorsCode['purple-100']]
+  'bg-circle-select-modal':[colorsCode['gray-400'],colorsCode['purple-100']],
+  'divided-border-transaction-detail':['#2B2D3B','#EDEDF8']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

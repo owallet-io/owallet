@@ -2,7 +2,7 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { useMemo } from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 import { Text } from '@src/components/text';
-import { _keyExtract, convertTypeEvent } from '@src/utils/helper';
+import { _keyExtract, convertTypeEvent, get } from '@src/utils/helper';
 import { metrics, spacing } from '@src/themes';
 import { OWEmpty } from '@src/components/empty';
 
@@ -12,8 +12,8 @@ const TypeModal = ({ transactions, active, actionType }) => {
     actions.add('All');
     const uniqueActions = [];
     dataAction?.map((log) => {
-      if (log?.tx_result?.code == 0) {
-        const logObj = JSON.parse(log?.tx_result?.log);
+      if (log?.code == 0) {
+        const logObj = get(log, 'logs');
         const events = logObj[0].events;
         events.forEach((event) => {
           if (event.type === 'message') {
@@ -45,7 +45,13 @@ const TypeModal = ({ transactions, active, actionType }) => {
     actionType(item);
   };
   const renderItem = ({ item }) => (
-    <ItemModal value={item?.value} label={item?.label} onPress={onActionType} item={item} active={active} />
+    <ItemModal
+      value={item?.value}
+      label={item?.label}
+      onPress={onActionType}
+      item={item}
+      active={active}
+    />
   );
   return (
     <ContainerModal
@@ -91,10 +97,12 @@ export const ItemModal = ({
       style={styles.containerItem}
       onPress={() => onPress(item)}
     >
-      <View style={{
-        flexDirection:"row",
-        alignItems:"center"
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center'
+        }}
+      >
         {iconComponent && iconComponent}
         <Text variant="body1" typo="bold">
           {label}

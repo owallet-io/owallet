@@ -246,7 +246,16 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           />
           <FlatList
             data={data}
-            renderItem={({item}) => <OWTransactionItem data={item}/>}
+            renderItem={({item}) => {
+              
+              if(item?.tx_result?.code === 0){
+                item.tx_result.logs = JSON.parse(item?.tx_result?.log);
+              }else{
+                item.tx_result.logs = [];
+              }
+              // console.log('item: ', item?.tx_result);
+              return <OWTransactionItem data={item}/>
+            }}
             keyExtractor={_keyExtract}
             showsVerticalScrollIndicator={false}
             // ListFooterComponent={() => (

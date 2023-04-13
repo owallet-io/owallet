@@ -9,6 +9,7 @@ import bs58 from 'bs58';
 import get from 'lodash/get';
 import Big from 'big.js';
 import { isNumber } from 'util';
+import { IDataTransaction } from './types';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -183,10 +184,10 @@ export const getValueTransactionHistory = ({
     isMinus = false;
   let amount = '';
   let denom = '';
-  let eventType, countEvent;
+  let eventType, countEvent, recipient, sender, txhash;
   const transfer = 'transfer';
-  if (item?.tx_result?.code === 0) {
-    const logs = JSON.parse(get(item, 'tx_result.log'));
+  if (item?.code === 0) {
+    const logs = get(item, 'logs');
     const event = logs && find(get(logs, `[0].events`), { type: 'message' });
     const action = event && find(get(event, 'attributes'), { key: 'action' });
     const actionValue = action?.value;
@@ -199,9 +200,9 @@ export const getValueTransactionHistory = ({
     const amountValue = valueTransfer
       ? find(valueTransfer?.attributes, { key: 'amount' })
       : getAmount(logs);
-    const recipient =
+    recipient =
       valueTransfer && find(valueTransfer?.attributes, { key: 'recipient' });
-    const sender =
+    sender =
       valueTransfer && find(valueTransfer?.attributes, { key: 'sender' });
     if (
       recipient?.value === address &&
@@ -227,14 +228,17 @@ export const getValueTransactionHistory = ({
   }
 
   return {
-    status: item?.tx_result?.code === 0 ? 'success' : 'failed',
+    status: item?.code === 0 ? 'success' : 'failed',
     eventType,
     countEvent,
     amount,
     denom,
     isRecipient,
     isPlus,
-    isMinus
+    isMinus,
+    recipient: recipient?.value,
+    sender: sender?.value,
+    txHash: item?.txhash || item?.hash
   };
 };
 function hasSpecialChar(str) {
@@ -249,6 +253,23 @@ function splitSpecialCharacter(str) {
 
   return str;
 }
+export function parseObjectToQueryString(obj) {
+  let params = new URLSearchParams();
+  for (let key in obj) {
+    if (Array.isArray(obj[key])) {
+      for (let value of obj[key]) {
+        params.append(key, value);
+      }
+    } else {
+      params.append(key, obj[key]);
+    }
+  }
+  return '?' + params.toString();
+}
+export function removeEmptyElements(array) {
+  return array.filter((element) => !!element);
+}
+
 const getAmount = (logs) => {
   for (let i = 0; i < get(logs, `[0].events`)?.length; i++) {
     const elementEvent = get(logs, `[0].events`)[i];
@@ -262,11 +283,10 @@ const getAmount = (logs) => {
   return null;
 };
 function convertString(str) {
-  const words = str.split('_');
-  const capitalizedWords = words.map(
-    (word) => word.charAt(0).toUpperCase() + word.slice(1)
-  );
-  return capitalizedWords.join(' ');
+  const words = str && str.split('_');
+  const capitalizedWords =
+    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  return capitalizedWords && capitalizedWords.join(' ');
 }
 export function removeSpecialChars(str) {
   return str.replace(/[^\w\s]/gi, '');
@@ -554,7 +574,7 @@ export function nFormatter(num, digits: 1) {
 }
 
 export function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }
 const truncDecimals = 6;
 const atomic = 10 ** truncDecimals;

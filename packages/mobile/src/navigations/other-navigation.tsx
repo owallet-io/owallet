@@ -25,6 +25,7 @@ import {
 import { SendTronScreen } from '@src/screens/send/send-tron';
 import { NotificationScreen } from '@src/screens/notifications/home';
 import HistoryTransactionsScreen from '@src/screens/transactions/history-transactions-screen';
+import TransactionDetailScreen from '@src/screens/transactions/transaction-detail-screen';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation })=>{
@@ -42,7 +43,7 @@ export const OtherNavigation: FC = () => {
       <Stack.Screen name={SCREENS.Dashboard} component={DashBoardScreen} />
       <Stack.Screen
         name={SCREENS.TransactionDetail}
-        component={TransactionDetail}
+        component={TransactionDetailScreen}
       />
       <Stack.Screen
         options={{
