@@ -22,10 +22,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
-import { findLedgerAddressWithChainId } from '../../utils/helper';
-
-const isBase58 = (value: string): boolean =>
-  /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
+import { findLedgerAddressWithChainId, isBase58 } from '../../utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;

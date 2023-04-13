@@ -12,7 +12,7 @@ import { useStyleMyWallet } from './styles';
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { keyRingStore, analyticsStore, modalStore } = useStore();
+  const { keyRingStore, analyticsStore, modalStore, chainStore } = useStore();
   const styles = useStyleMyWallet();
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
