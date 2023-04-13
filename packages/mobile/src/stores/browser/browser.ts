@@ -14,7 +14,7 @@ export const DAppInfos = [
   {
     id: 15,
     name: 'Staging V2 Oraidex',
-    uri: 'https://staging-v2.oraidex.io/',
+    uri: 'https://staging-v2.oraidex.io',
     logo: oraiLogo
   },
   {

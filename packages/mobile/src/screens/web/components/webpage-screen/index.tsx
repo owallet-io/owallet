@@ -1,4 +1,4 @@
-import { Ethereum, OWallet } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
