@@ -2,6 +2,7 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
+import { getNetworkTypeByChainId } from '@owallet/common';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -29,6 +30,17 @@ export const TRC20_LIST = [
     coinGeckoId: 'tether',
     coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
     type: 'trc20'
+  },
+  {
+    type: 'cw20',
+    coinDenom: 'wTRX',
+    coinMinimalDenom:
+      'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
+    contractAddress:
+      'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+    coinDecimals: 6,
+    coinGeckoId: 'tron',
+    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
   }
   // {
   //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
@@ -72,22 +84,6 @@ export const TRC20_LIST = [
   // }
 ];
 
-import { Base58 } from '@ethersproject/basex';
-import { sha256 } from '@ethersproject/sha2';
-import bs58 from 'bs58';
-
-export const getEvmAddress = (base58Address) =>
-  base58Address
-    ? '0x' +
-      Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex')
-    : '-';
-
-export const getBase58Address = (address) => {
-  const evmAddress = '0x41' + address.substring(2);
-  const hash = sha256(sha256(evmAddress));
-  const checkSum = hash.substring(2, 10);
-  return Base58.encode(evmAddress + checkSum);
-};
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {
@@ -370,4 +366,20 @@ export function nFormatter(num, digits: 1) {
 
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
+  let address;
+
+  if (chainId === TRON_ID) {
+    address = ledgerAddresses.trx;
+  } else {
+    const networkType = getNetworkTypeByChainId(chainId);
+    if (networkType === 'evm') {
+      address = ledgerAddresses.eth;
+    } else {
+      address = ledgerAddresses.cosmos;
+    }
+  }
+  return address;
 }

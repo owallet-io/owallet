@@ -61,20 +61,12 @@ export const SignEthereumModal: FunctionComponent<{
 
     useEffect(() => {
       const getGasPrice = async () => {
-        const response = await axios.post(
-          chainStore.current.rest,
-          {
-            jsonrpc: '2.0',
-            id: 'eth_gasPrice',
-            method: 'eth_gasPrice',
-            params: []
-          },
-          {
-            headers: {
-              'x-api-key': process.env.X_API_KEY
-            }
-          }
-        );
+        const response = await axios.post(chainStore.current.rest, {
+          jsonrpc: '2.0',
+          id: 'eth_gasPrice',
+          method: 'eth_gasPrice',
+          params: []
+        });
 
         setGasPrice(
           new Big(parseInt(response.data.result, 16))
@@ -99,7 +91,7 @@ export const SignEthereumModal: FunctionComponent<{
             // @ts-ignore
             const web3 = new Web3(chainStore.current.rest);
             const tokenInfo = new web3.eth.Contract(
-              ERC20_ABI,
+              ERC20_ABI as any,
               sendStore.sendObj?.contract_addr
             );
 
@@ -266,13 +258,6 @@ export const SignEthereumModal: FunctionComponent<{
               loading={signInteractionStore.isLoading}
               onPress={async () => {
                 try {
-                  // const gasPriceCalculate =
-                  //   '0x' +
-                  //   parseFloat(
-                  //     new Big(gasPrice)
-                  //       .mul(new Big(10).pow(decimals.current))
-                  //       .toString()
-                  //   ).toString(16);
                   const gasPrice =
                     '0x' +
                     parseInt(

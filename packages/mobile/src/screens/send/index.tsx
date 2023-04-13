@@ -302,11 +302,13 @@ export const SendScreen: FunctionComponent = observer(() => {
                   if (e?.message === 'Request rejected') {
                     return;
                   }
-                  if (
-                    e?.message.includes('Cannot read properties of undefined')
-                  ) {
-                    return;
-                  }
+                  console.log('e?.message', e?.message);
+
+                  // if (
+                  //   e?.message?.includes('Cannot read properties of undefined')
+                  // ) {
+                  //   return;
+                  // }
                   console.log('send error', e);
                   // alert(e.message);
                   if (smartNavigation.canGoBack) {

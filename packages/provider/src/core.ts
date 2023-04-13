@@ -2,12 +2,14 @@ import {
   ChainInfo,
   OWallet as IOWallet,
   Ethereum as IEthereum,
+  TronWeb as ITronWeb,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
   Key,
   EthereumMode,
-  RequestArguments
+  RequestArguments,
+  TronWebMode
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -48,7 +50,13 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import { RequestSignDirectMsg, RequestSignEthereumMsg } from './msgs';
+import {
+  RequestSignDirectMsg,
+  RequestSignEthereumMsg,
+  RequestSignTronMsg,
+  GetDefaultAddressTronMsg
+} from './msgs';
+import { TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -143,6 +151,15 @@ export class OWallet implements IOWallet {
       },
       signature: response.signature
     };
+  }
+
+  async signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async signArbitrary(
@@ -345,6 +362,15 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
+  async signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
   // async signDecryptData(chainId: string, data: object): Promise<object> {
   //   const msg = new RequestSignDecryptDataMsg(chainId, data);
   //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
@@ -364,4 +390,25 @@ export class Ethereum implements IEthereum {
   //   const msg = new GetKeyMsg(chainId);
   //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   // }
+}
+
+export class TronWeb implements ITronWeb {
+  constructor(
+    public readonly version: string,
+    public readonly mode: TronWebMode,
+    public initChainId: string,
+    protected readonly requester: MessageRequester
+  ) {
+    this.initChainId = initChainId;
+  }
+
+  async sign(transaction: object): Promise<object> {
+    const msg = new RequestSignTronMsg(TRON_ID, transaction);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async getDefaultAddress(): Promise<object> {
+    const msg = new GetDefaultAddressTronMsg(TRON_ID);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
 }

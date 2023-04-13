@@ -48,7 +48,7 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 
   switch (keyStore.type) {
     case 'ledger':
-      return `Ledger - m/44'/118'/${bip44HDPath.account}'${
+      return `Ledger - m/44'/${bip44HDPath.coinType}'/${bip44HDPath.account}'${
         bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
           ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
           : ''

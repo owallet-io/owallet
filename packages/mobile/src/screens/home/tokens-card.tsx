@@ -13,9 +13,9 @@ import {
   capitalizedText,
   convertAmount,
   formatContractAddress,
-  getBase58Address,
   _keyExtract
 } from '../../utils/helper';
+import { Address } from '@owallet/crypto';
 import { DownArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import ProgressiveImage from '../../components/progessive-image';

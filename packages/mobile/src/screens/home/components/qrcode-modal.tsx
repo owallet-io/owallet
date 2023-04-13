@@ -7,7 +7,8 @@ import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
 import { AccountWithAll, ChainStore } from '@owallet/stores';
 import { Text } from '@src/components/text';
-import { getBase58Address, TRON_ID } from '../../../utils/helper';
+import { TRON_ID } from '../../../utils/helper';
+import { Address } from '@owallet/crypto';
 
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
@@ -20,7 +21,7 @@ export const AddressQRCodeModal: FunctionComponent<{
     addressToshow = account.bech32Address;
   } else {
     if (chainStore?.chainId === TRON_ID) {
-      addressToshow = getBase58Address(account.evmosHexAddress);
+      addressToshow = Address.getBase58Address(account.evmosHexAddress);
     } else {
       addressToshow = account.evmosHexAddress;
     }
@@ -64,14 +65,13 @@ export const AddressQRCodeModal: FunctionComponent<{
         </View>
         <View style={{ flexDirection: 'row' }}>
           <OWButton
-            
             label="Share Address"
             loading={account.bech32Address === ''}
             disabled={account.bech32Address === ''}
             onPress={() => {
               Share.share({
                 message: addressToshow
-              }).catch((e) => {
+              }).catch(e => {
                 console.log(e);
               });
             }}

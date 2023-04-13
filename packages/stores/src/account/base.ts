@@ -1,6 +1,5 @@
 import { StdFeeEthereum } from './../common/types';
 
-// import Web3 from 'web3';
 import 'reflect-metadata';
 import {
   action,
@@ -14,7 +13,8 @@ import {
   AppCurrency,
   OWallet,
   OWalletSignOptions,
-  Ethereum
+  Ethereum,
+  TronWeb
 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
@@ -87,6 +87,7 @@ export interface AccountSetOpts<MsgOpts> {
   };
   readonly getOWallet: () => Promise<OWallet | undefined>;
   readonly getEthereum: () => Promise<Ethereum | undefined>;
+  readonly getTronWeb: () => Promise<TronWeb | undefined>;
   readonly msgOpts: MsgOpts;
   readonly wsObject?: new (
     url: string,
@@ -379,7 +380,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         wsObject: this.opts.wsObject
       }
     );
-    txTracer.traceTx(txHash).then(tx => {
+    txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
       runInAction(() => {
@@ -391,7 +392,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
           .balances.find(
-            bal => bal.currency.coinMinimalDenom === feeAmount.denom
+            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
           );
 
         if (bal) {
@@ -412,6 +413,40 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill(tx);
       }
     });
+  }
+
+  async sendTronToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    },
+    tokenTrc20?: object
+  ) {
+    console.log('tokenTrc20 ===', tokenTrc20);
+
+    try {
+      const ethereum = (await this.getEthereum())!;
+      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+        amount,
+        currency,
+        recipient,
+        address,
+        tokenTrc20
+      });
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(signResponse);
+      }
+      return {
+        txHash: signResponse
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
   }
 
   async sendEvmMsgs(
@@ -503,8 +538,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    const sleep = (milliseconds) => {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (

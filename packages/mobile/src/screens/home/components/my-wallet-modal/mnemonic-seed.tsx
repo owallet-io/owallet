@@ -10,7 +10,6 @@ import { LoadingSpinner } from '../../../../components/spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import { useStyleMyWallet } from './styles';
 
-
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { keyRingStore, analyticsStore, modalStore } = useStore();
@@ -18,19 +17,19 @@ const MnemonicSeed = () => {
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
+      keyStore => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
+      keyStore => keyStore.type === 'privateKey' && !keyStore.meta?.email
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      (keyStore) => keyStore.type === 'ledger'
+      keyStore => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -96,7 +95,9 @@ const MnemonicSeed = () => {
                     fontSize: 12
                   }}
                 >
-                  {item.address}
+                  {chainStore.current.networkType === 'cosmos'
+                    ? null
+                    : item.address}
                 </Text>
               )}
             </View>

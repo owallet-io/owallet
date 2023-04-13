@@ -49,12 +49,12 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
   const styles = useStyles();
 
-  const { analyticsStore } = useStore();
+  const { analyticsStore, chainStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
-  const bip44Option = useBIP44Option(118);
+  const bip44Option = useBIP44Option(chainStore.current.coinType ?? 118);
   const [mode] = useState(registerConfig.mode);
 
   const {
@@ -73,10 +73,15 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     setIsCreating(true);
 
     try {
+      // Re-create ledger when change network
       await registerConfig.createLedger(
         getValues('name'),
         getValues('password'),
-        bip44Option.bip44HDPath
+        {
+          ...bip44Option.bip44HDPath,
+          coinType:
+            bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
+        }
       );
       analyticsStore.setUserProperties({
         registerType: 'ledger',
