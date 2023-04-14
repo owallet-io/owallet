@@ -9,15 +9,20 @@ import {
   InvalidBech32Error,
   IRecipientConfig
 } from '@owallet/hooks';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+  TouchableOpacity
+} from 'react-native';
 import { TextInput } from './input';
 import { ObservableEnsFetcher } from '@owallet/ens';
 import { LoadingSpinner } from '../spinner';
 import { useStyle } from '../../styles';
-import { AddressBookIcon, NoteIcon } from '../icon';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSmartNavigation } from '../../navigation.provider';
 import { colors } from '../../themes';
+import { NoteIcon } from '../icon';
 
 const styles = StyleSheet.create({
   absolute: {
@@ -108,7 +113,7 @@ export const AddressInput: FunctionComponent<{
         errorLabelStyle={errorLabelStyle}
         error={errorText}
         value={recipientConfig.rawRecipient}
-        onChangeText={(text) => {
+        onChangeText={text => {
           recipientConfig.setRawRecipient(text);
         }}
         placeholder={placeholder}

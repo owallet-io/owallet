@@ -3,11 +3,9 @@ import { OWSubTitleHeader } from '@src/components/header';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { FlatList } from 'react-native';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { useStore } from '../../stores';
-import { spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
 import { TokenItem } from './components/token-item';
 
@@ -67,42 +65,3 @@ export const TokensScreen: FunctionComponent = observer(() => {
     </PageWithScrollViewInBottomTabView>
   );
 });
-
-const styling = colors =>
-  StyleSheet.create({
-    container: {
-      flex: 1
-    },
-    containerToken: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginHorizontal: spacing['4'],
-      marginVertical: spacing['8'],
-      paddingTop: spacing['18'],
-      paddingBottom: spacing['18']
-    },
-    transactionListEmpty: {
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    title: {
-      ...typography.h3,
-      fontWeight: '700',
-      textAlign: 'center',
-      color: colors['gray-900'],
-      marginTop: spacing['12']
-    },
-    containerTokens: {
-      backgroundColor: colors['primary'],
-      borderRadius: spacing['24'],
-      marginTop: spacing['16'],
-      paddingVertical: spacing['12'],
-      paddingHorizontal: spacing['24']
-    },
-    containerTokenItem: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      paddingVertical: spacing['8'],
-      marginVertical: spacing['4']
-    }
-  });
