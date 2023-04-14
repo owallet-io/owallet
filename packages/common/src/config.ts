@@ -320,6 +320,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 60
     },
+    coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
       return [this.stakeCurrency];
