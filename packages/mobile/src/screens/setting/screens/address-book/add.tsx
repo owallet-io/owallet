@@ -59,7 +59,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
           chainId: string;
           addressBookConfig: AddressBookConfig;
           recipient: string;
-          addressBookObj: Object;
+          addressBookObj?: Object;
         }
       >,
       string

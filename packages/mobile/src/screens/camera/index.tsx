@@ -198,7 +198,6 @@ export const AddressQRCodeModal: FunctionComponent<{
               //   flex: 1
               // }}
               label="Share Address"
-              
               loading={account.bech32Address === ''}
               onPress={() => {
                 Share.share({
