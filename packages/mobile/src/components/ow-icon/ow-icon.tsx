@@ -1,11 +1,5 @@
-import {
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
 import React from 'react';
+import { Image, ImageSourcePropType, StyleSheet } from 'react-native';
 import Icon, { IconProps } from './icomoon';
 export interface IOWIconProps extends IconProps {
   type?: 'images';

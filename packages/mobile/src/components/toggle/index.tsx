@@ -8,14 +8,12 @@ import {
   Platform,
   View
 } from 'react-native';
-import { useStyle } from '../../styles';
 import { spacing } from '../../themes';
 
 export const Toggle: FunctionComponent<{
   on: boolean;
   onChange(onOrOff: boolean): void;
 }> = ({ on, onChange }) => {
-  const style = useStyle();
   const { colors } = useTheme();
   const offColor = colors['white'];
   const offBackgroundColor = colors['off-background-toggle'];

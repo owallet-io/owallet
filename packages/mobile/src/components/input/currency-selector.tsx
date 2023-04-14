@@ -5,7 +5,6 @@ import { DenomHelper } from '@owallet/common';
 import { Bech32Address } from '@owallet/cosmos';
 import { TextStyle, ViewStyle } from 'react-native';
 import { Selector } from './selector';
-// import { SettingViewPrivateDataItem } from './items/view-private-data';
 
 export const CurrencySelector: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -27,7 +26,7 @@ export const CurrencySelector: FunctionComponent<{
     placeHolder,
     amountConfig
   }) => {
-    const items = amountConfig.sendableCurrencies.map((currency) => {
+    const items = amountConfig.sendableCurrencies.map(currency => {
       let label = currency.coinDenom;
 
       // if is cw20 contract
@@ -51,7 +50,7 @@ export const CurrencySelector: FunctionComponent<{
     const selectedKey = amountConfig.sendCurrency.coinMinimalDenom;
     const setSelectedKey = (key: string | undefined) => {
       const currency = amountConfig.sendableCurrencies.find(
-        (cur) => cur.coinMinimalDenom === key
+        cur => cur.coinMinimalDenom === key
       );
       amountConfig.setSendCurrency(currency);
     };
