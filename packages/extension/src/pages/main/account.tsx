@@ -19,7 +19,7 @@ export const AccountView: FunctionComponent = observer(() => {
   );
   const intl = useIntl();
   const checkTronNetwork = chainStore.current.chainId === TRON_ID;
-  const addressLedger =
+  const ledgerAddress =
     keyRingStore.keyRingType == 'ledger'
       ? checkTronNetwork
         ? keyRingStore?.keyRingLedgerAddress?.trx
@@ -129,7 +129,7 @@ export const AccountView: FunctionComponent = observer(() => {
               copyAddress(
                 keyRingStore.keyRingType !== 'ledger'
                   ? evmAddress
-                  : addressLedger
+                  : ledgerAddress
               )
             }
           >
@@ -144,9 +144,9 @@ export const AccountView: FunctionComponent = observer(() => {
                     : '...'}
                 </Address>
               ) : (
-                <Address isRaw={true} tooltipAddress={addressLedger}>
-                  {addressLedger
-                    ? `${addressLedger?.slice(0, 10)}...${addressLedger?.slice(
+                <Address isRaw={true} tooltipAddress={ledgerAddress}>
+                  {ledgerAddress
+                    ? `${ledgerAddress?.slice(0, 10)}...${ledgerAddress?.slice(
                         -8
                       )}`
                     : '...'}

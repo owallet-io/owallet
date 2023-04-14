@@ -39,7 +39,7 @@ export const TokenPage: FunctionComponent = observer(() => {
   const [hasSend, setHasSend] = React.useState(false);
   const [coinMinimalDenom, setCoinMinimalDenom] = React.useState('');
   const checkTronNetwork = chainStore.current.chainId === TRON_ID;
-  const addressLedger =
+  const ledgerAddress =
     keyRingStore.keyRingType === 'ledger'
       ? checkTronNetwork
         ? keyRingStore?.keyRingLedgerAddress?.trx
@@ -51,7 +51,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       chainStore.current.networkType === 'evm'
         ? keyRingStore.keyRingType !== 'ledger'
           ? accountInfo.evmosHexAddress
-          : addressLedger
+          : ledgerAddress
         : accountInfo.bech32Address
     );
 

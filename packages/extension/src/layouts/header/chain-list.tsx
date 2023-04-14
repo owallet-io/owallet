@@ -111,11 +111,9 @@ const ChainElement: FunctionComponent<{
                 }`
               });
             }
+            return;
           }
-
-          if (selected?.type !== 'ledger') {
-            await handleUpdateChain();
-          }
+          await handleUpdateChain();
         }
       }}
     >
