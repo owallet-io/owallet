@@ -1,21 +1,19 @@
 import { ValidatorThumbnails } from '@owallet/common';
 import { BondStatus } from '@owallet/stores';
-// import { Dec } from '@owallet/unit';
-import { useRoute, RouteProp } from '@react-navigation/native';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
-import { Text } from '@src/components/text';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { useStore } from '../../../stores';
-import { typography, colors, spacing } from '../../../themes';
-import { useTheme } from '@src/themes/theme-provider';
-import { PageWithView } from '@src/components/page';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import { OWButton } from '@src/components/button';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
+import { PageWithView } from '@src/components/page';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { spacing, typography } from '../../../themes';
 interface DelegateDetailProps {}
 
 export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
@@ -68,7 +66,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
       return bondedValidators.validators
         .concat(unbondingValidators.validators)
         .concat(unbondedValidators.validators)
-        .find((val) => val.operator_address === validatorAddress);
+        .find(val => val.operator_address === validatorAddress);
     }, [
       bondedValidators.validators,
       unbondingValidators.validators,
@@ -245,7 +243,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
     );
   });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerAllBtn: {
       paddingHorizontal: 20,

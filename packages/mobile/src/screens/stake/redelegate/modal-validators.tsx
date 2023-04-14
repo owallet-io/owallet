@@ -1,14 +1,14 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ValidatorThumbnails } from '@owallet/common';
+import { BondStatus } from '@owallet/stores';
+import { CoinPretty, Dec } from '@owallet/unit';
 import { Text } from '@src/components/text';
+import React from 'react';
+import { FlatList, View } from 'react-native';
 import { RectButton } from '../../../components/rect-button';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useStore } from '../../../stores';
 import { colors, metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
-import { BondStatus } from '@owallet/stores';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { ValidatorThumbnails } from '@owallet/common';
-import { CoinPretty, Dec } from '@owallet/unit';
 
 const Validators = ({
   onPressSelectValidator,
@@ -20,11 +20,7 @@ const Validators = ({
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Bonded
   );
-  // const account = accountStore.getAccount(chainStore.current.chainId);
-  // const queryDelegations =
-  //   queries.cosmos.queryDelegations.getQueryBech32Address(
-  //     account.bech32Address
-  //   );
+
   const dataAll = bondedValidators.validators;
   const data = [...dataAll];
   const renderItem = ({ item }) => {

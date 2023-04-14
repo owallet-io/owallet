@@ -1,17 +1,17 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { Card, CardBody, OWBox } from '../../../components/card';
-import { ViewStyle, View, StyleSheet } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../../styles';
-import { useIntl } from 'react-intl';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { ProgressBar } from '../../../components/progress-bar';
 import { BondStatus } from '@owallet/stores';
-import { spacing } from '../../../themes';
-import { useTheme } from '@src/themes/theme-provider';
 import { OWEmpty } from '@src/components/empty';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { useIntl } from 'react-intl';
+import { View, ViewStyle } from 'react-native';
+import { CardBody, OWBox } from '../../../components/card';
+import { ProgressBar } from '../../../components/progress-bar';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useStore } from '../../../stores';
+import { useStyle } from '../../../styles';
+
 export const UndelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -62,7 +62,7 @@ export const UndelegationsCard: FunctionComponent<{
           const validator = bondedValidators.validators
             .concat(unbondingValidators.validators)
             .concat(unbondedValidators.validators)
-            .find((val) => val.operator_address === unbonding.validatorAddress);
+            .find(val => val.operator_address === unbonding.validatorAddress);
           const thumbnail =
             bondedValidators.getValidatorThumbnail(
               unbonding.validatorAddress

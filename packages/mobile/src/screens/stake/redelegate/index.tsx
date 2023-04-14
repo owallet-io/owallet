@@ -16,7 +16,7 @@ import {
   MemoInput,
   TextInput
 } from '../../../components/input';
-import { Button, OWButton } from '../../../components/button';
+import { , OWButton } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
