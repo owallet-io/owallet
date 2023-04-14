@@ -1,19 +1,17 @@
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { OWBox } from '@src/components/card';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import Clipboard from 'expo-clipboard';
 import React, { FunctionComponent, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../../../styles';
+import { OWButton } from '../../../../components/button';
 import { CheckIcon, CopyFillIcon } from '../../../../components/icon';
-import { Button, OWButton } from '../../../../components/button';
 import { WordChip } from '../../../../components/mnemonic';
-import Clipboard from 'expo-clipboard';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { useSimpleTimer } from '../../../../hooks';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useStyle } from '../../../../styles';
 import { spacing, typography } from '../../../../themes';
-import { RectButton } from 'react-native-gesture-handler';
-import { OWBox } from '@src/components/card';
-import { useGetHeightHeader } from '@src/hooks/use-height-header';
-import { useTheme } from '@src/themes/theme-provider';
 
 export const getPrivateDataTitle = (
   keyRingType: string,
@@ -67,7 +65,7 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
       <OWBox>
         <View
           style={[
-            styles.containerMnemonicWord,
+            styles.containerMnemonicWord
             // { backgroundColor: colors['background-item-list'] }
           ]}
         >

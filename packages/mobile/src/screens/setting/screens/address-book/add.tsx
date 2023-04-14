@@ -1,42 +1,31 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { PageWithScrollView } from '../../../../components/page';
-import { useStyle } from '../../../../styles';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import { useTheme } from '@src/themes/theme-provider';
+import { EthereumEndpoint } from '@owallet/common';
 import {
   AddressBookConfig,
-  RecipientConfig,
   useAddressBookConfig,
   useMemoConfig,
   useRecipientConfig
 } from '@owallet/hooks';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { OWBox } from '@src/components/card';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  View
-} from 'react-native';
-import { useStore } from '../../../../stores';
-import { EthereumEndpoint } from '@owallet/common';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AsyncKVStore } from '../../../../common';
+import { OWButton } from '../../../../components/button';
+import { Scanner } from '../../../../components/icon';
 import {
   AddressInput,
   MemoInput,
   TextInput
 } from '../../../../components/input';
-import { Button, OWButton } from '../../../../components/button';
+import { PageWithScrollView } from '../../../../components/page';
 import { useSmartNavigation } from '../../../../navigation.provider';
+import { useStore } from '../../../../stores';
 import { spacing } from '../../../../themes';
-import { Scanner } from '../../../../components/icon';
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback
-} from 'react-native-gesture-handler';
-import { AsyncKVStore } from '../../../../common';
-import { OWBox } from '@src/components/card';
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     addNewBookRoot: {
       backgroundColor: colors['background'],
@@ -133,7 +122,7 @@ export const AddAddressBookScreen: FunctionComponent = observer(() => {
         <TextInput
           label="User name"
           value={name}
-          onChangeText={(text) => setName(text)}
+          onChangeText={text => setName(text)}
           labelStyle={styles.addNewBookLabel}
           inputContainerStyle={styles.addNewBookInput}
           placeholder="Type your user name"

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Modal } from 'react-native';
-import { Text } from '@src/components/text';
 
 export const ModalComponent = ({
   children,

@@ -12,29 +12,6 @@ import {
 import { View } from 'react-native';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import { useTheme } from '@src/themes/theme-provider';
-const CheckIcon: FunctionComponent<{
-  color: string;
-  height: number;
-}> = ({ color, height }) => {
-  return (
-    <Svg
-      fill="none"
-      viewBox="0 0 19 17"
-      style={{
-        height,
-        aspectRatio: 19 / 17
-      }}
-    >
-      <Path
-        stroke={color}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="3"
-        d="M18 1L7.448 16 1 7.923"
-      />
-    </Svg>
-  );
-};
 
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath

@@ -1,20 +1,20 @@
+import { OWButton } from '@src/components/button';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   useCallback,
   useMemo,
   useState
 } from 'react';
-import { observer } from 'mobx-react-lite';
-import { BIP44Option } from './bip44-option';
+import { StyleSheet, View } from 'react-native';
+import { TextInput } from '../../../components/input';
 import { registerModal } from '../../../modals/base';
 import { CardModal } from '../../../modals/card';
-import { Platform, StyleSheet, View } from 'react-native';
-import { TextInput } from '../../../components/input';
-import { typography } from '../../../themes';
-import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWButton } from '@src/components/button';
+import { typography } from '../../../themes';
+import { BIP44Option } from './bip44-option';
 
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;

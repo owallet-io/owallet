@@ -1,26 +1,24 @@
-import React, { FunctionComponent } from 'react';
-import { useStyle } from '../../../styles';
-import { Image, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { Text } from '@src/components/text';
-import { RectButton } from '../../../components/rect-button';
+import { useTheme } from '@src/themes/theme-provider';
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Svg, { Path } from 'react-native-svg';
 import {
-  USAIcon,
+  AUDIcon,
+  CADIcon,
+  CNYIcon,
   EURIcon,
   GBPIcon,
-  CADIcon,
-  AUDIcon,
-  RUBIcon,
-  KRWIcon,
   HKDIcon,
-  CNYIcon,
-  JPYIcon,
   INRIcon,
-  NoteIcon
+  JPYIcon,
+  KRWIcon,
+  NoteIcon,
+  RUBIcon,
+  USAIcon
 } from '../../../components/icon';
 import { spacing, typography } from '../../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useTheme } from '@src/themes/theme-provider';
 
 export const KeyStoreSectionTitle: FunctionComponent<{
   title: string;
@@ -42,9 +40,7 @@ export const KeyStoreSectionTitle: FunctionComponent<{
         }}
       >
         {title &&
-          title.replace(/(^\w{1})|(\s+\w{1})/g, (letter) =>
-            letter.toUpperCase()
-          )}
+          title.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase())}
       </Text>
     </View>
   );
@@ -191,7 +187,7 @@ export const KeyStoreItem: FunctionComponent<{
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     selectBtn: {
       height: 54,

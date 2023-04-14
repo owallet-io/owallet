@@ -1,49 +1,31 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStyle } from '../../../../styles';
-import { Dimensions, StyleSheet, View } from 'react-native';
-import { Text } from '@src/components/text';
-import { useSmartNavigation } from '../../../../navigation.provider';
+import { Bech32Address } from '@owallet/cosmos';
 import {
   IMemoConfig,
   IRecipientConfig,
   useAddressBookConfig
 } from '@owallet/hooks';
-import { AsyncKVStore } from '../../../../common';
-import { useStore } from '../../../../stores';
-import { AddIcon, SearchIcon, TrashCanIcon } from '../../../../components/icon';
-import { Bech32Address } from '@owallet/cosmos';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import { useTheme } from '@src/themes/theme-provider';
-import { RectButton } from '../../../../components/rect-button';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  HeaderLeftButton,
-  HeaderRightButton,
-  OWSubTitleHeader
-} from '../../../../components/header';
-import {
-  HeaderAddIcon,
-  HeaderBackButtonIcon
-} from '../../../../components/header/icon';
-import { AddressBookIcon } from '../../../../components/icon';
-import { useConfirmModal } from '../../../../providers/confirm-modal';
-import { spacing, typography } from '../../../../themes';
-import { TextInput } from '../../../../components/input';
-import { CustomHeader } from '../../../../navigation';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useHeaderHeight } from '@react-navigation/stack';
-import { PageWithScrollView } from '../../../../components/page';
-import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
-import OWIcon from '@src/components/ow-icon/ow-icon';
+import { OWBox } from '@src/components/card';
 import { OWEmpty } from '@src/components/empty';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useCallback, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { AsyncKVStore } from '../../../../common';
+import { OWSubTitleHeader } from '../../../../components/header';
+import { SearchIcon, TrashCanIcon } from '../../../../components/icon';
+import { TextInput } from '../../../../components/input';
+import { PageWithScrollView } from '../../../../components/page';
+import { RectButton } from '../../../../components/rect-button';
+import { useSmartNavigation } from '../../../../navigation.provider';
+import { useConfirmModal } from '../../../../providers/confirm-modal';
+import { useStore } from '../../../../stores';
+import { useStyle } from '../../../../styles';
+import { spacing } from '../../../../themes';
 
 const addressBookItemComponent = {
   inTransaction: RectButton,
@@ -135,12 +117,12 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
   const AddressBookItem =
     addressBookItemComponent[isInTransaction ? 'inTransaction' : 'inSetting'];
 
-  const onNameSearch = (txt) => {
+  const onNameSearch = txt => {
     const searchWord = txt ?? nameSearch;
     if (searchWord) {
       const addressList = addressBookConfig.addressBookDatas;
       if (addressList.length > 0) {
-        const newAdressList = addressList.filter((address) =>
+        const newAdressList = addressList.filter(address =>
           address.name.toLowerCase().includes(searchWord.toLowerCase())
         );
         return setContractList(newAdressList);
@@ -178,7 +160,7 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
               borderBottomRightRadius: spacing['8']
             }}
             value={nameSearch}
-            onChangeText={(text) => {
+            onChangeText={text => {
               setNameSearch(text);
               debouncedHandler(text);
             }}
@@ -214,9 +196,11 @@ export const AddressBookScreen: FunctionComponent = observer(() => {
         </View>
 
         <View
-          style={{
-            // flex: 1
-          }}
+          style={
+            {
+              // flex: 1
+            }
+          }
         >
           {contractData?.length > 0 ? (
             contractData.map((data, i) => {

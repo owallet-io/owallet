@@ -15,7 +15,7 @@ import {
   FeeButtons,
   TextInput
 } from '../../components/input';
-import { Button, OWButton } from '../../components/button';
+import { OWButton } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -26,7 +26,7 @@ import { Toggle } from '../../components/toggle';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -87,17 +87,15 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
-        (cur) => {
-          if (cur.type === 'cw20') {
-            return cur.coinDenom == route.params.currency;
-          }
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
-          }
-          return cur.coinMinimalDenom == route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+        if (cur.type === 'cw20') {
+          return cur.coinDenom == route.params.currency;
         }
-      );
+        if (cur.coinDenom === route.params.currency) {
+          return cur.coinDenom === route.params.currency;
+        }
+        return cur.coinMinimalDenom == route.params.currency;
+      });
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -165,7 +163,7 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={(value) => {
+                onChange={value => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -200,7 +198,7 @@ export const SendScreen: FunctionComponent = observer(() => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -265,13 +263,13 @@ export const SendScreen: FunctionComponent = observer(() => {
                       networkType: chainStore.current.networkType
                     },
                     {
-                      onFulfill: (tx) => {
+                      onFulfill: tx => {
                         console.log(
                           tx,
                           'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                         );
                       },
-                      onBroadcasted: (txHash) => {
+                      onBroadcasted: txHash => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
