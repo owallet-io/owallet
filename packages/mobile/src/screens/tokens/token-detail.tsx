@@ -1,3 +1,10 @@
+import { Text } from '@rneui/base';
+import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import { OWEmpty } from '@src/components/empty';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   ReactElement,
@@ -5,65 +12,35 @@ import React, {
   useRef,
   useState
 } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import {
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-  FlatList
-} from 'react-native';
-import { Text } from '@rneui/base';
-import { useSmartNavigation } from '../../navigation.provider';
-import { TokenSymbol } from '../../components/token-symbol';
-import { metrics, spacing, typography } from '../../themes';
-import { _keyExtract } from '../../utils/helper';
-import { TransactionMinusIcon } from '../../components/icon';
-import LinearGradient from 'react-native-linear-gradient';
+import { FlatList, View } from 'react-native';
+import { API } from '../../common/api';
 import {
   BuyIcon,
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
+import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import { TokenSymbol } from '../../components/token-symbol';
+import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useLoadingScreen } from '../../providers/loading-screen';
+import { navigate } from '../../router/root';
+import { useStore } from '../../stores';
+import { metrics, spacing, typography } from '../../themes';
+import { _keyExtract } from '../../utils/helper';
+import { AddressQRCodeModal } from '../home/components';
 import {
   TransactionItem,
   TransactionSectionTitle
 } from '../transactions/components';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import { navigate } from '../../router/root';
-import { API } from '../../common/api';
-import { useLoadingScreen } from '../../providers/loading-screen';
-import { AddressQRCodeModal } from '../home/components';
-import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWBox } from '@src/components/card';
-import { OWButton } from '@src/components/button';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { OWEmpty } from '@src/components/empty';
 
-export const TokenDetailScreen: FunctionComponent = observer((props) => {
+export const TokenDetailScreen: FunctionComponent = observer(props => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
-  const styles = styling(colors);
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
     props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
-  // const queries = queriesStore.get(chainStore.current.chainId);
-
-  // const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-  //   account.bech32Address
-  // );
-  // const delegated = queryDelegated.total;
-
-  // const queryUnbonding =
-  //   queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-  //     account.bech32Address
-  //   );
-
-  // const unbonding = queryUnbonding.total;
-  // const stakedSum = delegated.add(unbonding);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
@@ -121,7 +98,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     );
   };
 
-  const _onPressBtnMain = (name) => {
+  const _onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -302,19 +279,3 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     </PageWithScrollViewInBottomTabView>
   );
 });
-
-const styling = (colors) =>
-  StyleSheet.create({
-    containerToken: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginHorizontal: spacing['4'],
-      marginVertical: spacing['8'],
-      paddingTop: spacing['18'],
-      paddingBottom: spacing['18']
-    },
-    transactionListEmpty: {
-      justifyContent: 'center',
-      alignItems: 'center'
-    }
-  });
