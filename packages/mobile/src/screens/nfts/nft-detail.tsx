@@ -1,16 +1,12 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { StyleSheet, View, Image, ActivityIndicator } from 'react-native';
-
+import { StyleSheet, View, ActivityIndicator, FlatList } from 'react-native';
 import { useSmartNavigation } from '../../navigation.provider';
-import { DenomHelper, EthereumEndpoint } from '@owallet/common';
+import { EthereumEndpoint } from '@owallet/common';
 import { metrics, spacing, typography } from '../../themes';
-import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { convertAmount, _keyExtract } from '../../utils/helper';
 import { QuantityIcon } from '../../components/icon';
-import LinearGradient from 'react-native-linear-gradient';
-import { SendDashboardIcon } from '../../components/icon/button';
 import {
   TransactionItem,
   TransactionSectionTitle
@@ -32,7 +28,7 @@ const AIRI = 'airight';
 
 const commonDenom = { ORAI, AIRI };
 
-export const NftDetailScreen: FunctionComponent = observer((props) => {
+export const NftDetailScreen: FunctionComponent = observer(props => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, modalStore } = useStore();
   const { colors } = useTheme();
@@ -54,18 +50,8 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
     : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
-  const queries = queriesStore.get(chainId);
 
   const [loading, setLoading] = useState(false);
-
-  const sendConfigs = useSendTxConfig(
-    chainStore,
-    chainId,
-    account.msgOpts['send'],
-    account.bech32Address,
-    queries.queryBalances,
-    EthereumEndpoint
-  );
 
   const { item } = props.route?.params;
 
@@ -109,7 +95,7 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
         );
 
         const currentOwner = res.data.find(
-          (d) => d.ownerAddress === account.bech32Address
+          d => d.ownerAddress === account.bech32Address
         );
         setLoading(false);
         setOwner(currentOwner);

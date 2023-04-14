@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { colors, spacing, typography } from '../../themes';
+import { colors, spacing } from '../../themes';
 import OWText from '@src/components/text/ow-text';
 const styles = StyleSheet.create({
   container: {
@@ -25,13 +25,13 @@ const ManageIntroScreen: FunctionComponent = () => {
     <View style={styles.container}>
       <View style={styles.boardingTitleContainer}>
         <View>
-          <OWText variant="h1" typo = 'bold' color={colors['purple-h1']}>
+          <OWText variant="h1" typo="bold" color={colors['purple-h1']}>
             Manage both
           </OWText>
-          <OWText variant="h2" typo = 'bold' color={colors['black']}>
+          <OWText variant="h2" typo="bold" color={colors['black']}>
             fungible
           </OWText>
-          <OWText variant="h2" typo = 'bold' color={colors['black']}>
+          <OWText variant="h2" typo="bold" color={colors['black']}>
             {`& non-fungible tokens`}
           </OWText>
         </View>

@@ -7,21 +7,11 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
-import {
-  checkRouter,
-  checkRouterPaddingBottomBar,
-  navigate
-} from '../../../router/root';
+import { checkRouter, navigate } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
 import { spacing } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
@@ -34,7 +24,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer((props) => {
+export const NewLedgerScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<

@@ -8,29 +8,21 @@ import { PageWithScrollView } from '../../../components/page';
 import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { WordChip } from '../../../components/mnemonic';
-import { Button } from '../../../components/button';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-import { useSmartNavigation } from '../../../navigation.provider';
 import { NewMnemonicConfig } from './hook';
 import { RegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { RectButton } from '../../../components/rect-button';
 import { BIP44HDPath } from '@owallet/background';
 import { useStore } from '../../../stores';
-import {
-  navigate,
-  checkRouter,
-  checkRouterPaddingBottomBar
-} from '../../../router/root';
+import { navigate, checkRouter } from '../../../router/root';
 import { spacing, typography } from '../../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { LoadingSpinner } from '../../../components/spinner';
 import { OWalletLogo } from '../owallet-logo';
 import OWButton from '@src/components/button/OWButton';
 import { SCREENS } from '@src/common/constants';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
+export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -67,7 +59,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map((word) => {
+      randomSortedWords.map(word => {
         return {
           word,
           usedIndex: -1
@@ -81,9 +73,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex(
-    (word) => word === undefined
-  );
+  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
 
   const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
