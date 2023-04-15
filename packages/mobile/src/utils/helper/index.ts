@@ -9,7 +9,6 @@ import bs58 from 'bs58';
 import get from 'lodash/get';
 import Big from 'big.js';
 import { isNumber } from 'util';
-import { IDataTransaction } from './types';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -175,71 +174,152 @@ export const convertTypeEvent = (actionValue) => {
     ? getStringAfterMsg(addSpacesToString(actionValue))
     : convertString(actionValue);
 };
+
 export const getValueTransactionHistory = ({
   item,
   address
 }): IDataTransaction => {
-  let isRecipient,
-    isPlus,
-    isMinus = false;
-  let amount = '';
-  let denom = '';
-  let eventType, countEvent, recipient, sender, txhash;
+  let countEvent;
+  let dataEvents = [];
   const transfer = 'transfer';
+  // console.log('EmbedChainInfos: ', EmbedChainInfos);
   if (item?.code === 0) {
-    const logs = get(item, 'logs');
-    const event = logs && find(get(logs, `[0].events`), { type: 'message' });
-    const action = event && find(get(event, 'attributes'), { key: 'action' });
-    const actionValue = action?.value;
-    eventType = convertTypeEvent(actionValue);
-    countEvent = logs?.length > 1 ? logs?.length - 1 : 0;
-    const valueTransfer = find(get(logs, `[0].events`), {
-      type: transfer
-    });
+    const logs = get(item, 'raw_log')
+      ? JSON.parse(get(item, 'raw_log'))
+      : JSON.parse(get(item, 'log'));
+    if (logs?.length > 0) {
+      logs.forEach((itemLog) => {
+        let isRecipient;
+        const event =
+          itemLog && find(get(itemLog, `events`), { type: 'message' });
+        const action =
+          event && find(get(event, 'attributes'), { key: 'action' });
+        const actionValue = action?.value;
+        const moduleEvent = getModuleFromAction(actionValue);
 
-    const amountValue = valueTransfer
-      ? find(valueTransfer?.attributes, { key: 'amount' })
-      : getAmount(logs);
-    recipient =
-      valueTransfer && find(valueTransfer?.attributes, { key: 'recipient' });
-    sender =
-      valueTransfer && find(valueTransfer?.attributes, { key: 'sender' });
-    if (
-      recipient?.value === address &&
-      (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
-        actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send)
-    ) {
-      isRecipient = true;
-    }
+        const eventModule =
+          moduleEvent && find(get(itemLog, `events`), { type: moduleEvent });
+        const moduleAction =
+          eventModule &&
+          find(get(eventModule, 'attributes'), { key: 'action' });
+        const moduleValue = moduleAction && moduleAction?.value;
+        const eventType = convertTypeEvent(
+          moduleValue ? moduleValue : actionValue
+        );
 
-    const matchesAmount = amountValue?.value?.match(/\d+/g);
-    const matchesDenom = amountValue?.value?.match(/[^0-9\.]+/g);
-    amount = matchesAmount?.length > 0 && matchesAmount[0];
-    denom = matchesDenom?.length > 0 && splitSpecialCharacter(matchesDenom[0]);
-    if (recipient?.value === address && !!denom) {
-      isPlus = true;
-    } else if (
-      recipient?.value !== address &&
-      !!denom &&
-      sender?.value === address
-    ) {
-      isMinus = true;
+        countEvent = logs?.length > 1 ? logs?.length - 1 : 0;
+        const valueTransfer =
+          itemLog &&
+          find(get(itemLog, `events`), {
+            type: transfer
+          });
+        let dataTransfer;
+        if (
+          valueTransfer?.attributes &&
+          checkDuplicateAmount(valueTransfer?.attributes)
+        ) {
+          dataTransfer = convertFormatArrayTransfer(valueTransfer?.attributes);
+        } else {
+          dataTransfer = [
+            {
+              amount: valueTransfer
+                ? find(valueTransfer?.attributes, { key: 'amount' })
+                : find(get(eventModule, 'attributes'), { key: 'amount' }),
+              sender: valueTransfer
+                ? find(valueTransfer?.attributes, { key: 'sender' })
+                : find(get(eventModule, 'attributes'), { key: 'from' }) ||
+                  find(get(eventModule, 'attributes'), { key: 'sender' }),
+              recipient: valueTransfer
+                ? find(valueTransfer?.attributes, { key: 'recipient' })
+                : find(get(eventModule, 'attributes'), { key: 'to' }) ||
+                  find(get(eventModule, 'attributes'), { key: 'recipient' })
+            }
+          ];
+        }
+
+        dataTransfer.forEach((item) => {
+          isRecipient =
+            item?.recipient?.value === address &&
+            (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
+              actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send);
+
+          const matchesAmount =
+            get(item, 'amount.value') && item?.amount?.value?.match(/\d+/g);
+          const matchesDenom =
+            get(item, 'amount.value') &&
+            item?.amount?.value?.replace(/^\d+/g, '');
+          // console.log('matchesDenom: ', matchesDenom);
+          item.amountValue = matchesAmount?.length > 0 && matchesAmount[0];
+          item.denom = matchesDenom;
+
+          if (item?.recipient?.value === address) {
+            item.isPlus = true;
+          } else if (
+            item?.recipient?.value !== address &&
+            item?.sender?.value === address
+          ) {
+            item.isMinus = true;
+          }
+        });
+
+        dataEvents.push({
+          dataTransfer,
+          eventType,
+          moduleValue: moduleEvent,
+          eventValue: moduleValue ? moduleValue : actionValue,
+          pathEvent: moduleValue ? `${moduleEvent}.action` : `message.action`,
+          isRecipient
+        });
+      });
     }
   }
 
   return {
     status: item?.code === 0 ? 'success' : 'failed',
-    eventType,
     countEvent,
-    amount,
-    denom,
-    isRecipient,
-    isPlus,
-    isMinus,
-    recipient: recipient?.value,
-    sender: sender?.value,
-    txHash: item?.txhash || item?.hash
+    txHash: item?.txhash || item?.hash,
+    dataEvents
   };
+};
+const convertFormatArrayTransfer = (array) => {
+  let newArray = [];
+
+  let tempObject = {};
+
+  for (let element of array) {
+    tempObject[element.key] = element.value;
+
+    if (tempObject?.amount && tempObject?.sender && tempObject?.recipient) {
+      newArray.push(tempObject);
+
+      tempObject = {};
+    }
+  }
+
+  return newArray;
+};
+const checkDuplicateAmount = (array) => {
+  let count = 0;
+
+  for (let element of array) {
+    if (element.key === 'amount') {
+      count++;
+    }
+  }
+  if (count >= 2) {
+    return true;
+  } else {
+    return false;
+  }
+};
+const getModuleFromAction = (action) => {
+  if (action && action?.includes('.')) {
+    const splitData = action?.split('.');
+    if (splitData?.length > 3) {
+      return splitData[splitData?.length - 3];
+    }
+  }
+  return null;
 };
 function hasSpecialChar(str) {
   let regex = /[^\w\s]/; // sử dụng regex để tìm kiếm ký tự đặc biệt
@@ -433,18 +513,20 @@ function formatNumberSeparate(num) {
   return null;
 }
 export const formatAmount = (amount, decimals = 6) => {
-  if (amount?.length < 12) {
-    const divisor = new Big(10).pow(decimals);
-    const amountFormat = new Big(amount).div(divisor);
-    return removeZeroNumberLast(
-      formatNumberSeparate(amountFormat.toFixed(decimals))
-    );
-  } else {
-    const divisor = new Big(10).pow(16);
-    const amountFormat = new Big(amount).div(divisor);
-    return removeZeroNumberLast(
-      formatNumberSeparate(amountFormat.toFixed(decimals))
-    );
+  if (amount) {
+    if (amount?.length < 12) {
+      const divisor = new Big(10).pow(decimals);
+      const amountFormat = new Big(amount).div(divisor);
+      return removeZeroNumberLast(
+        formatNumberSeparate(amountFormat.toFixed(decimals))
+      );
+    } else {
+      const divisor = new Big(10).pow(16);
+      const amountFormat = new Big(amount).div(divisor);
+      return removeZeroNumberLast(
+        formatNumberSeparate(amountFormat.toFixed(decimals))
+      );
+    }
   }
 };
 const replaceZero = (str) => {

@@ -19,95 +19,94 @@ import { TITLE_TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
 import { useStore } from '@src/stores';
 import moment from 'moment';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import { IOWTransactionItem } from '@src/utils/helper/types';
 
-const OWTransactionItem = observer(({ data, time, ...props }: IOWTransactionItem) => {
-  const { chainStore, accountStore } = useStore();
-  const item = data;
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const {
-    eventType,
-    status,
-    countEvent,
-    amount,
-    denom,
-    isRecipient,
-    isPlus,
-    isMinus,
-    txHash
-  } = getValueTransactionHistory({
-    item:item?.tx_result?item?.tx_result:item,
-    address: account?.bech32Address
-  });
-  const { colors } = useTheme();
-  const styles = styling();
-  return (
-    <TouchableOpacity {...props}>
-      <View style={styles.item}>
-        <View style={[styles.flexRow,{paddingBottom:5}]}>
-          <Text color={colors['blue-300']} size={12}>
-            {formatContractAddress(txHash, 5)}
-          </Text>
-          {!!eventType ? (
-            <Text
-              variant="body2"
-              typo="regular"
-              color={colors['title-modal-login-failed']}
-            >
-              <Text color={colors['purple-700']}>
-                {countEvent > 0 ? `+${countEvent}` : null}
-              </Text>{' '}
-              {isRecipient
-                ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
-                : limitString(eventType, 14)}
-              <View style={styles.iconstyle}>
-                <OWIcon
-                  size={12}
-                  color={
-                    status === 'success'
-                      ? colors['green-500']
-                      : colors['orange-800']
-                  }
-                  name={status === 'success' ? 'check_stroke' : 'close_shape'}
-                />
-              </View>
+const OWTransactionItem = observer(
+  ({ data, time, ...props }: IOWTransactionItem) => {
+    const { chainStore, accountStore } = useStore();
+    const item = data;
+    const account = accountStore.getAccount(chainStore.current.chainId);
+    const { status, countEvent, dataEvents, txHash } =
+      getValueTransactionHistory({
+        item: item?.tx_result ? item?.tx_result : item,
+        address: account?.bech32Address
+      });
+    console.log('dataEvents: ', dataEvents);
+
+    const { colors } = useTheme();
+    const styles = styling();
+    return (
+      <TouchableOpacity {...props}>
+        <View style={styles.item}>
+          <View style={[styles.flexRow, { paddingBottom: 5 }]}>
+            <Text color={colors['blue-300']} size={12}>
+              {formatContractAddress(txHash, 5)}
             </Text>
-          ) : (
-            <Text>--</Text>
-          )}
+            {!!dataEvents[0]?.eventType ? (
+              <Text
+                variant="body2"
+                typo="regular"
+                color={colors['title-modal-login-failed']}
+              >
+                <Text color={colors['purple-700']}>
+                  {countEvent > 0 ? `+${countEvent}` : null}
+                </Text>{' '}
+                {dataEvents[0]?.isRecipient
+                  ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
+                  : limitString(dataEvents[0]?.eventType, 14)}
+                <View style={styles.iconstyle}>
+                  <OWIcon
+                    size={12}
+                    color={
+                      status === 'success'
+                        ? colors['green-500']
+                        : colors['orange-800']
+                    }
+                    name={status === 'success' ? 'check_stroke' : 'close_shape'}
+                  />
+                </View>
+              </Text>
+            ) : (
+              <Text>--</Text>
+            )}
+          </View>
+          <View style={styles.flexRow}>
+            <Text
+              variant="body1"
+              typo="bold"
+              weight={'500'}
+              size={15}
+              color={
+                dataEvents[0]?.dataTransfer[0]?.isPlus
+                  ? colors['green-500']
+                  : dataEvents[0]?.dataTransfer[0]?.isMinus
+                  ? colors['orange-800']
+                  : colors['title-modal-login-failed']
+              }
+              style={styles.amount}
+            >
+              {`${
+                formatAmount(dataEvents[0]?.dataTransfer[0]?.amountValue) &&
+                dataEvents[0]?.dataTransfer[0]?.isPlus
+                  ? '+'
+                  : dataEvents[0]?.dataTransfer[0]?.isMinus &&
+                    formatAmount(dataEvents[0]?.dataTransfer[0]?.amountValue)
+                  ? '-'
+                  : ''
+              }${
+                formatAmount(dataEvents[0]?.dataTransfer[0]?.amountValue) ||
+                '--'
+              }`}{' '}
+              {dataEvents[0]?.dataTransfer[0]?.denom}
+            </Text>
+            <Text style={styles.timeStyle} color={colors['blue-300']}>
+              {(time && moment(time).format('LL')) || item?.height || '--'}
+            </Text>
+          </View>
         </View>
-        <View style={styles.flexRow}>
-          <Text
-            variant="body1"
-            typo="bold"
-            weight={'500'}
-            size={15}
-            color={
-              isPlus
-                ? colors['green-500']
-                : isMinus
-                ? colors['orange-800']
-                : colors['title-modal-login-failed']
-            }
-            style={styles.amount}
-          >
-            {`${
-              amount && formatAmount(amount) && isPlus
-                ? '+'
-                : isMinus && amount && formatAmount(amount)
-                ? '-'
-                : ''
-            }${(amount && formatAmount(amount)) || '--'}`}{' '}
-            {denom}
-          </Text>
-          <Text style={styles.timeStyle} color={colors['blue-300']}>
-            {(time && moment(time).format('LL')) || item?.height || '--'}
-          </Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-});
+      </TouchableOpacity>
+    );
+  }
+);
 
 export default OWTransactionItem;
 
@@ -117,7 +116,7 @@ const styling = () => {
     flexRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems:"center"
+      alignItems: 'center'
     },
     amount: {
       // paddingTop: 8,

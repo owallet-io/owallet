@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-import { TouchableOpacityProps } from 'react-native';
 
 interface IDataTransaction {
   eventType?: string;
@@ -15,8 +13,9 @@ interface IDataTransaction {
   recipient?: string;
   sender?: string;
   txHash?:string;
+  dataEvents?:any[];
 }
-interface IOWTransactionItem extends TouchableOpacityProps {
+interface IOWTransactionItem {
   data?: any;
   time?: string;
 }

@@ -17,25 +17,29 @@ import {
 } from '@src/utils/helper';
 import { useStore } from '@src/stores';
 import moment from 'moment';
-const TransactionDetailScreen = () => {
+import { observer } from 'mobx-react-lite';
+const TransactionDetailScreen = observer(() => {
   const params = useRoute().params;
   const txHash = params?.txHash;
+  const { chainStore, accountStore } = useStore();
   const [data, setData] = useState();
   console.log('data: ', data);
   const { colors } = useTheme();
   useEffect(() => {
-    getDetailByHash(txHash);
+    getDetailByHash(txHash, chainStore?.current?.rest);
     return () => {};
   }, []);
-  const getDetailByHash = async (txHash) => {
+  const getDetailByHash = async (txHash, rest) => {
     try {
-      const txs = await API.getTransactionsByLCD({ method: `/txs/${txHash}` });
+      const txs = await API.getTransactionsByLCD({
+        method: `/txs/${txHash}`,
+        lcdUrl: rest
+      });
       setData(txs?.tx_response);
     } catch (error) {
       console.log('error: ', error);
     }
   };
-  const { chainStore, accountStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const {
@@ -122,7 +126,7 @@ const TransactionDetailScreen = () => {
       </TransactionBox>
     </PageWithScrollView>
   );
-};
+});
 
 export default TransactionDetailScreen;
 

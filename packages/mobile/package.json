@@ -25,7 +25,7 @@
     "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.12 --output-dir build",
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --sourcemap-output ios/main.jsbundle.map --assets-dest ios",
     "bundle:android": "react-native bundle --entry-file index.js --platform android --dev false --bundle-output android/index.android.bundle --sourcemap-output index.android.bundle.map --assets-dest android",
-    "images":"node ./src/scripts/generate-images.js"
+    "images": "node ./src/scripts/generate-images.js"
   },
   "dependencies": {
     "@amplitude/react-native": "^2.7.0",
@@ -142,6 +142,7 @@
     "@babel/plugin-proposal-decorators": "^7.13.5",
     "@babel/plugin-transform-flow-strip-types": "^7.13.0",
     "@babel/runtime": "^7.8.4",
+    "@types/bs58": "^4.0.1",
     "@types/react-native": "^0.63.2",
     "@types/react-native-dotenv": "^0.2.0",
     "@types/react-test-renderer": "^16.9.2",
