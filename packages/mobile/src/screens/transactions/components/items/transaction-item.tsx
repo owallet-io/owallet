@@ -43,7 +43,7 @@ const OWTransactionItem = observer(
             <Text color={colors['blue-300']} size={12}>
               {formatContractAddress(txHash, 5)}
             </Text>
-            {!!dataEvents[0]?.eventType ? (
+            {!!itemTransfer?.eventType ? (
               <Text
                 variant="body2"
                 typo="regular"
@@ -52,9 +52,9 @@ const OWTransactionItem = observer(
                 <Text color={colors['purple-700']}>
                   {countEvent > 0 ? `+${countEvent}` : null}
                 </Text>{' '}
-                {dataEvents[0]?.isRecipient
+                {itemTransfer?.isRecipient
                   ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
-                  : limitString(dataEvents[0]?.eventType, 14)}
+                  : limitString(itemTransfer?.eventType, 14)}
                 <View style={styles.iconstyle}>
                   <OWIcon
                     size={12}
@@ -89,7 +89,7 @@ const OWTransactionItem = observer(
               {`${
                 formatAmount(itemTransfer?.amountValue) && itemTransfer?.isPlus
                   ? '+'
-                  : itemTransfer[0]?.isMinus &&
+                  : itemTransfer?.isMinus &&
                     formatAmount(itemTransfer?.amountValue)
                   ? '-'
                   : ''

@@ -12,7 +12,10 @@ import {
   capitalizedText,
   formatAmount,
   formatContractAddress,
+  getDataFromDataEvent,
+  getValueFromDataEvents,
   getValueTransactionHistory,
+  limitString,
   numberWithCommas
 } from '@src/utils/helper';
 import { useStore } from '@src/stores';
@@ -23,7 +26,6 @@ const TransactionDetailScreen = observer(() => {
   const txHash = params?.txHash;
   const { chainStore, accountStore } = useStore();
   const [data, setData] = useState();
-  console.log('data: ', data);
   const { colors } = useTheme();
   useEffect(() => {
     getDetailByHash(txHash, chainStore?.current?.rest);
@@ -42,34 +44,15 @@ const TransactionDetailScreen = observer(() => {
   };
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const {
-    eventType,
-    status,
-    countEvent,
-    amount,
-    denom,
-    isRecipient,
-    isPlus,
-    isMinus,
-    recipient,
-    sender
-  } = getValueTransactionHistory({
+
+  const { status, countEvent, dataEvents } = getValueTransactionHistory({
     item: data,
     address: account?.bech32Address
   });
+  const itemEvents = getValueFromDataEvents(dataEvents);
   return (
     <PageWithScrollView style={styles.container}>
-      <TransactionBox label={'Received token'}>
-        <ItemReceivedToken
-          valueDisplay={formatContractAddress(sender)}
-          value={sender}
-          label="From"
-        />
-        <ItemReceivedToken
-          valueDisplay={formatContractAddress(recipient)}
-          value={recipient}
-          label="To"
-        />
+      <TransactionBox label={'Infomation'}>
         <ItemReceivedToken
           label="Transaction hash"
           valueProps={{
@@ -78,30 +61,8 @@ const TransactionDetailScreen = observer(() => {
           valueDisplay={formatContractAddress(txHash)}
           value={txHash}
         />
-        <ItemReceivedToken
-          label="Amount"
-          borderBottom={false}
-          btnCopy={false}
-          value={amount}
-          valueProps={{
-            color: isPlus
-              ? colors['green-500']
-              : isMinus
-              ? colors['orange-800']
-              : colors['title-modal-login-failed']
-          }}
-          valueDisplay={`${
-            amount && formatAmount(amount) && isPlus
-              ? '+'
-              : isMinus && amount && formatAmount(amount)
-              ? '-'
-              : ''
-          }${(amount && formatAmount(amount)) || '--'} ${denom || ''}`}
-        />
-      </TransactionBox>
-      <TransactionBox label={'Detail'}>
         <ItemDetail
-          label="Result"
+          label="Status"
           value={capitalizedText(status)}
           valueProps={{
             color:
@@ -124,6 +85,74 @@ const TransactionDetailScreen = observer(() => {
 
         <ItemDetail label="View on Scan" borderBottom={false} />
       </TransactionBox>
+
+      {itemEvents?.value?.map((itemEv, index) => (
+        <TransactionBox
+          label={`Transaction detail (${itemEv?.eventType || ''})`}
+        >
+          {itemEv?.dataTransfer?.map((itemDataTrans, index) => (
+            <>
+              {itemDataTrans?.sender && (
+                <ItemReceivedToken
+                  valueDisplay={formatContractAddress(
+                    typeof itemDataTrans?.sender === 'string'
+                      ? itemDataTrans?.sender
+                      : itemDataTrans?.sender?.value
+                  )}
+                  value={
+                    typeof itemDataTrans?.sender === 'string'
+                      ? itemDataTrans?.sender
+                      : itemDataTrans?.sender?.value
+                  }
+                  label="From"
+                />
+              )}
+              {itemDataTrans?.recipient && (
+                <ItemReceivedToken
+                  valueDisplay={formatContractAddress(
+                    typeof itemDataTrans?.recipient === 'string'
+                      ? itemDataTrans?.recipient
+                      : itemDataTrans?.recipient?.value
+                  )}
+                  value={
+                    typeof itemDataTrans?.recipient === 'string'
+                      ? itemDataTrans?.recipient
+                      : itemDataTrans?.recipient?.value
+                  }
+                  label="To"
+                />
+              )}
+
+              {itemDataTrans?.amountValue && (
+                <ItemReceivedToken
+                  label="Amount"
+                  borderBottom={false}
+                  btnCopy={false}
+                  value={itemDataTrans?.amountValue}
+                  valueProps={{
+                    color: itemDataTrans?.isPlus
+                      ? colors['green-500']
+                      : itemDataTrans?.isMinus
+                      ? colors['orange-800']
+                      : colors['title-modal-login-failed']
+                  }}
+                  valueDisplay={`${
+                    formatAmount(itemDataTrans?.amountValue) &&
+                    itemDataTrans?.isPlus
+                      ? '+'
+                      : itemDataTrans?.isMinus &&
+                        formatAmount(itemDataTrans?.amountValue)
+                      ? '-'
+                      : ''
+                  }${formatAmount(itemDataTrans?.amountValue) || '--'} ${
+                    limitString(itemDataTrans?.denom, 25) || ''
+                  }`}
+                />
+              )}
+            </>
+          ))}
+        </TransactionBox>
+      ))}
     </PageWithScrollView>
   );
 });

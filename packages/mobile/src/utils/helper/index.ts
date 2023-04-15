@@ -130,6 +130,7 @@ export const checkValidDomain = (url: string) => {
 export const _keyExtract = (item, index) => index.toString();
 
 export const formatContractAddress = (address: string, limitFirst = 10) => {
+  
   const fristLetter = address?.slice(0, limitFirst) ?? '';
   const lastLetter = address?.slice(-5) ?? '';
 
@@ -226,11 +227,11 @@ export const getValueTransactionHistory = ({
                 ? find(valueTransfer?.attributes, { key: 'amount' })
                 : find(get(eventModule, 'attributes'), { key: 'amount' }),
               sender: valueTransfer
-                ? find(valueTransfer?.attributes, { key: 'sender' })
+                ? find(valueTransfer?.attributes, { key: 'sender' })?.value
                 : find(get(eventModule, 'attributes'), { key: 'from' }) ||
                   find(get(eventModule, 'attributes'), { key: 'sender' }),
               recipient: valueTransfer
-                ? find(valueTransfer?.attributes, { key: 'recipient' })
+                ? find(valueTransfer?.attributes, { key: 'recipient' })?.value
                 : find(get(eventModule, 'attributes'), { key: 'to' }) ||
                   find(get(eventModule, 'attributes'), { key: 'recipient' })
             }
@@ -253,11 +254,11 @@ export const getValueTransactionHistory = ({
           item.amountValue = matchesAmount?.length > 0 && matchesAmount[0];
           item.denom = matchesDenom;
 
-          if (item?.recipient?.value === address) {
+          if (item?.recipient?.value === address || item?.recipient === address) {
             item.isPlus = true;
           } else if (
             item?.recipient?.value !== address &&
-            item?.sender?.value === address
+            item?.sender?.value === address || (item?.sender && item?.recipient !== address)
           ) {
             item.isMinus = true;
           }
@@ -283,11 +284,6 @@ export const getValueTransactionHistory = ({
   };
 };
 export const getValueFromDataEvents = (arr) => {
-  // if the array has only one element, return it and typeId = 1
-  if (arr.length === 1) {
-    return { value: arr[0], typeId: 1 };
-  }
-
   // if the array has more than one element, check for amountValue
   let result = [];
   for (let item of arr) {
@@ -298,13 +294,13 @@ export const getValueFromDataEvents = (arr) => {
   }
 
   // if the result array is empty, return null and typeId = 0
-  if (result.length === 0) {
-    return { value: arr[0], typeId: 0 };
+  if (arr.length === 1 || result.length === 0) {
+    return { value: [arr[0]], typeId: 1 };
   }
 
   // if the result array has one element, return it and typeId = 2
   if (result.length === 1) {
-    return { value: result[0], typeId: 2 };
+    return { value: [result[0]], typeId: 2 };
   }
 
   // if the result array has more than one element, return it and typeId = 3
@@ -313,8 +309,8 @@ export const getValueFromDataEvents = (arr) => {
 export const getDataFromDataEvent = (itemEvents) => {
   return itemEvents?.typeId !== 3
     ? {
-        ...itemEvents?.value,
-        ...itemEvents?.value?.dataTransfer[0]
+        ...itemEvents?.value[0],
+        ...itemEvents?.value[0]?.dataTransfer[0]
       }
     : itemEvents?.typeId == 3 && {
         ...itemEvents?.value[0],
