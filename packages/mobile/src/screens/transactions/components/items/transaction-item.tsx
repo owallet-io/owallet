@@ -8,6 +8,8 @@ import React from 'react';
 import {
   formatAmount,
   formatContractAddress,
+  getDataFromDataEvent,
+  getValueFromDataEvents,
   getValueTransactionHistory,
   limitString
 } from '@src/utils/helper';
@@ -30,8 +32,8 @@ const OWTransactionItem = observer(
         item: item?.tx_result ? item?.tx_result : item,
         address: account?.bech32Address
       });
-    console.log('dataEvents: ', dataEvents);
-
+    const itemEvents = getValueFromDataEvents(dataEvents);
+    const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();
     return (
@@ -76,27 +78,23 @@ const OWTransactionItem = observer(
               weight={'500'}
               size={15}
               color={
-                dataEvents[0]?.dataTransfer[0]?.isPlus
+                itemTransfer?.isPlus
                   ? colors['green-500']
-                  : dataEvents[0]?.dataTransfer[0]?.isMinus
+                  : itemTransfer?.isMinus
                   ? colors['orange-800']
                   : colors['title-modal-login-failed']
               }
               style={styles.amount}
             >
               {`${
-                formatAmount(dataEvents[0]?.dataTransfer[0]?.amountValue) &&
-                dataEvents[0]?.dataTransfer[0]?.isPlus
+                formatAmount(itemTransfer?.amountValue) && itemTransfer?.isPlus
                   ? '+'
-                  : dataEvents[0]?.dataTransfer[0]?.isMinus &&
-                    formatAmount(dataEvents[0]?.dataTransfer[0]?.amountValue)
+                  : itemTransfer[0]?.isMinus &&
+                    formatAmount(itemTransfer?.amountValue)
                   ? '-'
                   : ''
-              }${
-                formatAmount(dataEvents[0]?.dataTransfer[0]?.amountValue) ||
-                '--'
-              }`}{' '}
-              {dataEvents[0]?.dataTransfer[0]?.denom}
+              }${formatAmount(itemTransfer?.amountValue) || '--'}`}{' '}
+              {limitString(itemTransfer?.denom, 7)}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
               {(time && moment(time).format('LL')) || item?.height || '--'}

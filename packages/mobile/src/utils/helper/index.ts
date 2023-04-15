@@ -142,7 +142,7 @@ export function getLastWord(str) {
   return words[words.length - 1];
 }
 export function limitString(str, limit) {
-  if (str.length > limit) {
+  if (str && str.length > limit) {
     return str.slice(0, limit) + '...';
   } else {
     return str;
@@ -243,11 +243,12 @@ export const getValueTransactionHistory = ({
             (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
               actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send);
 
-          const matchesAmount =
-            get(item, 'amount.value') && item?.amount?.value?.match(/\d+/g);
-          const matchesDenom =
-            get(item, 'amount.value') &&
-            item?.amount?.value?.replace(/^\d+/g, '');
+          const matchesAmount = get(item, 'amount.value')
+            ? item?.amount?.value?.match(/\d+/g)
+            : item?.amount?.match(/\d+/g);
+          const matchesDenom = get(item, 'amount.value')
+            ? item?.amount?.value?.replace(/^\d+/g, '')
+            : item?.amount?.replace(/^\d+/g, '');
           // console.log('matchesDenom: ', matchesDenom);
           item.amountValue = matchesAmount?.length > 0 && matchesAmount[0];
           item.denom = matchesDenom;
@@ -280,6 +281,50 @@ export const getValueTransactionHistory = ({
     txHash: item?.txhash || item?.hash,
     dataEvents
   };
+};
+export const getValueFromDataEvents = (arr) => {
+  // if the array has only one element, return it and typeId = 1
+  if (arr.length === 1) {
+    return { value: arr[0], typeId: 1 };
+  }
+
+  // if the array has more than one element, check for amountValue
+  let result = [];
+  for (let item of arr) {
+    // if any element has amountValue, push it to the result array
+    if (item.dataTransfer.some((data) => data.amountValue)) {
+      result.push(item);
+    }
+  }
+
+  // if the result array is empty, return null and typeId = 0
+  if (result.length === 0) {
+    return { value: arr[0], typeId: 0 };
+  }
+
+  // if the result array has one element, return it and typeId = 2
+  if (result.length === 1) {
+    return { value: result[0], typeId: 2 };
+  }
+
+  // if the result array has more than one element, return it and typeId = 3
+  return { value: result, typeId: 3 };
+};
+export const getDataFromDataEvent = (itemEvents) => {
+  return itemEvents?.typeId !== 3
+    ? {
+        ...itemEvents?.value,
+        ...itemEvents?.value?.dataTransfer[0]
+      }
+    : itemEvents?.typeId == 3 && {
+        ...itemEvents?.value[0],
+        ...{
+          amountValue: 'More',
+          denom: false,
+          isPlus: false,
+          isMinus: false
+        }
+      };
 };
 const convertFormatArrayTransfer = (array) => {
   let newArray = [];
