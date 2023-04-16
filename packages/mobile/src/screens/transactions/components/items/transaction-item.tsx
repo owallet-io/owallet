@@ -33,7 +33,6 @@ const OWTransactionItem = observer(
         address: account?.bech32Address
       });
     const itemEvents = getValueFromDataEvents(dataEvents);
-    console.log('itemEvents: ', JSON.stringify(itemEvents));
     const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();
@@ -88,12 +87,7 @@ const OWTransactionItem = observer(
               style={styles.amount}
             >
               {`${
-                formatAmount(itemTransfer?.amountValue) && itemTransfer?.isPlus
-                  ? '+'
-                  : itemTransfer?.isMinus &&
-                    formatAmount(itemTransfer?.amountValue)
-                  ? '-'
-                  : ''
+                itemTransfer?.isPlus ? '+' : itemTransfer?.isMinus ? '-' : ''
               }${formatAmount(itemTransfer?.amountValue) || '--'}`}{' '}
               {limitString(itemTransfer?.denom, 7)}
             </Text>
@@ -119,7 +113,7 @@ const styling = () => {
     },
     amount: {
       // paddingTop: 8,
-      textTransform: 'uppercase'
+      // textTransform: 'uppercase'
     },
     flex: {
       flex: 1

@@ -251,7 +251,7 @@ export const getValueTransactionHistory = ({
             : item?.amount?.replace(/^\d+/g, '');
           // console.log('matchesDenom: ', matchesDenom);
           item.amountValue = matchesAmount?.length > 0 && matchesAmount[0];
-          item.denom = matchesDenom;
+          item.denom = matchesDenom && matchesDenom?.toUpperCase();
 
           if (
             item?.recipient?.value === address ||
@@ -567,7 +567,7 @@ function formatNumberSeparate(num) {
   return null;
 }
 export const formatAmount = (amount, decimals = 6) => {
-  if (amount !== 'More') {
+  if (amount !== 'More' && amount) {
     if (amount?.length < 12) {
       const divisor = new Big(10).pow(decimals);
       const amountFormat = new Big(amount).div(divisor);
@@ -581,7 +581,7 @@ export const formatAmount = (amount, decimals = 6) => {
         formatNumberSeparate(amountFormat.toFixed(decimals))
       );
     }
-  }else{
+  } else {
     return amount;
   }
 };

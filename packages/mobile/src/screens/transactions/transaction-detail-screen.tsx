@@ -52,7 +52,7 @@ const TransactionDetailScreen = observer(() => {
   const itemEvents = getValueFromDataEvents(dataEvents);
   return (
     <PageWithScrollView style={styles.container}>
-      <TransactionBox label={'Infomation'}>
+      <TransactionBox  label={'Infomation'}>
         <ItemReceivedToken
           label="Transaction hash"
           valueProps={{
@@ -87,7 +87,7 @@ const TransactionDetailScreen = observer(() => {
       </TransactionBox>
 
       {itemEvents?.value?.map((itemEv, index) => (
-        <TransactionBox
+        <TransactionBox key={`tsbox-${index}`}
           label={`Transaction detail (${itemEv?.eventType || ''})`}
         >
           {itemEv?.dataTransfer?.map((itemDataTrans, index) => (
