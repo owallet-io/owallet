@@ -33,6 +33,7 @@ const OWTransactionItem = observer(
         address: account?.bech32Address
       });
     const itemEvents = getValueFromDataEvents(dataEvents);
+    console.log('itemEvents: ', JSON.stringify(itemEvents));
     const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();

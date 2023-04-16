@@ -130,7 +130,6 @@ export const checkValidDomain = (url: string) => {
 export const _keyExtract = (item, index) => index.toString();
 
 export const formatContractAddress = (address: string, limitFirst = 10) => {
-  
   const fristLetter = address?.slice(0, limitFirst) ?? '';
   const lastLetter = address?.slice(-5) ?? '';
 
@@ -254,11 +253,15 @@ export const getValueTransactionHistory = ({
           item.amountValue = matchesAmount?.length > 0 && matchesAmount[0];
           item.denom = matchesDenom;
 
-          if (item?.recipient?.value === address || item?.recipient === address) {
+          if (
+            item?.recipient?.value === address ||
+            item?.recipient === address
+          ) {
             item.isPlus = true;
           } else if (
-            item?.recipient?.value !== address &&
-            item?.sender?.value === address || (item?.sender && item?.recipient !== address)
+            (item?.recipient?.value !== address &&
+              item?.sender?.value === address) ||
+            (item?.sender && item?.recipient !== address)
           ) {
             item.isMinus = true;
           }
@@ -307,12 +310,12 @@ export const getValueFromDataEvents = (arr) => {
   return { value: result, typeId: 3 };
 };
 export const getDataFromDataEvent = (itemEvents) => {
-  return itemEvents?.typeId !== 3
+  return countAmountValue(itemEvents?.value[0]?.dataTransfer) < 2
     ? {
         ...itemEvents?.value[0],
         ...itemEvents?.value[0]?.dataTransfer[0]
       }
-    : itemEvents?.typeId == 3 && {
+    : {
         ...itemEvents?.value[0],
         ...{
           amountValue: 'More',
@@ -321,6 +324,16 @@ export const getDataFromDataEvent = (itemEvents) => {
           isMinus: false
         }
       };
+};
+const countAmountValue = (array) => {
+  let count = 0;
+
+  for (let element of array) {
+    if (element.amountValue) {
+      count++;
+    }
+  }
+  return count;
 };
 const convertFormatArrayTransfer = (array) => {
   let newArray = [];
@@ -554,7 +567,7 @@ function formatNumberSeparate(num) {
   return null;
 }
 export const formatAmount = (amount, decimals = 6) => {
-  if (amount) {
+  if (amount !== 'More') {
     if (amount?.length < 12) {
       const divisor = new Big(10).pow(decimals);
       const amountFormat = new Big(amount).div(divisor);
@@ -568,6 +581,8 @@ export const formatAmount = (amount, decimals = 6) => {
         formatNumberSeparate(amountFormat.toFixed(decimals))
       );
     }
+  }else{
+    return amount;
   }
 };
 const replaceZero = (str) => {
