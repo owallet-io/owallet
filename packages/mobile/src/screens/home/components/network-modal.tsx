@@ -1,12 +1,16 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Alert } from 'react-native';
-import { RectButton } from '../../../components/rect-button';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Alert,
+  TouchableOpacity
+} from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const COINTYPE_NETWORK = {
   118: 'Cosmos',
@@ -20,13 +24,16 @@ export const NetworkModal = ({
   modalStore,
   smartNavigation,
   colors,
-  keyStore,
+  keyRingStore,
   bip44Option
 }) => {
   const styles = styling(colors);
 
   const handleSwitchNetwork = item => {
-    if (keyStore.keyRingType === 'ledger') {
+    console.log('handle', keyRingStore);
+
+    if (keyRingStore.keyRingType === 'ledger') {
+      console.log('get here', keyRingStore.keyRingType);
       Alert.alert(
         'Switch network',
         `You are switching to ${
@@ -47,7 +54,7 @@ export const NetworkModal = ({
             onPress: () => {
               chainStore.selectChain(item?.chainId);
               chainStore.saveLastViewChainId();
-              keyStore.setKeyStoreLedgerAddress(
+              keyRingStore.setkeyRingStoreLedgerAddress(
                 `44'/${item.bip44.coinType ?? item.coinType}'/${
                   bip44Option.bip44HDPath.account
                 }'/${bip44Option.bip44HDPath.change}/${
@@ -61,6 +68,7 @@ export const NetworkModal = ({
         ]
       );
     } else {
+      console.log('get here 222', keyRingStore.keyRingType);
       chainStore.selectChain(item?.chainId);
       chainStore.saveLastViewChainId();
       modalStore.close();
@@ -69,12 +77,17 @@ export const NetworkModal = ({
 
   const _renderItem = ({ item }) => {
     return (
-      <RectButton
+      <TouchableOpacity
         style={{
           ...styles.containerBtn
         }}
         onPress={async () => {
-          handleSwitchNetwork(item);
+          console.log('handle 2');
+          try {
+            handleSwitchNetwork(item);
+          } catch (error) {
+            console.log('error 2', error);
+          }
         }}
       >
         <View
@@ -129,7 +142,7 @@ export const NetworkModal = ({
               }}
               numberOfLines={1}
             >
-              {item.chainName}
+              {item.chainName} 2
             </Text>
           </View>
         </View>
@@ -158,7 +171,7 @@ export const NetworkModal = ({
             />
           </View>
         </View>
-      </RectButton>
+      </TouchableOpacity>
     );
   };
 
@@ -198,7 +211,7 @@ export const NetworkModal = ({
           color: colors['primary-text']
         }}
       >
-        {`Select networks`}
+        {`Select networks 2`}
       </Text>
 
       <View

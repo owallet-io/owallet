@@ -5,7 +5,6 @@ import {
   View
 } from 'react-native';
 import React, { useCallback } from 'react';
-import { Header } from '@react-navigation/stack';
 import OWIcon from '../ow-icon/ow-icon';
 import { useTheme } from '@src/themes/theme-provider';
 import { Text } from '../text';
@@ -15,14 +14,16 @@ import { Hash } from '@owallet/crypto';
 import { NetworkModal } from '@src/screens/home/components';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { HEADER_KEY } from '@src/common/constants';
+import { useBIP44Option } from '@src/screens/register/bip44';
 interface IOWHeaderTitle extends TouchableWithoutFeedbackProps {
   title?: string;
 }
 const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
-  const { chainStore, modalStore } = useStore();
+  const { chainStore, modalStore, keyRingStore } = useStore();
+  const bip44Option = useBIP44Option();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
-  const deterministicNumber = useCallback((chainInfo) => {
+  const deterministicNumber = useCallback(chainInfo => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
     );
@@ -32,7 +33,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   }, []);
 
   const profileColor = useCallback(
-    (chainInfo) => {
+    chainInfo => {
       const random = [colors['purple-400']];
 
       return random[deterministicNumber(chainInfo) % random.length];
@@ -47,6 +48,8 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
         profileColor,
         chainStore,
         modalStore,
+        keyRingStore,
+        bip44Option,
         smartNavigation,
         colors
       })

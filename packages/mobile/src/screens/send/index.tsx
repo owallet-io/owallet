@@ -88,7 +88,7 @@ export const SendScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     if (route?.params?.currency) {
       const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
-        if (cur.type === 'cw20') {
+        if (cur?.type === 'cw20') {
           return cur.coinDenom == route.params.currency;
         }
         if (cur.coinDenom === route.params.currency) {
