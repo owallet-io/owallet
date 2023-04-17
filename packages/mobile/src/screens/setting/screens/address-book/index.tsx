@@ -32,8 +32,7 @@ const addressBookItemComponent = {
   inSetting: View
 };
 
-const styling = () => {
-  const { colors } = useTheme();
+const styling = colors => {
   return StyleSheet.create({
     addressBookRoot: {
       padding: spacing['22'],

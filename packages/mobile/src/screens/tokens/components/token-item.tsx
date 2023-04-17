@@ -76,9 +76,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           balanceCoinDenom,
           amountBalance,
           priceBalance,
-          balanceCoinFull:
-            balance.currency.coinDenom ??
-            balance.currency.originCurrency.coinDenom
+          balanceCoinFull: balance.currency.coinDenom ?? balanceCoinDenom
         });
       }}
     >
