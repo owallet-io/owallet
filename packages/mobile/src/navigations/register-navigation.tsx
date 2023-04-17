@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';
 import useHeaderOptions from '@src/hooks/use-header';
-import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import { OnboardingIntroScreen } from '@src/screens/onboarding';
 import { RegisterIntroScreen } from '@src/screens/register';
 import { RegisterNewUserScreen } from '@src/screens/register/new-user';
@@ -23,7 +23,7 @@ export const RegisterNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
     const headerOptions = useHeaderOptions(
       {
-        title: SCREENS_TITLE[route?.name],
+        title: SCREENS_OPTIONS[route?.name].title,
         headerStyle: {
           backgroundColor: colors['plain-background']
         }

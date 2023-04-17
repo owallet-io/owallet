@@ -31,6 +31,7 @@ import images from '@src/assets/images';
 import { SCREENS, defaultAll } from '@src/common/constants';
 import { navigate } from '@src/router/root';
 import { useNavigation } from '@react-navigation/native';
+import ButtonFilter from './components/button-filter';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore } = useStore();
@@ -247,28 +248,18 @@ const HistoryTransactionsScreen = observer(() => {
     <PageWithView>
       <OWBox style={styles.container}>
         <View style={styles.containerFilter}>
-          <View style={styles.containerType}>
-            <Text color="#8C93A7">Type</Text>
-            <TouchableOpacity onPress={onType} style={styles.typeInput}>
-              <Text variant="body2">{activeType?.label}</Text>
-              <View>
-                <OWIcon name="down" size={15} color={colors['primary-text']} />
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.containerCoin}>
-            <Text color="#8C93A7">Coin</Text>
-            <TouchableOpacity onPress={onCoin} style={styles.coinInput}>
-              <Text variant="body2">
-                {activeCoin?.label
-                  ? activeCoin?.label
-                  : getCoinDenom(activeCoin)}
-              </Text>
-              <View>
-                <OWIcon name="down" size={15} color={colors['primary-text']} />
-              </View>
-            </TouchableOpacity>
-          </View>
+          <ButtonFilter
+            label={'Type'}
+            onPress={onType}
+            value={activeType?.label}
+          />
+          <ButtonFilter
+            label={'Coin'}
+            onPress={onCoin}
+            value={
+              activeCoin?.label ? activeCoin?.label : getCoinDenom(activeCoin)
+            }
+          />
         </View>
         <FlatList
           ListEmptyComponent={<OWEmpty />}
@@ -304,37 +295,8 @@ const styling = () => {
     },
     containerFilter: {
       flexDirection: 'row',
-      paddingBottom: spacing['page-pad']
-    },
-    containerCoin: {
-      flex: 1,
-      paddingLeft: 8
-    },
-    containerType: {
-      flex: 1,
-      paddingRight: 8
-    },
-    typeInput: {
-      borderWidth: 0.5,
-      borderColor: colors['border-input-login'],
-      height: 39,
-      borderRadius: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 20,
-      marginTop: 4
-    },
-    coinInput: {
-      borderWidth: 0.5,
-      borderColor: colors['border-input-login'],
-      height: 39,
-      borderRadius: 10,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 20,
-      marginTop: 4
+      paddingBottom: spacing['page-pad'],
+      justifyContent: 'space-between'
     },
     item: {
       flexDirection: 'row',

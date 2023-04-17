@@ -27,7 +27,6 @@ const TransactionDetailScreen = observer(() => {
   const txHash = params?.txHash;
   const { chainStore, accountStore } = useStore();
   const [data, setData] = useState();
-  console.log('data: ', data);
   const { colors } = useTheme();
   useEffect(() => {
     getDetailByHash(txHash, chainStore?.current?.rest);
@@ -81,7 +80,12 @@ const TransactionDetailScreen = observer(() => {
             data?.gas_wanted
           )}`}
         />
-        <ItemDetail label="Fee" value={`${caculatorFee(gasPrice,data?.gas_used)} ${denomFee && denomFee.toUpperCase() || ''}`} />
+        <ItemDetail
+          label="Fee"
+          value={`${caculatorFee(gasPrice, data?.gas_used)} ${
+            (denomFee && denomFee.toUpperCase()) || ''
+          }`}
+        />
         <ItemDetail
           label="Time"
           value={moment(data?.timestamp).format('MMMM D, YYYY (hh:mm:ss)')}
@@ -98,7 +102,7 @@ const TransactionDetailScreen = observer(() => {
           }`}
         >
           {itemEv?.dataTransfer?.map((itemDataTrans, index) => (
-            <>
+            <View key={`itemEv-${index}`}>
               {itemDataTrans?.sender && (
                 <ItemReceivedToken
                   valueDisplay={formatContractAddress(
@@ -154,7 +158,7 @@ const TransactionDetailScreen = observer(() => {
                   }`}
                 />
               )}
-            </>
+            </View>
           ))}
         </TransactionBox>
       ))}

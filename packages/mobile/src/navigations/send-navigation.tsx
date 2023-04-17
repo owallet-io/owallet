@@ -3,12 +3,12 @@ import React, { FC } from 'react'
 
 import { createStackNavigator } from '@react-navigation/stack';
 import useHeaderOptions from '@src/hooks/use-header';
-import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import TransferTokensScreen from '@src/screens/transfer-tokens/transfer-screen';
 const Stack = createStackNavigator(); 
 export const SendNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation })=>{
-    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name].title }, navigation);
     return headerOptions;
   }
     return (

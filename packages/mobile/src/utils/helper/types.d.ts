@@ -1,4 +1,3 @@
-
 interface IDataTransaction {
   eventType?: string;
   amount?: string;
@@ -12,12 +11,20 @@ interface IDataTransaction {
   isMinus?: boolean;
   recipient?: string;
   sender?: string;
-  txHash?:string;
-  dataEvents?:any[];
+  txHash?: string;
+  dataEvents?: any[];
 }
 interface IOWTransactionItem {
   data?: any;
   time?: string;
 }
+type itemOptions = {
+  title: string;
+  showTabBar?: boolean;
+};
+
+type IScreenOption = {
+  [key in string]: itemOptions;
+};
 
 declare var isCancel: boolean = false;

@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import React, { FC } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import useHeaderOptions from '@src/hooks/use-header';
-import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import { SendScreen } from '@src/screens/send';
 import { TransferNFTScreen } from '@src/screens/transfer-nft';
 import { TransactionDetail, Transactions } from '@src/screens/transactions';
@@ -29,7 +29,7 @@ import TransactionDetailScreen from '@src/screens/transactions/transaction-detai
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation })=>{
-    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name].title }, navigation);
     return headerOptions;
   }
   return (

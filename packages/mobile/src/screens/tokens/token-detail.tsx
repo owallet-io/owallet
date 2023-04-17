@@ -32,6 +32,7 @@ import {
 } from '../transactions/components';
 import {
   PageWithScrollViewInBottomTabView,
+  PageWithView,
   PageWithViewInBottomTabView
 } from '../../components/page';
 import { navigate } from '../../router/root';
@@ -150,7 +151,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   };
   console.log(balanceCoinDenom);
   return (
-    <PageWithViewInBottomTabView>
+    <PageWithView>
       <View
         style={{
           flex: 1
@@ -282,7 +283,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         /> */}
         </OWBox>
       </View>
-    </PageWithViewInBottomTabView>
+    </PageWithView>
   );
 });
 

@@ -1,4 +1,4 @@
-import { TYPE_ACTIONS_COSMOS_HISTORY } from './../../common/constants';
+import { EVENTS, SCREENS, TYPE_ACTIONS_COSMOS_HISTORY } from './../../common/constants';
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
@@ -9,6 +9,7 @@ import bs58 from 'bs58';
 import get from 'lodash/get';
 import Big from 'big.js';
 import { isNumber } from 'util';
+import { DeviceEventEmitter } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -329,7 +330,10 @@ const checkAmountHasDenom = (array) => {
   // if no match is found, return null
   return null;
 };
-
+export const showTabBar = (name)=>{
+  DeviceEventEmitter.emit(EVENTS.hiddenTabBar, { name });
+  return;
+}
 const convertStringToVar = (string) => {
   // split the string by uppercase letters
   let words = string.split(/(?=[A-Z])/);

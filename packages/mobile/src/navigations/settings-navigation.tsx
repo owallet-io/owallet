@@ -11,7 +11,7 @@ import {
   HeaderRightButton,
   PlainHeaderScreenOptionsPreset
 } from '@src/components/header';
-import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import { SettingScreen } from '@src/screens/setting';
 import { OWalletVersionScreen } from '@src/screens/setting/screens/version';
 import { ViewPrivateDataScreen } from '@src/screens/setting/screens/view-private-data';
@@ -23,13 +23,12 @@ export const SettingStackScreen: FC = () => {
   const style = useStyle();
 
   const navigation = useNavigation();
-
   const { colors } = useTheme();
-
-  const { analyticsStore } = useStore();
+  const { analyticsStore, appInitStore } = useStore();
   const handleScreenOptions = ({ route, navigation }) => {
+    appInitStore.updateVisibleTabBar(route?.name);
     const headerOptions = useHeaderOptions(
-      { title: SCREENS_TITLE[route?.name] },
+      { title: SCREENS_OPTIONS[route?.name].title },
       navigation
     );
     return headerOptions;
