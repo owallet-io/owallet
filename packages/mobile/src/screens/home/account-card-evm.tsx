@@ -12,7 +12,7 @@ import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import Big from 'big.js';
 
-export const AccountCard: FunctionComponent<{
+export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const {
@@ -87,23 +87,40 @@ export const AccountCard: FunctionComponent<{
       })
     );
   };
+
   return (
     <AccountBox
       totalBalance={
         chainStore.current.chainId !== TRON_ID && total?.amount
+          ? parseFloat(
+              new Big(parseInt(total.amount.int.value))
+                .div(new Big(10).pow(36))
+                .toString()
+            ).toFixed(5) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+          : chainStore.current.chainId === TRON_ID && total?.amount
+          ? parseFloat(
+              new Big(parseInt(total?.amount?.int))
+                .div(new Big(10).pow(24))
+                .toString()
+            ).toFixed(6) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+          : 0
+      }
+      totalAmount={
+        chainStore.current.chainId !== TRON_ID && total?.amount
           ? (
               parseFloat(
-                new Big(parseInt(total.amount.int.value))
+                new Big(parseInt(total?.amount?.int?.value))
                   .div(new Big(10).pow(36))
                   .toString()
               ) *
               priceStore?.getPrice(
                 chainStore?.current?.stakeCurrency?.coinGeckoId
               )
-            ).toFixed(5)
-          : (
+            ).toFixed(6)
+          : chainStore.current.chainId === TRON_ID && total?.amount
+          ? (
               parseFloat(
-                new Big(parseInt(total.amount.int.value))
+                new Big(parseInt(total?.amount?.int))
                   .div(new Big(10).pow(24))
                   .toString()
               ) *
@@ -111,6 +128,7 @@ export const AccountCard: FunctionComponent<{
                 chainStore?.current?.stakeCurrency?.coinGeckoId
               )
             ).toFixed(6)
+          : 0
       }
       addressComponent={
         <AddressCopyable
@@ -121,21 +139,22 @@ export const AccountCard: FunctionComponent<{
                   keyRingStore.keyRingLedgerAddresses,
                   chainStore.current.chainId
                 )
-              : chainStore.current.chainId === TRON_ID
+              : chainStore.current.chainId === TRON_ID &&
+                account.evmosHexAddress
               ? Address.getBase58Address(account.evmosHexAddress)
               : account.evmosHexAddress
           }
           maxCharacters={22}
         />
       }
-      name={account?.name || '..'}
+      name={account?.name || '...'}
       coinType={`${
         keyRingStore.keyRingType === 'ledger'
           ? chainStore?.current?.bip44?.coinType
           : selected?.bip44HDPath?.coinType ??
             chainStore?.current?.bip44?.coinType
       }`}
-      networkType={'cosmos'}
+      networkType={'evm'}
       onPressBtnMain={onPressBtnMain}
     />
   );

@@ -32,7 +32,7 @@ import { API } from '../../common/api';
 import { TRON_ID } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { colors } = useTheme();
 
@@ -84,7 +84,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [checkAndUpdateChainInfo]);
 
   useEffect(() => {
-    messaging().onNotificationOpenedApp((remoteMessage) => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage
@@ -95,11 +95,11 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     });
     messaging()
       .getInitialNotification()
-      .then(async (remoteMessage) => {
+      .then(async remoteMessage => {
         // const data = JSON.parse(remoteMessage?.data?.data);
         // console.log('message', data.message);
       });
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
       // const formatData = JSON.parse(remoteMessage?.data?.data);
       // console.log('raw', remoteMessage?.data);
       // console.log('formattedData', formatData);
@@ -176,7 +176,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       priceStore.waitFreshResponse(),
       ...queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
-        .balances.map((bal) => {
+        .balances.map(bal => {
           return bal.waitFreshResponse();
         }),
       queries.cosmos.queryRewards
@@ -225,7 +225,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,

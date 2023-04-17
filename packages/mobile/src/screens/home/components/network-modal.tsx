@@ -30,47 +30,49 @@ export const NetworkModal = ({
   const styles = styling(colors);
 
   const handleSwitchNetwork = item => {
-    console.log('handle', keyRingStore);
-
-    if (keyRingStore.keyRingType === 'ledger') {
-      console.log('get here', keyRingStore.keyRingType);
-      Alert.alert(
-        'Switch network',
-        `You are switching to ${
-          COINTYPE_NETWORK[item.bip44.coinType]
-        } network. Please confirm that you have ${
-          COINTYPE_NETWORK[item.bip44.coinType]
-        } App opened before switch network`,
-        [
-          {
-            text: 'Cancel',
-            onPress: () => {
-              modalStore.close();
+    try {
+      if (keyRingStore.keyRingType === 'ledger') {
+        console.log('get here', keyRingStore.keyRingType);
+        Alert.alert(
+          'Switch network',
+          `You are switching to ${
+            COINTYPE_NETWORK[item.bip44.coinType]
+          } network. Please confirm that you have ${
+            COINTYPE_NETWORK[item.bip44.coinType]
+          } App opened before switch network`,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                modalStore.close();
+              },
+              style: 'cancel'
             },
-            style: 'cancel'
-          },
-          {
-            text: 'Switch',
-            onPress: () => {
-              chainStore.selectChain(item?.chainId);
-              chainStore.saveLastViewChainId();
-              keyRingStore.setkeyRingStoreLedgerAddress(
-                `44'/${item.bip44.coinType ?? item.coinType}'/${
-                  bip44Option.bip44HDPath.account
-                }'/${bip44Option.bip44HDPath.change}/${
-                  bip44Option.bip44HDPath.addressIndex
-                }`,
-                item?.chainId
-              );
-              modalStore.close();
+            {
+              text: 'Switch',
+              onPress: () => {
+                chainStore.selectChain(item?.chainId);
+                chainStore.saveLastViewChainId();
+                keyRingStore.setkeyRingStoreLedgerAddress(
+                  `44'/${item.bip44.coinType ?? item.coinType}'/${
+                    bip44Option.bip44HDPath.account
+                  }'/${bip44Option.bip44HDPath.change}/${
+                    bip44Option.bip44HDPath.addressIndex
+                  }`,
+                  item?.chainId
+                );
+                modalStore.close();
+              }
             }
-          }
-        ]
-      );
-    } else {
-      console.log('get here 222', keyRingStore.keyRingType);
-      chainStore.selectChain(item?.chainId);
-      chainStore.saveLastViewChainId();
+          ]
+        );
+      } else {
+        chainStore.selectChain(item?.chainId);
+        chainStore.saveLastViewChainId();
+        modalStore.close();
+      }
+    } catch (error) {
+      alert(JSON.stringify(error.message));
       modalStore.close();
     }
   };
@@ -82,12 +84,7 @@ export const NetworkModal = ({
           ...styles.containerBtn
         }}
         onPress={async () => {
-          console.log('handle 2');
-          try {
-            handleSwitchNetwork(item);
-          } catch (error) {
-            console.log('error 2', error);
-          }
+          handleSwitchNetwork(item);
         }}
       >
         <View
@@ -142,7 +139,7 @@ export const NetworkModal = ({
               }}
               numberOfLines={1}
             >
-              {item.chainName} 2
+              {item.chainName}
             </Text>
           </View>
         </View>
@@ -211,7 +208,7 @@ export const NetworkModal = ({
           color: colors['primary-text']
         }}
       >
-        {`Select networks 2`}
+        {`Select networks`}
       </Text>
 
       <View
