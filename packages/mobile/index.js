@@ -7,12 +7,10 @@ import 'react-native-gesture-handler';
 import 'react-native-url-polyfill/auto';
 
 import { AppRegistry } from 'react-native';
-// add router to send message
 import './init';
 import messaging from '@react-native-firebase/messaging';
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
-import DeviceInfo from 'react-native-device-info';
 import firebase from '@react-native-firebase/app';
 
 const config = {
@@ -32,11 +30,13 @@ const { App } = require('./src/app');
 
 import * as Sentry from '@sentry/react-native';
 
-Sentry.init({
-  dsn: 'https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424',
-  environment: 'production',
-  enableNative: false
-});
+if (!__DEV__) {
+  Sentry.init({
+    dsn: 'https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424',
+    environment: 'production',
+    enableNative: false
+  });
+}
 
 // not using CodePush for development
 const CodePushApp = __DEV__
