@@ -276,7 +276,7 @@ export const getValueTransactionHistory = ({
 
         dataEvents.push({
           dataTransfer,
-          eventType,
+          eventType:eventType && eventType?.trim(),
           moduleValue: moduleEvent,
           eventValue: moduleValue ? moduleValue : actionValue,
           pathEvent: moduleValue ? `${moduleEvent}.action` : `message.action`,
@@ -320,7 +320,9 @@ const checkAmountHasDenom = (array) => {
             return other;
           }
         }
+        return item;
       }
+      
     }
     return null;
   }
@@ -336,6 +338,9 @@ const convertStringToVar = (string) => {
   // join the words with underscore and lowercase them
   return words.join('_').toLowerCase();
 };
+export const caculatorFee = (gasPrice, gasUsed)=>{
+  return gasPrice && gasUsed && new Big(parseInt(gasPrice)).div(parseInt(gasUsed)).toFixed(6) || '0';
+}
 export const getValueFromDataEvents = (arr) => {
   // if the array has more than one element, check for amountValue
   let result = [];

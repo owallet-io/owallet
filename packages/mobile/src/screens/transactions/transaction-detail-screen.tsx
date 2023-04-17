@@ -9,6 +9,7 @@ import ItemDetail from './components/item-details';
 import { API } from '@src/common/api';
 import { useRoute } from '@react-navigation/native';
 import {
+  caculatorFee,
   capitalizedText,
   formatAmount,
   formatContractAddress,
@@ -26,6 +27,7 @@ const TransactionDetailScreen = observer(() => {
   const txHash = params?.txHash;
   const { chainStore, accountStore } = useStore();
   const [data, setData] = useState();
+  console.log('data: ', data);
   const { colors } = useTheme();
   useEffect(() => {
     getDetailByHash(txHash, chainStore?.current?.rest);
@@ -50,9 +52,11 @@ const TransactionDetailScreen = observer(() => {
     address: account?.bech32Address
   });
   const itemEvents = getValueFromDataEvents(dataEvents);
+  const gasPrice = data?.tx?.auth_info?.fee?.amount[0]?.amount;
+  const denomFee = data?.tx?.auth_info?.fee?.amount[0]?.denom;
   return (
     <PageWithScrollView style={styles.container}>
-      <TransactionBox  label={'Infomation'}>
+      <TransactionBox label={'Infomation'}>
         <ItemReceivedToken
           label="Transaction hash"
           valueProps={{
@@ -77,7 +81,7 @@ const TransactionDetailScreen = observer(() => {
             data?.gas_wanted
           )}`}
         />
-        <ItemDetail label="Fee" value="Test" />
+        <ItemDetail label="Fee" value={`${caculatorFee(gasPrice,data?.gas_used)} ${denomFee && denomFee.toUpperCase() || ''}`} />
         <ItemDetail
           label="Time"
           value={moment(data?.timestamp).format('MMMM D, YYYY (hh:mm:ss)')}
@@ -87,8 +91,11 @@ const TransactionDetailScreen = observer(() => {
       </TransactionBox>
 
       {itemEvents?.value?.map((itemEv, index) => (
-        <TransactionBox key={`tsbox-${index}`}
-          label={`Transaction detail (${itemEv?.eventType || ''})`}
+        <TransactionBox
+          key={`tsbox-${index}`}
+          label={`Transaction detail ${
+            itemEv?.eventType ? `(${itemEv?.eventType || ''})` : ''
+          }`}
         >
           {itemEv?.dataTransfer?.map((itemDataTrans, index) => (
             <>
@@ -137,11 +144,9 @@ const TransactionDetailScreen = observer(() => {
                       : colors['title-modal-login-failed']
                   }}
                   valueDisplay={`${
-                    formatAmount(itemDataTrans?.amountValue) &&
                     itemDataTrans?.isPlus
                       ? '+'
-                      : itemDataTrans?.isMinus &&
-                        formatAmount(itemDataTrans?.amountValue)
+                      : itemDataTrans?.isMinus
                       ? '-'
                       : ''
                   }${formatAmount(itemDataTrans?.amountValue) || '--'} ${

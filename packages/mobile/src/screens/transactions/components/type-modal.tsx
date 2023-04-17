@@ -5,6 +5,7 @@ import { Text } from '@src/components/text';
 import { _keyExtract, convertTypeEvent, get } from '@src/utils/helper';
 import { metrics, spacing } from '@src/themes';
 import { OWEmpty } from '@src/components/empty';
+import { IContainerModal } from '../types';
 
 const TypeModal = ({ transactions, active, actionType }) => {
   const getUniqueActions = (dataAction) => {

@@ -25,8 +25,8 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 const OWTransactionItem = observer(
   ({ data, time, ...props }: IOWTransactionItem) => {
     const { chainStore, accountStore } = useStore();
-    const item = data;
     const account = accountStore.getAccount(chainStore.current.chainId);
+    const item = data;
     const { status, countEvent, dataEvents, txHash } =
       getValueTransactionHistory({
         item: item?.tx_result ? item?.tx_result : item,
