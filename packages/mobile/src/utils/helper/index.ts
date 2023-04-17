@@ -226,8 +226,12 @@ export const getValueTransactionHistory = ({
             {
               amount: valueTransfer
                 ? find(valueTransfer?.attributes, { key: 'amount' })
+                : checkAmountHasDenom(get(eventModule, 'attributes'))
+                ? checkAmountHasDenom(get(eventModule, 'attributes'))
                 : find(get(eventModule, 'attributes'), { key: 'amount' }) ||
-                  find(get(eventLastAction, 'attributes'), { key: 'amount' }),
+                  checkAmountHasDenom(get(eventLastAction, 'attributes'))
+                ? checkAmountHasDenom(get(eventLastAction, 'attributes'))
+                : find(get(eventLastAction, 'attributes'), { key: 'amount' }),
               sender: valueTransfer
                 ? find(valueTransfer?.attributes, { key: 'sender' })?.value
                 : find(get(eventModule, 'attributes'), { key: 'from' }) ||
@@ -296,6 +300,34 @@ const convertLastActionToVar = (actionValue) => {
   }
   return null;
 };
+const checkAmountHasDenom = (array) => {
+  // loop through the array
+  if (array) {
+    for (let item of array) {
+      // if the key is "amount" and the value is only a number
+      if (item?.key === 'amount' && /^\d+$/.test(item?.value)) {
+        // store the value as a number
+        let amount = Number(item?.value);
+        // loop through the array again
+        for (let other of array) {
+          // if the key is not "amount" and the value starts with the same number followed by some text
+          if (
+            other?.key !== 'amount' &&
+            other?.value.startsWith(amount.toString()) &&
+            other?.value?.length > amount.toString()?.length
+          ) {
+            // return the item and the other item
+            return other;
+          }
+        }
+      }
+    }
+    return null;
+  }
+  // if no match is found, return null
+  return null;
+};
+
 const convertStringToVar = (string) => {
   // split the string by uppercase letters
   let words = string.split(/(?=[A-Z])/);
