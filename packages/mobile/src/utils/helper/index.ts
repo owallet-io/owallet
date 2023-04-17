@@ -172,7 +172,7 @@ export function getStringAfterMsg(str) {
 export const convertTypeEvent = (actionValue) => {
   return actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
     ? getStringAfterMsg(addSpacesToString(actionValue))
-    : convertString(actionValue);
+    : convertVarToWord(actionValue);
 };
 
 export const getValueTransactionHistory = ({
@@ -196,9 +196,11 @@ export const getValueTransactionHistory = ({
           event && find(get(event, 'attributes'), { key: 'action' });
         const actionValue = action?.value;
         const moduleEvent = getModuleFromAction(actionValue);
-
+        const lastAction = convertLastActionToVar(actionValue);
         const eventModule =
           moduleEvent && find(get(itemLog, `events`), { type: moduleEvent });
+        const eventLastAction =
+          moduleEvent && find(get(itemLog, `events`), { type: lastAction });
         const moduleAction =
           eventModule &&
           find(get(eventModule, 'attributes'), { key: 'action' });
@@ -224,7 +226,8 @@ export const getValueTransactionHistory = ({
             {
               amount: valueTransfer
                 ? find(valueTransfer?.attributes, { key: 'amount' })
-                : find(get(eventModule, 'attributes'), { key: 'amount' }),
+                : find(get(eventModule, 'attributes'), { key: 'amount' }) ||
+                  find(get(eventLastAction, 'attributes'), { key: 'amount' }),
               sender: valueTransfer
                 ? find(valueTransfer?.attributes, { key: 'sender' })?.value
                 : find(get(eventModule, 'attributes'), { key: 'from' }) ||
@@ -285,6 +288,21 @@ export const getValueTransactionHistory = ({
     txHash: item?.txhash || item?.hash,
     dataEvents
   };
+};
+const convertLastActionToVar = (actionValue) => {
+  if (actionValue && actionValue?.includes('.')) {
+    const splitData = actionValue?.split('.');
+    return convertStringToVar(splitData[splitData?.length - 1]);
+  }
+  return null;
+};
+const convertStringToVar = (string) => {
+  // split the string by uppercase letters
+  let words = string.split(/(?=[A-Z])/);
+  // remove the first word "Msg"
+  words.shift();
+  // join the words with underscore and lowercase them
+  return words.join('_').toLowerCase();
 };
 export const getValueFromDataEvents = (arr) => {
   // if the array has more than one element, check for amountValue
@@ -404,19 +422,7 @@ export function removeEmptyElements(array) {
   return array.filter((element) => !!element);
 }
 
-const getAmount = (logs) => {
-  for (let i = 0; i < get(logs, `[0].events`)?.length; i++) {
-    const elementEvent = get(logs, `[0].events`)[i];
-    const valueAmount = find(elementEvent?.attributes, {
-      key: 'amount'
-    });
-    if (valueAmount) {
-      return valueAmount;
-    }
-  }
-  return null;
-};
-function convertString(str) {
+function convertVarToWord(str) {
   const words = str && str.split('_');
   const capitalizedWords =
     words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
