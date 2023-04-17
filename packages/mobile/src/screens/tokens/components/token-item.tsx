@@ -16,6 +16,7 @@ interface TokenItemProps {
   containerStyle?: ViewStyle;
   chainInfo: {
     stakeCurrency: Currency;
+    networkType?: string;
   };
   balance: CoinPretty;
   totalBalance?: number;

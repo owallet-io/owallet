@@ -33,10 +33,6 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  // const queryStakable = queries.queryBalances.getQueryBech32Address(
-  //   account.bech32Address
-  // ).stakable;
-  // const stakable = queryStakable?.balance;
   let totalPrice;
   let total;
   if (account.evmosHexAddress) {
@@ -60,7 +56,6 @@ export const AccountCardEVM: FunctionComponent<{
 
     if (total) {
       totalPrice = priceStore.calculatePrice(total, 'USD');
-      console.log('totalPrice', totalPrice, total);
     }
   }
 

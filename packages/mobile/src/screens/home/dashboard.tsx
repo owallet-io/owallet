@@ -1,21 +1,20 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { Card, OWBox } from '../../components/card';
+import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
-import { TouchableOpacity, View, ViewStyle, StyleSheet } from 'react-native';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import moment from 'moment';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { BarChart, LineChart } from 'react-native-chart-kit';
-import { metrics, spacing } from '../../themes';
+import { API } from '../../common/api';
+import { OWBox } from '../../components/card';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-import { API } from '../../common/api';
-import moment from 'moment';
+import { metrics, spacing } from '../../themes';
 import { nFormatter } from '../../utils/helper';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWEmpty } from '@src/components/empty';
 
-const TWO_HOURS_IN_MINUTES = 24 * 60;
 const DATA_COUNT_DENOM = 4;
-const transformData = (data) => {
+const transformData = data => {
   if (Array.isArray(data)) {
     return data
       .filter(
@@ -24,13 +23,13 @@ const transformData = (data) => {
           index === 0 ||
           index === arr.length - 1
       )
-      .map((item) => [item[0], Math.round(item[1] * 100) / 100]);
+      .map(item => [item[0], Math.round(item[1] * 100) / 100]);
   }
 
   return [];
 };
 
-const formater = (value) => {
+const formater = value => {
   if (value > 1000) {
     return nFormatter(value, 1).value;
   } else {
@@ -38,7 +37,7 @@ const formater = (value) => {
   }
 };
 
-const formatData = (data) => {
+const formatData = data => {
   const labels = [];
   const dataChart = [];
   let suffix = '';
@@ -125,20 +124,20 @@ export const DashboardCard: FunctionComponent<{
       },
       { baseURL: 'https://api.coingecko.com/api/v3' }
     )
-      .then((res) => {
+      .then(res => {
         if (typeof res.data === 'object') {
           setNetworkError(false);
           setData(formatData(transformData(res?.data?.prices)));
           setDataVolumes(formatData(transformData(res?.data?.total_volumes)));
         }
       })
-      .catch((ex) => {
+      .catch(ex => {
         setNetworkError(true);
         console.log('exception querying coinGecko', ex);
       });
   }, [chainStore.current.chainId]);
 
-  const handleChartState = (type) => {
+  const handleChartState = type => {
     setActive(type);
     if (type === 'price') {
       setChartSuffix(data.suffix);
@@ -244,7 +243,7 @@ export const DashboardCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     emptyChart: {
       height: 256,

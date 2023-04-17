@@ -19,7 +19,6 @@ import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;
