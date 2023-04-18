@@ -16,6 +16,7 @@ import { useStore } from '@src/stores';
 import {
   _keyExtract,
   addTimeProperty,
+  delay,
   removeEmptyElements
 } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
@@ -27,12 +28,14 @@ import OWTransactionItem from './components/items/transaction-item';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import TypeModal from './components/type-modal';
 import TokenModal, { getCoinDenom } from './components/token-modal';
-import images from '@src/assets/images';
+
 import { SCREENS, defaultAll } from '@src/common/constants';
 import { navigate } from '@src/router/root';
 import { useNavigation } from '@react-navigation/native';
 import ButtonFilter from './components/button-filter';
 import OWFlatList from '@src/components/page/ow-flat-list';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
+import { Animated } from 'react-native';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore } = useStore();
@@ -47,6 +50,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [activeType, setActiveType] = useState(defaultAll);
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
+  const listRef = useRef(null);
   const perPage = 10;
   const fetchData = useCallback(
     async (url, params, isLoadMore = false) => {
@@ -223,6 +227,39 @@ const HistoryTransactionsScreen = observer(() => {
   //     />
   //   );
   // };
+  const onScrollToTop = () => {
+    listRef.current.scrollToOffset({ offset: 0, animated: true });
+  };
+  const { images } = useTheme();
+  const [offset, setOffset] = useState(0);
+  console.log('offset: ', offset);
+  const handleScroll = (event) => {
+    const scrollOffset = event.nativeEvent.contentOffset.y;
+    handleSetOffset(scrollOffset);
+  };
+  const handleSetOffset = async (scrollOffset) => {
+    try {
+      await delay(200);
+      setOffset(scrollOffset);
+    } catch (error) {}
+  };
+  const [opacity] = useState(new Animated.Value(0));
+  useEffect(() => {
+    if (offset > 350) {
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true
+      }).start();
+    } else {
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true
+      }).start();
+    }
+    return () => {};
+  }, [offset]);
   return (
     <PageWithView>
       <OWBox style={styles.container}>
@@ -241,7 +278,9 @@ const HistoryTransactionsScreen = observer(() => {
           /> */}
         </View>
         <OWFlatList
+          ref={listRef}
           data={data}
+          onScroll={handleScroll}
           onEndReached={onEndReached}
           renderItem={renderItem}
           loadMore={loadMore}
@@ -249,6 +288,21 @@ const HistoryTransactionsScreen = observer(() => {
           onRefresh={onRefresh}
           refreshing={refreshing}
         />
+        <Animated.View
+          style={[
+            styles.fixedScroll,
+            {
+              opacity
+            }
+          ]}
+        >
+          <OWButtonIcon
+            onPress={onScrollToTop}
+            typeIcon="images"
+            source={images.scroll_to_top}
+            sizeIcon={43}
+          />
+        </Animated.View>
       </OWBox>
     </PageWithView>
   );
@@ -259,6 +313,12 @@ export default HistoryTransactionsScreen;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    fixedScroll: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0
+    },
     footer: {
       height: 20
     },

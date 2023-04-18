@@ -34,8 +34,6 @@ const OWTransactionItem = observer(
         address: account?.bech32Address
       });
     const itemEvents = getValueFromDataEvents(dataEvents);
-    console.log('itemEvents: ', itemEvents);
-    // const itemTransfer = '';
     const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();
@@ -112,7 +110,7 @@ const OWTransactionItem = observer(
               {limitString(itemTransfer?.denom, 7)}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
-              {(time && moment(time).format('LL')) || 'Height: 819233'}
+              {(time && moment(time).format('LL')) || `Height: ${item?.height}`}
             </Text>
           </View>
         </View>

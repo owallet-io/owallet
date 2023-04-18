@@ -401,6 +401,11 @@ const countAmountValue = (array) => {
   }
   return count;
 };
+export const delay = (timer = 300) => {
+  setTimeout(() => {
+    return true;
+  }, timer);
+};
 const convertFormatArrayTransfer = (array) => {
   let newArray = [];
 

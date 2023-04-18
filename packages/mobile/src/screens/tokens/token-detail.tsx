@@ -8,11 +8,11 @@ import React, {
 } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import { StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { TokenSymbol } from '../../components/token-symbol';
 import { metrics, spacing, typography } from '../../themes';
-import { _keyExtract } from '../../utils/helper';
+import { _keyExtract, delay } from '../../utils/helper';
 import {
   BuyIcon,
   DepositIcon,
@@ -33,6 +33,7 @@ import { Text } from '@src/components/text';
 import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 import { Skeleton } from '@rneui/themed';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
@@ -43,7 +44,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const styles = styling(colors);
-
+  const listRef = useRef(null);
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
     props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -76,7 +77,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
             url,
             `message.sender='${params?.address}' AND transfer.amount contains '${params?.denom}'`
           );
-          console.log('rs: ', rs);
+          
           const newData = isLoadMore ? [...data, ...rs?.txs] : rs?.txs;
           hasMore.current = rs?.txs?.length === perPage;
           page.current = page.current + 1;
@@ -214,6 +215,39 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     });
     return;
   };
+  const onScrollToTop = () => {
+    listRef.current.scrollToOffset({ offset: 0, animated: true });
+  };
+  const { images } = useTheme();
+  const [offset, setOffset] = useState(0);
+  console.log('offset: ', offset);
+  const handleScroll = (event) => {
+    const scrollOffset = event.nativeEvent.contentOffset.y;
+    handleSetOffset(scrollOffset);
+  };
+  const handleSetOffset = async (scrollOffset) => {
+    try {
+      await delay(200);
+      setOffset(scrollOffset);
+    } catch (error) {}
+  };
+  const [opacity] = useState(new Animated.Value(0));
+  useEffect(() => {
+    if (offset > 350) {
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true
+      }).start();
+    } else {
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true
+      }).start();
+    }
+    return () => {};
+  }, [offset]);
   return (
     <PageWithView>
       <View style={styles.containerBox}>
@@ -297,14 +331,31 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         </View>
 
         <OWFlatList
+          ref={listRef}
           data={data}
           onEndReached={onEndReached}
           renderItem={renderItem}
           loadMore={loadMore}
           onRefresh={onRefresh}
           loading={loading}
+          onScroll={handleScroll}
           refreshing={refreshing}
         />
+        <Animated.View
+          style={[
+            styles.fixedScroll,
+            {
+              opacity
+            }
+          ]}
+        >
+          <OWButtonIcon
+            onPress={onScrollToTop}
+            typeIcon="images"
+            source={images.scroll_to_top}
+            sizeIcon={43}
+          />
+        </Animated.View>
       </OWBox>
     </PageWithView>
   );
@@ -337,5 +388,11 @@ const styling = (colors) =>
     transactionListEmpty: {
       justifyContent: 'center',
       alignItems: 'center'
+    },
+    fixedScroll: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0
     }
   });

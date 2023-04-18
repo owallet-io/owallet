@@ -29,6 +29,8 @@ const images = {
    push: require('./push.png'),
    push_inactive: require('./push_inactive.png'),
    push_inactive_dark: require('./push_inactive_dark.png'),
+   scroll_top: require('./scroll_top.png'),
+   scroll_top_dark: require('./scroll_top_dark.png'),
    success: require('./success.png'),
    success_dark: require('./success_dark.png'),
 };
