@@ -28,6 +28,8 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       }
     }, [permissionStore, permissionStore.waitingDatas]);
 
+    console.log('ledgerInitStore.isInitNeeded', ledgerInitStore.isInitNeeded);
+
     return (
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (

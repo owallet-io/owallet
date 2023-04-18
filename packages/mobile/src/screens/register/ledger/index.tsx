@@ -261,7 +261,12 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       ) : null}
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={styles.heightView} />
-      <OWButton disabled={isCreating} onPress={submit} label={'Next'} />
+      <OWButton
+        loading={isCreating}
+        disabled={isCreating}
+        onPress={submit}
+        label={'Next'}
+      />
       <OWButton type="link" onPress={onGoBack} label={'Go back'} />
 
       {/* Mock element for bottom padding */}

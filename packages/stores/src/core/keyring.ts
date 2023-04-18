@@ -410,7 +410,7 @@ export class KeyRingStore {
     this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
-  // Set the coin type to current key store.
+  // Set the ledger addresses to current key store.
   // And, save it, refresh the key store.
   @flow
   *setKeyStoreLedgerAddress(bip44HDPath: string, chainId: string | number) {

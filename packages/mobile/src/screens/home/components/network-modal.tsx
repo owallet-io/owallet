@@ -33,6 +33,7 @@ export const NetworkModal = ({
     try {
       if (keyRingStore.keyRingType === 'ledger') {
         console.log('get here', keyRingStore.keyRingType);
+
         Alert.alert(
           'Switch network',
           `You are switching to ${
@@ -53,14 +54,19 @@ export const NetworkModal = ({
               onPress: () => {
                 chainStore.selectChain(item?.chainId);
                 chainStore.saveLastViewChainId();
-                keyRingStore.setkeyRingStoreLedgerAddress(
-                  `44'/${item.bip44.coinType ?? item.coinType}'/${
-                    bip44Option.bip44HDPath.account
-                  }'/${bip44Option.bip44HDPath.change}/${
-                    bip44Option.bip44HDPath.addressIndex
-                  }`,
-                  item?.chainId
-                );
+                if (
+                  typeof keyRingStore.setKeyStoreLedgerAddress === 'function'
+                ) {
+                  keyRingStore.setKeyStoreLedgerAddress(
+                    `44'/${item.bip44.coinType ?? item.coinType}'/${
+                      bip44Option.bip44HDPath.account
+                    }'/${bip44Option.bip44HDPath.change}/${
+                      bip44Option.bip44HDPath.addressIndex
+                    }`,
+                    item?.chainId
+                  );
+                }
+
                 modalStore.close();
               }
             }
