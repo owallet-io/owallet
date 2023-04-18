@@ -55,7 +55,7 @@ jobs:
       - name: Git Sumbodule Update
         working-directory: packages/background
         run: |
-          git pull origin tron-network-background
+          git pull origin feat/tron-network-background
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
