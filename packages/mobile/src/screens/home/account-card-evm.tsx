@@ -33,7 +33,6 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  let totalPrice;
   let total;
   if (account.evmosHexAddress) {
     if (keyRingStore.keyRingType === 'ledger') {
@@ -52,10 +51,6 @@ export const AccountCardEVM: FunctionComponent<{
       total = queries.evm.queryEvmBalance.getQueryBalance(
         account.evmosHexAddress
       )?.balance;
-    }
-
-    if (total) {
-      totalPrice = priceStore.calculatePrice(total, 'USD');
     }
   }
 

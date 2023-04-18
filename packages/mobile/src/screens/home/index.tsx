@@ -20,7 +20,7 @@ import { TokensCard } from './tokens-card';
 import { usePrevious } from '../../hooks';
 import { BIP44Selectable } from './bip44-selectable';
 import { useTheme } from '@src/themes/theme-provider';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
 import { colors, spacing } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
@@ -35,6 +35,7 @@ import { TronTokensCard } from './tron-tokens-card';
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { colors } = useTheme();
+  const navigation = useNavigation();
 
   const styles = styling(colors);
   const {
