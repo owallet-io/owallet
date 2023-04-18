@@ -43,6 +43,10 @@ export const BrowserFooterSection: FunctionComponent<{
           }
           return;
         case 'back':
+          if (isSwitchTab) {
+            setIsSwitchTab(false);
+            return;
+          }
           if (typeOf === 'browser') {
             return navigation.navigate('Home', {});
           }

@@ -57,8 +57,8 @@ export const WebpageScreen: FunctionComponent<
   const scrollY = new Animated.Value(0);
   const diffClamp = Animated.diffClamp(scrollY, 0, 80);
   const translateYBottom = diffClamp.interpolate({
-    inputRange: [0, 2],
-    outputRange: [-2, 0]
+    inputRange: [0, 0.1],
+    outputRange: [-0.1, 0]
   });
 
   const webviewRef = useRef<WebView | null>(null);
@@ -262,6 +262,8 @@ export const WebpageScreen: FunctionComponent<
 
   const _onScroll = syntheticEvent => {
     const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
+    console.log('currentOffet', currentOffet);
+
     scrollY.setValue(currentOffet);
   };
 
@@ -277,7 +279,27 @@ export const WebpageScreen: FunctionComponent<
   return (
     <PageWithView backgroundColor={colors['background']} disableSafeArea>
       {isSwitchTab ? (
-        <SwtichTab onPressItem={onPressItem} />
+        <>
+          <SwtichTab onPressItem={onPressItem} />
+          <WebViewStateContext.Provider
+            value={{
+              webView: webviewRef.current,
+              name: props.name,
+              url: currentURL,
+              canGoBack,
+              canGoForward,
+              clearWebViewContext: () => {
+                webviewRef.current = null;
+              }
+            }}
+          >
+            <BrowserFooterSection
+              isSwitchTab={isSwitchTab}
+              setIsSwitchTab={setIsSwitchTab}
+              typeOf={'webview'}
+            />
+          </WebViewStateContext.Provider>
+        </>
       ) : (
         <>
           <WebViewStateContext.Provider
@@ -299,6 +321,7 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 ref={webviewRef}
                 incognito={true}
+                bounces={true}
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onMessage={onMessage}
