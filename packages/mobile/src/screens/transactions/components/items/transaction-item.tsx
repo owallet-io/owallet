@@ -27,9 +27,10 @@ const OWTransactionItem = observer(
     const { chainStore, accountStore } = useStore();
     const account = accountStore.getAccount(chainStore.current.chainId);
     const item = data;
+
     const { status, countEvent, dataEvents, txHash } =
       getValueTransactionHistory({
-        item: item?.tx_result ? item?.tx_result : item,
+        item: item,
         address: account?.bech32Address
       });
     const itemEvents = getValueFromDataEvents(dataEvents);

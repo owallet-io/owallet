@@ -1,4 +1,8 @@
-import { EVENTS, SCREENS, TYPE_ACTIONS_COSMOS_HISTORY } from './../../common/constants';
+import {
+  EVENTS,
+  SCREENS,
+  TYPE_ACTIONS_COSMOS_HISTORY
+} from './../../common/constants';
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
@@ -184,10 +188,10 @@ export const getValueTransactionHistory = ({
   let dataEvents = [];
   const transfer = 'transfer';
   // console.log('EmbedChainInfos: ', EmbedChainInfos);
-  if (item?.code === 0) {
+  if (item?.code === 0 || item?.tx_result?.code === 0) {
     const logs = get(item, 'raw_log')
       ? JSON.parse(get(item, 'raw_log'))
-      : JSON.parse(get(item, 'log'));
+      : JSON.parse(get(item?.tx_result, 'log'));
     if (logs?.length > 0) {
       logs.forEach((itemLog) => {
         let isRecipient;
@@ -245,39 +249,40 @@ export const getValueTransactionHistory = ({
           ];
         }
 
-        dataTransfer.forEach((item) => {
+        dataTransfer.forEach((itDataTransfer) => {
           isRecipient =
-            item?.recipient?.value === address &&
+            itDataTransfer?.recipient?.value === address &&
             (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
               actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send);
 
-          const matchesAmount = get(item, 'amount.value')
-            ? item?.amount?.value?.match(/\d+/g)
-            : item?.amount?.match(/\d+/g);
-          const matchesDenom = get(item, 'amount.value')
-            ? item?.amount?.value?.replace(/^\d+/g, '')
-            : item?.amount?.replace(/^\d+/g, '');
+          const matchesAmount = get(itDataTransfer, 'amount.value')
+            ? itDataTransfer?.amount?.value?.match(/\d+/g)
+            : itDataTransfer?.amount?.match(/\d+/g);
+          const matchesDenom = get(itDataTransfer, 'amount.value')
+            ? itDataTransfer?.amount?.value?.replace(/^\d+/g, '')
+            : itDataTransfer?.amount?.replace(/^\d+/g, '');
           // console.log('matchesDenom: ', matchesDenom);
-          item.amountValue = matchesAmount?.length > 0 && matchesAmount[0];
-          item.denom = matchesDenom && matchesDenom?.toUpperCase();
+          itDataTransfer.amountValue =
+            matchesAmount?.length > 0 && matchesAmount[0];
+          itDataTransfer.denom = matchesDenom && matchesDenom?.toUpperCase();
 
           if (
-            item?.recipient?.value === address ||
-            item?.recipient === address
+            itDataTransfer?.recipient?.value === address ||
+            itDataTransfer?.recipient === address
           ) {
-            item.isPlus = true;
+            itDataTransfer.isPlus = true;
           } else if (
-            (item?.recipient?.value !== address &&
-              item?.sender?.value === address) ||
-            (item?.sender && item?.recipient !== address)
+            (itDataTransfer?.recipient?.value !== address &&
+              itDataTransfer?.sender?.value === address) ||
+            (itDataTransfer?.sender && itDataTransfer?.recipient !== address)
           ) {
-            item.isMinus = true;
+            itDataTransfer.isMinus = true;
           }
         });
 
         dataEvents.push({
           dataTransfer,
-          eventType:eventType && eventType?.trim(),
+          eventType: eventType && eventType?.trim(),
           moduleValue: moduleEvent,
           eventValue: moduleValue ? moduleValue : actionValue,
           pathEvent: moduleValue ? `${moduleEvent}.action` : `message.action`,
@@ -288,7 +293,8 @@ export const getValueTransactionHistory = ({
   }
 
   return {
-    status: item?.code === 0 ? 'success' : 'failed',
+    status:
+      item?.code === 0 || item?.tx_result?.code === 0 ? 'success' : 'failed',
     countEvent,
     txHash: item?.txhash || item?.hash,
     dataEvents
@@ -323,17 +329,16 @@ const checkAmountHasDenom = (array) => {
         }
         return item;
       }
-      
     }
     return null;
   }
   // if no match is found, return null
   return null;
 };
-export const showTabBar = (name)=>{
+export const showTabBar = (name) => {
   DeviceEventEmitter.emit(EVENTS.hiddenTabBar, { name });
   return;
-}
+};
 const convertStringToVar = (string) => {
   // split the string by uppercase letters
   let words = string.split(/(?=[A-Z])/);
@@ -342,9 +347,14 @@ const convertStringToVar = (string) => {
   // join the words with underscore and lowercase them
   return words.join('_').toLowerCase();
 };
-export const caculatorFee = (gasPrice, gasUsed)=>{
-  return gasPrice && gasUsed && new Big(parseInt(gasPrice)).div(parseInt(gasUsed)).toFixed(6) || '0';
-}
+export const caculatorFee = (gasPrice, gasUsed) => {
+  return (
+    (gasPrice &&
+      gasUsed &&
+      new Big(parseInt(gasPrice)).div(parseInt(gasUsed)).toFixed(6)) ||
+    '0'
+  );
+};
 export const getValueFromDataEvents = (arr) => {
   // if the array has more than one element, check for amountValue
   let result = [];
