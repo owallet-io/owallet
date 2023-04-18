@@ -41,6 +41,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [dataType, setDataType] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const page = useRef(1);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
@@ -73,16 +74,13 @@ const HistoryTransactionsScreen = observer(() => {
             hasMore.current = false;
           }
           setData(newData);
-          setLoadMore(false);
-          setLoading(false);
+          setAllLoading();
         } else {
-          setLoadMore(false);
-          setLoading(false);
+          setAllLoading();
         }
       } catch (error) {
         crashlytics().recordError(error);
-        setLoadMore(false);
-        setLoading(false);
+        setAllLoading();
       }
     },
     [data]
@@ -176,9 +174,15 @@ const HistoryTransactionsScreen = observer(() => {
     }
   }, [account?.bech32Address, data, activeCoin, activeType]);
   const onRefresh = () => {
+    setRefreshing(true);
     setActiveType(defaultAll);
     setActiveCoin(defaultAll);
     refreshData({ activeType: defaultAll, activeCoin: defaultAll });
+  };
+  const setAllLoading = () => {
+    setLoadMore(false);
+    setLoading(false);
+    setRefreshing(false);
   };
   const onTransactionDetail = (item) => {
     navigation.navigate(SCREENS.TransactionDetail, {
@@ -243,6 +247,7 @@ const HistoryTransactionsScreen = observer(() => {
           loadMore={loadMore}
           loading={loading}
           onRefresh={onRefresh}
+          refreshing={refreshing}
         />
       </OWBox>
     </PageWithView>

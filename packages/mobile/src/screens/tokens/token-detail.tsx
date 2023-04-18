@@ -41,6 +41,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
   const [loadMore, setLoadMore] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const styles = styling(colors);
 
   const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
@@ -87,19 +88,21 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           }
           // console.log('newData: ', newData);
           setData(newData);
-          setLoadMore(false);
-          setLoading(false);
+          setAllLoading();
         } else {
-          setLoadMore(false);
+          setAllLoading();
         }
       } catch (error) {
-        setLoadMore(false);
-        setLoading(false);
+        setAllLoading();
       }
     },
     [data]
   );
-
+  const setAllLoading = () => {
+    setLoadMore(false);
+    setLoading(false);
+    setRefreshing(false);
+  };
   useEffect(() => {
     refreshData();
     return () => {
@@ -170,8 +173,24 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       );
     }
   }, [account?.bech32Address, data]);
-  const renderItem = ({ item }) => {
-    return <OWTransactionItem data={item} />;
+  const onTransactionDetail = (item) => {
+    console.log('item: ', item);
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.TransactionDetail,
+      params: {
+        txHash: item?.hash
+      }
+    });
+    return;
+  };
+  const renderItem = ({ item, index }) => {
+    return (
+      <OWTransactionItem
+        key={`item-${index}`}
+        onPress={() => onTransactionDetail(item)}
+        data={item}
+      />
+    );
   };
   const refreshData = useCallback(() => {
     page.current = 1;
@@ -186,6 +205,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     );
   }, [chainStore?.current?.rest, account?.bech32Address]);
   const onRefresh = () => {
+    setRefreshing(true);
     refreshData();
   };
   const onTransactions = () => {
@@ -264,12 +284,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           </View>
         </OWBox>
       </View>
-      <OWBox
-        style={{
-          flex: 1,
-          paddingTop: 10
-        }}
-      >
+      <OWBox style={styles.containerListTransaction}>
         <View style={styles.containerTitleList}>
           <Text>Transaction List</Text>
           <OWButton
@@ -288,6 +303,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           loadMore={loadMore}
           onRefresh={onRefresh}
           loading={loading}
+          refreshing={refreshing}
         />
       </OWBox>
     </PageWithView>
@@ -296,6 +312,10 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
 
 const styling = (colors) =>
   StyleSheet.create({
+    containerListTransaction: {
+      flex: 1,
+      paddingTop: 10
+    },
     containerTitleList: {
       flexDirection: 'row',
       justifyContent: 'space-between',

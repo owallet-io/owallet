@@ -52,7 +52,7 @@ const OWTransactionItem = observer(
                 typo="regular"
                 color={colors['title-modal-login-failed']}
               >
-                <Text color={colors['purple-700']}>
+                <Text color={colors['green-500']}>
                   {countEvent > 0 ? `+${countEvent}` : null}
                 </Text>{' '}
                 {itemTransfer?.isRecipient
@@ -112,7 +112,7 @@ const OWTransactionItem = observer(
               {limitString(itemTransfer?.denom, 7)}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
-              {(time && moment(time).format('LL')) || item?.height || '--'}
+              {(time && moment(time).format('LL')) || 'Height: 819233'}
             </Text>
           </View>
         </View>

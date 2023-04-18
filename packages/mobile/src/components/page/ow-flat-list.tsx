@@ -39,6 +39,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     loadMore,
     loading,
     onRefresh,
+    refreshing,
     ...rest
   } = props;
 
@@ -63,7 +64,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         </View>
       }
       refreshControl={
-        <RefreshControl refreshing={false} onRefresh={onRefresh} />
+        <RefreshControl tintColor={colors['text-title']} refreshing={refreshing} onRefresh={onRefresh} />
       }
       {...rest}
     />
