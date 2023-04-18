@@ -123,12 +123,52 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsByLCD: async (url, query, perPage = 10, currentPage = 1) => {
+  getTxsByLCD: async ({
+    url,
+    params = null,
+    prefix = '/cosmos/tx/v1beta1',
+    method = '/txs'
+  }) => {
     try {
       const rs = await API.getByLCD({
         lcdUrl: url,
-        prefix: '/cosmos/tx/v1beta1',
-        method: '/txs',
+        prefix,
+        method,
+        params
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsByRPC: async ({ url, params = null, method = 'tx_search' }) => {
+    try {
+      const rs = await API.requestRpc({
+        url: url,
+        params,
+        method
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxs: async (url, query, perPage = 10, currentPage = 1) => {
+    try {
+      if (typeof query === 'string') {
+        const rs = await API.getTxsByRPC({
+          url,
+          params: {
+            query,
+            page: `${currentPage}`,
+            per_page: `${perPage}`,
+            order_by: 'desc'
+          }
+        });
+        return Promise.resolve(rs);
+      }
+      const rs = await API.getTxsByLCD({
+        url,
         params: {
           events: query,
           ['pagination.count_total']: true,

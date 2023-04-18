@@ -15,9 +15,7 @@ export const BlurredBottomTabBar: FunctionComponent<
   }
 
   const { style, enabledScreens = [], visibleTabBar, ...rest } = props;
-  console.log('visibleTabBar: ', visibleTabBar);
   const [opacity] = useState(new Animated.Value(0));
-  const [scale] = useState(new Animated.Value(0));
   useEffect(() => {
     if (visibleTabBar) {
       Animated.parallel([

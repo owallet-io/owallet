@@ -13,7 +13,7 @@ import bs58 from 'bs58';
 import get from 'lodash/get';
 import Big from 'big.js';
 import { isNumber } from 'util';
-import { DeviceEventEmitter } from 'react-native';
+
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -335,10 +335,6 @@ const checkAmountHasDenom = (array) => {
   // if no match is found, return null
   return null;
 };
-export const showTabBar = (name) => {
-  DeviceEventEmitter.emit(EVENTS.hiddenTabBar, { name });
-  return;
-};
 const convertStringToVar = (string) => {
   // split the string by uppercase letters
   let words = string.split(/(?=[A-Z])/);
@@ -396,10 +392,11 @@ export const getDataFromDataEvent = (itemEvents) => {
 };
 const countAmountValue = (array) => {
   let count = 0;
-
-  for (let element of array) {
-    if (element.amountValue) {
-      count++;
+  if (array && array?.length > 0) {
+    for (let element of array) {
+      if (element?.amountValue) {
+        count++;
+      }
     }
   }
   return count;

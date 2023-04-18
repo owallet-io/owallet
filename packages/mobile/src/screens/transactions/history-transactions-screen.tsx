@@ -39,7 +39,7 @@ const HistoryTransactionsScreen = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
-  const loadingScreen = useLoadingScreen();
+  const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
   const page = useRef(1);
   const navigation = useNavigation();
@@ -57,12 +57,7 @@ const HistoryTransactionsScreen = observer(() => {
         if (hasMore.current) {
           const query = [
             `message.sender='${params?.address}'`,
-            params?.action !== 'All'
-              ? `message.action='${params?.action}'`
-              : '',
-            params?.token !== 'All'
-              ? `transfer.amount CONTAINS '${params?.token?.toLowerCase()}'`
-              : ''
+            params?.action !== 'All' ? `message.action='${params?.action}'` : ''
           ];
           const events = removeEmptyElements(query);
           const rs = await requestData(isLoadMore, events, url);
@@ -79,21 +74,22 @@ const HistoryTransactionsScreen = observer(() => {
           }
           setData(newData);
           setLoadMore(false);
-          loadingScreen.setIsLoading(false);
+          setLoading(false);
         } else {
           setLoadMore(false);
+          setLoading(false);
         }
       } catch (error) {
         crashlytics().recordError(error);
         setLoadMore(false);
-        loadingScreen.setIsLoading(false);
+        setLoading(false);
       }
     },
     [data]
   );
   const getTypeAction = async (url, params) => {
     try {
-      const types = await API.getTxsByLCD(
+      const types = await API.getTxs(
         url,
         [`message.sender='${params?.address}'`],
         100
@@ -104,14 +100,14 @@ const HistoryTransactionsScreen = observer(() => {
   const requestData = async (isLoadMore, query, url) => {
     try {
       if (!isLoadMore) {
-        await loadingScreen.openAsync();
-        const data: any = await API.getTxsByLCD(url, query, perPage, 1);
+        setLoading(true);
+        const data: any = await API.getTxs(url, query, perPage, 1);
         return data;
       } else {
-        return await API.getTxsByLCD(url, query, perPage, page?.current);
+        return await API.getTxs(url, query, perPage, page?.current);
       }
     } catch (error) {
-      loadingScreen.setIsLoading(false);
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -125,7 +121,9 @@ const HistoryTransactionsScreen = observer(() => {
       page.current = 1;
       hasMore.current = true;
       fetchData(
-        chainStore?.current?.rest,
+        activeCoin?.value !== 'All'
+          ? chainStore?.current?.rpc
+          : chainStore?.current?.rest,
         {
           address: account?.bech32Address,
           action: activeType?.value,
@@ -210,17 +208,17 @@ const HistoryTransactionsScreen = observer(() => {
     },
     [activeType]
   );
-  const onCoin = () => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      <TokenModal
-        onActionCoin={onActionCoin}
-        active={
-          activeCoin?.value ? activeCoin?.value : getCoinDenom(activeCoin)
-        }
-      />
-    );
-  };
+  // const onCoin = () => {
+  //   modalStore.setOpen();
+  //   modalStore.setChildren(
+  //     <TokenModal
+  //       onActionCoin={onActionCoin}
+  //       active={
+  //         activeCoin?.value ? activeCoin?.value : getCoinDenom(activeCoin)
+  //       }
+  //     />
+  //   );
+  // };
   return (
     <PageWithView>
       <OWBox style={styles.container}>
@@ -230,19 +228,20 @@ const HistoryTransactionsScreen = observer(() => {
             onPress={onType}
             value={activeType?.label}
           />
-          <ButtonFilter
+          {/* <ButtonFilter
             label={'Coin'}
             onPress={onCoin}
             value={
               activeCoin?.label ? activeCoin?.label : getCoinDenom(activeCoin)
             }
-          />
+          /> */}
         </View>
         <OWFlatList
           data={data}
           onEndReached={onEndReached}
           renderItem={renderItem}
           loadMore={loadMore}
+          loading={loading}
           onRefresh={onRefresh}
         />
       </OWBox>

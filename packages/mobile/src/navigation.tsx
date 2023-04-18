@@ -17,12 +17,17 @@ import { navigationRef } from './router/root';
 import { handleDeepLink } from './utils/helper';
 import { SmartNavigatorProvider } from './navigation.provider';
 import { SCREENS } from './common/constants';
-import { AddressBookStackScreen, MainTabNavigation, OtherNavigation, RegisterNavigation } from './navigations';
-// import useHiddenTabBar from './hooks/use-hidden-tabbar';
+import {
+  AddressBookStackScreen,
+  MainTabNavigation,
+  OtherNavigation,
+  RegisterNavigation
+} from './navigations';
+
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
-  
+
   useEffect(() => {
     Linking.getInitialURL()
       .then((url) => {

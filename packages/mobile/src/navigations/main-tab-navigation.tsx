@@ -1,11 +1,4 @@
-import {
-  DeviceEventEmitter,
-  Image,
-  Platform,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';

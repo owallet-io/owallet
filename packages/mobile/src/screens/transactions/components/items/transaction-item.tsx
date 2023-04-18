@@ -34,6 +34,8 @@ const OWTransactionItem = observer(
         address: account?.bech32Address
       });
     const itemEvents = getValueFromDataEvents(dataEvents);
+    console.log('itemEvents: ', itemEvents);
+    // const itemTransfer = '';
     const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();
@@ -69,7 +71,24 @@ const OWTransactionItem = observer(
                 </View>
               </Text>
             ) : (
-              <Text>--</Text>
+              <View
+                style={{
+                  flexDirection: 'row'
+                }}
+              >
+                <Text>--</Text>
+                <View style={styles.iconstyle}>
+                  <OWIcon
+                    size={12}
+                    color={
+                      status === 'success'
+                        ? colors['green-500']
+                        : colors['orange-800']
+                    }
+                    name={status === 'success' ? 'check_stroke' : 'close_shape'}
+                  />
+                </View>
+              </View>
             )}
           </View>
           <View style={styles.flexRow}>

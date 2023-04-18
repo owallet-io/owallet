@@ -34,9 +34,9 @@ const TransactionDetailScreen = observer(() => {
   }, []);
   const getDetailByHash = async (txHash, rest) => {
     try {
-      const txs = await API.getTransactionsByLCD({
+      const txs = await API.getTxsByLCD({
         method: `/txs/${txHash}`,
-        lcdUrl: rest
+        url: rest
       });
       setData(txs?.tx_response);
     } catch (error) {

@@ -37,7 +37,7 @@ const styling = () => {
       marginTop: 4
     },
     containerInput: {
-      width: '48%'
+      width: '50%'
     }
   });
 };
