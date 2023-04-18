@@ -25,11 +25,6 @@ export const DelegatedCard: FunctionComponent<{
     .getQueryBech32Address(account.bech32Address)
     .getDelegationTo(validatorAddress);
 
-  const unbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    ).unbondings;
-
   const rewards = queries.cosmos.queryRewards
     .getQueryBech32Address(account.bech32Address)
     .getStakableRewardOf(validatorAddress);
