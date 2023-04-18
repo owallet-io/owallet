@@ -53,6 +53,7 @@ export const WebpageScreen: FunctionComponent<
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const { colors } = useTheme();
+  const [pageLoaded, setLoaded] = useState(false);
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const scrollY = new Animated.Value(0);
   const diffClamp = Animated.diffClamp(scrollY, 0, 80);
@@ -156,6 +157,7 @@ export const WebpageScreen: FunctionComponent<
       if (__DEV__) {
         console.log('WebViewMessageEvent', event.nativeEvent.data);
       }
+
       eventEmitter.emit('message', event.nativeEvent);
     },
     [eventEmitter]
@@ -174,6 +176,10 @@ export const WebpageScreen: FunctionComponent<
           `
       );
     }
+  };
+
+  const handleWebViewLoaded = () => {
+    setLoaded(true);
   };
 
   // Start proxy for webview
@@ -262,8 +268,6 @@ export const WebpageScreen: FunctionComponent<
 
   const _onScroll = syntheticEvent => {
     const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
-    console.log('currentOffet', currentOffet);
-
     scrollY.setValue(currentOffet);
   };
 
@@ -321,9 +325,10 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 ref={webviewRef}
                 incognito={true}
-                bounces={true}
+                style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
+                onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
                 onNavigationStateChange={e => {
                   // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
