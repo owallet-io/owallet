@@ -16,23 +16,26 @@ export const BlurredBottomTabBar: FunctionComponent<
 
   const { style, enabledScreens = [], visibleTabBar, ...rest } = props;
   const [opacity] = useState(new Animated.Value(0));
+  const [isDoneAnimated, setIsDoneAnimated] = useState(false);
   useEffect(() => {
     if (visibleTabBar) {
-      Animated.parallel([
-        Animated.timing(opacity, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true
-        })
-      ]).start();
+      setIsDoneAnimated(false);
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true
+      }).start(() => {
+        setIsDoneAnimated(true);
+      });
     } else {
-      Animated.parallel([
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: true
-        })
-      ]).start();
+      setIsDoneAnimated(false);
+      Animated.timing(opacity, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true
+      }).start(() => {
+        setIsDoneAnimated(true);
+      });
     }
     return () => {};
   }, [visibleTabBar]);
@@ -52,7 +55,6 @@ export const BlurredBottomTabBar: FunctionComponent<
 
     return 1;
   })();
-
   return (
     <Animated.View style={{ opacity }}>
       <BlurView
@@ -83,7 +85,8 @@ export const BlurredBottomTabBar: FunctionComponent<
           style={StyleSheet.flatten([
             style,
             {
-              backgroundColor: '#FFFFFF00'
+              backgroundColor: '#FFFFFF00',
+              display: !visibleTabBar && isDoneAnimated ? 'none' : 'flex'
             }
           ])}
           {...rest}

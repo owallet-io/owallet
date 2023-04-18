@@ -300,7 +300,7 @@ const HistoryTransactionsScreen = observer(() => {
             onPress={onScrollToTop}
             typeIcon="images"
             source={images.scroll_to_top}
-            sizeIcon={43}
+            sizeIcon={48}
           />
         </Animated.View>
       </OWBox>

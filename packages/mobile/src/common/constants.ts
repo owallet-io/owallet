@@ -130,7 +130,8 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.TransferTokensScreen]: {
-    title: HEADER_KEY.showNetworkHeader
+    title: HEADER_KEY.showNetworkHeader,
+    showTabBar:true
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader
