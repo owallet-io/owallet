@@ -22,6 +22,7 @@ import {
 import { useStore } from '@src/stores';
 import moment from 'moment';
 import { observer } from 'mobx-react-lite';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 const TransactionDetailScreen = observer(() => {
   const params = useRoute().params;
   const txHash = params?.txHash;
@@ -66,7 +67,16 @@ const TransactionDetailScreen = observer(() => {
         />
         <ItemDetail
           label="Status"
-          value={capitalizedText(status)}
+          value={status ?capitalizedText(status): '--'}
+          iconComponent={<OWIcon
+            size={12}
+            color={
+              status === 'success'
+                ? colors['green-500']
+                : colors['orange-800']
+            }
+            name={status === 'success' ? 'check_stroke' : 'close_shape'}
+          />}
           valueProps={{
             color:
               status === 'success' ? colors['green-500'] : colors['orange-800']
