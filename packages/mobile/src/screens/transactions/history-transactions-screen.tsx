@@ -32,6 +32,7 @@ import { SCREENS, defaultAll } from '@src/common/constants';
 import { navigate } from '@src/router/root';
 import { useNavigation } from '@react-navigation/native';
 import ButtonFilter from './components/button-filter';
+import OWFlatList from '@src/components/page/ow-flat-list';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore } = useStore();
@@ -92,16 +93,11 @@ const HistoryTransactionsScreen = observer(() => {
   );
   const getTypeAction = async (url, params) => {
     try {
-      const types = await API.getTransactionsByLCD({
-        lcdUrl: url,
-        params: {
-          events: [`message.sender='${params?.address}'`],
-          ['pagination.count_total']: true,
-          ['pagination.limit']: 100,
-          ['pagination.offset']: 1,
-          order_by: 'ORDER_BY_DESC'
-        }
-      });
+      const types = await API.getTxsByLCD(
+        url,
+        [`message.sender='${params?.address}'`],
+        100
+      );
       setDataType(types);
     } catch (error) {}
   };
@@ -109,34 +105,15 @@ const HistoryTransactionsScreen = observer(() => {
     try {
       if (!isLoadMore) {
         await loadingScreen.openAsync();
-        const data: any = await API.getTransactionsByLCD({
-          lcdUrl: url,
-          params: {
-            events: query,
-            ['pagination.count_total']: true,
-            ['pagination.limit']: perPage,
-            ['pagination.offset']: 1,
-            order_by: 'ORDER_BY_DESC'
-          }
-        });
+        const data: any = await API.getTxsByLCD(url, query, perPage, 1);
         return data;
       } else {
-        return await API.getTransactionsByLCD({
-          lcdUrl: url,
-          params: {
-            events: query,
-            ['pagination.count_total']: true,
-            ['pagination.limit']: perPage,
-            ['pagination.offset']: page.current,
-            order_by: 'ORDER_BY_DESC'
-          }
-        });
+        return await API.getTxsByLCD(url, query, perPage, page?.current);
       }
     } catch (error) {
       loadingScreen.setIsLoading(false);
     }
   };
-  const { colors } = useTheme();
   useEffect(() => {
     refreshData({ activeType: defaultAll, activeCoin: defaultAll });
     return () => {
@@ -261,21 +238,12 @@ const HistoryTransactionsScreen = observer(() => {
             }
           />
         </View>
-        <FlatList
-          ListEmptyComponent={<OWEmpty />}
+        <OWFlatList
           data={data}
-          keyExtractor={_keyExtract}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
           onEndReached={onEndReached}
-          ListFooterComponent={
-            <View style={styles.footer}>
-              {loadMore ? <ActivityIndicator /> : null}
-            </View>
-          }
-          refreshControl={
-            <RefreshControl refreshing={false} onRefresh={onRefresh} />
-          }
+          renderItem={renderItem}
+          loadMore={loadMore}
+          onRefresh={onRefresh}
         />
       </OWBox>
     </PageWithView>

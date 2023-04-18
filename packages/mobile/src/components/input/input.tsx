@@ -147,6 +147,8 @@ export const TextInput = React.forwardRef<
               {props.paragraph}
             </Text>
           </View>
+        ) : typeof props.paragraph == 'function' ? (
+          props.paragraph()
         ) : (
           props.paragraph
         )

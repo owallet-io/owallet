@@ -108,17 +108,36 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTransactionsByLCD: async ({
+  getByLCD: async ({
     lcdUrl = 'https://lcd.orai.io',
-    prefix = '/cosmos/tx/v1beta1',
-    method = '/txs',
+    prefix,
+    method,
     params = null
   }) => {
     try {
-      let qs = params ? parseObjectToQueryString(params):'';
+      let qs = params ? parseObjectToQueryString(params) : '';
       let url = `${prefix}${method}${qs}`;
       const rs = await API.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsByLCD: async (url, query, perPage = 10, currentPage = 1) => {
+    try {
+      const rs = await API.getByLCD({
+        lcdUrl: url,
+        prefix: '/cosmos/tx/v1beta1',
+        method: '/txs',
+        params: {
+          events: query,
+          ['pagination.count_total']: true,
+          ['pagination.limit']: perPage,
+          ['pagination.offset']: currentPage,
+          order_by: 'ORDER_BY_DESC'
+        }
+      });
+      return Promise.resolve(rs);
     } catch (error) {
       return Promise.reject(error);
     }

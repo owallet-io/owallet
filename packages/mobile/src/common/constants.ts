@@ -124,7 +124,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.TokenDetail]: {
-    title: HEADER_KEY.showNetworkHeader
+    title: 'Token Detail'
   },
   [SCREENS.NftsDetail]: {
     title: HEADER_KEY.showNetworkHeader
