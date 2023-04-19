@@ -62,9 +62,15 @@ export const AccountCardEVM: FunctionComponent<{
       _onPressReceiveModal();
     }
     if (name === 'Send') {
-      smartNavigation.navigateSmart('Send', {
-        currency: chainStore.current.stakeCurrency.coinMinimalDenom
-      });
+      if (chainStore.current.chainId === TRON_ID) {
+        smartNavigation.navigateSmart('SendTron', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      } else {
+        smartNavigation.navigateSmart('Send', {
+          currency: chainStore.current.stakeCurrency.coinMinimalDenom
+        });
+      }
     }
   };
 
