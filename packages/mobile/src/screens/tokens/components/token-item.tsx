@@ -80,6 +80,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         smartNavigation.navigateSmart('Tokens.Detail', {
           balanceCoinDenom,
           amountBalance,
+          balanceCurrency:balance.currency,
           priceBalance,
           balanceCoinFull:
             balance.currency.coinDenom ??
@@ -98,7 +99,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         <TokenSymbol
           style={{
             marginRight: spacing['12'],
-            backgroundColor:colors['bg-icon-token']
+            backgroundColor: colors['bg-icon-token']
           }}
           size={44}
           chainInfo={chainInfo}

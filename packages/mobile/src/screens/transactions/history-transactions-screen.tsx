@@ -50,7 +50,6 @@ const HistoryTransactionsScreen = observer(() => {
   const [activeType, setActiveType] = useState(defaultAll);
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
-  const listRef = useRef(null);
   const perPage = 10;
   const fetchData = useCallback(
     async (url, params, isLoadMore = false) => {
@@ -106,7 +105,7 @@ const HistoryTransactionsScreen = observer(() => {
         const data: any = await API.getTxs(url, query, perPage, 1);
         return data;
       } else {
-        return await API.getTxs(url, query, perPage, page?.current);
+        return await API.getTxs(url, query, perPage, (page?.current - 1) * 10);
       }
     } catch (error) {
       setLoading(false);
@@ -227,39 +226,7 @@ const HistoryTransactionsScreen = observer(() => {
   //     />
   //   );
   // };
-  const onScrollToTop = () => {
-    listRef.current.scrollToOffset({ offset: 0, animated: true });
-  };
-  const { images } = useTheme();
-  const [offset, setOffset] = useState(0);
-  console.log('offset: ', offset);
-  const handleScroll = (event) => {
-    const scrollOffset = event.nativeEvent.contentOffset.y;
-    handleSetOffset(scrollOffset);
-  };
-  const handleSetOffset = async (scrollOffset) => {
-    try {
-      await delay(200);
-      setOffset(scrollOffset);
-    } catch (error) {}
-  };
-  const [opacity] = useState(new Animated.Value(0));
-  useEffect(() => {
-    if (offset > 350) {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true
-      }).start();
-    } else {
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true
-      }).start();
-    }
-    return () => {};
-  }, [offset]);
+
   return (
     <PageWithView>
       <OWBox style={styles.container}>
@@ -278,9 +245,7 @@ const HistoryTransactionsScreen = observer(() => {
           /> */}
         </View>
         <OWFlatList
-          ref={listRef}
           data={data}
-          onScroll={handleScroll}
           onEndReached={onEndReached}
           renderItem={renderItem}
           loadMore={loadMore}
@@ -288,21 +253,6 @@ const HistoryTransactionsScreen = observer(() => {
           onRefresh={onRefresh}
           refreshing={refreshing}
         />
-        <Animated.View
-          style={[
-            styles.fixedScroll,
-            {
-              opacity
-            }
-          ]}
-        >
-          <OWButtonIcon
-            onPress={onScrollToTop}
-            typeIcon="images"
-            source={images.scroll_to_top}
-            sizeIcon={48}
-          />
-        </Animated.View>
       </OWBox>
     </PageWithView>
   );

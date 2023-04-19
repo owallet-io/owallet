@@ -44,9 +44,14 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const styles = styling(colors);
-  const listRef = useRef(null);
-  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
-    props?.route?.params ?? {};
+
+  const {
+    amountBalance,
+    balanceCoinDenom,
+    priceBalance,
+    balanceCoinFull,
+    balanceCurrency
+  } = props?.route?.params ?? {};
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -62,6 +67,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       queryBalances.positiveNativeUnstakables
     )
     .slice(0, 2);
+
   const page = useRef(1);
   const [data, setData] = useState([]);
   const hasMore = useRef(true);
@@ -75,9 +81,9 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
           }
           const rs = await API.getTxs(
             url,
-            `message.sender='${params?.address}' AND transfer.amount contains '${params?.denom}'`
+            `message.sender='${params?.address}' AND transfer.amount CONTAINS '${params?.denom}'`
           );
-          
+
           const newData = isLoadMore ? [...data, ...rs?.txs] : rs?.txs;
           hasMore.current = rs?.txs?.length === perPage;
           page.current = page.current + 1;
@@ -168,7 +174,9 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         chainStore?.current?.rpc,
         {
           address: account?.bech32Address,
-          denom: 'orai'
+          denom:
+            balanceCurrency?.contractAddress ||
+            balanceCurrency?.coinMinimalDenom
         },
         true
       );
@@ -200,7 +208,8 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       chainStore?.current?.rpc,
       {
         address: account?.bech32Address,
-        denom: 'orai'
+        denom:
+          balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
       },
       false
     );
@@ -215,39 +224,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     });
     return;
   };
-  const onScrollToTop = () => {
-    listRef.current.scrollToOffset({ offset: 0, animated: true });
-  };
-  const { images } = useTheme();
-  const [offset, setOffset] = useState(0);
-  console.log('offset: ', offset);
-  const handleScroll = (event) => {
-    const scrollOffset = event.nativeEvent.contentOffset.y;
-    handleSetOffset(scrollOffset);
-  };
-  const handleSetOffset = async (scrollOffset) => {
-    try {
-      await delay(200);
-      setOffset(scrollOffset);
-    } catch (error) {}
-  };
-  const [opacity] = useState(new Animated.Value(0));
-  useEffect(() => {
-    if (offset > 350) {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true
-      }).start();
-    } else {
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true
-      }).start();
-    }
-    return () => {};
-  }, [offset]);
+
   return (
     <PageWithView>
       <View style={styles.containerBox}>
@@ -331,31 +308,14 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         </View>
 
         <OWFlatList
-          ref={listRef}
           data={data}
           onEndReached={onEndReached}
           renderItem={renderItem}
           loadMore={loadMore}
           onRefresh={onRefresh}
           loading={loading}
-          onScroll={handleScroll}
           refreshing={refreshing}
         />
-        <Animated.View
-          style={[
-            styles.fixedScroll,
-            {
-              opacity
-            }
-          ]}
-        >
-          <OWButtonIcon
-            onPress={onScrollToTop}
-            typeIcon="images"
-            source={images.scroll_to_top}
-            sizeIcon={43}
-          />
-        </Animated.View>
       </OWBox>
     </PageWithView>
   );
