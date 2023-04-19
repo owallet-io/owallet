@@ -58,8 +58,10 @@ const HistoryTransactionsScreen = observer(() => {
     async (url, params, isLoadMore = false) => {
       try {
         crashlytics().log('transactions - history - fetchData');
-        if (!isLoadMore) {
+        if (!isLoadMore && !params?.isActiveType) {
           getTypeAction(url, params);
+        } else if (!isLoadMore && params?.isActiveType) {
+          setRefreshing(true);
         }
         if (hasMore.current) {
           const query = [
@@ -89,7 +91,7 @@ const HistoryTransactionsScreen = observer(() => {
         setAllLoading();
       }
     },
-    [data]
+    [data, dataType]
   );
   const getTypeAction = async (url, params) => {
     try {
@@ -125,7 +127,7 @@ const HistoryTransactionsScreen = observer(() => {
     };
   }, [chainStore?.current?.rest, account?.bech32Address]);
   const refreshData = useCallback(
-    ({ activeType, activeCoin }) => {
+    ({ activeType, activeCoin, isActiveType }) => {
       page.current = 1;
       hasMore.current = true;
       fetchData(
@@ -135,6 +137,7 @@ const HistoryTransactionsScreen = observer(() => {
         {
           address: account?.bech32Address,
           action: activeType?.value,
+          isActiveType,
           token: activeCoin?.value
             ? activeCoin?.value
             : getCoinDenom(activeCoin)
@@ -151,7 +154,8 @@ const HistoryTransactionsScreen = observer(() => {
       modalStore.close();
       refreshData({
         activeType: item,
-        activeCoin: activeCoin
+        activeCoin: activeCoin,
+        isActiveType: true
       });
     },
     [activeCoin]
@@ -187,7 +191,11 @@ const HistoryTransactionsScreen = observer(() => {
     setRefreshing(true);
     setActiveType(defaultAll);
     setActiveCoin(defaultAll);
-    refreshData({ activeType: defaultAll, activeCoin: defaultAll });
+    refreshData({
+      activeType: defaultAll,
+      activeCoin: defaultAll,
+      isActiveType: true
+    });
   };
   const setAllLoading = () => {
     setLoadMore(false);
