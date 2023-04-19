@@ -21,7 +21,7 @@ import {
 } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { OWBox } from '@src/components/card';
-import { spacing } from '@src/themes';
+import { metrics, spacing } from '@src/themes';
 import { OWEmpty } from '@src/components/empty';
 import { useLoadingScreen } from '@src/providers/loading-screen';
 import OWTransactionItem from './components/items/transaction-item';
@@ -36,6 +36,7 @@ import ButtonFilter from './components/button-filter';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { Animated } from 'react-native';
+import { Skeleton } from '@rneui/themed';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore } = useStore();
@@ -45,12 +46,14 @@ const HistoryTransactionsScreen = observer(() => {
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingType, setLoadingType] = useState(false);
   const page = useRef(1);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
   const perPage = 10;
+  const { colors } = useTheme();
   const fetchData = useCallback(
     async (url, params, isLoadMore = false) => {
       try {
@@ -90,13 +93,17 @@ const HistoryTransactionsScreen = observer(() => {
   );
   const getTypeAction = async (url, params) => {
     try {
+      setLoadingType(true);
       const types = await API.getTxs(
         url,
         [`message.sender='${params?.address}'`],
         100
       );
+      setLoadingType(false);
       setDataType(types);
-    } catch (error) {}
+    } catch (error) {
+      setLoadingType(false);
+    }
   };
   const requestData = async (isLoadMore, query, url) => {
     try {
@@ -231,11 +238,16 @@ const HistoryTransactionsScreen = observer(() => {
     <PageWithView>
       <OWBox style={styles.container}>
         <View style={styles.containerFilter}>
-          <ButtonFilter
-            label={'Type'}
-            onPress={onType}
-            value={activeType?.label}
-          />
+          {loadingType ? (
+            <SkeletonTypeBtn />
+          ) : (
+            <ButtonFilter
+              label={'Type'}
+              onPress={onType}
+              value={activeType?.label}
+            />
+          )}
+
           {/* <ButtonFilter
             label={'Coin'}
             onPress={onCoin}
@@ -260,6 +272,39 @@ const HistoryTransactionsScreen = observer(() => {
 
 export default HistoryTransactionsScreen;
 
+const SkeletonTypeBtn = () => {
+  const { colors } = useTheme();
+  return (
+    <View>
+      <Skeleton
+        animation="pulse"
+        width={60}
+        height={15}
+        style={{
+          borderRadius: 12,
+          backgroundColor: colors['background-item-list'],
+          marginBottom: 5
+        }}
+        skeletonStyle={{
+          backgroundColor: colors['skeleton']
+        }}
+      />
+      <Skeleton
+        animation="pulse"
+        width={metrics.screenWidth / 2 - 30}
+        height={40}
+        style={{
+          borderRadius: 12,
+          backgroundColor: colors['background-item-list']
+          // marginVertical: 8
+        }}
+        skeletonStyle={{
+          backgroundColor: colors['skeleton']
+        }}
+      />
+    </View>
+  );
+};
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
