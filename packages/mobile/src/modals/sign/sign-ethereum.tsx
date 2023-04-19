@@ -109,7 +109,6 @@ export const SignEthereumModal: FunctionComponent<{
                 from: sendStore.sendObj?.from
               });
 
-
             gasConfig.setGas(estimate);
             feeConfig.setFee(
               new Big(estimate).mul(gasPrice).toFixed(decimals.current)
@@ -198,7 +197,13 @@ export const SignEthereumModal: FunctionComponent<{
                 style={style.flatten(['max-height-214'])}
                 persistentScrollbar={true}
               >
-                <Text>{JSON.stringify(dataSign, null, 2)}</Text>
+                <Text
+                  style={{
+                    color: colors['sub-text']
+                  }}
+                >
+                  {JSON.stringify(dataSign, null, 2)}
+                </Text>
               </ScrollView>
             </View>
           </View>

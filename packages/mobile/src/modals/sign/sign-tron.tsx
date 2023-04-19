@@ -11,7 +11,7 @@ import {
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { Button } from '../../components/button';
-import { colors } from '../../themes';
+import { colors, typography } from '../../themes';
 
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
@@ -80,7 +80,13 @@ export const SignTronModal: FunctionComponent<{
                 style={style.flatten(['max-height-214'])}
                 persistentScrollbar={true}
               >
-                <Text>{JSON.stringify(dataSign, null, 2)}</Text>
+                <Text
+                  style={{
+                    color: colors['sub-text']
+                  }}
+                >
+                  {JSON.stringify(dataSign, null, 2)}
+                </Text>
               </ScrollView>
             </View>
           </View>

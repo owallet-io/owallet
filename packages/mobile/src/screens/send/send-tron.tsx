@@ -7,31 +7,36 @@ import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
 import { AmountInput, FeeButtons, TextInput } from '../../components/input';
-import { Button } from '../../components/button';
+import { OWButton } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
-import { colors, spacing } from '../../themes';
+import { spacing } from '../../themes';
 import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
 import { Address } from '@owallet/crypto';
 import { findLedgerAddressWithChainId } from '../../utils/helper';
+import { useTheme } from '@src/themes/theme-provider';
 
-const styles = StyleSheet.create({
-  sendInputRoot: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    backgroundColor: colors['white'],
-    borderRadius: 24
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      backgroundColor: colors['primary'],
+      borderRadius: 24
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      color: colors['sub-primary-text'],
+      marginBottom: spacing['8']
+    },
+    containerStyle: {
+      backgroundColor: colors['background-box']
+    }
+  });
 
 export const SendTronScreen: FunctionComponent = observer(props => {
   const {
@@ -44,7 +49,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
 
   const [receiveAddress, setReceiveAddress] = useState('');
   const [customFee, setCustomFee] = useState(false);
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const route = useRoute<
     RouteProp<
       Record<
@@ -212,13 +218,14 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             />
           ) : null}
 
-          <Button
-            text="Send"
+          <OWButton
+            label="Send"
             size="large"
             style={{
               backgroundColor: colors['purple-900'],
               borderRadius: 8
             }}
+            loading={account.isSendingMsg === 'send'}
             onPress={async () => {
               let amount;
               if (route?.params?.item?.type === 'trc20') {
