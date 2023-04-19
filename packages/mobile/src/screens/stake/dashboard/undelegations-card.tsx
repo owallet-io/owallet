@@ -199,7 +199,7 @@ export const UndelegationsCard: FunctionComponent<{
                   style={[
                     style.flatten(['height-1']),
                     {
-                      backgroundColor: colors['divider']
+                      backgroundColor: colors['border-input-login']
                     }
                   ]}
                 />
