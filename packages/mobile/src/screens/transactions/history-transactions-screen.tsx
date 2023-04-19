@@ -43,7 +43,6 @@ const HistoryTransactionsScreen = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
-  console.log('dataType: ', dataType);
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);

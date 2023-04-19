@@ -634,7 +634,7 @@ export const formatAmount = (amount, decimals = 6) => {
         formatNumberSeparate(amountFormat.toFixed(decimals))
       );
     } else {
-      const divisor = new Big(10).pow(16);
+      const divisor = new Big(10).pow(18);
       const amountFormat = new Big(amount).div(divisor);
       return removeZeroNumberLast(
         formatNumberSeparate(amountFormat.toFixed(decimals))
@@ -769,7 +769,22 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-
+export const getDenomFromMinimalDenom = (tokens, minimalDenom) => {
+  if (tokens && tokens?.length > 0 && minimalDenom) {
+    const info = tokens?.filter((item, index) => {
+      return (
+        item?.currency?.contractAddress &&
+        item?.currency?.contractAddress?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+      );
+    });
+    if (info?.length > 0) {
+      return info[0]?.currency?.coinDenom;
+    }
+    return minimalDenom;
+  }
+  return minimalDenom;
+};
 export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }

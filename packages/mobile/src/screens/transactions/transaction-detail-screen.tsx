@@ -14,6 +14,7 @@ import {
   formatAmount,
   formatContractAddress,
   getDataFromDataEvent,
+  getDenomFromMinimalDenom,
   getValueFromDataEvents,
   getValueTransactionHistory,
   limitString,
@@ -26,7 +27,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 const TransactionDetailScreen = observer(() => {
   const params = useRoute().params;
   const txHash = params?.txHash;
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
   const [data, setData] = useState();
   const { colors } = useTheme();
   useEffect(() => {
@@ -52,8 +53,19 @@ const TransactionDetailScreen = observer(() => {
     address: account?.bech32Address
   });
   const itemEvents = getValueFromDataEvents(dataEvents);
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const gasPrice = data?.tx?.auth_info?.fee?.amount[0]?.amount;
   const denomFee = data?.tx?.auth_info?.fee?.amount[0]?.denom;
+  const queryBalances = queriesStore
+    .get(chainStore.current.chainId)
+    .queryBalances.getQueryBech32Address(
+      chainStore.current.networkType === 'evm'
+        ? accountInfo.evmosHexAddress
+        : accountInfo.bech32Address
+    );
+
+  const tokens = queryBalances.balances;
+  console.log('tokens: ', tokens);
   return (
     <PageWithScrollView style={styles.container}>
       <TransactionBox label={'Infomation'}>
@@ -165,7 +177,10 @@ const TransactionDetailScreen = observer(() => {
                       ? '-'
                       : ''
                   }${formatAmount(itemDataTrans?.amountValue) || '--'} ${
-                    limitString(itemDataTrans?.denom, 25) || ''
+                    limitString(
+                      getDenomFromMinimalDenom(tokens, itemDataTrans?.denom),
+                      25
+                    ) || ''
                   }`}
                 />
               )}

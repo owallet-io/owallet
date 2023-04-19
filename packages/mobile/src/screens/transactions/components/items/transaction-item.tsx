@@ -9,6 +9,7 @@ import {
   formatAmount,
   formatContractAddress,
   getDataFromDataEvent,
+  getDenomFromMinimalDenom,
   getValueFromDataEvents,
   getValueTransactionHistory,
   limitString
@@ -24,10 +25,19 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const OWTransactionItem = observer(
   ({ data, time, ...props }: IOWTransactionItem) => {
-    const { chainStore, accountStore } = useStore();
+    const { chainStore, accountStore, queriesStore } = useStore();
     const account = accountStore.getAccount(chainStore.current.chainId);
+    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
     const item = data;
+    const queryBalances = queriesStore
+      .get(chainStore.current.chainId)
+      .queryBalances.getQueryBech32Address(
+        chainStore.current.networkType === 'evm'
+          ? accountInfo.evmosHexAddress
+          : accountInfo.bech32Address
+      );
 
+    const tokens = queryBalances.balances;
     const { status, countEvent, dataEvents, txHash } =
       getValueTransactionHistory({
         item: item,
@@ -107,7 +117,10 @@ const OWTransactionItem = observer(
               {`${
                 itemTransfer?.isPlus ? '+' : itemTransfer?.isMinus ? '-' : ''
               }${formatAmount(itemTransfer?.amountValue) || '--'}`}{' '}
-              {limitString(itemTransfer?.denom, 7)}
+              {limitString(
+                getDenomFromMinimalDenom(tokens, itemTransfer?.denom),
+                7
+              )}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
               {(time && moment(time).format('LL')) || `Height: ${item?.height}`}
