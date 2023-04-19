@@ -43,6 +43,7 @@ const HistoryTransactionsScreen = observer(() => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
+  console.log('dataType: ', dataType);
   const [loading, setLoading] = useState(false);
   const [loadMore, setLoadMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -53,7 +54,6 @@ const HistoryTransactionsScreen = observer(() => {
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
   const perPage = 10;
-  const { colors } = useTheme();
   const fetchData = useCallback(
     async (url, params, isLoadMore = false) => {
       try {
@@ -249,11 +249,14 @@ const HistoryTransactionsScreen = observer(() => {
           {loadingType ? (
             <SkeletonTypeBtn />
           ) : (
-            <ButtonFilter
-              label={'Type'}
-              onPress={onType}
-              value={activeType?.label}
-            />
+            dataType?.txs &&
+            dataType?.txs?.length > 0 && (
+              <ButtonFilter
+                label={'Type'}
+                onPress={onType}
+                value={activeType?.label}
+              />
+            )
           )}
 
           {/* <ButtonFilter

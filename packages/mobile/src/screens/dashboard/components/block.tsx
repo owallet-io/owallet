@@ -119,7 +119,7 @@ export const BlockCard: FunctionComponent<{
               style={{
                 paddingHorizontal: 12,
                 paddingVertical: 4,
-                backgroundColor: colors['purple-10'],
+                backgroundColor: colors['background-item-list'],
                 borderRadius: 4,
                 marginBottom: 4
               }}
@@ -236,7 +236,7 @@ const styling = () => {
     blockTitle: {
       fontSize: 14,
       lineHeight: 20,
-      color: colors['primary-text']
+      color: colors['text-dashboard']
     },
     blockValue: {
       fontSize: 34,
@@ -247,7 +247,7 @@ const styling = () => {
     blockSub: {
       fontSize: 12,
       lineHeight: 16,
-      color: colors['gray-600']
+      color: colors['text-dashboard']
     }
   });
 };

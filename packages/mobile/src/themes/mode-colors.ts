@@ -173,6 +173,7 @@ const modeColors = {
   'background-input-modal': ['#0E121D', '#FFFFFF'],
   'text-value-input-login': ['#E2DEEB', '#1C1C1E'], //icon input eyes
   'text-label-input': ['#C7C7CC', '#48484A'], //note under input
+  'text-dashboard': [colorsCode['blue-300'], '#48484A'], //note under input
   //login-success
   'text-content-success': ['#E2DEEB', '#5F5E77'],
   'text-btn-link': ['#945EF8', '#8B1BFB'],

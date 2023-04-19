@@ -67,16 +67,18 @@ const TransactionDetailScreen = observer(() => {
         />
         <ItemDetail
           label="Status"
-          value={status ?capitalizedText(status): '--'}
-          iconComponent={<OWIcon
-            size={12}
-            color={
-              status === 'success'
-                ? colors['green-500']
-                : colors['orange-800']
-            }
-            name={status === 'success' ? 'check_stroke' : 'close_shape'}
-          />}
+          value={status ? capitalizedText(status) : '--'}
+          iconComponent={
+            <OWIcon
+              size={12}
+              color={
+                status === 'success'
+                  ? colors['green-500']
+                  : colors['orange-800']
+              }
+              name={status === 'success' ? 'check_stroke' : 'close_shape'}
+            />
+          }
           valueProps={{
             color:
               status === 'success' ? colors['green-500'] : colors['orange-800']
@@ -147,7 +149,6 @@ const TransactionDetailScreen = observer(() => {
               {itemDataTrans?.amountValue && (
                 <ItemReceivedToken
                   label="Amount"
-                  borderBottom={false}
                   btnCopy={false}
                   value={itemDataTrans?.amountValue}
                   valueProps={{
