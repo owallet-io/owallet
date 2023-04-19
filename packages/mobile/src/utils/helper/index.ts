@@ -625,21 +625,17 @@ function formatNumberSeparate(num) {
   }
   return null;
 }
-export const formatAmount = (amount, decimals = 6) => {
-  if (amount !== 'More' && amount) {
-    if (amount?.length < 12) {
-      const divisor = new Big(10).pow(decimals);
-      const amountFormat = new Big(amount).div(divisor);
-      return removeZeroNumberLast(
-        formatNumberSeparate(amountFormat.toFixed(decimals))
-      );
-    } else {
-      const divisor = new Big(10).pow(18);
-      const amountFormat = new Big(amount).div(divisor);
-      return removeZeroNumberLast(
-        formatNumberSeparate(amountFormat.toFixed(decimals))
-      );
-    }
+export const formatAmount = (amount, minimalDenom, tokens) => {
+  const decimals = amount?.length < 12 ? 6 : 18;
+  if (amount !== 'More' && amount && minimalDenom && tokens?.length > 0) {
+    const currency = getCurrencyByMinimalDenom(tokens, minimalDenom);
+    const divisor = new Big(10).pow(currency?.coinDecimals || decimals);
+    const amountFormat = new Big(amount).div(divisor);
+    return removeZeroNumberLast(
+      formatNumberSeparate(
+        amountFormat.toFixed(currency?.coinDecimals || decimals)
+      )
+    );
   } else {
     return amount;
   }
@@ -769,7 +765,7 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-export const getDenomFromMinimalDenom = (tokens, minimalDenom) => {
+export const getCurrencyByMinimalDenom = (tokens, minimalDenom) => {
   if (tokens && tokens?.length > 0 && minimalDenom) {
     const info = tokens?.filter((item, index) => {
       return (
@@ -779,11 +775,11 @@ export const getDenomFromMinimalDenom = (tokens, minimalDenom) => {
       );
     });
     if (info?.length > 0) {
-      return info[0]?.currency?.coinDenom;
+      return info[0]?.currency;
     }
-    return minimalDenom;
+    return null;
   }
-  return minimalDenom;
+  return null;
 };
 export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';

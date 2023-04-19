@@ -9,7 +9,7 @@ import {
   formatAmount,
   formatContractAddress,
   getDataFromDataEvent,
-  getDenomFromMinimalDenom,
+  getCurrencyByMinimalDenom,
   getValueFromDataEvents,
   getValueTransactionHistory,
   limitString
@@ -116,9 +116,16 @@ const OWTransactionItem = observer(
             >
               {`${
                 itemTransfer?.isPlus ? '+' : itemTransfer?.isMinus ? '-' : ''
-              }${formatAmount(itemTransfer?.amountValue) || '--'}`}{' '}
+              }${
+                formatAmount(
+                  itemTransfer?.amountValue,
+                  itemTransfer?.denom,
+                  tokens
+                ) || '--'
+              }`}{' '}
               {limitString(
-                getDenomFromMinimalDenom(tokens, itemTransfer?.denom),
+                getCurrencyByMinimalDenom(tokens, itemTransfer?.denom)
+                  ?.coinDenom || itemTransfer?.denom,
                 7
               )}
             </Text>

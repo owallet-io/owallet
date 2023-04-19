@@ -14,7 +14,7 @@ import {
   formatAmount,
   formatContractAddress,
   getDataFromDataEvent,
-  getDenomFromMinimalDenom,
+  getCurrencyByMinimalDenom,
   getValueFromDataEvents,
   getValueTransactionHistory,
   limitString,
@@ -24,6 +24,7 @@ import { useStore } from '@src/stores';
 import moment from 'moment';
 import { observer } from 'mobx-react-lite';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import { DenomHelper } from '@owallet/common';
 const TransactionDetailScreen = observer(() => {
   const params = useRoute().params;
   const txHash = params?.txHash;
@@ -66,6 +67,7 @@ const TransactionDetailScreen = observer(() => {
 
   const tokens = queryBalances.balances;
   console.log('tokens: ', tokens);
+
   return (
     <PageWithScrollView style={styles.container}>
       <TransactionBox label={'Infomation'}>
@@ -176,9 +178,16 @@ const TransactionDetailScreen = observer(() => {
                       : itemDataTrans?.isMinus
                       ? '-'
                       : ''
-                  }${formatAmount(itemDataTrans?.amountValue) || '--'} ${
+                  }${
+                    formatAmount(
+                      itemDataTrans?.amountValue,
+                      itemDataTrans?.denom,
+                      tokens
+                    ) || '--'
+                  } ${
                     limitString(
-                      getDenomFromMinimalDenom(tokens, itemDataTrans?.denom),
+                      getCurrencyByMinimalDenom(tokens, itemDataTrans?.denom)
+                        ?.coinDenom || itemDataTrans?.denom,
                       25
                     ) || ''
                   }`}
