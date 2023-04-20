@@ -28,13 +28,13 @@ export const PageWithScrollView = forwardRef<
     }
   >
 >((props, ref) => {
-  const style = useStyle();
+  const styles = useStyle();
 
   useSetFocusedScreen();
   const scrollY = usePageRegisterScrollYValue();
   const { colors } = useTheme();
   const {
-    style: propStyle,
+    style,
     fixed,
     onScroll,
     disableSafeArea,
@@ -67,7 +67,7 @@ export const PageWithScrollView = forwardRef<
           <GradientBackground />
         )}
       </View>
-      <ContainerElement style={style.get('flex-1')}>
+      <ContainerElement style={styles.get('flex-1')}>
         <AnimatedKeyboardAwareScrollView
           innerRef={(_ref) => {
             if (ref) {
@@ -80,8 +80,8 @@ export const PageWithScrollView = forwardRef<
             }
           }}
           style={StyleSheet.flatten([
-            style.flatten(['flex-1', 'padding-0', 'overflow-visible']),
-            propStyle
+            styles.flatten(['flex-1', 'padding-0', 'overflow-visible']),
+            style
           ])}
           keyboardOpeningTime={0}
           onScroll={Animated.event(

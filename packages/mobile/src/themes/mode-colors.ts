@@ -80,7 +80,7 @@ export const colorsCode = {
   'gray-50': '#F2F2F7',
   'gray-100': '#F2F6FA',
   'gray-150': '#5F5E77',
-  'gray-200':'#D1D1D6',
+  'gray-200': '#D1D1D6',
   'gray-300': '#C7C7CC',
   'gray-301': '#C7C7CC',
   'gray-400': '#AEAEB2',
@@ -109,7 +109,7 @@ export const colorsCode = {
   'blue-300': '#8C93A7',
   'blue-600': '#5F5E77',
   'blue/Border-50': '#EDEDF8',
-  'bg-icon-coin':'#D3D3DA'
+  'bg-icon-coin': '#D3D3DA'
 };
 //item 1:Dark, item 2: Light
 const modeColors = {
@@ -164,6 +164,7 @@ const modeColors = {
   // 'text-btn-secondary':["#8B1BFB","#8B1BFB"], //1:Purple/900  2 gray-900
   'background-btn-secondary': ['#F3F1F5', '#F3F1F5'], //1: 2 Purple/10
   'text-placeholder-input-login': ['#717177', '#AEAEB2'],
+  'text-label-transaction-detail': ['#AEAEB2', '#636366'],
   'background-btn-disable-primary': ['#5F5E77', colorsCode['gray-300']],
   'background-btn-disable-danger': ['#5F5E77', '#D1D1D6'],
   'text-btn-disable-danger': ['#8E8E93', '#FFFFFF'],
@@ -172,6 +173,7 @@ const modeColors = {
   'background-input-modal': ['#0E121D', '#FFFFFF'],
   'text-value-input-login': ['#E2DEEB', '#1C1C1E'], //icon input eyes
   'text-label-input': ['#C7C7CC', '#48484A'], //note under input
+  'text-dashboard': [colorsCode['blue-300'], '#48484A'], //note under input
   //login-success
   'text-content-success': ['#E2DEEB', '#5F5E77'],
   'text-btn-link': ['#945EF8', '#8B1BFB'],
@@ -192,8 +194,11 @@ const modeColors = {
   'label-bottom-bar': ['#E2DEEB', '#5F5E77'],
   'border-bottom-tab': ['#3B2368', '#F0F0F0'],
   'on-background-toggle': ['#9AE796', '#A0F29B'],
-  'off-background-toggle': ['#6F6F76','#E9E9EA'],
-  'bg-icon-token':['#E5E5EA','#F3F1F5']
+  'off-background-toggle': ['#6F6F76', '#E9E9EA'],
+  'bg-icon-token': ['#E5E5EA', '#F3F1F5'],
+  'bg-circle-select-modal': [colorsCode['gray-400'], colorsCode['purple-100']],
+  'divided-border-transaction-detail': ['#2B2D3B', '#EDEDF8'],
+  skeleton: ['#36384a', '#f3f2f2']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

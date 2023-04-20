@@ -1,8 +1,18 @@
+import {
+  EVENTS,
+  SCREENS,
+  TYPE_ACTIONS_COSMOS_HISTORY
+} from './../../common/constants';
 import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
 import { getNetworkTypeByChainId } from '@owallet/common';
+import bs58 from 'bs58';
+import get from 'lodash/get';
+import Big from 'big.js';
+import { isNumber } from 'util';
+
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -83,6 +93,22 @@ export const TRC20_LIST = [
   //   type: 'trc20'
   // }
 ];
+export const handleError = (error, url, method) => {
+  if (__DEV__) {
+    console.log(`[1;34m: ---------------------------------------`);
+    console.log(`[1;34m: handleError -> url`, url);
+    console.log(`[1;34m: handleError -> method`, method);
+    console.log(`[1;34m: handleError -> error`, JSON.stringify(error));
+    console.log(`[1;34m: ---------------------------------------`);
+  }
+};
+
+export const getEvmAddress = (base58Address) =>
+  base58Address
+    ? '0x' +
+      Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex')
+    : '-';
+
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {
@@ -112,13 +138,25 @@ export const checkValidDomain = (url: string) => {
 
 export const _keyExtract = (item, index) => index.toString();
 
-export const formatContractAddress = (address: string) => {
-  const fristLetter = address?.slice(0, 10) ?? '';
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  const fristLetter = address?.slice(0, limitFirst) ?? '';
   const lastLetter = address?.slice(-5) ?? '';
 
   return `${fristLetter}...${lastLetter}`;
 };
-
+export function getLastWord(str) {
+  // Tách chuỗi thành mảng các từ
+  const words = str.split(' ');
+  // Trả về từ cuối cùng trong mảng
+  return words[words.length - 1];
+}
+export function limitString(str, limit) {
+  if (str && str.length > limit) {
+    return str.slice(0, limit) + '...';
+  } else {
+    return str;
+  }
+}
 // capital first letter of string
 export const capitalizedText = (text: string) => {
   return text.slice(0, 1).toUpperCase() + text.slice(1, text.length);
@@ -133,6 +171,326 @@ export const TRANSACTION_TYPE = {
   INSTANTIATE_CONTRACT: 'MsgInstantiateContract',
   EXECUTE_CONTRACT: 'MsgExecuteContract'
 };
+export function getStringAfterMsg(str) {
+  const msgIndex = str?.toUpperCase().indexOf('MSG');
+  if (msgIndex === -1) {
+    return '';
+  }
+  return str.substring(msgIndex + 3);
+}
+export const convertTypeEvent = (actionValue) => {
+  return actionValue?.length > 0 && actionValue?.toLowerCase()?.includes('msg')
+    ? getStringAfterMsg(addSpacesToString(actionValue))
+    : convertVarToWord(actionValue);
+};
+
+export const getValueTransactionHistory = ({
+  item,
+  address
+}): IDataTransaction => {
+  let countEvent;
+  let dataEvents = [];
+  const transfer = 'transfer';
+  // console.log('EmbedChainInfos: ', EmbedChainInfos);
+  if (item?.code === 0 || item?.tx_result?.code === 0) {
+    const logs = get(item, 'raw_log')
+      ? JSON.parse(get(item, 'raw_log'))
+      : JSON.parse(get(item?.tx_result, 'log'));
+    if (logs?.length > 0) {
+      logs.forEach((itemLog) => {
+        let isRecipient;
+        const event =
+          itemLog && find(get(itemLog, `events`), { type: 'message' });
+        const action =
+          event && find(get(event, 'attributes'), { key: 'action' });
+        const actionValue = action?.value;
+        const moduleEvent = getModuleFromAction(actionValue);
+        const lastAction = convertLastActionToVar(actionValue);
+        const eventModule =
+          moduleEvent && find(get(itemLog, `events`), { type: moduleEvent });
+        const eventLastAction =
+          moduleEvent && find(get(itemLog, `events`), { type: lastAction });
+        const moduleAction =
+          eventModule &&
+          find(get(eventModule, 'attributes'), { key: 'action' });
+        const moduleValue = moduleAction && moduleAction?.value;
+        const eventType = convertTypeEvent(
+          moduleValue ? moduleValue : actionValue
+        );
+
+        countEvent = logs?.length > 1 ? logs?.length - 1 : 0;
+        const valueTransfer =
+          itemLog &&
+          find(get(itemLog, `events`), {
+            type: transfer
+          });
+        let dataTransfer;
+        if (
+          valueTransfer?.attributes &&
+          checkDuplicateAmount(valueTransfer?.attributes)
+        ) {
+          dataTransfer = convertFormatArrayTransfer(valueTransfer?.attributes);
+        } else {
+          dataTransfer = [
+            {
+              amount: valueTransfer
+                ? find(valueTransfer?.attributes, { key: 'amount' })
+                : checkAmountHasDenom(get(eventModule, 'attributes'))
+                ? checkAmountHasDenom(get(eventModule, 'attributes'))
+                : find(get(eventModule, 'attributes'), { key: 'amount' }) ||
+                  checkAmountHasDenom(get(eventLastAction, 'attributes'))
+                ? checkAmountHasDenom(get(eventLastAction, 'attributes'))
+                : find(get(eventLastAction, 'attributes'), { key: 'amount' }),
+              sender: valueTransfer
+                ? find(valueTransfer?.attributes, { key: 'sender' })?.value
+                : find(get(eventModule, 'attributes'), { key: 'from' }) ||
+                  find(get(eventModule, 'attributes'), { key: 'sender' }),
+              recipient: valueTransfer
+                ? find(valueTransfer?.attributes, { key: 'recipient' })?.value
+                : find(get(eventModule, 'attributes'), { key: 'to' }) ||
+                  find(get(eventModule, 'attributes'), { key: 'recipient' })
+            }
+          ];
+        }
+
+        dataTransfer.forEach((itDataTransfer) => {
+          isRecipient =
+            itDataTransfer?.recipient?.value === address &&
+            (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
+              actionValue === TYPE_ACTIONS_COSMOS_HISTORY.send);
+
+          const matchesAmount = get(itDataTransfer, 'amount.value')
+            ? itDataTransfer?.amount?.value?.match(/\d+/g)
+            : itDataTransfer?.amount?.match(/\d+/g);
+          const matchesDenom = get(itDataTransfer, 'amount.value')
+            ? itDataTransfer?.amount?.value?.replace(/^\d+/g, '')
+            : itDataTransfer?.amount?.replace(/^\d+/g, '');
+          // console.log('matchesDenom: ', matchesDenom);
+          itDataTransfer.amountValue =
+            matchesAmount?.length > 0 && matchesAmount[0];
+          itDataTransfer.denom = matchesDenom && matchesDenom?.toUpperCase();
+
+          if (
+            itDataTransfer?.recipient?.value === address ||
+            itDataTransfer?.recipient === address
+          ) {
+            itDataTransfer.isPlus = true;
+          } else if (
+            (itDataTransfer?.recipient?.value !== address &&
+              itDataTransfer?.sender?.value === address) ||
+            (itDataTransfer?.sender && itDataTransfer?.recipient !== address)
+          ) {
+            itDataTransfer.isMinus = true;
+          }
+        });
+
+        dataEvents.push({
+          dataTransfer,
+          eventType: eventType && eventType?.trim(),
+          moduleValue: moduleEvent,
+          eventValue: moduleValue ? moduleValue : actionValue,
+          pathEvent: moduleValue ? `${moduleEvent}.action` : `message.action`,
+          isRecipient
+        });
+      });
+    }
+  }
+
+  return {
+    status:
+      item?.code === 0 || item?.tx_result?.code === 0 ? 'success' : 'failed',
+    countEvent,
+    txHash: item?.txhash || item?.hash,
+    dataEvents
+  };
+};
+const convertLastActionToVar = (actionValue) => {
+  if (actionValue && actionValue?.includes('.')) {
+    const splitData = actionValue?.split('.');
+    return convertStringToVar(splitData[splitData?.length - 1]);
+  }
+  return null;
+};
+const checkAmountHasDenom = (array) => {
+  // loop through the array
+  if (array) {
+    for (let item of array) {
+      // if the key is "amount" and the value is only a number
+      if (item?.key === 'amount' && /^\d+$/.test(item?.value)) {
+        // store the value as a number
+        let amount = Number(item?.value);
+        // loop through the array again
+        for (let other of array) {
+          // if the key is not "amount" and the value starts with the same number followed by some text
+          if (
+            other?.key !== 'amount' &&
+            other?.value.startsWith(amount.toString()) &&
+            other?.value?.length > amount.toString()?.length
+          ) {
+            // return the item and the other item
+            return other;
+          }
+        }
+        return item;
+      }
+    }
+    return null;
+  }
+  // if no match is found, return null
+  return null;
+};
+const convertStringToVar = (string) => {
+  // split the string by uppercase letters
+  let words = string.split(/(?=[A-Z])/);
+  // remove the first word "Msg"
+  words.shift();
+  // join the words with underscore and lowercase them
+  return words.join('_').toLowerCase();
+};
+export const caculatorFee = (gasPrice, gasUsed) => {
+  return (
+    (gasPrice &&
+      gasUsed &&
+      new Big(parseInt(gasPrice)).div(parseInt(gasUsed)).toFixed(6)) ||
+    '0'
+  );
+};
+export const getValueFromDataEvents = (arr) => {
+  // if the array has more than one element, check for amountValue
+  let result = [];
+  for (let item of arr) {
+    // if any element has amountValue, push it to the result array
+    if (item.dataTransfer.some((data) => data.amountValue)) {
+      result.push(item);
+    }
+  }
+
+  // if the result array is empty, return null and typeId = 0
+  if (arr.length === 1 || result.length === 0) {
+    return { value: [arr[0]], typeId: 1 };
+  }
+
+  // if the result array has one element, return it and typeId = 2
+  if (result.length === 1) {
+    return { value: [result[0]], typeId: 2 };
+  }
+
+  // if the result array has more than one element, return it and typeId = 3
+  return { value: result, typeId: 3 };
+};
+export const getDataFromDataEvent = (itemEvents) => {
+  return countAmountValue(itemEvents?.value[0]?.dataTransfer) < 2
+    ? {
+        ...itemEvents?.value[0],
+        ...itemEvents?.value[0]?.dataTransfer[0]
+      }
+    : {
+        ...itemEvents?.value[0],
+        ...{
+          amountValue: 'More',
+          denom: false,
+          isPlus: false,
+          isMinus: false
+        }
+      };
+};
+const countAmountValue = (array) => {
+  let count = 0;
+  if (array && array?.length > 0) {
+    for (let element of array) {
+      if (element?.amountValue) {
+        count++;
+      }
+    }
+  }
+  return count;
+};
+export const delay = (timer = 300) => {
+  setTimeout(() => {
+    return true;
+  }, timer);
+};
+const convertFormatArrayTransfer = (array) => {
+  let newArray = [];
+
+  let tempObject = {};
+
+  for (let element of array) {
+    tempObject[element.key] = element.value;
+
+    if (tempObject?.amount && tempObject?.sender && tempObject?.recipient) {
+      newArray.push(tempObject);
+
+      tempObject = {};
+    }
+  }
+
+  return newArray;
+};
+const checkDuplicateAmount = (array) => {
+  let count = 0;
+
+  for (let element of array) {
+    if (element.key === 'amount') {
+      count++;
+    }
+  }
+  if (count >= 2) {
+    return true;
+  } else {
+    return false;
+  }
+};
+const getModuleFromAction = (action) => {
+  if (action && action?.includes('.')) {
+    const splitData = action?.split('.');
+    if (splitData?.length > 3) {
+      return splitData[splitData?.length - 3];
+    }
+  }
+  return null;
+};
+function hasSpecialChar(str) {
+  let regex = /[^\w\s]/; // sử dụng regex để tìm kiếm ký tự đặc biệt
+  return regex.test(str);
+}
+function splitSpecialCharacter(str) {
+  if (hasSpecialChar(str)) {
+    let arr = str.split(/[^\w\s]/); // sử dụng regex để tách chuỗi
+    return arr[0];
+  }
+
+  return str;
+}
+export function parseObjectToQueryString(obj) {
+  let params = new URLSearchParams();
+  for (let key in obj) {
+    if (Array.isArray(obj[key])) {
+      for (let value of obj[key]) {
+        params.append(key, value);
+      }
+    } else {
+      params.append(key, obj[key]);
+    }
+  }
+  return '?' + params.toString();
+}
+export function removeEmptyElements(array) {
+  return array.filter((element) => !!element);
+}
+
+function convertVarToWord(str) {
+  const words = str && str.split('_');
+  const capitalizedWords =
+    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  return capitalizedWords && capitalizedWords.join(' ');
+}
+export function removeSpecialChars(str) {
+  return str.replace(/[^\w\s]/gi, '');
+}
+function addSpacesToString(str) {
+  return str.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
 
 export const getTransactionValue = ({ data, address, logs }) => {
   const transactionType = data?.[0]?.type;
@@ -260,6 +618,42 @@ export const convertAmount = (amount: any) => {
       return 0;
   }
 };
+function formatNumberSeparate(num) {
+  const numSplit = num && num.split('.');
+  if (numSplit?.length > 1) {
+    return (
+      numSplit[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +
+      '.' +
+      numSplit[1]
+    );
+  }
+  return null;
+}
+export const formatAmount = (amount, minimalDenom, tokens) => {
+  const decimals = amount?.length < 12 ? 6 : 18;
+  if (amount !== 'More' && amount && minimalDenom && tokens?.length > 0) {
+    const currency = getCurrencyByMinimalDenom(tokens, minimalDenom);
+    const divisor = new Big(10).pow(currency?.coinDecimals || decimals);
+    const amountFormat = new Big(amount).div(divisor);
+    return removeZeroNumberLast(
+      formatNumberSeparate(
+        amountFormat.toFixed(currency?.coinDecimals || decimals)
+      )
+    );
+  } else {
+    return amount;
+  }
+};
+const replaceZero = (str) => {
+  return parseFloat(str.replace(/^0+|\.?0+$/g, ''));
+};
+export const removeZeroNumberLast = (str) => {
+  return isNaN(replaceZero(str))
+    ? str
+    : `${replaceZero(str)}`.indexOf('.') == -1
+    ? replaceZero(str).toFixed(1)
+    : replaceZero(str);
+};
 
 export const getDomainFromUrl = url => {
   if (!url) {
@@ -276,7 +670,20 @@ export const getDomainFromUrl = url => {
 export const parseIbcMsgRecvPacket = denom => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
+export function addTimeProperty(array1, array2) {
+  // Create a new object with heightId as the key and time as the value
+  const timeMap = {};
+  array1.forEach((obj) => {
+    timeMap[obj?.block?.header?.height] = obj?.block?.header?.time;
+  });
 
+  // Add time property to each object in array2 based on heightId
+  array2.forEach((obj) => {
+    obj.time = timeMap[obj?.height];
+  });
+
+  return array2;
+}
 export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
   if (type) {
     const typeArr = type.split('.');
@@ -362,9 +769,24 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-
+export const getCurrencyByMinimalDenom = (tokens, minimalDenom) => {
+  if (tokens && tokens?.length > 0 && minimalDenom) {
+    const info = tokens?.filter((item, index) => {
+      return (
+        item?.currency?.contractAddress &&
+        item?.currency?.contractAddress?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+      );
+    });
+    if (info?.length > 0) {
+      return info[0]?.currency;
+    }
+    return null;
+  }
+  return null;
+};
 export function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }
 
 export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
@@ -385,3 +807,24 @@ export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
 
 export const isBase58 = (value: string): boolean =>
   /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
+const truncDecimals = 6;
+const atomic = 10 ** truncDecimals;
+export const toDisplay = (
+  amount: string | bigint,
+  sourceDecimals = 6,
+  desDecimals = 6
+): number => {
+  if (!amount) return 0;
+  // guarding conditions to prevent crashing
+  const validatedAmount =
+    typeof amount === 'string' ? BigInt(amount || '0') : amount;
+  const displayDecimals = Math.min(truncDecimals, desDecimals);
+  const returnAmount =
+    validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));
+  // save calculation by using cached atomic
+  return (
+    Number(returnAmount) /
+    (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals)
+  );
+};
+export { get };

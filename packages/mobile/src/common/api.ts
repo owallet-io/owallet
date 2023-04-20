@@ -1,3 +1,4 @@
+import { handleError, parseObjectToQueryString } from '@src/utils/helper';
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 
@@ -17,7 +18,105 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
+  requestRpc: async (
+    { method, params, url },
+    config: AxiosRequestConfig = null
+  ) => {
+    try {
+      let rpcConfig = {
+        method,
+        params,
+        id: 1,
+        jsonrpc: '2.0'
+      };
+      retryWrapper(axios, { retry_time: 3, retry_status_code: 502 });
+      const rs = await axios.post(url, rpcConfig, config);
+      if (rs?.data?.result) {
+        return Promise.resolve(rs?.data?.result);
+      }
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      handleError(error, url, method);
 
+      return Promise.reject(error);
+    }
+  },
+
+  getByLCD: async ({
+    lcdUrl = 'https://lcd.orai.io',
+    prefix,
+    method,
+    params = null
+  }) => {
+    try {
+      retryWrapper(axios, { retry_time: 3, retry_status_code: 502 });
+      let qs = params ? parseObjectToQueryString(params) : '';
+      let url = `${prefix}${method}${qs}`;
+      const rs = await axios.get(url, { baseURL: lcdUrl });
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsByLCD: async ({
+    url,
+    params = null,
+    prefix = '/cosmos/tx/v1beta1',
+    method = '/txs'
+  }) => {
+    try {
+      const rs = await API.getByLCD({
+        lcdUrl: url,
+        prefix,
+        method,
+        params
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsByRPC: async ({ url, params = null, method = 'tx_search' }) => {
+    try {
+      const rs = await API.requestRpc({
+        url: url,
+        params,
+        method
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxs: async (url, query, perPage = 10, currentPage = 1) => {
+    try {
+      if (typeof query === 'string') {
+        const rs = await API.getTxsByRPC({
+          url,
+          params: {
+            query,
+            page: `${currentPage}`,
+            per_page: `${perPage}`,
+            order_by: 'desc'
+          }
+        });
+        return Promise.resolve(rs);
+      }
+      const rs = await API.getTxsByLCD({
+        url,
+        params: {
+          events: query,
+          ['pagination.count_total']: true,
+          ['pagination.limit']: perPage,
+          ['pagination.offset']: currentPage,
+          order_by: 'ORDER_BY_DESC'
+        }
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig
@@ -103,4 +202,22 @@ export const API = {
     let url = `api/v1/topics`;
     return API.put(url, { topic, subcriber }, config);
   }
+};
+const retryWrapper = (axios, options) => {
+  const max_time = options.retry_time;
+  const retry_status_code = options.retry_status_code;
+  let counter = 0;
+  axios.interceptors.response.use(null, (error) => {
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = error.config;
+    // you could defined status you want to retry, such as 503
+    // if (counter < max_time && error.response.status === retry_status_code) {
+    if (counter < max_time && error.response.status === retry_status_code) {
+      counter++;
+      return new Promise((resolve) => {
+        resolve(axios(config));
+      });
+    }
+    return Promise.reject(error);
+  });
 };

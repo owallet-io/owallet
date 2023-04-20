@@ -26,6 +26,7 @@ import {
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
+
   useEffect(() => {
     Linking.getInitialURL()
       .then(url => {

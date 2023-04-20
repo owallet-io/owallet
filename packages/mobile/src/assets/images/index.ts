@@ -5,6 +5,7 @@ const images = {
    noti_dark: require('./Noti_dark.png'),
    carbon_notification: require('./carbon_notification.png'),
    carbon_notification_dark: require('./carbon_notification_dark.png'),
+   crypto: require('./crypto.png'),
    empty: require('./empty.png'),
    empty_dark: require('./empty_dark.png'),
    eye: require('./eye.png'),
@@ -28,6 +29,8 @@ const images = {
    push: require('./push.png'),
    push_inactive: require('./push_inactive.png'),
    push_inactive_dark: require('./push_inactive_dark.png'),
+   scroll_top: require('./scroll_top.png'),
+   scroll_top_dark: require('./scroll_top_dark.png'),
    success: require('./success.png'),
    success_dark: require('./success_dark.png'),
 };

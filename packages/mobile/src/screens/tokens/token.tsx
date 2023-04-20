@@ -1,8 +1,8 @@
+import React, { FunctionComponent, useMemo } from 'react';
+import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
-import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useMemo } from 'react';
 import { FlatList } from 'react-native';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { useStore } from '../../stores';
@@ -13,7 +13,6 @@ export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
-
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(

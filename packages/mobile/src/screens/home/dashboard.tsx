@@ -12,6 +12,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing } from '../../themes';
 import { nFormatter } from '../../utils/helper';
+import { colorsCode } from '@src/themes/mode-colors';
 
 const DATA_COUNT_DENOM = 4;
 const transformData = data => {
@@ -62,8 +63,8 @@ const formatData = data => {
     datasets: [
       {
         data: dataChart,
-        color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
-        strokeWidth: 2
+        color: (opacity = 1) => colorsCode['purple-700'],
+        strokeWidth: 1.7
       }
     ],
     suffix: suffix
@@ -81,7 +82,7 @@ export const DashboardCard: FunctionComponent<{
     backgroundGradientFrom: colors['background-box'],
     backgroundGradientTo: colors['background-box'],
     color: (opacity = 1) => `rgba(148, 94, 248, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(142, 142, 147, ${opacity})`,
+    labelColor: (opacity = 1) => colors['text-title-login'],
     strokeWidth: 3,
     barPercentage: 0.5,
     useShadowColorFromDataset: false

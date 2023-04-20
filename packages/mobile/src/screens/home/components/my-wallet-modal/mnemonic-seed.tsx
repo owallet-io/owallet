@@ -110,7 +110,9 @@ const MnemonicSeed = () => {
                 height: 24,
                 borderRadius: spacing['32'],
                 backgroundColor:
-                  colors[`${item.selected ? 'purple-700' : 'gray-100'}`],
+                  colors[
+                    `${item.selected ? 'purple-700' : 'bg-circle-select-modal'}`
+                  ],
                 justifyContent: 'center',
                 alignItems: 'center'
               }}
@@ -120,7 +122,7 @@ const MnemonicSeed = () => {
                   width: 12,
                   height: 12,
                   borderRadius: spacing['32'],
-                  backgroundColor: colors['white']
+                  backgroundColor: colors['background-item-list']
                 }}
               />
             </View>
@@ -129,16 +131,18 @@ const MnemonicSeed = () => {
       </>
     );
   };
+  const data = [...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores];
   return (
     <View
       style={{
         width: metrics.screenWidth - 36,
-        height: metrics.screenHeight / 4
+        height:
+          data?.length > 1 ? metrics.screenHeight / 4 : metrics.screenHeight / 7
       }}
     >
       <View style={{ position: 'relative' }}>
         <FlatList
-          data={[...mnemonicKeyStores, ...privateKeyStores, ...ledgerKeyStores]}
+          data={data}
           showsVerticalScrollIndicator={false}
           renderItem={renderItem}
           keyExtractor={_keyExtract}

@@ -76,6 +76,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         smartNavigation.navigateSmart('Tokens.Detail', {
           balanceCoinDenom,
           amountBalance,
+          balanceCurrency: balance.currency,
           priceBalance,
           balanceCoinFull: balance.currency.coinDenom ?? balanceCoinDenom
         });

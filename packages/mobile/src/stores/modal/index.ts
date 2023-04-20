@@ -1,10 +1,10 @@
 import { observable, action, makeObservable, computed } from 'mobx'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 export class ModalStore {
   @observable
   protected isOpen: boolean
-  protected children: ReactElement
+  protected children: ReactElement | ReactNode
 
   constructor() {
     this.isOpen = false
@@ -22,7 +22,7 @@ export class ModalStore {
   }
 
   @action
-  setChildren(children: ReactElement) {
+  setChildren(children: ReactElement | ReactNode) {
     this.children = children
   }
 
