@@ -16,10 +16,10 @@ import {
 } from '@src/screens/register/mnemonic';
 import { NewLedgerScreen } from '@src/screens/register/ledger';
 import { RegisterEndScreen } from '@src/screens/register/end';
+import { colors } from '@src/themes';
 const Stack = createStackNavigator();
 export const RegisterNavigation: FC = () => {
   const { appInitStore } = useStore();
-  const { colors } = useTheme();
   const handleScreenOptions = ({ route, navigation }) => {
     const headerOptions = useHeaderOptions(
       {

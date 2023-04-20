@@ -20,6 +20,8 @@ process.browser = false;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer;
 
+if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
+
 if (!global.atob || !global.btoa) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Buffer = require('buffer').Buffer;

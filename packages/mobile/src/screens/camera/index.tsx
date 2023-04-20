@@ -15,8 +15,8 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Bech32Address } from '@owallet/cosmos';
 import { FullScreenCameraView } from '../../components/camera';
-import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
-import { AsyncKVStore } from '../../common';
+// import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
+// import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
 import { checkValidDomain, TRON_ID } from '../../utils/helper';
 
@@ -49,11 +49,11 @@ export const CameraScreen: FunctionComponent = observer(props => {
   const [showingAddressQRCodeChainId, setShowingAddressQRCodeChainId] =
     useState(chainStore.current.chainId);
 
-  const registerConfig = useRegisterConfig(keyRingStore, []);
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
 
-  const [addressBookConfigMap] = useState(
-    () => new AddressBookConfigMap(new AsyncKVStore('address_book'), chainStore)
-  );
+  // const [addressBookConfigMap] = useState(
+  //   () => new AddressBookConfigMap(new AsyncKVStore('address_book'), chainStore)
+  // );
 
   return (
     <PageWithView disableSafeArea={true}>
