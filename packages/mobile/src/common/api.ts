@@ -1,6 +1,7 @@
 import { handleError, parseObjectToQueryString } from '@src/utils/helper';
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
+
 export const API = {
   post: (path: string, params: any, config: AxiosRequestConfig) => {
     return axios.post(path, params, config);
@@ -28,6 +29,7 @@ export const API = {
         id: 1,
         jsonrpc: '2.0'
       };
+      retryWrapper(axios, { retry_time: 3, retry_status_code: 502 });
       const rs = await axios.post(url, rpcConfig, config);
       if (rs?.data?.result) {
         return Promise.resolve(rs?.data?.result);
@@ -47,9 +49,10 @@ export const API = {
     params = null
   }) => {
     try {
+      retryWrapper(axios, { retry_time: 3, retry_status_code: 502 });
       let qs = params ? parseObjectToQueryString(params) : '';
       let url = `${prefix}${method}${qs}`;
-      const rs = await API.get(url, { baseURL: lcdUrl });
+      const rs = await axios.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
     } catch (error) {
       return Promise.reject(error);
@@ -199,4 +202,22 @@ export const API = {
     let url = `api/v1/topics`;
     return API.put(url, { topic, subcriber }, config);
   }
+};
+const retryWrapper = (axios, options) => {
+  const max_time = options.retry_time;
+  const retry_status_code = options.retry_status_code;
+  let counter = 0;
+  axios.interceptors.response.use(null, (error) => {
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = error.config;
+    // you could defined status you want to retry, such as 503
+    // if (counter < max_time && error.response.status === retry_status_code) {
+    if (counter < max_time && error.response.status === retry_status_code) {
+      counter++;
+      return new Promise((resolve) => {
+        resolve(axios(config));
+      });
+    }
+    return Promise.reject(error);
+  });
 };
