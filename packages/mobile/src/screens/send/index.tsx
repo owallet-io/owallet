@@ -260,8 +260,10 @@ export const SendScreen: FunctionComponent = observer(() => {
                     {
                       preferNoSetFee: true,
                       preferNoSetMemo: true,
-                      networkType: chainStore.current.networkType
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.chainId
                     },
+
                     {
                       onFulfill: tx => {
                         console.log(

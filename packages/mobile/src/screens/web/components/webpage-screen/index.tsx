@@ -53,10 +53,11 @@ export const WebpageScreen: FunctionComponent<
 > = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const { colors } = useTheme();
+  const bottomHeight = 80;
   const [pageLoaded, setLoaded] = useState(false);
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const scrollY = new Animated.Value(0);
-  const diffClamp = Animated.diffClamp(scrollY, 0, 80);
+  const diffClamp = Animated.diffClamp(scrollY, 0, bottomHeight);
   const translateYBottom = diffClamp.interpolate({
     inputRange: [0, 0.1],
     outputRange: [-0.1, 0]
@@ -328,6 +329,8 @@ export const WebpageScreen: FunctionComponent<
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
+                injectedJavaScript={`
+                `}
                 onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
                 onNavigationStateChange={e => {

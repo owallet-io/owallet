@@ -2,7 +2,7 @@ import { MsgOpt } from './base';
 import { AccountSetBase, AccountSetOpts } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper } from '@owallet/common';
+import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
 import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
@@ -103,7 +103,10 @@ export class EthereumAccount {
     const denomHelper = new DenomHelper(currency.coinMinimalDenom);
     console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
 
-    if (signOptions.networkType === 'evm') {
+    if (
+      signOptions.networkType === 'evm' ||
+      EVMOS_NETWORKS.includes(signOptions.chainId)
+    ) {
       switch (denomHelper.type) {
         case 'erc20':
           const realAmount = (() => {
