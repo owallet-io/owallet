@@ -130,7 +130,7 @@ const OWTransactionItem = observer(
               )}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
-              {(time && moment(time).format('LL')) || `Height: ${item?.height}`}
+              {(time && moment(time).format('LL')) || `Height ${item?.height}`}
             </Text>
           </View>
         </View>

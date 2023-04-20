@@ -84,10 +84,10 @@ const OWFlatList: FC<IOWFlatListProps> = forwardRef((props, ref) => {
     }
     return () => {};
   }, [offset]);
-  useEffect(() => {
-    onScrollToTop();
-    return () => {};
-  }, [loading, refreshing]);
+//   useEffect(() => {
+//     onScrollToTop();
+//     return () => {};
+//   }, [loading, refreshing]);
 
   return (
     <>

@@ -183,7 +183,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     }
   }, [account?.bech32Address, data]);
   const onTransactionDetail = (item) => {
-    console.log('item: ', item);
     navigation.navigate(SCREENS.STACK.Others, {
       screen: SCREENS.TransactionDetail,
       params: {

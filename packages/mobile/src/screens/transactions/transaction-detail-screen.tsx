@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import { PageWithScrollView } from '@src/components/page';
 
@@ -30,20 +30,27 @@ const TransactionDetailScreen = observer(() => {
   const txHash = params?.txHash;
   const { chainStore, queriesStore, accountStore } = useStore();
   const [data, setData] = useState();
+  const [refreshing, setIsRefreshing] = useState(false);
   const { colors } = useTheme();
   useEffect(() => {
     getDetailByHash(txHash, chainStore?.current?.rest);
     return () => {};
   }, []);
+  const refreshData = () => {
+    setIsRefreshing(true);
+    getDetailByHash(txHash, chainStore?.current?.rest);
+  };
   const getDetailByHash = async (txHash, rest) => {
     try {
       const txs = await API.getTxsByLCD({
         method: `/txs/${txHash}`,
         url: rest
       });
+      setIsRefreshing(false);
       setData(txs?.tx_response);
     } catch (error) {
       console.log('error: ', error);
+      setIsRefreshing(false);
     }
   };
 
@@ -66,10 +73,14 @@ const TransactionDetailScreen = observer(() => {
     );
 
   const tokens = queryBalances.balances;
-  console.log('tokens: ', tokens);
-
   return (
-    <PageWithScrollView style={styles.container}>
+    <PageWithScrollView
+      showsVerticalScrollIndicator={false}
+      style={styles.container}
+      refreshControl={
+        <RefreshControl tintColor={colors['text-title-login']} onRefresh={refreshData} refreshing={refreshing} />
+      }
+    >
       <TransactionBox label={'Infomation'}>
         <ItemReceivedToken
           label="Transaction hash"
@@ -114,21 +125,22 @@ const TransactionDetailScreen = observer(() => {
         />
         <ItemDetail
           label="Time"
+          borderBottom={false}
           value={moment(data?.timestamp).format('MMMM D, YYYY (hh:mm:ss)')}
         />
 
-        <ItemDetail label="View on Scan" borderBottom={false} />
+        {/* <ItemDetail label="View on Scan" borderBottom={false} /> */}
       </TransactionBox>
 
-      {itemEvents?.value?.map((itemEv, index) => (
+      {itemEvents?.value?.map((itemEv, inEv) => (
         <TransactionBox
-          key={`tsbox-${index}`}
+          key={`tsbox-${inEv}`}
           label={`Transaction detail ${
             itemEv?.eventType ? `(${itemEv?.eventType || ''})` : ''
           }`}
         >
-          {itemEv?.dataTransfer?.map((itemDataTrans, index) => (
-            <View key={`itemEv-${index}`}>
+          {itemEv?.dataTransfer?.map((itemDataTrans, inDtTransfer) => (
+            <View key={`itemEv-${inDtTransfer}`}>
               {itemDataTrans?.sender && (
                 <ItemReceivedToken
                   valueDisplay={formatContractAddress(
@@ -164,6 +176,12 @@ const TransactionDetailScreen = observer(() => {
                 <ItemReceivedToken
                   label="Amount"
                   btnCopy={false}
+                  borderBottom={
+                    inEv == itemEvents?.value?.length - 1 &&
+                    inDtTransfer == itemEv?.dataTransfer?.length - 1
+                      ? false
+                      : true
+                  }
                   value={itemDataTrans?.amountValue}
                   valueProps={{
                     color: itemDataTrans?.isPlus

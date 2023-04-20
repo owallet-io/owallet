@@ -17,6 +17,7 @@ import {
   _keyExtract,
   addTimeProperty,
   delay,
+  limitString,
   removeEmptyElements
 } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
@@ -187,7 +188,7 @@ const HistoryTransactionsScreen = observer(() => {
     }
   }, [account?.bech32Address, data, activeCoin, activeType]);
   const onRefresh = () => {
-    setRefreshing(true);
+    // setRefreshing(true);
     setActiveType(defaultAll);
     setActiveCoin(defaultAll);
     refreshData({
@@ -253,7 +254,7 @@ const HistoryTransactionsScreen = observer(() => {
               <ButtonFilter
                 label={'Type'}
                 onPress={onType}
-                value={activeType?.label}
+                value={limitString(activeType?.label,15)}
               />
             )
           )}
