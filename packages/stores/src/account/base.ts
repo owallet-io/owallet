@@ -502,7 +502,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
         txHash = result.txHash;
       } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee);
+        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
         txHash = result.txHash;
       }
     } catch (e: any) {
