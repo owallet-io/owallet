@@ -117,6 +117,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
+    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('orai'),
     get currencies() {
       return [
@@ -175,6 +176,28 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tron',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'KWT',
+          coinMinimalDenom:
+            'cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:Kawaii Islands',
+          contractAddress: 'orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5',
+          coinDecimals: 6,
+          coinGeckoId: 'kawaii-islands',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'MILKY',
+          coinMinimalDenom:
+            'cw20:orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw:Milky Token',
+          contractAddress: 'orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw',
+          coinDecimals: 6,
+          coinGeckoId: 'milky-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
         }
       ];
     },
@@ -212,6 +235,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
+    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('orai'),
     get currencies() {
       return [this.stakeCurrency];
@@ -247,6 +271,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
+    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('oraib'),
     // List of all coin/tokens used in this chain.
     get currencies() {
@@ -276,22 +301,30 @@ export const EmbedChainInfos: AppChainInfo[] = [
             'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
         },
         {
+          coinDenom: 'BEP20 MILKY',
+          coinMinimalDenom: 'oraib0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717',
+          coinDecimals: 18,
+          coinGeckoId: 'milky-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
+        },
+        {
           coinDenom: 'BEP20 USDT',
           coinMinimalDenom: 'oraib0x55d398326f99059fF775485246999027B3197955',
           coinDecimals: 18,
           coinGeckoId: 'tether',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
-        },
-        {
-          coinDenom: 'USDC',
-          coinMinimalDenom:
-            'erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:USDC',
-          coinDecimals: 6,
-          coinGeckoId: 'usd-coin',
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
         }
+        // {
+        //   coinDenom: 'USDC',
+        //   coinMinimalDenom:
+        //     'erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:USDC',
+        //   coinDecimals: 6,
+        //   coinGeckoId: 'usd-coin',
+        //   coinImageUrl:
+        //     'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
+        // }
       ];
     },
     get feeCurrencies() {
@@ -354,7 +387,27 @@ export const EmbedChainInfos: AppChainInfo[] = [
     coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('oraie'),
     get currencies() {
-      return [this.stakeCurrency];
+      return [
+        this.stakeCurrency,
+        {
+          coinDenom: 'KWT',
+          coinMinimalDenom:
+            'erc20:0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd:Kawaii Islands',
+          coinDecimals: 18,
+          coinGeckoId: 'kawaii-islands',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+        },
+        {
+          coinDenom: 'MILKY',
+          coinMinimalDenom:
+            'erc20:0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75:Milky Token',
+          coinDecimals: 18,
+          coinGeckoId: 'milky-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
+        }
+      ];
     },
     get feeCurrencies() {
       return [this.stakeCurrency];
@@ -382,6 +435,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
+    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('cosmos'),
     currencies: [
       {
@@ -395,7 +449,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
     txExplorer: {
@@ -425,6 +478,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
+    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [
       {
@@ -446,7 +500,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
     txExplorer: {
@@ -475,6 +528,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
+    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('juno'),
     currencies: [
       {

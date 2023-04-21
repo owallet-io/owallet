@@ -183,9 +183,10 @@ export const AccountView: FunctionComponent = observer(() => {
       <div className={styleAccount.coinType}>
         {' '}
         {`Coin type: m/44'/${
-          (selected?.bip44HDPath?.coinType ??
-            chainStore?.current?.bip44?.coinType ??
-            '118') +
+          (keyRingStore.keyRingType == 'ledger'
+            ? chainStore?.current?.bip44?.coinType
+            : selected?.bip44HDPath?.coinType ??
+              chainStore?.current?.bip44?.coinType) +
           "'/" +
           (selected?.bip44HDPath?.account ?? '0') +
           "'/" +

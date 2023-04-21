@@ -156,7 +156,8 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
     evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
       keyRingStore?.keyRingType === 'ledger'
         ? chainStore.current.chainId === TRON_ID
-          ? getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
+          ? keyRingStore?.keyRingLedgerAddress?.trx &&
+            getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
           : keyRingStore?.keyRingLedgerAddress?.eth
         : accountInfo.evmosHexAddress
     )?.balance;

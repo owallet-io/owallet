@@ -127,9 +127,9 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   const balanceStakableQuery = queries.queryBalances.getQueryBech32Address(
     accountInfo.bech32Address
-  ).stakable;
+  )?.stakable;
 
-  const stakable = balanceStakableQuery.balance;
+  const stakable = balanceStakableQuery?.balance;
 
   const delegated = queries.cosmos.queryDelegations
     .getQueryBech32Address(accountInfo.bech32Address)
@@ -263,7 +263,9 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   ) {
     evmosAddress = keyRingStore?.keyRingLedgerAddress?.eth;
     if (isTronNetwork) {
-      evmosAddress = getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx);
+      evmosAddress =
+        keyRingStore?.keyRingLedgerAddress?.trx &&
+        getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx);
     }
   }
   const balance =
