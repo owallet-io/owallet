@@ -11,8 +11,12 @@ export interface Currency {
    */
   readonly coinGeckoId?: string;
   readonly coinImageUrl?: string;
+  readonly gasPriceStep?: {
+    low: number;
+    average: number;
+    high: number;
+  };
 }
-
 /**
  * The currency that is supported on the cosmwasm.
  * This should be the CW-20 that confirms the standard.
