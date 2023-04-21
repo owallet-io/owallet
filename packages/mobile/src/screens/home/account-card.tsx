@@ -38,7 +38,7 @@ export const AccountCard: FunctionComponent<{
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
+    keyStore => keyStore?.selected
   );
 
   const smartNavigation = useSmartNavigation();
@@ -69,7 +69,7 @@ export const AccountCard: FunctionComponent<{
   const totalPrice = priceStore.calculatePrice(total);
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -97,7 +97,6 @@ export const AccountCard: FunctionComponent<{
     );
   };
   return (
-    
     <AccountBox
       totalBalance={
         totalPrice
@@ -109,7 +108,10 @@ export const AccountCard: FunctionComponent<{
       }
       name={account?.name || '..'}
       coinType={`${
-        selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
+        keyRingStore.keyRingType === 'ledger'
+          ? chainStore?.current?.bip44?.coinType
+          : selected?.bip44HDPath?.coinType ??
+            chainStore?.current?.bip44?.coinType
       }`}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
