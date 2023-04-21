@@ -11,6 +11,11 @@ export interface Currency {
    */
   readonly coinGeckoId?: string;
   readonly coinImageUrl?: string;
+  readonly gasPriceStep?: {
+    low: number;
+    average: number;
+    high: number;
+  };
 }
 
 /**

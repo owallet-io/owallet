@@ -84,8 +84,9 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
       if (dataSign) {
         decimals.current = dataSign?.data?.data?.data?.decimals;
         let chainIdSign = dataSign?.data?.chainId;
-        if (!chainIdSign?.toString()?.startsWith('0x'))
-          chainIdSign = '0x' + Number(chainIdSign).toString(16);
+        // if (!chainIdSign?.toString()?.startsWith('0x'))
+        //   chainIdSign = '0x' + Number(chainIdSign).toString(16);
+
         chainStore.selectChain(chainIdSign);
 
         const estimatedGasLimit = parseInt(
@@ -331,7 +332,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
                       ) {
                         window.close();
                       }
-                      history.goBack()
+                      history.goBack();
                     }}
                     outline
                   >

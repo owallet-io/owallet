@@ -4,6 +4,7 @@ import classnames from 'classnames';
 import styleCoinInput from './coin-input.module.scss';
 
 import {
+  Button,
   ButtonDropdown,
   DropdownItem,
   DropdownMenu,
@@ -21,14 +22,14 @@ import {
   ZeroAmountError,
   NegativeAmountError,
   InsufficientAmountError,
-  IAmountConfig
+  IAmountConfig,
+  IFeeEthereumConfig
 } from '@owallet/hooks';
 import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStore } from '../../stores';
-import { DenomHelper } from '@owallet/common';
-
-export interface CoinInputEvmProps {
+import { DenomHelper, getEvmAddress, toDisplay } from '@owallet/common';
+export interface CoinInputTronProps {
   amountConfig: IAmountConfig;
   feeConfig?: any;
   balanceText?: string;
@@ -38,20 +39,26 @@ export interface CoinInputEvmProps {
   placeholder?: string;
 
   disableAllBalance?: boolean;
+  tokenTrc20?: {
+    coinDenom: string;
+    amount: string;
+    contractAddress: string;
+  };
 }
 
 const reduceStringAssets = (str) => {
   return (str && str.split('(')[0]) || '';
 };
 
-export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
+export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
   ({
     amountConfig,
     className,
     label,
     disableAllBalance,
     placeholder,
-    feeConfig
+    feeConfig,
+    tokenTrc20
   }) => {
     const intl = useIntl();
 
@@ -60,7 +67,6 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
       crypto.getRandomValues(bytes);
       return Buffer.from(bytes).toString('hex');
     });
-
     const error = amountConfig.getError();
     const errorText: string | undefined = useMemo(() => {
       if (error) {
@@ -101,7 +107,6 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
       new CoinPretty(amountConfig.sendCurrency, new Int(0))
     );
 
-    // let balance = new CoinPretty(amountConfig.sendCurrency, new Int(0));
     const tokenDenom = new CoinPretty(amountConfig.sendCurrency, new Int(0))
       .currency.coinDenom;
 
@@ -114,21 +119,10 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
           keyRingStore.keyRingType === 'ledger'
-            ? keyRingStore?.keyRingLedgerAddress?.eth
+            ? getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
             : accountInfo.evmosHexAddress
-        ).balance;
+        )?.balance;
         setBalance(evmBalance);
-      } else {
-        const queryBalance = queryBalances.balances.find(
-          (bal) =>
-            amountConfig.sendCurrency.coinMinimalDenom ===
-            bal.currency.coinMinimalDenom
-        );
-        setBalance(
-          queryBalance
-            ? queryBalance.balance
-            : new CoinPretty(amountConfig.sendCurrency, new Int(0))
-        );
       }
     }, [tokenDenom, chainStore.current.chainId]);
 
@@ -145,9 +139,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
       amountConfig.sendCurrency.coinMinimalDenom
     );
 
-    const ba = balance?.trim(true)?.maxDecimals(6)?.toString()?.split(' ');
     useEffect(() => {}, [parseFloat(feeConfig)]);
-
     return (
       <React.Fragment>
         <FormGroup className={className}>
@@ -168,9 +160,13 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
             disabled={amountConfig.fraction === 1}
           >
             <DropdownToggle caret>
-              {amountConfig.sendCurrency.coinDenom}{' '}
-              {denomHelper.contractAddress &&
-                ` (${denomHelper.contractAddress})`}
+              {tokenTrc20
+                ? tokenTrc20.coinDenom
+                : amountConfig.sendCurrency.coinDenom}{' '}
+              {tokenTrc20
+                ? tokenTrc20.contractAddress
+                : denomHelper.contractAddress &&
+                  ` (${denomHelper.contractAddress})`}
             </DropdownToggle>
             <DropdownMenu>
               {selectableCurrencies.map((currency) => {
@@ -219,17 +215,36 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
                   onClick={(e) => {
                     e.preventDefault();
                     amountConfig.setAmount(
-                      (parseFloat(ba[0]) - parseFloat(feeConfig))
-                        .toFixed(8)
+                      parseFloat(
+                        tokenTrc20
+                          ? toDisplay(tokenTrc20.amount, 6).toString()
+                          : toDisplay(
+                              //@ts-ignore
+                              balance?.amount?.int?.value,
+                              24
+                            ).toString()
+                      )
+                        .toFixed(6)
                         .toString()
                     );
-                    // amountConfig.toggleIsMax();
                   }}
                 >
                   <span>{`Total: ${
-                    reduceStringAssets(
-                      balance?.trim(true)?.maxDecimals(6)?.toString()
-                    ) || 0
+                    tokenTrc20
+                      ? reduceStringAssets(
+                          toDisplay(tokenTrc20.amount, 6).toString() +
+                            ` ${tokenTrc20.coinDenom}`
+                        )
+                      : (balance &&
+                          reduceStringAssets(
+                            toDisplay(
+                              //@ts-ignore
+                              balance?.amount?.int?.value,
+                              24
+                            ).toString() +
+                              ` ${chainStore.current?.stakeCurrency.coinDenom}`
+                          )) ||
+                        0
                   }`}</span>
                 </div>
               ) : null}
@@ -261,36 +276,6 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
               autoComplete="off"
               placeholder={placeholder}
             />
-            {/* <div
-              style={{ padding: 7.5, textAlign: 'center', cursor: 'pointer' }}
-              onClick={(e) => {
-                e.preventDefault();
-                amountConfig.setAmount(
-                  (parseFloat(ba[0]) - parseFloat(feeConfig))
-                    .toFixed(8)
-                    .toString()
-                );
-                // amountConfig.toggleIsMax();
-              }}
-            >
-              <div
-                style={{
-                  width: 50,
-                  height: 28,
-                  backgroundColor: amountConfig.isMax ? '#7664E4' : '#f8fafc',
-                  borderRadius: 4
-                }}
-              >
-                <span
-                  style={{
-                    color: amountConfig.isMax ? 'white' : '#7664E4',
-                    fontSize: 14
-                  }}
-                >
-                  MAX
-                </span>
-              </div>
-            </div> */}
           </InputGroup>
           {errorText != null ? (
             <FormFeedback style={{ display: 'block', position: 'sticky' }}>

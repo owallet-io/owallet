@@ -21,7 +21,8 @@ import {
   QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
   AccountWithAll,
   getOWalletFromWindow,
-  getEthereumFromWindow
+  getEthereumFromWindow,
+  getTronWebFromWindow
 } from '@owallet/stores';
 import {
   ExtensionRouter,
@@ -253,7 +254,8 @@ export class RootStore {
           suggestChain: false,
           autoInit: true,
           getOWallet: getOWalletFromWindow,
-          getEthereum: getEthereumFromWindow
+          getEthereum: getEthereumFromWindow,
+          getTronWeb: getTronWebFromWindow
         },
         chainOpts
       }

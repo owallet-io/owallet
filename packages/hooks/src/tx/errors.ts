@@ -22,6 +22,13 @@ export class InvalidEvmAddressError extends Error {
   }
 }
 
+export class InvalidTronAddressError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, InvalidTronAddressError.prototype);
+  }
+}
 export class ENSNotSupportedError extends Error {
   constructor(m: string) {
     super(m);

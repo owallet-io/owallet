@@ -7,9 +7,11 @@ import { HashRouter, Route } from 'react-router-dom';
 
 import { AccessPage, Secret20ViewingKeyAccessPage } from './pages/access';
 import { RegisterPage } from './pages/register';
+import { ConfirmLedgerPage } from './pages/register/ledger/confirm';
 import { MainPage } from './pages/main';
 import { LockPage } from './pages/lock';
 import { SendPage } from './pages/send';
+import { SendTronEvmPage } from './pages/send-tron';
 import { IBCTransferPage } from './pages/ibc-transfer';
 import { SetKeyRingPage } from './pages/setting/keyring';
 
@@ -55,19 +57,20 @@ import {
 } from '@owallet/common';
 
 import manifest from './manifest.json';
-import { Ethereum, OWallet } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { InExtensionMessageRequester } from '@owallet/router-extension';
 import { ExportToMobilePage } from './pages/setting/export-to-mobile';
 import { LogPageViewWrapper } from './components/analytics';
 import { ValidatorListPage } from './pages/stake/validator-list';
 import { IntlProvider } from 'react-intl';
 import { SignEthereumPage } from './pages/sign/sign-ethereum';
+import { SignTronPage } from './pages/sign/sign-tron';
 import { SendEvmPage } from './pages/send-evm';
 import './ledger';
 import { TokenPage } from './pages/token';
 import { Menu } from './pages/main/menu';
-import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
+import * as Sentry from '@sentry/react';
+import { BrowserTracing } from '@sentry/tracing';
 
 const owallet = new OWallet(
   manifest.version,
@@ -82,13 +85,20 @@ const ethereum = new Ethereum(
   new InExtensionMessageRequester()
 );
 
+const tronWeb = new TronWeb(
+  manifest.version,
+  'core',
+  '0x2b6653dc',
+  new InExtensionMessageRequester()
+);
+
 Sentry.init({
-  dsn: "https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184",
+  dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
   integrations: [new BrowserTracing()],
 
   // We recommend adjusting this value in production, or using tracesSampler
   // for finer control
-  tracesSampleRate: 1.0,
+  tracesSampleRate: 1.0
 });
 
 //@ts-ignore
@@ -97,6 +107,8 @@ window.owallet = owallet;
 window.eth_owallet = ethereum;
 //@ts-ignore
 window.ethereum = ethereum;
+//@ts-ignore
+window.tronWeb = tronWeb;
 
 // Make sure that icon file will be included in bundle
 require('./public/assets/orai_wallet_logo.png');
@@ -211,8 +223,14 @@ ReactDOM.render(
                     component={Secret20ViewingKeyAccessPage}
                   />
                   <Route exact path="/register" component={RegisterPage} />
+                  <Route
+                    exact
+                    path="/confirm-ledger/:chain"
+                    component={ConfirmLedgerPage}
+                  />
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
+                  <Route exact path="/send-tron" component={SendTronEvmPage} />
                   <Route
                     exact
                     path="/ibc-transfer"
@@ -297,6 +315,7 @@ ReactDOM.render(
                   />
                   <Route path="/sign" component={SignPage} />
                   <Route path="/sign-ethereum" component={SignEthereumPage} />
+                  <Route path="/sign-tron" component={SignTronPage} />
                   <Route path="/suggest-chain" component={ChainSuggestedPage} />
                 </LogPageViewWrapper>
               </HashRouter>

@@ -20,11 +20,13 @@ import { BIP44SelectModal } from './bip44-select-modal';
 import { useIntl } from 'react-intl';
 import { useConfirm } from '../../components/confirm';
 import { ChainUpdaterService } from '@owallet/background';
+import { TRON_ID } from '@owallet/common';
 import { IBCTransferView } from './ibc-transfer';
 import { SelectChain } from '../../layouts/header';
 import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
 import { SendPage } from '../send';
 import { SendEvmPage } from '../send-evm';
+import { SendTronEvmPage } from '../send-tron';
 
 export const MainPage: FunctionComponent = observer(() => {
   const history = useHistory();
@@ -121,7 +123,11 @@ export const MainPage: FunctionComponent = observer(() => {
                 />
                 <LayoutHidePage hidePage={() => setHasSend(false)} />
                 {chainStore.current.networkType === 'evm' ? (
-                  <SendEvmPage />
+                  chainStore?.current.chainId === TRON_ID ? (
+                    <SendTronEvmPage />
+                  ) : (
+                    <SendEvmPage />
+                  )
                 ) : (
                   <SendPage />
                 )}
