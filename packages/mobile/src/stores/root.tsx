@@ -38,6 +38,9 @@ import { ModalStore } from './modal';
 
 import { version } from '../../package.json';
 import { SendStore } from './send';
+import { TxsStore } from './txs';
+import { ChainInfoInner } from '@owallet/stores';
+import { ChainInfo } from '@owallet/types';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -86,6 +89,9 @@ export class RootStore {
   public readonly sendStore: SendStore;
   public readonly appInitStore: AppInit;
   public readonly notificationStore: Notification;
+  public readonly txsStore: (
+    currentChain: ChainInfoInner<ChainInfo>
+  ) => TxsStore;
 
   constructor() {
     const router = new RNRouterUI(RNEnv.produceEnv);
@@ -172,7 +178,7 @@ export class RootStore {
             );
           }
         },
-        chainOpts: this.chainStore.chainInfos.map(chainInfo => {
+        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
           if (chainInfo.chainId.startsWith('osmosis')) {
             return {
               chainId: chainInfo.chainId,
@@ -271,6 +277,8 @@ export class RootStore {
     this.appInitStore = appInit;
     this.notificationStore = notification;
     this.sendStore = new SendStore();
+    this.txsStore = (currentChain: ChainInfoInner<ChainInfo>) =>
+      new TxsStore(currentChain);
   }
 }
 
