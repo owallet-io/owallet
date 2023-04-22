@@ -5,7 +5,7 @@ import { TxsBsc } from './txs-bsc';
 import { TxsEth } from './txs-eth';
 import { TxsTron } from './txs-tron';
 import { TxsKawaii } from './txs-kawaii';
-import { ChainIdEnum } from '../enums';
+import { ChainIdEnum } from '../helpers/txs-enums';
 
 export class TxsEVM extends Txs {
   protected readonly txsBsc: TxsBsc;
@@ -14,6 +14,7 @@ export class TxsEVM extends Txs {
   protected readonly txsKawaii: TxsKawaii;
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     super(current_chain);
+    console.log('current_chain: ', current_chain);
     this.txsBsc = new TxsBsc(current_chain);
     this.txsEth = new TxsEth(current_chain);
     this.txsTron = new TxsTron(current_chain);
@@ -25,6 +26,8 @@ export class TxsEVM extends Txs {
     params: ParamsFilterReqTxs
   ): Promise<ResTxsInfo[]> {
     try {
+        console.log('this.chainId: ', this.chainId);
+
       switch (this.chainId) {
         case ChainIdEnum.Ethereum:
           return await this.txsEth.getTxs(page, current_page, params);

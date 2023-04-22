@@ -1,6 +1,6 @@
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
-import { TxsHelper } from '../txs-helper';
+import { TxsHelper } from '../helpers/txs-helper';
 
 export abstract class Txs {
   public readonly currentChain: ChainInfoInner<ChainInfo>;

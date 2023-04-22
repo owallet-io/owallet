@@ -38,10 +38,13 @@ import OWFlatList from '@src/components/page/ow-flat-list';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { Animated } from 'react-native';
 import { Skeleton } from '@rneui/themed';
+import { TxsStore } from '../../stores/txs/txs-store';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, modalStore } = useStore();
+  const { chainStore, accountStore, modalStore, txsStore } = useStore();
+
   const account = accountStore.getAccount(chainStore.current.chainId);
+
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,6 +57,22 @@ const HistoryTransactionsScreen = observer(() => {
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
   const perPage = 10;
+  const requestTxs = async () => {
+    try {
+      const txs = txsStore(chainStore.current);
+      await txs.getTxs(10, 1, {
+        addressAccount:
+          chainStore.current.networkType === 'evm'
+            ? account.evmosHexAddress
+            : account.bech32Address
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  };
+  useEffect(() => {
+    requestTxs();
+  }, []);
   const fetchData = useCallback(
     async (url, params, isLoadMore = false) => {
       try {
@@ -120,6 +139,7 @@ const HistoryTransactionsScreen = observer(() => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     refreshData({ activeType: defaultAll, activeCoin: defaultAll });
     return () => {
@@ -254,7 +274,7 @@ const HistoryTransactionsScreen = observer(() => {
               <ButtonFilter
                 label={'Type'}
                 onPress={onType}
-                value={limitString(activeType?.label,15)}
+                value={limitString(activeType?.label, 15)}
               />
             )
           )}

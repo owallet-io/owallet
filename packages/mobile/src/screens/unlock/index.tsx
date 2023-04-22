@@ -112,7 +112,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     appInitStore,
-    notificationStore
+    notificationStore,
   } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();

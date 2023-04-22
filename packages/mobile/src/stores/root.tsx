@@ -38,9 +38,9 @@ import { ModalStore } from './modal';
 
 import { version } from '../../package.json';
 import { SendStore } from './send';
-import { TxsStore } from './txs';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
+import { TxsStore } from './txs';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -277,7 +277,7 @@ export class RootStore {
     this.appInitStore = appInit;
     this.notificationStore = notification;
     this.sendStore = new SendStore();
-    this.txsStore = (currentChain: ChainInfoInner<ChainInfo>) =>
+    this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>
       new TxsStore(currentChain);
   }
 }
