@@ -10,12 +10,36 @@ export class TxsEth extends Txs {
     super(current_chain);
     this.urlApi = this.txsHelper.INFO_API_EVM[ChainIdEnum.Ethereum].BASE_URL;
   }
+  async getTotalPage(
+    params: ParamsFilterReqTxs,
+    page: number
+  ): Promise<number> {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=txlist&address=${
+          params?.addressAccount
+        }&startblock=0&endblock=99999999&sort=desc&apikey=${
+          this.txsHelper.INFO_API_EVM[ChainIdEnum.Ethereum].API_KEY
+        }`,
+        { baseURL: this.urlApi }
+      );
+      const data: txsEthAndBscResult = rs.data;
+      if (data?.status === '1' && data.result?.length > 0) {
+        return Promise.resolve(data.result?.length / page);
+      }
+      return Promise.resolve(0);
+    } catch (error) {
+      Promise.reject(error);
+    }
+  }
+
   async getTxs(
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
-  ): Promise<ResTxs> {
+  ): Promise<Partial<ResTxs>> {
     try {
+      const totalPage = await this.getTotalPage(params, page);
       const rs = await API.get(
         `/api?module=account&action=txlist&address=${
           params?.addressAccount
@@ -26,22 +50,27 @@ export class TxsEth extends Txs {
       );
       const data: txsEthAndBscResult = rs.data;
       if (data?.status === '1') {
-        // console.log('rs1: ', data?.result);
-        const dataConverted = this.txsHelper.cleanDataResToStandFormat(
+        const rsConverted = this.txsHelper.cleanDataEthAndBscResToStandFormat(
           data.result,
           this.currentChain,
-          params?.addressAccount
+          params?.addressAccount,
+          current_page,
+          totalPage
         );
-        console.log('dataConverted: ', dataConverted);
+        console.log('dataConverted: ', rsConverted);
 
-        return Promise.resolve(dataConverted);
+        return Promise.resolve(rsConverted);
       }
       console.log('rs2: ', data?.result);
-    //   return Promise.resolve();
+      return Promise.resolve({
+        total_page: 0,
+        result: [],
+        current_page
+      });
     } catch (error) {
-      Promise.reject(error);
+      console.log('error: ', error);
+      return Promise.reject(error);
     }
-    return;
   }
   getTxsByHash(txHash: string): ResTxsInfo {
     return;

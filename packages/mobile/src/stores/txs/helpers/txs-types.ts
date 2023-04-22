@@ -35,7 +35,7 @@ interface ResTxsInfo {
 interface ResTxs {
   current_page: number;
   total_page: number;
-  result: ResTxsInfo[];
+  result: Partial<ResTxsInfo>[];
 }
 interface InfoTxEthAndBsc {
   blockHash: string;

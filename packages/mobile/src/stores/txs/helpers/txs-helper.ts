@@ -28,12 +28,35 @@ export class TxsHelper {
   replaceZero(str) {
     return parseFloat(str.replace(/^0+|\.?0+$/g, ''));
   }
+  checkZeros(input) {
+    if (!input) return false;
+    // Find the position of the decimal point
+    let dotIndex = input.indexOf('.');
+    // Check if the input has a decimal point
+    if (dotIndex !== -1) {
+      // Get the part after the decimal point
+      let fraction = input.slice(dotIndex + 1);
+      // Check if the fraction is all zeros
+      if (fraction === '0'.repeat(fraction.length)) {
+        // Return true if the fraction is all zeros
+        return true;
+      } else {
+        // Return false if the fraction has any non-zero
+        return false;
+      }
+    } else {
+      // Return false if the input does not have a decimal point
+      return false;
+    }
+  }
   removeZeroNumberLast(str) {
     if (!str) return str;
-    if (isNaN(this.replaceZero(str))) {
+    if (this.checkZeros(str)) {
       return parseFloat(str);
     } else if (`${this.replaceZero(str)}`.indexOf('.') == -1) {
       return this.replaceZero(str).toFixed(1);
+    } else if (isNaN(this.replaceZero(str))) {
+      return str;
     }
     return this.replaceZero(str);
   }
@@ -189,18 +212,20 @@ export class TxsHelper {
   }
 
   handleItemTron() {}
-  cleanDataResToStandFormat(
+  cleanDataEthAndBscResToStandFormat(
     data: InfoTxEthAndBsc[],
     currentChain: ChainInfoInner<ChainInfo>,
-    addressAccount: string
-  ): Partial<ResTxsInfo>[] {
+    addressAccount: string,
+    currentPage: number,
+    totalPage: number
+  ): Partial<ResTxs> {
     let dataConverted: Partial<ResTxsInfo>[] = [];
+    let current_page: number = currentPage;
+    let total_page: number = totalPage;
     if (data && data?.length > 0) {
       for (let i = 0; i < data.length; i++) {
         let item: Partial<ResTxsInfo>;
         const itData = data[i];
-        console.log('currentChain.chainId: ', itData, currentChain.chainId);
-
         switch (currentChain.chainId) {
           case ChainIdEnum.Ethereum:
             item = this.handleItemTxsEthAndBsc(
@@ -224,7 +249,10 @@ export class TxsHelper {
         }
       }
     }
-    console.log('dataConverted: ', dataConverted);
-    return dataConverted;
+    return {
+      current_page,
+      result: dataConverted,
+      total_page
+    };
   }
 }
