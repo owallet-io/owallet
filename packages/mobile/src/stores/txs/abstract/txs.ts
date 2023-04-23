@@ -19,5 +19,5 @@ export abstract class Txs {
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
-  ): Promise<ResTxsInfo[]>;
+  ): Promise<Partial<ResTxs>>;
 }

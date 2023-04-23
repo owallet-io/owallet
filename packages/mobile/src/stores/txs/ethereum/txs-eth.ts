@@ -25,7 +25,7 @@ export class TxsEth extends Txs {
       );
       const data: txsEthAndBscResult = rs.data;
       if (data?.status === '1' && data.result?.length > 0) {
-        return Promise.resolve(data.result?.length / page);
+        return Promise.resolve(Math.ceil(data.result?.length / page));
       }
       return Promise.resolve(0);
     } catch (error) {
@@ -50,18 +50,20 @@ export class TxsEth extends Txs {
       );
       const data: txsEthAndBscResult = rs.data;
       if (data?.status === '1') {
-        const rsConverted = this.txsHelper.cleanDataEthAndBscResToStandFormat(
+        const rsConverted = this.txsHelper.cleanDataResToStandFormat(
           data.result,
           this.currentChain,
-          params?.addressAccount,
-          current_page,
-          totalPage
+          params?.addressAccount
         );
-        console.log('dataConverted: ', rsConverted);
+        // console.log('dataConverted: ', rsConverted);
 
-        return Promise.resolve(rsConverted);
+        return Promise.resolve({
+          result: rsConverted,
+          current_page,
+          total_page: totalPage
+        });
       }
-      console.log('rs2: ', data?.result);
+    //   console.log('rs2: ', data?.result);
       return Promise.resolve({
         total_page: 0,
         result: [],

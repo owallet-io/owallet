@@ -212,16 +212,12 @@ export class TxsHelper {
   }
 
   handleItemTron() {}
-  cleanDataEthAndBscResToStandFormat(
+  cleanDataResToStandFormat(
     data: InfoTxEthAndBsc[],
     currentChain: ChainInfoInner<ChainInfo>,
-    addressAccount: string,
-    currentPage: number,
-    totalPage: number
-  ): Partial<ResTxs> {
+    addressAccount: string
+  ): Partial<ResTxsInfo>[] {
     let dataConverted: Partial<ResTxsInfo>[] = [];
-    let current_page: number = currentPage;
-    let total_page: number = totalPage;
     if (data && data?.length > 0) {
       for (let i = 0; i < data.length; i++) {
         let item: Partial<ResTxsInfo>;
@@ -249,10 +245,6 @@ export class TxsHelper {
         }
       }
     }
-    return {
-      current_page,
-      result: dataConverted,
-      total_page
-    };
+    return dataConverted;
   }
 }

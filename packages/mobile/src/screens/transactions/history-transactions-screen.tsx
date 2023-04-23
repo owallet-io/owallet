@@ -60,12 +60,13 @@ const HistoryTransactionsScreen = observer(() => {
   const requestTxs = async () => {
     try {
       const txs = txsStore(chainStore.current);
-      await txs.getTxs(10, 1, {
+      const data = await txs.getTxs(10, 1, {
         addressAccount:
           chainStore.current.networkType === 'evm'
             ? account.evmosHexAddress
             : account.bech32Address
       });
+      console.log('data: ', data);
     } catch (error) {
       console.log('error: ', error);
     }
