@@ -5,10 +5,8 @@ import { View, Image, StyleSheet } from 'react-native';
 import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
-import { AddressCopyable } from '../../components/address-copyable';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
-import { NetworkErrorView } from './network-error-view';
 import { DownArrowIcon } from '../../components/icon';
 import {
   BuyIcon,
@@ -16,19 +14,16 @@ import {
   SendDashboardIcon
 } from '../../components/icon/button';
 import { metrics, spacing, typography } from '../../themes';
-import { navigate } from '../../router/root';
-import { AddressQRCodeModal } from './components';
+
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
 
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;
-  totalAmount?:string | React.ReactNode;
+  totalAmount?: string | React.ReactNode;
   coinType?: any;
-  // address?: string;
   networkType?: 'cosmos' | 'evm';
   name?: string;
   addressComponent?: React.ReactNode;
@@ -122,23 +117,28 @@ export const AccountBox: FunctionComponent<{
             >
               Total Balance
             </Text>
-            {!!totalBalance && typeof totalBalance == 'string' ? (
-              <Text variant="h1" style={{
-                textAlign:"center"
-              }} color={colors['white']}>{totalBalance || 0}</Text>
-            ) : (
-              totalBalance
-            )}
-            {!!totalAmount && typeof totalAmount == "string" && <Text
+            {!!totalBalance ? (
+              <Text
+                variant="h1"
+                style={{
+                  textAlign: 'center'
+                }}
+                color={colors['white']}
+              >
+                {totalBalance || 0}
+              </Text>
+            ) : null}
+            {!!totalAmount && typeof totalAmount == 'string' && (
+              <Text
                 style={{
                   textAlign: 'center',
                   color: colors['gray-400'],
                   fontSize: 16
                 }}
               >
-                $
-                {totalAmount}
-              </Text>}
+                ${totalAmount}
+              </Text>
+            )}
           </View>
           <View style={styles.containerBtnHeader}>
             {['Buy', 'Receive', 'Send'].map((e, i) => (
@@ -246,7 +246,7 @@ export const AccountBox: FunctionComponent<{
   }
 );
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerLoading: {
       position: 'absolute',

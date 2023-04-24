@@ -7,8 +7,8 @@ import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
 import { AccountWithAll } from '@owallet/stores';
 import { Text } from '@src/components/text';
-import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
+import { TRON_ID } from '@owallet/common';
 
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
