@@ -17,13 +17,18 @@ import { navigationRef } from './router/root';
 import { handleDeepLink } from './utils/helper';
 import { SmartNavigatorProvider } from './navigation.provider';
 import { SCREENS } from './common/constants';
-import { AddressBookStackScreen, MainTabNavigation, OtherNavigation, RegisterNavigation } from './navigations';
+import {
+  AddressBookStackScreen,
+  MainTabNavigation,
+  OtherNavigation,
+  RegisterNavigation
+} from './navigations';
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
   useEffect(() => {
     Linking.getInitialURL()
-      .then((url) => {
+      .then(url => {
         if (url) {
           const SCHEME_IOS = 'owallet://open_url?url=';
           const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -32,7 +37,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           );
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.warn('Deeplinking error', err);
       });
     Linking.addEventListener('url', handleDeepLink);

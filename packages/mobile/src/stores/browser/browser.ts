@@ -12,6 +12,12 @@ export const DAppInfos = [
     logo: oraiLogo
   },
   {
+    id: 15,
+    name: 'Staging V2 Oraidex',
+    uri: 'https://staging-v2.oraidex.io',
+    logo: oraiLogo
+  },
+  {
     id: 3,
     name: 'Osmosis',
     uri: 'https://app.osmosis.zone',

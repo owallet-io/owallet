@@ -5,6 +5,7 @@ import { TextStyle, ViewStyle } from 'react-native';
 import { TextInput } from '../../components/input';
 import Big from 'big.js';
 import { observer } from 'mobx-react-lite';
+import { colors } from '@src/themes';
 
 export const FeeInput: FunctionComponent<{
   labelStyle?: TextStyle;
@@ -53,7 +54,9 @@ export const FeeInput: FunctionComponent<{
         }}
         inputRight={
           <View>
-            <Text>{feeConfig.chainInfo.stakeCurrency.coinDenom}</Text>
+            <Text style={{ color: colors['sub-text'] }}>
+              {feeConfig.chainInfo.stakeCurrency.coinDenom}
+            </Text>
           </View>
         }
         keyboardType="decimal-pad"

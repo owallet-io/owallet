@@ -1,20 +1,24 @@
 import React, { FC } from 'react';
 import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
 import useHeaderOptions from '@src/hooks/use-header';
-import { AddAddressBookScreen, AddressBookScreen } from '@src/screens/setting/screens/address-book';
+import {
+  AddAddressBookScreen,
+  AddressBookScreen
+} from '@src/screens/setting/screens/address-book';
 import { createStackNavigator } from '@react-navigation/stack';
+
 const Stack = createStackNavigator();
+
 export const AddressBookStackScreen: FC = () => {
-  
-  const handleScreenOptions = ({ route, navigation })=>{
-    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+  const handleScreenOptions = ({ route, navigation }) => {
+    const headerOptions = useHeaderOptions(
+      { title: SCREENS_TITLE[route?.name] },
+      navigation
+    );
     return headerOptions;
-  }
+  };
   return (
-    <Stack.Navigator
-      screenOptions={handleScreenOptions}
-      headerMode="screen"
-    >
+    <Stack.Navigator screenOptions={handleScreenOptions} headerMode="screen">
       <Stack.Screen name={SCREENS.AddressBook} component={AddressBookScreen} />
       <Stack.Screen
         name={SCREENS.AddAddressBook}

@@ -1,3 +1,14 @@
+import {
+  IFeeConfig,
+  IGasConfig,
+  InsufficientFeeError,
+  NotLoadedFeeError
+} from '@owallet/hooks';
+import { CoinPretty, PricePretty } from '@owallet/unit';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { action, makeObservable, observable } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   StyleSheet,
@@ -6,32 +17,13 @@ import {
   ViewProps,
   ViewStyle
 } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../styles';
-import { observer } from 'mobx-react-lite';
-import { action, makeObservable, observable } from 'mobx';
-import {
-  IFeeConfig,
-  IGasConfig,
-  InsufficientFeeError,
-  NotLoadedFeeError
-} from '@owallet/hooks';
-import { GasInput } from './gas';
 import { useStore } from '../../stores';
-import { CoinPretty, PricePretty } from '@owallet/unit';
-import { LoadingSpinner } from '../spinner';
-import { RectButton } from '../rect-button';
-import { OWBox } from '@src/components/card';
-import {
-  FastIcon,
-  LowIcon,
-  AverageIcon,
-  LowIconFill,
-  AverageIconFill,
-  FastIconFill
-} from '../icon';
+import { useStyle } from '../../styles';
 import { spacing, typography } from '../../themes';
-import { useTheme } from '@src/themes/theme-provider';
+import { AverageIconFill, FastIconFill, LowIconFill } from '../icon';
+import { RectButton } from '../rect-button';
+import { LoadingSpinner } from '../spinner';
+import { GasInput } from './gas';
 export interface FeeButtonsProps {
   labelStyle?: TextStyle;
   containerStyle?: ViewStyle;
@@ -64,7 +56,7 @@ class FeeButtonState {
 }
 
 export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  (props) => {
+  props => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
@@ -208,11 +200,15 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         <RectButton
           style={{
             ...styles.containerBtnFee,
-            ...(selected ? {
-              borderColor: colors['purple-700'],
-              borderWidth: 1
-            }:{borderColor: colors['border-purple-100-gray-800'],
-            borderWidth: 0.5})
+            ...(selected
+              ? {
+                  borderColor: colors['purple-700'],
+                  borderWidth: 1
+                }
+              : {
+                  borderColor: colors['border-purple-100-gray-800'],
+                  borderWidth: 0.5
+                })
           }}
           rippleColor={style.get('color-primary-100').color}
           onPress={onPress}
@@ -349,7 +345,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
   }
 );
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtnFee: {
       flex: 1,

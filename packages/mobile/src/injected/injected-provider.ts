@@ -1,4 +1,8 @@
-import { InjectedOWallet, InjectedEthereum } from '@owallet/provider';
+import {
+  InjectedOWallet,
+  InjectedEthereum,
+  InjectedTronWebOWallet
+} from '@owallet/provider';
 import { OWalletMode, EthereumMode } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
@@ -66,6 +70,39 @@ export class RNInjectedOWallet extends InjectedOWallet {
         }
       },
       RNInjectedOWallet.parseWebviewMessage
+    );
+  }
+}
+
+export class RNInjectedTronWeb extends InjectedTronWebOWallet {
+  static parseWebviewMessage(message: any): any {
+    if (message && typeof message === 'string') {
+      try {
+        return JSON.parse(message);
+      } catch {
+        // noop
+      }
+    }
+
+    return message;
+  }
+
+  constructor(version: string, mode: OWalletMode) {
+    super(
+      version,
+      mode,
+      {
+        addMessageListener: (fn: (e: any) => void) =>
+          window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) =>
+          window.removeEventListener('message', fn),
+        postMessage: message => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.ReactNativeWebView.postMessage(JSON.stringify(message));
+        }
+      },
+      RNInjectedTronWeb.parseWebviewMessage
     );
   }
 }

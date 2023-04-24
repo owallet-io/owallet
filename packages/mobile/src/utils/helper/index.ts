@@ -2,6 +2,7 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
+import { getNetworkTypeByChainId } from '@owallet/common';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -29,6 +30,17 @@ export const TRC20_LIST = [
     coinGeckoId: 'tether',
     coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
     type: 'trc20'
+  },
+  {
+    type: 'cw20',
+    coinDenom: 'wTRX',
+    coinMinimalDenom:
+      'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
+    contractAddress:
+      'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+    coinDecimals: 6,
+    coinGeckoId: 'tron',
+    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
   }
   // {
   //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
@@ -354,3 +366,22 @@ export function nFormatter(num, digits: 1) {
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
+
+export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
+  let address;
+
+  if (chainId === TRON_ID) {
+    address = ledgerAddresses.trx;
+  } else {
+    const networkType = getNetworkTypeByChainId(chainId);
+    if (networkType === 'evm') {
+      address = ledgerAddresses.eth;
+    } else {
+      address = ledgerAddresses.cosmos;
+    }
+  }
+  return address;
+}
+
+export const isBase58 = (value: string): boolean =>
+  /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
