@@ -6,7 +6,7 @@ export abstract class Txs {
   public readonly currentChain: ChainInfoInner<ChainInfo>;
   public readonly networkType: string;
   public readonly txsHelper: TxsHelper;
-  public urlApi: string;
+  public infoApi: IInfoApi;
   public readonly chainId: string;
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     this.currentChain = current_chain;
@@ -14,7 +14,7 @@ export abstract class Txs {
     this.chainId = current_chain?.chainId;
     this.txsHelper = new TxsHelper();
   }
-  abstract getTxsByHash(txHash: string): Promise<ResTxsInfo>;
+  abstract getTxsByHash(txHash: string, item?: ResTxsInfo): Promise<ResTxsInfo>;
   abstract getTxs(
     page: number,
     current_page: number,

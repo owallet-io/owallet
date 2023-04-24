@@ -8,24 +8,21 @@ export class TxsEth extends Txs {
   // private readonly
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     super(current_chain);
-    this.urlApi = this.txsHelper.INFO_API_EVM[ChainIdEnum.Ethereum].BASE_URL;
+    this.infoApi = this.txsHelper.INFO_API_EVM[ChainIdEnum.Ethereum];
   }
   async getTotalPage(
     params: ParamsFilterReqTxs,
     page: number
   ): Promise<number> {
     try {
-      const rs = await API.get(
-        `/api?module=account&action=txlist&address=${
-          params?.addressAccount
-        }&startblock=0&endblock=99999999&sort=desc&apikey=${
-          this.txsHelper.INFO_API_EVM[ChainIdEnum.Ethereum].API_KEY
-        }`,
-        { baseURL: this.urlApi }
+      const rs = await API.getTotalTxsEthAndBscPage(
+        this.infoApi.BASE_URL,
+        params?.addressAccount,
+        this.infoApi.API_KEY
       );
-      const data: txsEthAndBscResult = rs.data;
-      if (data?.status === '1' && data.result?.length > 0) {
-        return Promise.resolve(Math.ceil(data.result?.length / page));
+
+      if (rs.result?.length > 0) {
+        return Promise.resolve(Math.ceil(rs.result?.length / page));
       }
       return Promise.resolve(0);
     } catch (error) {
@@ -40,41 +37,43 @@ export class TxsEth extends Txs {
   ): Promise<Partial<ResTxs>> {
     try {
       const totalPage = await this.getTotalPage(params, page);
-      const rs = await API.get(
-        `/api?module=account&action=txlist&address=${
-          params?.addressAccount
-        }&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${
-          this.txsHelper.INFO_API_EVM[ChainIdEnum.Ethereum].API_KEY
-        }`,
-        { baseURL: this.urlApi }
+      const data = await API.getTxsEthAndBsc(
+        this.infoApi.BASE_URL,
+        params?.addressAccount,
+        current_page,
+        page,
+        this.infoApi.API_KEY
       );
-      const data: txsEthAndBscResult = rs.data;
+
       if (data?.status === '1') {
         const rsConverted = this.txsHelper.cleanDataResToStandFormat(
           data.result,
           this.currentChain,
           params?.addressAccount
         );
-        // console.log('dataConverted: ', rsConverted);
-
         return Promise.resolve({
           result: rsConverted,
           current_page,
           total_page: totalPage
         });
       }
-    //   console.log('rs2: ', data?.result);
       return Promise.resolve({
         total_page: 0,
         result: [],
         current_page
       });
     } catch (error) {
-      console.log('error: ', error);
       return Promise.reject(error);
     }
   }
-  getTxsByHash(txHash: string): ResTxsInfo {
-    return;
+  async getTxsByHash(txHash: string, item: ResTxsInfo): Promise<ResTxsInfo> {
+    try {
+        if(item && txHash){
+            return Promise.resolve(item)
+        }
+        return Promise.reject('Not found item or txHash');
+    } catch (error) {
+       return  Promise.reject(error);
+    }
   }
 }

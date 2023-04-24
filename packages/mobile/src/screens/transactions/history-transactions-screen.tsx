@@ -232,7 +232,7 @@ const HistoryTransactionsScreen = observer(() => {
   const renderItem = ({ item, index }) => {
     return (
       <OWTransactionItem
-        key={`item-${index}`}
+        key={`item-${index+1}-${index}`}
         onPress={() => onTransactionDetail(item)}
         time={item?.timestamp}
         data={item}

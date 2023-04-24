@@ -24,7 +24,7 @@ export class TxsEVM extends Txs {
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
-  ): Promise<ResTxsInfo[]> {
+  ): Promise<Partial<ResTxs>>{
     try {
         console.log('this.chainId: ', this.chainId);
 
@@ -32,11 +32,11 @@ export class TxsEVM extends Txs {
         case ChainIdEnum.Ethereum:
           return await this.txsEth.getTxs(page, current_page, params);
         case ChainIdEnum.BNBChain:
-          return this.txsBsc.getTxs(page, current_page, params);
+          return await this.txsBsc.getTxs(page, current_page, params);
         case ChainIdEnum.KawaiiEvm:
-          return this.txsKawaii.getTxs(page, current_page, params);
+          return await this.txsKawaii.getTxs(page, current_page, params);
         case ChainIdEnum.TRON:
-          return this.txsTron.getTxs(page, current_page, params);
+          return await this.txsTron.getTxs(page, current_page, params);
         default:
           break;
       }

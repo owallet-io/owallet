@@ -20,6 +20,12 @@ interface timeTxs {
   timeLong: string;
   timeShort: string;
 }
+interface IInfoApi{
+  RPC?:string;
+  LCD?:string;
+  BASE_URL?:string;
+  API_KEY?:string;
+}
 interface ResTxsInfo {
   txHash: string;
   time: timeTxs;

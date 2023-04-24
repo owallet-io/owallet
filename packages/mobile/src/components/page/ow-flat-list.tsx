@@ -10,7 +10,6 @@ import {
 import React, {
   FC,
   ReactNode,
-  forwardRef,
   useEffect,
   useRef,
   useState
@@ -28,7 +27,7 @@ interface IOWFlatListProps extends FlatListProps<any> {
   loading?: boolean;
   SkeletonComponent?: FlatListProps<any>['ListHeaderComponent'];
 }
-const OWFlatList: FC<IOWFlatListProps> = forwardRef((props, ref) => {
+const OWFlatList: FC<IOWFlatListProps> = (props) => {
   const { colors, images } = useTheme();
   const listRef = useRef(null);
   const {
@@ -98,7 +97,7 @@ const OWFlatList: FC<IOWFlatListProps> = forwardRef((props, ref) => {
           loading ? (
             <>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((it, inde) => {
-                return <>{SkeletonComponent}</>;
+                return <View key={`SkeletonComponent-${inde}`}>{SkeletonComponent}</View>;
               })}
             </>
           ) : (
@@ -140,7 +139,7 @@ const OWFlatList: FC<IOWFlatListProps> = forwardRef((props, ref) => {
       </Animated.View>
     </>
   );
-});
+};
 
 export default OWFlatList;
 

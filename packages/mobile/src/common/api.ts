@@ -117,6 +117,46 @@ export const API = {
       return Promise.reject(error);
     }
   },
+  getTotalTxsEthAndBscPage: async (url, addressAcc, apiKey) => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=txlist&address=${addressAcc}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      const data: txsEthAndBscResult = rs.data;
+      if (data?.status === '1') {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api?module=account&action=txlist&address=${addressAcc}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`,
+        'getTotalTxsEthAndBscPage'
+      );
+      return Promise.reject(error);
+    }
+  },
+  getTxsEthAndBsc:async (url, addressAccount, current_page, page, apiKey) => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=txlist&address=${addressAccount}&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      const data: txsEthAndBscResult = rs.data;
+      if (data?.status === '1') {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api?module=account&action=txlist&address=${addressAccount}&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        'getTxsEthAndBsc'
+      );
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig
