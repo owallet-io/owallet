@@ -175,6 +175,28 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tron',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'KWT',
+          coinMinimalDenom:
+            'cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:Kawaii Islands',
+          contractAddress: 'orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5',
+          coinDecimals: 6,
+          coinGeckoId: 'kawaii-islands',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+        },
+        {
+          type: 'cw20',
+          coinDenom: 'MILKY',
+          coinMinimalDenom:
+            'cw20:orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw:Milky Token',
+          contractAddress: 'orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw',
+          coinDecimals: 6,
+          coinGeckoId: 'milky-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
         }
       ];
     },

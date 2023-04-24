@@ -37,6 +37,7 @@ export interface OWalletSignOptions {
 
   readonly disableBalanceCheck?: boolean;
   readonly networkType?: NetworkType;
+  readonly chainId?: string;
 }
 
 export interface OWallet {
@@ -141,6 +142,8 @@ export type EthereumMode =
   | 'mobile-web'
   | 'walletconnect';
 
+export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
+
 export interface RequestArguments {
   method: string;
   params?: any;
@@ -176,6 +179,19 @@ export interface Ethereum {
   // signReEncryptData(chainId: string, data: object): Promise<object>;
   // signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
+  signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
+}
+
+export interface TronWeb {
+  readonly version: string;
+  readonly mode: TronWebMode;
+  defaultAddress?: object;
+  initChainId: string;
+  sign(transaction: object): Promise<object>;
+  getDefaultAddress(): object;
 }

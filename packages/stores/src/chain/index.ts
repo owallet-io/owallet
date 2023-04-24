@@ -256,7 +256,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get gasPriceStep():
     | { low: number; average: number; high: number }
     | undefined {
-    return this.raw.gasPriceStep;
+    return this.raw.stakeCurrency.gasPriceStep;
   }
 
   get rest(): string {

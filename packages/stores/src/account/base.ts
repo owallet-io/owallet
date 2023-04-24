@@ -1,6 +1,5 @@
 import { StdFeeEthereum } from './../common/types';
 
-// import Web3 from 'web3';
 import 'reflect-metadata';
 import {
   action,
@@ -14,13 +13,19 @@ import {
   AppCurrency,
   OWallet,
   OWalletSignOptions,
-  Ethereum
+  Ethereum,
+  TronWeb
 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator, fetchAdapter } from '@owallet/common';
+import {
+  DenomHelper,
+  toGenerator,
+  fetchAdapter,
+  EVMOS_NETWORKS
+} from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20.json';
 import {
@@ -87,6 +92,7 @@ export interface AccountSetOpts<MsgOpts> {
   };
   readonly getOWallet: () => Promise<OWallet | undefined>;
   readonly getEthereum: () => Promise<Ethereum | undefined>;
+  readonly getTronWeb: () => Promise<TronWeb | undefined>;
   readonly msgOpts: MsgOpts;
   readonly wsObject?: new (
     url: string,
@@ -414,6 +420,40 @@ export class AccountSetBase<MsgOpts, Queries> {
     });
   }
 
+  async sendTronToken(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    },
+    tokenTrc20?: object
+  ) {
+    console.log('tokenTrc20 ===', tokenTrc20);
+
+    try {
+      const ethereum = (await this.getEthereum())!;
+      const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
+        amount,
+        currency,
+        recipient,
+        address,
+        tokenTrc20
+      });
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(signResponse);
+      }
+      return {
+        txHash: signResponse
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
+  }
+
   async sendEvmMsgs(
     type: string | 'unknown',
     msgs: Msg,
@@ -462,7 +502,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
         txHash = result.txHash;
       } else {
-        const result = await this.broadcastEvmMsgs(msgs, fee);
+        const result = await this.broadcastEvmMsgs(msgs, fee, signOptions);
         txHash = result.txHash;
       }
     } catch (e: any) {
@@ -781,7 +821,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   // Return the tx hash.
   protected async broadcastEvmMsgs(
     msgs: Msg,
-    fee: StdFeeEthereum
+    fee: StdFeeEthereum,
+    signOptions?: OWalletSignOptions
   ): Promise<{
     txHash: string;
   }> {
@@ -798,8 +839,15 @@ export class AccountSetBase<MsgOpts, Queries> {
       const ethereum = (await this.getEthereum())!;
       console.log('Amino Msgs: ', msgs);
 
+      let toAddress = msgs.value.to_address;
+      if (EVMOS_NETWORKS.includes(signOptions.chainId)) {
+        const decoded = bech32.decode(toAddress);
+        toAddress =
+          '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
+      }
       const message = {
-        to: msgs.value.to_address,
+        // TODO: need to check kawaii cosmos
+        to: toAddress,
         value: '0x' + parseInt(msgs.value.amount[0].amount).toString(16),
         gas: fee.gas,
         gasPrice: fee.gasPrice
@@ -819,7 +867,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         txHash: signResponse.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastEvmMsgs: ', error);
     }
   }
 

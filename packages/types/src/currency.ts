@@ -17,6 +17,7 @@ export interface Currency {
     high: number;
   };
 }
+
 /**
  * The currency that is supported on the cosmwasm.
  * This should be the CW-20 that confirms the standard.
