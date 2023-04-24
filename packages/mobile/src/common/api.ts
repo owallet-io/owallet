@@ -137,7 +137,7 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsEthAndBsc:async (url, addressAccount, current_page, page, apiKey) => {
+  getTxsEthAndBsc: async (url, addressAccount, current_page, page, apiKey) => {
     try {
       const rs = await API.get(
         `/api?module=account&action=txlist&address=${addressAccount}&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
@@ -153,6 +153,26 @@ export const API = {
         error,
         `${url}/api?module=account&action=txlist&address=${addressAccount}&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
         'getTxsEthAndBsc'
+      );
+      return Promise.reject(error);
+    }
+  },
+  getTxsTron: async (url, addressAccount, current_page, page) => {
+    try {
+      const rs = await API.get(
+        `/api/transaction?sort=-timestamp&count=true&limit=${page}&start=${current_page}&address=${addressAccount}`,
+        { baseURL: url }
+      );
+      const data: ResDataTxsTron = rs.data;
+      if (data?.data) {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api/transaction?sort=-timestamp&count=true&limit=${page}&start=${current_page}&address=${addressAccount}`,
+        'getTxsTron'
       );
       return Promise.reject(error);
     }

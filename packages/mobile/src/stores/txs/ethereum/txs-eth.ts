@@ -46,7 +46,7 @@ export class TxsEth extends Txs {
       );
 
       if (data?.status === '1') {
-        const rsConverted = this.txsHelper.cleanDataResToStandFormat(
+        const rsConverted = this.txsHelper.cleanDataEthAndBscResToStandFormat(
           data.result,
           this.currentChain,
           params?.addressAccount
@@ -66,7 +66,7 @@ export class TxsEth extends Txs {
       return Promise.reject(error);
     }
   }
-  async getTxsByHash(txHash: string, item: ResTxsInfo): Promise<ResTxsInfo> {
+  async getTxsByHash(txHash: string, item?: ResTxsInfo): Promise<ResTxsInfo> {
     try {
         if(item && txHash){
             return Promise.resolve(item)

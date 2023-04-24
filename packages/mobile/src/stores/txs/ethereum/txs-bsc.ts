@@ -45,7 +45,7 @@ export class TxsBsc extends Txs {
       );
 
       if (data?.status === '1') {
-        const rsConverted = this.txsHelper.cleanDataResToStandFormat(
+        const rsConverted = this.txsHelper.cleanDataEthAndBscResToStandFormat(
           data.result,
           this.currentChain,
           params?.addressAccount

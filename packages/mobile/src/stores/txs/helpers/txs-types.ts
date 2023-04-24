@@ -16,15 +16,92 @@ interface TransferInfo {
   amount: string;
   token: string;
 }
+interface ResDataTxsTron {
+  total: number;
+  rangeTotal: number;
+  data: ResultDataTron[];
+  wholeChainTxCount: number;
+  contractMap: any;
+  contractInfo: any;
+}
+
+type CostTron = {
+  net_fee: number;
+  energy_penalty_total: number;
+  energy_usage: number;
+  fee: number;
+  energy_fee: number;
+  energy_usage_total: number;
+  origin_energy_usage: number;
+  net_usage: number;
+};
+
+type TokenInfoTron = {
+  tokenId: string;
+  tokenAbbr: string;
+  tokenName: string;
+  tokenDecimal: number;
+  tokenCanShow: number;
+  tokenType: string;
+  tokenLogo: string;
+  tokenLevel: string;
+  vip: boolean;
+};
+
+type ParameterTron = {
+  _value: string;
+  _to: string;
+};
+
+type TriggerInfoTron = {
+  method: string;
+  data: string;
+  parameter: ParameterTron;
+  methodId: string;
+  methodName: string;
+  contract_address: string;
+  call_value: number;
+};
+
+type ContractDataTron = {
+  data: string;
+  owner_address: string;
+  contract_address: string;
+};
+
+interface ResultDataTron {
+  block: number;
+  hash: string;
+  timestamp: number;
+  ownerAddress: string;
+  toAddressList: string[];
+  toAddress: string;
+  contractType: number;
+  confirmed: boolean;
+  revert: boolean;
+  contractData: ContractDataTron;
+  SmartCalls: string;
+  Events: string;
+  id: string;
+  data: string; // duplicate key
+  fee: string;
+  contractRet: string;
+  result: string;
+  amount: string;
+  cost: CostTron;
+  tokenInfo: TokenInfoTron;
+  tokenType: string;
+  trigger_info?: TriggerInfoTron; // optional because not present in all objects
+}
 interface timeTxs {
   timeLong: string;
   timeShort: string;
 }
-interface IInfoApi{
-  RPC?:string;
-  LCD?:string;
-  BASE_URL?:string;
-  API_KEY?:string;
+interface IInfoApi {
+  RPC?: string;
+  LCD?: string;
+  BASE_URL?: string;
+  API_KEY?: string;
 }
 interface ResTxsInfo {
   txHash: string;

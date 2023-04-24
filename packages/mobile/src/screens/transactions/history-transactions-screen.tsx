@@ -44,6 +44,7 @@ const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore, txsStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
+  console.log('account: ', account);
 
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);

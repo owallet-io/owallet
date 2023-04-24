@@ -108,6 +108,29 @@ export class TxsHelper {
       };
     }
   }
+  formatTimeTron(timestamp): timeTxs {
+    if (timestamp) {
+      // Create a moment object from the timestamp
+      var myMoment = moment(timestamp);
+
+      // Format the moment object using tokens
+      var formatted = myMoment.format('YYYY-MM-DD HH:mm:ss');
+
+      // Get the relative time from the moment object to now
+      var relative = this.capitalizeFirstLetter(myMoment.fromNow());
+
+      // Combine the formatted and relative strings
+      return {
+        timeLong: relative + ' (' + formatted + ')',
+        timeShort: relative
+      };
+    } else {
+      return {
+        timeLong: '',
+        timeShort: ''
+      };
+    }
+  }
   addSpacesToString(str) {
     return str && str.replace(/([a-z])([A-Z])/g, '$1 $2');
   }
@@ -190,12 +213,12 @@ export class TxsHelper {
         this.calculateTransactionFee(
           data.gasPrice,
           data.gasUsed,
-          currentChain?.stakeCurrency?.coinDecimals
+          currentChain?.feeCurrencies[0]?.coinDecimals
         ),
         true
       )
     );
-    item.denom = currentChain?.stakeCurrency?.coinDenom;
+    item.denom = currentChain?.feeCurrencies[0]?.coinDenom;
     item.time = this.formatTime(data?.timeStamp);
     item.txHash = data?.hash;
     item.height = data?.blockNumber;
@@ -211,8 +234,7 @@ export class TxsHelper {
     return item;
   }
 
-  handleItemTron() {}
-  cleanDataResToStandFormat(
+  cleanDataEthAndBscResToStandFormat(
     data: InfoTxEthAndBsc[],
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
@@ -239,10 +261,70 @@ export class TxsHelper {
             );
             dataConverted.push(item);
             break;
-          case ChainIdEnum.TRON:
-            // item = this.handleItemTron();
-            break;
         }
+      }
+    }
+    return dataConverted;
+  }
+  calculateFee(cost) {}
+  handleTransferDetailTron(
+    data: ResultDataTron,
+    addressAccount: string
+  ): Partial<TransferDetail>[] {
+    let transferItem: Partial<TransferDetail> = {};
+    transferItem.countTypeEvent = 0;
+    transferItem.typeEvent = this.capitalizedWords(
+      this.addSpacesToString(data?.trigger_info?.methodName),
+      ' '
+    );
+    transferItem.isMinus =
+      data?.ownerAddress?.toLowerCase() == addressAccount?.toLowerCase();
+    transferItem.isPlus =
+      data?.toAddress?.toLowerCase() == addressAccount?.toLowerCase();
+    transferItem.transferInfo = [
+      {
+        from: data?.ownerAddress,
+        to: data?.toAddress,
+        amount: this.removeZeroNumberLast(
+          this.formatNumberSeparateThousand(
+            this.formatAmount(data?.amount, data?.tokenInfo?.tokenDecimal),
+            true
+          )
+        ),
+        token: data?.tokenInfo?.tokenAbbr?.toUpperCase() || ''
+      }
+    ];
+    return [transferItem];
+  }
+  handleItemTron(
+    data: ResultDataTron,
+    currentChain: ChainInfoInner<ChainInfo>,
+    addressAccount: string
+  ): Partial<ResTxsInfo> {
+    let item: Partial<ResTxsInfo> = {};
+    item.fee = `${data.cost.fee}`;
+    item.height = `${data.block}`;
+    item.denom = `${currentChain?.feeCurrencies[0]?.coinDenom}`;
+    item.txHash = data.hash;
+    item.status = data.contractRet == 'SUCCESS' ? 'success' : 'fail';
+    item.time = this.formatTimeTron(data?.timestamp);
+    item.gasUsed = '0';
+    item.gasWanted = '0';
+    item.transfers = this.handleTransferDetailTron(data, addressAccount);
+    return item;
+  }
+  cleanDataTronResToStandFormat(
+    data: ResultDataTron[],
+    currentChain: ChainInfoInner<ChainInfo>,
+    addressAccount: string
+  ): Partial<ResTxsInfo>[] {
+    let dataConverted: Partial<ResTxsInfo>[] = [];
+    if (data && data?.length > 0) {
+      for (let i = 0; i < data.length; i++) {
+        let item: Partial<ResTxsInfo>;
+        const itData = data[i];
+        item = this.handleItemTron(itData, currentChain, addressAccount);
+        dataConverted.push(item);
       }
     }
     return dataConverted;
