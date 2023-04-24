@@ -1,18 +1,15 @@
-import React, { FunctionComponent } from 'react';
-import { useHeaderHeight } from '@react-navigation/stack';
-import { PageWithScrollView } from '../../components/page';
-import { View, StyleSheet } from 'react-native';
-import { Text } from '@src/components/text';
-import { useSmartNavigation } from '../../navigation.provider';
 import { useRegisterConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { OWalletLogo, OWalletUnion } from './owallet-logo';
-import { metrics } from '../../themes';
-import OWButton from '../../components/button/OWButton';
-import { useTheme } from '@src/themes/theme-provider';
 import OWText from '@src/components/text/ow-text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, View } from 'react-native';
+import OWButton from '../../components/button/OWButton';
+import { PageWithScrollView } from '../../components/page';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { metrics } from '../../themes';
+import { OWalletLogo, OWalletUnion } from './owallet-logo';
 
 export const RegisterIntroScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();
@@ -55,8 +52,8 @@ export const RegisterIntroScreen: FunctionComponent = observer(() => {
         <View style={styles.containerUnion}>
           <OWalletUnion />
         </View>
-        <OWText typo = 'bold' variant='h3' >
-        Sign in to OWallet
+        <OWText typo="bold" variant="h3">
+          Sign in to OWallet
         </OWText>
       </View>
       <OWButton

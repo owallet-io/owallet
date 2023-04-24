@@ -1,15 +1,13 @@
-import React, { FunctionComponent, ReactElement, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { FlatList, Image, StyleSheet, View, Animated } from 'react-native';
-
+import { FlatList, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import {
   convertAmount,
   formatContractAddress,
   _keyExtract
 } from '../../utils/helper';
-import { AddIcon, DownArrowIcon } from '../../components/icon';
+import { DownArrowIcon } from '../../components/icon';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -20,51 +18,7 @@ import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWEmpty } from '@src/components/empty';
 
-// hard code data to test UI
-// const nftsData = [
-//   {
-//     name: 'SamORAI Collections',
-//     data: [
-//       {
-//         url: 'https://picsum.photos/id/1002/200',
-//         name: 'The Empire State Building',
-//         offer: '49.14 ORAI'
-//       },
-//       {
-//         url: 'https://picsum.photos/id/1002/200',
-//         name: 'The Empire State Building',
-//         offer: '49.14 ORAI'
-//       },
-//       {
-//         url: 'https://picsum.photos/id/1002/200',
-//         name: 'The Empire State Building',
-//         offer: '49.14 ORAI'
-//       }
-//     ]
-//   },
-//   {
-//     name: 'Kawaii Island',
-//     data: [
-//       {
-//         url: 'https://picsum.photos/id/1002/200',
-//         name: 'The Empire State Building',
-//         offer: '49.14 ORAI'
-//       },
-//       {
-//         url: 'https://picsum.photos/id/1002/200',
-//         name: 'The Empire State Building',
-//         offer: '49.14 ORAI'
-//       },
-//       {
-//         url: 'https://picsum.photos/id/1002/200',
-//         name: 'The Empire State Building',
-//         offer: '49.14 ORAI'
-//       }
-//     ]
-//   }
-// ];
-
-export const NftsScreen: FunctionComponent = observer((props) => {
+export const NftsScreen: FunctionComponent = observer(props => {
   const [index, setIndex] = useState<number>(0);
   const [activeSection, setActiveSection] = useState([0]);
   const smartNavigation = useSmartNavigation();
@@ -73,7 +27,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   const { nfts } = props.route?.params;
 
   //function shadow
-  const _renderSectionTitle = (section) => {};
+  const _renderSectionTitle = section => {};
   const _renderHeader = (section, _, isActive) => {
     return (
       <View
@@ -99,7 +53,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
       </View>
     );
   };
-  const _renderContent = (section) => {
+  const _renderContent = section => {
     return (
       <View
         style={{
@@ -118,7 +72,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
       </View>
     );
   };
-  const _updateSections = (activeSection) => {
+  const _updateSections = activeSection => {
     setActiveSection(activeSection);
   };
   const _renderFlatlistItem = ({ item }) => (
@@ -164,14 +118,6 @@ export const NftsScreen: FunctionComponent = observer((props) => {
               : `${convertAmount(item.offer.lowestPrice)} ${item.offer.denom}`
             : ''}
         </Text>
-
-        {/* <Text
-          style={{
-            ...typography.h7,
-            color: colors['gray-300'],
-            fontWeight: '500'
-          }}
-        >{`$ ${58.23}`}</Text> */}
       </View>
     </TouchableOpacity>
   );
@@ -233,50 +179,20 @@ export const NftsScreen: FunctionComponent = observer((props) => {
                 underlayColor={colors['transparent']}
               />
             ) : (
-             <OWEmpty style={{
-              paddingBottom:60
-             }} />
+              <OWEmpty
+                style={{
+                  paddingBottom: 60
+                }}
+              />
             )}
           </View>
-
-          {/* <TouchableOpacity
-            style={{
-              ...styles.containerBtn
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-            >
-              <View
-                style={{
-                  marginTop: 5
-                }}
-              >
-                <AddIcon size={24} color={colors['white']} />
-              </View>
-              <Text
-                style={{
-                  ...typography.h6,
-                  color: colors['white'],
-                  fontWeight: '700',
-                  marginLeft: spacing['8']
-                }}
-              >
-                {`Add NFT`}
-              </Text>
-            </View>
-          </TouchableOpacity> */}
         </OWBox>
       </View>
     </PageWithScrollViewInBottomTabView>
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     container: {
       backgroundColor: colors['primary'],

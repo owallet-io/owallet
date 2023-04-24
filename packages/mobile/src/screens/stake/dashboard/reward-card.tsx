@@ -1,16 +1,15 @@
-import React, { FunctionComponent } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { Card, CardBody, OWBox } from '../../../components/card';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from '@src/components/text';
-import { useStyle } from '../../../styles';
-import { Button } from '../../../components/button';
 import { Dec } from '@owallet/unit';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { spacing, typography } from '../../../themes';
-import { DownArrowIcon } from '../../../components/icon';
+import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { Button } from '../../../components/button';
+import { OWBox } from '../../../components/card';
+import { DownArrowIcon } from '../../../components/icon';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { spacing, typography } from '../../../themes';
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -117,13 +116,13 @@ export const MyRewardCard: FunctionComponent<{
                     {},
                     {},
                     {
-                      onFulfill: (tx) => {
+                      onFulfill: tx => {
                         console.log(
                           tx,
                           'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                         );
                       },
-                      onBroadcasted: (txHash) => {
+                      onBroadcasted: txHash => {
                         analyticsStore.logEvent('Claim reward tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName
@@ -164,7 +163,7 @@ export const MyRewardCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     textInfo: {
       ...typography.h6,

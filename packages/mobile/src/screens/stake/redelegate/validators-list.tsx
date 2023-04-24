@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
-import { colors, spacing, typography } from '../../../themes';
+import { spacing, typography } from '../../../themes';
 import Validators from './modal-validators';
 import { useTheme } from '@src/themes/theme-provider';
 

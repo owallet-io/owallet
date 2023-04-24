@@ -1,17 +1,16 @@
-import React, { FunctionComponent } from 'react';
-import { useHeaderHeight } from '@react-navigation/stack';
-import { PageWithScrollView } from '../../components/page';
-import { GoogleIcon, AppleIcon } from '../../components/icon';
-import { useStyle } from '../../styles';
-import { View, Text, Dimensions, Platform, StyleSheet } from 'react-native';
-import { Button } from '../../components/button';
-import { useSmartNavigation } from '../../navigation.provider';
 import { useRegisterConfig } from '@owallet/hooks';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { OWalletLogo } from './owallet-logo';
+import { useHeaderHeight } from '@react-navigation/stack';
 import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { Dimensions, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Button } from '../../components/button';
+import { PageWithScrollView } from '../../components/page';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { useStyle } from '../../styles';
+import { OWalletLogo } from './owallet-logo';
 
 export const RegisterNotNewUserScreen: FunctionComponent = observer(() => {
   const { keyRingStore, analyticsStore } = useStore();

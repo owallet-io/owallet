@@ -6,49 +6,39 @@ import { EthereumEndpoint } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
-import { Mnemonic } from '@owallet/crypto';
-import {
-  AmountInput,
-  MemoInput,
-  CurrencySelector,
-  FeeButtons,
-  TextInput
-} from '../../components/input';
-import { Button } from '../../components/button';
+import { AmountInput, FeeButtons, TextInput } from '../../components/input';
+import { OWButton } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { Buffer } from 'buffer';
-import { colors, spacing } from '../../themes';
-import { Toggle } from '../../components/toggle';
-import { PasswordInputModal } from '../../modals/password-input/modal';
-import TronWeb from 'tronweb';
+import { spacing } from '../../themes';
 import { Text } from '@src/components/text';
-import {
-  BIP44_PATH_PREFIX,
-  getBase58Address,
-  FAILED,
-  SUCCESS
-} from '../../utils/helper';
-import { OWSubTitleHeader } from '@src/components/header';
-import { OWBox } from '@src/components/card';
+import { Toggle } from '../../components/toggle';
+import { Address } from '@owallet/crypto';
+import { findLedgerAddressWithChainId } from '../../utils/helper';
+import { useTheme } from '@src/themes/theme-provider';
 
-const styles = StyleSheet.create({
-  sendInputRoot: {
-    paddingHorizontal: spacing['20'],
-    paddingVertical: spacing['24'],
-    backgroundColor: colors['white'],
-    borderRadius: 24
-  },
-  sendlabelInput: {
-    fontSize: 16,
-    fontWeight: '700',
-    lineHeight: 22,
-    color: colors['gray-900'],
-    marginBottom: spacing['8']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    sendInputRoot: {
+      paddingHorizontal: spacing['20'],
+      paddingVertical: spacing['24'],
+      backgroundColor: colors['primary'],
+      borderRadius: 24
+    },
+    sendlabelInput: {
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 22,
+      color: colors['sub-primary-text'],
+      marginBottom: spacing['8']
+    },
+    containerStyle: {
+      backgroundColor: colors['background-box']
+    }
+  });
 
-export const SendTronScreen: FunctionComponent = observer((props) => {
+export const SendTronScreen: FunctionComponent = observer(props => {
   const {
     chainStore,
     accountStore,
@@ -57,15 +47,10 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
     keyRingStore
   } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
-  );
-
-  const [isOpenModal, setIsOpenModal] = useState(false);
   const [receiveAddress, setReceiveAddress] = useState('');
   const [customFee, setCustomFee] = useState(false);
-  const [loading, setLoading] = useState(false);
-
+  const { colors } = useTheme();
+  const styles = styling(colors);
   const route = useRoute<
     RouteProp<
       Record<
@@ -90,8 +75,6 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
     >
   >();
 
-  console.log('recipient', route?.params?.recipient);
-
   const smartNavigation = useSmartNavigation();
 
   const chainId = route?.params?.chainId
@@ -101,7 +84,6 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
-  let tronWeb;
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -113,14 +95,12 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(
-        (cur) => {
-          if (cur.coinDenom === route.params.currency) {
-            return cur.coinDenom === route.params.currency;
-          }
-          return cur.coinMinimalDenom == route.params.currency;
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+        if (cur.coinDenom === route.params.currency) {
+          return cur.coinDenom === route.params.currency;
         }
-      );
+        return cur.coinMinimalDenom == route.params.currency;
+      });
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -131,25 +111,35 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
   useEffect(() => {
     if (route?.params?.recipient) {
       sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
-      setReceiveAddress(route?.params?.recipient);
+      setReceiveAddress(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
 
   return (
     <PageWithScrollView>
       <View style={{ marginBottom: 99 }}>
-        <OWSubTitleHeader title="Send" />
-        <OWBox>
+        <View style={{ alignItems: 'center', marginVertical: spacing['16'] }}>
+          <Text
+            style={{
+              fontWeight: '700',
+              fontSize: 24,
+              lineHeight: 34
+            }}
+          >
+            Send
+          </Text>
+        </View>
+        <View style={styles.sendInputRoot}>
           <TextInput
             label="Token"
-            // labelStyle={styles.sendlabelInput}
+            labelStyle={styles.sendlabelInput}
             value={route?.params?.item?.coinDenom ?? 'TRX'}
             editable={false}
           />
           <TextInput
             placeholder="Enter receiving address"
             label="Send to"
-            // labelStyle={styles.sendlabelInput}
+            labelStyle={styles.sendlabelInput}
             value={receiveAddress}
             onChange={({ nativeEvent: { eventCount, target, text } }) =>
               setReceiveAddress(text)
@@ -163,7 +153,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
             label="Amount"
             allowMax={chainStore.current.networkType !== 'evm' ? true : false}
             amountConfig={sendConfigs.amountConfig}
-            // labelStyle={styles.sendlabelInput}
+            labelStyle={styles.sendlabelInput}
           />
 
           {chainStore.current.networkType !== 'evm' ? (
@@ -176,7 +166,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
             >
               <Toggle
                 on={customFee}
-                onChange={(value) => {
+                onChange={value => {
                   setCustomFee(value);
                   if (!value) {
                     if (
@@ -207,7 +197,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );
@@ -228,148 +218,57 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
             />
           ) : null}
 
-          <Button
-            text="Send"
+          <OWButton
+            label="Send"
             size="large"
             style={{
-              backgroundColor: colors['purple-700'],
+              backgroundColor: colors['purple-900'],
               borderRadius: 8
             }}
+            loading={account.isSendingMsg === 'send'}
             onPress={async () => {
-              setIsOpenModal(true);
-            }}
-          />
-        </OWBox>
-        <PasswordInputModal
-          isOpen={isOpenModal}
-          paragraph={'Please confirm your password'}
-          close={() => setIsOpenModal(false)}
-          title={'Confirm Password'}
-          disabled={loading}
-          onEnterPassword={async (password) => {
-            setLoading(true);
-            const index = keyRingStore.multiKeyStoreInfo.findIndex(
-              (keyStore) => keyStore.selected
-            );
-
-            let privateKey;
-
-            if (index >= 0) {
-              const privateData = await keyRingStore.showKeyRing(
-                index,
-                password
-              );
-
-              if (privateData.split(' ').length > 1) {
-                privateKey = Mnemonic.generateWalletFromMnemonic(
-                  privateData,
-                  BIP44_PATH_PREFIX +
-                    `/${
-                      selected?.bip44HDPath?.coinType ??
-                      chainStore?.current?.bip44?.coinType
-                    }'/${selected?.bip44HDPath?.account}'/${
-                      selected?.bip44HDPath?.change
-                    }/${selected?.bip44HDPath?.addressIndex}`
+              let amount;
+              if (route?.params?.item?.type === 'trc20') {
+                amount = Number(
+                  (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
                 );
               } else {
-                privateKey = privateData;
+                amount = new Dec(
+                  Number(
+                    (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
+                  )
+                ).mul(DecUtils.getTenExponentNInPrecisionRange(6));
               }
-
-              if (privateKey) {
-                try {
-                  tronWeb = new TronWeb({
-                    fullHost: chainStore.current.rpc,
-                    // fullHost: 'https://nile.trongrid.io', // TRON testnet
-                    headers: {
-                      'x-api-key': process.env.X_API_KEY
-                    },
-                    privateKey: Buffer.from(privateKey).toString('hex')
-                  });
-
-                  if (route?.params?.item?.type === 'trc20') {
-                    // Send TRC20
-                    // Get TRC20 contract
-                    const { abi } = await tronWeb.trx.getContract(
-                      route?.params?.item?.contractAddress
-                    );
-
-                    const contract = tronWeb.contract(
-                      abi.entrys,
-                      route?.params?.item?.contractAddress
-                    );
-
-                    const balance = await contract.methods
-                      .balanceOf(getBase58Address(account.evmosHexAddress))
-                      .call();
-
-                    console.log('balance:', Number(balance.toString()));
-                    if (Number(balance.toString()) > 0) {
-                      const resp = await contract.methods
-                        .transfer(
-                          receiveAddress,
-                          Number(
-                            (sendConfigs.amountConfig.amount ?? '0').replace(
-                              /,/g,
-                              '.'
-                            )
-                          ) * Math.pow(10, 6)
-                        )
-                        .send({
-                          feeLimit: 50_000_000, //in SUN. Fee limit is required while send TRC20 in TRON network, 50_000_000 SUN is equal to 50 TRX maximun fee. Read more: https://developers.tron.network/docs/set-feelimit
-                          callValue: 0
-                        });
-
+              try {
+                await account.sendTronToken(
+                  sendConfigs.amountConfig.amount,
+                  sendConfigs.amountConfig.sendCurrency!,
+                  receiveAddress,
+                  keyRingStore.keyRingType === 'ledger'
+                    ? findLedgerAddressWithChainId(
+                        keyRingStore.keyRingLedgerAddresses,
+                        chainStore.current.chainId
+                      )
+                    : Address.getBase58Address(account.evmosHexAddress),
+                  {
+                    onBroadcasted: txHash => {
                       smartNavigation.pushSmart('TxPendingResult', {
-                        txHash: resp,
-                        chainId: chainStore.current.chainId,
-                        tronWeb: tronWeb
+                        txHash: Buffer.from(txHash).toString('hex')
                       });
-                    } else {
-                      setIsOpenModal(false);
-                      setLoading(false);
-                      alert('Not enough balance to send');
                     }
-                  } else {
-                    // Send TRX
-                    const tradeobj = await tronWeb.transactionBuilder.sendTrx(
-                      receiveAddress,
-                      new Dec(
-                        Number(
-                          (sendConfigs.amountConfig.amount ?? '0').replace(
-                            /,/g,
-                            '.'
-                          )
-                        )
-                      ).mul(DecUtils.getTenExponentNInPrecisionRange(6)),
-                      getBase58Address(account.evmosHexAddress)
-                    );
-
-                    const signedtxn = await tronWeb.trx.sign(
-                      tradeobj,
-                      Buffer.from(privateKey).toString('hex')
-                    );
-                    const receipt = await tronWeb.trx.sendRawTransaction(
-                      signedtxn
-                    );
-                    smartNavigation.pushSmart('TxSuccessResult', {
-                      txHash: receipt.txid
-                    });
-                    console.log('sent tron tradeobj', tradeobj.raw_data_hex);
-                    console.log('sent tron receipt', receipt);
-                    setLoading(false);
-                  }
-                } catch (err) {
-                  console.log('send tron err', err);
-                  setLoading(false);
-                  smartNavigation.pushSmart('TxFailedResult', {
-                    chainId: chainStore.current.chainId,
-                    txHash: ''
-                  });
-                }
+                  },
+                  route?.params?.item
+                );
+              } catch (err) {
+                console.log('send tron err', err);
+                smartNavigation.pushSmart('TxFailedResult', {
+                  chainId: chainStore.current.chainId,
+                  txHash: ''
+                });
               }
-            }
-          }}
-        />
+            }}
+          />
+        </View>
       </View>
     </PageWithScrollView>
   );

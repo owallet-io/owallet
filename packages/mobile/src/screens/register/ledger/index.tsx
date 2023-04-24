@@ -7,21 +7,11 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
-import {
-  checkRouter,
-  checkRouterPaddingBottomBar,
-  navigate
-} from '../../../router/root';
+import { checkRouter, navigate } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
 import { spacing } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
@@ -34,7 +24,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer((props) => {
+export const NewLedgerScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -49,12 +39,12 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const { colors } = useTheme();
   const styles = useStyles();
 
-  const { analyticsStore } = useStore();
+  const { analyticsStore, chainStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
-  const bip44Option = useBIP44Option(118);
+  const bip44Option = useBIP44Option(chainStore.current.coinType ?? 118);
   const [mode] = useState(registerConfig.mode);
 
   const {
@@ -73,10 +63,15 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
     setIsCreating(true);
 
     try {
+      // Re-create ledger when change network
       await registerConfig.createLedger(
         getValues('name'),
         getValues('password'),
-        bip44Option.bip44HDPath
+        {
+          ...bip44Option.bip44HDPath,
+          coinType:
+            bip44Option.bip44HDPath?.coinType ?? chainStore.current.coinType
+        }
       );
       analyticsStore.setUserProperties({
         registerType: 'ledger',
@@ -267,7 +262,7 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
       <BIP44AdvancedButton bip44Option={bip44Option} />
       <View style={styles.heightView} />
       <OWButton
-        style={styles.btnNext}
+        loading={isCreating}
         disabled={isCreating}
         onPress={submit}
         label={'Next'}

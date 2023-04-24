@@ -1,29 +1,29 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { useStore } from '../../../stores';
-import { useStyle } from '../../../styles';
+import { ValidatorThumbnails } from '@owallet/common';
 import { useUndelegateTxConfig } from '@owallet/hooks';
+import { BondStatus } from '@owallet/stores';
 import { Dec, DecUtils } from '@owallet/unit';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { Buffer } from 'buffer';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { OWButton } from '../../../components/button';
+import { CardBody, CardDivider } from '../../../components/card';
 import {
   AmountInput,
   FeeButtons,
   MemoInput,
   TextInput
 } from '../../../components/input';
-import { View } from 'react-native';
-import { Text } from '@src/components/text';
-import { Button, OWButton } from '../../../components/button';
-import { CardBody, CardDivider } from '../../../components/card';
-import { BondStatus } from '@owallet/stores';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { Buffer } from 'buffer';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { colors, spacing } from '../../../themes';
-import { ValidatorThumbnails } from '@owallet/common';
 import { Toggle } from '../../../components/toggle';
-import { useTheme } from '@src/themes/theme-provider';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { useStyle } from '../../../styles';
+import { spacing } from '../../../themes';
 export const UndelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -187,7 +187,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
       >
         <Toggle
           on={customFee}
-          onChange={(value) => {
+          onChange={value => {
             setCustomFee(value);
             if (!value) {
               if (
@@ -223,7 +223,7 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
             color: colors['gray-900'],
             marginBottom: spacing['8']
           }}
-          onChangeText={(text) => {
+          onChangeText={text => {
             const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
               DecUtils.getTenExponentNInPrecisionRange(6)
             );
@@ -260,13 +260,13 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
                   preferNoSetFee: true
                 },
                 {
-                  onFulfill: (tx) => {
+                  onFulfill: tx => {
                     console.log(
                       tx,
                       'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                     );
                   },
-                  onBroadcasted: (txHash) => {
+                  onBroadcasted: txHash => {
                     analyticsStore.logEvent('Undelegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,

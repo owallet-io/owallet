@@ -1,35 +1,28 @@
+import { OWButton } from '@src/components/button';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   useCallback,
   useMemo,
   useState
 } from 'react';
-import { observer } from 'mobx-react-lite';
-import { BIP44Option } from './bip44-option';
+import { StyleSheet, View } from 'react-native';
+import { TextInput } from '../../../components/input';
 import { registerModal } from '../../../modals/base';
 import { CardModal } from '../../../modals/card';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
-import { TextInput } from '../../../components/input';
-import { typography } from '../../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWButton } from '@src/components/button';
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0;
+import { typography } from '../../../themes';
+import { BIP44Option } from './bip44-option';
 
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ bip44Option }) => {
   const { appInitStore } = useStore();
-  const scheme = appInitStore.getInitApp.theme;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { colors } = useTheme();
   return (
-    <View
-    // style={{ width:40, height:40, backgroundColor:'red' }}
-    // keyboardVerticalOffset={keyboardVerticalOffset}
-    >
+    <View>
       <BIP44SelectModal
         isOpen={isModalOpen}
         close={() => setIsModalOpen(false)}
@@ -38,8 +31,8 @@ export const BIP44AdvancedButton: FunctionComponent<{
       <OWButton
         label="Advanced Option"
         type="link"
-        size='medium'
-        contentAlign='left'
+        size="medium"
+        contentAlign="left"
         onPress={() => setIsModalOpen(true)}
       />
     </View>
@@ -230,7 +223,7 @@ export const BIP44SelectModal: FunctionComponent<{
   }
 );
 
-const styling = (scheme) => {
+const styling = scheme => {
   const { colors } = useTheme();
   return StyleSheet.create({
     borderInput: {

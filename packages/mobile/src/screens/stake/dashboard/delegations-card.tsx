@@ -1,15 +1,15 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from '@src/components/text';
-import { BondStatus, Validator } from '@owallet/stores';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { colors, spacing, typography } from '../../../themes';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ValidatorThumbnails } from '@owallet/common';
+import { BondStatus, Validator } from '@owallet/stores';
+import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { spacing, typography } from '../../../themes';
 export const DelegationsCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   validatorList: Array<any>;

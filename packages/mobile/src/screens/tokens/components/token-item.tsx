@@ -1,24 +1,22 @@
-import React, { FunctionComponent } from 'react';
-import { StyleSheet, View, ViewStyle, Image } from 'react-native';
-import { Text } from '@src/components/text';
-import { CoinPretty, Dec, IntPretty, PricePretty } from '@owallet/unit';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { Currency } from '@owallet/types';
-import { TokenSymbol } from '../../../components/token-symbol';
 import { DenomHelper } from '@owallet/common';
 import { Bech32Address } from '@owallet/cosmos';
-import { colors, spacing, typography } from '../../../themes';
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { _keyExtract } from '../../../utils/helper';
-import { CoinGeckoPriceStore } from '@owallet/stores';
-import { RightArrowIcon } from '../../../components/icon';
+import { Currency } from '@owallet/types';
+import { CoinPretty, Dec, IntPretty, PricePretty } from '@owallet/unit';
+import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { RightArrowIcon } from '../../../components/icon';
+import { TokenSymbol } from '../../../components/token-symbol';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { spacing, typography } from '../../../themes';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
   chainInfo: {
     stakeCurrency: Currency;
+    networkType?: string;
   };
   balance: CoinPretty;
   totalBalance?: number;
@@ -79,9 +77,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           balanceCoinDenom,
           amountBalance,
           priceBalance,
-          balanceCoinFull:
-            balance.currency.coinDenom ??
-            balance.currency.originCurrency.coinDenom
+          balanceCoinFull: balance.currency.coinDenom ?? balanceCoinDenom
         });
       }}
     >
@@ -96,7 +92,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
         <TokenSymbol
           style={{
             marginRight: spacing['12'],
-            backgroundColor:colors['bg-icon-token']
+            backgroundColor: colors['bg-icon-token']
           }}
           size={44}
           chainInfo={chainInfo}

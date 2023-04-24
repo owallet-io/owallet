@@ -16,7 +16,7 @@ import {
   MemoInput,
   TextInput
 } from '../../../components/input';
-import { Button, OWButton } from '../../../components/button';
+import { OWButton } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing } from '../../../themes';
 import { ValidatorThumbnails } from '@owallet/common';
@@ -133,7 +133,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             preferNoSetFee: true
           },
           {
-            onBroadcasted: (txHash) => {
+            onBroadcasted: txHash => {
               analyticsStore.logEvent('Redelgate tx broadcasted', {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
@@ -419,7 +419,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           >
             <Toggle
               on={customFee}
-              onChange={(value) => {
+              onChange={value => {
                 setCustomFee(value);
                 if (!value) {
                   if (
@@ -455,7 +455,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 color: colors['gray-900'],
                 marginBottom: spacing['8']
               }}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                   DecUtils.getTenExponentNInPrecisionRange(6)
                 );

@@ -1,18 +1,8 @@
-import React, { FunctionComponent } from 'react';
-import { View, StyleSheet } from 'react-native';
 import { Text } from '@src/components/text';
-import { colors, spacing, typography } from '../../../themes';
+import React, { FunctionComponent } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { GasInput } from '../../../components/input';
-import { EthereumEndpoint } from '@owallet/common';
-import { useDelegateTxConfig } from '@owallet/hooks';
-import { useStore } from '../../../stores';
-import { ChainStore } from '../../../stores/chain';
-import {
-  AccountStore,
-  AccountWithAll,
-  QueriesStore,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvm
-} from '@owallet/stores';
+import { colors, spacing, typography } from '../../../themes';
 
 interface StakeAdvanceProps {
   config: any;

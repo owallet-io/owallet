@@ -1,25 +1,25 @@
-import React, { FunctionComponent, useMemo } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { useTheme } from '@src/themes/theme-provider';
 import { BondStatus } from '@owallet/stores';
-import { StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
-import { Text } from '@src/components/text';
 import { CoinPretty, Dec, IntPretty } from '@owallet/unit';
-// import { Button } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { colors, metrics, spacing, typography } from '../../../themes';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useMemo } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useStore } from '../../../stores';
+import { ValidatorThumbnails } from '@owallet/common';
+import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
 import {
   ValidatorAPYIcon,
   ValidatorBlockIcon,
   ValidatorCommissionIcon,
   ValidatorVotingIcon
 } from '../../../components/icon';
-import { ValidatorThumbnails } from '@owallet/common';
-import { OWBox } from '@src/components/card';
-import { OWButton } from '@src/components/button';
-import { OWSubTitleHeader } from '@src/components/header';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { metrics, spacing, typography } from '../../../themes';
+
 const renderIconValidator = (label: string, size?: number, styles?: any) => {
   switch (label) {
     case 'Website':
@@ -87,7 +87,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
       .concat(unbondedValidators.validators)
-      .find((val) => val.operator_address === validatorAddress);
+      .find(val => val.operator_address === validatorAddress);
   }, [
     bondedValidators.validators,
     unbondingValidators.validators,
@@ -243,7 +243,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerIcon: {
       borderRadius: spacing['8'],

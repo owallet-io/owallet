@@ -28,9 +28,10 @@ import Big from 'big.js';
 import LinearGradient from 'react-native-linear-gradient';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { NetworkErrorViewEVM } from './network-error-view-evm';
-import { getBase58Address, TRON_ID } from '../../utils/helper';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
+import { TRON_ID } from '@owallet/common';
+import { Address } from '@owallet/crypto';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -50,7 +51,7 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
+    keyStore => keyStore?.selected
   );
 
   // const queryStakable = queries.queryBalances.getQueryBech32Address(
@@ -74,7 +75,7 @@ export const AccountCardEVM: FunctionComponent<{
   // ];
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = (name) => {
+  const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -118,14 +119,16 @@ export const AccountCardEVM: FunctionComponent<{
           {/* {console.log(total?.amount?.int?.value,"valueeee")} */}
           {chainStore.current.chainId !== TRON_ID && total
             ? `${new Big(parseInt(total?.amount?.int))
-              .div(new Big(10).pow(36))
-              .toFixed(8)}` + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+                .div(new Big(10).pow(36))
+                .toFixed(8)}` +
+              ` ${chainStore.current?.stakeCurrency.coinDenom}`
             : null}
 
           {chainStore.current.chainId === TRON_ID && total
             ? `${new Big(parseInt(total?.amount?.int))
-              .div(new Big(10).pow(24))
-              .toFixed(6)}` + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+                .div(new Big(10).pow(24))
+                .toFixed(6)}` +
+              ` ${chainStore.current?.stakeCurrency.coinDenom}`
             : null}
         </Text>
       }
@@ -156,8 +159,9 @@ export const AccountCardEVM: FunctionComponent<{
               address={
                 chainStore.current.networkType === 'cosmos'
                   ? account.bech32Address
-                  : chainStore.current.chainId === TRON_ID
-                  ? getBase58Address(account.evmosHexAddress)
+                  : chainStore.current.chainId === TRON_ID &&
+                    account.evmosHexAddress
+                  ? Address.getBase58Address(account.evmosHexAddress)
                   : account.evmosHexAddress
               }
               maxCharacters={22}

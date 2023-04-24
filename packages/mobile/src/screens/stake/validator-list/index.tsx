@@ -1,26 +1,29 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../../stores';
-import { PageWithSectionList, PageWithView, PageWithViewInBottomTabView } from '../../../components/page';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Text } from '@src/components/text';
+import { ValidatorThumbnails } from '@owallet/common';
 import { BondStatus, Validator } from '@owallet/stores';
-import { SelectorModal, TextInput } from '../../../components/input';
-import { CardDivider } from '../../../components/card';
-import { useSmartNavigation } from '../../../navigation.provider';
 import { CoinPretty, Dec } from '@owallet/unit';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { OWSubTitleHeader } from '@src/components/header';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { API } from '../../../common/api';
+import { CardDivider } from '../../../components/card';
 import {
   ArrowOpsiteUpDownIcon,
   ValidatorOutlineIcon
 } from '../../../components/icon';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { SelectorModal, TextInput } from '../../../components/input';
+import {
+  PageWithSectionList,
+  PageWithViewInBottomTabView
+} from '../../../components/page';
 import { RectButton } from '../../../components/rect-button';
-import { ValidatorThumbnails } from '@owallet/common';
-import { colors, spacing, typography } from '../../../themes';
-import { API } from '../../../common/api';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWSubTitleHeader } from '@src/components/header';
+import { ValidatorThumbnail } from '../../../components/thumbnail';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { spacing, typography } from '../../../themes';
 type Sort = 'APR' | 'Voting Power' | 'Name';
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
@@ -66,7 +69,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const data = useMemo(() => {
     let data = bondedValidators.validators;
     if (search) {
-      data = data.filter((val) =>
+      data = data.filter(val =>
         val?.description?.moniker?.toLowerCase().includes(search.toLowerCase())
       );
     }
@@ -111,7 +114,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   }, []);
 
   const sortItem = useMemo(() => {
-    const item = items.find((item) => item.key === sort);
+    const item = items.find(item => item.key === sort);
     if (!item) {
       throw new Error(`Can't find the item for sort (${sort})`);
     }
@@ -127,7 +130,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         isOpen={isSortModalOpen}
         items={items}
         selectedKey={sort}
-        setSelectedKey={(key) => setSort(key as Sort)}
+        setSelectedKey={key => setSort(key as Sort)}
       />
 
       <PageWithSectionList
@@ -146,7 +149,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         }}
         renderItem={({ item, index }: { item: Validator; index: number }) => {
           const foundValidator = validators.find(
-            (v) => v.operator_address === item.operator_address
+            v => v.operator_address === item.operator_address
           );
 
           return (
@@ -191,7 +194,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
                     padding: 0
                   }}
                   value={search}
-                  onChangeText={(text) => {
+                  onChangeText={text => {
                     setSearch(text);
                   }}
                   paragraph={
@@ -359,7 +362,7 @@ const ValidatorItem: FunctionComponent<{
   ) : null;
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     title: {
       ...typography.h7,

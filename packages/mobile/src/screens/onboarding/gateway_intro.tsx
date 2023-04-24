@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { colors, metrics, spacing } from '../../themes';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useSimpleTimer } from '../../hooks';
@@ -40,10 +40,10 @@ const GatewayIntroScreen: FunctionComponent = () => {
     <View style={styles.container}>
       <View style={styles.boardingTitleContainer}>
         <View>
-          <OWText variant="h1" typo = 'bold' color={colors['purple-h1']}>
+          <OWText variant="h1" typo="bold" color={colors['purple-h1']}>
             Gateway to
           </OWText>
-          <OWText variant="h2" typo = 'bold' color={colors['black']}>
+          <OWText variant="h2" typo="bold" color={colors['black']}>
             Oraichain Ecosystem
           </OWText>
         </View>

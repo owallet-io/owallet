@@ -1,31 +1,27 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { StyleSheet, View } from 'react-native';
-import { useStore } from '../../../stores';
-import { useDelegateTxConfig } from '@owallet/hooks';
 import { EthereumEndpoint } from '@owallet/common';
+import { useDelegateTxConfig } from '@owallet/hooks';
+import { BondStatus } from '@owallet/stores';
+import { Dec, DecUtils } from '@owallet/unit';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { OWBox } from '@src/components/card';
+import { OWSubTitleHeader } from '@src/components/header';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { OWButton } from '../../../components/button';
 import {
   AmountInput,
   FeeButtons,
   MemoInput,
   TextInput
 } from '../../../components/input';
-import { Button, OWButton } from '../../../components/button';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { BondStatus } from '@owallet/stores';
-import { spacing, typography } from '../../../themes';
-import { Text } from '@src/components/text';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
 import { Toggle } from '../../../components/toggle';
-import { Dec, DecUtils } from '@owallet/unit';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWBox } from '@src/components/card';
-import { OWSubTitleHeader } from '@src/components/header';
-// import { RectButton } from '../../../components/rect-button';
-// import { TouchableOpacity } from 'react-native-gesture-handler';
-// import { DownArrowIcon } from '../../../components/icon';
-// import { StakeAdvanceModal } from '../components/stake-advance';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { spacing, typography } from '../../../themes';
 
 export const DelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -113,7 +109,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         >
           <Toggle
             on={customFee}
-            onChange={(value) => {
+            onChange={value => {
               setCustomFee(value);
               if (!value) {
                 if (
@@ -144,7 +140,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             placeholder="Type your Fee here"
             keyboardType={'numeric'}
             labelStyle={styles.sendlabelInput}
-            onChangeText={(text) => {
+            onChangeText={text => {
               const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
                 DecUtils.getTenExponentNInPrecisionRange(6)
               );
@@ -231,7 +227,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
                   preferNoSetFee: true
                 },
                 {
-                  onBroadcasted: (txHash) => {
+                  onBroadcasted: txHash => {
                     analyticsStore.logEvent('Delegate tx broadcasted', {
                       chainId: chainStore.current.chainId,
                       chainName: chainStore.current.chainName,
@@ -261,7 +257,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     page: {
       padding: spacing['page']

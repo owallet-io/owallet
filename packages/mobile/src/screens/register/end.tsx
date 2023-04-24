@@ -1,20 +1,18 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { PageWithView } from '../../components/page';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Text } from '@src/components/text';
-import { useSmartNavigation } from '../../navigation.provider';
 import { RouteProp, useRoute } from '@react-navigation/native';
+import { Text } from '@src/components/text';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { PageWithView } from '../../components/page';
 import { Toggle } from '../../components/toggle';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import WelcomeRocket from '../../assets/svg/welcome-rocket.svg';
-import { OWalletLogo, OWalletStar } from './owallet-logo';
-import { typography } from '../../themes';
-import { LoadingSpinner } from '../../components/spinner';
 import OWButton from '@src/components/button/OWButton';
 import { useTheme } from '@src/themes/theme-provider';
+import { typography } from '../../themes';
+import { OWalletLogo, OWalletStar } from './owallet-logo';
 
 export const RegisterEndScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore } = useStore();
@@ -117,7 +115,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           />
           <Toggle
             on={isBiometricOn}
-            onChange={(value) => setIsBiometricOn(value)}
+            onChange={value => setIsBiometricOn(value)}
           />
         </View>
       ) : null}
@@ -129,6 +127,9 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           setIsLoading(true);
           try {
             if (password && isBiometricOn) {
+              console.log('password', password);
+              console.log('isBiometricOn', isBiometricOn);
+
               await keychainStore.turnOnBiometry(password);
             }
             // Definetly, the last key is newest keyring.
@@ -147,6 +148,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             });
           } catch (e) {
             console.log(e);
+            alert(JSON.stringify(e));
             setIsLoading(false);
           }
         }}

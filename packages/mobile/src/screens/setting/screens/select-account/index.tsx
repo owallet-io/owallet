@@ -12,29 +12,6 @@ import {
 import { View } from 'react-native';
 import { useSmartNavigation } from '../../../../navigation.provider';
 import { useTheme } from '@src/themes/theme-provider';
-const CheckIcon: FunctionComponent<{
-  color: string;
-  height: number;
-}> = ({ color, height }) => {
-  return (
-    <Svg
-      fill="none"
-      viewBox="0 0 19 17"
-      style={{
-        height,
-        aspectRatio: 19 / 17
-      }}
-    >
-      <Path
-        stroke={color}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="3"
-        d="M18 1L7.448 16 1 7.923"
-      />
-    </Svg>
-  );
-};
 
 export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
   const bip44HDPath = keyStore.bip44HDPath
@@ -48,7 +25,7 @@ export const getKeyStoreParagraph = (keyStore: MultiKeyStoreInfoElem) => {
 
   switch (keyStore.type) {
     case 'ledger':
-      return `Ledger - m/44'/118'/${bip44HDPath.account}'${
+      return `Ledger - m/44'/${bip44HDPath.coinType}'/${bip44HDPath.account}'${
         bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
           ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
           : ''

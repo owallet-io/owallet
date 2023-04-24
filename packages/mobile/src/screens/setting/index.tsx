@@ -1,41 +1,34 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import {
-  renderFlag,
-  RightArrow,
-  SettingItem,
-  SettingSectionTitle
-} from './components';
-// import { SettingSelectAccountItem } from "./items/select-account";
+import { renderFlag, SettingItem, SettingSectionTitle } from './components';
 import { useSmartNavigation } from '../../navigation.provider';
-// import { SettingFiatCurrencyItem } from "./items/fiat-currency";
-import { SettingBiometricLockItem } from './items/biometric-lock';
+import { OWBox } from '@src/components/card';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { SettingRemoveAccountItem } from './items/remove-account';
-import { canShowPrivateData } from './screens/view-private-data';
-import { SettingViewPrivateDataItem } from './items/view-private-data';
 import {
-  View,
+  ImageBackground,
+  Platform,
   StyleSheet,
   TouchableOpacity,
-  Platform,
-  ImageBackground
+  View
 } from 'react-native';
-import { Text } from '@src/components/text';
-import { spacing, typography } from '../../themes';
 import { DownArrowIcon } from '../../components/icon';
+import { useStore } from '../../stores';
+import { spacing, typography } from '../../themes';
 import { CountryModal } from './components/country-modal';
+import { SettingBiometricLockItem } from './items/biometric-lock';
+import { SettingRemoveAccountItem } from './items/remove-account';
 import { SettingSwitchModeItem } from './items/switch-mode';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWBox } from '@src/components/card';
+import { SettingViewPrivateDataItem } from './items/view-private-data';
+import { canShowPrivateData } from './screens/view-private-data';
 
 export const SettingScreen: FunctionComponent = observer(() => {
   const { keychainStore, keyRingStore, priceStore, modalStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
+    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
       return {
         key,
         label: key.toUpperCase()
@@ -43,7 +36,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
     });
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
-    (keyStore) => keyStore.selected
+    keyStore => keyStore.selected
   );
 
   const smartNavigation = useSmartNavigation();
@@ -77,9 +70,9 @@ export const SettingScreen: FunctionComponent = observer(() => {
           Settings
         </Text>
         <OWBox
-          type='shadow'
+          type="shadow"
           style={{
-            ...styles.containerInfo,
+            ...styles.containerInfo
           }}
         >
           <TouchableOpacity
@@ -157,12 +150,14 @@ export const SettingScreen: FunctionComponent = observer(() => {
           </TouchableOpacity>
         </OWBox>
       </ImageBackground>
-      
-        <OWBox style={{
-          marginTop:0,
-          marginBottom:20,
-          paddingHorizontal:0
-        }}>
+
+      <OWBox
+        style={{
+          marginTop: 0,
+          marginBottom: 20,
+          paddingHorizontal: 0
+        }}
+      >
         <SettingSectionTitle title="Security" />
         {canShowPrivateData(keyRingStore.keyRingType) && (
           <SettingViewPrivateDataItem />
@@ -189,7 +184,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
           }}
         />
         <SettingRemoveAccountItem />
-        </OWBox>
+      </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });
@@ -229,6 +224,6 @@ const styling = (colors: object) =>
       borderRadius: 12,
       padding: 20,
       width: '100%',
-      backgroundColor:colors['background-box']
+      backgroundColor: colors['background-box']
     }
   });

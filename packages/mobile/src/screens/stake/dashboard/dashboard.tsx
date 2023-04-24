@@ -1,25 +1,21 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
-import { StyleSheet, View, Image } from 'react-native';
-import { typography, spacing, metrics } from '../../../themes';
-import { Text } from '@src/components/text';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { _keyExtract } from '../../../utils/helper';
-import { useSmartNavigation } from '../../../navigation.provider';
-import { MyRewardCard } from './reward-card';
-import { DelegationsCard } from './delegations-card';
-import { useStore } from '../../../stores';
-import { observer } from 'mobx-react-lite';
-import { API } from '../../../common/api';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
-import { OWSubTitleHeader } from '@src/components/header';
+import { OWBox } from '@src/components/card';
 import { OWEmpty } from '@src/components/empty';
+import { OWSubTitleHeader } from '@src/components/header';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { API } from '../../../common/api';
+import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { useSmartNavigation } from '../../../navigation.provider';
+import { useStore } from '../../../stores';
+import { metrics, spacing, typography } from '../../../themes';
+import { DelegationsCard } from './delegations-card';
+import { MyRewardCard } from './reward-card';
 export const StakingDashboardScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
-  const safeAreaInsets = useSafeAreaInsets();
   const { chainStore, accountStore, queriesStore } = useStore();
   const [validators, setValidators] = useState([]);
   const { colors } = useTheme();
@@ -56,7 +52,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
           {chainStore.current.networkType === 'cosmos' ? (
             <MyRewardCard />
           ) : (
-           <OWEmpty />
+            <OWEmpty />
           )}
 
           {chainStore.current.networkType === 'cosmos' ? (
@@ -133,7 +129,7 @@ export const StakingDashboardScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     container: {},
     title: {
