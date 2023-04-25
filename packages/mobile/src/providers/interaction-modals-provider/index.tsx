@@ -20,7 +20,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
-        console.log('data', data);
         // Currently, there is no modal to permit the permission of external apps.
         // All apps should be embeded explicitly.
         // If such apps needs the permissions, add these origins to the privileged origins.
@@ -30,6 +29,8 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       }
     }, [permissionStore, permissionStore.waitingDatas]);
 
+    console.log('permissionStore waitingDatas', permissionStore.waitingDatas);
+
     return (
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (
@@ -38,14 +39,14 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => ledgerInitStore.abortAll()}
           />
         ) : null}
-        {permissionStore.waitingDatas.map(pwd => {
-          return (
-            <PermissionModal
-              isOpen={true}
-              close={() => signInteractionStore.rejectAll()}
-            />
-          );
-        })}
+
+        {permissionStore.waitingDatas.length > 0 ? (
+          <PermissionModal
+            isOpen={true}
+            close={() => permissionStore.rejectAll()}
+          />
+        ) : null}
+
         {signInteractionStore.waitingData ? (
           <SignModal
             isOpen={true}

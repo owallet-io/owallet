@@ -25,10 +25,12 @@ export const PermissionModal: FunctionComponent<{
 
     const chainId = chainStore?.current?.chainId;
 
+    console.log('permissionStore', permissionStore.waitingDatas);
+
     const account = accountStore.getAccount(chainId);
 
     const current = chainStore.current;
-    // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
+
     const [dataSign, setDataSign] = useState(null);
 
     useEffect(() => {
@@ -48,7 +50,7 @@ export const PermissionModal: FunctionComponent<{
     };
 
     return (
-      <CardModal title="Confirm Transaction">
+      <CardModal title="Confirm Grand Access">
         <KeyboardAvoidingView
           behavior="position"
           keyboardVerticalOffset={keyboardVerticalOffset}
@@ -128,7 +130,7 @@ export const PermissionModal: FunctionComponent<{
               loading={permissionStore.isLoading}
               onPress={async () => {
                 try {
-                  await permissionStore.approveAccessAndWaitEnd(['origins']);
+                  await permissionStore.approveAccessAndWaitEnd([]);
                 } catch (error) {
                   permissionStore.rejectAll();
                   console.log('error approveEthereumAndWaitEnd', error);

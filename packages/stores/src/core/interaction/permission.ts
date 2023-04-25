@@ -173,11 +173,13 @@ export class PermissionStore extends HasMapStore<
   }
 
   protected isEnded(): boolean {
-    return this.interactionStore.getEvents<void>('grand-access-end').length > 0;
+    return (
+      this.interactionStore.getEvents<void>('enable-access-end').length > 0
+    );
   }
 
   protected clearEnded() {
-    this.interactionStore.clearEvent('grand-access-end');
+    this.interactionStore.clearEvent('enable-access-end');
     this.interactionStore.clearEvent('request-sign-end');
     this.interactionStore.clearEvent('request-sign-tron-end');
     this.interactionStore.clearEvent('request-sign-ethereum-end');
@@ -208,11 +210,11 @@ export class PermissionStore extends HasMapStore<
     this._isLoading = true;
     const id = this.waitingDatas[0].id;
     try {
-      yield this.interactionStore.approveWithoutRemovingData(id, datas);
+      // yield this.interactionStore.approveWithoutRemovingData(id, datas);
     } finally {
       yield this.waitEnd();
       this._isLoading = false;
-      this.interactionStore.removeData('request-sign', id);
+      this.interactionStore.removeData('enable-access', id);
     }
   }
 
