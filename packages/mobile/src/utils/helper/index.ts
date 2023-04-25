@@ -12,6 +12,7 @@ import bs58 from 'bs58';
 import get from 'lodash/get';
 import Big from 'big.js';
 import { isNumber } from 'util';
+import { AppCurrency } from '@owallet/types';
 
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -108,7 +109,6 @@ export const getEvmAddress = (base58Address) =>
     ? '0x' +
       Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex')
     : '-';
-
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {
@@ -655,7 +655,7 @@ export const removeZeroNumberLast = (str) => {
     : replaceZero(str);
 };
 
-export const getDomainFromUrl = url => {
+export const getDomainFromUrl = (url) => {
   if (!url) {
     return '';
   }
@@ -667,7 +667,7 @@ export const getDomainFromUrl = url => {
     .replace('http://', '');
 };
 
-export const parseIbcMsgRecvPacket = denom => {
+export const parseIbcMsgRecvPacket = (denom) => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
 export function addTimeProperty(array1, array2) {
@@ -696,7 +696,7 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
             if (att?.['key'] === 'action') {
               let attValue = att?.['value']
                 .split('_')
-                .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
               break;
@@ -718,10 +718,10 @@ export const parseIbcMsgTransfer = (
   key = 'packet_data'
 ) => {
   const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
+    rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
   const ibcDemonPackData =
     arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
+    arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' ||
     ibcDemonPackData?.value instanceof String
@@ -769,21 +769,42 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-export const getCurrencyByMinimalDenom = (tokens, minimalDenom) => {
+export const getCurrencyByMinimalDenom = (
+  tokens,
+  minimalDenom
+): AppCurrency => {
   if (tokens && tokens?.length > 0 && minimalDenom) {
     const info = tokens?.filter((item, index) => {
-      return (
-        item?.currency?.contractAddress &&
-        item?.currency?.contractAddress?.toUpperCase() ==
+      if (item?.contractAddress) {
+        return (
+          item?.contractAddress?.toUpperCase() ==
           minimalDenom?.trim()?.toUpperCase()
+        );
+      } else if (item?.originCurrency) {
+        return (
+          item?.originCurrency?.coinMinimalDenom?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+        );
+      }
+      return (
+        item?.coinMinimalDenom?.toUpperCase() ==
+        minimalDenom?.trim()?.toUpperCase()
       );
     });
     if (info?.length > 0) {
-      return info[0]?.currency;
+      return info[0];
     }
-    return null;
+    return {
+      coinDecimals: 0,
+      coinDenom: minimalDenom,
+      coinMinimalDenom: minimalDenom
+    };
   }
-  return null;
+  return {
+    coinDecimals: 0,
+    coinDenom: minimalDenom,
+    coinMinimalDenom: minimalDenom
+  };
 };
 export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';

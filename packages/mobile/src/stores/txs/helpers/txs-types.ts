@@ -5,14 +5,13 @@ interface ParamsFilterReqTxs {
 }
 interface TransferDetail {
   typeEvent: string;
-  countTypeEvent: number;
-  isMinus: boolean;
-  isPlus: boolean;
   transferInfo: TransferInfo[];
 }
 interface TransferInfo {
   from: string;
   to: string;
+  isMinus: boolean;
+  isPlus: boolean;
   amount: string;
   token: string;
 }
@@ -106,13 +105,14 @@ interface IInfoApi {
 interface ResTxsInfo {
   txHash: string;
   time: timeTxs;
-  denom: string;
+  denomFee: string;
   height: string;
   status: 'success' | 'fail';
   memo: string;
   gasUsed: string;
   gasWanted: string;
   fee: string;
+  countTypeEvent: number;
   transfers: Partial<TransferDetail>[];
 }
 interface ResTxs {
@@ -147,4 +147,146 @@ interface txsEthAndBscResult {
   message: string;
   result: InfoTxEthAndBsc[];
   status: string;
+}
+
+//Cosmos type////////////////////////
+
+interface ResLcdCosmos {
+  txs?: TxLcdCosmos[];
+  tx_responses?: TxResponseLcdCosmos[];
+  pagination?: PaginationLcdCosmos;
+}
+
+interface PaginationLcdCosmos {
+  next_key?: null;
+  total?: string;
+}
+
+interface TxResponseLcdCosmos {
+  height?: string;
+  txhash?: string;
+  codespace?: string;
+  code?: number;
+  data?: string;
+  raw_log?: string;
+  logs?: Log[];
+  info?: string;
+  gas_wanted?: string;
+  gas_used?: string;
+  tx?: TxLcdCosmos;
+  timestamp?: Date;
+  events?: TxResponseEventLcdCosmos[];
+}
+
+interface TxResponseEventLcdCosmos {
+  type?: string;
+  attributes?: PurpleAttributeLcdCosmos[];
+}
+
+interface PurpleAttributeLcdCosmos {
+  key?: string;
+  value?: string;
+  index?: boolean;
+}
+
+interface Log {
+  msg_index?: number;
+  log?: string;
+  events?: LogEventLcdCosmos[];
+}
+
+interface LogEventLcdCosmos {
+  type?: string;
+  attributes?: FluffyAttributeLcdCosmos[];
+}
+
+interface FluffyAttributeLcdCosmos {
+  key?: string;
+  value?: string;
+}
+
+interface TxLcdCosmos {
+  '@type'?: string;
+  body?: Body;
+  auth_info?: AuthInfo;
+  signatures?: string[];
+}
+
+interface AuthInfo {
+  signer_infos?: SignerInfoLcdCosmos[];
+  fee?: FeeLcdCosmos;
+}
+
+interface FeeLcdCosmos {
+  amount?: AmountLcdCosmos[];
+  gas_limit?: string;
+  payer?: string;
+  granter?: string;
+}
+
+interface AmountLcdCosmos {
+  denom?: string;
+  amount?: string;
+}
+
+interface SignerInfoLcdCosmos {
+  public_key?: PublicKey;
+  mode_info?: ModeInfo;
+  sequence?: string;
+}
+
+interface ModeInfo {
+  single?: Single;
+}
+
+interface Single {
+  mode?: string;
+}
+
+interface PublicKey {
+  '@type'?: string;
+  key?: string;
+}
+
+interface Body {
+  messages?: MessageLcdCosmos[];
+  memo?: string;
+  timeout_height?: string;
+  extension_options?: any[];
+  non_critical_extension_options?: any[];
+}
+
+interface MessageLcdCosmos {
+  '@type'?: string;
+  sender?: string;
+  contract?: string;
+  msg?: MsgLcdCosmos;
+  funds?: AmountLcdCosmos[];
+}
+
+interface MsgLcdCosmos {
+  submit_order?: SubmitOrderLcdCosmos;
+}
+
+interface SubmitOrderLcdCosmos {
+  assets?: AssetLcdCosmos[];
+  direction?: string;
+}
+
+interface AssetLcdCosmos {
+  amount?: string;
+  info?: InfoLcdCosmos;
+}
+
+interface InfoLcdCosmos {
+  native_token?: NativeTokenLcdCosmos;
+  token?: TokenLcdCosmos;
+}
+
+interface NativeTokenLcdCosmos {
+  denom?: string;
+}
+
+interface TokenLcdCosmos {
+  contract_addr?: string;
 }

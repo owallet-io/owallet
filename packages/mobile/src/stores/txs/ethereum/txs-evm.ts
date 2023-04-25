@@ -32,8 +32,8 @@ export class TxsEVM extends Txs {
           return await this.txsEth.getTxs(page, current_page, params);
         case ChainIdEnum.BNBChain:
           return await this.txsBsc.getTxs(page, current_page, params);
-        case ChainIdEnum.KawaiiEvm:
-          return await this.txsKawaii.getTxs(page, current_page, params);
+        // case ChainIdEnum.KawaiiEvm:
+        //   return await this.txsKawaii.getTxs(page, current_page, params);
         case ChainIdEnum.TRON:
           return await this.txsTron.getTxs(page, current_page, {
             ...params,

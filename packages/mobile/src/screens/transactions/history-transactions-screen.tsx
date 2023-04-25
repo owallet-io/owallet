@@ -41,11 +41,9 @@ import { Skeleton } from '@rneui/themed';
 import { TxsStore } from '../../stores/txs/txs-store';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, modalStore, txsStore } = useStore();
+  const { chainStore, accountStore, modalStore, txsStore,queriesStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  console.log('account: ', account);
-
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,6 +56,18 @@ const HistoryTransactionsScreen = observer(() => {
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
   const perPage = 10;
+  const queryBalances = queriesStore
+      .get(chainStore.current.chainId)
+      .queryBalances.getQueryBech32Address(
+        chainStore.current.networkType === 'evm'
+          ? account.evmosHexAddress
+          : account.bech32Address
+      ).balances.find((bal)=>{
+        console.log('bal: ', bal);
+
+      })
+  // console.log('tokens: ', queryBalances.balances);
+
   const requestTxs = async () => {
     try {
       const txs = txsStore(chainStore.current);
@@ -65,7 +75,8 @@ const HistoryTransactionsScreen = observer(() => {
         addressAccount:
           chainStore.current.networkType === 'evm'
             ? account.evmosHexAddress
-            : account.bech32Address
+            : account.bech32Address,
+            action:"All"
       });
       console.log('data: ', data);
     } catch (error) {
@@ -233,7 +244,7 @@ const HistoryTransactionsScreen = observer(() => {
   const renderItem = ({ item, index }) => {
     return (
       <OWTransactionItem
-        key={`item-${index+1}-${index}`}
+        key={`item-${index + 1}-${index}`}
         onPress={() => onTransactionDetail(item)}
         time={item?.timestamp}
         data={item}

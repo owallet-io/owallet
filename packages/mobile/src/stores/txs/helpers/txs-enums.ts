@@ -1,5 +1,5 @@
 export enum NetworkEnum {
-  Cosmos = 'comos',
+  Cosmos = 'cosmos',
   Evm = 'evm'
 }
 export enum ChainIdEnum {

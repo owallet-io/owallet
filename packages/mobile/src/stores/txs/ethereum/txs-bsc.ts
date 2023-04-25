@@ -71,9 +71,9 @@ export class TxsBsc extends Txs {
       if (item && txHash) {
         return Promise.resolve(item);
       }
-      return Promise.reject('Not found item or txHash');
+      throw Error('Not found item or txHash');
     } catch (error) {
-      return Promise.reject(error);
+      throw Error(error);
     }
   }
 }

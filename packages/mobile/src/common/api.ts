@@ -88,21 +88,9 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxs: async (url, query, perPage = 10, currentPage = 1) => {
+  getTxsLcdCosmos: async (url, query, perPage = 10, currentPage = 1):Promise<ResLcdCosmos> => {
     try {
-      if (typeof query === 'string') {
-        const rs = await API.getTxsByRPC({
-          url,
-          params: {
-            query,
-            page: `${currentPage}`,
-            per_page: `${perPage}`,
-            order_by: 'desc'
-          }
-        });
-        return Promise.resolve(rs);
-      }
-      const rs = await API.getTxsByLCD({
+      const rs: Promise<ResLcdCosmos> = await API.getTxsByLCD({
         url,
         params: {
           events: query,
@@ -110,6 +98,22 @@ export const API = {
           ['pagination.limit']: perPage,
           ['pagination.offset']: currentPage,
           order_by: 'ORDER_BY_DESC'
+        }
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsRpcCosmos: async (url, query, perPage = 10, currentPage = 1):Promise<ResLcdCosmos> => {
+    try {
+      const rs = await API.getTxsByRPC({
+        url,
+        params: {
+          query,
+          page: `${currentPage}`,
+          per_page: `${perPage}`,
+          order_by: 'desc'
         }
       });
       return Promise.resolve(rs);
