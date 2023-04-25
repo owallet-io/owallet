@@ -91,6 +91,15 @@ export class TxsHelper {
       '0'
     );
   }
+  calculateTransactionFeeCosmos(fee, decimals = 18): string {
+    return (
+      (fee &&
+        new Big(parseInt(fee))
+          .div(this.totalFromDecimal(decimals))
+          .toFixed(decimals)) ||
+      '0'
+    );
+  }
   formatTime(timestamp): timeTxs {
     if (timestamp) {
       // Create a moment object from the timestamp
@@ -505,9 +514,8 @@ export class TxsHelper {
     item.txHash = data?.txhash;
     item.fee = this.removeZeroNumberLast(
       this.formatNumberSeparateThousand(
-        this.calculateTransactionFee(
+        this.calculateTransactionFeeCosmos(
           data?.tx?.auth_info?.fee?.amount[0]?.amount,
-          data?.gas_used,
           currentChain?.feeCurrencies[0]?.coinDecimals
         )
       )
