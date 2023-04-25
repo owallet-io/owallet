@@ -7,6 +7,7 @@ import { navigationRef } from '../../router/root';
 import { HomeBaseModal } from '../../modals/home-base';
 import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
 import { SignTronModal } from '../../modals/sign/sign-tron';
+import { PermissionModal } from '@src/modals/permission';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -19,16 +20,15 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
+        console.log('data', data);
         // Currently, there is no modal to permit the permission of external apps.
         // All apps should be embeded explicitly.
         // If such apps needs the permissions, add these origins to the privileged origins.
-        if (data.data.origins.length !== 1) {
-          permissionStore.reject(data.id);
-        }
+        // if (data.data.origins.length !== 1) {
+        //   permissionStore.reject(data.id);
+        // }
       }
     }, [permissionStore, permissionStore.waitingDatas]);
-
-    console.log('ledgerInitStore.isInitNeeded', ledgerInitStore.isInitNeeded);
 
     return (
       <React.Fragment>
@@ -38,6 +38,14 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => ledgerInitStore.abortAll()}
           />
         ) : null}
+        {permissionStore.waitingDatas.map(pwd => {
+          return (
+            <PermissionModal
+              isOpen={true}
+              close={() => signInteractionStore.rejectAll()}
+            />
+          );
+        })}
         {signInteractionStore.waitingData ? (
           <SignModal
             isOpen={true}
