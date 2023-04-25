@@ -7,7 +7,7 @@ import React, {
   useState
 } from 'react';
 import { observer } from 'mobx-react-lite';
-import {  StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import {
   BuyIcon,
   DepositIcon,
@@ -32,7 +32,7 @@ import { Text } from '@src/components/text';
 import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 
-export const TokenDetailScreen: FunctionComponent = observer(props => {
+export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
@@ -78,7 +78,11 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
           }
           const rs = await API.getTxs(
             url,
-            `message.sender='${params?.address}' AND transfer.amount CONTAINS '${params?.denom}'`
+            `message.sender='${params?.address}'${
+              chainStore.current.chainId == 'osmosis-1'
+                ? ''
+                : ` AND transfer.amount CONTAINS '${params?.denom}'`
+            }`
           );
 
           const newData = isLoadMore ? [...data, ...rs?.txs] : rs?.txs;
@@ -123,7 +127,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
     );
   };
 
-  const _onPressBtnMain = name => {
+  const _onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }

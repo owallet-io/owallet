@@ -361,8 +361,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm']
   },
   {
-    rpc: 'https://rpc-cosmoshub.keplr.app',
-    rest: 'https://lcd-cosmoshub.keplr.app',
+    rpc: 'https://rpc-cosmos.oraidex.io',
+    rest: 'https://lcd-cosmos.oraidex.io',
     chainId: 'cosmoshub-4',
     chainName: 'Cosmos Hub',
     networkType: 'cosmos',
@@ -404,8 +404,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc-osmosis.keplr.app',
-    rest: 'https://lcd-osmosis.keplr.app',
+    rpc: 'https://osmosis-rpc-global.orai.io',
+    rest: 'https://osmosis-lcd-global.orai.io',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
