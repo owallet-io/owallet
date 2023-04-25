@@ -15,7 +15,7 @@ interface IDataTransaction {
   dataEvents?: any[];
 }
 interface IOWTransactionItem {
-  data?: any;
+  item?: ResTxsInfo;
   time?: string;
 }
 type itemOptions = {

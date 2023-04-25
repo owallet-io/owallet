@@ -15,7 +15,6 @@ export class TxsEVM extends Txs {
   protected readonly txsKawaii: TxsKawaii;
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     super(current_chain);
-    console.log('current_chain: ', current_chain);
     this.txsBsc = new TxsBsc(current_chain);
     this.txsEth = new TxsEth(current_chain);
     this.txsTron = new TxsTron(current_chain);

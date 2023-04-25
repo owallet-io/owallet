@@ -23,10 +23,10 @@ export class TxsStore extends Txs {
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
-  ): Promise<ResTxsInfo[]> {
+  ): Promise<Partial<ResTxs>> {
     try {
       if (this.networkType === NetworkEnum.Cosmos) {
-        return this.txsCosmos.getTxs(page, current_page, params);
+        return await this.txsCosmos.getTxs(page, current_page, params);
       } else if (this.networkType === NetworkEnum.Evm) {
         return await this.txsEvm.getTxs(page, current_page, params);
       }

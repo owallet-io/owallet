@@ -6,7 +6,13 @@ import {
   ActivityIndicator,
   RefreshControl
 } from 'react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { PageWithView } from '@src/components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -41,7 +47,8 @@ import { Skeleton } from '@rneui/themed';
 import { TxsStore } from '../../stores/txs/txs-store';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, modalStore, txsStore,queriesStore } = useStore();
+  const { chainStore, accountStore, modalStore, txsStore, queriesStore } =
+    useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
@@ -56,61 +63,55 @@ const HistoryTransactionsScreen = observer(() => {
   const [activeCoin, setActiveCoin] = useState(defaultAll);
   const hasMore = useRef(true);
   const perPage = 10;
-  const queryBalances = queriesStore
-      .get(chainStore.current.chainId)
-      .queryBalances.getQueryBech32Address(
-        chainStore.current.networkType === 'evm'
-          ? account.evmosHexAddress
-          : account.bech32Address
-      ).balances.find((bal)=>{
-        console.log('bal: ', bal);
 
-      })
   // console.log('tokens: ', queryBalances.balances);
+  const txs = txsStore(chainStore.current);
 
-  const requestTxs = async () => {
-    try {
-      const txs = txsStore(chainStore.current);
-      const data = await txs.getTxs(10, 1, {
-        addressAccount:
-          chainStore.current.networkType === 'evm'
-            ? account.evmosHexAddress
-            : account.bech32Address,
-            action:"All"
-      });
-      console.log('data: ', data);
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  };
-  useEffect(() => {
-    requestTxs();
-  }, []);
+  // const requestTxs = async () => {
+  //   try {
+  //     const data = await txs.getTxs(perPage, page?.current, {
+  //       addressAccount:
+  //         chainStore.current.networkType === 'evm'
+  //           ? account.evmosHexAddress
+  //           : account.bech32Address,
+  //       action: 'All'
+  //     });
+  //     console.log('data: ', data);
+  //   } catch (error) {
+  //     console.log('error: ', error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   requestTxs();
+  // }, []);
   const fetchData = useCallback(
-    async (url, params, isLoadMore = false) => {
+    async (params, isLoadMore = false) => {
       try {
         crashlytics().log('transactions - history - fetchData');
-        if (!isLoadMore && !params?.isActiveType) {
-          getTypeAction(url, params);
-        } else if (!isLoadMore && params?.isActiveType) {
-          setRefreshing(true);
-        }
+        // if (!isLoadMore && !params?.isActiveType) {
+        //   getTypeAction(url, params);
+        // } else if (!isLoadMore && params?.isActiveType) {
+        //   setRefreshing(true);
+        // }
         if (hasMore.current) {
-          const query = [
-            `message.sender='${params?.address}'`,
-            params?.action !== 'All' ? `message.action='${params?.action}'` : ''
-          ];
-          const events = removeEmptyElements(query);
-          const rs = await requestData(isLoadMore, events, url);
-          const newData = isLoadMore
-            ? [...data, ...rs?.tx_responses]
-            : rs?.tx_responses;
-          hasMore.current = rs?.txs?.length === perPage;
-          page.current = page.current + 1;
-          if (page.current === rs?.pagination?.total / perPage) {
+          // const query = [
+          //   `message.sender='${params?.address}'`,
+          //   params?.action !== 'All' ? `message.action='${params?.action}'` : ''
+          // ];
+          // const events = removeEmptyElements(query);
+          const rs = await requestData(isLoadMore, {
+            addressAccount: params?.address,
+            action: params?.action
+          });
+          // console.log('rs: ', rs);
+
+          const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
+          hasMore.current = rs.result?.length === perPage;
+          page.current = rs?.current_page + 1;
+          if (page.current === rs?.total_page) {
             hasMore.current = false;
           }
-          if (rs?.txs.length < 1) {
+          if (rs.result?.length < 1) {
             hasMore.current = false;
           }
           setData(newData);
@@ -125,28 +126,27 @@ const HistoryTransactionsScreen = observer(() => {
     },
     [data, dataType]
   );
-  const getTypeAction = async (url, params) => {
-    try {
-      setLoadingType(true);
-      const types = await API.getTxs(
-        url,
-        [`message.sender='${params?.address}'`],
-        100
-      );
-      setLoadingType(false);
-      setDataType(types);
-    } catch (error) {
-      setLoadingType(false);
-    }
-  };
-  const requestData = async (isLoadMore, query, url) => {
+  // const getTypeAction = async (url, params) => {
+  //   try {
+  //     setLoadingType(true);
+  //     const types = await API.getTxs(
+  //       url,
+  //       [`message.sender='${params?.address}'`],
+  //       100
+  //     );
+  //     setLoadingType(false);
+  //     setDataType(types);
+  //   } catch (error) {
+  //     setLoadingType(false);
+  //   }
+  // };
+  const requestData = async (isLoadMore, params) => {
     try {
       if (!isLoadMore) {
         setLoading(true);
-        const data: any = await API.getTxs(url, query, perPage, 1);
-        return data;
+        return await txs.getTxs(perPage, 1, params);
       } else {
-        return await API.getTxs(url, query, perPage, (page?.current - 1) * 10);
+        return await txs.getTxs(perPage, page.current, params);
       }
     } catch (error) {
       setLoading(false);
@@ -154,79 +154,77 @@ const HistoryTransactionsScreen = observer(() => {
   };
 
   useEffect(() => {
-    refreshData({ activeType: defaultAll, activeCoin: defaultAll });
+    refreshData({ activeType: defaultAll });
     return () => {
       setData([]);
     };
-  }, [chainStore?.current?.rest, account?.bech32Address]);
+  }, []);
   const refreshData = useCallback(
-    ({ activeType, activeCoin, isActiveType }) => {
+    ({ activeType, isActiveType }) => {
       page.current = 1;
       hasMore.current = true;
       fetchData(
-        activeCoin?.value !== 'All'
-          ? chainStore?.current?.rpc
-          : chainStore?.current?.rest,
         {
-          address: account?.bech32Address,
+          address:
+            chainStore.current.networkType === 'evm'
+              ? account.evmosHexAddress
+              : account.bech32Address,
           action: activeType?.value,
-          isActiveType,
-          token: activeCoin?.value
-            ? activeCoin?.value
-            : getCoinDenom(activeCoin)
+          isActiveType
         },
         false
       );
     },
-    [chainStore?.current?.rest, account?.bech32Address]
+    [
+      chainStore.current.networkType,
+      account?.bech32Address,
+      account.evmosHexAddress
+    ]
   );
   const styles = styling();
-  const onActionType = useCallback(
-    (item) => {
-      setActiveType(item);
-      modalStore.close();
-      refreshData({
-        activeType: item,
-        activeCoin: activeCoin,
-        isActiveType: true
-      });
-    },
-    [activeCoin]
-  );
+  // const onActionType = useCallback(
+  //   (item) => {
+  //     setActiveType(item);
+  //     modalStore.close();
+  //     refreshData({
+  //       activeType: item,
+  //       activeCoin: activeCoin,
+  //       isActiveType: true
+  //     });
+  //   },
+  //   [activeCoin]
+  // );
 
-  const onType = useCallback(() => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      <TypeModal
-        actionType={onActionType}
-        active={activeType?.value}
-        transactions={dataType?.tx_responses}
-      />
-    );
-  }, [activeType, dataType]);
+  // const onType = useCallback(() => {
+  //   modalStore.setOpen();
+  //   modalStore.setChildren(
+  //     <TypeModal
+  //       actionType={onActionType}
+  //       active={activeType?.value}
+  //       transactions={dataType?.tx_responses}
+  //     />
+  //   );
+  // }, [activeType, dataType]);
   const onEndReached = useCallback(() => {
     if (page.current !== 1) {
       setLoadMore(true);
       fetchData(
-        chainStore?.current?.rest,
         {
-          address: account?.bech32Address,
-          action: activeType?.value,
-          token: activeCoin?.value
-            ? activeCoin?.value
-            : getCoinDenom(activeCoin)
+          address:
+            chainStore.current.networkType === 'evm'
+              ? account.evmosHexAddress
+              : account.bech32Address,
+          action: activeType?.value
         },
         true
       );
     }
-  }, [account?.bech32Address, data, activeCoin, activeType]);
+  }, [data, activeType]);
   const onRefresh = () => {
     // setRefreshing(true);
     setActiveType(defaultAll);
-    setActiveCoin(defaultAll);
     refreshData({
       activeType: defaultAll,
-      activeCoin: defaultAll,
       isActiveType: true
     });
   };
@@ -246,23 +244,23 @@ const HistoryTransactionsScreen = observer(() => {
       <OWTransactionItem
         key={`item-${index + 1}-${index}`}
         onPress={() => onTransactionDetail(item)}
-        time={item?.timestamp}
-        data={item}
+        // time={item?.timestamp}
+        item={item}
       />
     );
   };
 
-  const onActionCoin = useCallback(
-    (item) => {
-      setActiveCoin(item);
-      modalStore.close();
-      refreshData({
-        activeType: activeType,
-        activeCoin: item
-      });
-    },
-    [activeType]
-  );
+  // const onActionCoin = useCallback(
+  //   (item) => {
+  //     setActiveCoin(item);
+  //     modalStore.close();
+  //     refreshData({
+  //       activeType: activeType,
+  //       activeCoin: item
+  //     });
+  //   },
+  //   [activeType]
+  // );
   // const onCoin = () => {
   //   modalStore.setOpen();
   //   modalStore.setChildren(
@@ -279,7 +277,7 @@ const HistoryTransactionsScreen = observer(() => {
     <PageWithView>
       <OWBox style={styles.container}>
         <View style={styles.containerFilter}>
-          {loadingType ? (
+          {/* {loadingType ? (
             <SkeletonTypeBtn />
           ) : (
             dataType?.txs &&
@@ -290,7 +288,7 @@ const HistoryTransactionsScreen = observer(() => {
                 value={limitString(activeType?.label, 15)}
               />
             )
-          )}
+          )} */}
 
           {/* <ButtonFilter
             label={'Coin'}

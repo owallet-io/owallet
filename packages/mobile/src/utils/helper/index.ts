@@ -360,7 +360,7 @@ export const getValueFromDataEvents = (arr) => {
   let result = [];
   for (let item of arr) {
     // if any element has amountValue, push it to the result array
-    if (item.dataTransfer.some((data) => data.amountValue)) {
+    if (item?.transferInfo.some((data) => data.amount)) {
       result.push(item);
     }
   }
@@ -379,15 +379,15 @@ export const getValueFromDataEvents = (arr) => {
   return { value: result, typeId: 3 };
 };
 export const getDataFromDataEvent = (itemEvents) => {
-  return countAmountValue(itemEvents?.value[0]?.dataTransfer) < 2
+  return countAmountValue(itemEvents?.value[0]?.transferInfo) < 2
     ? {
         ...itemEvents?.value[0],
-        ...itemEvents?.value[0]?.dataTransfer[0]
+        ...itemEvents?.value[0]?.transferInfo[0]
       }
     : {
         ...itemEvents?.value[0],
         ...{
-          amountValue: 'More',
+          amount: 'More',
           denom: false,
           isPlus: false,
           isMinus: false

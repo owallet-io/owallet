@@ -190,10 +190,18 @@ export class TxsHelper {
     addressAccount: string
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
-    transferItem.typeEvent = this.capitalizedWords(
-      this.addSpacesToString(this.getFunctionName(data?.functionName)),
-      ' '
-    );
+    let isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
+    let isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
+    transferItem.typeEvent = data?.functionName
+      ? this.capitalizedWords(
+          this.addSpacesToString(this.getFunctionName(data?.functionName)),
+          ' '
+        )
+      : isMinus && !isPlus
+      ? 'Sent'
+      : isPlus && !isMinus
+      ? 'Received'
+      : '';
     transferItem.transferInfo = [
       {
         from: data?.from,
@@ -207,8 +215,8 @@ export class TxsHelper {
           )
         ),
         token: currentChain.stakeCurrency.coinDenom?.toUpperCase(),
-        isMinus: data?.from?.toLowerCase() == addressAccount?.toLowerCase(),
-        isPlus: data?.to?.toLowerCase() == addressAccount?.toLowerCase()
+        isMinus,
+        isPlus
       }
     ];
     return [transferItem];
@@ -391,14 +399,14 @@ export class TxsHelper {
       find(get(itemLog, `events`), {
         type: transfer
       });
-    let dataTransfer;
+    let transferInfo;
     if (
       valueTransfer?.attributes &&
       this.checkDuplicateAmount(valueTransfer?.attributes)
     ) {
-      dataTransfer = this.convertFormatArrayTransfer(valueTransfer?.attributes);
+      transferInfo = this.convertFormatArrayTransfer(valueTransfer?.attributes);
     } else {
-      dataTransfer = [
+      transferInfo = [
         {
           amountData: valueTransfer
             ? find(valueTransfer?.attributes, { key: 'amount' })
@@ -420,7 +428,7 @@ export class TxsHelper {
       ];
     }
 
-    dataTransfer.forEach((itDataTransfer) => {
+    transferInfo.forEach((itDataTransfer) => {
       isRecipient =
         itDataTransfer?.recipient?.value === address &&
         (actionValue === TYPE_ACTIONS_COSMOS_HISTORY['bank/MsgSend'] ||
@@ -465,7 +473,7 @@ export class TxsHelper {
     });
 
     return {
-      dataTransfer,
+      transferInfo,
       typeEvent: isRecipient ? 'Received' : eventType && eventType?.trim(),
       moduleValue: moduleEvent,
       eventValue: moduleValue ? moduleValue : actionValue,
@@ -560,7 +568,6 @@ export class TxsHelper {
         dataConverted.push(item);
       }
     }
-    console.log('dataConverted: ', dataConverted);
     return dataConverted;
   }
   handleTransferDetailTron(
@@ -568,10 +575,21 @@ export class TxsHelper {
     addressAccount: string
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
-    transferItem.typeEvent = this.capitalizedWords(
-      this.addSpacesToString(data?.trigger_info?.methodName),
-      ' '
-    );
+    const isMinus =
+      data?.ownerAddress?.toLowerCase() == addressAccount?.toLowerCase();
+    const isPlus =
+      data?.toAddress?.toLowerCase() == addressAccount?.toLowerCase();
+    transferItem.typeEvent = data?.trigger_info?.methodName
+      ? this.capitalizedWords(
+          this.addSpacesToString(data?.trigger_info?.methodName),
+          ' '
+        )
+      : isMinus && !isPlus
+      ? 'Sent'
+      : isPlus && !isMinus
+      ? 'Received'
+      : '';
+
     transferItem.transferInfo = [
       {
         from: data?.ownerAddress,
@@ -582,9 +600,8 @@ export class TxsHelper {
           )
         ),
         token: data?.tokenInfo?.tokenAbbr?.toUpperCase() || '',
-        isMinus:
-          data?.ownerAddress?.toLowerCase() == addressAccount?.toLowerCase(),
-        isPlus: data?.toAddress?.toLowerCase() == addressAccount?.toLowerCase()
+        isMinus,
+        isPlus
       }
     ];
     return [transferItem];

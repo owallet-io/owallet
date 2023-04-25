@@ -24,26 +24,9 @@ import moment from 'moment';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const OWTransactionItem = observer(
-  ({ data, time, ...props }: IOWTransactionItem) => {
-    const { chainStore, accountStore, queriesStore } = useStore();
-    const account = accountStore.getAccount(chainStore.current.chainId);
-    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-    const item = data;
-    const queryBalances = queriesStore
-      .get(chainStore.current.chainId)
-      .queryBalances.getQueryBech32Address(
-        chainStore.current.networkType === 'evm'
-          ? accountInfo.evmosHexAddress
-          : accountInfo.bech32Address
-      );
-
-    const tokens = queryBalances.balances;
-    const { status, countEvent, dataEvents, txHash } =
-      getValueTransactionHistory({
-        item: item,
-        address: account?.bech32Address
-      });
-    const itemEvents = getValueFromDataEvents(dataEvents);
+  ({ item, time, ...props }: IOWTransactionItem) => {
+    console.log('item: ', item);
+    const itemEvents = getValueFromDataEvents(item.transfers);
     const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();
@@ -52,29 +35,31 @@ const OWTransactionItem = observer(
         <View style={styles.item}>
           <View style={[styles.flexRow, { paddingBottom: 5 }]}>
             <Text color={colors['blue-300']} size={12}>
-              {formatContractAddress(txHash, 5)}
+              {formatContractAddress(item?.txHash, 5)}
             </Text>
-            {!!itemTransfer?.eventType ? (
+            {!!itemTransfer?.typeEvent ? (
               <Text
                 variant="body2"
                 typo="regular"
                 color={colors['title-modal-login-failed']}
               >
                 <Text color={colors['green-500']}>
-                  {countEvent > 0 ? `+${countEvent}` : null}
+                  {item?.countTypeEvent > 0 ? `+${item?.countTypeEvent}` : null}
                 </Text>{' '}
-                {itemTransfer?.isRecipient
-                  ? TITLE_TYPE_ACTIONS_COSMOS_HISTORY['receive']
-                  : limitString(itemTransfer?.eventType, 14)}
+                {limitString(itemTransfer?.typeEvent, 14)}
                 <View style={styles.iconstyle}>
                   <OWIcon
                     size={12}
                     color={
-                      status === 'success'
+                      item?.status === 'success'
                         ? colors['green-500']
                         : colors['orange-800']
                     }
-                    name={status === 'success' ? 'check_stroke' : 'close_shape'}
+                    name={
+                      item?.status === 'success'
+                        ? 'check_stroke'
+                        : 'close_shape'
+                    }
                   />
                 </View>
               </Text>
@@ -89,11 +74,15 @@ const OWTransactionItem = observer(
                   <OWIcon
                     size={12}
                     color={
-                      status === 'success'
+                      item?.status === 'success'
                         ? colors['green-500']
                         : colors['orange-800']
                     }
-                    name={status === 'success' ? 'check_stroke' : 'close_shape'}
+                    name={
+                      item?.status === 'success'
+                        ? 'check_stroke'
+                        : 'close_shape'
+                    }
                   />
                 </View>
               </View>
@@ -106,31 +95,25 @@ const OWTransactionItem = observer(
               weight={'500'}
               size={15}
               color={
-                itemTransfer?.isPlus
+                itemTransfer?.isPlus && !itemTransfer?.isMinus
                   ? colors['green-500']
-                  : itemTransfer?.isMinus
+                  : itemTransfer?.isMinus && !itemTransfer?.isPlus
                   ? colors['orange-800']
                   : colors['title-modal-login-failed']
               }
               style={styles.amount}
             >
               {`${
-                itemTransfer?.isPlus ? '+' : itemTransfer?.isMinus ? '-' : ''
-              }${
-                formatAmount(
-                  itemTransfer?.amountValue,
-                  itemTransfer?.denom,
-                  tokens
-                ) || '--'
-              }`}{' '}
-              {limitString(
-                getCurrencyByMinimalDenom(tokens, itemTransfer?.denom)
-                  ?.coinDenom || itemTransfer?.denom,
-                7
-              )}
+                itemTransfer?.amount && itemTransfer?.isPlus && !itemTransfer?.isMinus
+                  ? '+'
+                  : itemTransfer?.amount && itemTransfer?.isMinus && !itemTransfer?.isPlus
+                  ? '-'
+                  : ''
+              }${itemTransfer?.amount || 0}`}{' '}
+              {limitString(itemTransfer?.token, 7)}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
-              {(time && moment(time).format('LL')) || `Height ${item?.height}`}
+              {item?.time?.timeShort || `Height ${item?.height}`}
             </Text>
           </View>
         </View>
