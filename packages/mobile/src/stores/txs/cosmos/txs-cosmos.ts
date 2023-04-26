@@ -65,11 +65,25 @@ export class TxsCosmos extends Txs {
         total_page: Math.ceil(parseInt(data?.pagination?.total) / page) || 1
       });
     } catch (error) {
-      console.log('error: ', error);
-      return Promise.reject(error);
+      throw new Error(error);
     }
   }
-  getTxsByHash(txHash: string): ResTxsInfo {
-    return;
+  async getTxsByHash(
+    txHash: string,
+    addressAccount?: string
+  ): Promise<Partial<ResTxsInfo>> {
+    try {
+      const txs = await API.getTxsByLCD({
+        method: `/txs/${txHash}`,
+        url: this.currentChain.rest
+      });
+      return this.txsHelper.handleItemCosmos(
+        txs,
+        this.currentChain,
+        addressAccount
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }

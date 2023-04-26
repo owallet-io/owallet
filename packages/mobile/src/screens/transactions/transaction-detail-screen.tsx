@@ -27,41 +27,55 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { DenomHelper } from '@owallet/common';
 import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
+import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 const TransactionDetailScreen = observer(() => {
   const [data, setData] = useState<ResTxsInfo>();
   const [refreshing, setIsRefreshing] = useState(false);
   const { colors } = useTheme();
+  const { txsStore, chainStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore?.current?.chainId);
   const params = useRoute<
     RouteProp<
       {
         route: {
           txHash: string;
           item?: ResTxsInfo;
+          isRefreshData: boolean;
         };
       },
       'route'
     >
   >().params;
   const txHash = params?.txHash;
+  const txs = txsStore(
+    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+      : chainStore.current
+  );
   useEffect(() => {
-    if (params?.item) {
+    if (!params?.isRefreshData) {
       setData(params?.item);
+      return;
     }
-    // getDetailByHash(txHash);
+    getDetailByHash(params?.item?.txHash);
     return () => {};
-  }, [params?.item]);
+  }, [params?.isRefreshData]);
   const refreshData = () => {
-    // setIsRefreshing(true);
-    // getDetailByHash(txHash);
+    setIsRefreshing(true);
+    getDetailByHash(txHash);
   };
   const getDetailByHash = async (txHash) => {
     try {
-      // const txs = await API.getTxsByLCD({
-      //   method: `/txs/${txHash}`,
-      //   url: rest
-      // });
+      const tx = await txs.getTxsByHash(
+        txHash,
+        chainStore?.current?.networkType === 'cosmos'
+          ? account?.bech32Address
+          : account?.evmosHexAddress
+      );
       setIsRefreshing(false);
-      // setData(txs?.tx_response);
+      console.log('tx: ', tx);
+      
+      setData(tx);
     } catch (error) {
       console.log('error: ', error);
       setIsRefreshing(false);

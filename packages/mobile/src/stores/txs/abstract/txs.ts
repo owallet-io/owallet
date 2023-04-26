@@ -14,15 +14,11 @@ export abstract class Txs {
     this.chainId = current_chain?.chainId;
     this.txsHelper = new TxsHelper();
   }
-  abstract getTxsByHash(txHash: string, item?: ResTxsInfo): Promise<ResTxsInfo>;
+  abstract getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>>;
   abstract getTxs(
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
   ): Promise<Partial<ResTxs>>;
-  abstract getTxsByToken(
-    page: number,
-    current_page: number,
-    params: ParamsFilterReqTxs
-  ): Promise<Partial<ResTxs>>;
+  
 }

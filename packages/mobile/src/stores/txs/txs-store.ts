@@ -35,13 +35,17 @@ export class TxsStore extends Txs {
       console.log('error: ', error);
     }
   }
-  getTxsByHash(txHash: string): ResTxsInfo {
-    if (this.networkType === NetworkEnum.Cosmos) {
-      return this.txsCosmos.getTxsByHash(txHash);
-    } else if (this.networkType === NetworkEnum.Evm) {
-      return this.txsEvm.getTxsByHash(txHash);
+  async getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
+    try {
+      if (this.networkType === NetworkEnum.Cosmos) {
+        return await this.txsCosmos.getTxsByHash(txHash,addressAccount);
+      } else if (this.networkType === NetworkEnum.Evm) {
+        return this.txsEvm.getTxsByHash(txHash);
+      }
+      return;
+    } catch (error) {
+      console.log('error: ', error);
     }
-    return;
   }
   // @computed
   // get sendObj() {

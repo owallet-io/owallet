@@ -522,6 +522,8 @@ export class TxsHelper {
     addressAccount: string
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
+    console.log('data: ', data);
+
     let dataEvents = [];
     item.status = data?.code === 0 ? 'success' : 'fail';
     item.txHash = data?.txhash;

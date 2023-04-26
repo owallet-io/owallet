@@ -63,7 +63,7 @@ export const API = {
     params = null,
     prefix = '/cosmos/tx/v1beta1',
     method = '/txs'
-  }) => {
+  }): Promise<TxResponseLcdCosmos> => {
     try {
       const rs = await API.getByLCD({
         lcdUrl: url,
@@ -71,7 +71,7 @@ export const API = {
         method,
         params
       });
-      return Promise.resolve(rs);
+      return Promise.resolve(rs?.tx_response);
     } catch (error) {
       return Promise.reject(error);
     }
