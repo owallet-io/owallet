@@ -341,15 +341,15 @@ export class SignInteractionStore {
     try {
       yield this.interactionStore.reject(
         'request-sign',
-        this.waitingDatas[0].id
+        this.waitingDatas?.[0]?.id
       );
       yield this.interactionStore.reject(
         'request-ethereum-sign',
-        this.waitingEthereumDatas?.[0].id
+        this.waitingEthereumDatas?.[0]?.id
       );
       yield this.interactionStore.reject(
         'request-tron-sign',
-        this.waitingTronDatas?.[0].id
+        this.waitingTronDatas?.[0]?.id
       );
     } finally {
       this._isLoading = false;

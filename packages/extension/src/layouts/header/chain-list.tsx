@@ -227,7 +227,8 @@ export const ChainList: FunctionComponent = observer(() => {
       </div>
       {mainChainList.map(
         (chainInfo) =>
-          chainInfo.networkType !== 'evm' && (
+          chainInfo.networkType !== 'evm' &&
+          !chainInfo.beta && (
             <ChainElement key={chainInfo.chainId} chainInfo={chainInfo.raw} />
           )
       )}
