@@ -6,7 +6,11 @@ import {
   IGasConfig
 } from './types';
 import { TxChainSetter } from './chain';
-import { ChainGetter, CoinPrimitive, ObservableQueryEvmBalance } from '@owallet/stores';
+import {
+  ChainGetter,
+  CoinPrimitive,
+  ObservableQueryEvmBalance
+} from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { Currency } from '@owallet/types';
@@ -57,7 +61,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     protected readonly gasConfig: IGasConfig,
     additionAmountToNeedFee: boolean = true,
     queryEvmBalances?: ObservableQueryEvmBalance,
-    senderEvm?: string,
+    senderEvm?: string
   ) {
     super(chainGetter, initialChainId);
 
@@ -170,7 +174,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       // If fee is not set, just return with empty fee amount.
       return undefined;
     } catch (error) {
-      console.log("Error in getFeePrimitive:", error);
+      console.log('Error in getFeePrimitive:', error);
     }
   }
 
@@ -180,8 +184,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         throw new Error('Fee currency not set');
       }
 
-      const gasPriceStep = this.chainInfo.gasPriceStep
-        ? this.chainInfo.gasPriceStep
+      const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
+        ? this.chainInfo.stakeCurrency.gasPriceStep
         : DefaultGasPriceStep;
 
       const gasPrice = new Dec(gasPriceStep[feeType].toString());
@@ -192,7 +196,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         amount: feeAmount.roundUp().toString()
       };
     } catch (error) {
-      console.log("Error in getFeeTypePrimitive:", error);
+      console.log('Error in getFeeTypePrimitive:', error);
     }
   }
 
@@ -238,23 +242,27 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       }
 
       if (need.amount.gt(new Int(0))) {
-        if (this.chainInfo.networkType === "evm") {
-          const balance = this.queryEvmBalances.getQueryBalance(this._senderEvm).balance;
+        if (this.chainInfo.networkType === 'evm') {
+          const balance = this.queryEvmBalances.getQueryBalance(
+            this._senderEvm
+          ).balance;
           if (!balance) return new InsufficientFeeError('insufficient fee');
           else if (
             balance
               .toDec()
               .mul(
-                DecUtils.getTenExponentNInPrecisionRange(balance.currency.coinDecimals)
+                DecUtils.getTenExponentNInPrecisionRange(
+                  balance.currency.coinDecimals
+                )
               )
               .truncate()
               .lt(need.amount)
-          ) return new InsufficientFeeError('insufficient fee');
-        }
-        else {
+          )
+            return new InsufficientFeeError('insufficient fee');
+        } else {
           const bal = this.queryBalances
             .getQueryBech32Address(this._sender)
-            .balances.find((bal) => {
+            .balances.find(bal => {
               return bal.currency.coinMinimalDenom === need.denom;
             });
 
@@ -270,7 +278,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
             bal.balance
               .toDec()
               .mul(
-                DecUtils.getTenExponentNInPrecisionRange(bal.currency.coinDecimals)
+                DecUtils.getTenExponentNInPrecisionRange(
+                  bal.currency.coinDecimals
+                )
               )
               .truncate()
               .lt(need.amount)
@@ -280,7 +290,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         }
       }
     } catch (error) {
-        console.log("Error on get fees: ", error);
+      console.log('Error on get fees: ', error);
     }
   }
 
@@ -303,7 +313,7 @@ export const useFeeConfig = (
   gasConfig: IGasConfig,
   additionAmountToNeedFee: boolean = true,
   queryEvmBalances?: ObservableQueryEvmBalance,
-  senderEvm?: string,
+  senderEvm?: string
 ) => {
   const [config] = useState(
     () =>
@@ -316,7 +326,7 @@ export const useFeeConfig = (
         gasConfig,
         additionAmountToNeedFee,
         queryEvmBalances,
-        senderEvm,
+        senderEvm
       )
   );
   config.setChain(chainId);
