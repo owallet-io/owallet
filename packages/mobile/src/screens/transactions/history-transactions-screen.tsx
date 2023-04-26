@@ -31,8 +31,7 @@ import { Skeleton } from '@rneui/themed';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, modalStore, txsStore, queriesStore } =
-    useStore();
+  const { chainStore, accountStore, txsStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);

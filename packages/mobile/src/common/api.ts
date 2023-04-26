@@ -115,7 +115,7 @@ export const API = {
     query,
     perPage = 10,
     currentPage = 1
-  ): Promise<ResLcdCosmos> => {
+  ): Promise<ResTxsRpcCosmos> => {
     try {
       const rs = await API.getTxsByRPC({
         url,
@@ -171,17 +171,19 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsEthAndBscByToken: async (url, addressAccount, currentPage, page, apiKey) => {
+  getTxsEthAndBscByToken: async (
+    url,
+    addressAccount,
+    currentPage,
+    page,
+    apiKey
+  ) => {
     try {
       const rs = await API.get(
         `/api?module=account&action=tokentx&address=${addressAccount}&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
         { baseURL: url }
       );
-      
-   
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   },
   getTxsTron: async (url, addressAccount, current_page, page) => {
     try {

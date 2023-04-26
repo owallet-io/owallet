@@ -33,7 +33,8 @@ import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const { chainStore, queriesStore, accountStore, modalStore } = useStore();
+  const { chainStore, modalStore, txsStore, accountStore, queriesStore } =
+    useStore();
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -41,7 +42,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const styles = styling(colors);
-
   const {
     amountBalance,
     balanceCoinDenom,
@@ -49,6 +49,8 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     balanceCoinFull,
     balanceCurrency
   } = props?.route?.params ?? {};
+
+  const txs = txsStore(chainStore.current);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -70,28 +72,21 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const hasMore = useRef(true);
   const perPage = 10;
   const fetchData = useCallback(
-    async (url, params, isLoadMore = false) => {
+    async (params, isLoadMore = false) => {
       try {
         if (hasMore.current) {
           if (!isLoadMore) {
             setLoading(true);
           }
-          const rs = await API.getTxs(
-            url,
-            `message.sender='${params?.address}'${
-              chainStore.current.chainId == 'osmosis-1'
-                ? ''
-                : ` AND transfer.amount CONTAINS '${params?.denom}'`
-            }`
-          );
+          const rs = await txs.getTxs(perPage, page.current, params);
 
-          const newData = isLoadMore ? [...data, ...rs?.txs] : rs?.txs;
-          hasMore.current = rs?.txs?.length === perPage;
+          const newData = isLoadMore ? [...data, ...rs?.result] : rs?.result;
+          hasMore.current = rs?.result?.length === perPage;
           page.current = page.current + 1;
-          if (page.current === rs?.total_count / perPage) {
+          if (page.current === rs?.total_page) {
             hasMore.current = false;
           }
-          if (rs?.txs.length < 1) {
+          if (rs?.result.length < 1) {
             hasMore.current = false;
           }
           // console.log('newData: ', newData);
@@ -172,10 +167,12 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     if (page.current !== 1) {
       setLoadMore(true);
       fetchData(
-        chainStore?.current?.rpc,
         {
-          address: account?.bech32Address,
-          denom:
+          addressAccount:
+            chainStore.current.networkType == 'evm'
+              ? account?.evmosHexAddress
+              : account?.bech32Address,
+          token:
             balanceCurrency?.contractAddress ||
             balanceCurrency?.coinMinimalDenom
         },
@@ -184,10 +181,12 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     }
   }, [account?.bech32Address, data]);
   const onTransactionDetail = (item) => {
+    console.log('item: ', item);
     navigation.navigate(SCREENS.STACK.Others, {
       screen: SCREENS.TransactionDetail,
       params: {
-        txHash: item?.hash
+        txHash: item?.txHash,
+        item
       }
     });
     return;
@@ -197,7 +196,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       <OWTransactionItem
         key={`item-${index}`}
         onPress={() => onTransactionDetail(item)}
-        data={item}
+        item={item}
       />
     );
   };
@@ -205,10 +204,12 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     page.current = 1;
     hasMore.current = true;
     fetchData(
-      chainStore?.current?.rpc,
       {
-        address: account?.bech32Address,
-        denom:
+        addressAccount:
+          chainStore.current.networkType == 'evm'
+            ? account?.evmosHexAddress
+            : account?.bech32Address,
+        token:
           balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
       },
       false

@@ -1,3 +1,38 @@
+interface ResTxsRpcCosmos {
+  txs?: TxRpcCosmos[];
+  total_count?: string;
+}
+
+interface TxRpcCosmos {
+  hash?: string;
+  height?: string;
+  index?: number;
+  tx_result?: TxResultRpcCosmos;
+  tx?: string;
+}
+
+interface TxResultRpcCosmos {
+  code?: number;
+  data?: string;
+  log?: string;
+  info?: string;
+  gas_wanted?: string;
+  gas_used?: string;
+  events?: EventRpcCosmos[];
+  codespace?: string;
+}
+
+interface EventRpcCosmos {
+  type?: string;
+  attributes?: AttributeRpcCosmos[];
+}
+
+interface AttributeRpcCosmos {
+  key?: string;
+  value?: string;
+  index?: boolean;
+}
+
 interface ParamsFilterReqTxs {
   action?: string;
   addressAccount?: string;

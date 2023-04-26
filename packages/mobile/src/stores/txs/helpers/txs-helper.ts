@@ -575,6 +575,64 @@ export class TxsHelper {
     }
     return dataConverted;
   }
+  handleItemRpcCosmos(
+    data: TxRpcCosmos,
+    currentChain: ChainInfoInner<ChainInfo>,
+    addressAccount: string
+  ): Partial<ResTxsInfo> {
+    let item: Partial<ResTxsInfo> = {};
+    let dataEvents = [];
+    item.status = data?.tx_result?.code === 0 ? 'success' : 'fail';
+    item.txHash = data?.hash;
+    item.fee = '0';
+    item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
+    item.gasUsed = this.formatNumberSeparateThousand(data?.tx_result?.gas_used);
+    item.gasWanted = this.formatNumberSeparateThousand(
+      data?.tx_result?.gas_wanted
+    );
+    item.height = data?.height;
+    item.memo = '';
+    item.time = {
+      timeLong: '',
+      timeShort: ''
+    };
+    if (data?.tx_result?.code === 0) {
+      const logs = data?.tx_result?.log && JSON.parse(data?.tx_result?.log);
+      item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;
+      if (logs?.length > 0) {
+        logs.forEach((itemLog) => {
+          let itemDataTransferDetail = this.handleItemRawLogCosmos(
+            itemLog,
+            addressAccount,
+            currentChain
+          );
+          dataEvents.push(itemDataTransferDetail);
+        });
+      }
+    }
+    item.transfers = dataEvents;
+    return item;
+  }
+  cleanDataRpcCosmosToStandFormat(
+    txs: TxRpcCosmos[],
+    currentChain: ChainInfoInner<ChainInfo>,
+    addressAccount: string
+  ): Partial<ResTxsInfo>[] {
+    let dataConverted: Partial<ResTxsInfo>[] = [];
+    if (txs?.length > 0) {
+      for (let i = 0; i < txs.length; i++) {
+        let item: Partial<ResTxsInfo>;
+        const elementTx = txs[i];
+        item = this.handleItemRpcCosmos(
+          elementTx,
+          currentChain,
+          addressAccount
+        );
+        dataConverted.push(item);
+      }
+    }
+    return dataConverted;
+  }
   handleTransferDetailTron(
     data: ResultDataTron,
     addressAccount: string
