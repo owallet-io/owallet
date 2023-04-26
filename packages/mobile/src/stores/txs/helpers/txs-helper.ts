@@ -178,6 +178,9 @@ export class TxsHelper {
     if (!amount) {
       return amount;
     }
+    if (!decimals) {
+      decimals = 6;
+    }
     return (
       new Big(parseInt(amount))
         .div(this.totalFromDecimal(decimals))
@@ -449,7 +452,7 @@ export class TxsHelper {
             matchesDenom
               ? getCurrencyByMinimalDenom(currentChain.currencies, matchesDenom)
                   .coinDecimals
-              : null
+              : currentChain.stakeCurrency.coinDecimals
           )
         )
       );
@@ -618,7 +621,7 @@ export class TxsHelper {
     let item: Partial<ResTxsInfo> = {};
     item.fee = `${data.cost.fee}`;
     item.height = `${data.block}`;
-    item.denomFee = `${currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase}`;
+    item.denomFee = `${currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase()}`;
     item.txHash = data.hash;
     item.status = data.contractRet == 'SUCCESS' ? 'success' : 'fail';
     item.time = this.formatTimeTron(data?.timestamp);

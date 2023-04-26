@@ -17,7 +17,6 @@ export class TxsCosmos extends Txs {
         `message.sender='${params?.addressAccount}'`,
         params?.action !== 'All' ? `message.action='${params?.action}'` : ''
       ];
-
       const data = await API.getTxsLcdCosmos(
         this.currentChain.rest,
         this.txsHelper.removeEmptyElements(query),

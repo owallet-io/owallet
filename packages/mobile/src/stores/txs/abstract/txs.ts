@@ -20,4 +20,9 @@ export abstract class Txs {
     current_page: number,
     params: ParamsFilterReqTxs
   ): Promise<Partial<ResTxs>>;
+  abstract getTxsByToken(
+    page: number,
+    current_page: number,
+    params: ParamsFilterReqTxs
+  ): Promise<Partial<ResTxs>>;
 }

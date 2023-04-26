@@ -28,6 +28,9 @@ import { DenomHelper } from '@owallet/common';
 import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 const TransactionDetailScreen = observer(() => {
+  const [data, setData] = useState<ResTxsInfo>();
+  const [refreshing, setIsRefreshing] = useState(false);
+  const { colors } = useTheme();
   const params = useRoute<
     RouteProp<
       {
@@ -40,15 +43,11 @@ const TransactionDetailScreen = observer(() => {
     >
   >().params;
   const txHash = params?.txHash;
-  const { chainStore, queriesStore, accountStore } = useStore();
-  const [data, setData] = useState<ResTxsInfo>();
-  const [refreshing, setIsRefreshing] = useState(false);
-  const { colors } = useTheme();
   useEffect(() => {
     if (params?.item) {
       setData(params?.item);
     }
-    getDetailByHash(txHash);
+    // getDetailByHash(txHash);
     return () => {};
   }, [params?.item]);
   const refreshData = () => {
@@ -69,12 +68,8 @@ const TransactionDetailScreen = observer(() => {
     }
   };
 
-  // const account = accountStore.getAccount(chainStore.current.chainId);
-
-  console.log('data: ', data);
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
-  console.log('itemEvents: ', itemEvents);
-  const handleTransferInfo = () => {};
+
   const handleMapData = (itemEv, inEv) => {
     if (itemEv?.transferInfo?.length > 0 && itemEv?.transferInfo[0]) {
       return (

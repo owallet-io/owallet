@@ -7,18 +7,20 @@ import { TxsTron } from './txs-tron';
 import { TxsKawaii } from './txs-kawaii';
 import { ChainIdEnum } from '../helpers/txs-enums';
 import { Address } from '@owallet/crypto';
+import { TxsCosmos } from '../cosmos/txs-cosmos';
 
 export class TxsEVM extends Txs {
   protected readonly txsBsc: TxsBsc;
   protected readonly txsEth: TxsEth;
   protected readonly txsTron: TxsTron;
   protected readonly txsKawaii: TxsKawaii;
+  protected readonly txsCosmos: TxsCosmos;
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     super(current_chain);
     this.txsBsc = new TxsBsc(current_chain);
     this.txsEth = new TxsEth(current_chain);
     this.txsTron = new TxsTron(current_chain);
-    this.txsKawaii = new TxsKawaii(current_chain);
+    this.txsCosmos = new TxsCosmos(current_chain);
   }
   async getTxs(
     page: number,
@@ -32,7 +34,7 @@ export class TxsEVM extends Txs {
         case ChainIdEnum.BNBChain:
           return await this.txsBsc.getTxs(page, current_page, params);
         // case ChainIdEnum.KawaiiEvm:
-        //   return await this.txsKawaii.getTxs(page, current_page, params);
+        //   return await this.txsCosmos.getTxs(page, current_page, params);
         case ChainIdEnum.TRON:
           return await this.txsTron.getTxs(page, current_page, {
             ...params,

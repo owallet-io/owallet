@@ -376,7 +376,7 @@ export const getValueFromDataEvents = (arr) => {
   if (result.length === 1) {
     return { value: [result[0]], typeId: 2 };
   }
-  
+
   // if the result array has more than one element, return it and typeId = 3
   return { value: result, typeId: 3 };
 };

@@ -88,7 +88,12 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsLcdCosmos: async (url, query, perPage = 10, currentPage = 1):Promise<ResLcdCosmos> => {
+  getTxsLcdCosmos: async (
+    url,
+    query,
+    perPage = 10,
+    currentPage = 1
+  ): Promise<ResLcdCosmos> => {
     try {
       const rs: Promise<ResLcdCosmos> = await API.getTxsByLCD({
         url,
@@ -105,7 +110,12 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsRpcCosmos: async (url, query, perPage = 10, currentPage = 1):Promise<ResLcdCosmos> => {
+  getTxsRpcCosmos: async (
+    url,
+    query,
+    perPage = 10,
+    currentPage = 1
+  ): Promise<ResLcdCosmos> => {
     try {
       const rs = await API.getTxsByRPC({
         url,
@@ -159,6 +169,18 @@ export const API = {
         'getTxsEthAndBsc'
       );
       return Promise.reject(error);
+    }
+  },
+  getTxsEthAndBscByToken: async (url, addressAccount, currentPage, page, apiKey) => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=tokentx&address=${addressAccount}&startblock=0&endblock=99999999&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      
+   
+    } catch (error) {
+      
     }
   },
   getTxsTron: async (url, addressAccount, current_page, page) => {

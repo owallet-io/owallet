@@ -28,6 +28,7 @@ import { SCREENS, defaultAll } from '@src/common/constants';
 import { useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Skeleton } from '@rneui/themed';
+import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore, txsStore, queriesStore } =
@@ -46,7 +47,11 @@ const HistoryTransactionsScreen = observer(() => {
 
   const hasMore = useRef(true);
   const perPage = 10;
-  const txs = txsStore(chainStore.current);
+  const txs = txsStore(
+    chainStore.current.chainId === ChainIdEnum.KawaiiEvm
+      ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
+      : chainStore.current
+  );
   const fetchData = useCallback(
     async (params, isLoadMore = false) => {
       try {
@@ -64,7 +69,7 @@ const HistoryTransactionsScreen = observer(() => {
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
           hasMore.current = rs.result?.length === perPage;
           page.current = rs?.current_page + 1;
-          if (page.current === rs?.total_page) {
+          if (rs?.current_page === rs?.total_page) {
             hasMore.current = false;
           }
           if (rs.result?.length < 1) {
@@ -190,9 +195,12 @@ const HistoryTransactionsScreen = observer(() => {
     setRefreshing(false);
   };
   const onTransactionDetail = (item?: ResTxsInfo) => {
-    navigation.navigate(SCREENS.TransactionDetail, {
-      txHash: item?.txHash,
-      item
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.TransactionDetail,
+      params: {
+        txHash: item?.txHash,
+        item
+      }
     });
     return;
   };
