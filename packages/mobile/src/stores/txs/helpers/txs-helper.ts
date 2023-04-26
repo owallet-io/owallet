@@ -190,8 +190,8 @@ export class TxsHelper {
     addressAccount: string
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
-    let isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
-    let isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
+    const isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
+    const isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
     transferItem.typeEvent = data?.functionName
       ? this.capitalizedWords(
           this.addSpacesToString(this.getFunctionName(data?.functionName)),
@@ -201,6 +201,8 @@ export class TxsHelper {
       ? 'Sent'
       : isPlus && !isMinus
       ? 'Received'
+      : isPlus && isMinus
+      ? 'Refund'
       : '';
     transferItem.transferInfo = [
       {
@@ -588,6 +590,8 @@ export class TxsHelper {
       ? 'Sent'
       : isPlus && !isMinus
       ? 'Received'
+      : isPlus && isMinus
+      ? 'Refund'
       : '';
 
     transferItem.transferInfo = [

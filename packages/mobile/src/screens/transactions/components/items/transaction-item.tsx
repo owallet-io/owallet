@@ -95,18 +95,26 @@ const OWTransactionItem = observer(
               weight={'500'}
               size={15}
               color={
-                itemTransfer?.isPlus && !itemTransfer?.isMinus
+                itemTransfer?.amount &&
+                itemTransfer?.isPlus &&
+                !itemTransfer?.isMinus
                   ? colors['green-500']
-                  : itemTransfer?.isMinus && !itemTransfer?.isPlus
+                  : itemTransfer?.amount &&
+                    itemTransfer?.isMinus &&
+                    !itemTransfer?.isPlus
                   ? colors['orange-800']
                   : colors['title-modal-login-failed']
               }
               style={styles.amount}
             >
               {`${
-                itemTransfer?.amount && itemTransfer?.isPlus && !itemTransfer?.isMinus
+                itemTransfer?.amount &&
+                itemTransfer?.isPlus &&
+                !itemTransfer?.isMinus
                   ? '+'
-                  : itemTransfer?.amount && itemTransfer?.isMinus && !itemTransfer?.isPlus
+                  : itemTransfer?.amount &&
+                    itemTransfer?.isMinus &&
+                    !itemTransfer?.isPlus
                   ? '-'
                   : ''
               }${itemTransfer?.amount || 0}`}{' '}
