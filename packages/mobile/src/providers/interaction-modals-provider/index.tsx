@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { SignModal } from '../../modals/sign';
@@ -18,16 +18,16 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       modalStore
     } = useStore();
 
-    useEffect(() => {
-      for (const data of permissionStore.waitingDatas) {
-        // Currently, there is no modal to permit the permission of external apps.
-        // All apps should be embeded explicitly.
-        // If such apps needs the permissions, add these origins to the privileged origins.
-        // if (data.data.origins.length !== 1) {
-        //   // permissionStore.rejectAll();
-        // }
-      }
-    }, [permissionStore, permissionStore.waitingDatas]);
+    // useEffect(() => {
+    //   for (const data of permissionStore.waitingDatas) {
+    //     // Currently, there is no modal to permit the permission of external apps.
+    //     // All apps should be embeded explicitly.
+    //     // If such apps needs the permissions, add these origins to the privileged origins.
+    //     // if (data.data.origins.length !== 1) {
+    //     //   // permissionStore.rejectAll();
+    //     // }
+    //   }
+    // }, [permissionStore, permissionStore.waitingDatas]);
 
     const renderAccessModal = () => {
       if (
