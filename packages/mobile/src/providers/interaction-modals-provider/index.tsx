@@ -20,8 +20,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
     useEffect(() => {
       for (const data of permissionStore.waitingDatas) {
-        console.log('data', data);
-
         // Currently, there is no modal to permit the permission of external apps.
         // All apps should be embeded explicitly.
         // If such apps needs the permissions, add these origins to the privileged origins.
@@ -36,12 +34,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         permissionStore.waitingDatas &&
         navigationRef?.current?.getCurrentRoute().name === 'Web.dApp'
       ) {
-        console.log(
-          ' permissionStore.waitingDatas',
-          permissionStore.waitingDatas,
-          navigationRef?.current?.getCurrentRoute().name
-        );
-
         return permissionStore.waitingDatas.map(wd => {
           return (
             <AccessModal

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
 import {
@@ -24,8 +24,6 @@ export const AccessModal: FunctionComponent<{
   observer(({ waitingData }) => {
     const { permissionStore } = useStore();
     const style = useStyle();
-
-    console.log('waitingData', waitingData);
 
     const _onPressReject = async () => {
       if (waitingData) {
@@ -69,7 +67,7 @@ export const AccessModal: FunctionComponent<{
                     color: colors['sub-text']
                   }}
                 >
-                  {JSON.stringify(permissionStore.waitingDatas, null, 2)}
+                  {JSON.stringify(waitingData, null, 2)}
                 </Text>
               </ScrollView>
             </View>
