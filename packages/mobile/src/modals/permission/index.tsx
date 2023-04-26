@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
 import {
@@ -16,36 +16,22 @@ import { colors } from '../../themes';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
-export const PermissionModal: FunctionComponent<{
+export const AccessModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  waitingData: any;
 }> = registerModal(
-  observer(({}) => {
-    const { chainStore, permissionStore, accountStore } = useStore();
-
-    const chainId = chainStore?.current?.chainId;
-
-    console.log('permissionStore', permissionStore.waitingDatas);
-
-    const account = accountStore.getAccount(chainId);
-
-    const current = chainStore.current;
-
-    const [dataSign, setDataSign] = useState(null);
-
-    useEffect(() => {
-      if (permissionStore.waitingDatas) {
-        setDataSign(permissionStore.waitingDatas);
-      }
-    }, [permissionStore.waitingDatas]);
-
+  observer(({ waitingData }) => {
+    const { permissionStore } = useStore();
     const style = useStyle();
 
-    const _onPressReject = () => {
-      try {
-        permissionStore.rejectAll();
-      } catch (error) {
-        console.error(error);
+    console.log('waitingData', waitingData);
+
+    const _onPressReject = async () => {
+      if (waitingData) {
+        await permissionStore.reject(waitingData.id);
+        if (permissionStore.waitingBasicAccessPermissions.length === 0) {
+        }
       }
     };
 
@@ -83,7 +69,7 @@ export const PermissionModal: FunctionComponent<{
                     color: colors['sub-text']
                   }}
                 >
-                  {JSON.stringify(dataSign, null, 2)}
+                  {JSON.stringify(permissionStore.waitingDatas, null, 2)}
                 </Text>
               </ScrollView>
             </View>
@@ -130,7 +116,9 @@ export const PermissionModal: FunctionComponent<{
               loading={permissionStore.isLoading}
               onPress={async () => {
                 try {
-                  await permissionStore.approveAccessAndWaitEnd([]);
+                  if (waitingData) {
+                    await permissionStore.approve(waitingData.id);
+                  }
                 } catch (error) {
                   permissionStore.rejectAll();
                   console.log('error approveEthereumAndWaitEnd', error);
