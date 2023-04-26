@@ -5,9 +5,15 @@ import { StyleSheet, View, ViewStyle, Image } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { useSmartNavigation } from '../../navigation.provider';
-import { colors, metrics, spacing, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { getBase58Address, TRC20_LIST, _keyExtract } from '../../utils/helper';
+import { useTheme } from '@src/themes/theme-provider';
+import {
+  findLedgerAddressWithChainId,
+  TRC20_LIST,
+  _keyExtract
+} from '../../utils/helper';
+import { Address } from '@owallet/crypto';
 import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import FastImage from 'react-native-fast-image';
@@ -22,9 +28,11 @@ const imageScale = 0.54;
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore, priceStore } = useStore();
+  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [tokens, setTokens] = useState([]);
+  const { colors } = useTheme();
+  const styles = styling(colors);
 
   const smartNavigation = useSmartNavigation();
 
@@ -33,7 +41,13 @@ export const TronTokensCard: FunctionComponent<{
       try {
         const res = await API.getTronAccountInfo(
           {
-            address: getBase58Address(account.evmosHexAddress)
+            address:
+              keyRingStore.keyRingType === 'ledger'
+                ? findLedgerAddressWithChainId(
+                    keyRingStore.keyRingLedgerAddresses,
+                    chainStore.current.chainId
+                  )
+                : Address.getBase58Address(account.evmosHexAddress)
           },
           {
             baseURL: chainStore.current.rpc
@@ -44,9 +58,9 @@ export const TronTokensCard: FunctionComponent<{
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            TRC20_LIST.map((tk) => {
+            TRC20_LIST.map(tk => {
               let token = res.data?.data[0].trc20.find(
-                (t) => tk.contractAddress in t
+                t => tk.contractAddress in t
               );
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
@@ -58,7 +72,7 @@ export const TronTokensCard: FunctionComponent<{
         }
       } catch (error) {}
     })();
-  }, [account.evmosHexAddress]);
+  }, [account.evmosHexAddress, keyRingStore.keyRingLedgerAddresses]);
 
   const _renderFlatlistItem = ({ item }) => {
     return (
@@ -126,7 +140,7 @@ export const TronTokensCard: FunctionComponent<{
             <Text
               style={{
                 ...typography.subtitle2,
-                color: colors['gray-900'],
+                color: colors['primary-text'],
                 fontWeight: '700'
               }}
             >
@@ -179,7 +193,7 @@ export const TronTokensCard: FunctionComponent<{
           style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
-            alignItems: 'center',
+            alignItems: 'center'
             // width: metrics.screenWidth - 64,
             // marginHorizontal: spacing['32']
           }}
@@ -187,14 +201,14 @@ export const TronTokensCard: FunctionComponent<{
           <View
             style={{
               justifyContent: 'center',
-              alignItems: 'center',
+              alignItems: 'center'
               // marginTop: spacing['12']
             }}
           >
             <Text
               style={{
                 fontSize: 18,
-                fontWeight: '500',
+                fontWeight: '500'
                 // color: colors['gray-900']
               }}
             >
@@ -220,55 +234,56 @@ export const TronTokensCard: FunctionComponent<{
   );
 });
 
-const styles = StyleSheet.create({
-  textLoadMore: {
-    ...typography['h7'],
-    color: colors['purple-700']
-  },
-  containerBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors['gray-50'],
-    width: metrics.screenWidth - 48,
-    height: spacing['40'],
-    paddingVertical: spacing['10'],
-    borderRadius: spacing['12']
-  },
-  sectionHeader: {
-    ...typography.h7,
-    color: colors['gray-800'],
-    marginBottom: spacing['8'],
-    marginRight: spacing['10']
-  },
-  flatListItem: {
-    backgroundColor: colors['gray-50'],
-    borderRadius: spacing['12'],
-    width: (metrics.screenWidth - 60) / 2,
-    marginRight: spacing['12'],
-    padding: spacing['12']
-  },
-  itemPhoto: {
-    // width: (metrics.screenWidth - 84) / 2,
-    height: (metrics.screenWidth - 84) / 2,
-    borderRadius: 10,
-    marginHorizontal: 'auto',
-    width: (metrics.screenWidth - 84) / 2
-  },
-  itemText: {
-    ...typography.h7,
-    color: colors['gray-900'],
-    fontWeight: '700'
-  },
-  transactionListEmpty: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  containerToken: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: spacing['4'],
-    marginVertical: spacing['8'],
-    paddingTop: spacing['10'],
-    paddingBottom: spacing['10']
-  }
-});
+const styling = colors =>
+  StyleSheet.create({
+    textLoadMore: {
+      ...typography['h7'],
+      color: colors['purple-700']
+    },
+    containerBtn: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors['gray-50'],
+      width: metrics.screenWidth - 48,
+      height: spacing['40'],
+      paddingVertical: spacing['10'],
+      borderRadius: spacing['12']
+    },
+    sectionHeader: {
+      ...typography.h7,
+      color: colors['gray-800'],
+      marginBottom: spacing['8'],
+      marginRight: spacing['10']
+    },
+    flatListItem: {
+      backgroundColor: colors['gray-50'],
+      borderRadius: spacing['12'],
+      width: (metrics.screenWidth - 60) / 2,
+      marginRight: spacing['12'],
+      padding: spacing['12']
+    },
+    itemPhoto: {
+      // width: (metrics.screenWidth - 84) / 2,
+      height: (metrics.screenWidth - 84) / 2,
+      borderRadius: 10,
+      marginHorizontal: 'auto',
+      width: (metrics.screenWidth - 84) / 2
+    },
+    itemText: {
+      ...typography.h7,
+      color: colors['gray-900'],
+      fontWeight: '700'
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    containerToken: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginHorizontal: spacing['4'],
+      marginVertical: spacing['8'],
+      paddingTop: spacing['10'],
+      paddingBottom: spacing['10']
+    }
+  });

@@ -139,17 +139,28 @@ export const AccountCardEVM: FunctionComponent<{
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
       totalAmount={`${
-        total?.amount
+        chainStore.current.chainId !== TRON_ID && total
           ? (
               parseFloat(
-                new Big(parseInt(total?.amount?.int))
+                new Big(parseInt(total?.amount?.int?.value))
                   .div(new Big(10).pow(36))
                   .toString()
               ) *
               priceStore?.getPrice(
                 chainStore?.current?.stakeCurrency?.coinGeckoId
               )
-            ).toFixed(5)
+            ).toFixed(6)
+          : chainStore.current.chainId === TRON_ID && total
+          ? (
+              parseFloat(
+                new Big(parseInt(total?.amount?.int))
+                  .div(new Big(10).pow(24))
+                  .toString()
+              ) *
+              priceStore?.getPrice(
+                chainStore?.current?.stakeCurrency?.coinGeckoId
+              )
+            ).toFixed(6)
           : 0
       }`}
       addressComponent={
