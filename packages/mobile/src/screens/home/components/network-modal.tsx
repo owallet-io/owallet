@@ -1,32 +1,96 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { RectButton } from '../../../components/rect-button';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Alert,
+  TouchableOpacity
+} from 'react-native';
 import { metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
+const COINTYPE_NETWORK = {
+  118: 'Cosmos',
+  60: 'Ethereum',
+  195: 'Tron'
+};
 
 export const NetworkModal = ({
   profileColor,
   chainStore,
   modalStore,
   smartNavigation,
-  colors
+  colors,
+  keyRingStore,
+  bip44Option
 }) => {
   const styles = styling(colors);
 
+  const handleSwitchNetwork = item => {
+    try {
+      if (keyRingStore.keyRingType === 'ledger') {
+        console.log('get here', keyRingStore.keyRingType);
+
+        Alert.alert(
+          'Switch network',
+          `You are switching to ${
+            COINTYPE_NETWORK[item.bip44.coinType]
+          } network. Please confirm that you have ${
+            COINTYPE_NETWORK[item.bip44.coinType]
+          } App opened before switch network`,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                modalStore.close();
+              },
+              style: 'cancel'
+            },
+            {
+              text: 'Switch',
+              onPress: () => {
+                chainStore.selectChain(item?.chainId);
+                chainStore.saveLastViewChainId();
+                if (
+                  typeof keyRingStore.setKeyStoreLedgerAddress === 'function'
+                ) {
+                  keyRingStore.setKeyStoreLedgerAddress(
+                    `44'/${item.bip44.coinType ?? item.coinType}'/${
+                      bip44Option.bip44HDPath.account
+                    }'/${bip44Option.bip44HDPath.change}/${
+                      bip44Option.bip44HDPath.addressIndex
+                    }`,
+                    item?.chainId
+                  );
+                }
+
+                modalStore.close();
+              }
+            }
+          ]
+        );
+      } else {
+        chainStore.selectChain(item?.chainId);
+        chainStore.saveLastViewChainId();
+        modalStore.close();
+      }
+    } catch (error) {
+      alert(JSON.stringify(error.message));
+      modalStore.close();
+    }
+  };
+
   const _renderItem = ({ item }) => {
     return (
-      <RectButton
+      <TouchableOpacity
         style={{
           ...styles.containerBtn
         }}
-        onPress={() => {
-          chainStore.selectChain(item?.chainId);
-          chainStore.saveLastViewChainId();
-          modalStore.close();
+        onPress={async () => {
+          handleSwitchNetwork(item);
         }}
       >
         <View
@@ -110,7 +174,7 @@ export const NetworkModal = ({
             />
           </View>
         </View>
-      </RectButton>
+      </TouchableOpacity>
     );
   };
 
