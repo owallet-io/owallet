@@ -7,13 +7,7 @@ import {
   Text,
   View
 } from 'react-native';
-import React, {
-  FC,
-  ReactNode,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
+import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { FlatListProps } from 'react-native';
 import { OWEmpty } from '../empty';
 import { _keyExtract } from '@src/utils/helper';
@@ -83,10 +77,10 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     }
     return () => {};
   }, [offset]);
-//   useEffect(() => {
-//     onScrollToTop();
-//     return () => {};
-//   }, [loading, refreshing]);
+  //   useEffect(() => {
+  //     onScrollToTop();
+  //     return () => {};
+  //   }, [loading, refreshing]);
 
   return (
     <>
@@ -97,7 +91,11 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
           loading ? (
             <>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((it, inde) => {
-                return <View key={`SkeletonComponent-${inde}`}>{SkeletonComponent}</View>;
+                return (
+                  <View key={`SkeletonComponent-${inde}`}>
+                    {SkeletonComponent}
+                  </View>
+                );
               })}
             </>
           ) : (
@@ -114,11 +112,13 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
           </View>
         }
         refreshControl={
-          <RefreshControl
-            tintColor={colors['text-title']}
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+          onRefresh ? (
+            <RefreshControl
+              tintColor={colors['text-title']}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          ) : null
         }
         {...rest}
       />

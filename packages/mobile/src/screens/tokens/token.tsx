@@ -4,10 +4,14 @@ import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 import { observer } from 'mobx-react-lite';
 import { FlatList } from 'react-native';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import {
+  PageWithScrollViewInBottomTabView,
+  PageWithView
+} from '../../components/page';
 import { useStore } from '../../stores';
 import { _keyExtract } from '../../utils/helper';
 import { TokenItem } from './components/token-item';
+import OWFlatList from '@src/components/page/ow-flat-list';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
@@ -28,9 +32,10 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
+    tokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -39,14 +44,16 @@ export const TokensScreen: FunctionComponent = observer(() => {
   }, [chainStore.current.chainId]);
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+    <PageWithView backgroundColor={colors['background']}>
       <OWSubTitleHeader title="My Tokens" />
-      <OWBox>
-        <FlatList
+      <OWBox style={{
+        flex:1
+      }}>
+        <OWFlatList
           data={unique}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             const priceBalance = priceStore.calculatePrice(item.balance);
-
             return (
               <TokenItem
                 key={item.currency.coinMinimalDenom}
@@ -61,6 +68,6 @@ export const TokensScreen: FunctionComponent = observer(() => {
           keyExtractor={_keyExtract}
         />
       </OWBox>
-    </PageWithScrollViewInBottomTabView>
+    </PageWithView>
   );
 });
