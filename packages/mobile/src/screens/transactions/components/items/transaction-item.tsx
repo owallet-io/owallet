@@ -1,32 +1,20 @@
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ListRenderItemInfo
-} from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import {
-  formatAmount,
   formatContractAddress,
   getDataFromDataEvent,
-  getCurrencyByMinimalDenom,
   getValueFromDataEvents,
-  getValueTransactionHistory,
   limitString
 } from '@src/utils/helper';
 import { useTheme } from '@src/themes/theme-provider';
 import { spacing } from '@src/themes';
 import { observer } from 'mobx-react-lite';
 import { Text } from '@src/components/text';
-import { TITLE_TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
-import { useStore } from '@src/stores';
-import moment from 'moment';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const OWTransactionItem = observer(
   ({ item, time, ...props }: IOWTransactionItem) => {
-    console.log('item: ', item);
-    const itemEvents = getValueFromDataEvents(item.transfers);
+    const itemEvents = item.transfers && getValueFromDataEvents(item.transfers);
     const itemTransfer = getDataFromDataEvent(itemEvents);
     const { colors } = useTheme();
     const styles = styling();

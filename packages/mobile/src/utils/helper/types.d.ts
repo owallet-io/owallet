@@ -17,6 +17,7 @@ interface IDataTransaction {
 interface IOWTransactionItem {
   item?: ResTxsInfo;
   time?: string;
+  onPress?: () => void;
 }
 type itemOptions = {
   title: string;

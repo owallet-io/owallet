@@ -7,7 +7,7 @@ import ItemReceivedToken from './components/item-received-token';
 import { useTheme } from '@src/themes/theme-provider';
 import ItemDetail from './components/item-details';
 import { API } from '@src/common/api';
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   caculatorFee,
   capitalizedText,
@@ -25,63 +25,173 @@ import moment from 'moment';
 import { observer } from 'mobx-react-lite';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { DenomHelper } from '@owallet/common';
+import { OWEmpty } from '@src/components/empty';
+import { Text } from '@src/components/text';
 const TransactionDetailScreen = observer(() => {
-  const params = useRoute().params;
+  const params = useRoute<
+    RouteProp<
+      {
+        route: {
+          txHash: string;
+          item?: ResTxsInfo;
+        };
+      },
+      'route'
+    >
+  >().params;
   const txHash = params?.txHash;
   const { chainStore, queriesStore, accountStore } = useStore();
-  const [data, setData] = useState();
+  const [data, setData] = useState<ResTxsInfo>();
   const [refreshing, setIsRefreshing] = useState(false);
   const { colors } = useTheme();
   useEffect(() => {
-    getDetailByHash(txHash, chainStore?.current?.rest);
+    if (params?.item) {
+      setData(params?.item);
+    }
+    getDetailByHash(txHash);
     return () => {};
-  }, []);
+  }, [params?.item]);
   const refreshData = () => {
-    setIsRefreshing(true);
-    getDetailByHash(txHash, chainStore?.current?.rest);
+    // setIsRefreshing(true);
+    // getDetailByHash(txHash);
   };
-  const getDetailByHash = async (txHash, rest) => {
+  const getDetailByHash = async (txHash) => {
     try {
-      const txs = await API.getTxsByLCD({
-        method: `/txs/${txHash}`,
-        url: rest
-      });
+      // const txs = await API.getTxsByLCD({
+      //   method: `/txs/${txHash}`,
+      //   url: rest
+      // });
       setIsRefreshing(false);
-      setData(txs?.tx_response);
+      // setData(txs?.tx_response);
     } catch (error) {
       console.log('error: ', error);
       setIsRefreshing(false);
     }
   };
 
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  // const account = accountStore.getAccount(chainStore.current.chainId);
 
-  const { status, countEvent, dataEvents } = getValueTransactionHistory({
-    item: data,
-    address: account?.bech32Address
-  });
-  const itemEvents = getValueFromDataEvents(dataEvents);
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-  const gasPrice = data?.tx?.auth_info?.fee?.amount[0]?.amount;
-  const denomFee = data?.tx?.auth_info?.fee?.amount[0]?.denom;
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? accountInfo.evmosHexAddress
-        : accountInfo.bech32Address
-    );
-
-  const tokens = queryBalances.balances;
+  console.log('data: ', data);
+  const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
+  console.log('itemEvents: ', itemEvents);
+  const handleTransferInfo = () => {};
+  const handleMapData = (itemEv, inEv) => {
+    if (itemEv?.transferInfo?.length > 0 && itemEv?.transferInfo[0]) {
+      return (
+        <TransactionBox
+          key={`tsbox-${inEv}`}
+          label={`Transaction detail ${
+            itemEv?.typeEvent ? `(${itemEv?.typeEvent || ''})` : ''
+          }`}
+        >
+          {itemEv?.transferInfo?.map((itemDataTrans, inDtTransfer) => {
+            if (
+              itemDataTrans?.amount ||
+              itemDataTrans?.amount == '0' ||
+              itemDataTrans?.amount == 0
+            ) {
+              return (
+                <View key={`itemEv-${inDtTransfer}`}>
+                  {itemDataTrans?.from && (
+                    <ItemReceivedToken
+                      valueDisplay={formatContractAddress(
+                        typeof itemDataTrans?.from === 'string'
+                          ? itemDataTrans?.from
+                          : itemDataTrans?.from?.value
+                      )}
+                      value={
+                        typeof itemDataTrans?.from === 'string'
+                          ? itemDataTrans?.from
+                          : itemDataTrans?.from?.value
+                      }
+                      label="From"
+                    />
+                  )}
+                  {itemDataTrans?.to && (
+                    <ItemReceivedToken
+                      valueDisplay={formatContractAddress(
+                        typeof itemDataTrans?.to === 'string'
+                          ? itemDataTrans?.to
+                          : itemDataTrans?.to?.value
+                      )}
+                      value={
+                        typeof itemDataTrans?.to === 'string'
+                          ? itemDataTrans?.to
+                          : itemDataTrans?.to?.value
+                      }
+                      label="To"
+                    />
+                  )}
+                  {itemDataTrans?.amount ||
+                  itemDataTrans?.amount == '0' ||
+                  itemDataTrans?.amount == 0 ? (
+                    <ItemReceivedToken
+                      label="Amount"
+                      btnCopy={false}
+                      borderBottom={
+                        inEv == itemEvents?.value?.length - 1 &&
+                        inDtTransfer == itemEv?.transferInfo?.length - 1
+                          ? false
+                          : true
+                      }
+                      value={itemDataTrans?.amount}
+                      valueProps={{
+                        color:
+                          itemDataTrans?.amount &&
+                          itemDataTrans?.isPlus &&
+                          !itemDataTrans?.isMinus
+                            ? colors['green-500']
+                            : itemDataTrans?.amount &&
+                              itemDataTrans?.isMinus &&
+                              !itemDataTrans?.isPlus
+                            ? colors['orange-800']
+                            : colors['title-modal-login-failed']
+                      }}
+                      valueDisplay={`${
+                        itemDataTrans?.amount &&
+                        itemDataTrans?.isPlus &&
+                        !itemDataTrans?.isMinus
+                          ? '+'
+                          : itemDataTrans?.amount &&
+                            itemDataTrans?.isMinus &&
+                            !itemDataTrans?.isPlus
+                          ? '-'
+                          : ''
+                      }${itemDataTrans?.amount} ${
+                        limitString(itemDataTrans?.token, 25) || ''
+                      }`}
+                    />
+                  ) : null}
+                </View>
+              );
+            }
+            return (
+              <OWEmpty
+                style={{
+                  paddingVertical: 5
+                }}
+                sizeImage={70}
+              />
+            );
+          })}
+        </TransactionBox>
+      );
+    }
+    return null;
+  };
   return (
     <PageWithScrollView
       showsVerticalScrollIndicator={false}
       style={styles.container}
       refreshControl={
-        <RefreshControl tintColor={colors['text-title-login']} onRefresh={refreshData} refreshing={refreshing} />
+        <RefreshControl
+          tintColor={colors['text-title-login']}
+          onRefresh={refreshData}
+          refreshing={refreshing}
+        />
       }
     >
-      <TransactionBox label={'Infomation'}>
+      <TransactionBox label={'Information'}>
         <ItemReceivedToken
           label="Transaction hash"
           valueProps={{
@@ -92,129 +202,46 @@ const TransactionDetailScreen = observer(() => {
         />
         <ItemDetail
           label="Status"
-          value={status ? capitalizedText(status) : '--'}
+          value={data?.status ? capitalizedText(data?.status) : '--'}
           iconComponent={
             <OWIcon
               size={12}
               color={
-                status === 'success'
+                data?.status === 'success'
                   ? colors['green-500']
                   : colors['orange-800']
               }
-              name={status === 'success' ? 'check_stroke' : 'close_shape'}
+              name={data?.status === 'success' ? 'check_stroke' : 'close_shape'}
             />
           }
           valueProps={{
             color:
-              status === 'success' ? colors['green-500'] : colors['orange-800']
+              data?.status === 'success'
+                ? colors['green-500']
+                : colors['orange-800']
           }}
         />
         <ItemDetail label="Block height" value={data?.height} />
-        <ItemDetail label="Memo" value={data?.tx?.body?.memo} />
+        <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
+
         <ItemDetail
           label="Gas (used/ wanted)"
-          value={`${numberWithCommas(data?.gas_used)}/${numberWithCommas(
-            data?.gas_wanted
-          )}`}
+          value={`${data?.gasUsed}/${data?.gasWanted}`}
         />
         <ItemDetail
           label="Fee"
-          value={`${caculatorFee(gasPrice, data?.gas_used)} ${
-            (denomFee && denomFee.toUpperCase()) || ''
-          }`}
+          value={`${data?.fee} ${data?.denomFee || ''}`}
         />
         <ItemDetail
           label="Time"
           borderBottom={false}
-          value={moment(data?.timestamp).format('MMMM D, YYYY (hh:mm:ss)')}
+          value={data?.time?.timeLong}
         />
 
         {/* <ItemDetail label="View on Scan" borderBottom={false} /> */}
       </TransactionBox>
 
-      {itemEvents?.value?.map((itemEv, inEv) => (
-        <TransactionBox
-          key={`tsbox-${inEv}`}
-          label={`Transaction detail ${
-            itemEv?.eventType ? `(${itemEv?.eventType || ''})` : ''
-          }`}
-        >
-          {itemEv?.dataTransfer?.map((itemDataTrans, inDtTransfer) => (
-            <View key={`itemEv-${inDtTransfer}`}>
-              {itemDataTrans?.sender && (
-                <ItemReceivedToken
-                  valueDisplay={formatContractAddress(
-                    typeof itemDataTrans?.sender === 'string'
-                      ? itemDataTrans?.sender
-                      : itemDataTrans?.sender?.value
-                  )}
-                  value={
-                    typeof itemDataTrans?.sender === 'string'
-                      ? itemDataTrans?.sender
-                      : itemDataTrans?.sender?.value
-                  }
-                  label="From"
-                />
-              )}
-              {itemDataTrans?.recipient && (
-                <ItemReceivedToken
-                  valueDisplay={formatContractAddress(
-                    typeof itemDataTrans?.recipient === 'string'
-                      ? itemDataTrans?.recipient
-                      : itemDataTrans?.recipient?.value
-                  )}
-                  value={
-                    typeof itemDataTrans?.recipient === 'string'
-                      ? itemDataTrans?.recipient
-                      : itemDataTrans?.recipient?.value
-                  }
-                  label="To"
-                />
-              )}
-
-              {itemDataTrans?.amountValue && (
-                <ItemReceivedToken
-                  label="Amount"
-                  btnCopy={false}
-                  borderBottom={
-                    inEv == itemEvents?.value?.length - 1 &&
-                    inDtTransfer == itemEv?.dataTransfer?.length - 1
-                      ? false
-                      : true
-                  }
-                  value={itemDataTrans?.amountValue}
-                  valueProps={{
-                    color: itemDataTrans?.isPlus
-                      ? colors['green-500']
-                      : itemDataTrans?.isMinus
-                      ? colors['orange-800']
-                      : colors['title-modal-login-failed']
-                  }}
-                  valueDisplay={`${
-                    itemDataTrans?.isPlus
-                      ? '+'
-                      : itemDataTrans?.isMinus
-                      ? '-'
-                      : ''
-                  }${
-                    formatAmount(
-                      itemDataTrans?.amountValue,
-                      itemDataTrans?.denom,
-                      tokens
-                    ) || '--'
-                  } ${
-                    limitString(
-                      getCurrencyByMinimalDenom(tokens, itemDataTrans?.denom)
-                        ?.coinDenom || itemDataTrans?.denom,
-                      25
-                    ) || ''
-                  }`}
-                />
-              )}
-            </View>
-          ))}
-        </TransactionBox>
-      ))}
+      {itemEvents?.typeId !== 0 && itemEvents?.value?.map(handleMapData)}
     </PageWithScrollView>
   );
 });

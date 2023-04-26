@@ -26,23 +26,24 @@ const ItemDetail: FC<{
         <Text color={colors['text-label-transaction-detail']} variant="body2">
           {label}
         </Text>
-        <Text
-          color={colors['text-title-login']}
-          variant="body1"
-          {...valueProps}
-        >
+        <View style={styles.wrapRightItem}>
           {iconComponent && (
             <View
               style={{
-                paddingHorizontal: 10,
-                paddingBottom: 2
+                paddingHorizontal: 10
               }}
             >
               {iconComponent}
             </View>
           )}
-          {value}
-        </Text>
+          <Text
+            color={colors['text-title-login']}
+            variant="body1"
+            {...valueProps}
+          >
+            {value}
+          </Text>
+        </View>
       </View>
       {borderBottom && <ItemDivided />}
     </View>
@@ -52,6 +53,10 @@ const ItemDetail: FC<{
 export default ItemDetail;
 
 const styles = StyleSheet.create({
+  wrapRightItem: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   containerItemDetail: {
     flexDirection: 'row',
     justifyContent: 'space-between',

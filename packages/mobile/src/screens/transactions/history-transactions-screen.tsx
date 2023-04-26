@@ -19,32 +19,15 @@ import { useTheme } from '@src/themes/theme-provider';
 import { API } from '@src/common/api';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
-import {
-  _keyExtract,
-  addTimeProperty,
-  delay,
-  limitString,
-  removeEmptyElements
-} from '@src/utils/helper';
+import { _keyExtract } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { OWBox } from '@src/components/card';
 import { metrics, spacing } from '@src/themes';
-import { OWEmpty } from '@src/components/empty';
-import { useLoadingScreen } from '@src/providers/loading-screen';
 import OWTransactionItem from './components/items/transaction-item';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import TypeModal from './components/type-modal';
-import TokenModal, { getCoinDenom } from './components/token-modal';
-
 import { SCREENS, defaultAll } from '@src/common/constants';
-import { navigate } from '@src/router/root';
 import { useNavigation } from '@react-navigation/native';
-import ButtonFilter from './components/button-filter';
 import OWFlatList from '@src/components/page/ow-flat-list';
-import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { Animated } from 'react-native';
 import { Skeleton } from '@rneui/themed';
-import { TxsStore } from '../../stores/txs/txs-store';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, modalStore, txsStore, queriesStore } =
@@ -60,30 +43,10 @@ const HistoryTransactionsScreen = observer(() => {
   const page = useRef(1);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
-  const [activeCoin, setActiveCoin] = useState(defaultAll);
+
   const hasMore = useRef(true);
   const perPage = 10;
-
-  // console.log('tokens: ', queryBalances.balances);
   const txs = txsStore(chainStore.current);
-
-  // const requestTxs = async () => {
-  //   try {
-  //     const data = await txs.getTxs(perPage, page?.current, {
-  //       addressAccount:
-  //         chainStore.current.networkType === 'evm'
-  //           ? account.evmosHexAddress
-  //           : account.bech32Address,
-  //       action: 'All'
-  //     });
-  //     console.log('data: ', data);
-  //   } catch (error) {
-  //     console.log('error: ', error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   requestTxs();
-  // }, []);
   const fetchData = useCallback(
     async (params, isLoadMore = false) => {
       try {
@@ -94,17 +57,10 @@ const HistoryTransactionsScreen = observer(() => {
         //   setRefreshing(true);
         // }
         if (hasMore.current) {
-          // const query = [
-          //   `message.sender='${params?.address}'`,
-          //   params?.action !== 'All' ? `message.action='${params?.action}'` : ''
-          // ];
-          // const events = removeEmptyElements(query);
           const rs = await requestData(isLoadMore, {
             addressAccount: params?.address,
             action: params?.action
           });
-          // console.log('rs: ', rs);
-
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
           hasMore.current = rs.result?.length === perPage;
           page.current = rs?.current_page + 1;
@@ -233,9 +189,10 @@ const HistoryTransactionsScreen = observer(() => {
     setLoading(false);
     setRefreshing(false);
   };
-  const onTransactionDetail = (item) => {
+  const onTransactionDetail = (item?: ResTxsInfo) => {
     navigation.navigate(SCREENS.TransactionDetail, {
-      txHash: item?.txhash ? item?.txhash : item?.hash
+      txHash: item?.txHash,
+      item
     });
     return;
   };
@@ -244,34 +201,10 @@ const HistoryTransactionsScreen = observer(() => {
       <OWTransactionItem
         key={`item-${index + 1}-${index}`}
         onPress={() => onTransactionDetail(item)}
-        // time={item?.timestamp}
         item={item}
       />
     );
   };
-
-  // const onActionCoin = useCallback(
-  //   (item) => {
-  //     setActiveCoin(item);
-  //     modalStore.close();
-  //     refreshData({
-  //       activeType: activeType,
-  //       activeCoin: item
-  //     });
-  //   },
-  //   [activeType]
-  // );
-  // const onCoin = () => {
-  //   modalStore.setOpen();
-  //   modalStore.setChildren(
-  //     <TokenModal
-  //       onActionCoin={onActionCoin}
-  //       active={
-  //         activeCoin?.value ? activeCoin?.value : getCoinDenom(activeCoin)
-  //       }
-  //     />
-  //   );
-  // };
 
   return (
     <PageWithView>

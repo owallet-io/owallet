@@ -356,25 +356,27 @@ export const caculatorFee = (gasPrice, gasUsed) => {
   );
 };
 export const getValueFromDataEvents = (arr) => {
-  // if the array has more than one element, check for amountValue
+  if (arr.length === 1) {
+    return { value: [arr[0]], typeId: 1 };
+  }
   let result = [];
   for (let item of arr) {
     // if any element has amountValue, push it to the result array
-    if (item?.transferInfo.some((data) => data.amount)) {
+    if (item?.transferInfo.some((data) => data?.amount)) {
       result.push(item);
     }
   }
+  // console.log('result: ', result);
 
   // if the result array is empty, return null and typeId = 0
-  if (arr.length === 1 || result.length === 0) {
-    return { value: [arr[0]], typeId: 1 };
+  if (result.length === 0) {
+    return { value: [], typeId: 0 };
   }
-
   // if the result array has one element, return it and typeId = 2
   if (result.length === 1) {
     return { value: [result[0]], typeId: 2 };
   }
-
+  
   // if the result array has more than one element, return it and typeId = 3
   return { value: result, typeId: 3 };
 };
@@ -617,42 +619,6 @@ export const convertAmount = (amount: any) => {
     default:
       return 0;
   }
-};
-function formatNumberSeparate(num) {
-  const numSplit = num && num.split('.');
-  if (numSplit?.length > 1) {
-    return (
-      numSplit[0].toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') +
-      '.' +
-      numSplit[1]
-    );
-  }
-  return null;
-}
-export const formatAmount = (amount, minimalDenom, tokens) => {
-  const decimals = amount?.length < 12 ? 6 : 18;
-  if (amount !== 'More' && amount && minimalDenom && tokens?.length > 0) {
-    const currency = getCurrencyByMinimalDenom(tokens, minimalDenom);
-    const divisor = new Big(10).pow(currency?.coinDecimals || decimals);
-    const amountFormat = new Big(amount).div(divisor);
-    return removeZeroNumberLast(
-      formatNumberSeparate(
-        amountFormat.toFixed(currency?.coinDecimals || decimals)
-      )
-    );
-  } else {
-    return amount;
-  }
-};
-const replaceZero = (str) => {
-  return parseFloat(str.replace(/^0+|\.?0+$/g, ''));
-};
-export const removeZeroNumberLast = (str) => {
-  return isNaN(replaceZero(str))
-    ? str
-    : `${replaceZero(str)}`.indexOf('.') == -1
-    ? replaceZero(str).toFixed(1)
-    : replaceZero(str);
 };
 
 export const getDomainFromUrl = (url) => {
