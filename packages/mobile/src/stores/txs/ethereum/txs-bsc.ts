@@ -39,7 +39,7 @@ export class TxsBsc extends Txs {
       this.infoApi.BASE_URL,
       params?.token,
       params?.addressAccount,
-      current_page + 1,
+      current_page,
       page,
       this.infoApi.API_KEY
     );
