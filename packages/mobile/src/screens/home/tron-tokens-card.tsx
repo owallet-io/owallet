@@ -159,11 +159,13 @@ export const TronTokensCard: FunctionComponent<{
               $
               {`${
                 item?.amount
-                  ? parseFloat(
-                      new Big(parseInt(item.amount))
-                        .div(new Big(10).pow(6).toFixed(6))
-                        .toString()
-                    ) * priceStore?.getPrice(item.coinGeckoId)
+                  ? (
+                      parseFloat(
+                        new Big(parseInt(item.amount))
+                          .div(new Big(10).pow(6).toFixed(6))
+                          .toString()
+                      ) * priceStore?.getPrice(item.coinGeckoId)
+                    ).toFixed(6)
                   : 0
               }` || '$0'}
             </Text>

@@ -316,8 +316,6 @@ export class PermissionStore extends HasMapStore<
   *rejectAll() {
     this._isLoading = true;
     try {
-      console.log('reject all');
-
       yield this.interactionStore.rejectAll(INTERACTION_TYPE_PERMISSION);
     } finally {
       this._isLoading = false;
