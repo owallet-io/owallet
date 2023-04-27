@@ -51,6 +51,8 @@ const HistoryTransactionsScreen = observer(() => {
       ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
       : chainStore.current
   );
+  console.log('chainStore.current: ', chainStore.current);
+
   const fetchData = useCallback(
     async (params, isLoadMore = false) => {
       try {

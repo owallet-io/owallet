@@ -79,17 +79,15 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
             setLoading(true);
           }
           const rs = await txs.getTxs(perPage, page.current, params);
-
           const newData = isLoadMore ? [...data, ...rs?.result] : rs?.result;
           hasMore.current = rs?.result?.length === perPage;
-          page.current = page.current + 1;
-          if (page.current === rs?.total_page) {
+          page.current = rs?.current_page + 1;
+          if (rs?.current_page === rs?.total_page) {
             hasMore.current = false;
           }
           if (rs?.result.length < 1) {
             hasMore.current = false;
           }
-          // console.log('newData: ', newData);
           setData(newData);
           setAllLoading();
         } else {
@@ -185,8 +183,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       screen: SCREENS.TransactionDetail,
       params: {
         txHash: item?.txHash,
-        item,
-        isRefreshData: true
+        item
       }
     });
     return;
@@ -200,6 +197,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       />
     );
   };
+
   const refreshData = useCallback(() => {
     page.current = 1;
     hasMore.current = true;

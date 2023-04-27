@@ -2,6 +2,7 @@ import { ChainInfoInner } from '@owallet/stores';
 import { Txs } from '../abstract/txs';
 import { ChainInfo } from '@owallet/types';
 import { API } from '@src/common/api';
+import { ChainIdEnum } from '../helpers/txs-enums';
 
 export class TxsCosmos extends Txs {
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
@@ -13,7 +14,7 @@ export class TxsCosmos extends Txs {
     params: ParamsFilterReqTxs
   ): Promise<Partial<ResTxs>> {
     const query = `message.sender='${params?.addressAccount}'${
-      this.currentChain.chainId == 'osmosis-1'
+      this.currentChain.chainId == ChainIdEnum.Osmosis
         ? ''
         : ` AND transfer.amount CONTAINS '${params?.token}'`
     }`;

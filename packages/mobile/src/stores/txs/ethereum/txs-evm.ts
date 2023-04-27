@@ -33,8 +33,6 @@ export class TxsEVM extends Txs {
           return await this.txsEth.getTxs(page, current_page, params);
         case ChainIdEnum.BNBChain:
           return await this.txsBsc.getTxs(page, current_page, params);
-        // case ChainIdEnum.KawaiiEvm:
-        //   return await this.txsCosmos.getTxs(page, current_page, params);
         case ChainIdEnum.TRON:
           return await this.txsTron.getTxs(page, current_page, {
             ...params,
@@ -48,16 +46,19 @@ export class TxsEVM extends Txs {
       console.log('error: ', error);
     }
   }
-  getTxsByHash(txHash: string): ResTxsInfo {
+  getTxsByHash(
+    txHash: string,
+    addressAccount?: string
+  ): Promise<Partial<ResTxsInfo>> {
     switch (this.chainId) {
       case ChainIdEnum.Ethereum:
         return this.txsEth.getTxsByHash(txHash);
       case ChainIdEnum.BNBChain:
         return this.txsBsc.getTxsByHash(txHash);
-      case ChainIdEnum.KawaiiEvm:
-        return this.txsKawaii.getTxsByHash(txHash);
-      case ChainIdEnum.TRON:
-        return this.txsTron.getTxsByHash(txHash);
+      //   case ChainIdEnum.KawaiiEvm:
+      //     return this.txsKawaii.getTxsByHash(txHash);
+      //   case ChainIdEnum.TRON:
+      //     return this.txsTron.getTxsByHash(txHash);
       default:
         break;
     }

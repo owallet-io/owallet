@@ -255,6 +255,7 @@ export class TxsHelper {
       currentChain,
       addressAccount
     );
+    item.isRefreshData = false;
     return item;
   }
 
@@ -279,6 +280,103 @@ export class TxsHelper {
             break;
           case ChainIdEnum.BNBChain:
             item = this.handleItemTxsEthAndBsc(
+              itData,
+              currentChain,
+              addressAccount
+            );
+            dataConverted.push(item);
+            break;
+        }
+      }
+    }
+    return dataConverted;
+  }
+  handleTransferDetailEthAndBscByToken(
+    data: ResultEthAndBscByToken,
+    addressAccount: string
+  ): Partial<TransferDetail>[] {
+    let transferItem: Partial<TransferDetail> = {};
+    const isMinus = data?.from?.toLowerCase() == addressAccount?.toLowerCase();
+    const isPlus = data?.to?.toLowerCase() == addressAccount?.toLowerCase();
+    transferItem.typeEvent =
+      isMinus && !isPlus
+        ? 'Sent'
+        : isPlus && !isMinus
+        ? 'Received'
+        : isPlus && isMinus
+        ? 'Refund'
+        : '';
+    transferItem.transferInfo = [
+      {
+        from: data?.from,
+        to: data?.to,
+        amount: this.removeZeroNumberLast(
+          this.formatNumberSeparateThousand(
+            this.formatAmount(
+              data?.value,
+              data?.tokenDecimal ? parseInt(data?.tokenDecimal) : 18
+            )
+          )
+        ),
+        token: data?.tokenSymbol?.toUpperCase(),
+        isMinus,
+        isPlus
+      }
+    ];
+    return [transferItem];
+  }
+  handleItemTxsEthAndBscByToken(
+    data: ResultEthAndBscByToken,
+    currentChain: ChainInfoInner<ChainInfo>,
+    addressAccount: string
+  ): Partial<ResTxsInfo> {
+    let item: Partial<ResTxsInfo> = {};
+    item.fee = this.removeZeroNumberLast(
+      this.formatNumberSeparateThousand(
+        this.calculateTransactionFee(
+          data.gasPrice,
+          data.gasUsed,
+          currentChain?.feeCurrencies[0]?.coinDecimals
+        )
+      )
+    );
+    item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
+    item.time = this.formatTime(data?.timeStamp);
+    item.txHash = data?.hash;
+    item.height = data?.blockNumber;
+    item.status = data?.value !== '0' ? 'success' : 'fail';
+    item.memo = null;
+    item.countTypeEvent = 0;
+    item.gasUsed = this.formatNumberSeparateThousand(data?.gasUsed);
+    item.gasWanted = this.formatNumberSeparateThousand(data?.gas);
+    item.transfers = this.handleTransferDetailEthAndBscByToken(
+      data,
+      addressAccount
+    );
+    item.isRefreshData = false;
+    return item;
+  }
+  cleanDataEthAndBscResByTokenToStandFormat(
+    data: ResultEthAndBscByToken[],
+    currentChain: ChainInfoInner<ChainInfo>,
+    addressAccount: string
+  ): Partial<ResTxsInfo>[] {
+    let dataConverted: Partial<ResTxsInfo>[] = [];
+    if (data && data?.length > 0) {
+      for (let i = 0; i < data.length; i++) {
+        let item: Partial<ResTxsInfo>;
+        const itData = data[i];
+        switch (currentChain.chainId) {
+          case ChainIdEnum.Ethereum:
+            item = this.handleItemTxsEthAndBscByToken(
+              itData,
+              currentChain,
+              addressAccount
+            );
+            dataConverted.push(item);
+            break;
+          case ChainIdEnum.BNBChain:
+            item = this.handleItemTxsEthAndBscByToken(
               itData,
               currentChain,
               addressAccount
@@ -522,8 +620,6 @@ export class TxsHelper {
     addressAccount: string
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
-    console.log('data: ', data);
-
     let dataEvents = [];
     item.status = data?.code === 0 ? 'success' : 'fail';
     item.txHash = data?.txhash;
@@ -558,7 +654,7 @@ export class TxsHelper {
       }
     }
     item.transfers = dataEvents;
-
+    item.isRefreshData = false;
     return item;
   }
   cleanDataCosmosToStandFormat(
@@ -613,6 +709,7 @@ export class TxsHelper {
       }
     }
     item.transfers = dataEvents;
+    item.isRefreshData = true;
     return item;
   }
   cleanDataRpcCosmosToStandFormat(
@@ -689,6 +786,7 @@ export class TxsHelper {
     item.gasWanted = '0';
     item.countTypeEvent = 0;
     item.transfers = this.handleTransferDetailTron(data, addressAccount);
+    item.isRefreshData = false;
     return item;
   }
   removeEmptyElements(array) {

@@ -53,16 +53,18 @@ const TransactionDetailScreen = observer(() => {
       : chainStore.current
   );
   useEffect(() => {
-    if (!params?.isRefreshData) {
+    if (!params?.item?.isRefreshData) {
       setData(params?.item);
       return;
     }
     getDetailByHash(params?.item?.txHash);
     return () => {};
-  }, [params?.isRefreshData]);
+  }, [params?.item?.isRefreshData]);
   const refreshData = () => {
-    setIsRefreshing(true);
-    getDetailByHash(txHash);
+    if (params?.item?.isRefreshData) {
+      setIsRefreshing(true);
+      getDetailByHash(txHash);
+    }
   };
   const getDetailByHash = async (txHash) => {
     try {
@@ -229,16 +231,25 @@ const TransactionDetailScreen = observer(() => {
           }}
         />
         <ItemDetail label="Block height" value={data?.height} />
-        <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
+        {data?.memo ? (
+          <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
+        ) : null}
 
-        <ItemDetail
-          label="Gas (used/ wanted)"
-          value={`${data?.gasUsed}/${data?.gasWanted}`}
-        />
-        <ItemDetail
-          label="Fee"
-          value={`${data?.fee} ${data?.denomFee || ''}`}
-        />
+        {data?.gasUsed &&
+        data?.gasWanted &&
+        data?.gasUsed != '0' &&
+        data?.gasWanted != '0' ? (
+          <ItemDetail
+            label="Gas (used/ wanted)"
+            value={`${data?.gasUsed}/${data?.gasWanted}`}
+          />
+        ) : null}
+        {data?.fee && data?.fee != '0' ? (
+          <ItemDetail
+            label="Fee"
+            value={`${data?.fee} ${data?.denomFee || ''}`}
+          />
+        ) : null}
         <ItemDetail
           label="Time"
           borderBottom={false}

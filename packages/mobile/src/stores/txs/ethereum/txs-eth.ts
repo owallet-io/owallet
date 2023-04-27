@@ -29,13 +29,60 @@ export class TxsEth extends Txs {
       Promise.reject(error);
     }
   }
-
+  async getTotalPageByToken(
+    params: ParamsFilterReqTxs,
+    page: number
+  ): Promise<number> {
+    try {
+      const rs = await API.getTotalTxsEthAndBscPageByToken(
+        this.infoApi.BASE_URL,
+        params?.addressAccount,
+        params?.token,
+        this.infoApi.API_KEY
+      );
+      if (rs.result?.length > 0) {
+        return Promise.resolve(Math.ceil(rs.result?.length / page));
+      }
+      return Promise.resolve(0);
+    } catch (error) {
+        throw new Error(error);
+    }
+  }
+  async getTxsByToken(
+    page: number,
+    current_page: number,
+    params: ParamsFilterReqTxs
+  ): Promise<Partial<ResTxs>> {
+    const totalPage = await this.getTotalPageByToken(params, page);
+    const data = await API.getTxsEthAndBscByToken(
+      this.infoApi.BASE_URL,
+      params?.token,
+      params?.addressAccount,
+      current_page,
+      page,
+      this.infoApi.API_KEY
+    );
+    const rsConverted =
+      this.txsHelper.cleanDataEthAndBscResByTokenToStandFormat(
+        data.result,
+        this.currentChain,
+        params?.addressAccount
+      );
+    return Promise.resolve({
+      result: rsConverted,
+      current_page,
+      total_page: totalPage || 1
+    });
+  }
   async getTxs(
     page: number,
     current_page: number,
     params: ParamsFilterReqTxs
   ): Promise<Partial<ResTxs>> {
     try {
+      if (params?.token) {
+        return await this.getTxsByToken(page, current_page, params);
+      }
       const totalPage = await this.getTotalPage(params, page);
       const data = await API.getTxsEthAndBsc(
         this.infoApi.BASE_URL,
@@ -63,17 +110,10 @@ export class TxsEth extends Txs {
         current_page
       });
     } catch (error) {
-      return Promise.reject(error);
+        throw new Error(error);
     }
   }
-  async getTxsByHash(txHash: string, item?: ResTxsInfo): Promise<ResTxsInfo> {
-    try {
-        if(item && txHash){
-            return Promise.resolve(item)
-        }
-        return Promise.reject('Not found item or txHash');
-    } catch (error) {
-       return  Promise.reject(error);
-    }
+  getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
+      return;
   }
 }
