@@ -58,12 +58,12 @@ export const API = {
       return Promise.reject(error);
     }
   },
-  getTxsByLCD: async ({
+  getTxsByLCD: async <T>({
     url,
     params = null,
     prefix = '/cosmos/tx/v1beta1',
     method = '/txs'
-  }): Promise<TxResponseLcdCosmos> => {
+  }): Promise<T> => {
     try {
       const rs = await API.getByLCD({
         lcdUrl: url,
@@ -71,7 +71,7 @@ export const API = {
         method,
         params
       });
-      return Promise.resolve(rs?.tx_response);
+      return Promise.resolve(rs);
     } catch (error) {
       return Promise.reject(error);
     }
@@ -95,7 +95,7 @@ export const API = {
     currentPage = 1
   ): Promise<ResLcdCosmos> => {
     try {
-      const rs: Promise<ResLcdCosmos> = await API.getTxsByLCD({
+      const rs= await API.getTxsByLCD<ResLcdCosmos>({
         url,
         params: {
           events: query,

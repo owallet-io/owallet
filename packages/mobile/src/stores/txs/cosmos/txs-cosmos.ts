@@ -73,12 +73,12 @@ export class TxsCosmos extends Txs {
     addressAccount?: string
   ): Promise<Partial<ResTxsInfo>> {
     try {
-      const txs = await API.getTxsByLCD({
+      const txs = await API.getTxsByLCD<ResDetailLcdCosmos>({
         method: `/txs/${txHash}`,
         url: this.currentChain.rest
       });
       return this.txsHelper.handleItemCosmos(
-        txs,
+        txs?.tx_response,
         this.currentChain,
         addressAccount
       );

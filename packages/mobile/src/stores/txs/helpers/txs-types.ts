@@ -191,6 +191,10 @@ interface ResLcdCosmos {
   tx_responses?: TxResponseLcdCosmos[];
   pagination?: PaginationLcdCosmos;
 }
+interface ResDetailLcdCosmos {
+  txs?: TxLcdCosmos[];
+  tx_response?: TxResponseLcdCosmos;
+}
 
 interface PaginationLcdCosmos {
   next_key?: null;

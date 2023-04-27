@@ -29,7 +29,7 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 const TransactionDetailScreen = observer(() => {
-  const [data, setData] = useState<ResTxsInfo>();
+  const [data, setData] = useState<Partial<ResTxsInfo>>();
   const [refreshing, setIsRefreshing] = useState(false);
   const { colors } = useTheme();
   const { txsStore, chainStore, accountStore } = useStore();
@@ -73,8 +73,6 @@ const TransactionDetailScreen = observer(() => {
           : account?.evmosHexAddress
       );
       setIsRefreshing(false);
-      console.log('tx: ', tx);
-      
       setData(tx);
     } catch (error) {
       console.log('error: ', error);
