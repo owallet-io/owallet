@@ -1,5 +1,5 @@
 import { computed, makeObservable, override } from 'mobx';
-import { DenomHelper, KVStore } from '@owallet/common';
+import { DenomHelper, KVStore, MyBigInt } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { CoinPretty, Int } from '@owallet/unit';
 import {
@@ -11,7 +11,6 @@ import { Result } from './types';
 import { ObservableEvmContractChainQuery } from './contract-query';
 import { evmosToEth } from '@hanchon/ethermint-address-converter';
 import { AppCurrency, ERC20Currency } from '@owallet/types';
-import { MyBigInt } from '../../common/utils/';
 
 export class ObservableQueryErc20Balance extends ObservableEvmContractChainQuery<Result> {
   constructor(
