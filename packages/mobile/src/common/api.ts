@@ -42,19 +42,15 @@ export const API = {
     }
   },
 
-  getByLCD: async ({
-    lcdUrl,
-    prefix,
-    method,
-    params = null
-  }) => {
+  getByLCD: async ({ lcdUrl, prefix, method, params = null }) => {
     try {
       retryWrapper(axios, { retry_time: 3 });
       let qs = params ? parseObjectToQueryString(params) : '';
       let url = `${prefix}${method}${qs}`;
-      const rs = await axios.get(url, { baseURL: lcdUrl });
+      const rs = await API.get(url, { baseURL: lcdUrl });
       return Promise.resolve(rs?.data);
     } catch (error) {
+      handleError(error, lcdUrl, method);
       return Promise.reject(error);
     }
   },
@@ -321,7 +317,7 @@ export const API = {
   }
 };
 const retryWrapper = (axios, options) => {
-  const max_time = options.retry_time;
+  const max_time = 1;
   let counter = 0;
   axios.interceptors.response.use(null, (error) => {
     /** @type {import("axios").AxiosRequestConfig} */
@@ -329,10 +325,8 @@ const retryWrapper = (axios, options) => {
     // you could defined status you want to retry, such as 503
     // if (counter < max_time && error.response.status === retry_status_code) {
     if (
-      counter < max_time &&
-      (error.response.status === 502 ||
-        error.response.status === 400 ||
-        error.response.status === 503)
+      (counter < max_time && error.response.status === 400) ||
+      (counter < max_time && error.response.status === 502)
     ) {
       counter++;
       return new Promise((resolve) => {

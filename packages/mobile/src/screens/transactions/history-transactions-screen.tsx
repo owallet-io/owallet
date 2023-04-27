@@ -19,7 +19,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import { API } from '@src/common/api';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
-import { _keyExtract } from '@src/utils/helper';
+import { _keyExtract, limitString } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { OWBox } from '@src/components/card';
 import { metrics, spacing } from '@src/themes';
@@ -28,10 +28,12 @@ import { SCREENS, defaultAll } from '@src/common/constants';
 import { useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Skeleton } from '@rneui/themed';
-import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
+import { ChainIdEnum, NetworkEnum } from '@src/stores/txs/helpers/txs-enums';
+import TypeModal from './components/type-modal';
+import ButtonFilter from './components/button-filter';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, txsStore } = useStore();
+  const { chainStore, accountStore, txsStore, modalStore } = useStore();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
@@ -51,17 +53,16 @@ const HistoryTransactionsScreen = observer(() => {
       ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
       : chainStore.current
   );
-  console.log('chainStore.current: ', chainStore.current);
 
   const fetchData = useCallback(
     async (params, isLoadMore = false) => {
       try {
         crashlytics().log('transactions - history - fetchData');
-        // if (!isLoadMore && !params?.isActiveType) {
-        //   getTypeAction(url, params);
-        // } else if (!isLoadMore && params?.isActiveType) {
-        //   setRefreshing(true);
-        // }
+        if (!isLoadMore && !params?.isActiveType) {
+          getTypeAction();
+        } else if (!isLoadMore && params?.isActiveType) {
+          setRefreshing(true);
+        }
         if (hasMore.current) {
           const rs = await requestData(isLoadMore, {
             addressAccount: params?.address,
@@ -88,20 +89,21 @@ const HistoryTransactionsScreen = observer(() => {
     },
     [data, dataType]
   );
-  // const getTypeAction = async (url, params) => {
-  //   try {
-  //     setLoadingType(true);
-  //     const types = await API.getTxs(
-  //       url,
-  //       [`message.sender='${params?.address}'`],
-  //       100
-  //     );
-  //     setLoadingType(false);
-  //     setDataType(types);
-  //   } catch (error) {
-  //     setLoadingType(false);
-  //   }
-  // };
+  const getTypeAction = async () => {
+    try {
+      if (
+        chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm ||
+        chainStore?.current?.networkType === 'cosmos'
+      ) {
+        setLoadingType(true);
+        const types = await txs.getAllMethodActionTxs(account?.bech32Address);
+        setLoadingType(false);
+        setDataType(types?.result);
+      }
+    } catch (error) {
+      setLoadingType(false);
+    }
+  };
   const requestData = async (isLoadMore, params) => {
     try {
       if (!isLoadMore) {
@@ -144,29 +146,25 @@ const HistoryTransactionsScreen = observer(() => {
     ]
   );
   const styles = styling();
-  // const onActionType = useCallback(
-  //   (item) => {
-  //     setActiveType(item);
-  //     modalStore.close();
-  //     refreshData({
-  //       activeType: item,
-  //       activeCoin: activeCoin,
-  //       isActiveType: true
-  //     });
-  //   },
-  //   [activeCoin]
-  // );
+  const onActionType = useCallback((item) => {
+    setActiveType(item);
+    modalStore.close();
+    refreshData({
+      activeType: item,
+      isActiveType: true
+    });
+  }, []);
 
-  // const onType = useCallback(() => {
-  //   modalStore.setOpen();
-  //   modalStore.setChildren(
-  //     <TypeModal
-  //       actionType={onActionType}
-  //       active={activeType?.value}
-  //       transactions={dataType?.tx_responses}
-  //     />
-  //   );
-  // }, [activeType, dataType]);
+  const onType = useCallback(() => {
+    modalStore.setOpen();
+    modalStore.setChildren(
+      <TypeModal
+        actionType={onActionType}
+        active={activeType?.value}
+        transactions={dataType}
+      />
+    );
+  }, [activeType, dataType]);
   const onEndReached = useCallback(() => {
     if (page.current !== 1) {
       setLoadMore(true);
@@ -214,32 +212,24 @@ const HistoryTransactionsScreen = observer(() => {
       />
     );
   };
-
+  const handleCheckFilter = useMemo(() => {
+    if (loadingType) {
+      return <SkeletonTypeBtn />;
+    } else if (dataType && dataType?.length > 0) {
+      return (
+        <ButtonFilter
+          label={'Type'}
+          onPress={onType}
+          value={limitString(activeType?.label, 15)}
+        />
+      );
+    }
+    return null;
+  }, [activeType, dataType, loadingType]);
   return (
     <PageWithView>
       <OWBox style={styles.container}>
-        <View style={styles.containerFilter}>
-          {/* {loadingType ? (
-            <SkeletonTypeBtn />
-          ) : (
-            dataType?.txs &&
-            dataType?.txs?.length > 0 && (
-              <ButtonFilter
-                label={'Type'}
-                onPress={onType}
-                value={limitString(activeType?.label, 15)}
-              />
-            )
-          )} */}
-
-          {/* <ButtonFilter
-            label={'Coin'}
-            onPress={onCoin}
-            value={
-              activeCoin?.label ? activeCoin?.label : getCoinDenom(activeCoin)
-            }
-          /> */}
-        </View>
+        <View style={styles.containerFilter}>{handleCheckFilter}</View>
         <OWFlatList
           data={data}
           onEndReached={onEndReached}

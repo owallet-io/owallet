@@ -15,6 +15,7 @@ export abstract class Txs {
     this.txsHelper = new TxsHelper();
   }
   abstract getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>>;
+  abstract getAllMethodActionTxs(addressAccount?: string): Promise<Partial<ResTxs>>;
   abstract getTxs(
     page: number,
     current_page: number,

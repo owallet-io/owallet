@@ -87,4 +87,24 @@ export class TxsCosmos extends Txs {
       throw new Error(error);
     }
   }
+  async getAllMethodActionTxs(
+    addressAccount?: string
+  ): Promise<Partial<ResTxs>> {
+    try {
+      const query = [`message.sender='${addressAccount}'`];
+      const data = await API.getTxsLcdCosmos(
+        this.currentChain.rest,
+        query,
+        100,
+        1
+      );
+      return Promise.resolve({
+        result: data?.tx_responses,
+        total_page: 1,
+        current_page: 1
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }

@@ -734,7 +734,8 @@ export class TxsHelper {
   }
   handleTransferDetailTron(
     data: ResultDataTron,
-    addressAccount: string
+    addressAccount: string,
+    currentChain: ChainInfoInner<ChainInfo>,
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
     const isMinus =
@@ -760,7 +761,7 @@ export class TxsHelper {
         to: data?.toAddress,
         amount: this.removeZeroNumberLast(
           this.formatNumberSeparateThousand(
-            this.formatAmount(data?.amount, data?.tokenInfo?.tokenDecimal)
+            this.formatAmount(data?.amount, data?.tokenInfo?.tokenDecimal || currentChain?.feeCurrencies[0]?.coinDecimals)
           )
         ),
         token: data?.tokenInfo?.tokenAbbr?.toUpperCase() || '',
@@ -785,7 +786,7 @@ export class TxsHelper {
     item.gasUsed = '0';
     item.gasWanted = '0';
     item.countTypeEvent = 0;
-    item.transfers = this.handleTransferDetailTron(data, addressAccount);
+    item.transfers = this.handleTransferDetailTron(data, addressAccount,currentChain);
     item.isRefreshData = false;
     return item;
   }

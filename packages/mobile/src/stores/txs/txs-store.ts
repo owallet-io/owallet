@@ -4,7 +4,7 @@ import { TxsEVM } from './ethereum/txs-evm';
 import { TxsCosmos } from './cosmos/txs-cosmos';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
-import { NetworkEnum } from './helpers/txs-enums';
+import { ChainIdEnum, NetworkEnum } from './helpers/txs-enums';
 export class TxsStore extends Txs {
   @observable
   public readonly txsEvm: TxsEVM;
@@ -35,16 +35,30 @@ export class TxsStore extends Txs {
       console.log('error: ', error);
     }
   }
-  async getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
+  async getTxsByHash(
+    txHash: string,
+    addressAccount?: string
+  ): Promise<Partial<ResTxsInfo>> {
     try {
       if (this.networkType === NetworkEnum.Cosmos) {
-        return await this.txsCosmos.getTxsByHash(txHash,addressAccount);
+        return await this.txsCosmos.getTxsByHash(txHash, addressAccount);
       } else if (this.networkType === NetworkEnum.Evm) {
         return this.txsEvm.getTxsByHash(txHash);
       }
       return;
     } catch (error) {
       console.log('error: ', error);
+    }
+  }
+  async getAllMethodActionTxs(
+    addressAccount?: string
+  ): Promise<Partial<ResTxs>> {
+    try {
+      if (this.networkType === NetworkEnum.Cosmos) {
+        return await this.txsCosmos.getAllMethodActionTxs(addressAccount);
+      }
+    } catch (error) {
+      throw new Error(error);
     }
   }
   // @computed
