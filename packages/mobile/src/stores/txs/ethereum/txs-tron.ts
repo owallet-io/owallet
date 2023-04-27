@@ -20,7 +20,7 @@ export class TxsTron extends Txs {
       const data = await API.getTxsTron(
         this.infoApi.BASE_URL,
         params?.addressAccount,
-        current_page,
+        current_page * 10,
         page
       );
 

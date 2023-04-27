@@ -42,7 +42,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [loadMore, setLoadMore] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
-  const page = useRef(1);
+  const page = useRef(0);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
 
@@ -108,7 +108,7 @@ const HistoryTransactionsScreen = observer(() => {
     try {
       if (!isLoadMore) {
         setLoading(true);
-        return await txs.getTxs(perPage, 1, params);
+        return await txs.getTxs(perPage, 0, params);
       } else {
         return await txs.getTxs(perPage, page.current, params);
       }
@@ -125,7 +125,7 @@ const HistoryTransactionsScreen = observer(() => {
   }, []);
   const refreshData = useCallback(
     ({ activeType, isActiveType }) => {
-      page.current = 1;
+      page.current = 0;
       hasMore.current = true;
       fetchData(
         {
@@ -166,7 +166,7 @@ const HistoryTransactionsScreen = observer(() => {
     );
   }, [activeType, dataType]);
   const onEndReached = useCallback(() => {
-    if (page.current !== 1) {
+    if (page.current !== 0) {
       setLoadMore(true);
       fetchData(
         {

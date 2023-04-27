@@ -45,7 +45,7 @@ export class TxsEth extends Txs {
       }
       return Promise.resolve(0);
     } catch (error) {
-        throw new Error(error);
+      throw new Error(error);
     }
   }
   async getTxsByToken(
@@ -58,7 +58,7 @@ export class TxsEth extends Txs {
       this.infoApi.BASE_URL,
       params?.token,
       params?.addressAccount,
-      current_page,
+      current_page + 1,
       page,
       this.infoApi.API_KEY
     );
@@ -87,7 +87,7 @@ export class TxsEth extends Txs {
       const data = await API.getTxsEthAndBsc(
         this.infoApi.BASE_URL,
         params?.addressAccount,
-        current_page,
+        current_page + 1,
         page,
         this.infoApi.API_KEY
       );
@@ -110,10 +110,13 @@ export class TxsEth extends Txs {
         current_page
       });
     } catch (error) {
-        throw new Error(error);
+      throw new Error(error);
     }
   }
-  getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
-      return;
+  getTxsByHash(
+    txHash: string,
+    addressAccount?: string
+  ): Promise<Partial<ResTxsInfo>> {
+    return;
   }
 }

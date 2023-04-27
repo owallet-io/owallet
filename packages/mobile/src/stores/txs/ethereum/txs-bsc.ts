@@ -39,7 +39,7 @@ export class TxsBsc extends Txs {
       this.infoApi.BASE_URL,
       params?.token,
       params?.addressAccount,
-      current_page,
+      current_page + 1,
       page,
       this.infoApi.API_KEY
     );
@@ -87,7 +87,7 @@ export class TxsBsc extends Txs {
       const data = await API.getTxsEthAndBsc(
         this.infoApi.BASE_URL,
         params?.addressAccount,
-        current_page,
+        current_page + 1,
         page,
         this.infoApi.API_KEY
       );
