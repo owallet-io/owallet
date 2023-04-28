@@ -17,6 +17,18 @@ export interface OWTextProps extends TextProps {
     | 'overline';
   typo?: 'bold' | 'regular';
   color?: string;
+  size?: number;
+  weight?:
+    | '0'
+    | '100'
+    | '200'
+    | '300'
+    | '400'
+    | '500'
+    | '600'
+    | '700'
+    | '800'
+    | '900';
 }
 const OWText = ({ ...props }: OWTextProps) => {
   const { colors } = useTheme();
@@ -24,16 +36,21 @@ const OWText = ({ ...props }: OWTextProps) => {
     color = colors['primary-text'],
     variant,
     typo = 'regular',
-    style
+    size,
+    style,
+    weight
   } = props;
   return (
-    <Text {...props} style={[useStyle({ variant, color, typo }), style]}>
+    <Text
+      {...props}
+      style={[useStyle({ variant, color, typo, size, weight }), style]}
+    >
       {props.children}
     </Text>
   );
 };
 
-const useStyle = ({ variant, typo, color }: OWTextProps) => {
+const useStyle = ({ variant, typo, color, size, weight }: OWTextProps) => {
   let textStyle: TextStyle = {};
   switch (variant) {
     case 'h1':
@@ -89,6 +106,8 @@ const useStyle = ({ variant, typo, color }: OWTextProps) => {
       break;
   }
   if (color) textStyle.color = color;
+  if (size) textStyle.fontSize = size;
+  if (weight) textStyle.fontWeight = weight;
   return textStyle;
 };
 export default OWText;

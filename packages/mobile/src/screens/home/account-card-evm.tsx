@@ -30,7 +30,7 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   let total;
@@ -54,7 +54,7 @@ export const AccountCardEVM: FunctionComponent<{
     }
   }
 
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -83,6 +83,7 @@ export const AccountCardEVM: FunctionComponent<{
       })
     );
   };
+
   return (
     <AccountBox
       totalBalance={
@@ -123,7 +124,7 @@ export const AccountCardEVM: FunctionComponent<{
         chainStore.current.chainId !== TRON_ID && total
           ? (
               parseFloat(
-                new Big(parseInt(total?.amount?.int))
+                new Big(parseInt(total?.amount?.int?.value))
                   .div(new Big(10).pow(36))
                   .toString()
               ) *

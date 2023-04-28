@@ -108,7 +108,6 @@ export const SignEthereumModal: FunctionComponent<{
               .estimateGas({
                 from: sendStore.sendObj?.from
               });
-
             gasConfig.setGas(estimate);
             feeConfig.setFee(
               new Big(estimate).mul(gasPrice).toFixed(decimals.current)

@@ -1,71 +1,25 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { Card, CardBody, OWBox } from '../../components/card';
-import { SectionList, StyleSheet, View, ViewStyle, Image } from 'react-native';
+import { OWButton } from '@src/components/button';
+import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { TokenItem } from '../tokens/components/token-item';
-import { useSmartNavigation } from '../../navigation.provider';
-import { RectButton } from '../../components/rect-button';
-import { colors, metrics, spacing, typography } from '../../themes';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { API } from '../../common/api';
+import { CardBody, OWBox } from '../../components/card';
+import { DownArrowIcon } from '../../components/icon';
+import ProgressiveImage from '../../components/progessive-image';
+import { useSmartNavigation } from '../../navigation.provider';
+import { useStore } from '../../stores';
+import { metrics, spacing, typography } from '../../themes';
 import {
   capitalizedText,
   convertAmount,
   formatContractAddress,
-  getBase58Address,
   _keyExtract
 } from '../../utils/helper';
-import { DownArrowIcon } from '../../components/icon';
-import { API } from '../../common/api';
-import ProgressiveImage from '../../components/progessive-image';
-import { useTheme } from '@src/themes/theme-provider';
-import { OWButton } from '@src/components/button';
-import { OWEmpty } from '@src/components/empty';
-
-// hard code data to test UI
-// const nftsData = [
-//   {
-//     title: 'ERC-721',
-//     data: [
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       }
-//     ]
-//   },
-//   {
-//     title: 'ERC-1155',
-//     data: [
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       },
-//       {
-//         uri: 'https://picsum.photos/id/1002/200',
-//         title: 'The Empire State Building',
-//         oraiPrice: '49.14 ORAI'
-//       }
-//     ]
-//   }
-// ];
+import { TokenItem } from '../tokens/components/token-item';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -108,17 +62,6 @@ export const TokensCard: FunctionComponent<{
     account.evmosHexAddress
   ]);
 
-  // const listTokens = tokens.map((e) => e.balance.currency.coinGeckoId);
-
-  // const config = {
-  //   customDomain: 'https://api.coingecko.com/'
-  // };
-  // const getPriceCoinGecko = async () => {
-  //   return await API.get(
-  //     `api/v3/simple/price?ids=${listTokens.join(',')}&vs_currencies=usd`,
-  //     config
-  //   );
-  // };
   useEffect(() => {
     (async function get() {
       try {
@@ -264,20 +207,24 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {unique.slice(0, 3).map((token) => {
-              const priceBalance = priceStore.calculatePrice(token.balance);
-              return (
-                <TokenItem
-                  key={token.currency?.coinMinimalDenom}
-                  chainInfo={{
-                    stakeCurrency: chainStore.current.stakeCurrency,
-                    networkType: chainStore.current.networkType
-                  }}
-                  balance={token.balance}
-                  priceBalance={priceBalance}
-                />
-              );
-            })}
+            {unique?.length > 0 ? (
+              unique.slice(0, 3).map((token) => {
+                const priceBalance = priceStore.calculatePrice(token.balance);
+                return (
+                  <TokenItem
+                    key={token.currency?.coinMinimalDenom}
+                    chainInfo={{
+                      stakeCurrency: chainStore.current.stakeCurrency,
+                      networkType: chainStore.current.networkType
+                    }}
+                    balance={token.balance}
+                    priceBalance={priceBalance}
+                  />
+                );
+              })
+            ) : (
+              <OWEmpty />
+            )}
           </CardBody>
         ) : (
           <CardBody>
@@ -323,7 +270,7 @@ export const TokensCard: FunctionComponent<{
                 renderItem={() => <View />}
               />
             ) : (
-            <OWEmpty />
+              <OWEmpty />
             )}
           </CardBody>
         )}
@@ -331,7 +278,7 @@ export const TokensCard: FunctionComponent<{
         <View
           style={{
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'center'
           }}
         >
           <OWButton
@@ -346,7 +293,6 @@ export const TokensCard: FunctionComponent<{
               }
             }}
           />
-         
         </View>
       </OWBox>
     </View>

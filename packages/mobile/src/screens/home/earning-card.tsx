@@ -1,27 +1,19 @@
-import React, { FunctionComponent } from 'react';
-import { Card, OWBox } from '../../components/card';
-import {
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  ViewStyle
-} from 'react-native';
-import { Text } from '@src/components/text';
-import { observer } from 'mobx-react-lite';
-import { metrics, spacing, typography } from '../../themes';
-import { AddIcon } from '../../components/icon';
-import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
 import { Dec } from '@owallet/unit';
-import { LoadingSpinner } from '../../components/spinner';
-import { navigate } from '../../router/root';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { useTheme } from '@src/themes/theme-provider';
+import { SCREENS } from '@src/common/constants';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import { SCREENS } from '@src/common/constants';
+import { Text } from '@src/components/text';
+import { useTheme } from '@src/themes/theme-provider';
+import { observer } from 'mobx-react-lite';
+import React, { FunctionComponent } from 'react';
+import { Image, StyleSheet, View, ViewStyle } from 'react-native';
+import { OWBox } from '../../components/card';
+import { useSmartNavigation } from '../../navigation.provider';
+import { navigate } from '../../router/root';
+import { useStore } from '../../stores';
+import { metrics, spacing, typography } from '../../themes';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -55,7 +47,7 @@ export const EarningCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: (txHash) => {
+          onBroadcasted: txHash => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
               chainId: chainStore.current.chainId,
               chainName: chainStore.current.chainName
@@ -85,9 +77,11 @@ export const EarningCard: FunctionComponent<{
   };
 
   return (
-    <OWBox style={{
-      marginBottom:spacing['page-pad']
-    }}>
+    <OWBox
+      style={{
+        marginBottom: spacing['page-pad']
+      }}
+    >
       <View style={styles.cardBody}>
         <Text
           style={[
@@ -128,59 +122,6 @@ export const EarningCard: FunctionComponent<{
             : stakingReward.shrink(true).maxDecimals(6).toString()}
         </Text>
 
-        {/* <TouchableOpacity
-          style={{
-            ...styles['btn-claim'],
-            borderColor:
-              !account.isReadyToSendMsgs ||
-              stakingReward.toDec().equals(new Dec(0)) ||
-              queryReward.pendingRewardValidatorAddresses.length === 0
-                ? colors['gray-300']
-                : colors['purple-700'],
-            backgroundColor:
-              !account.isReadyToSendMsgs ||
-              stakingReward.toDec().equals(new Dec(0)) ||
-              queryReward.pendingRewardValidatorAddresses.length === 0
-                ? colors['gray-300']
-                : colors['purple-700']
-          }}
-          disabled={
-            !account.isReadyToSendMsgs ||
-            stakingReward.toDec().equals(new Dec(0)) ||
-            queryReward.pendingRewardValidatorAddresses.length === 0
-          }
-          onPress={_onPressClaim}
-        >
-          <View
-            style={{
-              ...styles['flex-center'],
-              flexDirection: 'row',
-              padding: spacing['8']
-            }}
-          >
-            {account.isSendingMsg === 'withdrawRewards' ? (
-              <View
-                style={{
-                  position: 'absolute',
-                  bottom: 50,
-                  left: '50%'
-                }}
-              >
-                <LoadingSpinner color={colors['gray-150']} size={22} />
-              </View>
-            ) : null}
-            <Image
-              style={{
-                width: 20,
-                height: 20
-              }}
-              source={require('../../assets/image/rewards.png')}
-              resizeMode="contain"
-              fadeDuration={0}
-            />
-            <Text style={styles['text-rewards']}>Claim Rewards</Text>
-          </View>
-        </TouchableOpacity> */}
         <OWButton
           label="Claim Rewards"
           size="medium"
@@ -295,7 +236,7 @@ export const EarningCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     btnClaimStyle: {
       marginTop: 10

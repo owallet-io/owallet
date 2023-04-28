@@ -3,6 +3,8 @@ import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
 import { getNetworkTypeByChainId } from '@owallet/common';
+import { AppCurrency } from '@owallet/types';
+import get from 'lodash/get';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -83,6 +85,16 @@ export const TRC20_LIST = [
   //   type: 'trc20'
   // }
 ];
+export const handleError = (error, url, method) => {
+  if (__DEV__) {
+    console.log(`[1;34m: ---------------------------------------`);
+    console.log(`[1;34m: handleError -> url`, url);
+    console.log(`[1;34m: handleError -> method`, method);
+    console.log(`[1;34m: handleError -> error`, JSON.stringify(error));
+    console.log(`[1;34m: ---------------------------------------`);
+  }
+};
+
 
 export const handleDeepLink = async ({ url }) => {
   if (url) {
@@ -112,13 +124,19 @@ export const checkValidDomain = (url: string) => {
 
 export const _keyExtract = (item, index) => index.toString();
 
-export const formatContractAddress = (address: string) => {
-  const fristLetter = address?.slice(0, 10) ?? '';
+export const formatContractAddress = (address: string, limitFirst = 10) => {
+  const fristLetter = address?.slice(0, limitFirst) ?? '';
   const lastLetter = address?.slice(-5) ?? '';
 
   return `${fristLetter}...${lastLetter}`;
 };
-
+export function limitString(str, limit) {
+  if (str && str.length > limit) {
+    return str.slice(0, limit) + '...';
+  } else {
+    return str;
+  }
+}
 // capital first letter of string
 export const capitalizedText = (text: string) => {
   return text.slice(0, 1).toUpperCase() + text.slice(1, text.length);
@@ -133,6 +151,95 @@ export const TRANSACTION_TYPE = {
   INSTANTIATE_CONTRACT: 'MsgInstantiateContract',
   EXECUTE_CONTRACT: 'MsgExecuteContract'
 };
+
+
+export const getValueFromDataEvents = (arr) => {
+  if (arr.length === 1) {
+    return { value: [arr[0]], typeId: 1 };
+  }
+  let result = [];
+  for (let item of arr) {
+    // if any element has amountValue, push it to the result array
+    if (item?.transferInfo.some((data) => data?.amount)) {
+      result.push(item);
+    }
+  }
+  // console.log('result: ', result);
+
+  // if the result array is empty, return null and typeId = 0
+  if (result.length === 0) {
+    return { value: [], typeId: 0 };
+  }
+  // if the result array has one element, return it and typeId = 2
+  if (result.length === 1) {
+    return { value: [result[0]], typeId: 2 };
+  }
+
+  // if the result array has more than one element, return it and typeId = 3
+  return { value: result, typeId: 3 };
+};
+export const getDataFromDataEvent = (itemEvents) => {
+  return countAmountValue(itemEvents?.value[0]?.transferInfo) < 2
+    ? {
+        ...itemEvents?.value[0],
+        ...itemEvents?.value[0]?.transferInfo[0]
+      }
+    : {
+        ...itemEvents?.value[0],
+        ...{
+          amount: 'More',
+          denom: false,
+          isPlus: false,
+          isMinus: false
+        }
+      };
+};
+const countAmountValue = (array) => {
+  let count = 0;
+  if (array && array?.length > 0) {
+    for (let element of array) {
+      if (element?.amountValue) {
+        count++;
+      }
+    }
+  }
+  return count;
+};
+export const delay = (timer = 300) => {
+  setTimeout(() => {
+    return true;
+  }, timer);
+};
+
+export function parseObjectToQueryString(obj) {
+  let params = new URLSearchParams();
+  for (let key in obj) {
+    if (Array.isArray(obj[key])) {
+      for (let value of obj[key]) {
+        params.append(key, value);
+      }
+    } else {
+      params.append(key, obj[key]);
+    }
+  }
+  return '?' + params.toString();
+}
+export function removeEmptyElements(array) {
+  return array.filter((element) => !!element);
+}
+
+function convertVarToWord(str) {
+  const words = str && str.split('_');
+  const capitalizedWords =
+    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  return capitalizedWords && capitalizedWords.join(' ');
+}
+export function removeSpecialChars(str) {
+  return str.replace(/[^\w\s]/gi, '');
+}
+function addSpacesToString(str) {
+  return str.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
 
 export const getTransactionValue = ({ data, address, logs }) => {
   const transactionType = data?.[0]?.type;
@@ -276,7 +383,20 @@ export const getDomainFromUrl = url => {
 export const parseIbcMsgRecvPacket = denom => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
+export function addTimeProperty(array1, array2) {
+  // Create a new object with heightId as the key and time as the value
+  const timeMap = {};
+  array1.forEach((obj) => {
+    timeMap[obj?.block?.header?.height] = obj?.block?.header?.time;
+  });
 
+  // Add time property to each object in array2 based on heightId
+  array2.forEach((obj) => {
+    obj.time = timeMap[obj?.height];
+  });
+
+  return array2;
+}
 export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
   if (type) {
     const typeArr = type.split('.');
@@ -362,9 +482,45 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-
+export const getCurrencyByMinimalDenom = (
+  tokens,
+  minimalDenom
+): AppCurrency => {
+  if (tokens && tokens?.length > 0 && minimalDenom) {
+    const info = tokens?.filter((item, index) => {
+      if (item?.contractAddress) {
+        return (
+          item?.contractAddress?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+        );
+      } else if (item?.originCurrency) {
+        return (
+          item?.originCurrency?.coinMinimalDenom?.toUpperCase() ==
+          minimalDenom?.trim()?.toUpperCase()
+        );
+      }
+      return (
+        item?.coinMinimalDenom?.toUpperCase() ==
+        minimalDenom?.trim()?.toUpperCase()
+      );
+    });
+    if (info?.length > 0) {
+      return info[0];
+    }
+    return {
+      coinDecimals: 0,
+      coinDenom: minimalDenom,
+      coinMinimalDenom: minimalDenom
+    };
+  }
+  return {
+    coinDecimals: 0,
+    coinDenom: minimalDenom,
+    coinMinimalDenom: minimalDenom
+  };
+};
 export function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }
 
 export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
@@ -385,3 +541,4 @@ export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
 
 export const isBase58 = (value: string): boolean =>
   /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
+  export { get };

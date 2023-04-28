@@ -2,7 +2,6 @@ import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStyle } from '../../styles';
 import { Card, CardHeaderWithButton } from '../../components/card';
-// import { RewardIcon } from "../../components/icon";
 import { Dec } from '@owallet/unit';
 import { View, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
