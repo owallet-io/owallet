@@ -9,16 +9,10 @@ import ItemDetail from './components/item-details';
 import { API } from '@src/common/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
-  caculatorFee,
   capitalizedText,
-  formatAmount,
   formatContractAddress,
-  getDataFromDataEvent,
-  getCurrencyByMinimalDenom,
   getValueFromDataEvents,
-  getValueTransactionHistory,
-  limitString,
-  numberWithCommas
+  limitString
 } from '@src/utils/helper';
 import { useStore } from '@src/stores';
 import moment from 'moment';
