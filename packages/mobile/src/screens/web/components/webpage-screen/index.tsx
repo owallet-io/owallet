@@ -329,8 +329,6 @@ export const WebpageScreen: FunctionComponent<
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
-                injectedJavaScript={`
-                `}
                 onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
                 onNavigationStateChange={e => {

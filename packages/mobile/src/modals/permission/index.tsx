@@ -34,7 +34,7 @@ export const AccessModal: FunctionComponent<{
     };
 
     return (
-      <CardModal title="Confirm Grand Access">
+      <CardModal title="Confirm Grant Access">
         <KeyboardAvoidingView
           behavior="position"
           keyboardVerticalOffset={keyboardVerticalOffset}
