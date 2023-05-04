@@ -15,10 +15,7 @@ export class TxsStore extends Txs {
     this.txsEvm = new TxsEVM(current_chain);
     this.txsCosmos = new TxsCosmos(current_chain);
   }
-  //   @action
-  //   updateSendObject(sendObj) {
-  //     this.txs = this.accountStore.getAccount(this.chainStore.current.chainId);
-  //   }
+
   async getTxs(
     page: number,
     current_page: number,
@@ -61,8 +58,4 @@ export class TxsStore extends Txs {
       throw new Error(error);
     }
   }
-  // @computed
-  // get sendObj() {
-  //   return this.txs;
-  // }
 }

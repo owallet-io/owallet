@@ -141,7 +141,6 @@
     "@babel/plugin-proposal-decorators": "^7.13.5",
     "@babel/plugin-transform-flow-strip-types": "^7.13.0",
     "@babel/runtime": "^7.8.4",
-    "@types/bs58": "^4.0.1",
     "@types/react-native": "^0.63.2",
     "@types/react-native-dotenv": "^0.2.0",
     "@types/react-test-renderer": "^16.9.2",
