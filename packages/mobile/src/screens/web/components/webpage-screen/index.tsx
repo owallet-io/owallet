@@ -10,7 +10,7 @@ import React, {
   useState
 } from 'react';
 import { useTheme } from '@src/themes/theme-provider';
-import { Animated, BackHandler, Platform } from 'react-native';
+import { Animated, BackHandler, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
@@ -56,12 +56,12 @@ export const WebpageScreen: FunctionComponent<
   const bottomHeight = 80;
   const [pageLoaded, setLoaded] = useState(false);
   const [isSwitchTab, setIsSwitchTab] = useState(false);
-  const scrollY = new Animated.Value(0);
-  const diffClamp = Animated.diffClamp(scrollY, 0, bottomHeight);
-  const translateYBottom = diffClamp.interpolate({
-    inputRange: [0, 0.1],
-    outputRange: [-0.1, 0]
-  });
+  // const scrollY = new Animated.Value(0);
+  // const diffClamp = Animated.diffClamp(scrollY, 0, bottomHeight);
+  // const translateYBottom = diffClamp.interpolate({
+  //   inputRange: [0, 0.1],
+  //   outputRange: [-0.1, 0]
+  // });
 
   const webviewRef = useRef<WebView | null>(null);
   const [currentURL, setCurrentURL] = useState(() => {
@@ -267,10 +267,10 @@ export const WebpageScreen: FunctionComponent<
     }
   }, [canGoBack, navigation]);
 
-  const _onScroll = syntheticEvent => {
-    const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
-    scrollY.setValue(currentOffet);
-  };
+  // const _onScroll = syntheticEvent => {
+  //   const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
+  //   scrollY.setValue(currentOffet);
+  // };
 
   const sourceCode = useInjectedSourceCode();
 
@@ -326,7 +326,13 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 ref={webviewRef}
                 incognito={true}
-                style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
+                style={
+                  pageLoaded
+                    ? {
+                        margin: bottomHeight
+                      }
+                    : { flex: 0, height: 0, opacity: 0 }
+                }
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onLoad={handleWebViewLoaded}
@@ -351,7 +357,7 @@ export const WebpageScreen: FunctionComponent<
                 automaticallyAdjustContentInsets={false}
                 decelerationRate="normal"
                 allowsBackForwardNavigationGestures={true}
-                onScroll={_onScroll}
+                // onScroll={_onScroll}
                 {...props}
               />
               <WebViewStateContext.Provider
@@ -366,17 +372,19 @@ export const WebpageScreen: FunctionComponent<
                   }
                 }}
               >
-                <Animated.View
+                {/* <Animated.View
                   style={{
                     transform: [{ translateY: translateYBottom }]
                   }}
-                >
+                > */}
+                <View>
                   <BrowserFooterSection
                     isSwitchTab={isSwitchTab}
                     setIsSwitchTab={setIsSwitchTab}
                     typeOf={'webview'}
                   />
-                </Animated.View>
+                </View>
+                {/* </Animated.View> */}
               </WebViewStateContext.Provider>
             </>
           ) : null}

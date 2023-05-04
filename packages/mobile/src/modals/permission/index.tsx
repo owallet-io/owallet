@@ -29,6 +29,7 @@ export const AccessModal: FunctionComponent<{
       if (waitingData) {
         await permissionStore.reject(waitingData.id);
         if (permissionStore.waitingBasicAccessPermissions.length === 0) {
+          console.log('permissionStore - all clear');
         }
       }
     };
@@ -119,7 +120,7 @@ export const AccessModal: FunctionComponent<{
                   }
                 } catch (error) {
                   permissionStore.reject(waitingData.id);
-                  console.log('error approveEthereumAndWaitEnd', error);
+                  console.log('error AccessModal', error);
                 }
               }}
             />
