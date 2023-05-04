@@ -15,7 +15,7 @@ const ItemBtnViewOnScan = (props: TouchableOpacityProps) => {
       <View style={styles.container}>
         <OWIcon color={colors['purple-700']} size={20} name="eye" />
         <Text size={16} style={styles.txtView} color={colors['purple-700']}>
-          View on Scan
+          View on scan
         </Text>
       </View>
     </TouchableOpacity>
