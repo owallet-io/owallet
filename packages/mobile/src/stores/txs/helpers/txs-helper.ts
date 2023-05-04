@@ -421,6 +421,7 @@ export class TxsHelper {
           for (let other of array) {
             // if the key is not "amount" and the value starts with the same number followed by some text
             if (
+              !!amount &&
               other?.key !== 'amount' &&
               other?.value.startsWith(amount.toString()) &&
               other?.value?.length > amount.toString()?.length

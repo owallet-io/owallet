@@ -350,7 +350,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ['isEvm']
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Kawaii',
+      txUrl: 'https://scan.kawaii.global/tx/{txHash}'
+    }
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
@@ -380,7 +384,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ['isEvm']
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Kawaii',
+      txUrl: 'https://scan.kawaii.global/tx/{txHash}'
+    }
   },
   {
     rpc: 'https://rpc-cosmos.oraidex.io',
