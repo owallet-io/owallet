@@ -20,7 +20,7 @@ const TransactionBox: FC<{
         {label}
         {subLabel ? (
           <>{' '}(
-            <Text typo="bold" color={colors['purple-700']}>
+            <Text weight='400' size={14.5} color={colors['purple-700']}>
               {subLabel}
             </Text>
             )
