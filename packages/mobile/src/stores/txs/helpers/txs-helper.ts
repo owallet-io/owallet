@@ -1,10 +1,11 @@
+import { TxsCurrencies } from './txs-currencies';
 import { find } from 'lodash';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainIdEnum } from './txs-enums';
 import { ChainInfo } from '@owallet/types';
 import Big from 'big.js';
 import moment from 'moment';
-import { get, getCurrencyByMinimalDenom } from '@src/utils/helper';
+import { get } from '@src/utils/helper';
 import { isArray } from 'util';
 import { TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
 export class TxsHelper {
@@ -26,6 +27,10 @@ export class TxsHelper {
       API_KEY: process.env.API_KEY_ETH_SCAN
     }
   };
+  public readonly TxsCurrencies: TxsCurrencies;
+  constructor() {
+    this.TxsCurrencies = new TxsCurrencies();
+  }
   totalFromDecimal(decimals = 6) {
     return new Big(10).pow(decimals);
   }
@@ -548,18 +553,18 @@ export class TxsHelper {
           this.formatAmount(
             matchesAmount && matchesAmount[0],
             matchesDenom
-              ? getCurrencyByMinimalDenom(currentChain.currencies, matchesDenom)
-                  .coinDecimals
+              ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+                  matchesDenom?.trim()?.toUpperCase()
+                ).coinDecimals
               : currentChain.stakeCurrency.coinDecimals
           )
         )
       );
       itDataTransfer.token =
         matchesDenom &&
-        getCurrencyByMinimalDenom(
-          currentChain.currencies,
-          matchesDenom
-        )?.coinDenom?.toUpperCase();
+        this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+          matchesDenom?.trim()?.toUpperCase()
+        ).coinDenom?.toUpperCase();
 
       if (
         itDataTransfer?.to?.value === address ||
@@ -735,7 +740,7 @@ export class TxsHelper {
   handleTransferDetailTron(
     data: ResultDataTron,
     addressAccount: string,
-    currentChain: ChainInfoInner<ChainInfo>,
+    currentChain: ChainInfoInner<ChainInfo>
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
     const isMinus =
@@ -761,7 +766,11 @@ export class TxsHelper {
         to: data?.toAddress,
         amount: this.removeZeroNumberLast(
           this.formatNumberSeparateThousand(
-            this.formatAmount(data?.amount, data?.tokenInfo?.tokenDecimal || currentChain?.feeCurrencies[0]?.coinDecimals)
+            this.formatAmount(
+              data?.amount,
+              data?.tokenInfo?.tokenDecimal ||
+                currentChain?.feeCurrencies[0]?.coinDecimals
+            )
           )
         ),
         token: data?.tokenInfo?.tokenAbbr?.toUpperCase() || '',
@@ -786,7 +795,11 @@ export class TxsHelper {
     item.gasUsed = '0';
     item.gasWanted = '0';
     item.countTypeEvent = 0;
-    item.transfers = this.handleTransferDetailTron(data, addressAccount,currentChain);
+    item.transfers = this.handleTransferDetailTron(
+      data,
+      addressAccount,
+      currentChain
+    );
     item.isRefreshData = false;
     return item;
   }

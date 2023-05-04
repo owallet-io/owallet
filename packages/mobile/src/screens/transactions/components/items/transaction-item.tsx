@@ -81,7 +81,7 @@ const OWTransactionItem = observer(
               variant="body1"
               typo="bold"
               weight={'500'}
-              size={15}
+              size={13}
               color={
                 itemTransfer?.amount &&
                 itemTransfer?.isPlus &&
@@ -93,7 +93,11 @@ const OWTransactionItem = observer(
                   ? colors['orange-800']
                   : colors['title-modal-login-failed']
               }
-              style={styles.amount}
+              style={
+                itemTransfer?.amount &&
+                (itemTransfer?.isPlus || itemTransfer?.isMinus) &&
+                styles.amount
+              }
             >
               {`${
                 itemTransfer?.amount &&
@@ -106,7 +110,7 @@ const OWTransactionItem = observer(
                   ? '-'
                   : ''
               }${itemTransfer?.amount || 0}`}{' '}
-              {limitString(itemTransfer?.token, 7)}
+              {limitString(itemTransfer?.token, 14)}
             </Text>
             <Text style={styles.timeStyle} color={colors['blue-300']}>
               {item?.time?.timeShort || `Height ${item?.height}`}
@@ -129,7 +133,7 @@ const styling = () => {
       alignItems: 'center'
     },
     amount: {
-      // paddingTop: 8,
+      marginLeft: -8
       // textTransform: 'uppercase'
     },
     flex: {
