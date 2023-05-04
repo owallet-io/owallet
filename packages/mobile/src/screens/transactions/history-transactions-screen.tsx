@@ -1,11 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl
-} from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import React, {
   useCallback,
   useEffect,
@@ -14,9 +7,7 @@ import React, {
   useState
 } from 'react';
 import { PageWithView } from '@src/components/page';
-import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
-import { API } from '@src/common/api';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 import { _keyExtract, limitString } from '@src/utils/helper';
@@ -28,7 +19,7 @@ import { SCREENS, defaultAll } from '@src/common/constants';
 import { useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Skeleton } from '@rneui/themed';
-import { ChainIdEnum, NetworkEnum } from '@src/stores/txs/helpers/txs-enums';
+import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 import TypeModal from './components/type-modal';
 import ButtonFilter from './components/button-filter';
 
@@ -146,7 +137,7 @@ const HistoryTransactionsScreen = observer(() => {
     ]
   );
   const styles = styling();
-  const onActionType = useCallback((item) => {
+  const onActionType = useCallback(item => {
     setActiveType(item);
     modalStore.close();
     refreshData({

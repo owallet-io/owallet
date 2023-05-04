@@ -46,6 +46,13 @@ export class TxsEVM extends Txs {
       console.log('error: ', error);
     }
   }
+
+  async getAllMethodActionTxs(
+    addressAccount?: string
+  ): Promise<Partial<ResTxs>> {
+    return Promise.resolve({} as ResTxs);
+  }
+
   getTxsByHash(
     txHash: string,
     addressAccount?: string
