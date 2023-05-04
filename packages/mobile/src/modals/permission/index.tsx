@@ -118,7 +118,7 @@ export const AccessModal: FunctionComponent<{
                     await permissionStore.approve(waitingData.id);
                   }
                 } catch (error) {
-                  permissionStore.rejectAll();
+                  permissionStore.reject(waitingData.id);
                   console.log('error approveEthereumAndWaitEnd', error);
                 }
               }}
