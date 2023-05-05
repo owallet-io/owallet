@@ -1,13 +1,12 @@
-import React, { ReactElement } from 'react'
-import { StyleSheet, View, Image } from 'react-native'
+import React, { ReactElement } from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import { Text } from '@src/components/text';
-import { RectButton } from '../../../components/rect-button'
-import { colors, metrics, spacing, typography } from '../../../themes'
-import { ScanIcon } from '../../../components/icon'
+import { RectButton } from '../../../components/rect-button';
+import { colors, metrics, spacing, typography } from '../../../themes';
+import { ScanIcon } from '../../../components/icon';
 
 export const WalletModal = (account): ReactElement => {
   return (
-    // container
     <View
       style={{
         alignItems: 'center'
@@ -92,8 +91,8 @@ export const WalletModal = (account): ReactElement => {
         </RectButton>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   containerToken: {
@@ -126,4 +125,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing['16'],
     flexDirection: 'row'
   }
-})
+});

@@ -1,11 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React, { FC } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import useHeaderOptions from '@src/hooks/use-header';
-import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import { SendScreen } from '@src/screens/send';
 import { TransferNFTScreen } from '@src/screens/transfer-nft';
-import { TransactionDetail, Transactions } from '@src/screens/transactions';
 import { DashBoardScreen } from '@src/screens/dashboard';
 import { CameraScreen } from '@src/screens/camera';
 import {
@@ -24,24 +23,29 @@ import {
 } from '@src/screens/tx-result';
 import { SendTronScreen } from '@src/screens/send/send-tron';
 import { NotificationScreen } from '@src/screens/notifications/home';
+import HistoryTransactionsScreen from '@src/screens/transactions/history-transactions-screen';
+import TransactionDetailScreen from '@src/screens/transactions/transaction-detail-screen';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
-  const handleScreenOptions = ({ route, navigation })=>{
-    const headerOptions = useHeaderOptions({ title: SCREENS_TITLE[route?.name] }, navigation);
+  const handleScreenOptions = ({ route, navigation }) => {
+    const headerOptions = useHeaderOptions(
+      { title: SCREENS_OPTIONS[route?.name].title },
+      navigation
+    );
     return headerOptions;
-  }
+  };
   return (
-    <Stack.Navigator
-      screenOptions={handleScreenOptions}
-      headerMode="screen"
-    >
+    <Stack.Navigator screenOptions={handleScreenOptions} headerMode="screen">
       <Stack.Screen name={SCREENS.Send} component={SendScreen} />
       <Stack.Screen name={SCREENS.TransferNFT} component={TransferNFTScreen} />
-      <Stack.Screen name={SCREENS.Transactions} component={Transactions} />
+      <Stack.Screen
+        name={SCREENS.Transactions}
+        component={HistoryTransactionsScreen}
+      />
       <Stack.Screen name={SCREENS.Dashboard} component={DashBoardScreen} />
       <Stack.Screen
         name={SCREENS.TransactionDetail}
-        component={TransactionDetail}
+        component={TransactionDetailScreen}
       />
       <Stack.Screen
         options={{

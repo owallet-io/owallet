@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { SCREENS, SCREENS_TITLE } from '@src/common/constants';
+import { SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import useHeaderOptions from '@src/hooks/use-header';
 import {
   AddAddressBookScreen,
@@ -10,11 +10,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 const Stack = createStackNavigator();
 
 export const AddressBookStackScreen: FC = () => {
-  const handleScreenOptions = ({ route, navigation }) => {
-    const headerOptions = useHeaderOptions(
-      { title: SCREENS_TITLE[route?.name] },
-      navigation
-    );
+  
+  const handleScreenOptions = ({ route, navigation })=>{
+    const headerOptions = useHeaderOptions({ title: SCREENS_OPTIONS[route?.name].title }, navigation);
     return headerOptions;
   };
   return (

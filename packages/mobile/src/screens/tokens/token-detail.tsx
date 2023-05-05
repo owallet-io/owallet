@@ -1,45 +1,56 @@
-import { Text } from '@rneui/base';
-import { OWButton } from '@src/components/button';
-import { OWBox } from '@src/components/card';
-import { OWEmpty } from '@src/components/empty';
-import OWIcon from '@src/components/ow-icon/ow-icon';
-import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
 import React, {
   FunctionComponent,
   ReactElement,
+  useCallback,
   useEffect,
   useRef,
   useState
 } from 'react';
-import { FlatList, View } from 'react-native';
-import { API } from '../../common/api';
+import { observer } from 'mobx-react-lite';
+import { StyleSheet, View } from 'react-native';
 import {
   BuyIcon,
   DepositIcon,
   SendDashboardIcon
 } from '../../components/icon/button';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { TokenSymbol } from '../../components/token-symbol';
-import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
 import { useSmartNavigation } from '../../navigation.provider';
-import { useLoadingScreen } from '../../providers/loading-screen';
-import { navigate } from '../../router/root';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
+import { PageWithView } from '../../components/page';
+import { navigate } from '../../router/root';
+import { API } from '../../common/api';
 import { AddressQRCodeModal } from '../home/components';
-import {
-  TransactionItem,
-  TransactionSectionTitle
-} from '../transactions/components';
+import { TokenSymbolEVM } from '../../components/token-symbol/token-symbol-evm';
+import { useTheme } from '@src/themes/theme-provider';
+import { OWBox } from '@src/components/card';
+import { OWButton } from '@src/components/button';
+import OWTransactionItem from '../transactions/components/items/transaction-item';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { Text } from '@src/components/text';
+import { useNavigation } from '@react-navigation/native';
+import { SCREENS } from '@src/common/constants';
 
-export const TokenDetailScreen: FunctionComponent = observer(props => {
-  const { chainStore, queriesStore, accountStore, modalStore } = useStore();
+export const TokenDetailScreen: FunctionComponent = observer((props) => {
+  const { chainStore, modalStore, txsStore, accountStore, queriesStore } =
+    useStore();
   const smartNavigation = useSmartNavigation();
+  const navigation = useNavigation();
   const { colors } = useTheme();
-  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull } =
-    props?.route?.params ?? {};
+  const [loadMore, setLoadMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const styles = styling(colors);
+  const {
+    amountBalance,
+    balanceCoinDenom,
+    priceBalance,
+    balanceCoinFull,
+    balanceCurrency
+  } = props?.route?.params ?? {};
+
+  const txs = txsStore(chainStore.current);
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -55,39 +66,50 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
       queryBalances.positiveNativeUnstakables
     )
     .slice(0, 2);
+
   const page = useRef(1);
   const [data, setData] = useState([]);
-  const offset = useRef(0);
   const hasMore = useRef(true);
-  const fetchData = async (isLoadMore = false) => {
-    const res = await API.getTransactions(
-      {
-        address: account.bech32Address,
-        page: page.current,
-        limit: 10,
-        type: 'native'
-      },
-      // { baseURL: chainStore.current.rest }
-      { baseURL: 'https://api.scan.orai.io' }
-    );
-
-    const value = res.data?.data || [];
-    let newData = isLoadMore ? [...data, ...value] : value;
-    hasMore.current = value?.length === 10;
-    page.current = res.data?.page?.page_id + 1;
-    if (page.current === res.data?.page.total_page) {
-      hasMore.current = false;
-    }
-
-    setData(newData);
+  const perPage = 10;
+  const fetchData = useCallback(
+    async (params, isLoadMore = false) => {
+      try {
+        if (hasMore.current) {
+          if (!isLoadMore) {
+            setLoading(true);
+          }
+          const rs = await txs.getTxs(perPage, page.current, params);
+          const newData = isLoadMore ? [...data, ...rs?.result] : rs?.result;
+          hasMore.current = rs?.result?.length === perPage;
+          page.current = rs?.current_page + 1;
+          if (rs?.current_page === rs?.total_page) {
+            hasMore.current = false;
+          }
+          if (rs?.result.length < 1) {
+            hasMore.current = false;
+          }
+          setData(newData);
+          setAllLoading();
+        } else {
+          setAllLoading();
+        }
+      } catch (error) {
+        setAllLoading();
+      }
+    },
+    [data]
+  );
+  const setAllLoading = () => {
+    setLoadMore(false);
+    setLoading(false);
+    setRefreshing(false);
   };
-
   useEffect(() => {
-    offset.current = 0;
-    fetchData();
-  }, [account.bech32Address, chainStore.current.chainId]);
-  const loadingScreen = useLoadingScreen();
-
+    refreshData();
+    return () => {
+      setData([]);
+    };
+  }, [chainStore?.current?.rest, account?.bech32Address]);
   const _onPressReceiveModal = () => {
     modalStore.setOpen();
     modalStore.setChildren(
@@ -139,15 +161,73 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
       />
     );
   };
+  const onEndReached = useCallback(() => {
+    if (page.current !== 1) {
+      setLoadMore(true);
+      fetchData(
+        {
+          addressAccount:
+            chainStore.current.networkType == 'evm'
+              ? account?.evmosHexAddress
+              : account?.bech32Address,
+          token:
+            balanceCurrency?.contractAddress ||
+            balanceCurrency?.coinMinimalDenom
+        },
+        true
+      );
+    }
+  }, [account?.bech32Address, data]);
+  const onTransactionDetail = (item) => {
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.TransactionDetail,
+      params: {
+        txHash: item?.txHash,
+        item
+      }
+    });
+    return;
+  };
+  const renderItem = ({ item, index }) => {
+    return (
+      <OWTransactionItem
+        key={`item-${index}`}
+        onPress={() => onTransactionDetail(item)}
+        item={item}
+      />
+    );
+  };
+
+  const refreshData = useCallback(() => {
+    page.current = 1;
+    hasMore.current = true;
+    fetchData(
+      {
+        addressAccount:
+          chainStore.current.networkType == 'evm'
+            ? account?.evmosHexAddress
+            : account?.bech32Address,
+        token:
+          balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
+      },
+      false
+    );
+  }, [chainStore?.current?.rest, account?.bech32Address]);
+  const onRefresh = () => {
+    setRefreshing(true);
+    refreshData();
+  };
+  const onTransactions = () => {
+    navigation.navigate(SCREENS.STACK.Others, {
+      screen: SCREENS.Transactions
+    });
+    return;
+  };
+
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
-      <View
-        style={{
-          marginHorizontal: 24,
-          marginBottom: 24
-        }}
-      >
-        <OWBox style={{}} type="gradient">
+    <PageWithView>
+      <View style={styles.containerBox}>
+        <OWBox type="gradient">
           <View
             style={{
               justifyContent: 'center',
@@ -214,68 +294,64 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
           </View>
         </OWBox>
       </View>
-      <OWBox
-        style={{
-          paddingHorizontal: 0,
-          marginTop: 0,
-          paddingBottom: 24,
-          paddingTop: 0,
-          height: metrics.screenHeight / 2.1
-        }}
-      >
-        <TransactionSectionTitle
-          containerStyle={{
-            paddingTop: 0
-          }}
-          title={'Transaction list'}
-          onPress={async () => {
-            await loadingScreen.openAsync();
-            await fetchData();
-            loadingScreen.setIsLoading(false);
-          }}
-        />
-        <FlatList
+      <OWBox style={styles.containerListTransaction}>
+        <View style={styles.containerTitleList}>
+          <Text>Transaction List</Text>
+          <OWButton
+            type="link"
+            size="medium"
+            fullWidth={false}
+            label="View all"
+            onPress={onTransactions}
+          />
+        </View>
+
+        <OWFlatList
           data={data}
-          renderItem={({ item, index }) => (
-            <TransactionItem
-              type={'native'}
-              item={item}
-              address={account.bech32Address}
-              key={index}
-              onPress={() =>
-                smartNavigation.navigateSmart('Transactions.Detail', {
-                  item: {
-                    ...item,
-                    address: account.bech32Address
-                  }
-                })
-              }
-            />
-          )}
-          keyExtractor={_keyExtract}
-          showsVerticalScrollIndicator={false}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: 12
-              }}
-            />
-          )}
-          ListEmptyComponent={<OWEmpty />}
-        />
-        <OWButton
-          onPress={() => smartNavigation.navigateSmart('Transactions', {})}
-          label="View all transactions"
-          style={{
-            marginHorizontal: spacing['24'],
-            marginTop: 10
-          }}
-          icon={
-            <OWIcon name="transactions" color={colors['white']} size={18} />
-          }
-          fullWidth={false}
+          onEndReached={onEndReached}
+          renderItem={renderItem}
+          loadMore={loadMore}
+          onRefresh={onRefresh}
+          loading={loading}
+          refreshing={refreshing}
         />
       </OWBox>
-    </PageWithScrollViewInBottomTabView>
+    </PageWithView>
   );
 });
+
+const styling = (colors) =>
+  StyleSheet.create({
+    containerListTransaction: {
+      flex: 1,
+      paddingTop: 10
+    },
+    containerTitleList: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingTop: 0,
+      marginTop: 0
+    },
+    containerBox: {
+      marginHorizontal: 24
+    },
+    containerToken: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginHorizontal: spacing['4'],
+      marginVertical: spacing['8'],
+      paddingTop: spacing['18'],
+      paddingBottom: spacing['18']
+    },
+    transactionListEmpty: {
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    fixedScroll: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0
+    }
+  });

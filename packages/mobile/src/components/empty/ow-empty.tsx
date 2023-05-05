@@ -8,8 +8,14 @@ interface IOWEmpty extends ViewProps {
   style?: ViewProps['style'];
   type?: 'list' | 'crash';
   label?: string;
+  sizeImage?: number;
 }
-const OWEmpty = ({ style, type = 'list', ...props }: IOWEmpty) => {
+const OWEmpty = ({
+  style,
+  sizeImage = 142,
+  type = 'list',
+  ...props
+}: IOWEmpty) => {
   const { label = type == 'list' ? 'No result found' : 'Not found data' } =
     props;
   const { colors, images } = useTheme();
@@ -17,7 +23,10 @@ const OWEmpty = ({ style, type = 'list', ...props }: IOWEmpty) => {
     <View style={[styles.container, style]} {...props}>
       <FastImage
         source={type === 'crash' ? images.crash_empty : images.list_empty}
-        style={styles.stylesImage}
+        style={{
+          width: sizeImage,
+          height: sizeImage
+        }}
         resizeMode={'contain'}
       />
       <Text
@@ -42,7 +51,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     paddingTop: 8,
-    textAlign:"center"
+    textAlign: 'center'
   },
   stylesImage: {
     width: 142,

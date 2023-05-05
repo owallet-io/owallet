@@ -6,7 +6,7 @@ export const useStyleMyWallet = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
     containerAccount: {
-      backgroundColor: colors['sub-primary'],
+      backgroundColor: colors['background-item-list'],
       paddingVertical: spacing['16'],
       borderRadius: spacing['8'],
       paddingHorizontal: spacing['16'],
