@@ -120,21 +120,17 @@ const HistoryTransactionsScreen = observer(() => {
   useEffect(() => {
     const chainInfo = chainStore.getChain(chainStore.current.chainId);
     let msgTracer: TendermintTxTracer | undefined;
-
     if (isFocused && chainInfo?.networkType == 'cosmos') {
       msgTracer = new TendermintTxTracer(chainInfo?.rpc, '/websocket');
       msgTracer
         .subscribeMsgByAddress(account.bech32Address)
         .then((tx) => {
-          setTimeout(() => {
-            onRefresh();
-          }, 1500);
+          onRefresh();
         })
         .catch((e) => {
           console.log(`Failed to trace the tx ()`, e);
         });
     }
-
     return () => {
       if (msgTracer) {
         msgTracer.close();
@@ -164,7 +160,7 @@ const HistoryTransactionsScreen = observer(() => {
     ]
   );
   const styles = styling();
-  const onActionType = useCallback(item => {
+  const onActionType = useCallback((item) => {
     setActiveType(item);
     modalStore.close();
     refreshData({

@@ -83,8 +83,6 @@ const TransactionDetailScreen = observer(() => {
       '{txHash}',
       txHash
     );
-    console.log('url: ', url);
-
     WebBrowser.openBrowserAsync(url);
   };
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
