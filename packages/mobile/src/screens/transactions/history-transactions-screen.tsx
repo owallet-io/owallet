@@ -16,12 +16,13 @@ import { OWBox } from '@src/components/card';
 import { metrics, spacing } from '@src/themes';
 import OWTransactionItem from './components/items/transaction-item';
 import { SCREENS, defaultAll } from '@src/common/constants';
-import { useNavigation } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Skeleton } from '@rneui/themed';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 import TypeModal from './components/type-modal';
 import ButtonFilter from './components/button-filter';
+import { TendermintTxTracer } from '@owallet/cosmos';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, txsStore, modalStore } = useStore();
@@ -114,6 +115,28 @@ const HistoryTransactionsScreen = observer(() => {
       setData([]);
     };
   }, []);
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const chainInfo = chainStore.getChain(chainStore.current.chainId);
+    let msgTracer: TendermintTxTracer | undefined;
+    if (isFocused && chainInfo?.networkType == 'cosmos') {
+      msgTracer = new TendermintTxTracer(chainInfo?.rpc, '/websocket');
+      msgTracer
+        .subscribeMsgByAddress(account.bech32Address)
+        .then((tx) => {
+          onRefresh();
+        })
+        .catch((e) => {
+          console.log(`Failed to trace the tx ()`, e);
+        });
+    }
+    return () => {
+      if (msgTracer) {
+        msgTracer.close();
+      }
+    };
+  }, [chainStore, isFocused, data]);
   const refreshData = useCallback(
     ({ activeType, isActiveType }) => {
       page.current = 0;
@@ -137,7 +160,7 @@ const HistoryTransactionsScreen = observer(() => {
     ]
   );
   const styles = styling();
-  const onActionType = useCallback(item => {
+  const onActionType = useCallback((item) => {
     setActiveType(item);
     modalStore.close();
     refreshData({

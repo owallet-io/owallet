@@ -1,3 +1,16 @@
+interface CurrencyInfo {
+  prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | '';
+  coinDenom?: string;
+  coinMinimalDenom?: string;
+  contractAddress?: string;
+  coinDecimals?: number;
+  coinGeckoId?: string;
+  coinImageUrl?: string;
+}
+interface Currencies {
+  [key: string]: CurrencyInfo;
+}
+//////////////
 interface ResTxsEthAndBscByToken {
   status?: string;
   message?: string;

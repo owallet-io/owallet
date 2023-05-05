@@ -14,6 +14,7 @@ import {
   getValueFromDataEvents,
   limitString
 } from '@src/utils/helper';
+import * as WebBrowser from 'expo-web-browser';
 import { useStore } from '@src/stores';
 import moment from 'moment';
 import { observer } from 'mobx-react-lite';
@@ -22,6 +23,7 @@ import { DenomHelper } from '@owallet/common';
 import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
+import { ItemBtnViewOnScan } from './components';
 const TransactionDetailScreen = observer(() => {
   const [data, setData] = useState<Partial<ResTxsInfo>>();
   const [refreshing, setIsRefreshing] = useState(false);
@@ -76,6 +78,13 @@ const TransactionDetailScreen = observer(() => {
     }
   };
 
+  const onViewScan = () => {
+    const url = chainStore?.current?.raw?.txExplorer.txUrl.replace(
+      '{txHash}',
+      txHash
+    );
+    WebBrowser.openBrowserAsync(url);
+  };
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
 
   const handleMapData = (itemEv, inEv) => {
@@ -83,9 +92,8 @@ const TransactionDetailScreen = observer(() => {
       return (
         <TransactionBox
           key={`tsbox-${inEv}`}
-          label={`Transaction detail ${
-            itemEv?.typeEvent ? `(${itemEv?.typeEvent || ''})` : ''
-          }`}
+          label={`Transaction detail`}
+          subLabel={itemEv?.typeEvent ? `${itemEv?.typeEvent || ''}` : ''}
         >
           {itemEv?.transferInfo?.map((itemDataTrans, inDtTransfer) => {
             if (
@@ -246,11 +254,12 @@ const TransactionDetailScreen = observer(() => {
         ) : null}
         <ItemDetail
           label="Time"
-          borderBottom={false}
           value={data?.time?.timeLong}
+          borderBottom={!!chainStore?.current?.raw?.txExplorer}
         />
-
-        {/* <ItemDetail label="View on Scan" borderBottom={false} /> */}
+        {chainStore?.current?.raw?.txExplorer && (
+          <ItemBtnViewOnScan onPress={onViewScan} />
+        )}
       </TransactionBox>
 
       {itemEvents?.typeId !== 0 && itemEvents?.value?.map(handleMapData)}
