@@ -326,13 +326,8 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 ref={webviewRef}
                 incognito={true}
-                style={
-                  pageLoaded
-                    ? {
-                        margin: bottomHeight
-                      }
-                    : { flex: 0, height: 0, opacity: 0 }
-                }
+                style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
+                containerStyle={{ marginBottom: bottomHeight }}
                 // cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onLoad={handleWebViewLoaded}
