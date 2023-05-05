@@ -17,11 +17,12 @@ const useStyleType = ({ type }) => {
           shadowColor: colors['gray-150'],
           shadowOffset: {
             width: 0,
-            height: 6
+            height: 3
           },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
+          shadowOpacity: 0.26,
+          shadowRadius: 2.62,
           borderRadius: spacing['12'],
+          elevation:4,
           width: '100%',
           backgroundColor: colors['background-box-shadow']
         };

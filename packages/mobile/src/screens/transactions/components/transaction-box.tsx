@@ -6,7 +6,8 @@ import { useTheme } from '@src/themes/theme-provider';
 
 const TransactionBox: FC<{
   label?: string;
-}> = ({ label, children }) => {
+  subLabel?: string;
+}> = ({ label, children, subLabel }) => {
   const { colors } = useTheme();
   return (
     <>
@@ -17,6 +18,14 @@ const TransactionBox: FC<{
         variant="body1"
       >
         {label}
+        {subLabel ? (
+          <>{' '}(
+            <Text weight='400' size={14.5} color={colors['purple-700']}>
+              {subLabel}
+            </Text>
+            )
+          </>
+        ) : null}
       </Text>
       <OWBox style={styles.containerBox}>{children}</OWBox>
     </>

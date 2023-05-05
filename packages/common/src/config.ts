@@ -341,7 +341,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ['isEvm']
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Kawaii',
+      txUrl: 'https://scan.kawaii.global/tx/{txHash}'
+    }
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
@@ -371,7 +375,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ['isEvm']
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Kawaii',
+      txUrl: 'https://scan.kawaii.global/tx/{txHash}'
+    }
   },
   {
     rpc: 'https://rpc-cosmos.oraidex.io',
@@ -581,7 +589,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm'],
     txExplorer: {
       name: 'Bsc Scan Testnet',
-      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
+      txUrl: 'https://testnet.bscscan.com/tx/{txHash}',
       accountUrl: 'https://testnet.bscscan.com/address/{address}'
     }
   },
@@ -710,7 +718,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
       name: 'Bsc Scan',
-      txUrl: 'https://bscscan.com/tx/${txHash}',
+      txUrl: 'https://bscscan.com/tx/{txHash}',
       accountUrl: 'https://bscscan.com/address/{address}'
     }
   },
