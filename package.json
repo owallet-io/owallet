@@ -72,6 +72,8 @@
     "zx": "^4.2.0"
   },
   "resolutions": {
+    "@ledgerhq/hw-transport": "6.27.2",
+    "@ledgerhq/devices": "^7.0.0",
     "@types/react": "^16.14.4",
     "@cosmjs/crypto": "^0.24.0-alpha.25",
     "@iov/crypto": "2.1.0",

@@ -1,13 +1,8 @@
-import { sha256 } from 'ethereum-cryptography/sha256';
-import { keccak256 } from 'ethereum-cryptography/keccak';
+import { sha256 } from "sha.js";
 
 export class Hash {
   static sha256(data: Uint8Array): Uint8Array {
-    return sha256(data);
-  }
-
-  static keccak256(data: Uint8Array): Uint8Array {
-    return keccak256(data);
+    return new Uint8Array(new sha256().update(data).digest());
   }
 
   static truncHashPortion(
@@ -17,7 +12,7 @@ export class Hash {
   ): string {
     return (
       str.substring(0, firstCharCount) +
-      '…' +
+      "…" +
       str.substring(str.length - endCharCount, str.length)
     );
   }

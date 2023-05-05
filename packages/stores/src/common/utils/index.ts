@@ -1,7 +1,6 @@
 import { Currency } from '@owallet/types';
 import { CoinPrimitive } from '../types';
 import { CoinPretty, Dec, Int } from '@owallet/unit';
-import _BigInt from 'big-integer';
 
 export class StoreUtils {
   public static getBalancesFromCurrencies(

@@ -1,6 +1,5 @@
 import { ec } from 'elliptic';
-import { sha256 } from 'ethereum-cryptography/sha256';
-import { ripemd160 } from 'ethereum-cryptography/ripemd160';
+import CryptoJS from 'crypto-js';
 
 import { Buffer } from 'buffer';
 
@@ -33,9 +32,11 @@ export class PrivKeySecp256k1 {
     const secp256k1 = new ec('secp256k1');
     const key = secp256k1.keyFromPrivate(this.privKey);
 
-    const hash = sha256(msg);
+    const hash = CryptoJS.SHA256(
+      CryptoJS.lib.WordArray.create(msg as any)
+    ).toString();
 
-    const signature = key.sign(hash, {
+    const signature = key.sign(Buffer.from(hash, 'hex'), {
       canonical: true
     });
 
@@ -53,8 +54,12 @@ export class PubKeySecp256k1 {
   }
 
   getAddress(): Uint8Array {
-    const hash = sha256(this.pubKey);
-    return ripemd160(hash);
+    let hash = CryptoJS.SHA256(
+      CryptoJS.lib.WordArray.create(this.pubKey as any)
+    ).toString();
+    hash = CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(hash)).toString();
+
+    return new Uint8Array(Buffer.from(hash, 'hex'));
   }
 
   toKeyPair(): ec.KeyPair {
@@ -67,7 +72,9 @@ export class PubKeySecp256k1 {
   }
 
   verify(msg: Uint8Array, signature: Uint8Array): boolean {
-    const hash = sha256(msg);
+    const hash = CryptoJS.SHA256(
+      CryptoJS.lib.WordArray.create(msg as any)
+    ).toString();
 
     const secp256k1 = new ec('secp256k1');
 
@@ -92,7 +99,7 @@ export class PubKeySecp256k1 {
       ...s
     ]);
     return secp256k1.verify(
-      hash,
+      Buffer.from(hash, 'hex'),
       new Uint8Array([0x30, derData.length, ...derData]),
       this.toKeyPair()
     );

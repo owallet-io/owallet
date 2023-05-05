@@ -1,3 +1,4 @@
+import { handleError, parseObjectToQueryString } from '@src/utils/helper';
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 
@@ -17,7 +18,218 @@ export const API = {
   delete: (path: string, config: AxiosRequestConfig) => {
     return axios.delete(path, config);
   },
+  requestRpc: async (
+    { method, params, url },
+    config: AxiosRequestConfig = null
+  ) => {
+    try {
+      let rpcConfig = {
+        method,
+        params,
+        id: 1,
+        jsonrpc: '2.0'
+      };
+      retryWrapper(axios, { retry_time: 3 });
+      const rs = await axios.post(url, rpcConfig, config);
+      if (rs?.data?.result) {
+        return Promise.resolve(rs?.data?.result);
+      }
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      handleError(error, url, method);
 
+      return Promise.reject(error);
+    }
+  },
+
+  getByLCD: async ({ lcdUrl, prefix, method, params = null }) => {
+    try {
+      retryWrapper(axios, { retry_time: 3 });
+      let qs = params ? parseObjectToQueryString(params) : '';
+      let url = `${prefix}${method}${qs}`;
+      const rs = await API.get(url, { baseURL: lcdUrl });
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      handleError(error, lcdUrl, method);
+      return Promise.reject(error);
+    }
+  },
+  getTxsByLCD: async <T>({
+    url,
+    params = null,
+    prefix = '/cosmos/tx/v1beta1',
+    method = '/txs'
+  }): Promise<T> => {
+    try {
+      const rs = await API.getByLCD({
+        lcdUrl: url,
+        prefix,
+        method,
+        params
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsByRPC: async ({ url, params = null, method = 'tx_search' }) => {
+    try {
+      const rs = await API.requestRpc({
+        url: url,
+        params,
+        method
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsLcdCosmos: async (
+    url,
+    query,
+    perPage = 10,
+    currentPage = 1
+  ): Promise<ResLcdCosmos> => {
+    try {
+      const rs = await API.getTxsByLCD<ResLcdCosmos>({
+        url,
+        params: {
+          events: query,
+          ['pagination.count_total']: true,
+          ['pagination.limit']: perPage,
+          ['pagination.offset']: currentPage,
+          order_by: 'ORDER_BY_DESC'
+        }
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsEthAndBscByToken: async (
+    url,
+    contractAddress,
+    addressAcc,
+    current_page,
+    page,
+    apiKey
+  ): Promise<ResTxsEthAndBscByToken> => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=tokentx&contractaddress=${contractAddress}&address=${addressAcc}&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      return Promise.resolve(rs?.data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTxsRpcCosmos: async (
+    url,
+    query,
+    perPage = 10,
+    currentPage = 1
+  ): Promise<ResTxsRpcCosmos> => {
+    try {
+      const rs = await API.getTxsByRPC({
+        url,
+        params: {
+          query,
+          page: `${currentPage}`,
+          per_page: `${perPage}`,
+          order_by: 'desc'
+        }
+      });
+      return Promise.resolve(rs);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  getTotalTxsEthAndBscPage: async (url, addressAcc, apiKey) => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      const data: txsEthAndBscResult = rs.data;
+      if (data?.status === '1') {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
+        'getTotalTxsEthAndBscPage'
+      );
+      return Promise.reject(error);
+    }
+  },
+  getTotalTxsEthAndBscPageByToken: async (
+    url,
+    addressAcc,
+    contractAddress,
+    apiKey
+  ): Promise<ResTxsEthAndBscByToken> => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=tokentx&contractaddress=${contractAddress}&address=${addressAcc}&&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      const data: ResTxsEthAndBscByToken = rs.data;
+      if (data?.status === '1') {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api?module=account&action=txlist&address=${addressAcc}&sort=desc&apikey=${apiKey}`,
+        'getTotalTxsEthAndBscPage'
+      );
+      return Promise.reject(error);
+    }
+  },
+  getTxsEthAndBsc: async (url, addressAccount, current_page, page, apiKey) => {
+    try {
+      const rs = await API.get(
+        `/api?module=account&action=txlist&address=${addressAccount}&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        { baseURL: url }
+      );
+      const data: txsEthAndBscResult = rs.data;
+      if (data?.status === '1') {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api?module=account&action=txlist&address=${addressAccount}&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        'getTxsEthAndBsc'
+      );
+      return Promise.reject(error);
+    }
+  },
+  getTxsTron: async (url, addressAccount, current_page, page) => {
+    try {
+      const rs = await API.get(
+        `/api/transaction?sort=-timestamp&count=true&limit=${page}&start=${current_page}&address=${addressAccount}`,
+        { baseURL: url }
+      );
+      const data: ResDataTxsTron = rs.data;
+      if (data?.data) {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api/transaction?sort=-timestamp&count=true&limit=${page}&start=${current_page}&address=${addressAccount}`,
+        'getTxsTron'
+      );
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig
@@ -103,4 +315,24 @@ export const API = {
     let url = `api/v1/topics`;
     return API.put(url, { topic, subcriber }, config);
   }
+};
+const retryWrapper = (axios, options) => {
+  const max_time = 1;
+  let counter = 0;
+  axios.interceptors.response.use(null, (error) => {
+    /** @type {import("axios").AxiosRequestConfig} */
+    const config = error.config;
+    // you could defined status you want to retry, such as 503
+    // if (counter < max_time && error.response.status === retry_status_code) {
+    if (
+      (counter < max_time && error.response.status === 400) ||
+      (counter < max_time && error.response.status === 502)
+    ) {
+      counter++;
+      return new Promise((resolve) => {
+        resolve(axios(config));
+      });
+    }
+    return Promise.reject(error);
+  });
 };

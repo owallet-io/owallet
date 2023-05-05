@@ -199,6 +199,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
+      showsVerticalScrollIndicator={false}
       // backgroundColor={colors['background']}
       ref={scrollViewRef}
     >

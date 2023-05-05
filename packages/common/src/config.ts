@@ -374,8 +374,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm']
   },
   {
-    rpc: 'https://rpc-cosmoshub.keplr.app',
-    rest: 'https://lcd-cosmoshub.keplr.app',
+    rpc: 'https://rpc-cosmos.oraidex.io',
+    rest: 'https://lcd-cosmos.oraidex.io',
     chainId: 'cosmoshub-4',
     chainName: 'Cosmos Hub',
     networkType: 'cosmos',
@@ -417,8 +417,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc-osmosis.keplr.app',
-    rest: 'https://lcd-osmosis.keplr.app',
+    rpc: 'https://osmosis-rpc-global.orai.io',
+    rest: 'https://osmosis-lcd-global.orai.io',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
@@ -621,6 +621,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'ORAI',
         coinMinimalDenom:
           'erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5:Oraichain Token',
+        contractAddress: '0x4c11249814f11b9346808179cf06e71ac328c1b5',
         coinDecimals: 18,
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
@@ -675,7 +676,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'ORAI',
         coinMinimalDenom:
           'erc20:0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0:Oraichain Token',
+        contractAddress: '0xA325Ad6D9c92B55A3Fc5aD7e412B1518F96441C0',
         coinDecimals: 18,
+
         coinGeckoId: 'oraichain-token',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
@@ -684,6 +687,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'AIRI',
         coinMinimalDenom:
           'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
+        contractAddress: '0x7e2a35c746f2f7c240b664f1da4dd100141ae71f',
         coinDecimals: 18,
         coinGeckoId: 'airight',
         coinImageUrl:
@@ -693,6 +697,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDenom: 'KWT',
         coinMinimalDenom:
           'erc20:0x257a8d1e03d17b8535a182301f15290f11674b53:Kawaii Islands',
+        contractAddress: '0x257a8d1e03d17b8535a182301f15290f11674b53',
         coinDecimals: 18,
         coinGeckoId: 'kawaii-islands',
         coinImageUrl:

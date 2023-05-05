@@ -132,8 +132,8 @@ export const SendEvmPage: FunctionComponent<{
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
         if (coinMinimalDenom) {
+          // @ts-ignore
           const tokenInfo = new web3.eth.Contract(
-            // @ts-ignore
             ERC20_ABI,
             query?.defaultDenom?.split(':')?.[1]
           );
@@ -173,7 +173,7 @@ export const SendEvmPage: FunctionComponent<{
   useEffect(() => {
     if (query.defaultDenom) {
       const currency = current.currencies.find(
-        (cur) => cur.coinMinimalDenom === query.defaultDenom
+        cur => cur.coinMinimalDenom === query.defaultDenom
       );
 
       if (currency) {
@@ -319,7 +319,7 @@ export const SendEvmPage: FunctionComponent<{
                       feeType: sendConfigs.feeConfig.feeType
                     });
                   },
-                  onFulfill: (tx) => {
+                  onFulfill: tx => {
                     console.log(
                       tx,
                       'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'

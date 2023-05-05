@@ -47,9 +47,10 @@ export const TokensCard: FunctionComponent<{
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
+    tokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -206,20 +207,24 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {unique.slice(0, 3).map(token => {
-              const priceBalance = priceStore.calculatePrice(token.balance);
-              return (
-                <TokenItem
-                  key={token.currency?.coinMinimalDenom}
-                  chainInfo={{
-                    stakeCurrency: chainStore.current.stakeCurrency,
-                    networkType: chainStore.current.networkType
-                  }}
-                  balance={token.balance}
-                  priceBalance={priceBalance}
-                />
-              );
-            })}
+            {unique?.length > 0 ? (
+              unique.slice(0, 3).map((token) => {
+                const priceBalance = priceStore.calculatePrice(token.balance);
+                return (
+                  <TokenItem
+                    key={token.currency?.coinMinimalDenom}
+                    chainInfo={{
+                      stakeCurrency: chainStore.current.stakeCurrency,
+                      networkType: chainStore.current.networkType
+                    }}
+                    balance={token.balance}
+                    priceBalance={priceBalance}
+                  />
+                );
+              })
+            ) : (
+              <OWEmpty />
+            )}
           </CardBody>
         ) : (
           <CardBody>
@@ -294,7 +299,7 @@ export const TokensCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],

@@ -6,15 +6,16 @@ import { AddressCopyable } from '../../components/address-copyable';
 import { useSmartNavigation } from '../../navigation.provider';
 import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
+import Big from 'big.js';
+import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
-import { findLedgerAddressWithChainId, isBase58 } from '@src/utils/helper';
 import { TRON_ID } from '@owallet/common';
 import { Address } from '@owallet/crypto';
-import Big from 'big.js';
+import { findLedgerAddressWithChainId, isBase58 } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+}> = observer(({}) => {
   const {
     chainStore,
     accountStore,
@@ -24,14 +25,13 @@ export const AccountCardEVM: FunctionComponent<{
     keyRingStore
   } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
-  );
-
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  const selected = keyRingStore?.multiKeyStoreInfo.find(
+    (keyStore) => keyStore?.selected
+  );
 
   let total;
   if (account.evmosHexAddress) {
@@ -54,7 +54,7 @@ export const AccountCardEVM: FunctionComponent<{
     }
   }
 
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -87,22 +87,41 @@ export const AccountCardEVM: FunctionComponent<{
   return (
     <AccountBox
       totalBalance={
-        chainStore.current.chainId !== TRON_ID && total?.amount
-          ? parseFloat(
-              new Big(parseInt(total.amount.int.value))
+        <Text
+          style={{
+            textAlign: 'center',
+            color: 'white',
+            fontWeight: '900',
+            fontSize: 34,
+            lineHeight: 50
+          }}
+        >
+          {chainStore.current.chainId !== TRON_ID && total
+            ? `${new Big(parseInt(total?.amount?.int))
                 .div(new Big(10).pow(36))
-                .toString()
-            ).toFixed(5) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
-          : chainStore.current.chainId === TRON_ID && total?.amount
-          ? parseFloat(
-              new Big(parseInt(total?.amount?.int))
+                .toFixed(8)}` +
+              ` ${chainStore.current?.stakeCurrency.coinDenom}`
+            : null}
+
+          {chainStore.current.chainId === TRON_ID && total
+            ? `${new Big(parseInt(total?.amount?.int))
                 .div(new Big(10).pow(24))
-                .toString()
-            ).toFixed(6) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
-          : 0
+                .toFixed(6)}` +
+              ` ${chainStore.current?.stakeCurrency.coinDenom}`
+            : null}
+        </Text>
       }
-      totalAmount={
-        chainStore.current.chainId !== TRON_ID && total?.amount
+      coinType={`${
+        keyRingStore.keyRingType === 'ledger'
+          ? chainStore?.current?.bip44?.coinType
+          : selected?.bip44HDPath?.coinType ??
+            chainStore?.current?.bip44?.coinType
+      }`}
+      networkType={'evm'}
+      name={account.name || '...'}
+      onPressBtnMain={onPressBtnMain}
+      totalAmount={`${
+        chainStore.current.chainId !== TRON_ID && total
           ? (
               parseFloat(
                 new Big(parseInt(total.amount?.int?.value))
@@ -113,7 +132,7 @@ export const AccountCardEVM: FunctionComponent<{
                 chainStore?.current?.stakeCurrency?.coinGeckoId
               )
             ).toFixed(6)
-          : chainStore.current.chainId === TRON_ID && total?.amount
+          : chainStore.current.chainId === TRON_ID && total
           ? (
               parseFloat(
                 new Big(parseInt(total.amount?.int))
@@ -125,7 +144,7 @@ export const AccountCardEVM: FunctionComponent<{
               )
             ).toFixed(6)
           : 0
-      }
+      }`}
       addressComponent={
         <AddressCopyable
           address={
@@ -143,15 +162,6 @@ export const AccountCardEVM: FunctionComponent<{
           maxCharacters={22}
         />
       }
-      name={account?.name || '...'}
-      coinType={`${
-        keyRingStore.keyRingType === 'ledger'
-          ? chainStore?.current?.bip44?.coinType
-          : selected?.bip44HDPath?.coinType ??
-            chainStore?.current?.bip44?.coinType
-      }`}
-      networkType={'evm'}
-      onPressBtnMain={onPressBtnMain}
     />
   );
 });

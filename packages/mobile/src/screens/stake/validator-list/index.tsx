@@ -1,13 +1,15 @@
 import { ValidatorThumbnails } from '@owallet/common';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../../stores';
+import { PageWithView } from '../../../components/page';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Text } from '@src/components/text';
 import { BondStatus, Validator } from '@owallet/stores';
 import { CoinPretty, Dec } from '@owallet/unit';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { OWSubTitleHeader } from '@src/components/header';
-import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
-import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { API } from '../../../common/api';
 import { CardDivider } from '../../../components/card';
 import {
@@ -15,15 +17,11 @@ import {
   ValidatorOutlineIcon
 } from '../../../components/icon';
 import { SelectorModal, TextInput } from '../../../components/input';
-import {
-  PageWithSectionList,
-  PageWithViewInBottomTabView
-} from '../../../components/page';
 import { RectButton } from '../../../components/rect-button';
-import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useSmartNavigation } from '../../../navigation.provider';
-import { useStore } from '../../../stores';
 import { spacing, typography } from '../../../themes';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { ValidatorThumbnail } from '@src/components/thumbnail';
 type Sort = 'APR' | 'Voting Power' | 'Name';
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
@@ -120,9 +118,73 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
     }
     return item;
   }, [items, sort]);
+  const paragraph = () => {
+    return (
+      <View style={styles.containerParagraph}>
+        <View style={styles.flexRow}>
+          <ValidatorOutlineIcon color={colors['primary-text']} size={16} />
+          <Text
+            style={{
+              ...styles.title,
+              marginLeft: spacing['8'],
+              color: colors['sub-primary-text']
+            }}
+          >
+            {`Validator list`}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.sortBtn}
+          onPress={() => {
+            setIsSortModalOpen(true);
+          }}
+        >
+          <Text
+            style={[
+              styles.title,
+              ,
+              {
+                color: colors['sub-primary-text']
+              },
+              styles.titleLabel
+            ]}
+          >
+            {sortItem.label}
+          </Text>
+          <ArrowOpsiteUpDownIcon size={24} color={colors['border']} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
+  const renderItem = ({ item, index }: { item: Validator; index: number }) => {
+    const foundValidator = validators.find(
+      (v) => v.operator_address === item.operator_address
+    );
+
+    return (
+      <View
+        style={{
+          marginHorizontal: spacing['24'],
+          marginVertical: spacing['8'],
+          borderRadius: spacing['8']
+        }}
+      >
+        <ValidatorItem
+          validatorAddress={item.operator_address}
+          apr={foundValidator?.apr ?? 0}
+          index={index}
+          sort={sort}
+          onSelectValidator={route.params.validatorSelector}
+        />
+      </View>
+    );
+  };
+  const separateComponentItem = () => (
+    <CardDivider backgroundColor={colors['border-input-login']} />
+  );
   return (
-    <PageWithViewInBottomTabView>
+    <PageWithView>
       <SelectorModal
         close={() => {
           setIsSortModalOpen(false);
@@ -132,136 +194,30 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
         selectedKey={sort}
         setSelectedKey={key => setSort(key as Sort)}
       />
-
-      <PageWithSectionList
-        style={{
-          backgroundColor: colors['background']
-        }}
-        sections={[
-          {
-            data
-          }
-        ]}
-        stickySectionHeadersEnabled={false}
-        keyExtractor={(item: Validator) => item.operator_address}
-        renderSectionFooter={() => {
-          return <View style={{ height: spacing['24'] }} />;
-        }}
-        renderItem={({ item, index }: { item: Validator; index: number }) => {
-          const foundValidator = validators.find(
-            v => v.operator_address === item.operator_address
-          );
-
-          return (
-            <View
-              style={{
-                marginHorizontal: spacing['24'],
-                marginVertical: spacing['8'],
-                borderRadius: spacing['8']
-              }}
-            >
-              <ValidatorItem
-                validatorAddress={item.operator_address}
-                apr={foundValidator?.apr ?? 0}
-                index={index}
-                sort={sort}
-                onSelectValidator={route.params.validatorSelector}
-              />
-            </View>
-          );
-        }}
-        ItemSeparatorComponent={() => (
-          <CardDivider backgroundColor={colors['border-input-login']} />
-        )}
-        renderSectionHeader={() => {
-          return (
-            <View>
-              <OWSubTitleHeader title="Active validators" />
-              <View
-                style={{
-                  paddingHorizontal: spacing['24'],
-                  paddingTop: spacing['24'],
-                  paddingBottom: spacing['4']
-                }}
-              >
-                <TextInput
-                  label="Search"
-                  placeholder="Search"
-                  labelStyle={{
-                    display: 'none'
-                  }}
-                  containerStyle={{
-                    padding: 0
-                  }}
-                  value={search}
-                  onChangeText={text => {
-                    setSearch(text);
-                  }}
-                  paragraph={
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        marginTop: spacing['32'],
-                        marginHorizontal: spacing['16']
-                      }}
-                    >
-                      <View
-                        style={{
-                          flex: 1,
-                          flexDirection: 'row'
-                        }}
-                      >
-                        <ValidatorOutlineIcon
-                          color={colors['primary-text']}
-                          size={16}
-                        />
-                        <Text
-                          style={{
-                            ...styles.title,
-                            marginLeft: spacing['8'],
-                            color: colors['sub-primary-text']
-                          }}
-                        >
-                          {`Validator list`}
-                        </Text>
-                      </View>
-                      <TouchableOpacity
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          paddingHorizontal: spacing['2'],
-                          position: 'absolute',
-                          right: -25
-                        }}
-                        onPress={() => {
-                          setIsSortModalOpen(true);
-                        }}
-                      >
-                        <Text
-                          style={{
-                            ...styles.title,
-                            marginRight: spacing['10'],
-                            textTransform: 'uppercase',
-                            color: colors['sub-primary-text'],
-                            marginBottom: spacing['8']
-                          }}
-                        >
-                          {sortItem.label}
-                        </Text>
-                        <ArrowOpsiteUpDownIcon
-                          size={24}
-                          color={colors['border']}
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  }
-                />
-              </View>
-            </View>
-          );
-        }}
+      <View>
+        <OWSubTitleHeader title="Active validators" />
+        <View style={styles.containerHeader}>
+          <TextInput
+            label="Search"
+            placeholder="Search"
+            labelStyle={{
+              display: 'none'
+            }}
+            containerStyle={styles.containerSearch}
+            value={search}
+            onChangeText={(text) => {
+              setSearch(text);
+            }}
+            paragraph={paragraph}
+          />
+        </View>
+      </View>
+      <OWFlatList
+        data={data}
+        renderItem={renderItem}
+        ItemSeparatorComponent={separateComponentItem}
       />
-    </PageWithViewInBottomTabView>
+    </PageWithView>
   );
 });
 
@@ -364,6 +320,36 @@ const ValidatorItem: FunctionComponent<{
 
 const styling = colors =>
   StyleSheet.create({
+    containerSearch: {
+      padding: 0
+    },
+    titleLabel: {
+      marginRight: spacing['10'],
+      textTransform: 'uppercase',
+
+      marginBottom: spacing['8']
+    },
+    sortBtn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: spacing['2'],
+      position: 'absolute',
+      right: -25
+    },
+    flexRow: {
+      flex: 1,
+      flexDirection: 'row'
+    },
+    containerParagraph: {
+      flexDirection: 'row',
+      marginTop: spacing['32'],
+      marginHorizontal: spacing['16']
+    },
+    containerHeader: {
+      paddingHorizontal: spacing['24'],
+      paddingTop: spacing['24'],
+      paddingBottom: spacing['4']
+    },
     title: {
       ...typography.h7,
       fontWeight: '400',
