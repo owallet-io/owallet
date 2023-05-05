@@ -598,7 +598,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm'],
     txExplorer: {
       name: 'Bsc Scan Testnet',
-      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
+      txUrl: 'https://testnet.bscscan.com/tx/{txHash}',
       accountUrl: 'https://testnet.bscscan.com/address/{address}'
     }
   },
@@ -727,7 +727,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
       name: 'Bsc Scan',
-      txUrl: 'https://bscscan.com/tx/${txHash}',
+      txUrl: 'https://bscscan.com/tx/{txHash}',
       accountUrl: 'https://bscscan.com/address/{address}'
     }
   },

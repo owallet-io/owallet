@@ -79,14 +79,13 @@ const TransactionDetailScreen = observer(() => {
   };
 
   const onViewScan = () => {
-    WebBrowser.openBrowserAsync(
-      chainStore?.current?.raw?.txExplorer.txUrl.replace(
-        '{txHash}',
-        chainStore?.current.chainId === ChainIdEnum?.TRON
-          ? txHash
-          : txHash.toUpperCase()
-      )
+    const url = chainStore?.current?.raw?.txExplorer.txUrl.replace(
+      '{txHash}',
+      txHash
     );
+    console.log('url: ', url);
+
+    WebBrowser.openBrowserAsync(url);
   };
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
 
@@ -255,9 +254,14 @@ const TransactionDetailScreen = observer(() => {
             value={`${data?.fee} ${data?.denomFee || ''}`}
           />
         ) : null}
-        <ItemDetail label="Time" value={data?.time?.timeLong} borderBottom={!!chainStore?.current?.raw?.txExplorer} />
-        {chainStore?.current?.raw?.txExplorer && <ItemBtnViewOnScan onPress={onViewScan} />}
-        
+        <ItemDetail
+          label="Time"
+          value={data?.time?.timeLong}
+          borderBottom={!!chainStore?.current?.raw?.txExplorer}
+        />
+        {chainStore?.current?.raw?.txExplorer && (
+          <ItemBtnViewOnScan onPress={onViewScan} />
+        )}
       </TransactionBox>
 
       {itemEvents?.typeId !== 0 && itemEvents?.value?.map(handleMapData)}
