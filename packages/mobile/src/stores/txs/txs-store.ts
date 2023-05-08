@@ -47,6 +47,20 @@ export class TxsStore extends Txs {
       console.log('error: ', error);
     }
   }
+  async getReceiveTxs(
+    page: number,
+    current_page: number,
+    params: ParamsFilterReqTxs
+  ): Promise<Partial<ResTxs>> {
+    try {
+      if (this.networkType === NetworkEnum.Cosmos) {
+        return await this.txsCosmos.getReceiveTxs(page, current_page, params);
+      }
+      return;
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  }
   async getAllMethodActionTxs(
     addressAccount?: string
   ): Promise<Partial<ResTxs>> {

@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import React, {
   useCallback,
   useEffect,
@@ -23,10 +23,12 @@ import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 import TypeModal from './components/type-modal';
 import ButtonFilter from './components/button-filter';
 import { TendermintTxTracer } from '@owallet/cosmos';
+import { OWButtonPage } from '@src/components/button';
+import { Text } from '@src/components/text';
 
 const HistoryTransactionsScreen = observer(() => {
   const { chainStore, accountStore, txsStore, modalStore } = useStore();
-
+  const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
@@ -35,6 +37,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const page = useRef(0);
+  const [activePage, setActivePage] = useState(0);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
   const txsHelper = createTxsHelper();
@@ -56,10 +59,14 @@ const HistoryTransactionsScreen = observer(() => {
           setRefreshing(true);
         }
         if (hasMore.current) {
-          const rs = await requestData(isLoadMore, {
-            addressAccount: params?.address,
-            action: params?.action
-          });
+          const rs = await requestData(
+            isLoadMore,
+            {
+              addressAccount: params?.address,
+              action: params?.action
+            },
+            params?.activePage
+          );
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
           // hasMore.current = rs.result?.length === perPage;
           page.current = rs?.current_page + 1;
@@ -69,11 +76,7 @@ const HistoryTransactionsScreen = observer(() => {
           if (rs.result?.length < 1) {
             hasMore.current = false;
           }
-          setData(
-            chainStore.current.networkType == 'cosmos'
-              ? txsHelper.sortByTimestamp(txsHelper.uniqueArrayByHash(newData))
-              : newData
-          );
+          setData(newData);
           setAllLoading();
         } else {
           setAllLoading();
@@ -100,13 +103,21 @@ const HistoryTransactionsScreen = observer(() => {
       setLoadingType(false);
     }
   };
-  const requestData = async (isLoadMore, params) => {
+  const requestData = async (isLoadMore, params, activePage) => {
     try {
       if (!isLoadMore) {
         setLoading(true);
-        return await txs.getTxs(perPage, 0, params);
+        if (activePage === 0) {
+          return await txs.getTxs(perPage, 0, params);
+        } else if (activePage === 1) {
+          return await txs.getReceiveTxs(perPage, 0, params);
+        }
       } else {
-        return await txs.getTxs(perPage, page.current, params);
+        if (activePage === 0) {
+          return await txs.getTxs(perPage, page.current, params);
+        } else if (activePage === 1) {
+          return await txs.getReceiveTxs(perPage, page.current, params);
+        }
       }
     } catch (error) {
       setLoading(false);
@@ -114,11 +125,11 @@ const HistoryTransactionsScreen = observer(() => {
   };
 
   useEffect(() => {
-    refreshData({ activeType: defaultAll });
+    refreshData({ activeType: defaultAll, activePage });
     return () => {
       setData([]);
     };
-  }, []);
+  }, [activePage]);
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -142,7 +153,7 @@ const HistoryTransactionsScreen = observer(() => {
     };
   }, [chainStore, isFocused, data]);
   const refreshData = useCallback(
-    ({ activeType, isActiveType }) => {
+    ({ activeType, isActiveType, activePage }) => {
       page.current = 0;
       hasMore.current = true;
       fetchData(
@@ -152,7 +163,8 @@ const HistoryTransactionsScreen = observer(() => {
               ? account.evmosHexAddress
               : account.bech32Address,
           action: activeType?.value,
-          isActiveType
+          isActiveType,
+          activePage
         },
         false
       );
@@ -164,14 +176,18 @@ const HistoryTransactionsScreen = observer(() => {
     ]
   );
   const styles = styling();
-  const onActionType = useCallback((item) => {
-    setActiveType(item);
-    modalStore.close();
-    refreshData({
-      activeType: item,
-      isActiveType: true
-    });
-  }, []);
+  const onActionType = useCallback(
+    (item) => {
+      setActiveType(item);
+      modalStore.close();
+      refreshData({
+        activeType: item,
+        isActiveType: true,
+        activePage
+      });
+    },
+    [activePage]
+  );
 
   const onType = useCallback(() => {
     modalStore.setOpen();
@@ -192,20 +208,22 @@ const HistoryTransactionsScreen = observer(() => {
             chainStore.current.networkType === 'evm'
               ? account.evmosHexAddress
               : account.bech32Address,
-          action: activeType?.value
+          action: activeType?.value,
+          activePage
         },
         true
       );
     }
-  }, [data, activeType]);
-  const onRefresh = () => {
+  }, [data, activeType, activePage]);
+  const onRefresh = useCallback(() => {
     // setRefreshing(true);
     setActiveType(defaultAll);
     refreshData({
       activeType: defaultAll,
-      isActiveType: true
+      isActiveType: true,
+      activePage
     });
-  };
+  }, [activePage]);
   const setAllLoading = () => {
     setLoadMore(false);
     setLoading(false);
@@ -244,9 +262,57 @@ const HistoryTransactionsScreen = observer(() => {
     }
     return null;
   }, [activeType, dataType, loadingType]);
+
   return (
     <PageWithView>
-      <OWBox style={styles.container}>
+      {chainStore?.current?.networkType === 'cosmos' ||
+      chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm ? (
+        <View
+          style={[
+            styles.containerBtnPage,
+            { backgroundColor: colors['background-box'], borderRadius: 16 }
+          ]}
+        >
+          {['Transfer', 'Receive'].map((title: string, i: number) => (
+            <TouchableOpacity
+              key={i}
+              style={{
+                width: (metrics.screenWidth - 60) / 2,
+                alignItems: 'center',
+                paddingVertical: spacing['12'],
+                backgroundColor:
+                  activePage === i
+                    ? colors['purple-700']
+                    : colors['background-box'],
+                borderRadius: spacing['12']
+              }}
+              onPress={() => {
+                setActivePage(i);
+                setActiveType(defaultAll);
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: activePage === i ? colors['white'] : colors['gray-300']
+                }}
+              >
+                {title}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      ) : null}
+      <OWBox
+        style={[
+          styles.container,
+          (chainStore?.current?.networkType === 'cosmos' ||
+            chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm) && {
+            marginTop: 0
+          }
+        ]}
+      >
         <View style={styles.containerFilter}>{handleCheckFilter}</View>
         <OWFlatList
           data={data}
@@ -300,6 +366,15 @@ const SkeletonTypeBtn = () => {
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    containerBtnPage: {
+      flexDirection: 'row',
+      // justifyContent: 'space-around',
+      marginVertical: 20,
+      justifyContent: 'center',
+      paddingVertical: 6,
+      paddingHorizontal: 8,
+      marginHorizontal: 24
+    },
     fixedScroll: {
       position: 'absolute',
       bottom: 0,
