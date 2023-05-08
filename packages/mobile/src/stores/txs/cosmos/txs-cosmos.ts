@@ -44,26 +44,40 @@ export class TxsCosmos extends Txs {
       if (params?.token) {
         return this.getTxsByToken(page, current_page, params);
       }
-      const query = [
+      const querySender = [
         `message.sender='${params?.addressAccount}'`,
         params?.action !== 'All' ? `message.action='${params?.action}'` : ''
       ];
-      const data = await API.getTxsLcdCosmos(
+      const dataSender = API.getTxsLcdCosmos(
         this.currentChain.rest,
-        this.txsHelper.removeEmptyElements(query),
+        this.txsHelper.removeEmptyElements(querySender),
         page,
-        current_page * 10
+        current_page * page
       );
-
+      const queryReceive = [
+        `transfer.recipient='${params?.addressAccount}'`,
+        params?.action !== 'All' ? `message.action='${params?.action}'` : ''
+      ];
+      const dataRecipient = API.getTxsLcdCosmos(
+        this.currentChain.rest,
+        this.txsHelper.removeEmptyElements(queryReceive),
+        page,
+        current_page * page
+      );
+      const rs = await Promise.all([dataSender, dataRecipient]);
       const rsConverted = this.txsHelper.cleanDataCosmosToStandFormat(
-        data.tx_responses,
+        [...rs[0].tx_responses, ...rs[1].tx_responses],
         this.currentChain,
         params?.addressAccount
       );
       return Promise.resolve({
         result: rsConverted,
         current_page,
-        total_page: Math.ceil(parseInt(data?.pagination?.total) / page) || 1
+        total_page:
+          parseInt(rs[0]?.pagination?.total) >
+          parseInt(rs[1]?.pagination?.total)
+            ? Math.ceil(parseInt(rs[0]?.pagination?.total) / page)
+            : Math.ceil(parseInt(rs[1]?.pagination?.total) / page) || 1
       });
     } catch (error) {
       throw new Error(error);

@@ -10,7 +10,7 @@ import { PageWithView } from '@src/components/page';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
-import { _keyExtract, limitString } from '@src/utils/helper';
+import { _keyExtract, limitString, createTxsHelper } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { OWBox } from '@src/components/card';
 import { metrics, spacing } from '@src/themes';
@@ -37,7 +37,7 @@ const HistoryTransactionsScreen = observer(() => {
   const page = useRef(0);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
-
+  const txsHelper = createTxsHelper();
   const hasMore = useRef(true);
   const perPage = 10;
   const txs = txsStore(
@@ -61,7 +61,7 @@ const HistoryTransactionsScreen = observer(() => {
             action: params?.action
           });
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
-          hasMore.current = rs.result?.length === perPage;
+          // hasMore.current = rs.result?.length === perPage;
           page.current = rs?.current_page + 1;
           if (rs?.current_page === rs?.total_page) {
             hasMore.current = false;
@@ -69,7 +69,11 @@ const HistoryTransactionsScreen = observer(() => {
           if (rs.result?.length < 1) {
             hasMore.current = false;
           }
-          setData(newData);
+          setData(
+            chainStore.current.networkType == 'cosmos'
+              ? txsHelper.sortByTimestamp(txsHelper.uniqueArrayByHash(newData))
+              : newData
+          );
           setAllLoading();
         } else {
           setAllLoading();
