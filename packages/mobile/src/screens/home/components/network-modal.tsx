@@ -141,7 +141,7 @@ export const NetworkModal = ({
               style={{
                 ...typography.h6,
                 color: colors['sub-primary-text'],
-                fontWeight: '900',
+                fontWeight: '900'
               }}
               numberOfLines={1}
             >
@@ -192,7 +192,7 @@ export const NetworkModal = ({
       >
         <TouchableOpacity
           onPress={() => {
-            smartNavigation.navigateSmart('Network.select', {});
+            smartNavigation.navigateSmart('Network.token', {});
             modalStore.close();
           }}
         >
@@ -203,7 +203,7 @@ export const NetworkModal = ({
               color: colors['purple-700']
             }}
           >
-            + Add more
+            + Add token
           </Text>
         </TouchableOpacity>
       </View>
@@ -245,7 +245,7 @@ export const NetworkModal = ({
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

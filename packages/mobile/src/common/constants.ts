@@ -33,6 +33,7 @@ export const SCREENS = {
   Governance: 'Governance',
   GovernanceDetails: 'Governance.Details',
   NetworkSelect: 'Network.select',
+  NetworkToken: 'Network.token',
   ValidatorDetails: 'Validator.Details',
   ValidatorList: 'Validator.List',
   TxPendingResult: 'TxPendingResult',
@@ -131,7 +132,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.TransferTokensScreen]: {
     title: HEADER_KEY.showNetworkHeader,
-    showTabBar:true
+    showTabBar: true
   },
   [SCREENS.RegisterIntro]: {
     title: HEADER_KEY.notShowHeader
@@ -182,6 +183,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.NetworkSelect]: {
+    title: HEADER_KEY.showNetworkHeader
+  },
+  [SCREENS.NetworkToken]: {
     title: HEADER_KEY.showNetworkHeader
   },
   [SCREENS.ValidatorDetails]: {
