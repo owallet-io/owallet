@@ -45,9 +45,11 @@ export const TokensScreen: FunctionComponent = observer(() => {
   return (
     <PageWithView backgroundColor={colors['background']}>
       <OWSubTitleHeader title="My Tokens" />
-      <OWBox style={{
-        flex:1
-      }}>
+      <OWBox
+        style={{
+          flex: 1
+        }}
+      >
         <OWFlatList
           data={unique}
           showsVerticalScrollIndicator={false}

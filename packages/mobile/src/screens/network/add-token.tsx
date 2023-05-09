@@ -15,6 +15,7 @@ import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-check-box';
 import { useTheme } from '@src/themes/theme-provider';
 import { CW20Currency, Secret20Currency } from '@owallet/types';
+import { observer } from 'mobx-react-lite';
 
 interface FormData {
   viewingKey: string;
@@ -131,13 +132,12 @@ export const SelectFeatures = ({ onChange, networkType }) => {
   );
 };
 
-export const AddTokenScreen = () => {
+export const AddTokenScreen = observer(() => {
   const {
     control,
     handleSubmit,
-    setFocus,
     getValues,
-    setValue,
+    watch,
     formState: { errors }
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
@@ -154,8 +154,7 @@ export const AddTokenScreen = () => {
     }
   });
 
-  // const contractAddress = form.watch('contractAddress');
-  const contractAddress = '';
+  const contractAddress = watch('contractAddress');
 
   useEffect(() => {
     if (tokensStore.waitingSuggestedToken) {
@@ -184,6 +183,7 @@ export const AddTokenScreen = () => {
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
+
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
 
@@ -205,8 +205,6 @@ export const AddTokenScreen = () => {
   };
 
   const submit = handleSubmit(async data => {
-    const { contractAddress } = getValues();
-
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         if (!isSecret20) {
@@ -249,7 +247,7 @@ export const AddTokenScreen = () => {
         }
       }
     } catch (err) {
-      // alert('Oops! Something went wrong!');
+      alert('Oops! Something went wrong!');
     }
   });
 
@@ -333,7 +331,7 @@ export const AddTokenScreen = () => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        // value={'value'}
+        value={tokenInfo?.name ?? '-'}
         defaultValue={'-'}
         editable={false}
       />
@@ -350,7 +348,7 @@ export const AddTokenScreen = () => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        // value={'value'}
+        value={tokenInfo?.symbol ?? '-'}
         defaultValue={'-'}
         editable={false}
       />
@@ -367,10 +365,25 @@ export const AddTokenScreen = () => {
           submit();
         }}
         error={errors.contractAddress?.message}
-        // value={'value'}
+        value={tokenInfo?.decimals.toString() ?? '-'}
         defaultValue={'-'}
         editable={false}
       />
+
+      {isSecret20 ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <CheckBox
+            style={{ flex: 1, padding: 14 }}
+            checkBoxColor={colors['primary-text']}
+            checkedCheckBoxColor={colors['primary-text']}
+            onClick={() => {
+              setIsOpenSecret20ViewingKey(value => !value);
+            }}
+            isChecked={isOpenSecret20ViewingKey}
+          />
+          <Text style={{ paddingLeft: 16 }}>{'Viewing key'}</Text>
+        </View>
+      ) : null}
 
       <TouchableOpacity
         disabled={false}
@@ -419,7 +432,7 @@ export const AddTokenScreen = () => {
       </TouchableOpacity>
     </PageWithScrollView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   borderInput: {
