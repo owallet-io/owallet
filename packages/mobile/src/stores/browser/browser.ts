@@ -50,7 +50,7 @@ export const DAppInfos = [
   {
     id: 13,
     name: 'aiRight',
-    uri: ' https://airight.io',
+    uri: 'https://airight.io',
     logo: oraiLogo
   }
 ];
@@ -79,7 +79,7 @@ export class BrowserStore {
 
   @action
   removeBoorkmark(boorkmark) {
-    const rIndex = this.bookmarks.findIndex(b => b.uri === boorkmark.uri);
+    const rIndex = this.bookmarks.findIndex((b) => b.uri === boorkmark.uri);
     if (rIndex > -1) {
       this.bookmarks.splice(rIndex, 1);
     }
@@ -87,7 +87,7 @@ export class BrowserStore {
 
   @action
   addBoorkmark(boorkmark) {
-    const rIndex = this.bookmarks.findIndex(b => b.uri === boorkmark?.uri);
+    const rIndex = this.bookmarks.findIndex((b) => b.uri === boorkmark?.uri);
     if (rIndex < 0) {
       this.bookmarks.push(boorkmark);
     }
@@ -110,7 +110,7 @@ export class BrowserStore {
 
   @action
   checkTabOpen(tab) {
-    const tabOpen = this.tabs.find(t => {
+    const tabOpen = this.tabs.find((t) => {
       return t?.uri === tab?.uri;
     });
 
@@ -129,7 +129,7 @@ export class BrowserStore {
 
   @action
   removeTab(tab) {
-    const rTabIndex = this.tabs.findIndex(t => t.id === tab.id);
+    const rTabIndex = this.tabs.findIndex((t) => t.id === tab.id);
     if (rTabIndex > -1) {
       this.tabs.splice(rTabIndex, 1);
     }
