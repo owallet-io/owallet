@@ -49,6 +49,14 @@ export const SwtichTab: FunctionComponent<{
 
   useEffect(() => {
     setTabs(browserStore.getTabs);
+    navigation.setOptions({
+      headerShown: false,
+    })
+    return ()=>{
+      navigation.setOptions({
+        headerShown: true,
+      })
+    }
   }, []);
 
   const renderItem = ({ item, index }) => {
