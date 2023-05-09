@@ -35,6 +35,43 @@ export class TxsCosmos extends Txs {
       total_page: Math.ceil(parseInt(data?.total_count) / page) || 1
     });
   }
+
+  async getReceiveTxs(
+    page: number,
+    current_page: number,
+    params: ParamsFilterReqTxs
+  ): Promise<Partial<ResTxs>> {
+    try {
+      if (params?.token) {
+        return this.getTxsByToken(page, current_page, params);
+      }
+      const queryReceive = [
+        `transfer.recipient='${params?.addressAccount}'`,
+        params?.action !== 'All' ? `message.action='${params?.action}'` : ''
+      ];
+      const dataRecipient = await API.getTxsLcdCosmos(
+        this.currentChain.rest,
+        this.txsHelper.removeEmptyElements(queryReceive),
+        page,
+        current_page * page
+      );
+
+      // const rs = await Promise.all([dataSender, dataRecipient]);
+      const rsConverted = this.txsHelper.cleanDataCosmosToStandFormat(
+        dataRecipient.tx_responses,
+        this.currentChain,
+        params?.addressAccount
+      );
+      return Promise.resolve({
+        result: rsConverted,
+        current_page,
+        total_page:
+          Math.ceil(parseInt(dataRecipient?.pagination?.total) / page) || 1
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
   async getTxs(
     page: number,
     current_page: number,
@@ -44,26 +81,28 @@ export class TxsCosmos extends Txs {
       if (params?.token) {
         return this.getTxsByToken(page, current_page, params);
       }
-      const query = [
+      const querySender = [
         `message.sender='${params?.addressAccount}'`,
         params?.action !== 'All' ? `message.action='${params?.action}'` : ''
       ];
-      const data = await API.getTxsLcdCosmos(
+      const dataSender = await API.getTxsLcdCosmos(
         this.currentChain.rest,
-        this.txsHelper.removeEmptyElements(query),
+        this.txsHelper.removeEmptyElements(querySender),
         page,
-        current_page * 10
+        current_page * page
       );
 
+      // const rs = await Promise.all([dataSender, dataRecipient]);
       const rsConverted = this.txsHelper.cleanDataCosmosToStandFormat(
-        data.tx_responses,
+        dataSender.tx_responses,
         this.currentChain,
         params?.addressAccount
       );
       return Promise.resolve({
         result: rsConverted,
         current_page,
-        total_page: Math.ceil(parseInt(data?.pagination?.total) / page) || 1
+        total_page:
+          Math.ceil(parseInt(dataSender?.pagination?.total) / page) || 1
       });
     } catch (error) {
       throw new Error(error);

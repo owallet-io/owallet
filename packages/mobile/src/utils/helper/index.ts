@@ -5,6 +5,7 @@ import moment from 'moment';
 import { getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
+import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -95,7 +96,6 @@ export const handleError = (error, url, method) => {
   }
 };
 
-
 export const handleDeepLink = async ({ url }) => {
   if (url) {
     const path = url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '');
@@ -151,7 +151,6 @@ export const TRANSACTION_TYPE = {
   INSTANTIATE_CONTRACT: 'MsgInstantiateContract',
   EXECUTE_CONTRACT: 'MsgExecuteContract'
 };
-
 
 export const getValueFromDataEvents = (arr) => {
   if (arr.length === 1) {
@@ -368,7 +367,7 @@ export const convertAmount = (amount: any) => {
   }
 };
 
-export const getDomainFromUrl = url => {
+export const getDomainFromUrl = (url) => {
   if (!url) {
     return '';
   }
@@ -380,7 +379,7 @@ export const getDomainFromUrl = url => {
     .replace('http://', '');
 };
 
-export const parseIbcMsgRecvPacket = denom => {
+export const parseIbcMsgRecvPacket = (denom) => {
   return denom?.slice(0, 1) === 'u' ? denom?.slice(1, denom?.length) : denom;
 };
 export function addTimeProperty(array1, array2) {
@@ -409,7 +408,7 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
             if (att?.['key'] === 'action') {
               let attValue = att?.['value']
                 .split('_')
-                .map(word => word?.charAt(0).toUpperCase() + word?.slice(1))
+                .map((word) => word?.charAt(0).toUpperCase() + word?.slice(1))
                 .join('');
               typeMsg += '/' + attValue;
               break;
@@ -431,10 +430,10 @@ export const parseIbcMsgTransfer = (
   key = 'packet_data'
 ) => {
   const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
+    rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
   const ibcDemonPackData =
     arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
+    arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
     typeof ibcDemonPackData?.value === 'string' ||
     ibcDemonPackData?.value instanceof String
@@ -541,4 +540,8 @@ export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
 
 export const isBase58 = (value: string): boolean =>
   /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
-  export { get };
+export function createTxsHelper() {
+  return new TxsHelper();
+}
+
+export { get };
