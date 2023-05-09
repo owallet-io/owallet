@@ -172,6 +172,7 @@ interface ResultDataTron {
 interface timeTxs {
   timeLong: string;
   timeShort: string;
+  timestamp: number;
 }
 interface IInfoApi {
   RPC?: string;

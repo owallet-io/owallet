@@ -62,6 +62,24 @@ export class TxsHelper {
       return false;
     }
   }
+  sortByTimestamp(array: Partial<ResTxsInfo>[]): Partial<ResTxsInfo>[] {
+    if (!array) throw new Error('Array is not empty to sort txs by timestamp');
+    return array.sort((a, b) => b.time.timestamp - a.time.timestamp);
+  }
+  uniqueArrayByHash<T>(array: T[]): T[] {
+    const hashSet: { [key: string]: boolean } = {};
+    const uniqueArray: T[] = [];
+
+    for (const item of array) {
+      const hash = item?.txHash;
+      if (!hashSet[hash]) {
+        hashSet[hash] = true;
+        uniqueArray.push(item);
+      }
+    }
+
+    return uniqueArray;
+  }
   removeZeroNumberLast(str) {
     if (!str) return str;
     if (this.checkZeros(str)) {
@@ -119,12 +137,14 @@ export class TxsHelper {
       // Combine the formatted and relative strings
       return {
         timeLong: relative + ' (' + formatted + ')',
-        timeShort: relative
+        timeShort: relative,
+        timestamp
       };
     } else {
       return {
         timeLong: '',
-        timeShort: ''
+        timeShort: '',
+        timestamp: 0
       };
     }
   }
@@ -142,12 +162,14 @@ export class TxsHelper {
       // Combine the formatted and relative strings
       return {
         timeLong: relative + ' (' + formatted + ')',
-        timeShort: relative
+        timeShort: relative,
+        timestamp
       };
     } else {
       return {
         timeLong: '',
-        timeShort: ''
+        timeShort: '',
+        timestamp: 0
       };
     }
   }
@@ -698,7 +720,8 @@ export class TxsHelper {
     item.memo = '';
     item.time = {
       timeLong: '',
-      timeShort: ''
+      timeShort: '',
+      timestamp: 0
     };
     if (data?.tx_result?.code === 0) {
       const logs = data?.tx_result?.log && JSON.parse(data?.tx_result?.log);

@@ -22,7 +22,7 @@ const OWTransactionItem = observer(
       <TouchableOpacity {...props}>
         <View style={styles.item}>
           <View style={[styles.flexRow, { paddingBottom: 5 }]}>
-            <Text color={colors['blue-300']} size={12}>
+            <Text color={colors['title-modal-login-failed']} size={12}>
               {formatContractAddress(item?.txHash, 5)}
             </Text>
             {!!itemTransfer?.typeEvent ? (

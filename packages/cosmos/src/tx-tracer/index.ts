@@ -247,6 +247,14 @@ export class TendermintTxTracer {
         JSON.stringify({
           jsonrpc: '2.0',
           method: 'subscribe',
+          params: [`tm.event='Tx' AND transfer.recipient = '${address}'`],
+          id
+        })
+      );
+      this.ws.send(
+        JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'subscribe',
           params: [`tm.event='Tx' AND message.sender = '${address}'`],
           id
         })
