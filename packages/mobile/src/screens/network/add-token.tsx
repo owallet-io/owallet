@@ -7,13 +7,9 @@ import { Text } from '@src/components/text';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../components/input';
 import { LoadingSpinner } from '../../components/spinner';
-import { useSimpleTimer } from '../../hooks';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-import { Bech32Address } from '@owallet/cosmos';
-import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-check-box';
-import { useTheme } from '@src/themes/theme-provider';
 import { CW20Currency, Secret20Currency } from '@owallet/types';
 import { observer } from 'mobx-react-lite';
 
@@ -22,121 +18,10 @@ interface FormData {
   contractAddress: string;
 }
 
-export const SelectNetworkType = ({ onChange }) => {
-  const { colors } = useTheme();
-  const [radioButtons, setRadioButtons] = useState([
-    {
-      id: 'cosmos',
-      label: 'Cosmos',
-      value: 'cosmos',
-      selected: true,
-      borderColor: colors['primary-text'],
-      labelStyle: {
-        color: colors['primary-text']
-      }
-    },
-    {
-      id: 'evm',
-      label: 'EVM',
-      value: 'evm',
-      borderColor: colors['primary-text'],
-      labelStyle: {
-        color: colors['primary-text']
-      }
-    }
-  ]);
-
-  function onPressRadioButton(radioButtonGroup) {
-    setRadioButtons(radioButtonGroup);
-    const selected = radioButtonGroup.find(rb => rb.selected);
-    onChange && onChange(selected);
-  }
-
-  return (
-    <RadioGroup
-      layout={'row'}
-      radioButtons={radioButtons}
-      onPress={onPressRadioButton}
-    />
-  );
-};
-
-const features = [
-  'stargate',
-  'ibc-transfer',
-  'cosmwasm',
-  'secretwasm',
-  'ibc-go',
-  'isEvm',
-  'no-legacy-stdTx'
-];
-
-export const SelectFeatures = ({ onChange, networkType }) => {
-  const [selected, setSelected] = useState([]);
-  const { colors } = useTheme();
-  useEffect(() => {
-    if (networkType === 'evm') {
-      setSelected(['ibc-go', 'stargate', 'isEvm']);
-    } else {
-      setSelected([
-        'stargate',
-        'ibc-go',
-        'ibc-transfer',
-        'cosmwasm',
-        'no-legacy-stdTx'
-      ]);
-    }
-  }, [networkType]);
-
-  return (
-    <View
-      style={{
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        maxHeight: 150
-      }}
-    >
-      {features.map(f => {
-        return (
-          <View key={f} style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <CheckBox
-              disabled={
-                (networkType === 'cosmos' &&
-                  (f === 'isEvm' || f === 'secretwasm')) ||
-                (networkType === 'evm' && f === 'cosmwasm')
-              }
-              style={{ flex: 1, padding: 14 }}
-              checkBoxColor={colors['primary-text']}
-              checkedCheckBoxColor={colors['primary-text']}
-              onClick={() => {
-                const tempArr = [...selected];
-                if (selected.includes(f)) {
-                  const index = selected.indexOf(f);
-                  if (index > -1) {
-                    tempArr.splice(index, 1);
-                    setSelected(tempArr);
-                  }
-                } else {
-                  tempArr.push(f);
-                  setSelected(tempArr);
-                }
-                onChange(tempArr);
-              }}
-              isChecked={selected.includes(f)}
-            />
-            <Text style={{ paddingLeft: 16 }}>{f}</Text>
-          </View>
-        );
-      })}
-    </View>
-  );
-};
-
 export const AddTokenScreen = observer(() => {
   const {
     control,
     handleSubmit,
-    getValues,
     watch,
     formState: { errors }
   } = useForm<FormData>();
