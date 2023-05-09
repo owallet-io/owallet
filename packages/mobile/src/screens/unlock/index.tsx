@@ -36,6 +36,8 @@ import { MaintainScreen } from '../../components/maintain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButton from '@src/components/button/OWButton';
+import { showToast } from '@src/utils/helper';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 let splashScreenHided = false;
 async function hideSplashScreen() {
   if (!splashScreenHided) {
@@ -112,7 +114,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     accountStore,
     chainStore,
     appInitStore,
-    notificationStore,
+    notificationStore
   } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -290,6 +292,11 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // console.log('message', data.message);
       });
     const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      showToast({
+        text1: remoteMessage?.notification?.title,
+        text2: remoteMessage?.notification?.body,
+        onPress: () => Toast.hide()
+      });
       // const formatData = JSON.parse(remoteMessage?.data?.data);
       // console.log('raw', remoteMessage?.data);
       // console.log('formattedData', formatData);

@@ -29,10 +29,11 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { API } from '../../common/api';
-import { TRON_ID } from '../../utils/helper';
+import { TRON_ID, showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
-export const HomeScreen: FunctionComponent = observer(props => {
+export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const { colors } = useTheme();
   const navigation = useNavigation();
@@ -83,24 +84,38 @@ export const HomeScreen: FunctionComponent = observer(props => {
       AppState.removeEventListener('change', appStateHandler);
     };
   }, [checkAndUpdateChainInfo]);
-
+  const onNavigateToTransaction = () => {
+    navigation.navigate('Others', {
+      screen: 'Transactions'
+    });
+    Toast.hide();
+    return;
+  };
   useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
+    messaging().onNotificationOpenedApp((remoteMessage) => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage
       );
-      navigation.navigate('Others', {
-        screen: 'Transactions'
-      });
+      onNavigateToTransaction();
     });
     messaging()
       .getInitialNotification()
-      .then(async remoteMessage => {
+      .then(async (remoteMessage) => {
+        // showToast({
+        //   title:remoteMessage?.notification?.title,
+        //   text:remoteMessage?.notification?.body,
+        // })
+        console.log('remoteMessage2: ', remoteMessage);
         // const data = JSON.parse(remoteMessage?.data?.data);
         // console.log('message', data.message);
       });
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      showToast({
+        text1: remoteMessage?.notification?.title,
+        text2: remoteMessage?.notification?.body,
+        onPress: onNavigateToTransaction
+      });
       // const formatData = JSON.parse(remoteMessage?.data?.data);
       // console.log('raw', remoteMessage?.data);
       // console.log('formattedData', formatData);
@@ -177,7 +192,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
       priceStore.waitFreshResponse(),
       ...queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
-        .balances.map(bal => {
+        .balances.map((bal) => {
           return bal.waitFreshResponse();
         }),
       queries.cosmos.queryRewards
@@ -227,7 +242,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
