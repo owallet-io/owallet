@@ -68,15 +68,18 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   const [data, setData] = useState([]);
   const { colors } = useTheme();
 
-  const removeBookmark = (bm) => {
-    const tmpData = [...data];
-    const rIndex = tmpData.findIndex((b) => b.uri === bm.uri);
-    if (rIndex > -1) {
-      tmpData.splice(rIndex, 1);
-    }
-    setData(tmpData);
-    browserStore.removeBoorkmark(bm);
-  };
+  const removeBookmark = useCallback(
+    (bm) => {
+      const tmpData = [...browserStore.getBookmarks];
+      const rIndex = tmpData.findIndex((b) => b.uri === bm.uri);
+      if (rIndex > -1) {
+        tmpData.splice(rIndex, 1);
+      }
+      setData(tmpData);
+      browserStore.removeBoorkmark(bm);
+    },
+    [browserStore.getBookmarks]
+  );
 
   useEffect(() => {
     setData(browserStore.getBookmarks);
