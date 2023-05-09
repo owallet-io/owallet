@@ -68,21 +68,24 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   const [data, setData] = useState([]);
   const { colors } = useTheme();
 
-  const removeBookmark = bm => {
-    const tmpData = [...data];
-    const rIndex = tmpData.findIndex(b => b.uri === bm.uri);
-    if (rIndex > -1) {
-      tmpData.splice(rIndex, 1);
-    }
-    setData(tmpData);
-    browserStore.removeBoorkmark(bm);
-  };
+  const removeBookmark = useCallback(
+    (bm) => {
+      const tmpData = [...browserStore.getBookmarks];
+      const rIndex = tmpData.findIndex((b) => b.uri === bm.uri);
+      if (rIndex > -1) {
+        tmpData.splice(rIndex, 1);
+      }
+      setData(tmpData);
+      browserStore.removeBoorkmark(bm);
+    },
+    [browserStore.getBookmarks]
+  );
 
   useEffect(() => {
     setData(browserStore.getBookmarks);
   }, []);
 
-  const onHandleUrl = uri => {
+  const onHandleUrl = (uri) => {
     let currentUri = uri;
     if (currentUri !== '') {
       if (checkValidDomain(currentUri?.toLowerCase())) {
@@ -168,7 +171,6 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
       <View style={{ opacity: isOpenSetting ? 0.8 : 1 }}>
-        <BrowserSectionTitle title="" />
         <View
           style={StyleSheet.flatten([
             style.flatten(['height-full']),
