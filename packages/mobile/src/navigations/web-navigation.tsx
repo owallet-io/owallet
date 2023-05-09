@@ -10,7 +10,7 @@ import { DAppWebpageScreen } from '@src/screens/web/webpages';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-export const WebpageHeaderOptions = ({ navigation, title }) => {
+export const WebpageHeaderOptions = ({ navigation, title }):any => {
   const { colors } = useTheme();
   return {
     headerShown: true,
@@ -34,6 +34,7 @@ export const WebpageHeaderOptions = ({ navigation, title }) => {
     },
     headerTitle: title,
     headerTitleAlign: 'center',
+    headerTitleStyle:{color:colors['text-title-login']},
     headerStyle: {
       backgroundColor: colors['background'],
       shadowColor: 'transparent',
