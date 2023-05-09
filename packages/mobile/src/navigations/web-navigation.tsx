@@ -10,7 +10,7 @@ import { DAppWebpageScreen } from '@src/screens/web/webpages';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-export const WebpageHeaderOptions = ({ navigation }) => {
+export const WebpageHeaderOptions = ({ navigation, title }) => {
   const { colors } = useTheme();
   return {
     headerShown: true,
@@ -32,7 +32,8 @@ export const WebpageHeaderOptions = ({ navigation }) => {
         );
       return null;
     },
-    headerTitle: '',
+    headerTitle: title,
+    headerTitleAlign: 'center',
     headerStyle: {
       backgroundColor: colors['background'],
       shadowColor: 'transparent',
@@ -40,11 +41,10 @@ export const WebpageHeaderOptions = ({ navigation }) => {
       elevation: 0
     }
   };
-}
+};
 const Stack = createStackNavigator();
 export const WebNavigation: FC = () => {
   const navigation = useNavigation();
-  
 
   return (
     <Stack.Navigator
@@ -55,12 +55,16 @@ export const WebNavigation: FC = () => {
       headerMode="screen"
     >
       <Stack.Screen
-        options={WebpageHeaderOptions}
+        options={({ navigation }) =>
+          WebpageHeaderOptions({ navigation, title: SCREENS.Browser })
+        }
         name={SCREENS.Browser}
         component={Browser}
       />
       <Stack.Screen
-        options={WebpageHeaderOptions}
+        options={({ navigation }) =>
+          WebpageHeaderOptions({ navigation, title: 'Bookmarks' })
+        }
         name={SCREENS.BookMarks}
         component={BookMarks}
       />
