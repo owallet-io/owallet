@@ -14,23 +14,11 @@ import { Bech32Address } from '@owallet/cosmos';
 import RadioGroup from 'react-native-radio-buttons-group';
 import CheckBox from 'react-native-check-box';
 import { useTheme } from '@src/themes/theme-provider';
+import { CW20Currency, Secret20Currency } from '@owallet/types';
 
 interface FormData {
-  name: string;
-  chainId: string;
-  url_rpc: string;
-  url_rest: string;
-  code: string;
-  bech32Config: string;
-  coinMinimal: string;
-  coingecko: string;
-  url_block: string;
-  networkType: string;
-  features: Array<string>;
-  symbol: string;
-  feeLow: number;
-  feeMedium: number;
-  feeHigh: number;
+  viewingKey: string;
+  contractAddress: string;
 }
 
 export const SelectNetworkType = ({ onChange }) => {
@@ -152,111 +140,118 @@ export const AddTokenScreen = () => {
     setValue,
     formState: { errors }
   } = useForm<FormData>();
-  const { isTimedOut, setTimer } = useSimpleTimer();
-  const { chainStore } = useStore();
   const smartNavigation = useSmartNavigation();
-  const [networkType, setNetworkType] = useState('cosmos');
 
-  const submit = handleSubmit(async () => {
-    const {
-      name,
-      chainId,
-      url_rpc,
-      url_rest,
-      code,
-      bech32Config,
-      url_block,
-      symbol,
-      coingecko = '',
-      coinMinimal,
-      networkType,
-      features,
-      feeLow,
-      feeMedium,
-      feeHigh
-    } = getValues();
+  const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
+  const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
 
-    setTimer(2000);
-    const block = url_block;
-    let chainInfo;
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
-    try {
-      chainInfo = {
-        rpc: url_rpc.endsWith('/') ? `${url_rpc.slice(0, -1)}` : `${url_rpc}`,
-        rest: url_rest.endsWith('/')
-          ? `${url_rest.slice(0, -1)}`
-          : `${url_rest}`,
-        chainId:
-          chainId.split(' ').join('-').toLocaleLowerCase() ??
-          `${name.split(' ').join('-')}`,
-        chainName: `${name}`,
-        networkType: networkType?.toLocaleLowerCase() ?? 'cosmos',
-        stakeCurrency: {
-          coinDenom: `${code.split(' ').join('').toLocaleUpperCase()}`,
-          coinMinimalDenom: `${coinMinimal
-            .split(' ')
-            .join('')
-            .toLocaleLowerCase()}`,
-          coinDecimals: 6,
-          coinGeckoId: `${
-            coingecko?.split(' ').join('-').toLocaleLowerCase() ??
-            code.split(' ').join('-').toLocaleLowerCase()
-          }`,
-          coinImageUrl:
-            symbol !== ''
-              ? symbol
-              : 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-        },
-        bip44: {
-          coinType: 118
-        },
-        bech32Config: Bech32Address.defaultBech32Config(
-          `${
-            bech32Config.split(' ').join('').toLocaleLowerCase() ??
-            code.split(' ').join('').toLocaleLowerCase()
-          }`
-        ),
-        get currencies() {
-          return [this.stakeCurrency];
-        },
-        get feeCurrencies() {
-          return [this.stakeCurrency];
-        },
-        gasPriceStep: {
-          low: feeLow ?? 0,
-          average: feeMedium ?? 0,
-          high: feeHigh ?? 0
-        },
-        features: features?.length > 0 ? features : ['stargate'],
-        chainSymbolImageUrl:
-          symbol !== ''
-            ? symbol
-            : 'https://orai.io/images/logos/logomark-dark.png',
-        txExplorer: {
-          name: 'Scan',
-          txUrl: `${block}/txs/{txHash}`,
-          accountUrl: `${block}/account/{address}`
-        }
-        // beta: true // use v1beta1
-      };
-
-      await chainStore.addChain(chainInfo);
-      alert('Network added successfully!');
-      smartNavigation.goBack();
-    } catch (err) {
-      // alert('Oops! Something went wrong!');
-      alert(err.message);
+  const form = useForm<FormData>({
+    defaultValues: {
+      contractAddress: '',
+      viewingKey: ''
     }
   });
 
-  const handleChangeNetwork = selected => {
-    setValue('networkType', selected.value);
-    setNetworkType(selected.value);
+  // const contractAddress = form.watch('contractAddress');
+  const contractAddress = '';
+
+  useEffect(() => {
+    if (tokensStore.waitingSuggestedToken) {
+      chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
+      if (
+        contractAddress !==
+        tokensStore.waitingSuggestedToken.data.contractAddress
+      ) {
+        form.setValue(
+          'contractAddress',
+          tokensStore.waitingSuggestedToken.data.contractAddress
+        );
+      }
+    }
+  }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
+
+  const isSecret20 =
+    (chainStore.current.features ?? []).find(
+      feature => feature === 'secretwasm'
+    ) != null;
+
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const query = isSecret20
+    ? queries.secret.querySecret20ContractInfo
+    : queries.cosmwasm.querycw20ContractInfo;
+  const queryContractInfo = query.getQueryContract(contractAddress);
+
+  const tokenInfo = queryContractInfo.tokenInfo;
+  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
+    useState(false);
+
+  const createViewingKey = async (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      accountInfo.secret
+        .createSecret20ViewingKey(
+          contractAddress,
+          '',
+          {},
+          {},
+          (_, viewingKey) => {
+            resolve(viewingKey);
+          }
+        )
+        .then(() => {})
+        .catch(reject);
+    });
   };
 
-  const handleSelectFeatures = features => {
-    setValue('features', features);
-  };
+  const submit = handleSubmit(async data => {
+    const { contractAddress } = getValues();
+
+    try {
+      if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
+        if (!isSecret20) {
+          const currency: CW20Currency = {
+            type: 'cw20',
+            contractAddress: data.contractAddress,
+            coinMinimalDenom: tokenInfo.name,
+            coinDenom: tokenInfo.symbol,
+            coinDecimals: tokenInfo.decimals
+          };
+
+          await tokensOf.addToken(currency);
+        } else {
+          let viewingKey = data.viewingKey;
+          if (!viewingKey && !isOpenSecret20ViewingKey) {
+            try {
+              viewingKey = await createViewingKey();
+            } catch (e) {
+              if (tokensStore.waitingSuggestedToken) {
+                await tokensStore.rejectAllSuggestedTokens();
+              }
+
+              return;
+            }
+          }
+
+          if (!viewingKey) {
+          } else {
+            const currency: Secret20Currency = {
+              type: 'secret20',
+              contractAddress: data.contractAddress,
+              viewingKey,
+              coinMinimalDenom: tokenInfo.name,
+              coinDenom: tokenInfo.symbol,
+              coinDecimals: tokenInfo.decimals
+            };
+
+            await tokensOf.addToken(currency);
+          }
+        }
+      }
+    } catch (err) {
+      // alert('Oops! Something went wrong!');
+    }
+  });
 
   return (
     <PageWithScrollView
@@ -314,7 +309,7 @@ export const AddTokenScreen = () => {
               onSubmitEditing={() => {
                 submit();
               }}
-              error={errors.name?.message}
+              error={errors.contractAddress?.message}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -322,78 +317,63 @@ export const AddTokenScreen = () => {
             />
           );
         }}
-        name="name"
-        defaultValue=""
-      />
-      <Controller
-        control={control}
-        rules={{
-          required: 'Chain Id is required'
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="Chain Id"
-              labelStyle={{
-                fontWeight: '700'
-              }}
-              placeholder={'e.g: Oraichain'}
-              inputStyle={{
-                ...styles.borderInput
-              }}
-              onSubmitEditing={() => {
-                submit();
-              }}
-              error={errors.chainId?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="chainId"
-        defaultValue=""
-      />
-      <Controller
-        control={control}
-        rules={{
-          required: 'New RPC network is required',
-          validate: (value: string) => {
-            const values = value.toLowerCase();
-            if (!/^https?:\/\//.test(values)) {
-              return 'The url must have a proper https prefix';
-            }
-          }
-        }}
-        render={({ field: { onChange, onBlur, value, ref } }) => {
-          return (
-            <TextInput
-              label="URL RPC"
-              inputStyle={{
-                ...styles.borderInput
-              }}
-              placeholder={'e.g: https://rpc.orai.io'}
-              labelStyle={{
-                fontWeight: '700'
-              }}
-              onSubmitEditing={() => {
-                setFocus('url_rpc');
-              }}
-              error={errors.url_rpc?.message}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              ref={ref}
-            />
-          );
-        }}
-        name="url_rpc"
+        name="contractAddress"
         defaultValue=""
       />
 
+      <TextInput
+        label="Name"
+        labelStyle={{
+          fontWeight: '700'
+        }}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        onSubmitEditing={() => {
+          submit();
+        }}
+        error={errors.contractAddress?.message}
+        // value={'value'}
+        defaultValue={'-'}
+        editable={false}
+      />
+
+      <TextInput
+        label="Symbol"
+        labelStyle={{
+          fontWeight: '700'
+        }}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        onSubmitEditing={() => {
+          submit();
+        }}
+        error={errors.contractAddress?.message}
+        // value={'value'}
+        defaultValue={'-'}
+        editable={false}
+      />
+
+      <TextInput
+        label="Decimals"
+        labelStyle={{
+          fontWeight: '700'
+        }}
+        inputStyle={{
+          ...styles.borderInput
+        }}
+        onSubmitEditing={() => {
+          submit();
+        }}
+        error={errors.contractAddress?.message}
+        // value={'value'}
+        defaultValue={'-'}
+        editable={false}
+      />
+
       <TouchableOpacity
-        disabled={isTimedOut}
+        disabled={false}
         onPress={submit}
         style={{
           marginBottom: 24,
@@ -402,7 +382,7 @@ export const AddTokenScreen = () => {
           borderRadius: 8
         }}
       >
-        {isTimedOut ? (
+        {false ? (
           <View style={{ padding: 16, alignItems: 'center' }}>
             <LoadingSpinner color={colors['white']} size={20} />
           </View>
@@ -416,12 +396,12 @@ export const AddTokenScreen = () => {
               padding: 16
             }}
           >
-            Next
+            Submit
           </Text>
         )}
       </TouchableOpacity>
       <TouchableOpacity
-        disabled={isTimedOut}
+        disabled={false}
         onPress={() => {
           smartNavigation.goBack();
         }}
