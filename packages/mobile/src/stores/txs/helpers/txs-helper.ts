@@ -6,7 +6,7 @@ import { ChainInfo } from '@owallet/types';
 import Big from 'big.js';
 import moment from 'moment';
 import { get } from '@src/utils/helper';
-import { isArray } from 'util';
+import { isArray, isString } from 'util';
 import { TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
 export class TxsHelper {
   public readonly INFO_API_EVM = {
@@ -567,10 +567,14 @@ export class TxsHelper {
 
       const matchesAmount = get(itDataTransfer, 'amountData.value')
         ? itDataTransfer?.amountData?.value?.match(/\d+/g)
-        : itDataTransfer?.amountData?.match(/\d+/g);
+        : isString(itDataTransfer?.amountData)
+        ? itDataTransfer?.amountData?.match(/\d+/g)
+        : '';
       const matchesDenom = get(itDataTransfer, 'amountData.value')
         ? itDataTransfer?.amountData?.value?.replace(/^\d+/g, '')
-        : itDataTransfer?.amountData?.replace(/^\d+/g, '');
+        : isString(itDataTransfer?.amountData)
+        ? itDataTransfer?.amountData?.replace(/^\d+/g, '')
+        : '';
       itDataTransfer.amount = this.removeZeroNumberLast(
         this.formatNumberSeparateThousand(
           this.formatAmount(

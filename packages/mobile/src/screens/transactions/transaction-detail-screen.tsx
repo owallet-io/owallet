@@ -169,7 +169,7 @@ const TransactionDetailScreen = observer(() => {
                           ? '-'
                           : ''
                       }${itemDataTrans?.amount} ${
-                        limitString(itemDataTrans?.token, 25) || ''
+                        limitString(itemDataTrans?.token, 25) || '0'
                       }`}
                     />
                   ) : null}
