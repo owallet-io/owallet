@@ -18,13 +18,11 @@ interface FormData {
   contractAddress: string;
 }
 
-export const AddTokenScreen = observer(() => {
+export const AddTokenEVMScreen = observer(() => {
   const {
     control,
     handleSubmit,
     watch,
-    setValue,
-
     formState: { errors }
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
@@ -50,7 +48,7 @@ export const AddTokenScreen = observer(() => {
         contractAddress !==
         tokensStore.waitingSuggestedToken.data.contractAddress
       ) {
-        setValue(
+        form.setValue(
           'contractAddress',
           tokensStore.waitingSuggestedToken.data.contractAddress
         );
