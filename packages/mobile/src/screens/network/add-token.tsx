@@ -33,6 +33,7 @@ export const AddTokenScreen = observer(() => {
   const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -74,6 +75,12 @@ export const AddTokenScreen = observer(() => {
   const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
     useState(false);
 
+  const addTokenSuccess = () => {
+    alert('Token added');
+    setLoading(false);
+    smartNavigation.goBack();
+  };
+
   const createViewingKey = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       accountInfo.secret
@@ -94,6 +101,7 @@ export const AddTokenScreen = observer(() => {
   const submit = handleSubmit(async data => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
+        setLoading(true);
         if (!isSecret20) {
           const currency: CW20Currency = {
             type: 'cw20',
@@ -104,6 +112,7 @@ export const AddTokenScreen = observer(() => {
           };
 
           await tokensOf.addToken(currency);
+          addTokenSuccess();
         } else {
           let viewingKey = data.viewingKey;
           if (!viewingKey && !isOpenSecret20ViewingKey) {
@@ -119,6 +128,9 @@ export const AddTokenScreen = observer(() => {
           }
 
           if (!viewingKey) {
+            alert('Failed to create the viewing key');
+            setLoading(false);
+            smartNavigation.goBack();
           } else {
             const currency: Secret20Currency = {
               type: 'secret20',
@@ -130,11 +142,14 @@ export const AddTokenScreen = observer(() => {
             };
 
             await tokensOf.addToken(currency);
+            addTokenSuccess();
           }
         }
       }
     } catch (err) {
-      alert('Oops! Something went wrong!');
+      setLoading(false);
+      alert(err.message);
+      smartNavigation.goBack();
     }
   });
 
@@ -273,7 +288,7 @@ export const AddTokenScreen = observer(() => {
       ) : null}
 
       <TouchableOpacity
-        disabled={false}
+        disabled={loading}
         onPress={submit}
         style={{
           marginBottom: 24,
@@ -282,7 +297,7 @@ export const AddTokenScreen = observer(() => {
           borderRadius: 8
         }}
       >
-        {false ? (
+        {loading ? (
           <View style={{ padding: 16, alignItems: 'center' }}>
             <LoadingSpinner color={colors['white']} size={20} />
           </View>
@@ -301,7 +316,6 @@ export const AddTokenScreen = observer(() => {
         )}
       </TouchableOpacity>
       <TouchableOpacity
-        disabled={false}
         onPress={() => {
           smartNavigation.goBack();
         }}

@@ -29,6 +29,7 @@ export const AddTokenEVMScreen = observer(() => {
 
   const { chainStore, queriesStore, accountStore, tokensStore } = useStore();
   const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
+  const [loading, setLoading] = useState(false);
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
@@ -84,9 +85,16 @@ export const AddTokenEVMScreen = observer(() => {
     });
   };
 
+  const addTokenSuccess = () => {
+    alert('Token added');
+    setLoading(false);
+    smartNavigation.goBack();
+  };
+
   const submit = handleSubmit(async data => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
+        setLoading(true);
         if (!isSecret20) {
           const currency: ERC20Currency = {
             type: 'erc20',
@@ -97,6 +105,7 @@ export const AddTokenEVMScreen = observer(() => {
           };
 
           await tokensOf.addToken(currency);
+          addTokenSuccess();
         } else {
           let viewingKey = data.viewingKey;
           if (!viewingKey && !isOpenSecret20ViewingKey) {
@@ -112,6 +121,9 @@ export const AddTokenEVMScreen = observer(() => {
           }
 
           if (!viewingKey) {
+            alert('Failed to create the viewing key');
+            setLoading(false);
+            smartNavigation.goBack();
           } else {
             const currency: Secret20Currency = {
               type: 'secret20',
@@ -123,11 +135,14 @@ export const AddTokenEVMScreen = observer(() => {
             };
 
             await tokensOf.addToken(currency);
+            addTokenSuccess();
           }
         }
       }
     } catch (err) {
-      alert('Oops! Something went wrong!');
+      alert(err.message);
+      setLoading(false);
+      smartNavigation.goBack();
     }
   });
 
@@ -266,7 +281,7 @@ export const AddTokenEVMScreen = observer(() => {
       ) : null}
 
       <TouchableOpacity
-        disabled={false}
+        disabled={loading}
         onPress={submit}
         style={{
           marginBottom: 24,
@@ -275,7 +290,7 @@ export const AddTokenEVMScreen = observer(() => {
           borderRadius: 8
         }}
       >
-        {false ? (
+        {loading ? (
           <View style={{ padding: 16, alignItems: 'center' }}>
             <LoadingSpinner color={colors['white']} size={20} />
           </View>
