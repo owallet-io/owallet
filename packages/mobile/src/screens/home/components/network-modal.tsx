@@ -192,7 +192,7 @@ export const NetworkModal = ({
       >
         <TouchableOpacity
           onPress={() => {
-            smartNavigation.navigateSmart('Network.select', {});
+            smartNavigation.navigateSmart('Network.token', {});
             modalStore.close();
           }}
         >
@@ -203,7 +203,7 @@ export const NetworkModal = ({
               color: colors['purple-700']
             }}
           >
-            + Add network
+            + Add token
           </Text>
         </TouchableOpacity>
       </View>

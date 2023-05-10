@@ -10,7 +10,7 @@ import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import CheckBox from 'react-native-check-box';
-import { CW20Currency, Secret20Currency } from '@owallet/types';
+import { ERC20Currency, Secret20Currency } from '@owallet/types';
 import { observer } from 'mobx-react-lite';
 
 interface FormData {
@@ -56,15 +56,10 @@ export const AddTokenEVMScreen = observer(() => {
     }
   }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
-  const isSecret20 =
-    (chainStore.current.features ?? []).find(
-      feature => feature === 'secretwasm'
-    ) != null;
+  const isSecret20 = false;
 
   const queries = queriesStore.get(chainStore.current.chainId);
-  const query = isSecret20
-    ? queries.secret.querySecret20ContractInfo
-    : queries.cosmwasm.querycw20ContractInfo;
+  const query = queries.evm.queryErc20ContractInfo;
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
@@ -93,8 +88,8 @@ export const AddTokenEVMScreen = observer(() => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         if (!isSecret20) {
-          const currency: CW20Currency = {
-            type: 'cw20',
+          const currency: ERC20Currency = {
+            type: 'erc20',
             contractAddress: data.contractAddress,
             coinMinimalDenom: tokenInfo.name,
             coinDenom: tokenInfo.symbol,
