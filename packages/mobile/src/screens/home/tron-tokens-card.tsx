@@ -27,7 +27,8 @@ const imageScale = 0.54;
 
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+  refreshing: boolean;
+}> = observer(({ containerStyle, refreshing }) => {
   const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [tokens, setTokens] = useState([]);

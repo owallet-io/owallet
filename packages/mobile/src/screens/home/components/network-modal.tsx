@@ -11,6 +11,7 @@ import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
+import { TRON_ID } from '@owallet/common';
 
 const COINTYPE_NETWORK = {
   118: 'Cosmos',
@@ -190,22 +191,24 @@ export const NetworkModal = ({
           width: '100%'
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            smartNavigation.navigateSmart('Network.token', {});
-            modalStore.close();
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: '700',
-              color: colors['purple-700']
+        {chainStore.current.chainId === TRON_ID ? null : (
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.navigateSmart('Network.token', {});
+              modalStore.close();
             }}
           >
-            + Add token
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: colors['purple-700']
+              }}
+            >
+              + Add token
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Text
         style={{

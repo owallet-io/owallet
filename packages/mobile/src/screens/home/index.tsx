@@ -212,9 +212,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
       <DashboardCard />
       {chainStore.current.chainId === TRON_ID ? (
-        <TronTokensCard />
+        <TronTokensCard refreshing={refreshing} />
       ) : (
-        <TokensCard />
+        <TokensCard refreshing={refreshing} />
       )}
 
       {chainStore.current.networkType === 'cosmos' ? (
