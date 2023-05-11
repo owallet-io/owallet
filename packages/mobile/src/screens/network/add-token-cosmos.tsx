@@ -148,7 +148,7 @@ export const AddTokenCosmosScreen = observer(() => {
       }
     } catch (err) {
       setLoading(false);
-      alert(err.message);
+      alert(JSON.stringify(err.message));
       smartNavigation.goBack();
     }
   });
@@ -176,7 +176,7 @@ export const AddTokenCosmosScreen = observer(() => {
             fontWeight: '700'
           }}
         >
-          Add Token
+          Add Token (Cosmos)
         </Text>
         <View>
           <OWalletLogo size={72} />

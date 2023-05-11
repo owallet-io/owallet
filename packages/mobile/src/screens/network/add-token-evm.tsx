@@ -140,7 +140,7 @@ export const AddTokenEVMScreen = observer(() => {
         }
       }
     } catch (err) {
-      alert(err.message);
+      alert(JSON.stringify(err.message));
       setLoading(false);
       smartNavigation.goBack();
     }
@@ -169,7 +169,7 @@ export const AddTokenEVMScreen = observer(() => {
             fontWeight: '700'
           }}
         >
-          Add Token
+          Add Token (EVM)
         </Text>
         <View>
           <OWalletLogo size={72} />
