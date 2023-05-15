@@ -11,12 +11,30 @@ const BundleAnalyzerPlugin =
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
+
+const fallback = {
+  fs: false,
+  tls: false,
+  net: false,
+  os: false,
+  url: false,
+  path: false,
+  assert: false,
+  querystring: false,
+  http: require.resolve('stream-http'),
+  crypto: require.resolve('crypto-browserify'),
+  stream: require.resolve('stream-browserify'),
+  https: require.resolve('https-browserify')
+};
+
 const commonResolve = (dir) => ({
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss'],
   alias: {
     assets: path.resolve(__dirname, dir)
-  }
+  },
+  fallback,
 });
+
 const sassRule = {
   test: /(\.s?css)|(\.sass)$/,
   oneOf: [
@@ -108,7 +126,7 @@ const extensionConfig = {
   plugins: [
     // Remove all and write anyway
     // TODO: Optimizing build process
-    new CleanWebpackPlugin(),
+    // new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
     new CopyWebpackPlugin(
       [
@@ -138,6 +156,10 @@ const extensionConfig = {
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new BundleAnalyzerPlugin({
       analyzerMode: isEnvAnalyzer ? 'server' : 'disabled'
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer']
     })
   ]
 };
