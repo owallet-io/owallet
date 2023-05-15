@@ -10,7 +10,6 @@ import { _keyExtract } from '../../utils/helper';
 import { TokenItem } from './components/token-item';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Text } from '@src/components/text';
-import { TRON_ID } from '@owallet/common';
 import { useSmartNavigation } from '@src/navigation.provider';
 
 export const TokensScreen: FunctionComponent = observer(() => {
@@ -57,23 +56,21 @@ export const TokensScreen: FunctionComponent = observer(() => {
             width: '100%'
           }}
         >
-          {chainStore.current.chainId === TRON_ID ? null : (
-            <TouchableOpacity
-              onPress={() => {
-                smartNavigation.navigateSmart('Network.token', {});
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.navigateSmart('Network.token', {});
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: colors['purple-700']
               }}
             >
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: '700',
-                  color: colors['purple-700']
-                }}
-              >
-                + Add network
-              </Text>
-            </TouchableOpacity>
-          )}
+              + Add token
+            </Text>
+          </TouchableOpacity>
         </View>
         <OWFlatList
           data={unique}

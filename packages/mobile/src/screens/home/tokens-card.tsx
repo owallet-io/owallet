@@ -42,8 +42,6 @@ export const TokensCard: FunctionComponent<{
         : account.bech32Address
     );
 
-  console.log('get here', refreshDate);
-
   useEffect(() => {
     const queryTokens = queryBalances.balances.concat(
       queryBalances.nonNativeBalances,
@@ -58,7 +56,6 @@ export const TokensCard: FunctionComponent<{
         ? null
         : uniqTokens.push(token)
     );
-    console.log('uniqTokens', uniqTokens);
 
     setTokens(uniqTokens);
   }, [
@@ -86,6 +83,8 @@ export const TokensCard: FunctionComponent<{
   }, [account.bech32Address]);
 
   const _renderFlatlistItem = ({ item }) => {
+    console.log('item ===', item);
+
     return (
       <TouchableOpacity
         style={styles.flatListItem}
