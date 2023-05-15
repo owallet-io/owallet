@@ -34,6 +34,7 @@ import { TronTokensCard } from './tron-tokens-card';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
   const navigation = useNavigation();
 
@@ -192,6 +193,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
     ]);
 
     setRefreshing(false);
+    setRefreshDate(Date.now());
   }, [accountStore, chainStore, priceStore, queriesStore]);
 
   return (
@@ -212,9 +214,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
       <DashboardCard />
       {chainStore.current.chainId === TRON_ID ? (
-        <TronTokensCard refreshing={refreshing} />
+        <TronTokensCard />
       ) : (
-        <TokensCard refreshing={refreshing} />
+        <TokensCard refreshDate={refreshDate} />
       )}
 
       {chainStore.current.networkType === 'cosmos' ? (

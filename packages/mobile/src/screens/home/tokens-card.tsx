@@ -23,8 +23,8 @@ import { TokenItem } from '../tokens/components/token-item';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
-  refreshing: boolean;
-}> = observer(({ containerStyle, refreshing }) => {
+  refreshDate: number;
+}> = observer(({ containerStyle, refreshDate }) => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
@@ -47,6 +47,7 @@ export const TokensCard: FunctionComponent<{
       queryBalances.nonNativeBalances,
       queryBalances.positiveNativeUnstakables
     );
+
     const uniqTokens = [];
     queryTokens.map(token =>
       uniqTokens.filter(
@@ -55,12 +56,13 @@ export const TokensCard: FunctionComponent<{
         ? null
         : uniqTokens.push(token)
     );
+
     setTokens(uniqTokens);
   }, [
     chainStore.current.chainId,
     account.bech32Address,
     account.evmosHexAddress,
-    refreshing
+    refreshDate
   ]);
 
   useEffect(() => {
@@ -81,6 +83,8 @@ export const TokensCard: FunctionComponent<{
   }, [account.bech32Address]);
 
   const _renderFlatlistItem = ({ item }) => {
+    console.log('item ===', item);
+
     return (
       <TouchableOpacity
         style={styles.flatListItem}
