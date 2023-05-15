@@ -11,6 +11,7 @@ import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
+import { TRON_ID } from '@owallet/common';
 
 const COINTYPE_NETWORK = {
   118: 'Cosmos',
@@ -141,7 +142,7 @@ export const NetworkModal = ({
               style={{
                 ...typography.h6,
                 color: colors['sub-primary-text'],
-                fontWeight: '900',
+                fontWeight: '900'
               }}
               numberOfLines={1}
             >
@@ -190,22 +191,24 @@ export const NetworkModal = ({
           width: '100%'
         }}
       >
-        <TouchableOpacity
-          onPress={() => {
-            smartNavigation.navigateSmart('Network.select', {});
-            modalStore.close();
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 12,
-              fontWeight: '700',
-              color: colors['purple-700']
+        {chainStore.current.chainId === TRON_ID ? null : (
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.navigateSmart('Network.token', {});
+              modalStore.close();
             }}
           >
-            + Add more
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: colors['purple-700']
+              }}
+            >
+              + Add token
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Text
         style={{
@@ -245,7 +248,7 @@ export const NetworkModal = ({
   );
 };
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

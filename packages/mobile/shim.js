@@ -4,6 +4,7 @@ import './polyfill/crypto';
 
 if (typeof __dirname === 'undefined') global.__dirname = '/';
 if (typeof __filename === 'undefined') global.__filename = '';
+if (typeof BigInt === 'undefined') global.BigInt = require('big-integer');
 if (typeof process === 'undefined') {
   global.process = require('process');
 } else {

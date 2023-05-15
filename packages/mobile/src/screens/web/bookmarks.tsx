@@ -13,7 +13,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
-import { checkValidDomain } from '../../utils/helper';
+import { checkValidDomain, formatContractAddress } from '../../utils/helper';
 import { useNavigation } from '@react-navigation/native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { useTheme } from '@src/themes/theme-provider';
@@ -69,9 +69,9 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
   const { colors } = useTheme();
 
   const removeBookmark = useCallback(
-    (bm) => {
+    bm => {
       const tmpData = [...browserStore.getBookmarks];
-      const rIndex = tmpData.findIndex((b) => b.uri === bm.uri);
+      const rIndex = tmpData.findIndex(b => b.uri === bm.uri);
       if (rIndex > -1) {
         tmpData.splice(rIndex, 1);
       }
@@ -85,7 +85,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
     setData(browserStore.getBookmarks);
   }, []);
 
-  const onHandleUrl = (uri) => {
+  const onHandleUrl = uri => {
     let currentUri = uri;
     if (currentUri !== '') {
       if (checkValidDomain(currentUri?.toLowerCase())) {
@@ -151,7 +151,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
               {item.name}
             </Text>
             <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-              {item.uri}
+              {formatContractAddress(item.uri, 16)}
             </Text>
           </View>
         </View>

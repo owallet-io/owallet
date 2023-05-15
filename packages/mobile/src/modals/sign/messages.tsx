@@ -17,7 +17,7 @@ import english from 'hyphenation.en-us';
 import { useStore } from '../../stores';
 import { Buffer } from 'buffer';
 import { observer } from 'mobx-react-lite';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, IntlShape } from 'react-intl';
 import { Badge } from '../../components/badge';
 import { StyleSheet, View } from 'react-native';
 import { typography } from '../../themes';
@@ -587,6 +587,57 @@ export function renderMsgVote(proposalId: string, option: string | number) {
     //     <Text style={{ fontWeight: 'bold' }}>{`Proposal ${proposalId}`}</Text>
     //   </Text>
     // )
+  };
+}
+
+export function renderMsgInstantiateContract(
+  currencies: Currency[],
+  intl: IntlShape,
+  initFunds: CoinPrimitive[],
+  admin: string | undefined,
+  codeId: string,
+  label: string,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  initMsg: object
+) {
+  const funds: { amount: string; denom: string }[] = [];
+  for (const coinPrimitive of initFunds) {
+    const coin = new Coin(coinPrimitive.denom, coinPrimitive.amount);
+    const parsed = CoinUtils.parseDecAndDenomFromCoin(currencies, coin);
+    funds.push({
+      amount: clearDecimals(parsed.amount),
+      denom: parsed.denom
+    });
+  }
+  return {
+    icon: 'fas fa-cog',
+    title: intl.formatMessage({
+      id: 'sign.list.message.wasm/MsgInstantiateContract.title'
+    }),
+    content: (
+      <React.Fragment>
+        <FormattedMessage
+          id="sign.list.message.wasm/MsgInstantiateContract.content"
+          values={{
+            b: (...chunks: any[]) => <b>{chunks}</b>,
+            br: <br />,
+            admin: admin ? Bech32Address.shortenAddress(admin, 30) : '',
+            ['only-admin-exist']: (...chunks: any[]) => (admin ? chunks : ''),
+            codeId: codeId,
+            label: label,
+            ['only-funds-exist']: (...chunks: any[]) =>
+              funds.length > 0 ? chunks : '',
+            funds: funds
+              .map(coin => {
+                return `${coin.amount} ${coin.denom}`;
+              })
+              .join(',')
+          }}
+        />
+        <br />
+        <WasmExecutionMsgView msg={initMsg} />
+      </React.Fragment>
+    )
   };
 }
 

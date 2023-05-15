@@ -1,9 +1,8 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
-import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
@@ -182,17 +181,6 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       smartNavigation.navigateSmart('Register.Intro', {});
     }
   };
-
-  const requestPermissions = async () => {
-    await requestMultiple([
-      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
-    ]);
-  };
-
-  useEffect(() => {
-    requestPermissions();
-  }, []);
 
   const renderConfirmPass = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
