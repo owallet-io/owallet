@@ -88,7 +88,7 @@ export const AddTokenEVMScreen = observer(() => {
   const addTokenSuccess = () => {
     alert('Token added');
     setLoading(false);
-    smartNavigation.goBack();
+    smartNavigation.navigateSmart('Home', {});
   };
 
   const submit = handleSubmit(async data => {
@@ -123,7 +123,7 @@ export const AddTokenEVMScreen = observer(() => {
           if (!viewingKey) {
             alert('Failed to create the viewing key');
             setLoading(false);
-            smartNavigation.goBack();
+            smartNavigation.navigateSmart('Home', {});
           } else {
             const currency: Secret20Currency = {
               type: 'secret20',
@@ -142,7 +142,7 @@ export const AddTokenEVMScreen = observer(() => {
     } catch (err) {
       alert(JSON.stringify(err.message));
       setLoading(false);
-      smartNavigation.goBack();
+      smartNavigation.navigateSmart('Home', {});
     }
   });
 

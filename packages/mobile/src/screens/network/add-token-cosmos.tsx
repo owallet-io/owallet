@@ -78,7 +78,7 @@ export const AddTokenCosmosScreen = observer(() => {
   const addTokenSuccess = () => {
     alert('Token added');
     setLoading(false);
-    smartNavigation.goBack();
+    smartNavigation.navigateSmart('Home', {});
   };
 
   const createViewingKey = async (): Promise<string> => {
@@ -130,7 +130,7 @@ export const AddTokenCosmosScreen = observer(() => {
           if (!viewingKey) {
             alert('Failed to create the viewing key');
             setLoading(false);
-            smartNavigation.goBack();
+            smartNavigation.navigateSmart('Home', {});
           } else {
             const currency: Secret20Currency = {
               type: 'secret20',
@@ -149,7 +149,7 @@ export const AddTokenCosmosScreen = observer(() => {
     } catch (err) {
       setLoading(false);
       alert(JSON.stringify(err.message));
-      smartNavigation.goBack();
+      smartNavigation.navigateSmart('Home', {});
     }
   });
 

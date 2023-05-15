@@ -33,8 +33,6 @@ export const NetworkModal = ({
   const handleSwitchNetwork = item => {
     try {
       if (keyRingStore.keyRingType === 'ledger') {
-        console.log('get here', keyRingStore.keyRingType);
-
         Alert.alert(
           'Switch network',
           `You are switching to ${
@@ -194,7 +192,7 @@ export const NetworkModal = ({
         {chainStore.current.chainId === TRON_ID ? null : (
           <TouchableOpacity
             onPress={() => {
-              smartNavigation.navigateSmart('Network.token', {});
+              smartNavigation.navigateSmart('Network.select', {});
               modalStore.close();
             }}
           >
@@ -205,7 +203,7 @@ export const NetworkModal = ({
                 color: colors['purple-700']
               }}
             >
-              + Add token
+              + Add network
             </Text>
           </TouchableOpacity>
         )}
