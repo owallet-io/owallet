@@ -11,7 +11,7 @@
   "background": {
     "service_worker": "service_worker.js"
   },
-  "permissions": ["storage", "notifications"],
+  "permissions": ["storage", "identity", "tabs", "notifications"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -34,5 +34,8 @@
     "default_popup": "popup.html",
     "default_title": "OWallet"
   },
-  "content_security_policy": {}
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvLuFQ2ocU9mn894Ic/lRGRZ3kyXgW17DhJHBPynJPJAtBiXPp2+cGuenlTJaD46qF/sLBqp171BcWFqfBtHCuRkxB2xlslFhQDU7iZx41yMD+Pmqi1dx1CNchyfqoalo7w4OTDrZAtWRsNURm/mgjEh0Z7Z8tWU2tT4tkfFJSV7/QRv33czwl8jxmf0E4iuBgBaSi/oj/zW3r6z8If0638AY9rFt+us83B9E0ShM2bdJC/dC8Sr61anwOy4YTDiNKACgtFaf+BR0Abj5IfL9fmn0vOH1saBCVEnzYOe2CNO6gowUYrux1z6nWTxycjBCrUMc4oMZz8m0hDL3VHh9MQIDAQAB"
 }
