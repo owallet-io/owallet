@@ -7,7 +7,7 @@ import {
 } from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
 import { init, Ledger, ScryptParams } from '@owallet/background';
-import scrypt from 'scrypt-js';
+import { scrypt } from 'scrypt-pbkdf';
 import { Buffer } from 'buffer';
 
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
@@ -29,14 +29,17 @@ init(
   },
   {
     scrypt: async (text: string, params: ScryptParams) => {
-      return await scrypt.scrypt(
+      const buf = await scrypt(
         Buffer.from(text),
         Buffer.from(params.salt, 'hex'),
-        params.n,
-        params.r,
-        params.p,
-        params.dklen
+        params.dklen,
+        {
+          N: params.n,
+          r: params.r,
+          p: params.p
+        }
       );
+      return Buffer.from(buf);
     }
   },
   {
