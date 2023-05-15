@@ -23,6 +23,11 @@ import {
   ImportLedgerPage,
   TypeImportLedger
 } from './ledger';
+import {
+  ImportSocialIntro,
+  ImportSocialPage,
+  TypeImportSocial
+} from './social';
 import { WelcomePage } from './welcome';
 
 export const AdditionalSignInPrepend: RegisterOption[] | undefined = undefined;
@@ -55,7 +60,7 @@ export const RegisterPage: FunctionComponent = observer(() => {
   }, []);
 
   const { keyRingStore } = useStore();
-  
+
   const registerConfig = useRegisterConfig(keyRingStore, [
     ...(AdditionalSignInPrepend ?? []),
     {
@@ -72,13 +77,21 @@ export const RegisterPage: FunctionComponent = observer(() => {
       type: TypeImportLedger,
       intro: ImportLedgerIntro,
       page: ImportLedgerPage
+    },
+    {
+      type: TypeImportSocial,
+      intro: ImportSocialIntro,
+      page: ImportSocialPage
     }
   ]);
   return (
     <EmptyLayout
       className={style.container}
-      style={{ 
-        justifyContent: registerConfig.isIntro || registerConfig.isFinalized ? 'center' : 'start'
+      style={{
+        justifyContent:
+          registerConfig.isIntro || registerConfig.isFinalized
+            ? 'center'
+            : 'start'
       }}
     >
       <div className={style.logoContainer}>
