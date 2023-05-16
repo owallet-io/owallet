@@ -115,7 +115,6 @@
     "react-native-keychain": "^7.0.0",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-localize": "^2.1.1",
-    "react-native-permissions": "^3.8.0",
     "react-native-qrcode-svg": "^6.1.1",
     "react-native-radio-buttons-group": "^2.2.11",
     "react-native-randombytes": "^3.6.1",
