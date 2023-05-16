@@ -37,7 +37,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const page = useRef(0);
-  const [activePage, setActivePage] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
   const txsHelper = createTxsHelper();

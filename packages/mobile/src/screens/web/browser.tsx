@@ -320,6 +320,7 @@ export const Browser: FunctionComponent<any> = observer((props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginBottom: 80
+    marginBottom: 80,
+    marginTop:24
   }
 });
