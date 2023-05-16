@@ -184,10 +184,12 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
   };
 
   const requestPermissions = async () => {
-    await requestMultiple([
-      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
-    ]);
+    if (Platform.OS === 'android') {
+      await requestMultiple([
+        PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+        PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
+      ]);
+    }
   };
 
   useEffect(() => {

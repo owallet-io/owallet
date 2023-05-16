@@ -16,7 +16,9 @@ import {
   renderMsgUndelegate,
   renderMsgDelegate,
   renderMsgWithdrawDelegatorReward,
-  renderMsgVote
+  renderMsgVote,
+  MsgInstantiateContract,
+  renderMsgInstantiateContract
 } from './messages';
 import { AppCurrency } from '@owallet/types';
 
@@ -77,6 +79,18 @@ export function renderAminoMessage(
     const value = msg.value as MsgVote['value'];
     return renderMsgVote(value.proposal_id, value.option);
   }
+
+  // if (msg.type === 'wasm/MsgInstantiateContract') {
+  //   const value = msg.value as MsgInstantiateContract['value'];
+  //   return renderMsgInstantiateContract(
+  //     currencies,
+  //     value.init_funds,
+  //     value.admin,
+  //     value.code_id,
+  //     value.label,
+  //     value.init_msg
+  //   );
+  // }
 
   /*
   if (msg.type === "wasm/MsgInstantiateContract") {

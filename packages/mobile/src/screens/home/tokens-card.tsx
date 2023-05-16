@@ -23,11 +23,13 @@ import { TokenItem } from '../tokens/components/token-item';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
-}> = observer(({ containerStyle }) => {
+  refreshDate: number;
+}> = observer(({ containerStyle, refreshDate }) => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const [nfts, setNFTs] = useState([]);
   const { colors } = useTheme();
+  const [nfts, setNFTs] = useState([]);
+  const [tokens, setTokens] = useState([]);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -40,26 +42,27 @@ export const TokensCard: FunctionComponent<{
         : account.bech32Address
     );
 
-  const tokens = queryBalances.balances.concat(
-    queryBalances.nonNativeBalances,
-    queryBalances.positiveNativeUnstakables
-  );
+  useEffect(() => {
+    const queryTokens = queryBalances.balances.concat(
+      queryBalances.nonNativeBalances,
+      queryBalances.positiveNativeUnstakables
+    );
 
-  const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map((token) =>
+    queryTokens.map(token =>
       uniqTokens.filter(
-        (ut) =>
-          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
     );
-    return uniqTokens;
+
+    setTokens(uniqTokens);
   }, [
     chainStore.current.chainId,
     account.bech32Address,
-    account.evmosHexAddress
+    account.evmosHexAddress,
+    refreshDate
   ]);
 
   useEffect(() => {
@@ -80,6 +83,8 @@ export const TokensCard: FunctionComponent<{
   }, [account.bech32Address]);
 
   const _renderFlatlistItem = ({ item }) => {
+    console.log('item ===', item);
+
     return (
       <TouchableOpacity
         style={styles.flatListItem}
@@ -207,8 +212,8 @@ export const TokensCard: FunctionComponent<{
 
         {index === 0 ? (
           <CardBody>
-            {unique?.length > 0 ? (
-              unique.slice(0, 3).map((token) => {
+            {tokens?.length > 0 ? (
+              tokens.slice(0, 3).map(token => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
                 return (
                   <TokenItem
@@ -299,7 +304,7 @@ export const TokensCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],

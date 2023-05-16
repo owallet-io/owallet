@@ -1,9 +1,9 @@
 import { DenomHelper } from '@owallet/common';
-import { Bech32Address } from '@owallet/cosmos';
 import { Currency } from '@owallet/types';
-import { CoinPretty, Dec, IntPretty, PricePretty } from '@owallet/unit';
+import { CoinPretty, PricePretty } from '@owallet/unit';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
+import { formatContractAddress } from '@src/utils/helper';
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -27,8 +27,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   containerStyle,
   chainInfo,
   balance,
-  priceBalance,
-  totalBalance = 1000
+  priceBalance
 }) => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
@@ -45,10 +44,9 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
     balanceCoinDenom = balance.currency.coinDenom;
 
     if (denomHelper.contractAddress && denomHelper.contractAddress !== '') {
-      name += ` (${Bech32Address.shortenAddress(
-        denomHelper.contractAddress,
-        34
-      )})`;
+      name += ` (${formatContractAddress(denomHelper.contractAddress, 34)})`;
+
+      console.log('nam', name, denomHelper.contractAddress);
     }
   }
   const amountBalance = balance
@@ -59,15 +57,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
     .hideDenom(true)
     .toString();
 
-  const balanceUsdInPercent = priceBalance
-    ? new IntPretty(
-        priceBalance.toDec().mul(new Dec(100)).quo(new Dec(totalBalance))
-      )
-        .moveDecimalPointRight(2)
-        .maxDecimals(3)
-        .trim(true)
-        .toString() + '%'
-    : '';
   return (
     <TouchableOpacity
       activeOpacity={0.7}

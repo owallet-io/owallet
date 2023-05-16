@@ -934,6 +934,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
 
   get evmosHexAddress(): string {
+    // here
     if (!this.bech32Address) return;
     const address = Buffer.from(
       fromWords(bech32.decode(this.bech32Address).words)

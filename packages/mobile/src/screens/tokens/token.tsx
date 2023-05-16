@@ -3,19 +3,19 @@ import { useTheme } from '@src/themes/theme-provider';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 import { observer } from 'mobx-react-lite';
-import { FlatList } from 'react-native';
-import {
-  PageWithScrollViewInBottomTabView,
-  PageWithView
-} from '../../components/page';
+import { FlatList, TouchableOpacity, View } from 'react-native';
+import { PageWithView } from '../../components/page';
 import { useStore } from '../../stores';
 import { _keyExtract } from '../../utils/helper';
 import { TokenItem } from './components/token-item';
 import OWFlatList from '@src/components/page/ow-flat-list';
+import { Text } from '@src/components/text';
+import { useSmartNavigation } from '@src/navigation.provider';
 
 export const TokensScreen: FunctionComponent = observer(() => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const { colors } = useTheme();
+  const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -44,10 +44,34 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   return (
     <PageWithView backgroundColor={colors['background']}>
-      <OWSubTitleHeader title="My Tokens" />
-      <OWBox style={{
-        flex:1
-      }}>
+      <OWSubTitleHeader title="Tokens" />
+      <OWBox
+        style={{
+          flex: 1
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'flex-end',
+            width: '100%'
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.navigateSmart('Network.token', {});
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: colors['purple-700']
+              }}
+            >
+              + Add token
+            </Text>
+          </TouchableOpacity>
+        </View>
         <OWFlatList
           data={unique}
           showsVerticalScrollIndicator={false}

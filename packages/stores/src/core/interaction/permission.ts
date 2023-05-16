@@ -10,9 +10,9 @@ import {
   splitSecret20ViewingKeyPermissionType,
   getSecret20ViewingKeyPermissionType,
   AddPermissionOrigin,
-  GetOriginPermittedChainsMsg,
+  GetOriginPermittedChainsMsg
 } from '@owallet/background';
-import { computed, flow, makeObservable, observable } from 'mobx';
+import { computed, flow, makeObservable, observable, autorun } from 'mobx';
 import { HasMapStore } from '../../common';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import { toGenerator } from '@owallet/common';
@@ -157,7 +157,7 @@ export class PermissionStore extends HasMapStore<
     const key = JSON.stringify({
       type: 'basicAccess',
       chainId,
-      contractAddress: '',
+      contractAddress: ''
     });
     return this.get(key) as BasicAccessPermissionInnerStore;
   }
@@ -172,6 +172,52 @@ export class PermissionStore extends HasMapStore<
     );
   }
 
+  protected isEnded(): boolean {
+    return (
+      this.interactionStore.getEvents<void>('enable-access-end').length > 0
+    );
+  }
+
+  protected clearEnded() {
+    this.interactionStore.clearEvent('enable-access-end');
+    this.interactionStore.clearEvent('request-sign-end');
+    this.interactionStore.clearEvent('request-sign-tron-end');
+    this.interactionStore.clearEvent('request-sign-ethereum-end');
+  }
+
+  protected waitEnd(): Promise<void> {
+    if (this.isEnded()) {
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve => {
+      const disposer = autorun(() => {
+        if (this.isEnded()) {
+          resolve();
+          this.clearEnded();
+          disposer();
+        }
+      });
+    });
+  }
+
+  @flow
+  *approveAccessAndWaitEnd(datas: string[]) {
+    if (this.waitingDatas.length === 0) {
+      return;
+    }
+
+    this._isLoading = true;
+    const id = this.waitingDatas[0].id;
+    try {
+      // yield this.interactionStore.approveWithoutRemovingData(id, datas);
+    } finally {
+      yield this.waitEnd();
+      this._isLoading = false;
+      this.interactionStore.removeData('enable-access', id);
+    }
+  }
+
   getSecret20ViewingKeyAccessInfo(
     chainId: string,
     contractAddress: string
@@ -179,7 +225,7 @@ export class PermissionStore extends HasMapStore<
     const key = JSON.stringify({
       type: 'viewingKey',
       chainId,
-      contractAddress,
+      contractAddress
     });
     return this.get(key) as Secret20ViewingKeyPermissionInnerStore;
   }
@@ -201,8 +247,8 @@ export class PermissionStore extends HasMapStore<
           id: data.id,
           data: {
             chainIds: data.data.chainIds,
-            origins: data.data.origins,
-          },
+            origins: data.data.origins
+          }
         });
       }
     }
@@ -231,8 +277,8 @@ export class PermissionStore extends HasMapStore<
             contractAddress: splitSecret20ViewingKeyPermissionType(
               data.data.type
             ),
-            origins: data.data.origins,
-          },
+            origins: data.data.origins
+          }
         });
       }
     }

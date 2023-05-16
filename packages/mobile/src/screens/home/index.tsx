@@ -35,6 +35,7 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
   const navigation = useNavigation();
 
@@ -207,6 +208,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     ]);
 
     setRefreshing(false);
+    setRefreshDate(Date.now());
   }, [accountStore, chainStore, priceStore, queriesStore]);
 
   return (
@@ -229,7 +231,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       {chainStore.current.chainId === TRON_ID ? (
         <TronTokensCard />
       ) : (
-        <TokensCard />
+        <TokensCard refreshDate={refreshDate} />
       )}
 
       {chainStore.current.networkType === 'cosmos' ? (

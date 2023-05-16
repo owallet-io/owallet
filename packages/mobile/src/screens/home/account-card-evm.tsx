@@ -124,7 +124,7 @@ export const AccountCardEVM: FunctionComponent<{
         chainStore.current.chainId !== TRON_ID && total
           ? (
               parseFloat(
-                new Big(parseInt(total?.amount?.int?.value))
+                new Big(parseInt(total.amount?.int?.value))
                   .div(new Big(10).pow(36))
                   .toString()
               ) *
@@ -135,7 +135,7 @@ export const AccountCardEVM: FunctionComponent<{
           : chainStore.current.chainId === TRON_ID && total
           ? (
               parseFloat(
-                new Big(parseInt(total?.amount?.int))
+                new Big(parseInt(total.amount?.int))
                   .div(new Big(10).pow(24))
                   .toString()
               ) *

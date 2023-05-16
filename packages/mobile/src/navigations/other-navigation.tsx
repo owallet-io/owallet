@@ -25,6 +25,7 @@ import { SendTronScreen } from '@src/screens/send/send-tron';
 import { NotificationScreen } from '@src/screens/notifications/home';
 import HistoryTransactionsScreen from '@src/screens/transactions/history-transactions-screen';
 import TransactionDetailScreen from '@src/screens/transactions/transaction-detail-screen';
+import { AddTokenScreen } from '@src/screens/network/add-token';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -64,6 +65,7 @@ export const OtherNavigation: FC = () => {
         name={SCREENS.NetworkSelect}
         component={SelectNetworkScreen}
       />
+      <Stack.Screen name={SCREENS.NetworkToken} component={AddTokenScreen} />
       <Stack.Screen
         name={SCREENS.ValidatorDetails}
         component={ValidatorDetailsScreen}

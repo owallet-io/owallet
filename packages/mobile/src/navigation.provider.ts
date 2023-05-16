@@ -149,6 +149,9 @@ const { SmartNavigatorProvider, useSmartNavigation } =
       'Network.select': {
         upperScreenName: 'Others'
       },
+      'Network.token': {
+        upperScreenName: 'Others'
+      },
       'Web.Intro': {
         upperScreenName: 'Web'
       },
