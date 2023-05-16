@@ -12,6 +12,7 @@ import { useStore } from '../../stores';
 import CheckBox from 'react-native-check-box';
 import { CW20Currency, Secret20Currency } from '@owallet/types';
 import { observer } from 'mobx-react-lite';
+import { showToast } from '@src/utils/helper';
 
 interface FormData {
   viewingKey: string;
@@ -76,9 +77,13 @@ export const AddTokenCosmosScreen = observer(() => {
     useState(false);
 
   const addTokenSuccess = () => {
-    alert('Token added');
     setLoading(false);
     smartNavigation.navigateSmart('Home', {});
+    showToast({
+      text1: 'Success',
+      text2: 'Token added',
+      onPress: () => {}
+    });
   };
 
   const createViewingKey = async (): Promise<string> => {
@@ -128,9 +133,14 @@ export const AddTokenCosmosScreen = observer(() => {
           }
 
           if (!viewingKey) {
-            alert('Failed to create the viewing key');
             setLoading(false);
             smartNavigation.navigateSmart('Home', {});
+            showToast({
+              text1: 'Error',
+              text2: 'Failed to create the viewing key',
+              type: 'error',
+              onPress: () => {}
+            });
           } else {
             const currency: Secret20Currency = {
               type: 'secret20',
@@ -148,8 +158,13 @@ export const AddTokenCosmosScreen = observer(() => {
       }
     } catch (err) {
       setLoading(false);
-      alert(JSON.stringify(err.message));
       smartNavigation.navigateSmart('Home', {});
+      showToast({
+        text1: 'Error',
+        text2: JSON.stringify(err.message),
+        type: 'error',
+        onPress: () => {}
+      });
     }
   });
 
