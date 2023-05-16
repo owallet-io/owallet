@@ -3,7 +3,7 @@ import { StoreProvider, useStore } from './stores';
 import { StyleProvider } from './styles';
 import { AppNavigation } from './navigation';
 import { ModalsProvider } from './modals/base';
-import { Platform,  LogBox, Text, View } from 'react-native';
+import { Platform, LogBox, Text, View } from 'react-native';
 import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
 import { InteractionModalsProivder } from './providers/interaction-modals-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -14,6 +14,30 @@ import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
 import crashlytics from '@react-native-firebase/crashlytics';
 import ThemeProvider, { useTheme } from './themes/theme-provider';
+import Toast, { BaseToast } from 'react-native-toast-message';
+import { colorsCode } from './themes/mode-colors';
+const toastConfig = {
+  /*
+    Overwrite 'success' type,
+    by modifying the existing `BaseToast` component
+  */
+  success: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: colorsCode['purple-700'], height:90}}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        fontSize: 16,
+        fontWeight: '600'
+      }}
+      text2Style={{
+        fontSize: 15,
+        fontWeight: '400'
+      }}
+      text2NumberOfLines={4}
+    />
+  )
+};
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -111,7 +135,6 @@ export const App = () => {
       <StoreProvider>
         <ThemeProvider>
           <AppIntlProviderWithStorage>
-            
             <SafeAreaProvider>
               <ModalsProvider>
                 <LoadingScreenProvider>
@@ -124,6 +147,7 @@ export const App = () => {
               </ModalsProvider>
             </SafeAreaProvider>
           </AppIntlProviderWithStorage>
+          <Toast config={toastConfig} />
         </ThemeProvider>
       </StoreProvider>
     </StyleProvider>

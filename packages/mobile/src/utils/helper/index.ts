@@ -6,6 +6,8 @@ import { getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import { ToastShowParams } from 'react-native-toast-message';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -95,7 +97,13 @@ export const handleError = (error, url, method) => {
     console.log(`[1;34m: ---------------------------------------`);
   }
 };
-
+export const showToast = ({ ...params }: ToastShowParams) => {
+  Toast.show({
+    type: 'success',
+    visibilityTime:8000,
+    ...params
+  });
+};
 export const handleDeepLink = async ({ url }) => {
   if (url) {
     const path = url.replace(SCHEME_ANDROID, '').replace(SCHEME_IOS, '');
