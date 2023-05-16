@@ -100,7 +100,7 @@ export const handleError = (error, url, method) => {
 export const showToast = ({ ...params }: ToastShowParams) => {
   Toast.show({
     type: params?.type ?? 'success',
-    visibilityTime: 8000,
+    visibilityTime: 4000,
     ...params
   });
 };
