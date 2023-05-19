@@ -215,6 +215,20 @@ const KeyRingToolsIcon: FunctionComponent<{
           >
             <FormattedMessage id="setting.clear" />
           </div>
+          {keyStore.type !== 'mnemonic' && !keyStore?.meta?.email && (
+            <div
+              className={style.popoverItem}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                browser.tabs.create({
+                  url: `/popup.html#/connect-social/${index}/${keyStore?.meta?.name}`
+                });
+              }}
+            >
+              <FormattedMessage id="setting.connect.google" />
+            </div>
+          )}
         </PopoverBody>
       </Popover>
       <AccountSettingModal

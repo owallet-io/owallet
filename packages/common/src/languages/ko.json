@@ -87,6 +87,8 @@
   "setting.export.input.password.error.invalid": "잘못된 비밀번호입니다",
   "setting.export.button.confirm": "확인",
 
+  "setting.connect.google": "Connect Google",
+
   "setting.clear": "계정 삭제",
   "setting.clear.alert": "계정을 삭제하기 전에 니모닉 시드를 가지고 있는지 확인하세요",
   "setting.clear.button.back-up": "니모닉 시드 보기",
@@ -110,6 +112,7 @@
   "setting.token.manage.notification.viewing-key.copy": "뷰잉키가 복사되었습니다",
 
   "register.name": "계정 이름",
+  "register.email": "Email name",
   "register.name.error.required": "계정 이름을 입력하세요",
   "register.button.back": "뒤로",
   "register.button.trx-ledger": "Tron Ledger",
@@ -134,6 +137,9 @@
   "register.create.input.password": "새로운 비밀번호 (최소 8자리 이상)",
   "register.create.input.password.error.required": "비밀번호를 입력하세요",
   "register.create.input.password.error.too-short": "비밀번호가 너무 짧습니다",
+  "register.create.input.confirm-password-recovery": "Recovery password (minimum 8 characters)",
+  "register.create.input.confirm-password-recovery.error.required": "Recovery password is required",
+  "register.create.input.confirm-password-recovery.error.unmatched": "Recovery Password must be >= 8 characters",
   "register.create.input.confirm-password": "비밀번호 확인",
   "register.create.input.confirm-password.error.required": "비밀번호를 입력하세요",
   "register.create.input.confirm-password.error.unmatched": "비밀번호가 일치하지 않습니다",
@@ -148,6 +154,7 @@
   "register.create.button.next": "다음",
 
   "register.ledger.title": "렛저 계정 불러오기",
+  "register.social.google.connect": "Connect with Google",
   "register.social.google.title": "Google로 로그인",
   "register.verify.button.register": "등록",
 

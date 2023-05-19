@@ -97,6 +97,8 @@
   "setting.export.input.password.error.invalid": "Invalid password",
   "setting.export.button.confirm": "Confirm",
 
+  "setting.connect.google": "Connect Google",
+
   "setting.clear": "Delete Account",
   "setting.clear.alert": "Make sure you’ve backed up your mnemonic seed before proceeding.",
   "setting.clear.button.back-up": "Back-up",
@@ -121,6 +123,7 @@
   "setting.token.manage.notification.viewing-key.copy": "Viewing key copied!",
 
   "register.name": "Account name",
+  "register.email": "Email name",
   "register.name.error.required": "Account name is required",
   "register.button.back": "Back",
   "register.button.trx-ledger": "Tron Ledger",
@@ -145,6 +148,9 @@
   "register.create.input.password": "New Password (minimum 8 characters)",
   "register.create.input.password.error.required": "Password is required",
   "register.create.input.password.error.too-short": "Too short password",
+  "register.create.input.confirm-password-recovery": "Recovery password (minimum 8 characters)",
+  "register.create.input.confirm-password-recovery.error.required": "Recovery password is required",
+  "register.create.input.confirm-password-recovery.error.unmatched": "Recovery Password must be >= 8 characters",
   "register.create.input.confirm-password": "Confirm password",
   "register.create.input.confirm-password.error.required": "Confirm password is required",
   "register.create.input.confirm-password.error.unmatched": "Password should match",
@@ -159,6 +165,7 @@
   "register.create.button.next": "Next",
 
   "register.ledger.title": "Import Ledger Nano X",
+  "register.social.google.connect": "Connect with Google",
   "register.social.google.title": "Sign in with Google",
 
   "register.verify.button.register": "Register",
