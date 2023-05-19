@@ -4,7 +4,6 @@ import { Platform, TouchableOpacity, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../../../styles';
 import { useWebViewState } from '../context';
-
 import { observer } from 'mobx-react-lite';
 import {
   BrowserIcon,
@@ -14,7 +13,7 @@ import {
   RightLightIcon
 } from '../../../../components/icon';
 import { useStore } from '../../../../stores';
-import { colors } from '../../../../themes';
+import { colors, metrics } from '../../../../themes';
 import { useTheme } from '@src/themes/theme-provider';
 
 export const BrowserFooterSection: FunctionComponent<{
@@ -86,19 +85,37 @@ export const BrowserFooterSection: FunctionComponent<{
     switch (type) {
       case 'back':
         return (
-          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             <LeftLightIcon color={colors['icon']} />
           </TouchableOpacity>
         );
       case 'next':
         return (
-          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             <RightLightIcon color={colors['icon']} />
           </TouchableOpacity>
         );
       case 'tabs':
         return (
-          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             <View
               style={{
                 padding: 1.5,
@@ -120,7 +137,13 @@ export const BrowserFooterSection: FunctionComponent<{
         );
       case 'home':
         return (
-          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             {typeOf === 'browser' ? (
               <HomeLightIcon color={colors['icon']} size={22} />
             ) : (
@@ -130,7 +153,13 @@ export const BrowserFooterSection: FunctionComponent<{
         );
       case 'reload':
         return (
-          <TouchableOpacity style={{ width: 30 }} onPress={() => onPress(type)}>
+          <TouchableOpacity
+            style={{
+              width: metrics.screenWidth / 5,
+              alignItems: 'center'
+            }}
+            onPress={() => onPress(type)}
+          >
             <RefreshIcon color={colors['icon']} size={22} />
           </TouchableOpacity>
         );
@@ -144,15 +173,13 @@ export const BrowserFooterSection: FunctionComponent<{
           bottom: 0,
           borderTopColor: colors['gray-300'],
           borderTopWidth: 0.2,
-          backgroundColor: colors['background'],
-          
+          backgroundColor: colors['background']
         },
         style.flatten([
           'width-full',
           'height-80',
           'flex-row',
           'items-center',
-          'padding-40',
           'absolute'
         ])
       ]}
@@ -166,11 +193,7 @@ export const BrowserFooterSection: FunctionComponent<{
         ])}
       >
         {arrayIcon.map((e, i) => {
-          return (
-            <View key={i} style={{ width: '24%' }}>
-              {renderIcon(e)}
-            </View>
-          );
+          return <View key={i}>{renderIcon(e)}</View>;
         })}
       </View>
     </View>

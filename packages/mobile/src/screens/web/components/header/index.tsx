@@ -136,7 +136,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
         }}
       >
         <RectButton
-          style={{ paddingLeft: 4 }}
+          style={{ paddingLeft: 4, width: 60 }}
           onPress={() => {
             if (!webViewState.canGoBack) {
               webViewState.clearWebViewContext();
@@ -151,9 +151,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
         {onEdit ? (
           <TextInput
             style={{
-              width: metrics.screenWidth * 0.8,
-              marginHorizontal: 12,
-              paddingHorizontal: 12,
+              width: metrics.screenWidth * 0.7,
               fontFamily: 'DMSans-Regular',
               color: colors['label'],
               fontWeight: '500'
@@ -202,15 +200,13 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
               style.flatten([
                 'flex-row',
                 'items-center',
-                'padding-x-12',
                 'padding-y-5',
-                'justify-between',
-                'margin-x-16'
+                'justify-between'
               ]),
               {
                 borderBottomWidth: 0.4,
                 borderBottomColor: colors['border'],
-                width: metrics.screenWidth * 0.8
+                width: metrics.screenWidth * 0.7
               }
             ])}
             onPress={() => {
