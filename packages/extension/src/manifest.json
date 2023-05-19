@@ -11,7 +11,13 @@
   "background": {
     "service_worker": "service_worker.js"
   },
-  "permissions": ["storage", "identity", "tabs", "notifications"],
+  "permissions": [
+    "storage",
+    "identity",
+    "tabs",
+    "notifications",
+    "https://analytics.google.com/*"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
