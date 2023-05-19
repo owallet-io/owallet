@@ -351,8 +351,8 @@ export class KeyRingStore {
   }
 
   @flow
-  *updateNameKeyRing(index: number, name: string) {
-    const msg = new UpdateNameKeyRingMsg(index, name);
+  *updateNameKeyRing(index: number, name: string, email?: string) {
+    const msg = new UpdateNameKeyRingMsg(index, name, email);
     const result = yield* toGenerator(
       this.requester.sendMessage(BACKGROUND_PORT, msg)
     );
