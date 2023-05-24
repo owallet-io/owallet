@@ -10,6 +10,7 @@ import { API } from '@src/common/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   capitalizedText,
+  createTxsHelper,
   formatContractAddress,
   getValueFromDataEvents,
   limitString
@@ -45,6 +46,7 @@ const TransactionDetailScreen = observer(() => {
   const txHash = params?.txHash;
 
   const infoTransaction = params?.item?.infoTransaction;
+  const txsHelper = createTxsHelper();
   const txs = txsStore(
     chainStore.current.chainId === ChainIdEnum.KawaiiEvm
       ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
@@ -279,7 +281,7 @@ const TransactionDetailScreen = observer(() => {
           return (
             <TransactionBox
               key={`title-${index}`}
-              label={txs.txsHelper.convertToWord(item?.messages?.value)}
+              label={txsHelper.convertToWord(item?.messages?.value)}
             >
               {item?.events?.length > 0 ? (
                 item?.events?.map((ev, indexEv) => {
@@ -292,64 +294,79 @@ const TransactionDetailScreen = observer(() => {
                         paddingTop: 0
                       }}
                       key={`sub-title-${indexEv}`}
-                      label={txs.txsHelper.convertToWord(ev?.type)}
+                      label={
+                        ev?.type == 'transfer'
+                          ? 'Transfer Info'
+                          : txsHelper.convertToWord(ev?.type)
+                      }
                     >
                       {ev?.attributes?.map((attr, indexAttr) => (
                         <ItemReceivedToken
                           key={`attr-${indexAttr}`}
                           valueProps={{
                             numberOfLines: 4,
-                            color: txs.txsHelper.isAddress(
+                            color: txsHelper.isAddress(
                               attr?.value,
                               chainStore?.current?.networkType
                             )
                               ? colors['purple-700']
+                              : txsHelper.checkSendReceive(
+                                  ev?.type,
+                                  ev?.attributes,
+                                  indexAttr,
+                                  account?.bech32Address
+                                )?.isPlus
+                              ? colors['green-500']
+                              : txsHelper.checkSendReceive(
+                                  ev?.type,
+                                  ev?.attributes,
+                                  indexAttr,
+                                  account?.bech32Address
+                                )?.isMinus
+                              ? colors['orange-800']
                               : colors['text-title-login']
                           }}
-                          btnCopy={txs.txsHelper.isAddress(
+                          btnCopy={txsHelper.isAddress(
                             attr?.value,
                             chainStore?.current?.networkType
                           )}
                           value={attr?.value}
-                          label={txs.txsHelper.convertToWord(attr?.key)}
+                          label={txsHelper.convertToWord(attr?.key)}
                           valueDisplay={
-                            txs.txsHelper.isAmount(attr?.value, attr?.key) ? (
-                              <View
-                                style={{
-                                  flexDirection: 'row'
-                                }}
-                              >
-                                <Text
-                                  color={colors['text-title-login']}
-                                  variant="body1"
-                                >
-                                  {
-                                    txs.txsHelper.convertValueTransactionToDisplay(
-                                      attr?.value,
-                                      attr?.key,
-                                      chainStore.current
-                                    )?.amount
-                                  }
-                                </Text>
-                                <Text
-                                  color={colors['purple-700']}
-                                  variant="body1"
-                                  style={{
-                                    paddingLeft: 5
-                                  }}
-                                >
-                                  {
-                                    txs.txsHelper.convertValueTransactionToDisplay(
-                                      attr?.value,
-                                      attr?.key,
-                                      chainStore.current
-                                    )?.token
-                                  }
-                                </Text>
-                              </View>
-                            ) : (
-                              attr?.value
-                            )
+                            txsHelper.isAmount(attr?.value, attr?.key)
+                              ? `${
+                                  txsHelper.checkSendReceive(
+                                    ev?.type,
+                                    ev?.attributes,
+                                    indexAttr,
+                                    account?.bech32Address
+                                  )?.isPlus
+                                    ? '+'
+                                    : txsHelper.checkSendReceive(
+                                        ev?.type,
+                                        ev?.attributes,
+                                        indexAttr,
+                                        account?.bech32Address
+                                      )?.isMinus
+                                    ? '-'
+                                    : ''
+                                }${
+                              txsHelper.convertValueTransactionToDisplay(
+                                attr?.value,
+                                attr?.key,
+                                chainStore.current
+                              )?.amount
+                            } ${txsHelper.convertValueTransactionToDisplay(
+                              attr?.value,
+                              attr?.key,
+                              chainStore.current
+                            )?.token}`
+                              : txsHelper.isAddress(
+                                  attr?.value,
+                                  chainStore?.current?.networkType
+                                )
+                              ? formatContractAddress(attr?.value)
+                              : attr?.value
                           }
                         />
                       ))}

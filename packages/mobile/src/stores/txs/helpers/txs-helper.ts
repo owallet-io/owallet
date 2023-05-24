@@ -6,7 +6,7 @@ import { ChainIdEnum } from './txs-enums';
 import { ChainInfo } from '@owallet/types';
 import Big from 'big.js';
 import moment from 'moment';
-import { get, limitString } from '@src/utils/helper';
+import { formatContractAddress, get, limitString } from '@src/utils/helper';
 import { isArray, isString } from 'util';
 import { TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
 import { Bech32Address } from '@owallet/cosmos';
@@ -222,6 +222,13 @@ export class TxsHelper {
   }
   convertValueTransactionToDisplay(str, label, currentChain) {
     if (!str || !label || !currentChain) return null;
+    console.log('currentChain: ', currentChain?.networkType);
+
+    console.log(
+      'this.isAddress(str, currentChain.networkType): ',
+      this.isAddress(str, currentChain.networkType)
+    );
+
     if (this.isAmount(str, label)) {
       const matchesAmount = str?.match(/\d+/g);
       const matchesDenom = str?.replace(/^\d+/g, '');
@@ -240,10 +247,16 @@ export class TxsHelper {
         ),
         token:
           matchesDenom &&
-          limitString(this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
-            matchesDenom?.trim()?.toUpperCase()
-          ).coinDenom?.toUpperCase(),10)
+          limitString(
+            this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+              matchesDenom?.trim()?.toUpperCase()
+            ).coinDenom?.toUpperCase(),
+            10
+          )
       };
+    } else if (this.isAddress(str, currentChain.networkType)) {
+      console.log('currentChain.networkType: ', currentChain.networkType);
+      return formatContractAddress(str);
     }
     return str;
   }
@@ -538,31 +551,44 @@ export class TxsHelper {
     // if no match is found, return null
     return null;
   };
+  sortTransferFirst(inputArray) {
+    if (!inputArray || inputArray?.length <= 0) return null;
+    if (Array.isArray(inputArray)) {
+      for (let i = 0; i < inputArray.length; i++) {
+        const events = inputArray[i].events;
+        if (Array.isArray(events)) {
+          const transferIndex = events.findIndex(
+            (event) => event.type === 'transfer'
+          );
+          if (transferIndex !== -1 && transferIndex !== 0) {
+            const transferEvent = events.splice(transferIndex, 1)[0];
+            events.unshift(transferEvent);
+          }
+        }
+      }
+    }
+    return inputArray;
+  }
   sortTransferEvents(array) {
-    console.log('array: ', array);
     if (!array || !isArray(array) || array?.length < 0) return null;
-
     const transferEvents = array.filter((item) => {
       return item.events && item?.events[0]?.type === 'transfer';
     });
     if (transferEvents && transferEvents?.length > 0) {
       transferEvents.forEach((item) => {
         const attributes = item?.events[0]?.attributes;
-        console.log('attributes: ', attributes);
         const sortedAttributes = [];
         const keys = ['sender', 'recipient', 'amount'];
-
         for (let key of keys) {
-          const foundAttribute = attributes.find((attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key);
-          console.log('foundAttribute: ', foundAttribute);
+          const foundAttribute = attributes.find(
+            (attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key
+          );
           if (foundAttribute) {
             sortedAttributes.push(foundAttribute);
           }
         }
-
         item.events[0].attributes = sortedAttributes;
       });
-
       return transferEvents;
     }
     return array;
@@ -591,7 +617,6 @@ export class TxsHelper {
         }
         return true;
       } catch (error) {
-        console.log('error: ', error);
         return false;
       }
     }
@@ -601,6 +626,31 @@ export class TxsHelper {
     } catch (error) {
       return false;
     }
+  }
+  checkSendReceive(evType, evAttr, indexAttr, addressAcc) {
+    if (!evType || evAttr?.length < 3 || !Array.isArray(evAttr)) return null;
+    if (evType === 'transfer') {
+      if (
+        evAttr[indexAttr - 2] &&
+        evAttr[indexAttr - 2]?.key == 'sender' &&
+        evAttr[indexAttr - 2]?.value === addressAcc &&
+        evAttr[indexAttr - 1]?.key == 'recipient' &&
+        evAttr[indexAttr - 1]?.value !== addressAcc
+      ) {
+        console.log('ngonm');
+        return { isPlus: false, isMinus: true };
+      } else if (
+        evAttr[indexAttr - 2] &&
+        evAttr[indexAttr - 2]?.key == 'sender' &&
+        evAttr[indexAttr - 2]?.value !== addressAcc &&
+        evAttr[indexAttr - 1]?.key == 'recipient' &&
+        evAttr[indexAttr - 1]?.value === addressAcc
+      ) {
+        return { isPlus: true, isMinus: false };
+      }
+      return { isPlus: false, isMinus: false };
+    }
+    return { isPlus: false, isMinus: false };
   }
   convertVarToWord(str) {
     if (!str) return str;
@@ -806,7 +856,7 @@ export class TxsHelper {
       item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;
       if (logs?.length > 0) {
         item.infoTransaction = this.sortTransferEvents(
-          this.filterEventsNotUse(logs)
+          this.sortTransferFirst(this.filterEventsNotUse(logs))
         );
         logs.forEach((itemLog) => {
           let itemDataTransferDetail = this.handleItemRawLogCosmos(
@@ -890,7 +940,7 @@ export class TxsHelper {
       date: '',
       timestamp: 0
     };
-    item.infoTransaction = []
+    item.infoTransaction = [];
     if (data?.tx_result?.code === 0) {
       const logs = data?.tx_result?.log && JSON.parse(data?.tx_result?.log);
       item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;

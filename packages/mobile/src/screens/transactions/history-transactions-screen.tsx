@@ -37,10 +37,12 @@ const HistoryTransactionsScreen = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const page = useRef(0);
-  const [activePage, setActivePage] = useState(1);
+  const [activePage, setActivePage] = useState(
+    chainStore.current?.networkType !== 'evm' ? 1 : 0
+  );
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
-  const txsHelper = createTxsHelper();
+
   const hasMore = useRef(true);
   const perPage = 10;
   const txs = txsStore(
@@ -58,6 +60,7 @@ const HistoryTransactionsScreen = observer(() => {
         } else if (!isLoadMore && params?.isActiveType) {
           setRefreshing(true);
         }
+
         if (hasMore.current) {
           const rs = await requestData(
             isLoadMore,
@@ -67,6 +70,8 @@ const HistoryTransactionsScreen = observer(() => {
             },
             params?.activePage
           );
+          console.log('rs: ', rs);
+
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
           // hasMore.current = rs.result?.length === perPage;
           page.current = rs?.current_page + 1;
