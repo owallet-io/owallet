@@ -15,7 +15,7 @@ export interface OWTextProps extends TextProps {
     | 'button'
     | 'caption'
     | 'overline';
-  typo?: 'bold' | 'regular';
+  typo?: 'bold' | 'regular' | 'medium';
   color?: string;
   size?: number;
   weight?:
@@ -103,6 +103,10 @@ const useStyle = ({ variant, typo, color, size, weight }: OWTextProps) => {
     case 'regular':
       textStyle.fontWeight = '400';
       textStyle.fontFamily = 'DMSans-Regular';
+      break;
+    case 'medium':
+      textStyle.fontWeight = '500';
+      textStyle.fontFamily = 'DMSans-Medium';
       break;
   }
   if (color) textStyle.color = color;
