@@ -222,13 +222,6 @@ export class TxsHelper {
   }
   convertValueTransactionToDisplay(str, label, currentChain) {
     if (!str || !label || !currentChain) return null;
-    console.log('currentChain: ', currentChain?.networkType);
-
-    console.log(
-      'this.isAddress(str, currentChain.networkType): ',
-      this.isAddress(str, currentChain.networkType)
-    );
-
     if (this.isAmount(str, label)) {
       const matchesAmount = str?.match(/\d+/g);
       const matchesDenom = str?.replace(/^\d+/g, '');
@@ -255,7 +248,6 @@ export class TxsHelper {
           )
       };
     } else if (this.isAddress(str, currentChain.networkType)) {
-      console.log('currentChain.networkType: ', currentChain.networkType);
       return formatContractAddress(str);
     }
     return str;
@@ -628,12 +620,10 @@ export class TxsHelper {
     }
   }
   trimQuotes(inputString) {
-   if(!inputString) return null;
+    if (!inputString) return null;
     if (inputString?.startsWith('"') && inputString?.endsWith('"')) {
-   
       return inputString?.slice(1, -1);
     } else {
-   
       return inputString;
     }
   }
@@ -647,7 +637,6 @@ export class TxsHelper {
         evAttr[indexAttr - 1]?.key == 'recipient' &&
         evAttr[indexAttr - 1]?.value !== addressAcc
       ) {
-        console.log('ngonm');
         return { isPlus: false, isMinus: true };
       } else if (
         evAttr[indexAttr - 2] &&
@@ -886,12 +875,9 @@ export class TxsHelper {
     return item;
   }
   filterEventsNotUse(eventsArray) {
-    console.log('eventsArray: ', eventsArray);
     const messages = eventsArray.flatMap((item) =>
       item?.events?.filter((event) => event?.type === 'message')
     );
-    console.log('messages: ', messages);
-
     const filteredEvents = eventsArray?.map((item) => ({
       events: item.events.filter(
         (event) =>
@@ -907,8 +893,6 @@ export class TxsHelper {
         messages &&
         messages[0]?.attributes.find((item, data) => item?.key == 'action')
     }));
-    console.log('filteredEvents: ', filteredEvents);
-
     return filteredEvents;
   }
   cleanDataCosmosToStandFormat(
