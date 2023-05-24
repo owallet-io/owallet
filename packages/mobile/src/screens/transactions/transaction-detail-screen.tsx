@@ -43,11 +43,14 @@ const TransactionDetailScreen = observer(() => {
     >
   >().params;
   const txHash = params?.txHash;
+
+  const infoTransaction = params?.item?.infoTransaction;
   const txs = txsStore(
     chainStore.current.chainId === ChainIdEnum.KawaiiEvm
       ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
       : chainStore.current
   );
+
   useEffect(() => {
     if (!params?.item?.isRefreshData) {
       setData(params?.item);
@@ -254,7 +257,13 @@ const TransactionDetailScreen = observer(() => {
         ) : null}
         <ItemDetail
           label="Time"
-          value={data?.time?.timeLong}
+          value={`${data?.time?.timeShort}\n ${data?.time?.date}`}
+          valueProps={{
+            style: {
+              textAlign: 'right'
+            },
+            numberOfLines: 2
+          }}
           borderBottom={!!chainStore?.current?.raw?.txExplorer}
         />
         {chainStore?.current?.raw?.txExplorer && (
@@ -262,7 +271,96 @@ const TransactionDetailScreen = observer(() => {
         )}
       </TransactionBox>
 
-      {itemEvents?.typeId !== 0 && itemEvents?.value?.map(handleMapData)}
+      {chainStore.current?.networkType === 'evm' &&
+        itemEvents?.typeId !== 0 &&
+        itemEvents?.value?.map(handleMapData)}
+      {infoTransaction?.length > 0 &&
+        infoTransaction?.map((item, index) => {
+          return (
+            <TransactionBox
+              label={txs.txsHelper.convertToWord(item?.messages?.value)}
+            >
+              {item?.events?.length > 0 ? (
+                item?.events?.map((ev, indexEv) => {
+                  return (
+                    <TransactionBox
+                      style={{
+                        paddingTop: 0
+                      }}
+                      label={txs.txsHelper.convertToWord(ev?.type)}
+                    >
+                      {ev?.attributes?.map((attr, indexAttr) => (
+                        <ItemReceivedToken
+                          valueProps={{
+                            numberOfLines: 4,
+                            color: txs.txsHelper.isAddress(
+                              attr?.value,
+                              chainStore?.current?.networkType
+                            )
+                              ? colors['purple-700']
+                              : colors['text-title-login']
+                          }}
+                          btnCopy={txs.txsHelper.isAddress(
+                            attr?.value,
+                            chainStore?.current?.networkType
+                          )}
+                          value={attr?.value}
+                          label={txs.txsHelper.convertToWord(attr?.key)}
+                          valueDisplay={
+                            txs.txsHelper.isAmount(attr?.value, attr?.key) ? (
+                              <View
+                                style={{
+                                  flexDirection: 'row'
+                                }}
+                              >
+                                <Text
+                                  color={colors['text-title-login']}
+                                  variant="body1"
+                                >
+                                  {
+                                    txs.txsHelper.convertValueTransactionToDisplay(
+                                      attr?.value,
+                                      attr?.key,
+                                      chainStore.current
+                                    )?.amount
+                                  }
+                                </Text>
+                                <Text
+                                  color={colors['purple-700']}
+                                  variant="body1"
+                                  style={{
+                                    paddingLeft: 5
+                                  }}
+                                >
+                                  {
+                                    txs.txsHelper.convertValueTransactionToDisplay(
+                                      attr?.value,
+                                      attr?.key,
+                                      chainStore.current
+                                    )?.token
+                                  }
+                                </Text>
+                              </View>
+                            ) : (
+                              attr?.value
+                            )
+                          }
+                        />
+                      ))}
+                    </TransactionBox>
+                  );
+                })
+              ) : (
+                <OWEmpty
+                  style={{
+                    paddingVertical: 5
+                  }}
+                  sizeImage={70}
+                />
+              )}
+            </TransactionBox>
+          );
+        })}
     </PageWithScrollView>
   );
 });
