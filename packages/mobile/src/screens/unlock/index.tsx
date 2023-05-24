@@ -12,7 +12,6 @@ import {
   Image,
   Platform,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -21,21 +20,24 @@ import * as SplashScreen from 'expo-splash-screen';
 import { TextInput } from '../../components/input';
 import delay from 'delay';
 import { useStore } from '../../stores';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { StackActions, useNavigation } from '@react-navigation/native';
 import { KeyRingStatus } from '@owallet/background';
 import { KeychainStore } from '../../stores/keychain';
 import { AccountStore } from '@owallet/stores';
 import { autorun } from 'mobx';
 import { spacing } from '../../themes';
-import { LoadingSpinner } from '../../components/spinner';
 import { ProgressBar } from '../../components/progress-bar';
 import CodePush from 'react-native-code-push';
 import messaging from '@react-native-firebase/messaging';
-import { MaintainScreen } from '../../components/maintain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButton from '@src/components/button/OWButton';
+import { PageWithScrollView } from '@src/components/page';
+import { HeaderWelcome, OrText } from '../register/components';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
+import { Text } from '@src/components/text';
+import OWIcon from '@src/components/ow-icon/ow-icon';
+import images from '@src/assets/images';
 import { showToast } from '@src/utils/helper';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 let splashScreenHided = false;
@@ -122,7 +124,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const [installing, setInstalling] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
-
+  const [statusPass, setStatusPass] = useState(true);
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
     if (!navigateToHomeOnce.current) {
@@ -393,7 +395,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, []);
 
   // return <MaintainScreen />;
-
+  const showPass = () => setStatusPass(!statusPass);
   return !routeToRegisterOnce.current &&
     keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
@@ -468,86 +470,85 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       </TouchableOpacity>
     </View>
   ) : (
-    <React.Fragment>
+    <PageWithScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: 'center'
+      }}
+      backgroundColor={colors['plain-background']}
+    >
+      <HeaderWelcome
+        style={{
+          marginTop: 0
+        }}
+        title={'Sign in to OWallet'}
+      />
       <View
         style={{
-          flex: 1,
-          backgroundColor: colors['background-container']
+          paddingLeft: 20,
+          paddingRight: 20
         }}
       >
-        <KeyboardAwareScrollView
-          contentContainerStyle={{
-            flexGrow: 1
+        <TextInput
+          containerStyle={{
+            paddingBottom: 40
           }}
-        >
-          <View
-            style={{
-              flex: 5
-            }}
-          />
-          <View
-            style={{
-              flex: 3
-            }}
-          >
-            <Image
-              style={{
-                marginBottom: 102,
-                height: '100%',
-                width: '100%'
-              }}
-              fadeDuration={0}
-              resizeMode="contain"
-              source={require('../../assets/logo/splash-image.png')}
+          accessibilityLabel="password"
+          returnKeyType="done"
+          secureTextEntry={statusPass}
+          value={password}
+          error={isFailed ? 'Invalid password' : undefined}
+          onChangeText={setPassword}
+          onSubmitEditing={tryUnlock}
+          placeholder="Password"
+          inputLeft={
+            <View style={{ paddingRight: 10 }}>
+              <OWIcon type="images" size={25} source={images.lock_circle} />
+            </View>
+          }
+          inputRight={
+            <OWButtonIcon
+              style={styles.padIcon}
+              onPress={showPass}
+              name={statusPass ? 'eye' : 'eye-slash'}
+              colorIcon={colors['icon-purple-700-gray']}
+              sizeIcon={22}
             />
-          </View>
-          <View
-            style={{
-              paddingLeft: 20,
-              paddingRight: 20
-            }}
-          >
-            <TextInput
-              containerStyle={{
-                paddingBottom: 40
-              }}
-              label="Password"
-              accessibilityLabel="password"
-              returnKeyType="done"
-              secureTextEntry={true}
-              value={password}
-              error={isFailed ? 'Invalid password' : undefined}
-              onChangeText={setPassword}
-              onSubmitEditing={tryUnlock}
-            />
+          }
+        />
+        <OWButton
+          label="Sign In"
+          disabled={isLoading || !password}
+          onPress={tryUnlock}
+          loading={isLoading || isBiometricLoading}
+        />
+        {keychainStore.isBiometryOn && (
+          <>
+            <OrText />
             <OWButton
-              label="Sign In"
-              disabled={isLoading}
-              onPress={tryUnlock}
-              loading={isLoading || isBiometricLoading}
+              label="Use Biometric Authentication"
+              style={styles.useBiometric}
+              onPress={tryBiometric}
+              type="secondary"
             />
-
-            {keychainStore.isBiometryOn && (
-              <OWButton
-                label="Use Biometric Authentication"
-                style={styles.useBiometric}
-                onPress={tryBiometric}
-              />
-            )}
-          </View>
-          <View
-            style={{
-              flex: 7
-            }}
-          />
-        </KeyboardAwareScrollView>
+          </>
+        )}
       </View>
-    </React.Fragment>
+      <View
+        style={{
+          height: 100
+        }}
+      ></View>
+    </PageWithScrollView>
   );
 });
 
 const styles = StyleSheet.create({
   useBiometric: {
-    marginTop: 44
+    // marginTop: 44
+  },
+  padIcon: {
+    paddingLeft: 10,
+    width: 'auto'
   }
 });

@@ -23,6 +23,7 @@ const images = {
    line_success_short: require('./line_success_short.png'),
    line_success_short_dark: require('./line_success_short_dark.png'),
    line_sucess_long_dark: require('./line_sucess_long_dark.png'),
+   lock_circle: require('./lock-circle.png'),
    pending_dark: require('./pending-dark.png'),
    pending: require('./pending.png'),
    process_pending: require('./process_pending.png'),
