@@ -37,7 +37,9 @@ const HistoryTransactionsScreen = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const page = useRef(0);
-  const [activePage, setActivePage] = useState(1);
+  const [activePage, setActivePage] = useState(
+    chainStore.current?.networkType !== 'evm' ? 1 : 0
+  );
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
   const txsHelper = createTxsHelper();
