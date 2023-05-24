@@ -21,8 +21,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && yarn patch-package",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.31 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.15 --output-dir build",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.30 --output-dir build",
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 1.0.2 --output-dir build",
     "bundle:ios": "react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --sourcemap-output ios/main.jsbundle.map --assets-dest ios",
     "bundle:android": "react-native bundle --entry-file index.js --platform android --dev false --bundle-output android/index.android.bundle --sourcemap-output index.android.bundle.map --assets-dest android",
     "images": "node ./src/scripts/generate-images.js"
@@ -115,7 +115,6 @@
     "react-native-keychain": "^7.0.0",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-localize": "^2.1.1",
-    "react-native-permissions": "^3.8.0",
     "react-native-qrcode-svg": "^6.1.1",
     "react-native-radio-buttons-group": "^2.2.11",
     "react-native-randombytes": "^3.6.1",
