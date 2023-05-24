@@ -539,6 +539,7 @@ export class TxsHelper {
     return null;
   };
   sortTransferEvents(array) {
+    console.log('array: ', array);
     if (!array || !isArray(array) || array?.length < 0) return null;
 
     const transferEvents = array.filter((item) => {
@@ -547,11 +548,13 @@ export class TxsHelper {
     if (transferEvents && transferEvents?.length > 0) {
       transferEvents.forEach((item) => {
         const attributes = item?.events[0]?.attributes;
+        console.log('attributes: ', attributes);
         const sortedAttributes = [];
         const keys = ['sender', 'recipient', 'amount'];
 
         for (let key of keys) {
-          const foundAttribute = attributes.find((attr) => attr?.key === key);
+          const foundAttribute = attributes.find((attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key);
+          console.log('foundAttribute: ', foundAttribute);
           if (foundAttribute) {
             sortedAttributes.push(foundAttribute);
           }
@@ -823,6 +826,7 @@ export class TxsHelper {
     return item;
   }
   filterEventsNotUse(eventsArray) {
+    console.log('eventsArray: ', eventsArray);
     const messages = eventsArray.flatMap((item) =>
       item?.events?.filter((event) => event?.type === 'message')
     );

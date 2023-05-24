@@ -7,8 +7,9 @@ import { useTheme } from '@src/themes/theme-provider';
 const TransactionBox: FC<{
   label?: string;
   style?:ViewStyle;
+  styleBox?:ViewStyle;
   subLabel?: string;
-}> = ({ label, children, subLabel,style }) => {
+}> = ({ label, children, subLabel,style,styleBox }) => {
   const { colors } = useTheme();
   return (
     <View
@@ -30,7 +31,7 @@ const TransactionBox: FC<{
           </>
         ) : null}
       </Text>
-      <OWBox style={styles.containerBox}>{children}</OWBox>
+      <OWBox style={[styles.containerBox,styleBox]}>{children}</OWBox>
     </View>
   );
 };

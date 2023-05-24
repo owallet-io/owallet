@@ -278,19 +278,25 @@ const TransactionDetailScreen = observer(() => {
         infoTransaction?.map((item, index) => {
           return (
             <TransactionBox
+              key={`title-${index}`}
               label={txs.txsHelper.convertToWord(item?.messages?.value)}
             >
               {item?.events?.length > 0 ? (
                 item?.events?.map((ev, indexEv) => {
                   return (
                     <TransactionBox
+                      styleBox={{
+                        marginTop: 0
+                      }}
                       style={{
                         paddingTop: 0
                       }}
+                      key={`sub-title-${indexEv}`}
                       label={txs.txsHelper.convertToWord(ev?.type)}
                     >
                       {ev?.attributes?.map((attr, indexAttr) => (
                         <ItemReceivedToken
+                          key={`attr-${indexAttr}`}
                           valueProps={{
                             numberOfLines: 4,
                             color: txs.txsHelper.isAddress(
