@@ -12,4 +12,5 @@ interface IContainerModal {
     iconComponent?: ReactNode;
     label?:string;
     value?:string;
+    subLabel?:string;
   }
