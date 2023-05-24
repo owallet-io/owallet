@@ -627,6 +627,16 @@ export class TxsHelper {
       return false;
     }
   }
+  trimQuotes(inputString) {
+   if(!inputString) return null;
+    if (inputString?.startsWith('"') && inputString?.endsWith('"')) {
+   
+      return inputString?.slice(1, -1);
+    } else {
+   
+      return inputString;
+    }
+  }
   checkSendReceive(evType, evAttr, indexAttr, addressAcc) {
     if (!evType || evAttr?.length < 3 || !Array.isArray(evAttr)) return null;
     if (evType === 'transfer') {

@@ -8,7 +8,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const ItemDetail: FC<{
   label?: string;
-  value?: string;
+  value?: any;
   borderBottom?: boolean;
   valueProps?: OWTextProps;
   iconComponent?: React.ReactNode;
@@ -23,7 +23,7 @@ const ItemDetail: FC<{
   return (
     <View>
       <View style={styles.containerItemDetail}>
-        <Text color={colors['text-label-transaction-detail']} variant="body2">
+        <Text color={colors['blue-300']} variant="body2">
           {label}
         </Text>
         <View style={styles.wrapRightItem}>
@@ -36,13 +36,17 @@ const ItemDetail: FC<{
               {iconComponent}
             </View>
           )}
-          <Text
-            color={colors['text-title-login']}
-            variant="body1"
-            {...valueProps}
-          >
-            {value}
-          </Text>
+          {typeof value === 'string' ? (
+            <Text
+              color={colors['text-title-login']}
+              variant="body1"
+              {...valueProps}
+            >
+              {value}
+            </Text>
+          ) : (
+            value
+          )}
         </View>
       </View>
       {borderBottom && <ItemDivided />}

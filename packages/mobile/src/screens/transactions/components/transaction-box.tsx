@@ -18,7 +18,7 @@ const TransactionBox: FC<{
         ...style
       }}
     >
-      <Text color={colors['icon-text']} typo="regular" variant="body1">
+      <Text color={colors['blue-300']} typo="regular" variant="body1">
         {label}
         {subLabel ? (
           <>

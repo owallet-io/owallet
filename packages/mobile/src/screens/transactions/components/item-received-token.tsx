@@ -34,7 +34,7 @@ const ItemReceivedToken: FC<{
     <View>
       <View style={styles.containerItemReceivedToken}>
         <View style={styles.flex_1}>
-          <Text color={colors['text-label-transaction-detail']} variant="body2">
+          <Text color={colors['blue-300']} variant="body2">
             {label}
           </Text>
           {typeof valueDisplay == 'string' ? (

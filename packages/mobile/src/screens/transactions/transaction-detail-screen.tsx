@@ -259,13 +259,20 @@ const TransactionDetailScreen = observer(() => {
         ) : null}
         <ItemDetail
           label="Time"
-          value={`${data?.time?.timeShort}\n ${data?.time?.date}`}
-          valueProps={{
-            style: {
-              textAlign: 'right'
-            },
-            numberOfLines: 2
-          }}
+          value={
+            <View
+              style={{
+                alignItems: 'flex-end'
+              }}
+            >
+              <Text color={colors['text-title-login']} variant="body1">
+                {data?.time?.timeShort}
+              </Text>
+              <Text variant="body1" color={colors['blue-300']}>
+                {data?.time?.date}
+              </Text>
+            </View>
+          }
           borderBottom={!!chainStore?.current?.raw?.txExplorer}
         />
         {chainStore?.current?.raw?.txExplorer && (
@@ -273,7 +280,7 @@ const TransactionDetailScreen = observer(() => {
         )}
       </TransactionBox>
 
-      {chainStore.current?.networkType === 'evm' &&
+      {chainStore.current?.networkType === 'evm' && chainStore.current.chainId !==  ChainIdEnum.KawaiiEvm &&
         itemEvents?.typeId !== 0 &&
         itemEvents?.value?.map(handleMapData)}
       {infoTransaction?.length > 0 &&
@@ -310,20 +317,6 @@ const TransactionDetailScreen = observer(() => {
                               chainStore?.current?.networkType
                             )
                               ? colors['purple-700']
-                              : txsHelper.checkSendReceive(
-                                  ev?.type,
-                                  ev?.attributes,
-                                  indexAttr,
-                                  account?.bech32Address
-                                )?.isPlus
-                              ? colors['green-500']
-                              : txsHelper.checkSendReceive(
-                                  ev?.type,
-                                  ev?.attributes,
-                                  indexAttr,
-                                  account?.bech32Address
-                                )?.isMinus
-                              ? colors['orange-800']
                               : colors['text-title-login']
                           }}
                           btnCopy={txsHelper.isAddress(
@@ -335,38 +328,27 @@ const TransactionDetailScreen = observer(() => {
                           valueDisplay={
                             txsHelper.isAmount(attr?.value, attr?.key)
                               ? `${
-                                  txsHelper.checkSendReceive(
-                                    ev?.type,
-                                    ev?.attributes,
-                                    indexAttr,
-                                    account?.bech32Address
-                                  )?.isPlus
-                                    ? '+'
-                                    : txsHelper.checkSendReceive(
-                                        ev?.type,
-                                        ev?.attributes,
-                                        indexAttr,
-                                        account?.bech32Address
-                                      )?.isMinus
-                                    ? '-'
-                                    : ''
-                                }${
-                              txsHelper.convertValueTransactionToDisplay(
-                                attr?.value,
-                                attr?.key,
-                                chainStore.current
-                              )?.amount
-                            } ${txsHelper.convertValueTransactionToDisplay(
-                              attr?.value,
-                              attr?.key,
-                              chainStore.current
-                            )?.token}`
+                                  txsHelper.convertValueTransactionToDisplay(
+                                    attr?.value,
+                                    attr?.key,
+                                    chainStore.current
+                                  )?.amount
+                                } ${
+                                  txsHelper.convertValueTransactionToDisplay(
+                                    attr?.value,
+                                    attr?.key,
+                                    chainStore.current
+                                  )?.token
+                                }`
                               : txsHelper.isAddress(
                                   attr?.value,
                                   chainStore?.current?.networkType
                                 )
                               ? formatContractAddress(attr?.value)
-                              : attr?.value
+                              : limitString(
+                                  txsHelper.trimQuotes(attr?.value),
+                                  40
+                                )
                           }
                         />
                       ))}
