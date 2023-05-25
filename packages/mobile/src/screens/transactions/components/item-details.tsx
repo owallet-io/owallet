@@ -1,5 +1,5 @@
 import { StyleSheet, View } from 'react-native';
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import ItemDivided from './item-divided';
@@ -8,7 +8,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 
 const ItemDetail: FC<{
   label?: string;
-  value?: any;
+  value?: string | ReactNode;
   borderBottom?: boolean;
   valueProps?: OWTextProps;
   iconComponent?: React.ReactNode;

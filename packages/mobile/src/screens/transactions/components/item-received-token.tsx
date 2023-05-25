@@ -1,5 +1,5 @@
 import { Clipboard, StyleSheet, View } from 'react-native';
-import React, { FC, useCallback } from 'react';
+import React, { FC, ReactNode, useCallback } from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { Text } from '@src/components/text';
@@ -14,7 +14,7 @@ const ItemReceivedToken: FC<{
   borderBottom?: boolean;
   btnCopy?: boolean;
   valueProps?: OWTextProps;
-  valueDisplay?: string;
+  valueDisplay?: string | ReactNode;
 }> = ({
   label = '--',
   value = '',
