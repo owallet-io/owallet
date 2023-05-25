@@ -10,6 +10,7 @@ import { API } from '@src/common/api';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import {
   capitalizedText,
+  createTxsHelper,
   formatContractAddress,
   getValueFromDataEvents,
   limitString
@@ -43,11 +44,15 @@ const TransactionDetailScreen = observer(() => {
     >
   >().params;
   const txHash = params?.txHash;
+
+  const infoTransaction = params?.item?.infoTransaction;
+  const txsHelper = createTxsHelper();
   const txs = txsStore(
     chainStore.current.chainId === ChainIdEnum.KawaiiEvm
       ? chainStore.getChain(ChainIdEnum.KawaiiCosmos)
       : chainStore.current
   );
+
   useEffect(() => {
     if (!params?.item?.isRefreshData) {
       setData(params?.item);
@@ -254,7 +259,20 @@ const TransactionDetailScreen = observer(() => {
         ) : null}
         <ItemDetail
           label="Time"
-          value={data?.time?.timeLong}
+          value={
+            <View
+              style={{
+                alignItems: 'flex-end'
+              }}
+            >
+              <Text color={colors['text-title-login']} variant="body1">
+                {data?.time?.timeShort}
+              </Text>
+              <Text variant="body1" color={colors['blue-300']}>
+                {data?.time?.date}
+              </Text>
+            </View>
+          }
           borderBottom={!!chainStore?.current?.raw?.txExplorer}
         />
         {chainStore?.current?.raw?.txExplorer && (
@@ -262,7 +280,92 @@ const TransactionDetailScreen = observer(() => {
         )}
       </TransactionBox>
 
-      {itemEvents?.typeId !== 0 && itemEvents?.value?.map(handleMapData)}
+      {chainStore.current?.networkType === 'evm' && chainStore.current.chainId !==  ChainIdEnum.KawaiiEvm &&
+        itemEvents?.typeId !== 0 &&
+        itemEvents?.value?.map(handleMapData)}
+      {infoTransaction?.length > 0 &&
+        infoTransaction?.map((item, index) => {
+          return (
+            <TransactionBox
+              key={`title-${index}`}
+              label={txsHelper.convertToWord(item?.messages?.value)}
+            >
+              {item?.events?.length > 0 ? (
+                item?.events?.map((ev, indexEv) => {
+                  return (
+                    <TransactionBox
+                      styleBox={{
+                        marginTop: 0
+                      }}
+                      style={{
+                        paddingTop: 0
+                      }}
+                      key={`sub-title-${indexEv}`}
+                      label={
+                        ev?.type == 'transfer'
+                          ? 'Transfer Info'
+                          : txsHelper.convertToWord(ev?.type)
+                      }
+                    >
+                      {ev?.attributes?.map((attr, indexAttr) => (
+                        <ItemReceivedToken
+                          key={`attr-${indexAttr}`}
+                          valueProps={{
+                            numberOfLines: 4,
+                            color: txsHelper.isAddress(
+                              attr?.value,
+                              chainStore?.current?.networkType
+                            )
+                              ? colors['purple-700']
+                              : colors['text-title-login']
+                          }}
+                          btnCopy={txsHelper.isAddress(
+                            attr?.value,
+                            chainStore?.current?.networkType
+                          )}
+                          value={attr?.value}
+                          label={txsHelper.convertToWord(attr?.key)}
+                          valueDisplay={
+                            txsHelper.isAmount(attr?.value, attr?.key)
+                              ? `${
+                                  txsHelper.convertValueTransactionToDisplay(
+                                    attr?.value,
+                                    attr?.key,
+                                    chainStore.current
+                                  )?.amount
+                                } ${
+                                  txsHelper.convertValueTransactionToDisplay(
+                                    attr?.value,
+                                    attr?.key,
+                                    chainStore.current
+                                  )?.token
+                                }`
+                              : txsHelper.isAddress(
+                                  attr?.value,
+                                  chainStore?.current?.networkType
+                                )
+                              ? formatContractAddress(attr?.value)
+                              : limitString(
+                                  txsHelper.trimQuotes(attr?.value),
+                                  40
+                                )
+                          }
+                        />
+                      ))}
+                    </TransactionBox>
+                  );
+                })
+              ) : (
+                <OWEmpty
+                  style={{
+                    paddingVertical: 5
+                  }}
+                  sizeImage={70}
+                />
+              )}
+            </TransactionBox>
+          );
+        })}
     </PageWithScrollView>
   );
 });

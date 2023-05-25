@@ -42,7 +42,7 @@ const HistoryTransactionsScreen = observer(() => {
   );
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
-  const txsHelper = createTxsHelper();
+
   const hasMore = useRef(true);
   const perPage = 10;
   const txs = txsStore(
@@ -60,6 +60,7 @@ const HistoryTransactionsScreen = observer(() => {
         } else if (!isLoadMore && params?.isActiveType) {
           setRefreshing(true);
         }
+
         if (hasMore.current) {
           const rs = await requestData(
             isLoadMore,
@@ -69,6 +70,7 @@ const HistoryTransactionsScreen = observer(() => {
             },
             params?.activePage
           );
+
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
           // hasMore.current = rs.result?.length === perPage;
           page.current = rs?.current_page + 1;
