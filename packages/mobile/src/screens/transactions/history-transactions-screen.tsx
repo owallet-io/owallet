@@ -70,7 +70,6 @@ const HistoryTransactionsScreen = observer(() => {
             },
             params?.activePage
           );
-          console.log('rs: ', rs);
 
           const newData = isLoadMore ? [...data, ...rs.result] : rs?.result;
           // hasMore.current = rs.result?.length === perPage;
