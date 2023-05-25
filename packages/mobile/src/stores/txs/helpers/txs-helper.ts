@@ -1,3 +1,4 @@
+import Web3 from 'web3';
 import { TxsCurrencies } from './txs-currencies';
 import { find } from 'lodash';
 import { ChainInfoInner } from '@owallet/stores';
@@ -5,9 +6,10 @@ import { ChainIdEnum } from './txs-enums';
 import { ChainInfo } from '@owallet/types';
 import Big from 'big.js';
 import moment from 'moment';
-import { get } from '@src/utils/helper';
+import { formatContractAddress, get, limitString } from '@src/utils/helper';
 import { isArray, isString } from 'util';
 import { TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
+import { Bech32Address } from '@owallet/cosmos';
 export class TxsHelper {
   public readonly INFO_API_EVM = {
     [ChainIdEnum.TRON]: {
@@ -138,11 +140,13 @@ export class TxsHelper {
       return {
         timeLong: relative + ' (' + formatted + ')',
         timeShort: relative,
+        date: formatted,
         timestamp
       };
     } else {
       return {
         timeLong: '',
+        date: '',
         timeShort: '',
         timestamp: 0
       };
@@ -163,12 +167,14 @@ export class TxsHelper {
       return {
         timeLong: relative + ' (' + formatted + ')',
         timeShort: relative,
-        timestamp
+        timestamp,
+        date: formatted
       };
     } else {
       return {
         timeLong: '',
         timeShort: '',
+        date: '',
         timestamp: 0
       };
     }
@@ -199,7 +205,84 @@ export class TxsHelper {
     const capitalizedWords =
       words &&
       words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords && capitalizedWords.join(' ');
+    return capitalizedWords && capitalizedWords.join(' ')?.trim();
+  }
+
+  convertToWord(str) {
+    if (!str) return null;
+    if (str.indexOf('_') !== -1) {
+      return this.capitalizedWords(str, '_');
+    } else if (str.indexOf('.') !== -1) {
+      let splitCapitalize = str.split('.');
+      return this.convertVarCapitalizeToWord(
+        splitCapitalize[splitCapitalize?.length - 1]
+      );
+    }
+    return this.capitalizedWords(str, ' ');
+  }
+  convertValueTransactionToDisplay(str, label, currentChain) {
+    if (!str || !label || !currentChain) return null;
+    if (this.isAmount(str, label)) {
+      const matchesAmount = str?.match(/\d+/g);
+      const matchesDenom = str?.replace(/^\d+/g, '');
+      return {
+        amount: this.removeZeroNumberLast(
+          this.formatNumberSeparateThousand(
+            this.formatAmount(
+              matchesAmount && matchesAmount[0],
+              matchesDenom
+                ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+                    matchesDenom?.trim()?.toUpperCase()
+                  ).coinDecimals
+                : currentChain.stakeCurrency.coinDecimals
+            )
+          )
+        ),
+        token:
+          matchesDenom &&
+          limitString(
+            this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+              matchesDenom?.trim()?.toUpperCase()
+            ).coinDenom?.toUpperCase(),
+            10
+          )
+      };
+    } else if (this.isAddress(str, currentChain.networkType)) {
+      return formatContractAddress(str);
+    }
+    return str;
+  }
+  isAlphaNumeric(input) {
+    const regex = /^(?=.*[a-zA-Z])(?=.*\d).*$/;
+    return regex.test(input);
+  }
+  isDigitsOnly(input) {
+    const regex = /^\d+$/;
+    return regex.test(input);
+  }
+  isAmount(str, label) {
+    if (!str || !label) return false;
+    if (
+      str?.indexOf(' ') === -1 &&
+      this.isAlphaNumeric(str) &&
+      label?.toLowerCase()?.indexOf('amount') !== -1
+    ) {
+      const regex = /^(\d+)(.+)$/;
+      return regex.test(str);
+    } else if (
+      label?.toLowerCase()?.indexOf('amount') !== -1 &&
+      this.isDigitsOnly(str)
+    ) {
+      return true;
+    }
+    return false;
+  }
+  convertVarCapitalizeToWord(str) {
+    if (!str) return null;
+    let converted = str?.replace(/([a-z])([A-Z])/g, '$1 $2');
+    converted = converted?.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
+    converted = converted?.replace(/(\d+)([A-Za-z]+)/g, '$1 $2');
+    return converted?.trim();
   }
   formatAmount(amount, decimals = 6) {
     if (!amount) {
@@ -271,7 +354,7 @@ export class TxsHelper {
     item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
     item.time = this.formatTime(data?.timeStamp);
     item.txHash = data?.hash;
-    item.height = data?.blockNumber;
+    item.height = this.formatNumberSeparateThousand(data?.blockNumber);
     item.status = data?.isError == '0' ? 'success' : 'fail';
     item.memo = null;
     item.countTypeEvent = 0;
@@ -460,6 +543,48 @@ export class TxsHelper {
     // if no match is found, return null
     return null;
   };
+  sortTransferFirst(inputArray) {
+    if (!inputArray || inputArray?.length <= 0) return null;
+    if (Array.isArray(inputArray)) {
+      for (let i = 0; i < inputArray.length; i++) {
+        const events = inputArray[i].events;
+        if (Array.isArray(events)) {
+          const transferIndex = events.findIndex(
+            (event) => event.type === 'transfer'
+          );
+          if (transferIndex !== -1 && transferIndex !== 0) {
+            const transferEvent = events.splice(transferIndex, 1)[0];
+            events.unshift(transferEvent);
+          }
+        }
+      }
+    }
+    return inputArray;
+  }
+  sortTransferEvents(array) {
+    if (!array || !isArray(array) || array?.length < 0) return null;
+    const transferEvents = array.filter((item) => {
+      return item.events && item?.events[0]?.type === 'transfer';
+    });
+    if (transferEvents && transferEvents?.length > 0) {
+      transferEvents.forEach((item) => {
+        const attributes = item?.events[0]?.attributes;
+        const sortedAttributes = [];
+        const keys = ['sender', 'recipient', 'amount'];
+        for (let key of keys) {
+          const foundAttribute = attributes.find(
+            (attr) => attr?.key && attr?.key?.toLowerCase()?.trim() == key
+          );
+          if (foundAttribute) {
+            sortedAttributes.push(foundAttribute);
+          }
+        }
+        item.events[0].attributes = sortedAttributes;
+      });
+      return transferEvents;
+    }
+    return array;
+  }
   convertStringToVar = (string) => {
     // split the string by uppercase letters
     let words = string.split(/(?=[A-Z])/);
@@ -474,12 +599,65 @@ export class TxsHelper {
       ? this.getStringAfterMsg(this.addSpacesToString(actionValue))
       : this.convertVarToWord(actionValue);
   };
+
+  isAddress(value, networkType): boolean {
+    if (!value) return value;
+    if (networkType == 'evm') {
+      try {
+        if (!Web3.utils.isAddress(value)) {
+          return false;
+        }
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+    try {
+      Bech32Address.validate(value);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+  trimQuotes(inputString) {
+    if (!inputString) return null;
+    if (inputString?.startsWith('"') && inputString?.endsWith('"')) {
+      return inputString?.slice(1, -1);
+    } else {
+      return inputString;
+    }
+  }
+  checkSendReceive(evType, evAttr, indexAttr, addressAcc) {
+    if (!evType || evAttr?.length < 3 || !Array.isArray(evAttr)) return null;
+    if (evType === 'transfer') {
+      if (
+        evAttr[indexAttr - 2] &&
+        evAttr[indexAttr - 2]?.key == 'sender' &&
+        evAttr[indexAttr - 2]?.value === addressAcc &&
+        evAttr[indexAttr - 1]?.key == 'recipient' &&
+        evAttr[indexAttr - 1]?.value !== addressAcc
+      ) {
+        return { isPlus: false, isMinus: true };
+      } else if (
+        evAttr[indexAttr - 2] &&
+        evAttr[indexAttr - 2]?.key == 'sender' &&
+        evAttr[indexAttr - 2]?.value !== addressAcc &&
+        evAttr[indexAttr - 1]?.key == 'recipient' &&
+        evAttr[indexAttr - 1]?.value === addressAcc
+      ) {
+        return { isPlus: true, isMinus: false };
+      }
+      return { isPlus: false, isMinus: false };
+    }
+    return { isPlus: false, isMinus: false };
+  }
   convertVarToWord(str) {
+    if (!str) return str;
     const words = str && str.split('_');
     const capitalizedWords =
       words &&
       words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-    return capitalizedWords && capitalizedWords.join(' ');
+    return capitalizedWords && capitalizedWords.join(' ')?.trim();
   }
   getStringAfterMsg(str) {
     const msgIndex = str?.toUpperCase().indexOf('MSG');
@@ -666,8 +844,9 @@ export class TxsHelper {
     item.denomFee = currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase();
     item.gasUsed = this.formatNumberSeparateThousand(data?.gas_used);
     item.gasWanted = this.formatNumberSeparateThousand(data?.gas_wanted);
-    item.height = data?.height;
+    item.height = this.formatNumberSeparateThousand(data?.height);
     item.memo = data?.tx?.body?.memo;
+    item.infoTransaction = [];
     item.time = this.formatTimeTron(
       this.convertDateToTimeStamp(data?.timestamp)
     );
@@ -675,6 +854,9 @@ export class TxsHelper {
       const logs = data?.raw_log && JSON.parse(data?.raw_log);
       item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;
       if (logs?.length > 0) {
+        item.infoTransaction = this.sortTransferEvents(
+          this.sortTransferFirst(this.filterEventsNotUse(logs))
+        );
         logs.forEach((itemLog) => {
           let itemDataTransferDetail = this.handleItemRawLogCosmos(
             itemLog,
@@ -685,9 +867,33 @@ export class TxsHelper {
         });
       }
     }
+
     item.transfers = dataEvents;
     item.isRefreshData = false;
+    item.isCosmos = true;
+
     return item;
+  }
+  filterEventsNotUse(eventsArray) {
+    const messages = eventsArray.flatMap((item) =>
+      item?.events?.filter((event) => event?.type === 'message')
+    );
+    const filteredEvents = eventsArray?.map((item) => ({
+      events: item.events.filter(
+        (event) =>
+          ![
+            'coin_received',
+            'coin_spent',
+            'execute',
+            'message',
+            'wasm'
+          ].includes(event?.type)
+      ),
+      messages:
+        messages &&
+        messages[0]?.attributes.find((item, data) => item?.key == 'action')
+    }));
+    return filteredEvents;
   }
   cleanDataCosmosToStandFormat(
     tx_responses: TxResponseLcdCosmos[],
@@ -720,17 +926,22 @@ export class TxsHelper {
     item.gasWanted = this.formatNumberSeparateThousand(
       data?.tx_result?.gas_wanted
     );
-    item.height = data?.height;
+    item.height = this.formatNumberSeparateThousand(data?.height);
     item.memo = '';
     item.time = {
       timeLong: '',
       timeShort: '',
+      date: '',
       timestamp: 0
     };
+    item.infoTransaction = [];
     if (data?.tx_result?.code === 0) {
       const logs = data?.tx_result?.log && JSON.parse(data?.tx_result?.log);
       item.countTypeEvent = logs?.length > 1 ? logs?.length - 1 : 0;
       if (logs?.length > 0) {
+        item.infoTransaction = this.sortTransferEvents(
+          this.filterEventsNotUse(logs)
+        );
         logs.forEach((itemLog) => {
           let itemDataTransferDetail = this.handleItemRawLogCosmos(
             itemLog,
@@ -815,7 +1026,7 @@ export class TxsHelper {
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
     item.fee = `${data.cost.fee}`;
-    item.height = `${data.block}`;
+    item.height = `${this.formatNumberSeparateThousand(data.block)}`;
     item.denomFee = `${currentChain?.feeCurrencies[0]?.coinDenom?.toUpperCase()}`;
     item.txHash = data.hash;
     item.status = data.contractRet == 'SUCCESS' ? 'success' : 'fail';

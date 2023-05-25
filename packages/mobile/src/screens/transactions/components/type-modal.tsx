@@ -7,6 +7,7 @@ import { metrics, spacing } from '@src/themes';
 import { OWEmpty } from '@src/components/empty';
 import { IContainerModal } from '../types';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
+import { IItemModal } from '../types';
 const txsHelper = new TxsHelper();
 const TypeModal = ({ transactions, active, actionType }) => {
   const getUniqueActions = (dataAction) => {
@@ -34,7 +35,8 @@ const TypeModal = ({ transactions, active, actionType }) => {
     actions.forEach((action) =>
       uniqueActions.push({
         label: txsHelper.convertTypeEvent(action),
-        value: action
+        value: action,
+        subLabel: txsHelper.getModuleFromAction(action)
       })
     );
     return uniqueActions;
@@ -50,6 +52,7 @@ const TypeModal = ({ transactions, active, actionType }) => {
     <ItemModal
       value={item?.value}
       label={item?.label}
+      subLabel={item?.subLabel}
       onPress={onActionType}
       item={item}
       active={active}
@@ -90,7 +93,8 @@ export const ItemModal = ({
   onPress,
   iconComponent,
   label,
-  value
+  value,
+  subLabel
 }: IItemModal) => {
   const { colors } = useTheme();
   const styles = styling();
@@ -105,10 +109,23 @@ export const ItemModal = ({
           alignItems: 'center'
         }}
       >
-        {iconComponent && iconComponent}
-        <Text variant="body1" typo="bold">
-          {label}
-        </Text>
+        <View>
+          {iconComponent && iconComponent}
+
+          <Text variant="body1" typo="bold">
+            {label}
+          </Text>
+          {subLabel && (
+            <Text
+              style={{ paddingTop: 2 }}
+              color={colors['text-place-holder']}
+              variant="caption"
+            >
+              {' '}
+              ({subLabel})
+            </Text>
+          )}
+        </View>
       </View>
       <View
         style={[

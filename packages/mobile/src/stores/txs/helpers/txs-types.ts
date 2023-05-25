@@ -1,3 +1,4 @@
+
 interface CurrencyInfo {
   prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | '';
   coinDenom?: string;
@@ -172,6 +173,7 @@ interface ResultDataTron {
 interface timeTxs {
   timeLong: string;
   timeShort: string;
+  date?: string;
   timestamp: number;
 }
 interface IInfoApi {
@@ -193,6 +195,8 @@ interface ResTxsInfo {
   countTypeEvent: number;
   transfers: Partial<TransferDetail>[];
   isRefreshData?: boolean;
+  isCosmos?: boolean;
+  infoTransaction?:any;
 }
 interface ResTxs {
   current_page: number;
