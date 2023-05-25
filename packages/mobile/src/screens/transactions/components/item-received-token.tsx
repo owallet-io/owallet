@@ -14,11 +14,11 @@ const ItemReceivedToken: FC<{
   borderBottom?: boolean;
   btnCopy?: boolean;
   valueProps?: OWTextProps;
-  valueDisplay?:string;
+  valueDisplay?: string;
 }> = ({
   label = '--',
   value = '',
-  valueDisplay='--',
+  valueDisplay = '--',
   borderBottom = true,
   btnCopy = true,
   valueProps
@@ -34,16 +34,20 @@ const ItemReceivedToken: FC<{
     <View>
       <View style={styles.containerItemReceivedToken}>
         <View style={styles.flex_1}>
-          <Text color={colors['text-label-transaction-detail']} variant="body2">
+          <Text color={colors['blue-300']} variant="body2">
             {label}
           </Text>
-          <Text
-            color={colors['text-title-login']}
-            variant="body1"
-            {...valueProps}
-          >
-            {valueDisplay}
-          </Text>
+          {typeof valueDisplay == 'string' ? (
+            <Text
+              color={colors['text-title-login']}
+              variant="body1"
+              {...valueProps}
+            >
+              {valueDisplay}
+            </Text>
+          ) : (
+            valueDisplay
+          )}
         </View>
         {btnCopy && (
           <View>
@@ -79,7 +83,7 @@ const styling = () => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      height: 50
+      height: 60
     },
     flex_1: {
       flex: 1
