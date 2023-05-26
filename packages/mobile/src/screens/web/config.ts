@@ -49,21 +49,6 @@ export const DAppInfos: DAppInfo[] = [
   //   logo: oraiLogo
   // },
   {
-    name: 'Staging Oraidex',
-    uri: 'https://staging.oraidex.io',
-    logo: oraiLogo
-  },
-  {
-    name: 'Staging V2 Oraidex',
-    uri: 'https://staging-v2.oraidex.io/',
-    logo: oraiLogo
-  },
-  {
-    name: 'Local V2 Oraidex',
-    uri: 'http://192.168.1.85:3000',
-    logo: oraiLogo
-  },
-  {
     name: 'Osmosis',
     uri: 'https://app.osmosis.zone',
     logo: require('../../assets/image/webpage/osmosis_logo.png')

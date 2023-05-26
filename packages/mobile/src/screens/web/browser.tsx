@@ -239,37 +239,7 @@ export const Browser: FunctionComponent<any> = observer(props => {
           }
         />
         <BrowserBookmark />
-        <TouchableOpacity
-          key={`https://orderbook.orai.io/`}
-          style={style.flatten(['height-44', 'margin-bottom-15', 'flex-row'])}
-          onPress={() => onHandleUrl(`https://orderbook.orai.io/`)}
-        >
-          <View style={style.flatten(['padding-top-5'])}>
-            <Image
-              style={{
-                width: 20,
-                height: 22
-              }}
-              source={require('../../assets/image/webpage/orai_logo.png')}
-              fadeDuration={0}
-            />
-          </View>
-          <View style={style.flatten(['padding-x-15'])}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: colors['label']
-              }}
-            >
-              {`Orderbook`}
-            </Text>
-            <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-              {`https://orderbook.orai.io/`}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <OWFlatList
+        <View
           style={{
             paddingHorizontal: 20,
             paddingTop: 20
