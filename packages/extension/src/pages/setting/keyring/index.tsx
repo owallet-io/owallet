@@ -215,7 +215,7 @@ const KeyRingToolsIcon: FunctionComponent<{
           >
             <FormattedMessage id="setting.clear" />
           </div>
-          {keyStore.type !== 'mnemonic' && !keyStore?.meta?.email && (
+          {/* {keyStore.type !== 'mnemonic' && !keyStore?.meta?.email && (
             <div
               className={style.popoverItem}
               onClick={(e) => {
@@ -228,7 +228,7 @@ const KeyRingToolsIcon: FunctionComponent<{
             >
               <FormattedMessage id="setting.connect.google" />
             </div>
-          )}
+          )} */}
         </PopoverBody>
       </Popover>
       <AccountSettingModal
