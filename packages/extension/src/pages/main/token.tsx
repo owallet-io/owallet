@@ -22,6 +22,7 @@ import { DenomHelper } from '@owallet/common';
 import { useLanguage } from '@owallet/common';
 import { Bech32Address } from '@owallet/cosmos';
 import { NetworkType } from '@owallet/types';
+import { NftPage } from '../nft';
 
 const TokenView: FunctionComponent<{
   balance: ObservableQueryBalanceInner;
@@ -239,7 +240,7 @@ export const TokensView: FunctionComponent<{
   // const { chainStore, accountStore, queriesStore } = useStore();
 
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
-
+  const [tab, setTab] = useState(0);
   const displayTokens = tokens
     .filter((v, i, obj) => {
       return (
@@ -269,64 +270,94 @@ export const TokensView: FunctionComponent<{
 
   return (
     <div className={styleToken.tokensContainer}>
-      <h1 className={styleToken.title}>Tokens</h1>
-      <div>
-        <Input
-          type={'text'}
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-          classNameInputGroup={styleToken.inputGroup}
-          placeholder={'Search Chain Coin'}
-          append={
-            <div
+      <div className={styleToken.tabsContainer}>
+        {['Tokens', 'NFTs'].map((nft, i) => (
+          <div className={styleToken.tab}>
+            <h1
               style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: 50
+                color: tab == i && '#7664E4'
               }}
+              className={styleToken.title}
+              onClick={() => setTab(i)}
             >
-              <img src={require('../../public/assets/img/light.svg')} alt="" />
-            </div>
-          }
-        />
+              {nft}
+            </h1>
+            {tab == i && <hr />}
+          </div>
+        ))}
       </div>
-      {displayTokens
-        .filter(
-          (token) =>
-            token?.currency?.coinMinimalDenom?.includes(search.toUpperCase()) ||
-            token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
-            token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
-            token?.currency?.coinMinimalDenom?.includes(search.toLowerCase()) ||
-            token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
-            token?.currency?.coinGeckoId?.includes(search.toLowerCase())
-        )
-        .map((token, i) => {
-          return (
-            <TokenView
-              key={i.toString()}
-              balance={token}
-              active={
-                `?defaultDenom=${token.currency.coinMinimalDenom}` ==
-                coinMinimalDenom
-              }
-              onClick={() => {
-                if (handleClickToken) {
-                  handleClickToken(
-                    `?defaultDenom=${token.currency.coinMinimalDenom}`
-                  );
-                  return;
-                }
-                history.push({
-                  pathname: '/send',
-                  search: `?defaultDenom=${token.currency.coinMinimalDenom}`
-                });
+      {tab ? (
+        <>
+          <NftPage />
+        </>
+      ) : (
+        <>
+          <div>
+            <Input
+              type={'text'}
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
               }}
+              classNameInputGroup={styleToken.inputGroup}
+              placeholder={'Search Chain Coin'}
+              append={
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: 50
+                  }}
+                >
+                  <img
+                    src={require('../../public/assets/img/light.svg')}
+                    alt=""
+                  />
+                </div>
+              }
             />
-          );
-        })}
+          </div>
+          {displayTokens
+            .filter(
+              (token) =>
+                token?.currency?.coinMinimalDenom?.includes(
+                  search.toUpperCase()
+                ) ||
+                token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
+                token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
+                token?.currency?.coinMinimalDenom?.includes(
+                  search.toLowerCase()
+                ) ||
+                token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
+                token?.currency?.coinGeckoId?.includes(search.toLowerCase())
+            )
+            .map((token, i) => {
+              return (
+                <TokenView
+                  key={i.toString()}
+                  balance={token}
+                  active={
+                    `?defaultDenom=${token.currency.coinMinimalDenom}` ==
+                    coinMinimalDenom
+                  }
+                  onClick={() => {
+                    if (handleClickToken) {
+                      handleClickToken(
+                        `?defaultDenom=${token.currency.coinMinimalDenom}`
+                      );
+                      return;
+                    }
+                    history.push({
+                      pathname: '/send',
+                      search: `?defaultDenom=${token.currency.coinMinimalDenom}`
+                    });
+                  }}
+                />
+              );
+            })}
+        </>
+      )}
     </div>
   );
 });

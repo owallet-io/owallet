@@ -1,13 +1,38 @@
 @import '../../styles/var';
 
+.label {
+  color: rgba(119, 126, 144, 1);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.list {
+  height: 220px;
+  display: flex;
+  flex-wrap: no-wrap;
+  overflow: auto;
+}
+
 .card {
-  margin-bottom: $layout-margin;
-
-  &:last-of-type {
-    margin-bottom: 0;
+  width: 132px;
+  height: 202px;
+  background-color: #f6f6f9;
+  border-radius: 8px;
+  box-shadow: rgba(8, 4, 28, 0.12);
+  border: 1px solid #f6f6f9;
+  color: rgba(53, 57, 69, 1);
+  cursor: pointer;
+  margin-right: 12px;
+  .img {
+    border-radius: 8px;
+    padding: 3px;
   }
-
-  // :global(.card-body) {
-  //   padding: $main-card-padding;
-  // }
+  .info {
+    padding: 8px;
+    font-size: 14px;
+  }
+  .usd {
+    font-size: 12px;
+    color: #8c93a7;
+  }
 }

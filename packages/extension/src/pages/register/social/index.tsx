@@ -9,6 +9,7 @@ import { BackButton } from '../index';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../stores';
 import { tKey, CLIENT_ID, signUpGoogle } from './helper';
+import { useNotification } from '../../../components/notification';
 
 export const TypeImportSocial = 'import-social';
 
@@ -33,8 +34,8 @@ export const ImportSocialIntro: FunctionComponent<{
         e.preventDefault();
 
         registerConfig.setType(TypeImportSocial);
-        analyticsStore.logEvent('Import account started', {
-          registerType: 'ledger'
+        analyticsStore.logEvent('Import account social started', {
+          registerType: 'seed'
         });
       }}
       className={style.importWalletBtn}
@@ -47,11 +48,12 @@ export const ImportSocialIntro: FunctionComponent<{
 export const ImportSocialPage: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
+  const notification = useNotification();
   const intl = useIntl();
   const { analyticsStore, keyRingStore } = useStore();
   const [userInfo, setUserInfo] = useState({ email: '' });
+  const [isLoading, setIsLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState('empty');
-
   const { register, handleSubmit, getValues, errors, setValue } =
     useForm<FormData>({
       defaultValues: {
@@ -176,6 +178,16 @@ export const ImportSocialPage: FunctionComponent<{
       }
     } catch (err) {
       console.log({ err });
+      notification.push({
+        placement: 'top-center',
+        type: 'danger',
+        duration: 5,
+        content: `Recovery Fail: ${err?.message}`,
+        canDelete: true,
+        transition: {
+          duration: 0.5
+        }
+      });
     }
   };
 
@@ -220,7 +232,9 @@ export const ImportSocialPage: FunctionComponent<{
       console.log('🚀 ~ file: Popup.jsx:86 ~ triggerLogin ~ errors:', error);
     }
   };
-
+  console.log({
+    isLoading
+  });
   return (
     <div>
       <div className={style.title}>
@@ -232,6 +246,7 @@ export const ImportSocialPage: FunctionComponent<{
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
           try {
+            setIsLoading(true);
             await initializeNewKey({
               ...data,
               email: userInfo?.email
@@ -240,6 +255,8 @@ export const ImportSocialPage: FunctionComponent<{
             console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e);
             alert(e.message ? e.message : e.toString());
             registerConfig.clear();
+          } finally {
+            setIsLoading(false);
           }
         })}
       >
@@ -337,7 +354,9 @@ export const ImportSocialPage: FunctionComponent<{
           color=""
           type="submit"
           block
-          data-loading={registerConfig.isLoading || !userInfo?.email?.length}
+          data-loading={
+            isLoading || registerConfig.isLoading || !userInfo?.email?.length
+          }
           className={style.nextBtn}
         >
           <FormattedMessage id="register.create.button.next" />
