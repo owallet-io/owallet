@@ -22,27 +22,32 @@ export const DAppInfos: DAppInfo[] = [
     uri: 'https://oraidex.io',
     logo: oraiLogo
   },
+  {
+    name: 'Orderbook',
+    uri: 'https://orderbook.orai.io',
+    logo: oraiLogo
+  },
   // {
   //
   //   name: 'Oraidex',
   //   uri: '192.168.0.147',
   //   logo: oraiLogo
   // },
-  {
-    name: 'Staging Oraidex',
-    uri: 'https://staging.oraidex.io',
-    logo: oraiLogo
-  },
-  {
-    name: 'Staging V2 Oraidex',
-    uri: 'https://staging-v2.oraidex.io/',
-    logo: oraiLogo
-  },
-  {
-    name: 'Local V2 Oraidex',
-    uri: 'http://192.168.1.85:3000',
-    logo: oraiLogo
-  },
+  // {
+  //   name: 'Staging Oraidex',
+  //   uri: 'https://staging.oraidex.io',
+  //   logo: oraiLogo
+  // },
+  // {
+  //   name: 'Staging V2 Oraidex',
+  //   uri: 'https://staging-v2.oraidex.io/',
+  //   logo: oraiLogo
+  // },
+  // {
+  //   name: 'Local V2 Oraidex',
+  //   uri: 'http://192.168.1.85:3000',
+  //   logo: oraiLogo
+  // },
   {
     name: 'Osmosis',
     uri: 'https://app.osmosis.zone',
