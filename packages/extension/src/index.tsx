@@ -50,6 +50,8 @@ import { AddTokenPage } from './pages/setting/token/add';
 import { AddEvmTokenPage } from './pages/setting/token-evm/add';
 import { ManageTokenPage } from './pages/setting/token/manage';
 
+import { NftDetailsPage } from './pages/nft/nft-details';
+
 // import * as BackgroundTxResult from "../../background/tx/foreground";
 import {
   AppIntlProvider,
@@ -217,6 +219,11 @@ ReactDOM.render(
                   <Route exact path="/unlock" component={LockPage} />
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/token" component={TokenPage} />
+                  <Route
+                    exact
+                    path="/token/:nftId"
+                    component={NftDetailsPage}
+                  />
                   <Route exact path="/menu" component={Menu} />
                   <Route
                     exact
@@ -229,11 +236,11 @@ ReactDOM.render(
                     path="/confirm-ledger/:chain"
                     component={ConfirmLedgerPage}
                   />
-                  <Route
+                  {/* <Route
                     exact
                     path="/connect-social/:index/:name"
                     component={ConnectSocialPage}
-                  />
+                  /> */}
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
                   <Route exact path="/send-tron" component={SendTronEvmPage} />

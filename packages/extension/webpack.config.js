@@ -126,7 +126,7 @@ const extensionConfig = {
   plugins: [
     // Remove all and write anyway
     // TODO: Optimizing build process
-    // new CleanWebpackPlugin(),
+    new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin(),
     new CopyWebpackPlugin(
       [

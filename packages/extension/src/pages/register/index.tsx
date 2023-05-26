@@ -77,12 +77,12 @@ export const RegisterPage: FunctionComponent = observer(() => {
       type: TypeImportLedger,
       intro: ImportLedgerIntro,
       page: ImportLedgerPage
-    },
-    {
-      type: TypeImportSocial,
-      intro: ImportSocialIntro,
-      page: ImportSocialPage
     }
+    // {
+    //   type: TypeImportSocial,
+    //   intro: ImportSocialIntro,
+    //   page: ImportSocialPage
+    // }
   ]);
   return (
     <EmptyLayout
