@@ -3,45 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <script src="./ga.js"></script> -->
-    <!-- <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src *;img-src * 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *;style-src  'self' 'unsafe-inline' *"
-    /> -->
     <title>OWallet</title>
     <script type="application/javascript" src="browser-polyfill.js"></script>
-    <script>
-      // var _gaq = _gaq || [];
-      // _gaq.push(['_setAccount', 'G-2CPX1CFGYZ']);
-      // _gaq.push(['_trackPageview']);
-
-      // (function () {
-      //   var ga = document.createElement('script');
-      //   ga.type = 'text/javascript';
-      //   ga.async = true;
-      //   ga.src = 'https://ssl.google-analytics.com/ga.js';
-      //   var s = document.getElementsByTagName('script')[0];
-      //   s.parentNode.insertBefore(ga, s);
-      // })();
-      chrome.runtime.onInstalled.addListener(() => {
-        // Inject Google Analytics tracking code
-        const gaScript = document.createElement('script');
-        gaScript.async = true;
-        gaScript.src = 'https://www.google-analytics.com/analytics.js'; // or use the latest gtag.js library: https://www.google-analytics.com/gtag/js
-        (document.head || document.documentElement).appendChild(gaScript);
-
-        // Initialize Google Analytics
-        window.ga =
-          window.ga ||
-          function () {
-            (ga.q = ga.q || []).push(arguments);
-          };
-        ga.l = +new Date();
-        ga('create', 'G-2CPX1CFGYZ', 'auto');
-        ga('set', 'checkProtocolTask', null);
-        ga('send', 'pageview');
-      });
-    </script>
   </head>
   <body>
     <div id="app"></div>
