@@ -76,7 +76,7 @@ jobs:
         run: cd ./android && bundle exec fastlane beta
       - name: Setup fastlane
         working-directory: packages/mobile/android/fastlane
-        run: bundle exec fastlane beta
+        run: cd ../ | bundle exec fastlane beta
         env:
           JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
