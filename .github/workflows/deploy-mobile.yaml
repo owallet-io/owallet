@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-          
+
       # # Update references
       # - name: Git Submodule Update
       #   working-directory: packages/background
@@ -73,10 +73,12 @@ jobs:
           ruby-version: 2.7.2
           bundler-cache: true
       - name: Run tests
-        run: cd ./android && bundle exec fastlane beta
-      - name: Setup fastlane
+        working-directory: packages/mobile/android
+        run: bundle exec fastlane android beta
+      
+      - name: Setup Fastlane
         working-directory: packages/mobile/android/fastlane
-        run: cd ../ | bundle exec fastlane beta
+        run: cd packages/mobile/android | bundle exec fastlane android beta
         env:
           JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
@@ -84,25 +86,28 @@ jobs:
           PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           FILE_PATH: "/OWalletKeystore"
+        
+        # working-directory: packages/mobile/android/fastlane
+        
       # - name: Deploy on AppCenter
       #   working-directory: packages/mobile
       #   run: |
       #     yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
       #     yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+      
+      # - name: Send discord message
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: Fastlane success! Comment=${{ github.event.head_commit.message }}
 
-      - name: Send discord message
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: Fastlane success! Comment=${{ github.event.head_commit.message }}
-
-      - name: Send discord message
-        if: ${{ failure() }}
-        uses: appleboy/discord-action@master
-        with:
-          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
-          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          username: "GitBot"
-          message: Fastlane fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+      # - name: Send discord message
+      #   if: ${{ failure() }}
+      #   uses: appleboy/discord-action@master
+      #   with:
+      #     webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+      #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+      #     username: "GitBot"
+      #     message: Fastlane fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
