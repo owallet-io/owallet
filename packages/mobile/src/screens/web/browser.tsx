@@ -1,21 +1,15 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  Image,
-  View,
-  Keyboard,
-  TouchableWithoutFeedback,
-  StyleSheet,
-  FlatList
-} from 'react-native';
+import React, {
+  FunctionComponent,
+  ReactPropTypes,
+  useEffect,
+  useState
+} from 'react';
+import { Image, View, Keyboard, StyleSheet } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { TextInput } from '../../components/input';
-import { PageWithScrollView, PageWithView } from '../../components/page';
+import { PageWithView } from '../../components/page';
 import { useNavigation } from '@react-navigation/core';
-import {
-  BrowserSectionTitle
-  // BrowserSectionModal,
-} from './components/section-title';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { _keyExtract, checkValidDomain } from '../../utils/helper';
 import { useStore } from '../../stores';
@@ -26,6 +20,12 @@ import { observer } from 'mobx-react-lite';
 import { SearchLightIcon, XIcon } from '../../components/icon';
 import { useTheme } from '@src/themes/theme-provider';
 import OWFlatList from '@src/components/page/ow-flat-list';
+
+interface BrowserProps extends ReactPropTypes {
+  route: {
+    params: { url?: string };
+  };
+}
 
 export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -74,7 +74,7 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   );
 };
 
-export const Browser: FunctionComponent<any> = observer(props => {
+export const Browser: FunctionComponent<BrowserProps> = observer(props => {
   const style = useStyle();
   const [isSwitchTab, setIsSwitchTab] = useState(false);
   const navigation = useNavigation();
