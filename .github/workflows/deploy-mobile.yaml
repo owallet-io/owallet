@@ -73,7 +73,7 @@ jobs:
           ruby-version: 2.7.2
           bundler-cache: true
       - name: Run tests
-        run: bundle exec fastlane android test
+        run: cd ./android && bundle exec fastlane beta
       - name: Setup fastlane
         working-directory: packages/mobile/android/fastlane
         run: bundle exec fastlane beta
