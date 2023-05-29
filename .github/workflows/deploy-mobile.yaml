@@ -46,10 +46,10 @@ jobs:
           submodules: true
           
       # # Update references
-      - name: Git Submodule Update
-        working-directory: packages/background
-        run: |
-          git checkout feat/link-gg
+      # - name: Git Submodule Update
+      #   working-directory: packages/background
+      #   run: |
+      #     git checkout feat/link-gg
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
