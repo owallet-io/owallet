@@ -1,0 +1,67 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+api_key = app_store_connect_api_key(
+  key_id: ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"],
+  issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+  key_content: ENV["APP_STORE_CONNECT_API_KEY_KEY"],
+  duration: ENV["APP_STORE_CONNECT_API_KEY_DURATION"], # optional (maximum 1200)
+  in_house: ENV["APP_STORE_CONNECT_API_KEY_IN_HOUSE"] # optional but may be required if using match/sigh
+)
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :test do
+    increment_build_number(xcodeproj: "mobile.xcodeproj")
+    version = get_version_number(xcodeproj: "mobile.xcodeproj")
+    previous_build_number = latest_testflight_build_number(
+      app_identifier: ENV["APP_IDENTIFIER"],
+      api_key: api_key,
+    )
+    current_build_number = previous_build_number + 1
+    discord_notifier(
+      webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      title: "IOS FASTLANE - #{version} (#{current_build_number})",
+      description: "
+      Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      success: true
+    )
+  end
+end
+
+
+platform :ios do
+  desc "Push a new beta build to TestFlight"
+  lane :beta do 
+    previous_build_number = latest_testflight_build_number(
+      app_identifier: ENV["APP_IDENTIFIER"],
+      api_key: api_key,
+    )
+    current_build_number = previous_build_number + 1
+    increment_build_number(build_number: current_build_number,xcodeproj: "mobile.xcodeproj")
+    version = get_version_number(xcodeproj: "mobile.xcodeproj")
+    build_number = get_build_number(xcodeproj: "mobile.xcodeproj")
+    build_app(workspace: "mobile.xcworkspace", scheme: "mobile")
+    pilot(api_key: api_key,changelog: "This is test on fastlane")
+    discord_notifier(
+      webhook_url: ENV["DISCORD_HOOK"],
+      title: "IOS FASTLANE - #{version} (#{build_number})",
+      description: "
+      Congratulations. You have successfully deployed OWallet app to TestFlight :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      success: true
+    )
+  end
+end

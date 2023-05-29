@@ -1,0 +1,97 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :distribution do
+    latest_release = firebase_app_distribution_get_latest_release(
+      app: ENV["APP_ID_DISTRIBUTION"]
+    )
+    increment_version_code({ version_code: latest_release[:buildVersion].to_i + 1 })
+    gradle(task: 'assemble', build_type: 'Release')
+    firebase_app_distribution(
+      app: ENV["APP_ID_DISTRIBUTION"],
+      groups: "internal-test",
+      release_notes: "Test on fastlane"
+    )
+    discord_notifier(
+      webhook_url: ENV["DISCORD_HOOK"],
+      title: "ANDROID DISTRIBUTION FASTLANE - #{android_get_version_name} (#{latest_release[:buildVersion].to_i + 1})",
+      description: "
+      Congratulations. You have successfully deployed OWallet app to Distribution :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      success: true
+    )
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    previous_build_number = google_play_track_version_codes(
+      package_name: ENV["APP_ID"],
+      track: 'production',
+      json_key_data: ENV["JSON_KEY_DATA"],
+    )[0]
+    
+    current_build_number = previous_build_number + 1
+    
+    increment_version_code(
+      version_code: current_build_number
+    )
+    discord_notifier(
+      webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      title: "ANDROID FASTLANE - #{android_get_version_name} (#{current_build_number})",
+      description: 'test',
+      success: true
+    )
+  end
+
+  desc "Submit a new Beta Build"
+  lane :beta do
+    previous_build_number = google_play_track_version_codes(
+      package_name: ENV["APP_ID"],
+      track: 'internal',
+      json_key_data: ENV["JSON_KEY_DATA"],
+    )[0]
+    
+    current_build_number = previous_build_number + 1
+    
+    increment_version_code(
+      version_code: current_build_number
+    )
+    gradle(task: 'clean bundle', build_type: 'Release',properties: {
+      "android.injected.signing.store.file" => Dir.pwd + ENV["FILE_PATH"],
+      "android.injected.signing.store.password" => ENV["PASS_KEY_STORE"],
+      "android.injected.signing.key.alias" => ENV["ALIAS"],
+      "android.injected.signing.key.password" => ENV["PASS_ALIAS_KEY_STORE"],
+    })
+    upload_to_play_store(track: 'internal',skip_upload_apk:true, json_key_data: ENV["JSON_KEY_DATA"],package_name:ENV["APP_ID"],skip_upload_metadata:true,skip_upload_images:true,skip_upload_screenshots:true)
+    discord_notifier(
+      webhook_url: ENV["DISCORD_HOOK"],
+      title: "ANDROID BETA FASTLANE - #{android_get_version_name} (#{current_build_number})",
+      description: "
+      Congratulations. You have successfully deployed OWallet app to Google Play :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
+      success: true
+    )
+    # sh "your_script.sh"
+    # You can also use other beta testing services here
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "clean assembleRelease")
+    upload_to_play_store
+  end
+end
