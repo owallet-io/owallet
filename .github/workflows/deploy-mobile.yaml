@@ -1,0 +1,90 @@
+name: Mobile code push release workflow
+on:
+  push:
+    branches: [mobile-fastlane-ci-cd]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04 #orai-self-hosted
+    strategy:
+      matrix:
+        node-version: [16.14.0]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      # - uses: sonarsource/sonarqube-scan-action@master
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            ./node_modules/
+          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Checkout submodule repo
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      # Update references
+      - name: Git Sumbodule Update
+        working-directory: packages/background
+        run: |
+          git pull origin mobile-backup
+
+      - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn --ignore-platform --ignore-scripts
+
+      - name: Install mobile packages
+        working-directory: packages/mobile
+        run: yarn --silent
+
+      - name: Build Libs
+        run: yarn build:libs
+
+      - name: Build provider
+        working-directory: packages/mobile
+        run: yarn build:provider
+        env:
+          CI: false
+      # - name: Deploy on AppCenter
+      #   working-directory: packages/mobile
+      #   run: |
+      #     yarn code-push-android --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+      #     yarn code-push-ios --token ${{ secrets.CODEPUSH_TOKEN }} --description "${{ github.event.head_commit.message }}"
+
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Code pushed success! Comment=${{ github.event.head_commit.message }}
+
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
