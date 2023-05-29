@@ -1,4 +1,4 @@
-name: Mobile code push release workflow
+name: Mobile fastlane release workflow
 on:
   push:
     branches: [mobile-fastlane-ci-cd]
@@ -40,15 +40,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Checkout submodule repo
+      - name: Checkout submodule repo test
         uses: actions/checkout@v3
         with:
           submodules: true
-      # Update references
-      - name: Git Sumbodule Update
-        working-directory: packages/background
-        run: |
-          git pull origin mobile-backup
+          
+      # # Update references
+      # - name: Git Submodule Update
+      #   working-directory: packages/background
+      #   run: |
+      #     git pull origin mobile-backup
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
