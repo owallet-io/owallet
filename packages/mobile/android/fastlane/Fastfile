@@ -40,7 +40,7 @@ platform :android do
   desc "Runs all the tests"
   lane :test do
     previous_build_number = google_play_track_version_codes(
-      package_name: ENV["APP_ID"],
+      package_name: "com.io.owallet",
       track: 'production',
       json_key_data: ENV["JSON_KEY_DATA"],
     )[0]
@@ -61,7 +61,7 @@ platform :android do
   desc "Submit a new Beta Build"
   lane :beta do
     previous_build_number = google_play_track_version_codes(
-      package_name: ENV["APP_ID"],
+      package_name: "com.io.owallet",
       track: 'internal',
       json_key_data: ENV["JSON_KEY_DATA"],
     )[0]
@@ -77,7 +77,7 @@ platform :android do
       "android.injected.signing.key.alias" => ENV["ALIAS"],
       "android.injected.signing.key.password" => ENV["PASS_ALIAS_KEY_STORE"],
     })
-    upload_to_play_store(track: 'internal',skip_upload_apk:true, json_key_data: ENV["JSON_KEY_DATA"],package_name:ENV["APP_ID"],skip_upload_metadata:true,skip_upload_images:true,skip_upload_screenshots:true)
+    upload_to_play_store(track: 'internal',skip_upload_apk:true, json_key_data: ENV["JSON_KEY_DATA"],package_name:"com.io.owallet",skip_upload_metadata:true,skip_upload_images:true,skip_upload_screenshots:true)
     discord_notifier(
       webhook_url: ENV["DISCORD_HOOK"],
       title: "ANDROID BETA FASTLANE - #{android_get_version_name} (#{current_build_number})",

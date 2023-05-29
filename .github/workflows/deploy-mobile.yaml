@@ -46,10 +46,10 @@ jobs:
           submodules: true
           
       # # Update references
-      # - name: Git Submodule Update
-      #   working-directory: packages/background
-      #   run: |
-      #     git pull origin mobile-backup
+      - name: Git Submodule Update
+        working-directory: packages/background
+        run: |
+          git checkout feat/link-gg
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
@@ -67,6 +67,17 @@ jobs:
         run: yarn build:provider
         env:
           CI: false
+
+      - name: Setup fastlane
+        working-directory: packages/mobile/android/fastlane
+        run: bundle exec fastlane beta
+        env:
+          JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          ALIAS: "key0"
+          PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          FILE_PATH: "/OWalletKeystore"
       # - name: Deploy on AppCenter
       #   working-directory: packages/mobile
       #   run: |
@@ -79,7 +90,7 @@ jobs:
           webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
           webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           username: "GitBot"
-          message: Code pushed success! Comment=${{ github.event.head_commit.message }}
+          message: Fastlane success! Comment=${{ github.event.head_commit.message }}
 
       - name: Send discord message
         if: ${{ failure() }}
@@ -88,4 +99,4 @@ jobs:
           webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
           webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           username: "GitBot"
-          message: Code pushed fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
+          message: Fastlane fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
