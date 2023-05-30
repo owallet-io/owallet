@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-mobile:
     runs-on: macos-latest #orai-self-hosted
     strategy:
       matrix:
@@ -73,40 +73,17 @@ jobs:
         with:
           ruby-version: 2.6.10
           bundler-cache: true
-      - name: Make env for android
+     
+      - name: Setup Fastlane android
         working-directory: packages/mobile/android/fastlane
-        run:  |
-          echo JSON_KEY_DATA=${{ secrets.GOOGLE_ACCOUNT_SERVICE }} >> .env
-          echo DISCORD_HOOK="https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_" >> .env
-          echo PASS_KEY_STORE=${{ secrets.PASS_KEY_STORE }} >> .env
-          echo PASS_ALIAS_KEY_STORE=${{ secrets.PASS_KEY_STORE }} >> .env
-          echo ALIAS=${{ secrets.ALIAS }} >> .env
-          echo FILE_PATH="/OWalletKeystore" >> .env
-      - name: Fastlane running
-        working-directory: packages/mobile
-        run: yarn fastlane-android:beta
-        
-      # - name: Make env for IOS
-      #   uses: SpicyPizza/create-envfile@v1.3
-      #   with:
-      #     envkey_JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
-      #     envkey_DISCORD_HOOK: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_"
-      #     envkey_PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-      #     envkey_PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-      #     envkey_FILE_PATH: "/OWalletKeystore"
-      #     directory: packages/mobile/android/fastlane
-      #     file_name: .env
-      #     fail_on_empty: false
-        
-      
-        # run: cd .. && bundle update && fastlane beta
-        # env:
-        #   JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
-        #   DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-        #   ALIAS: ${{ secrets.ALIAS }}
-        #   PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-        #   PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-        #   FILE_PATH: "/OWalletKeystore"
+        run: cd .. && bundle update && fastlane beta
+        env:
+          JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
+          DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          ALIAS: ${{ secrets.ALIAS }}
+          PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          FILE_PATH: "/OWalletKeystore"
         # working-directory: packages/mobile/android/fastlane
         
       # - name: Deploy on AppCenter
