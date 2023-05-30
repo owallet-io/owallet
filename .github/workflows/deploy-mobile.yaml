@@ -16,7 +16,6 @@ jobs:
         uses: styfle/cancel-workflow-action@0.8.0
         with:
           access_token: ${{ github.token }}
-      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -108,9 +107,8 @@ jobs:
     runs-on: ubuntu-latest #orai-self-hosted
     steps:
       - run: echo "The workflow is now ready to test your code."
-      - name: Grant execute permission for gradlew
-        working-directory: packages/mobile/android
-        run: chmod +x gradlew
+      - name: Make Gradlew Executable
+        run: cd android && chmod +x ./gradlew
       - name: Setup Fastlane android
         working-directory: packages/mobile/android/fastlane
         run: cd .. && bundle update && fastlane beta
