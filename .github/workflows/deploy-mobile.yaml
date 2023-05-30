@@ -6,6 +6,7 @@ on:
 
 jobs:
   build-mobile:
+    name: build-mobile
     runs-on: macos-latest #orai-self-hosted
     strategy:
       matrix:
@@ -59,9 +60,6 @@ jobs:
       - name: Install mobile packages
         working-directory: packages/mobile
         run: yarn --silent
-      - name: Install IOS Dependencies
-        working-directory: packages/mobile/
-        run: yarn pod:install --silent
       - name: Build Libs
         run: yarn build:libs
 
@@ -141,6 +139,9 @@ jobs:
   #   - build-mobile
   #   runs-on: macos-latest #orai-self-hosted
   #   steps:
+  #     - name: Install IOS Dependencies
+  #       working-directory: packages/mobile/
+  #       run: yarn pod:install --silent
   #     - name: Setup Fastlane ios
   #       working-directory: packages/mobile/android/fastlane
   #       run: cd .. && bundle update && fastlane beta
