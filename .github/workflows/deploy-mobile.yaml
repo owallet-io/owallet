@@ -106,8 +106,8 @@ jobs:
     - build-mobile
     runs-on: ubuntu-latest #orai-self-hosted
     steps:
-      - run: echo "The workflow is now ready to test your code."
       - name: Make Gradlew Executable
+        working-directory: packages/mobile
         run: cd android && chmod +x ./gradlew
       - name: Setup Fastlane android
         working-directory: packages/mobile/android/fastlane
