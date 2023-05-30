@@ -76,12 +76,12 @@ jobs:
       - name: Make env for android
         working-directory: packages/mobile/android/fastlane
         run:  |
-          echo JSON_KEY_DATA=${{ secrets.GOOGLE_ACCOUNT_SERVICE }} > .env
-          echo DISCORD_HOOK="https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_" > .env
-          echo PASS_KEY_STORE=${{ secrets.PASS_KEY_STORE }} > .env
-          echo PASS_ALIAS_KEY_STORE=${{ secrets.PASS_KEY_STORE }} > .env
-          echo ALIAS=${{ secrets.ALIAS }} > .env
-          echo FILE_PATH="/OWalletKeystore" > .env
+          echo JSON_KEY_DATA=${{ secrets.GOOGLE_ACCOUNT_SERVICE }} >> .env
+          echo DISCORD_HOOK="https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_" >> .env
+          echo PASS_KEY_STORE=${{ secrets.PASS_KEY_STORE }} >> .env
+          echo PASS_ALIAS_KEY_STORE=${{ secrets.PASS_KEY_STORE }} >> .env
+          echo ALIAS=${{ secrets.ALIAS }} >> .env
+          echo FILE_PATH="/OWalletKeystore" >> .env
       - name: Fastlane running
         working-directory: packages/mobile
         run: yarn fastlane-android:beta
