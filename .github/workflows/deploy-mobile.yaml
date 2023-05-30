@@ -67,6 +67,19 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: gradle
+      - name: Grant execute permission for gradlew
+        working-directory: packages/mobile/android
+        run: chmod +x gradlew
+      - name: Setup Fastlane android
+        working-directory: packages/mobile/android/fastlane
+        run: cd .. && bundle update && fastlane beta
+        env:
+          JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
+          DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          ALIAS: ${{ secrets.ALIAS }}
+          PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          FILE_PATH: "/OWalletKeystore"
       # - name: Setup Fastlane android
       #   working-directory: packages/mobile/android/fastlane
       #   run: cd .. && bundle update && fastlane beta
@@ -101,24 +114,25 @@ jobs:
       #     webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
       #     username: "GitBot"
       #     message: Fastlane fail ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}
-  release-android:
-    needs: 
-    - build-mobile
-    runs-on: ubuntu-latest #orai-self-hosted
-    steps:
-      - name: Make Gradlew Executable
-        working-directory: packages/mobile
-        run: cd android && chmod +x ./gradlew
-      - name: Setup Fastlane android
-        working-directory: packages/mobile/android/fastlane
-        run: cd .. && bundle update && fastlane beta
-        env:
-          JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
-          DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
-          ALIAS: ${{ secrets.ALIAS }}
-          PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-          PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
-          FILE_PATH: "/OWalletKeystore"
+  # release-android:
+  #   needs: 
+  #   - build-mobile
+  #   runs-on: ubuntu-latest #orai-self-hosted
+  #   steps:
+  #     - run: echo "The workflow is now ready to test your code."
+  #     - name: Grant execute permission for gradlew
+  #       working-directory: packages/mobile/android
+  #       run: chmod +x gradlew
+  #     - name: Setup Fastlane android
+  #       working-directory: packages/mobile/android/fastlane
+  #       run: cd .. && bundle update && fastlane beta
+  #       env:
+  #         JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
+  #         DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+  #         ALIAS: ${{ secrets.ALIAS }}
+  #         PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+  #         PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+  #         FILE_PATH: "/OWalletKeystore"
 
   # # release-ios:
   #   needs: 
