@@ -40,17 +40,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Checkout submodule repo
-        uses: actions/checkout@v3
-        with:
-          submodules: true
+      # - name: Checkout submodule repo
+      #   uses: actions/checkout@v3
+      #   with:
+      #     submodules: true
 
       # # Update references
       # - name: Git Submodule Update
       #   working-directory: packages/background
       #   run: |
       #     git checkout feat/link-gg
-
+     
+        
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
@@ -70,11 +71,12 @@ jobs:
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 2.7.6
           bundler-cache: true
-      - name: Setup Fastlane
+     
+      - name: Setup Fastlane android
         working-directory: packages/mobile/android/fastlane
-        run: cd .. && bundle install && bundle exec fastlane android beta
+        run: cd .. && bundle update && bundle exec fastlane android beta
         env:
           JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
@@ -82,7 +84,6 @@ jobs:
           PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           FILE_PATH: "/OWalletKeystore"
-        
         # working-directory: packages/mobile/android/fastlane
         
       # - name: Deploy on AppCenter
