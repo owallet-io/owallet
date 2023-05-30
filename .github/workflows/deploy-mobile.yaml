@@ -56,9 +56,9 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn --ignore-platform --ignore-scripts
 
-      - name: Install mobile packages
-        working-directory: packages/mobile
-        run: yarn --silent
+      # - name: Install mobile packages
+      #   working-directory: packages/mobile
+      #   run: yarn --silent
 
       - name: Build Libs
         run: yarn build:libs
