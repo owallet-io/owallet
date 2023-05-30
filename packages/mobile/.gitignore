@@ -54,7 +54,6 @@ buck-out/
 # env
 /ios/fastlane/.env.default
 /android/fastlane/.env.default
-/android/fastlane/OWalletKeystore
 
 
 index.android.bundle
