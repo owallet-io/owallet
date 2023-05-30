@@ -29,7 +29,7 @@ platform :android do
       release_notes: "Test on fastlane"
     )
     discord_notifier(
-      webhook_url: ENV["DISCORD_HOOK"],
+      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
       title: "ANDROID DISTRIBUTION FASTLANE - #{android_get_version_name} (#{latest_release[:buildVersion].to_i + 1})",
       description: "
       Congratulations. You have successfully deployed OWallet app to Distribution :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
@@ -51,7 +51,7 @@ platform :android do
       version_code: current_build_number
     )
     discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
       title: "ANDROID FASTLANE - #{android_get_version_name} (#{current_build_number})",
       description: 'test',
       success: true
@@ -79,7 +79,7 @@ platform :android do
     })
     upload_to_play_store(track: 'internal',skip_upload_apk:true, json_key_data: ENV["JSON_KEY_DATA"],package_name:"com.io.owallet",skip_upload_metadata:true,skip_upload_images:true,skip_upload_screenshots:true)
     discord_notifier(
-      webhook_url: ENV["DISCORD_HOOK"],
+      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
       title: "ANDROID BETA FASTLANE - #{android_get_version_name} (#{current_build_number})",
       description: "
       Congratulations. You have successfully deployed OWallet app to Google Play :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
