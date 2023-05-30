@@ -40,10 +40,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      # - name: Checkout submodule repo
-      #   uses: actions/checkout@v3
-      #   with:
-      #     submodules: true
+      - name: Checkout submodule repo
+        uses: actions/checkout@v3
+        with:
+          ref: 'feat/link-gg'
+          submodules: true
 
       # # Update references
       # - name: Git Submodule Update
