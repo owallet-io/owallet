@@ -49,6 +49,11 @@ jobs:
       - name: Install mobile packages
         working-directory: packages/mobile
         run: yarn --silent
+      - name: restore lerna
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
       - name: Build provider
