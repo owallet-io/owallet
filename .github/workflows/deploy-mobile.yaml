@@ -40,7 +40,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Checkout submodule repo test
+      - name: Checkout submodule repo
         uses: actions/checkout@v3
         with:
           submodules: true
@@ -72,13 +72,9 @@ jobs:
         with:
           ruby-version: 2.7.2
           bundler-cache: true
-      - name: Run tests
-        working-directory: packages/mobile/android
-        run: bundle exec fastlane android beta
-      
       - name: Setup Fastlane
         working-directory: packages/mobile/android/fastlane
-        run: cd packages/mobile/android | bundle exec fastlane android beta
+        run: cd .. && bundle install && bundle exec fastlane android beta
         env:
           JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
