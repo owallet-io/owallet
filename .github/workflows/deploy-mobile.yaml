@@ -78,7 +78,7 @@ jobs:
         working-directory: packages/mobile/android/fastlane
         run: cd .. && bundle update && fastlane beta
         env:
-          JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          JSON_KEY_DATA: ${{ secrets.GOOGLE_ACCOUNT_SERVICE }}
           DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           ALIAS: "key0"
           PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
