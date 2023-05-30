@@ -71,12 +71,12 @@ jobs:
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.6
+          ruby-version: 2.7.2
           bundler-cache: true
      
       - name: Setup Fastlane android
         working-directory: packages/mobile/android/fastlane
-        run: cd .. && bundle update && bundle exec fastlane android beta
+        run: cd .. && bundle update && fastlane beta
         env:
           JSON_KEY_DATA: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
           DISCORD_HOOK: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
