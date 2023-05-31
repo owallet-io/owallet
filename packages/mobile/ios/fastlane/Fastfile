@@ -46,6 +46,27 @@ end
 platform :ios do
   desc "Push a new beta build to TestFlight"
   lane :beta do 
+    create_keychain(
+      name: ENV["KEYCHAIN_NAME"],
+      password: ENV["KEYCHAIN_PASSWORD"],
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: false
+    )
+    match(
+      storage_mode:'git',
+      app_identifier: ENV["APP_IDENTIFIER"],
+      api_key: api_key,
+      username:ENV["APPLE_ID"],
+      type: "appstore",
+      team_id: ENV["TEAM_ID"],
+      git_url: ENV["MATCH_GIT_URL"],
+      keychain_name: ENV["KEYCHAIN_NAME"],
+      keychain_password: ENV["KEYCHAIN_PASSWORD"],
+      readonly: true
+    )
+
     previous_build_number = latest_testflight_build_number(
       app_identifier: ENV["APP_IDENTIFIER"],
       api_key: api_key,
@@ -54,6 +75,19 @@ platform :ios do
     increment_build_number(build_number: current_build_number,xcodeproj: "mobile.xcodeproj")
     version = get_version_number(xcodeproj: "mobile.xcodeproj")
     build_number = get_build_number(xcodeproj: "mobile.xcodeproj")
+    
+    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+    mapping = Actions.lane_context[
+      SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING
+    ]
+    sign_profile_type = Actions.lane_context[
+      SharedValues::SIGH_PROFILE_TYPE
+    ]
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      profile_name: mapping[app_identifier],
+      code_sign_identity:'iPhone Distribution' ,
+    )
     build_app(workspace: "mobile.xcworkspace", scheme: "mobile")
     pilot(api_key: api_key,changelog: "This is test on fastlane")
     discord_notifier(
