@@ -64,6 +64,7 @@ platform :ios do
       git_url: ENV["MATCH_GIT_URL"],
       keychain_name: ENV["KEYCHAIN_NAME"],
       keychain_password: ENV["KEYCHAIN_PASSWORD"],
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
       readonly: true
     )
 

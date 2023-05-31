@@ -187,6 +187,7 @@ jobs:
           KEYCHAIN_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
           MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
           KEYCHAIN_NAME: "login"
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
       # - name: Send discord message
       #   uses: appleboy/discord-action@master
       #   with:
