@@ -45,7 +45,7 @@ end
 
 platform :ios do
   desc "Push a new beta build to TestFlight"
-  lane :beta do 
+  lane :release do 
     create_keychain(
       name: ENV["KEYCHAIN_NAME"],
       password: ENV["KEYCHAIN_PASSWORD"],
@@ -87,10 +87,10 @@ platform :ios do
     update_code_signing_settings(
       use_automatic_signing: false,
       profile_name: mapping[app_identifier],
-      code_sign_identity:'iPhone Distribution' ,
+      code_sign_identity:'iPhone Distribution'
     )
     build_app(workspace: "mobile.xcworkspace", scheme: "mobile")
-    pilot(api_key: api_key,changelog: "This is test on fastlane")
+    pilot(api_key: api_key)
     discord_notifier(
       webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
       title: "IOS FASTLANE - #{version} (#{build_number})",

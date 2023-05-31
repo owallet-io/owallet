@@ -59,7 +59,7 @@ platform :android do
   end
 
   desc "Submit a new Beta Build"
-  lane :beta do
+  lane :release do
     previous_build_number = google_play_track_version_codes(
       package_name: "com.io.owallet",
       track: 'internal',
