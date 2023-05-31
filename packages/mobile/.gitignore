@@ -53,6 +53,7 @@ buck-out/
 
 # env
 /ios/fastlane/.env.default
+/ios/fastlane/Matchfile
 /android/fastlane/.env.default
 
 
