@@ -1,7 +1,8 @@
 name: Mobile fastlane release workflow
 on:
   push:
-    branches: [mobile-fastlane-ci-cd]
+    tags:
+      - mobile/v*
   workflow_dispatch:
 
 jobs:
