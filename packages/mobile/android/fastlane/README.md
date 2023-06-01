@@ -31,10 +31,10 @@ Submit a new Beta Build to Crashlytics Beta
 
 Runs all the tests
 
-### android beta
+### android release
 
 ```sh
-[bundle exec] fastlane android beta
+[bundle exec] fastlane android release
 ```
 
 Submit a new Beta Build

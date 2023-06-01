@@ -54,19 +54,34 @@ platform :ios do
       timeout: 3600,
       lock_when_sleeps: false
     )
-    match(
-      storage_mode:'git',
-      app_identifier: ENV["APP_IDENTIFIER"],
-      api_key: api_key,
-      username:ENV["APPLE_ID"],
-      type: "appstore",
-      team_id: ENV["TEAM_ID"],
-      git_url: ENV["MATCH_GIT_URL"],
-      keychain_name: ENV["KEYCHAIN_NAME"],
-      keychain_password: ENV["KEYCHAIN_PASSWORD"],
-      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
-      readonly: true
-    )
+    if ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
+      match(
+        storage_mode:'git',
+        app_identifier: ENV["APP_IDENTIFIER"],
+        api_key: api_key,
+        username:ENV["APPLE_ID"],
+        type: "appstore",
+        team_id: ENV["TEAM_ID"],
+        git_url: ENV["MATCH_GIT_URL"],
+        keychain_name: ENV["KEYCHAIN_NAME"],
+        keychain_password: ENV["KEYCHAIN_PASSWORD"],
+        git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
+        readonly: true
+      )
+    else
+      match(
+        storage_mode:'git',
+        app_identifier: ENV["APP_IDENTIFIER"],
+        api_key: api_key,
+        username:ENV["APPLE_ID"],
+        type: "appstore",
+        team_id: ENV["TEAM_ID"],
+        git_url: ENV["MATCH_GIT_URL"],
+        keychain_name: ENV["KEYCHAIN_NAME"],
+        keychain_password: ENV["KEYCHAIN_PASSWORD"],
+        readonly: true
+      )
+    end
 
     previous_build_number = latest_testflight_build_number(
       app_identifier: ENV["APP_IDENTIFIER"],
