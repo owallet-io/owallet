@@ -81,9 +81,6 @@ platform :ios do
     mapping = Actions.lane_context[
       SharedValues::MATCH_PROVISIONING_PROFILE_MAPPING
     ]
-    sign_profile_type = Actions.lane_context[
-      SharedValues::SIGH_PROFILE_TYPE
-    ]
     update_code_signing_settings(
       use_automatic_signing: false,
       profile_name: mapping[app_identifier],
