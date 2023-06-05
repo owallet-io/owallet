@@ -39,20 +39,44 @@ platform :android do
 
   desc "Runs all the tests"
   lane :test do
-    previous_build_number = google_play_track_version_codes(
+    version_code_store = google_play_track_version_codes(
       package_name: "com.io.owallet",
-      track: 'production',
-      json_key_data: ENV["JSON_KEY_DATA"],
+      track: 'internal',
+      json_key_data: ENV["JSON_KEY_DATA"]
     )[0]
-    
-    current_build_number = previous_build_number + 1
-    
-    increment_version_code(
-      version_code: current_build_number
-    )
+    version_code_local = android_get_version_code(gradle_file: "app/build.gradle")
+    version_name_store = google_play_track_release_names(
+      package_name: "com.io.owallet",
+      track: 'internal',
+      json_key_data: ENV["JSON_KEY_DATA"])[0]
+    version_name_local = android_get_version_name(
+      gradle_file: "app/build.gradle" # optional
+    ).gsub("'", "")
+    if Gem::Version.new(version_name_local) < Gem::Version.new(version_name_store)
+      android_set_version_code(
+        version_code: version_code_store+1, # optional, if not specified, Version Code will be incremented
+        gradle_file: "app/build.gradle" # optional
+      )
+      android_set_version_name(
+        version_name: "'#{version_name_store}'",
+        gradle_file: "app/build.gradle" # optional
+      )
+    elsif Gem::Version.new(version_name_local) == Gem::Version.new(version_name_store) && version_code_local.to_i <= version_code_store
+      android_set_version_code(gradle_file: "app/build.gradle", version_code: version_code_store + 1)
+    elsif Gem::Version.new(version_name_local) > Gem::Version.new(version_name_store)
+      android_set_version_name(
+        version_name: "'#{version_name_local}'", # Set a specific version number
+        gradle_file: "app/build.gradle" # optional
+      )
+      android_set_version_code(gradle_file: "app/build.gradle", version_code: version_code_local)
+    end
+    version_code_local = android_get_version_code(gradle_file: "app/build.gradle")
+    version_name_local = android_get_version_name(
+      gradle_file: "app/build.gradle" # optional
+    ).gsub("'", "")
     discord_notifier(
-      webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
-      title: "ANDROID FASTLANE - #{android_get_version_name} (#{current_build_number})",
+      webhook_url: "https://discord.com/api/webhooks/1111240493888720898/P5NGMukdguh3nuXf9Cqrs7YKoYz_fjUnhQlvdi1MFjnOKXf2FmMN5ms5L5_5a67KR5I_",
+      title: "ANDROID FASTLANE - #{version_name_local} (#{version_code_local})",
       description: 'test',
       success: true
     )
@@ -60,17 +84,41 @@ platform :android do
 
   desc "Submit a new Beta Build"
   lane :release do
-    previous_build_number = google_play_track_version_codes(
+    version_code_store = google_play_track_version_codes(
       package_name: "com.io.owallet",
       track: 'internal',
-      json_key_data: ENV["JSON_KEY_DATA"],
+      json_key_data: ENV["JSON_KEY_DATA"]
     )[0]
-    
-    current_build_number = previous_build_number + 1
-    
-    increment_version_code(
-      version_code: current_build_number
-    )
+    version_code_local = android_get_version_code(gradle_file: "app/build.gradle")
+    version_name_store = google_play_track_release_names(
+      package_name: "com.io.owallet",
+      track: 'internal',
+      json_key_data: ENV["JSON_KEY_DATA"])[0]
+    version_name_local = android_get_version_name(
+      gradle_file: "app/build.gradle" # optional
+    ).gsub("'", "")
+    if Gem::Version.new(version_name_local) < Gem::Version.new(version_name_store)
+      android_set_version_code(
+        version_code: version_code_store+1, # optional, if not specified, Version Code will be incremented
+        gradle_file: "app/build.gradle" # optional
+      )
+      android_set_version_name(
+        version_name: "'#{version_name_store}'",
+        gradle_file: "app/build.gradle" # optional
+      )
+    elsif Gem::Version.new(version_name_local) == Gem::Version.new(version_name_store) && version_code_local.to_i <= version_code_store
+      android_set_version_code(gradle_file: "app/build.gradle", version_code: version_code_store + 1)
+    elsif Gem::Version.new(version_name_local) > Gem::Version.new(version_name_store)
+      android_set_version_name(
+        version_name: "'#{version_name_local}'", # Set a specific version number
+        gradle_file: "app/build.gradle" # optional
+      )
+      android_set_version_code(gradle_file: "app/build.gradle", version_code: version_code_local)
+    end
+    version_code_local = android_get_version_code(gradle_file: "app/build.gradle")
+    version_name_local = android_get_version_name(
+      gradle_file: "app/build.gradle" # optional
+    ).gsub("'", "")
     gradle(task: 'clean bundle', build_type: 'Release',properties: {
       "android.injected.signing.store.file" => Dir.pwd + ENV["FILE_PATH"],
       "android.injected.signing.store.password" => ENV["PASS_KEY_STORE"],
@@ -80,7 +128,7 @@ platform :android do
     upload_to_play_store(track: 'internal',skip_upload_apk:true, json_key_data: ENV["JSON_KEY_DATA"],package_name:"com.io.owallet",skip_upload_metadata:true,skip_upload_images:true,skip_upload_screenshots:true)
     discord_notifier(
       webhook_url: "https://discord.com/api/webhooks/#{ENV["DISCORD_HOOK_ID"]}/#{ENV["DISCORD_HOOK_TOKEN"]}",
-      title: "ANDROID BETA FASTLANE - #{android_get_version_name} (#{current_build_number})",
+      title: "ANDROID BETA FASTLANE - #{version_name_local} (#{version_code_local})",
       description: "
       Congratulations. You have successfully deployed OWallet app to Google Play :thumbsup::skin-tone-4: :thumbsup::skin-tone-4: :thumbsup::skin-tone-4:",
       success: true
