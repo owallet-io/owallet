@@ -133,12 +133,6 @@ jobs:
         with:
           ruby-version: 2.6.10
           bundler-cache: true
-      - uses: actions/cache@v1
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
       - name: Pod install
         working-directory: packages/mobile
         run: yarn pod:install
