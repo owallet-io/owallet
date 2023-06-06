@@ -10,6 +10,9 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
+    "fastlane-ios:release": "cd ios && bundle exec fastlane release",
+    "fastlane-android:release": "cd android && bundle exec fastlane release",
+    "fastlane-android:distribution": "cd android && fastlane distribution",
     "android:connect": "adb reverse tcp:8081 tcp:8081",
     "typecheck": "tsc",
     "watch:provider": "cross-env NODE_ENV=development webpack",
