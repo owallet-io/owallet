@@ -68,3 +68,8 @@ export interface AppChainInfo extends ChainInfo {
     readonly accountUrl?: string;
   };
 }
+
+export type ChainInfoWithoutEndpoints = Omit<
+  ChainInfo,
+  'rest' | 'rpc' | 'nodeProvider'
+>;
