@@ -100,9 +100,11 @@ export const SendEvmPage: FunctionComponent<{
 
   useEffect(() => {
     // Get gas price
-    (async () => {
-      await getFee();
-    })();
+    if (coinMinimalDenom) {
+      (async () => {
+        await getFee();
+      })();
+    }
   }, [coinMinimalDenom]);
 
   const getFee = async () => {
@@ -111,9 +113,6 @@ export const SendEvmPage: FunctionComponent<{
         jsonrpc: '2.0',
         id: 1,
         method: 'eth_gasPrice',
-        headers: {
-          'x-api-key': ''
-        },
         params: []
       });
       setGasPrice(
@@ -127,48 +126,87 @@ export const SendEvmPage: FunctionComponent<{
   };
 
   useEffect(() => {
+<<<<<<< HEAD
+<<<<<<< HEAD
+    console.log("here");
     (async () => {
       try {
         const web3 = new Web3(chainStore.current.rest);
-        let estimate = 21000;
-        if (coinMinimalDenom) {
-          // @ts-ignore
-          const tokenInfo = new web3.eth.Contract(
-            ERC20_ABI,
-            query?.defaultDenom?.split(':')?.[1]
-          );
-          estimate = await tokenInfo.methods
-            .transfer(
-              accountInfo?.evmosHexAddress,
-              '0x' +
-                parseFloat(
-                  new Big(sendConfigs.amountConfig.amount)
-                    .mul(new Big(10).pow(decimals))
-                    .toString()
-                ).toString(16)
-            )
-            .estimateGas({
-              from: query?.defaultDenom?.split(':')?.[1]
-            });
-        } else {
-          estimate = await web3.eth.estimateGas({
-            to: accountInfo?.evmosHexAddress,
-            from: query?.defaultDenom?.split(':')?.[1]
-          });
-        }
+        // @ts-ignore
+        const tokenInfo = new web3.eth.Contract(ERC20_ABI, query?.defaultDenom?.split(':')?.[1])
+        const estimate = await tokenInfo.methods.transfer(
+          accountInfo?.evmosHexAddress,
+          '0x' + parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(16)
+
+        ).estimateGas({
+          from: query?.defaultDenom?.split(':')?.[1],
+        })
+        // console.log("🚀 ~ file: index.tsx ~ line 139 ~ estimate1", estimate1)
+        // const estimate = await web3.eth.estimateGas({
+        //   to: accountInfo?.evmosHexAddress,
+        //   from: query?.defaultDenom?.split(':')?.[1]
+        // });
+        // console.log(query?.defaultDenom,'zzzzzzzzz')
+        // console.log(estimate,'estimateeee')
+=======
+    (async () => {
+      try {
+        const web3 = new Web3(chainStore.current.rest);
+        const estimate = await web3.eth.estimateGas({
+          to: accountInfo?.evmosHexAddress,
+          from: query?.defaultDenom?.split(':')?.[1]
+        });
+>>>>>>> 191745a8 (fixbug func sp kawaii)
+=======
+    console.log("here");
+    (async () => {
+      try {
+        const web3 = new Web3(chainStore.current.rest);
+        // @ts-ignore
+        const tokenInfo = new web3.eth.Contract(ERC20_ABI, query?.defaultDenom?.split(':')?.[1])
+        const estimate = await tokenInfo.methods.transfer(
+          accountInfo?.evmosHexAddress,
+          '0x' + parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(16)
+
+        ).estimateGas({
+          from: query?.defaultDenom?.split(':')?.[1],
+        })
+        // console.log("🚀 ~ file: index.tsx ~ line 139 ~ estimate1", estimate1)
+        // const estimate = await web3.eth.estimateGas({
+        //   to: accountInfo?.evmosHexAddress,
+        //   from: query?.defaultDenom?.split(':')?.[1]
+        // });
+        // console.log(query?.defaultDenom,'zzzzzzzzz')
+        // console.log(estimate,'estimateeee')
+>>>>>>> 91803c90 (Testing estimate gas erc-20 send)
         gasConfig.setGas(estimate ?? 21000);
         feeConfig.setFee(
           new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       } catch (error) {
-        console.log(error, 'zzz');
+<<<<<<< HEAD
+<<<<<<< HEAD
+        console.log(error,'zzz')
+=======
+>>>>>>> 191745a8 (fixbug func sp kawaii)
+=======
+        console.log(error,'zzz')
+>>>>>>> 91803c90 (Testing estimate gas erc-20 send)
         gasConfig.setGas(21000);
         feeConfig.setFee(
           new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       }
     })();
+<<<<<<< HEAD
+<<<<<<< HEAD
   }, [gasPrice, sendConfigs.amountConfig.amount]);
+=======
+  }, [gasPrice]);
+>>>>>>> 191745a8 (fixbug func sp kawaii)
+=======
+  }, [gasPrice, sendConfigs.amountConfig.amount]);
+>>>>>>> 91803c90 (Testing estimate gas erc-20 send)
 
   useEffect(() => {
     if (query.defaultDenom) {

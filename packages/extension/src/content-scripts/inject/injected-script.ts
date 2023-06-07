@@ -1,4 +1,8 @@
-import { InjectedOWallet, InjectedEthereum, InjectedEthereumOWallet } from '@owallet/provider';
+import {
+  InjectedOWallet,
+  InjectedEthereum,
+  InjectedEthereumOWallet
+} from '@owallet/provider';
 import { init } from './init';
 
 import manifest from '../../manifest.json';

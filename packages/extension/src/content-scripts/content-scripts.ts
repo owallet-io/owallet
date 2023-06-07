@@ -5,7 +5,13 @@ import {
   ExtensionRouter,
   InExtensionMessageRequester
 } from '@owallet/router-extension';
-import { OWallet, InjectedOWallet, Ethereum, InjectedEthereum, InjectedEthereumOWallet } from '@owallet/provider';
+import {
+  OWallet,
+  InjectedOWallet,
+  Ethereum,
+  InjectedEthereum,
+  InjectedEthereumOWallet
+} from '@owallet/provider';
 import { initEvents } from './events';
 
 import manifest from '../manifest.json';
@@ -14,7 +20,7 @@ import manifest from '../manifest.json';
 function keepAlive() {
   const port = chrome.runtime.connect({ name: 'keepAlive' });
   port.onDisconnect.addListener(keepAlive);
-  port.onMessage.addListener((msg) => {
+  port.onMessage.addListener(msg => {
     console.log('received', msg, 'from bg');
   });
 }
@@ -25,11 +31,30 @@ InjectedOWallet.startProxy(
 );
 
 InjectedEthereum.startProxy(
-  new Ethereum(manifest.version, 'core', "0x38", new InExtensionMessageRequester())
+  new Ethereum(
+    manifest.version,
+    'core',
+    '0x38',
+    new InExtensionMessageRequester()
+  )
 );
 
 InjectedEthereumOWallet.startProxy(
-  new Ethereum(manifest.version, 'core', "0x38", new InExtensionMessageRequester())
+  new Ethereum(
+    manifest.version,
+    'core',
+    '0x38',
+    new InExtensionMessageRequester()
+  )
+);
+
+InjectedEthereumOWallet.startProxy(
+  new Ethereum(
+    manifest.version,
+    'core',
+    '0x38',
+    new InExtensionMessageRequester()
+  )
 );
 
 const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
