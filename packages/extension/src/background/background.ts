@@ -62,5 +62,16 @@ init(
 
 router.listen(BACKGROUND_PORT);
 
+browser.alarms.create('keep-alive-alarm', {
+  periodInMinutes: 0.25
+});
+
+browser.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'keep-alive-alarm') {
+    // noop
+    // To make background persistent even if it is service worker, invoke noop alarm periodically.
+    // https://developer.chrome.com/blog/longer-esw-lifetimes/
+  }
+});
 // @ts-ignore
 window.Ledger = Ledger;
