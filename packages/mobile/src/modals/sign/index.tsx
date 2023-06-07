@@ -159,11 +159,7 @@ export const SignModal: FunctionComponent<{
               {/* <Msg title={title}> */}
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
-                  <Text
-                    style={style.flatten(['body3'])}
-                  >
-                    {content}
-                  </Text>
+                  <Text style={style.flatten(['body3'])}>{content}</Text>
                 </ScrollView>
               ) : (
                 <View>{content}</View>
@@ -277,9 +273,7 @@ export const SignModal: FunctionComponent<{
               width: '40%'
             }}
             style={{
-              backgroundColor: isDisable
-                ? colors['gray-400']
-                : colors['purple-700']
+              backgroundColor: isDisable ? colors['gray-400'] : colors['white']
             }}
             textStyle={{
               color: isDisable ? colors['gray-10'] : colors['white']

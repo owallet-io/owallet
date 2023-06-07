@@ -257,7 +257,7 @@ export const SignEthereumModal: FunctionComponent<{
               style={{
                 backgroundColor: signInteractionStore.isLoading
                   ? colors['gray-400']
-                  : colors['purple-700']
+                  : colors['white']
               }}
               loading={signInteractionStore.isLoading}
               onPress={async () => {

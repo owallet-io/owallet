@@ -37,8 +37,8 @@ import {
   RequestVerifyADR36AminoSignDoc,
   RequestSignEthereumTypedDataMsg,
   SignEthereumTypedDataObject,
-  // RequestSignDecryptDataMsg,
-  // RequestSignReEncryptDataMsg,
+  RequestSignDecryptDataMsg,
+  RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
@@ -362,25 +362,16 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAndBroadcastTron(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }> {
-    const msg = new RequestSignTronMsg(chainId, data);
-    console.log('data signAndBroadcastTron:', data, msg);
+  async signDecryptData(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignDecryptDataMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  // async signDecryptData(chainId: string, data: object): Promise<object> {
-  //   const msg = new RequestSignDecryptDataMsg(chainId, data);
-  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  // }
-
-  // // thang2
-  // async signReEncryptData(chainId: string, data: object): Promise<object> {
-  //   const msg = new RequestSignReEncryptDataMsg(chainId, data);
-  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  // }
+  // thang2
+  async signReEncryptData(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignReEncryptDataMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
 
   // async sign()
   // async asyncRequest(): Promise<void> {
