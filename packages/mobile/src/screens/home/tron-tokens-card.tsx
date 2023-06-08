@@ -76,8 +76,6 @@ export const TronTokensCard: FunctionComponent<{
   }, [account.evmosHexAddress, keyRingStore.keyRingLedgerAddresses]);
 
   const _renderFlatlistItem = ({ item }) => {
-    console.log('item.amount', item.amount);
-
     return (
       <TouchableOpacity
         style={styles.containerToken}
