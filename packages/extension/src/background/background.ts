@@ -73,5 +73,9 @@ browser.alarms.onAlarm.addListener((alarm) => {
     // https://developer.chrome.com/blog/longer-esw-lifetimes/
   }
 });
+
+chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
+  console.log('wake me up');
+});
 // @ts-ignore
 window.Ledger = Ledger;
