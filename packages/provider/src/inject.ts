@@ -12,6 +12,7 @@ import {
   Key,
   EthereumMode,
   RequestArguments,
+  ChainInfoWithoutEndpoints,
   TronWebMode
 } from '@owallet/types';
 import { Result, JSONUint8Array } from '@owallet/router';
@@ -416,6 +417,10 @@ export class InjectedOWallet implements IOWallet {
     return await this.requestMethod('getEnigmaPubKey', [chainId]);
   }
 
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
+    return await this.requestMethod('getChainInfosWithoutEndpoints', []);
+  }
+
   async getEnigmaTxEncryptionKey(
     chainId: string,
     nonce: Uint8Array
@@ -472,8 +477,6 @@ export class InjectedEthereum implements Ethereum {
   set chainId(chainId: string) {
     window.localStorage.setItem('ethereum.chainId', chainId);
   }
-
-  // public static chainId: string;
 
   static startProxy(
     ethereum: Ethereum,
@@ -542,6 +545,7 @@ export class InjectedEthereum implements Ethereum {
           case 'eth_signDecryptData':
             result = await ethereum.signDecryptData(chainId, message.args[0]);
             break;
+          // thang1
           case 'eth_signReEncryptData':
             result = await ethereum.signReEncryptData(chainId, message.args[0]);
             break;
@@ -710,14 +714,6 @@ export class InjectedEthereum implements Ethereum {
     ]);
   }
 
-  async signAndBroadcastTron(
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<{ rawTxHex: string }> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
   async signAndBroadcastEthereum(
     chainId: string,
     data: object
@@ -741,6 +737,14 @@ export class InjectedEthereum implements Ethereum {
     chainId: string,
     data: SignEthereumTypedDataObject
   ): Promise<void> {
+    console.log('WILL NOT USE');
+    return;
+  }
+
+  async signAndBroadcastTron(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<{ rawTxHex: string }> {
     console.log('WILL NOT USE');
     return;
   }
@@ -779,8 +783,6 @@ export class InjectedEthereumOWallet implements Ethereum {
   set chainId(chainId: string) {
     window.localStorage.setItem('eth_owallet.chainId', chainId);
   }
-
-  // public static chainId: string;
 
   static startProxy(
     eth_owallet: Ethereum,
@@ -852,6 +854,7 @@ export class InjectedEthereumOWallet implements Ethereum {
               message.args[0]
             );
             break;
+          // thang1
           case 'eth_signReEncryptData':
             result = await eth_owallet.signReEncryptData(
               chainId,
@@ -883,7 +886,6 @@ export class InjectedEthereumOWallet implements Ethereum {
               chainId
             });
             window.localStorage.setItem('eth_owallet.chainId', result);
-            window.localStorage.setItem('owallet.chainId', result);
             break;
           case 'eth_getTransactionReceipt' as any:
             try {
@@ -1021,6 +1023,14 @@ export class InjectedEthereumOWallet implements Ethereum {
     ]);
   }
 
+  async signAndBroadcastTron(
+    chainId: string,
+    data: SignEthereumTypedDataObject
+  ): Promise<{ rawTxHex: string }> {
+    console.log('WILL NOT USE');
+    return;
+  }
+
   async signAndBroadcastEthereum(
     chainId: string,
     data: object
@@ -1044,14 +1054,6 @@ export class InjectedEthereumOWallet implements Ethereum {
     chainId: string,
     data: SignEthereumTypedDataObject
   ): Promise<void> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
-  async signAndBroadcastTron(
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<{ rawTxHex: string }> {
     console.log('WILL NOT USE');
     return;
   }
@@ -1139,16 +1141,22 @@ export class InjectedTronWebOWallet implements TronWeb {
             result = await tronweb.sign(message.args[0]);
             break;
           case 'tron_requestAccounts':
-            const account = await tronweb.getDefaultAddress();
-            // result = {
-            //   code: 200,
-            //   message: 'The site is already in the whitelist'
-            // };
-            // window.localStorage.setItem(
-            //   'tronWeb.defaultAddress',
-            //   JSON.stringify(account)
-            // );
-            result = account;
+            try {
+              const account = await tronweb.getDefaultAddress();
+              result = {
+                code: 200,
+                message: 'The site is already in the whitelist'
+              };
+              window.localStorage.setItem(
+                'tronWeb.defaultAddress',
+                JSON.stringify(account)
+              );
+            } catch (error) {
+              result = {
+                code: error?.code,
+                message: error?.message
+              };
+            }
             break;
           default:
             result = await tronweb.sign(message.args[0]);

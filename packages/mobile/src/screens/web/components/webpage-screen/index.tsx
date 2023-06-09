@@ -33,7 +33,7 @@ export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
 
   useEffect(() => {
-    fetch(`${InjectedProviderUrl}/injected-provider-test.bundle.js`)
+    fetch(`${InjectedProviderUrl}/injected-provider-merge.bundle.js`)
       .then(res => {
         return res.text();
       })

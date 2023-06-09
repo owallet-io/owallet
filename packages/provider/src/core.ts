@@ -9,7 +9,8 @@ import {
   Key,
   EthereumMode,
   RequestArguments,
-  TronWebMode
+  TronWebMode,
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -39,7 +40,8 @@ import {
   SignEthereumTypedDataObject,
   RequestSignDecryptDataMsg,
   RequestSignReEncryptDataMsg,
-  RequestPublicKeyMsg
+  RequestPublicKeyMsg,
+  GetChainInfosWithoutEndpointsMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -68,6 +70,11 @@ export class OWallet implements IOWallet {
     public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
   ) {}
+
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
+    const msg = new GetChainInfosWithoutEndpointsMsg();
+    return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).chainInfos;
+  }
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
