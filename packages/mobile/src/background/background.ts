@@ -5,7 +5,7 @@ import {
   RNRouterBackground
 } from '../router';
 import { AsyncKVStore } from '../common';
-import scrypt from 'react-native-scrypt';
+import scrypt from 'scrypt-async-modern';
 import { Buffer } from 'buffer';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { BACKGROUND_PORT } from '@owallet/router';
@@ -49,19 +49,14 @@ init(
   webcrypto.getRandomValues,
   {
     scrypt: async (text: string, params: ScryptParams) => {
-      return Buffer.from(
-        await scrypt(
-          Buffer.from(text).toString('hex'),
-          // Salt is expected to be encoded as Hex
-          params.salt,
-          params.n,
-          params.r,
-          params.p,
-          params.dklen,
-          'hex'
-        ),
-        'hex'
-      );
+      const buf = await scrypt(text, Buffer.from(params.salt, 'hex'), {
+        dkLen: params.dklen,
+        N: params.n,
+        r: params.r,
+        p: params.p,
+        encoding: 'binary'
+      });
+      return buf;
     }
   },
   {
