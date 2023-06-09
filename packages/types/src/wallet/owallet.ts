@@ -55,6 +55,7 @@ export interface OWallet {
   defaultOptions: OWalletIntereactionOptions;
 
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
+  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   enable(chainIds: string | string[]): Promise<void>;
   getKey(chainId: string): Promise<Key>;
   signAmino(
@@ -170,7 +171,6 @@ export interface Ethereum {
     data: object
   ): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   signEthereumTypeData(
     chainId: string,
     data: SignEthereumTypedDataObject
