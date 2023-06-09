@@ -2,7 +2,7 @@ import { BACKGROUND_PORT } from '@owallet/router';
 import { ExtensionRouter, ExtensionGuards, ExtensionEnv, ContentScriptMessageRequester } from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
 import { init, Ledger, ScryptParams } from '@owallet/background';
-import scrypt from 'scrypt-async-modern';
+import { scrypt } from '@owallet/crypto';
 import { Buffer } from 'buffer';
 
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
@@ -29,6 +29,7 @@ init(
         p: params.p,
         encoding: 'binary'
       });
+
       return buf;
     }
   },

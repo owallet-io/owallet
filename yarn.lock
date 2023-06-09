@@ -22025,11 +22025,6 @@ screenfull@^5.0.0:
   resolved "https://registry.yarnpkg.com/screenfull/-/screenfull-5.2.0.tgz#6533d524d30621fc1283b9692146f3f13a93d1ba"
   integrity sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==
 
-scrypt-async-modern@^3.0.12:
-  version "3.0.12"
-  resolved "https://registry.yarnpkg.com/scrypt-async-modern/-/scrypt-async-modern-3.0.12.tgz#2da4239053c57d042b4b76412ef691c06bfecbf2"
-  integrity sha512-NkkoREZSg/KbM+60R1xwAReTcJJBVbWmnorf5rksso+Q3zlNJofhk/Ty32FqpAyuHLLIduLz/T+DvEBs8EELHg==
-
 scrypt-js@3.0.1, scrypt-js@^3.0.0, scrypt-js@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-3.0.1.tgz#d314a57c2aef69d1ad98a138a21fe9eafa9ee312"
