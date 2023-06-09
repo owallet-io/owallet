@@ -63,10 +63,7 @@ export class KeyRingSelectablesStore {
   @computed
   get needSelectCoinType(): boolean {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    if (
-      !chainInfo.alternativeBIP44s ||
-      chainInfo.alternativeBIP44s.length === 0
-    ) {
+    if (!chainInfo.alternativeBIP44s || chainInfo.alternativeBIP44s.length === 0) {
       return false;
     }
     return !this.isInitializing && !this._isKeyStoreCoinTypeSet;
@@ -96,21 +93,13 @@ export class KeyRingSelectablesStore {
 
     const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    const msg = new GetIsKeyStoreCoinTypeSetMsg(this.chainId, [
-      chainInfo.bip44,
-      ...(chainInfo.alternativeBIP44s ?? [])
-    ]);
-    const seletables = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const msg = new GetIsKeyStoreCoinTypeSetMsg(this.chainId, [chainInfo.bip44, ...(chainInfo.alternativeBIP44s ?? [])]);
+    const seletables = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     if (seletables.length === 0) {
       this._isKeyStoreCoinTypeSet = true;
     } else if (seletables.length === 1) {
-      yield this.keyRingStore.setKeyStoreCoinType(
-        this.chainId,
-        seletables[0].path.coinType
-      );
+      yield this.keyRingStore.setKeyStoreCoinType(this.chainId, seletables[0].path.coinType);
       this._isKeyStoreCoinTypeSet = true;
     } else {
       this._selectables = seletables;
@@ -153,9 +142,7 @@ export class KeyRingStore {
 
   @computed
   get keyRingType(): string {
-    const keyStore = this.multiKeyStoreInfo.find(
-      (keyStore) => keyStore.selected
-    );
+    const keyStore = this.multiKeyStoreInfo.find((keyStore) => keyStore.selected);
 
     if (!keyStore) {
       return 'none';
@@ -166,9 +153,7 @@ export class KeyRingStore {
 
   @computed
   get keyRingLedgerAddress(): ledgerAddresses {
-    const keyStore = this.multiKeyStoreInfo.find(
-      (keyStore) => keyStore.selected
-    );
+    const keyStore = this.multiKeyStoreInfo.find((keyStore) => keyStore.selected);
     console.log('keyStore =======', keyStore);
     console.log('multiKeyStoreInfo =======', this.multiKeyStoreInfo);
 
@@ -187,98 +172,52 @@ export class KeyRingStore {
     bip44HDPath: BIP44HDPath,
     kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
   ) {
-    const msg = new CreateMnemonicKeyMsg(
-      kdf,
-      mnemonic,
-      password,
-      meta,
-      bip44HDPath
-    );
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const msg = new CreateMnemonicKeyMsg(kdf, mnemonic, password, meta, bip44HDPath);
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
   }
 
   @flow
-  *createPrivateKey(
-    privateKey: Uint8Array,
-    password: string,
-    meta: Record<string, string>,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
-  ) {
+  *createPrivateKey(privateKey: Uint8Array, password: string, meta: Record<string, string>, kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf) {
     const msg = new CreatePrivateKeyMsg(kdf, privateKey, password, meta);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
   }
 
   @flow
-  *createLedgerKey(
-    password: string,
-    meta: Record<string, string>,
-    bip44HDPath: BIP44HDPath,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
-  ) {
+  *createLedgerKey(password: string, meta: Record<string, string>, bip44HDPath: BIP44HDPath, kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf) {
     const msg = new CreateLedgerKeyMsg(kdf, password, meta, bip44HDPath);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
   }
 
   @flow
-  *addMnemonicKey(
-    mnemonic: string,
-    meta: Record<string, string>,
-    bip44HDPath: BIP44HDPath,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
-  ) {
+  *addMnemonicKey(mnemonic: string, meta: Record<string, string>, bip44HDPath: BIP44HDPath, kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf) {
     const msg = new AddMnemonicKeyMsg(kdf, mnemonic, meta, bip44HDPath);
-    this.multiKeyStoreInfo = (yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    )).multiKeyStoreInfo;
+    this.multiKeyStoreInfo = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg))).multiKeyStoreInfo;
   }
 
   @flow
-  *addPrivateKey(
-    privateKey: Uint8Array,
-    meta: Record<string, string>,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
-  ) {
+  *addPrivateKey(privateKey: Uint8Array, meta: Record<string, string>, kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf) {
     const msg = new AddPrivateKeyMsg(kdf, privateKey, meta);
-    this.multiKeyStoreInfo = (yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    )).multiKeyStoreInfo;
+    this.multiKeyStoreInfo = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg))).multiKeyStoreInfo;
   }
 
   @flow
-  *addLedgerKey(
-    meta: Record<string, string>,
-    bip44HDPath: BIP44HDPath,
-    kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf
-  ) {
+  *addLedgerKey(meta: Record<string, string>, bip44HDPath: BIP44HDPath, kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf) {
     const msg = new AddLedgerKeyMsg(kdf, meta, bip44HDPath);
-    const result = (yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    )).multiKeyStoreInfo;
-    console.log(
-      '🚀 ~ file: keyring.ts ~ line 251 ~ KeyRingStore ~ result',
-      result
-    );
+    const result = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg))).multiKeyStoreInfo;
+    console.log('🚀 ~ file: keyring.ts ~ line 251 ~ KeyRingStore ~ result', result);
     this.multiKeyStoreInfo = result;
   }
 
   @flow
   *changeKeyRing(index: number) {
     const msg = new ChangeKeyRingMsg(index);
-    this.multiKeyStoreInfo = (yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    )).multiKeyStoreInfo;
+    this.multiKeyStoreInfo = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg))).multiKeyStoreInfo;
 
     // Emit the key store changed event manually.
     this.dispatchKeyStoreChangeEvent();
@@ -288,18 +227,15 @@ export class KeyRingStore {
   @flow
   *lock() {
     const msg = new LockKeyRingMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
+    localStorage.removeItem('password');
   }
 
   @flow
   *unlock(password: string) {
     const msg = new UnlockKeyRingMsg(password);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
 
     // Approve all waiting interaction for the enabling key ring.
@@ -309,6 +245,7 @@ export class KeyRingStore {
 
     this.dispatchKeyStoreChangeEvent();
     this.selectablesMap.forEach((selectables) => selectables.refresh());
+    localStorage.setItem('password', password);
   }
 
   @flow
@@ -319,11 +256,20 @@ export class KeyRingStore {
   @flow
   protected *restore() {
     const msg = new RestoreKeyRingMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
+
+    // unlock with store password
+    if (this.password) {
+      const msg = new UnlockKeyRingMsg(this.password);
+      const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
+      this.status = result.status;
+    }
+  }
+
+  get password() {
+    return localStorage.getItem('password');
   }
 
   async showKeyRing(index: number, password: string) {
@@ -333,13 +279,9 @@ export class KeyRingStore {
 
   @flow
   *deleteKeyRing(index: number, password: string) {
-    const selectedIndex = this.multiKeyStoreInfo.findIndex(
-      (keyStore) => keyStore.selected
-    );
+    const selectedIndex = this.multiKeyStoreInfo.findIndex((keyStore) => keyStore.selected);
     const msg = new DeleteKeyRingMsg(index, password);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
 
@@ -353,13 +295,9 @@ export class KeyRingStore {
   @flow
   *updateNameKeyRing(index: number, name: string, email?: string) {
     const msg = new UpdateNameKeyRingMsg(index, name, email);
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
-    const selectedIndex = this.multiKeyStoreInfo.findIndex(
-      (keyStore) => keyStore.selected
-    );
+    const selectedIndex = this.multiKeyStoreInfo.findIndex((keyStore) => keyStore.selected);
     // If selectedIndex and index are same, name could be changed, so dispatch keystore event
     if (selectedIndex === index) {
       this.dispatchKeyStoreChangeEvent();
@@ -367,24 +305,13 @@ export class KeyRingStore {
   }
 
   async checkPassword(password: string): Promise<boolean> {
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new CheckPasswordMsg(password)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new CheckPasswordMsg(password));
   }
 
   getKeyStoreSelectables(chainId: string): KeyRingSelectablesStore {
     if (!this.selectablesMap.has(chainId)) {
       runInAction(() => {
-        this.selectablesMap.set(
-          chainId,
-          new KeyRingSelectablesStore(
-            this.chainGetter,
-            this.requester,
-            chainId,
-            this
-          )
-        );
+        this.selectablesMap.set(chainId, new KeyRingSelectablesStore(this.chainGetter, this.requester, chainId, this));
       });
     }
 
@@ -396,16 +323,9 @@ export class KeyRingStore {
   // And, save it, refresh the key store.
   @flow
   *setKeyStoreCoinType(chainId: string, coinType: number) {
-    const status = yield* toGenerator(
-      this.requester.sendMessage(
-        BACKGROUND_PORT,
-        new SetKeyStoreCoinTypeMsg(chainId, coinType)
-      )
-    );
+    const status = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new SetKeyStoreCoinTypeMsg(chainId, coinType)));
 
-    this.multiKeyStoreInfo = (yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg())
-    )).multiKeyStoreInfo;
+    this.multiKeyStoreInfo = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg()))).multiKeyStoreInfo;
 
     this.status = status;
 
@@ -420,16 +340,9 @@ export class KeyRingStore {
   *setKeyStoreLedgerAddress(bip44HDPath: string, chainId: number | string) {
     console.log('SetKeyStoreLedgerAddressMsg', bip44HDPath);
 
-    const status = yield* toGenerator(
-      this.requester.sendMessage(
-        BACKGROUND_PORT,
-        new SetKeyStoreLedgerAddressMsg(bip44HDPath, chainId)
-      )
-    );
+    const status = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new SetKeyStoreLedgerAddressMsg(bip44HDPath, chainId)));
 
-    this.multiKeyStoreInfo = (yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg())
-    )).multiKeyStoreInfo;
+    this.multiKeyStoreInfo = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg()))).multiKeyStoreInfo;
 
     this.status = status;
 
@@ -439,10 +352,7 @@ export class KeyRingStore {
   }
 
   async exportKeyRingDatas(password: string): Promise<ExportKeyRingData[]> {
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new ExportKeyRingDatasMsg(password)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new ExportKeyRingDatasMsg(password));
   }
 
   @flow
