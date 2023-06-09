@@ -357,6 +357,14 @@ export class Ethereum implements IEthereum {
     }
   }
 
+  async signAndBroadcastTron(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
   async getPublicKey(chainId: string): Promise<object> {
     const msg = new RequestPublicKeyMsg(chainId);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
