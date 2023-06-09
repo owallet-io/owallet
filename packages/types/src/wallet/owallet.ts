@@ -1,4 +1,8 @@
-import { ChainInfo, NetworkType } from '../chain-info';
+import {
+  ChainInfo,
+  ChainInfoWithoutEndpoints,
+  NetworkType
+} from '../chain-info';
 import {
   BroadcastMode,
   AminoSignResponse,
@@ -166,6 +170,7 @@ export interface Ethereum {
     data: object
   ): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
+  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   signEthereumTypeData(
     chainId: string,
     data: SignEthereumTypedDataObject
