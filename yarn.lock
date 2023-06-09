@@ -18951,11 +18951,6 @@ pause-stream@0.0.11:
   dependencies:
     through "~2.3"
 
-pbkdf2-hmac@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/pbkdf2-hmac/-/pbkdf2-hmac-1.2.1.tgz#c468e1c8627999998251d5b8e79e01bb52a97f90"
-  integrity sha512-hVmhFGESrB+GtfSYHk7JYYIevsq2r96ilSdDdQmUz3ukicz4m31xzk2gWPFm3300eek54DV4MekINaXu/G8VyA==
-
 pbkdf2@^3.0.16, pbkdf2@^3.0.17, pbkdf2@^3.0.3, pbkdf2@^3.0.9, pbkdf2@^3.1.1, pbkdf2@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.1.2.tgz#dd822aa0887580e52f1a039dc3eda108efae3075"
@@ -22030,17 +22025,15 @@ screenfull@^5.0.0:
   resolved "https://registry.yarnpkg.com/screenfull/-/screenfull-5.2.0.tgz#6533d524d30621fc1283b9692146f3f13a93d1ba"
   integrity sha512-9BakfsO2aUQN2K9Fdbj87RJIEZ82Q9IGim7FqM5OsebfoFC6ZHXgDq/KvniuLTPdeM8wY2o6Dj3WQ7KeQCj3cA==
 
+scrypt-async-modern@^3.0.12:
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/scrypt-async-modern/-/scrypt-async-modern-3.0.12.tgz#2da4239053c57d042b4b76412ef691c06bfecbf2"
+  integrity sha512-NkkoREZSg/KbM+60R1xwAReTcJJBVbWmnorf5rksso+Q3zlNJofhk/Ty32FqpAyuHLLIduLz/T+DvEBs8EELHg==
+
 scrypt-js@3.0.1, scrypt-js@^3.0.0, scrypt-js@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-3.0.1.tgz#d314a57c2aef69d1ad98a138a21fe9eafa9ee312"
   integrity sha512-cdwTTnqPu0Hyvf5in5asVdZocVDTNRmR7XEcJuIzMjJeSHybHl7vpB66AzwTaIg6CLSbtjcxc8fqcySfnTkccA==
-
-scrypt-pbkdf@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/scrypt-pbkdf/-/scrypt-pbkdf-1.1.1.tgz#b24978df1bf041bdefd2de024e6d41695aa1322e"
-  integrity sha512-El8PPv18WoKaOsDXzOFo7wLgLkCBScqs4PGdYvNE9THIYCeODVRb6Ynj6qcYdw2Bv1N1+t574nQsUjFKpBVvvw==
-  dependencies:
-    pbkdf2-hmac "^1.2.1"
 
 secp256k1@3.7.1:
   version "3.7.1"

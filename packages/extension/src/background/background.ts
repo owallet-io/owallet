@@ -2,7 +2,7 @@ import { BACKGROUND_PORT } from '@owallet/router';
 import { ExtensionRouter, ExtensionGuards, ExtensionEnv, ContentScriptMessageRequester } from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
 import { init, Ledger, ScryptParams } from '@owallet/background';
-import { scrypt } from 'scrypt-pbkdf';
+import scrypt from 'scrypt-async-modern';
 import { Buffer } from 'buffer';
 
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
@@ -24,12 +24,15 @@ init(
   },
   {
     scrypt: async (text: string, params: ScryptParams) => {
-      const buf = await scrypt(Buffer.from(text), Buffer.from(params.salt, 'hex'), params.dklen, {
+      const t = Date.now();
+      const buf = await scrypt(text, Buffer.from(params.salt, 'hex'), {
+        dkLen: params.dklen,
         N: params.n,
         r: params.r,
-        p: params.p
+        p: params.p,
+        encoding: 'binary'
       });
-      return Buffer.from(buf);
+      return buf;
     }
   },
   {
