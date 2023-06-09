@@ -5,7 +5,7 @@ import {
   RNRouterBackground
 } from '../router';
 import { AsyncKVStore } from '../common';
-import scrypt from 'scrypt-async-modern';
+import { scrypt } from '@owallet/crypto';
 import { Buffer } from 'buffer';
 import TransportBLE from '@ledgerhq/react-native-hw-transport-ble';
 import { BACKGROUND_PORT } from '@owallet/router';

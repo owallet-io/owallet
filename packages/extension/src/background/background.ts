@@ -7,9 +7,8 @@ import {
 } from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
 import { init, Ledger, ScryptParams } from '@owallet/background';
-import scrypt from 'scrypt-js';
+import { scrypt } from '@owallet/crypto';
 import { Buffer } from 'buffer';
-
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
 
 const router = new ExtensionRouter(ExtensionEnv.produceEnv);
@@ -24,7 +23,7 @@ init(
   new ContentScriptMessageRequester(),
   EmbedChainInfos,
   PrivilegedOrigins,
-  (array) => {
+  array => {
     return Promise.resolve(crypto.getRandomValues(array));
   },
   {
