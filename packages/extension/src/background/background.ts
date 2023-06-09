@@ -24,7 +24,6 @@ init(
   },
   {
     scrypt: async (text: string, params: ScryptParams) => {
-      const t = Date.now();
       const buf = await scrypt(text, Buffer.from(params.salt, 'hex'), {
         dkLen: params.dklen,
         N: params.n,
