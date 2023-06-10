@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
 
 import styleToken from './token.module.scss';
 import { observer } from 'mobx-react-lite';
@@ -74,17 +69,11 @@ const TokenView: FunctionComponent<{
       const contractAddress = balance.currency.contractAddress;
       return new Promise((resolve) => {
         accountInfo.secret
-          .createSecret20ViewingKey(
-            contractAddress,
-            '',
-            {},
-            {},
-            (_, viewingKey) => {
-              loadingIndicator.setIsLoading('create-veiwing-key', false);
+          .createSecret20ViewingKey(contractAddress, '', {}, {}, (_, viewingKey) => {
+            loadingIndicator.setIsLoading('create-veiwing-key', false);
 
-              resolve(viewingKey);
-            }
-          )
+            resolve(viewingKey);
+          })
           .then(() => {
             loadingIndicator.setIsLoading('create-veiwing-key', true);
           });
@@ -100,10 +89,7 @@ const TokenView: FunctionComponent<{
   } else {
     const denomHelper = new DenomHelper(amount.currency.coinMinimalDenom);
     if (denomHelper.contractAddress) {
-      name += ` (${Bech32Address.shortenAddress(
-        denomHelper.contractAddress,
-        24
-      )})`;
+      name += ` (${Bech32Address.shortenAddress(denomHelper.contractAddress, 24)})`;
     }
   }
 
@@ -135,13 +121,7 @@ const TokenView: FunctionComponent<{
             fontSize: '16px'
           }}
         >
-          {balance.currency.coinImageUrl ? (
-            <img src={balance.currency.coinImageUrl} />
-          ) : name.length > 0 ? (
-            name[0]
-          ) : (
-            '?'
-          )}
+          {balance.currency.coinImageUrl ? <img src={balance.currency.coinImageUrl} /> : name.length > 0 ? name[0] : '?'}
         </div>
       </div>
       <div className={styleToken.innerContainer}>
@@ -155,24 +135,15 @@ const TokenView: FunctionComponent<{
           </div>
           <div className={styleToken.amount}>
             {amount.maxDecimals(6).toString()}
-            {balance.isFetching ? (
-              <i className="fas fa-spinner fa-spin ml-1" />
-            ) : null}
+            {balance.isFetching ? <i className="fas fa-spinner fa-spin ml-1" /> : null}
           </div>
-          {tokenPrice && (
-            <div className={styleToken.price}>{tokenPrice.toString()}</div>
-          )}
+          {tokenPrice && <div className={styleToken.price}>{tokenPrice.toString()}</div>}
         </div>
         <div style={{ flex: 1 }} />
         {error ? (
           <div className={classmames(styleToken.rightIcon, 'mr-2')}>
-            <i
-              className="fas fa-exclamation-circle text-danger"
-              id={validSelector}
-            />
-            <UncontrolledTooltip target={validSelector}>
-              {error.message}
-            </UncontrolledTooltip>
+            <i className="fas fa-exclamation-circle text-danger" id={validSelector} />
+            <UncontrolledTooltip target={validSelector}>{error.message}</UncontrolledTooltip>
           </div>
         ) : null}
         {error?.data && error.data instanceof WrongViewingKeyError ? (
@@ -182,10 +153,7 @@ const TokenView: FunctionComponent<{
               e.preventDefault();
               e.stopPropagation();
 
-              if (
-                'type' in balance.currency &&
-                balance.currency.type === 'secret20'
-              ) {
+              if ('type' in balance.currency && balance.currency.type === 'secret20') {
                 const viewingKey = await createViewingKey();
                 if (!viewingKey) {
                   notification.push({
@@ -202,9 +170,7 @@ const TokenView: FunctionComponent<{
                   return;
                 }
 
-                const tokenOf = tokensStore.getTokensOf(
-                  chainStore.current.chainId
-                );
+                const tokenOf = tokensStore.getTokensOf(chainStore.current.chainId);
 
                 await tokenOf.addToken({
                   ...balance.currency,
@@ -217,11 +183,7 @@ const TokenView: FunctionComponent<{
               }
             }}
           >
-            {accountInfo.isSendingMsg === 'createSecret20ViewingKey' ? (
-              <i className="fa fa-spinner fa-spin fa-fw" />
-            ) : (
-              <i className="fas fa-wrench" />
-            )}
+            {accountInfo.isSendingMsg === 'createSecret20ViewingKey' ? <i className="fa fa-spinner fa-spin fa-fw" /> : <i className="fas fa-wrench" />}
           </div>
         ) : null}
         <div className={styleToken.rightIcon}>
@@ -243,13 +205,7 @@ export const TokensView: FunctionComponent<{
   const [tab, setTab] = useState(0);
   const displayTokens = tokens
     .filter((v, i, obj) => {
-      return (
-        v?.balance &&
-        obj.findIndex(
-          (v2) =>
-            v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom
-        ) === i
-      );
+      return v?.balance && obj.findIndex((v2) => v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom) === i;
     })
     .sort((a, b) => {
       const aDecIsZero = a.balance?.toDec()?.isZero();
@@ -310,10 +266,7 @@ export const TokensView: FunctionComponent<{
                     width: 50
                   }}
                 >
-                  <img
-                    src={require('../../public/assets/img/light.svg')}
-                    alt=""
-                  />
+                  <img src={require('../../public/assets/img/light.svg')} alt="" />
                 </div>
               }
             />
@@ -321,14 +274,10 @@ export const TokensView: FunctionComponent<{
           {displayTokens
             .filter(
               (token) =>
-                token?.currency?.coinMinimalDenom?.includes(
-                  search.toUpperCase()
-                ) ||
+                token?.currency?.coinMinimalDenom?.includes(search.toUpperCase()) ||
                 token?.currency?.coinDenom?.includes(search.toUpperCase()) ||
                 token?.currency?.coinGeckoId?.includes(search.toUpperCase()) ||
-                token?.currency?.coinMinimalDenom?.includes(
-                  search.toLowerCase()
-                ) ||
+                token?.currency?.coinMinimalDenom?.includes(search.toLowerCase()) ||
                 token?.currency?.coinDenom?.includes(search.toLowerCase()) ||
                 token?.currency?.coinGeckoId?.includes(search.toLowerCase())
             )
@@ -337,15 +286,10 @@ export const TokensView: FunctionComponent<{
                 <TokenView
                   key={i.toString()}
                   balance={token}
-                  active={
-                    `?defaultDenom=${token.currency.coinMinimalDenom}` ==
-                    coinMinimalDenom
-                  }
+                  active={`?defaultDenom=${token.currency.coinMinimalDenom}` == coinMinimalDenom}
                   onClick={() => {
                     if (handleClickToken) {
-                      handleClickToken(
-                        `?defaultDenom=${token.currency.coinMinimalDenom}`
-                      );
+                      handleClickToken(`?defaultDenom=${token.currency.coinMinimalDenom}`);
                       return;
                     }
                     history.push({
