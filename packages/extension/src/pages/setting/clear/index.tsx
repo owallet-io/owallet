@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useState,
-  useEffect,
-  useMemo
-} from 'react';
+import React, { FunctionComponent, useCallback, useState, useEffect, useMemo } from 'react';
 import { HeaderLayout } from '../../../layouts';
 
 import { useHistory, useRouteMatch } from 'react-router';
@@ -40,18 +34,13 @@ export const ClearPage: FunctionComponent<{
   });
 
   useEffect(() => {
-    if (
-      parseInt(indexPage || match.params.index).toString() !==
-      (indexPage || match.params.index)
-    ) {
+    if (parseInt(indexPage || match.params.index).toString() !== (indexPage || match.params.index)) {
       throw new Error('Invalid index');
     }
   }, [match.params.index, indexPage]);
 
   const keyStore = useMemo(() => {
-    return keyRingStore.multiKeyStoreInfo[
-      parseInt(indexPage || match.params.index)
-    ];
+    return keyRingStore.multiKeyStoreInfo[parseInt(indexPage || match.params.index)];
   }, [keyRingStore.multiKeyStoreInfo, indexPage, match.params.index]);
 
   return (
@@ -67,21 +56,16 @@ export const ClearPage: FunctionComponent<{
     // >
     <>
       <div className={style.container}>
-        {keyStore ? (
-          <WarningView
-            index={parseInt(match.params.index)}
-            keyStore={keyStore}
-          />
-        ) : null}
+        {keyStore ? <WarningView index={parseInt(match.params.index)} keyStore={keyStore} /> : null}
         <Form
           onSubmit={handleSubmit(async (data) => {
             setLoading(true);
             try {
               // Make sure that password is valid and keyring is cleared.
-              await keyRingStore.deleteKeyRing(
-                parseInt(indexPage || match.params.index),
-                data.password
-              );
+              await keyRingStore.deleteKeyRing(parseInt(indexPage || match.params.index), data.password);
+              if (!keyRingStore.multiKeyStoreInfo.length) {
+                localStorage.removeItem('password');
+              }
               analyticsStore.logEvent('Account removed');
 
               history.push('/');
