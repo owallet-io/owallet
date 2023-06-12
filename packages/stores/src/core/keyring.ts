@@ -35,6 +35,7 @@ import { ChainGetter } from '../common';
 import { BIP44 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import { toGenerator } from '@owallet/common';
+import AES from 'aes-js';
 
 export class KeyRingSelectablesStore {
   @observable
@@ -125,6 +126,8 @@ export class KeyRingStore {
   protected selectablesMap: Map<string, KeyRingSelectablesStore> = new Map();
 
   protected keyStoreChangedListeners: (() => void)[] = [];
+
+  private _password: string | undefined;
 
   constructor(
     protected readonly eventDispatcher: {
@@ -229,7 +232,7 @@ export class KeyRingStore {
     const msg = new LockKeyRingMsg();
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
-    localStorage.removeItem('password');
+    localStorage.removeItem('passcode');
   }
 
   @flow
@@ -245,7 +248,12 @@ export class KeyRingStore {
 
     this.dispatchKeyStoreChangeEvent();
     this.selectablesMap.forEach((selectables) => selectables.refresh());
-    localStorage.setItem('password', password);
+
+    const key = this.getKeyExpired();
+    const aesCtr = new AES.ModeOfOperation.ctr(key);
+    const encryptedBytes = aesCtr.encrypt(Buffer.from(password));
+
+    localStorage.setItem('passcode', Buffer.from(encryptedBytes).toString('base64'));
   }
 
   @flow
@@ -268,8 +276,30 @@ export class KeyRingStore {
     }
   }
 
+  // default expired is 1 hour
+  getKeyExpired(expired = 3600000) {
+    const key = Buffer.allocUnsafe(16);
+    key.writeUInt32BE((Date.now() / expired) >> 1);
+    return key;
+  }
+
   get password() {
-    return localStorage.getItem('password');
+    if (!this._password) {
+      const key = this.getKeyExpired();
+      // The counter is optional, and if omitted will begin at 1
+      const aesCtr = new AES.ModeOfOperation.ctr(key);
+      try {
+        // decode encrypted password
+        const encryptedBytes = Buffer.from(localStorage.getItem('passcode'), 'base64');
+        const decryptedBytes = aesCtr.decrypt(encryptedBytes);
+        console.log(Buffer.from(decryptedBytes).toString());
+        this._password = Buffer.from(decryptedBytes).toString();
+      } catch {
+        localStorage.removeItem('passcode');
+      }
+    }
+
+    return this._password;
   }
 
   async showKeyRing(index: number, password: string) {
