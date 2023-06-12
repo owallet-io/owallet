@@ -292,7 +292,6 @@ export class KeyRingStore {
         // decode encrypted password
         const encryptedBytes = Buffer.from(localStorage.getItem('passcode'), 'base64');
         const decryptedBytes = aesCtr.decrypt(encryptedBytes);
-        console.log(Buffer.from(decryptedBytes).toString());
         this._password = Buffer.from(decryptedBytes).toString();
       } catch {
         localStorage.removeItem('passcode');
