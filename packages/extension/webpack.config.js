@@ -6,8 +6,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
-const BundleAnalyzerPlugin =
-  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
@@ -32,7 +31,7 @@ const commonResolve = (dir) => ({
   alias: {
     assets: path.resolve(__dirname, dir)
   },
-  fallback,
+  fallback
 });
 
 const sassRule = {
@@ -111,7 +110,7 @@ const extensionConfig = {
     injectedScript: ['./src/content-scripts/inject/injected-script.ts']
   },
   output: {
-    path: path.resolve(__dirname, isEnvDevelopment ? 'dist' : 'prod'),
+    path: path.resolve(__dirname, process.env.OUT_DIR || (isEnvDevelopment ? 'dist' : 'prod')),
     filename: '[name].bundle.js'
   },
   resolve: commonResolve('src/public/assets'),
@@ -131,10 +130,7 @@ const extensionConfig = {
     new CopyWebpackPlugin(
       [
         {
-          from:
-            process.env.GECKO === 'true'
-              ? './src/manifest-gecko.json'
-              : './src/manifest.json',
+          from: process.env.GECKO === 'true' ? './src/manifest-gecko.json' : './src/manifest.json',
           to: './manifest.json'
         },
         {
