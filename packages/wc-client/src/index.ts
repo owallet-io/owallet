@@ -279,6 +279,10 @@ export class OWalletConnectV1 implements OWallet {
     throw new Error('Not yet implemented');
   }
 
+  getChainInfosWithoutEndpoints(): Promise<[]> {
+    throw new Error('Not yet implemented');
+  }
+
   getEnigmaTxEncryptionKey(
     _chainId: string,
     _nonce: Uint8Array

@@ -26,7 +26,7 @@ export const ImportLedgerIntro: FunctionComponent<{
     <Button
       color=""
       block
-      onClick={(e) => {
+      onClick={e => {
         e.preventDefault();
 
         registerConfig.setType(TypeImportLedger);
@@ -68,20 +68,20 @@ export const ImportLedgerPage: FunctionComponent<{
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
-          console.log("REACH SUBMIT!!!!!!!!")
+          console.log('REACH SUBMIT!!!!!!!!');
           try {
             const result = await registerConfig.createLedger(
               data.name,
               data.password,
               bip44Option.bip44HDPath
             );
-            console.log(result,'result create ledger ====')
+            console.log(result, 'result create ledger ===');
             analyticsStore.setUserProperties({
               registerType: 'ledger',
               accountType: 'ledger'
             });
           } catch (e) {
-            console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e)
+            console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e);
             alert(e.message ? e.message : e.toString());
             registerConfig.clear();
           }
@@ -134,7 +134,7 @@ export const ImportLedgerPage: FunctionComponent<{
               styleInputGroup={{
                 border: '1px solid rgba(8, 4, 28, 0.12)'
               }}
-              style={{ position: 'relative'}}
+              style={{ position: 'relative' }}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({
