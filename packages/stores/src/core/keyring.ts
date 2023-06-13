@@ -276,10 +276,11 @@ export class KeyRingStore {
     }
   }
 
-  // default expired is 1 hour
-  getKeyExpired(expired = 3600000) {
+  // default expired is 1 hour, seed is gen using crypto.randomBytes(12)
+  getKeyExpired(expired = 3600000, seed = [87, 235, 226, 143, 100, 250, 250, 208, 174, 131, 56, 214]) {
     const key = Buffer.allocUnsafe(16);
     key.writeUInt32BE((Date.now() / expired) >> 1);
+    key.set(seed, 4);
     return key;
   }
 
