@@ -36,6 +36,7 @@ import { BIP44 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import { toGenerator } from '@owallet/common';
 import AES from 'aes-js';
+import { Hash } from '@owallet/crypto';
 
 export class KeyRingSelectablesStore {
   @observable
@@ -128,6 +129,7 @@ export class KeyRingStore {
   protected keyStoreChangedListeners: (() => void)[] = [];
 
   private _password: string | undefined;
+  private _iv: string;
 
   constructor(
     protected readonly eventDispatcher: {
@@ -136,10 +138,11 @@ export class KeyRingStore {
     public readonly defaultKdf: 'scrypt' | 'sha256' | 'pbkdf2',
     protected readonly chainGetter: ChainGetter,
     protected readonly requester: MessageRequester,
-    protected readonly interactionStore: InteractionStore
+    protected readonly interactionStore: InteractionStore,
+    protected readonly seed: number[] = [87, 235, 226, 143, 100, 250, 250, 208, 174, 131, 56, 214]
   ) {
     makeObservable(this);
-
+    this._iv = Buffer.from(Hash.sha256(Uint8Array.from(this.seed))).toString('hex');
     this.restore();
   }
 
@@ -254,7 +257,7 @@ export class KeyRingStore {
     const prefix = Buffer.alloc(password.length);
     // add prefix to make passcode more obfuscated
     crypto.getRandomValues(prefix);
-    const encryptedBytes = aesCtr.encrypt(Buffer.concat([Buffer.from(prefix.toString('hex')), Buffer.from(password)]));
+    const encryptedBytes = aesCtr.encrypt(Buffer.from(this._iv + password));
     localStorage.setItem('passcode', Buffer.from(encryptedBytes).toString('base64'));
   }
 
@@ -296,9 +299,10 @@ export class KeyRingStore {
         const encryptedBytes = Buffer.from(localStorage.getItem('passcode'), 'base64');
         const decryptedBytes = aesCtr.decrypt(encryptedBytes);
         // hex length = 2 * length password
-        this._password = Buffer.from(decryptedBytes)
-          .slice((2 * decryptedBytes.length) / 3)
-          .toString();
+        const decryptedStr = Buffer.from(decryptedBytes).toString();
+        if (decryptedStr.startsWith(this._iv)) {
+          this._password = decryptedStr.substring(this._iv.length);
+        }
       } catch {
         localStorage.removeItem('passcode');
       }
