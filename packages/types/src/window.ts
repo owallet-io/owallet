@@ -7,6 +7,7 @@ export interface Window {
   owallet?: OWallet;
   ethereum?: Ethereum;
   tronWeb?: TronWeb;
+  eth_owallet?: Ethereum;
   getOfflineSigner?: (chainId: string) => OfflineSigner & OfflineDirectSigner;
   getOfflineSignerOnlyAmino?: (chainId: string) => OfflineSigner;
   getOfflineSignerAuto?: (

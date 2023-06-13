@@ -286,6 +286,10 @@ export class OWalletConnectV1 implements OWallet {
     throw new Error('Not yet implemented');
   }
 
+  getChainInfosWithoutEndpoints(): Promise<[]> {
+    throw new Error('Not yet implemented');
+  }
+
   getEnigmaUtils(_chainId: string): SecretUtils {
     throw new Error('Not yet implemented');
   }

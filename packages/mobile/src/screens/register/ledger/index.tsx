@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { RegisterConfig } from '@owallet/hooks';
-import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
@@ -18,6 +17,7 @@ import { spacing } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
+import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
 
 interface FormData {
   name: string;
@@ -166,6 +166,20 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       />
     );
   };
+
+  const requestPermissions = async () => {
+    if (Platform.OS === 'android') {
+      await requestMultiple([
+        PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+        PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
+      ]);
+    }
+  };
+
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   const validateConfirmPass = (value: string) => {
     if (value.length < 8) {
       return 'Password must be longer than 8 characters';
@@ -182,19 +196,6 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       smartNavigation.navigateSmart('Register.Intro', {});
     }
   };
-
-  const requestPermissions = async () => {
-    if (Platform.OS === 'android') {
-      await requestMultiple([
-        PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-        PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
-      ]);
-    }
-  };
-
-  useEffect(() => {
-    requestPermissions();
-  }, []);
 
   const renderConfirmPass = ({ field: { onChange, onBlur, value, ref } }) => {
     return (

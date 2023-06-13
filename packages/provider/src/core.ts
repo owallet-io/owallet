@@ -9,7 +9,8 @@ import {
   Key,
   EthereumMode,
   RequestArguments,
-  TronWebMode
+  TronWebMode,
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -37,9 +38,10 @@ import {
   RequestVerifyADR36AminoSignDoc,
   RequestSignEthereumTypedDataMsg,
   SignEthereumTypedDataObject,
-  // RequestSignDecryptDataMsg,
-  // RequestSignReEncryptDataMsg,
-  RequestPublicKeyMsg
+  RequestSignDecryptDataMsg,
+  RequestSignReEncryptDataMsg,
+  RequestPublicKeyMsg,
+  GetChainInfosWithoutEndpointsMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -68,6 +70,11 @@ export class OWallet implements IOWallet {
     public readonly mode: OWalletMode,
     protected readonly requester: MessageRequester
   ) {}
+
+  async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
+    const msg = new GetChainInfosWithoutEndpointsMsg();
+    return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).chainInfos;
+  }
 
   async enable(chainIds: string | string[]): Promise<void> {
     if (typeof chainIds === 'string') {
@@ -357,30 +364,29 @@ export class Ethereum implements IEthereum {
     }
   }
 
-  async getPublicKey(chainId: string): Promise<object> {
-    const msg = new RequestPublicKeyMsg(chainId);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
   async signAndBroadcastTron(
     chainId: string,
     data: object
   ): Promise<{ rawTxHex: string }> {
     const msg = new RequestSignTronMsg(chainId, data);
-    console.log('data signAndBroadcastTron:', data, msg);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  // async signDecryptData(chainId: string, data: object): Promise<object> {
-  //   const msg = new RequestSignDecryptDataMsg(chainId, data);
-  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  // }
+  async getPublicKey(chainId: string): Promise<object> {
+    const msg = new RequestPublicKeyMsg(chainId);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
 
-  // // thang2
-  // async signReEncryptData(chainId: string, data: object): Promise<object> {
-  //   const msg = new RequestSignReEncryptDataMsg(chainId, data);
-  //   return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  // }
+  async signDecryptData(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignDecryptDataMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  // thang2
+  async signReEncryptData(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignReEncryptDataMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
 
   // async sign()
   // async asyncRequest(): Promise<void> {

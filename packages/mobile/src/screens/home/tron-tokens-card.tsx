@@ -24,6 +24,7 @@ import { OWEmpty } from '@src/components/empty';
 
 const size = 44;
 const imageScale = 0.54;
+const USDT_DEFAULT_PRICE = 1;
 
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -164,7 +165,11 @@ export const TronTokensCard: FunctionComponent<{
                         new Big(parseInt(item.amount))
                           .div(new Big(10).pow(6).toFixed(6))
                           .toString()
-                      ) * priceStore?.getPrice(item.coinGeckoId)
+                      ) *
+                      Number(
+                        priceStore?.getPrice(item.coinGeckoId) ??
+                          USDT_DEFAULT_PRICE
+                      )
                     ).toFixed(6)
                   : 0
               }` || '$0'}
