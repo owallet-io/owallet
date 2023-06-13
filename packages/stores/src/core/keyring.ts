@@ -251,8 +251,10 @@ export class KeyRingStore {
 
     const key = this.getKeyExpired();
     const aesCtr = new AES.ModeOfOperation.ctr(key);
-    const encryptedBytes = aesCtr.encrypt(Buffer.from(password));
-
+    const prefix = Buffer.alloc(16);
+    // add prefix to make passcode more obfuscated
+    crypto.getRandomValues(prefix);
+    const encryptedBytes = aesCtr.encrypt(Buffer.concat([Buffer.from(prefix.toString('base64')), Buffer.from('$'), Buffer.from(password)]));
     localStorage.setItem('passcode', Buffer.from(encryptedBytes).toString('base64'));
   }
 
@@ -293,7 +295,7 @@ export class KeyRingStore {
         // decode encrypted password
         const encryptedBytes = Buffer.from(localStorage.getItem('passcode'), 'base64');
         const decryptedBytes = aesCtr.decrypt(encryptedBytes);
-        this._password = Buffer.from(decryptedBytes).toString();
+        this._password = Buffer.from(decryptedBytes).toString().split('$', 2)[1];
       } catch {
         localStorage.removeItem('passcode');
       }
