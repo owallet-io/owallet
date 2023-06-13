@@ -44,10 +44,6 @@ export const LockPage: FunctionComponent = observer(() => {
   });
 
   useEffect(() => {
-    if (keyRingStore.password) {
-      history.replace('/');
-      return;
-    }
     if (passwordRef.current) {
       // Focus the password input on enter.
       passwordRef.current.focus();

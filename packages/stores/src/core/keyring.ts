@@ -35,8 +35,6 @@ import { ChainGetter } from '../common';
 import { BIP44 } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import { toGenerator } from '@owallet/common';
-import AES from 'aes-js';
-import { Hash } from '@owallet/crypto';
 
 export class KeyRingSelectablesStore {
   @observable
@@ -128,9 +126,6 @@ export class KeyRingStore {
 
   protected keyStoreChangedListeners: (() => void)[] = [];
 
-  private _password: string | undefined;
-  private _iv: string;
-
   constructor(
     protected readonly eventDispatcher: {
       dispatchEvent: (type: string) => void;
@@ -138,11 +133,10 @@ export class KeyRingStore {
     public readonly defaultKdf: 'scrypt' | 'sha256' | 'pbkdf2',
     protected readonly chainGetter: ChainGetter,
     protected readonly requester: MessageRequester,
-    protected readonly interactionStore: InteractionStore,
-    protected readonly seed: number[] = [87, 235, 226, 143, 100, 250, 250, 208, 174, 131, 56, 214]
+    protected readonly interactionStore: InteractionStore
   ) {
     makeObservable(this);
-    this._iv = Buffer.from(Hash.sha256(Uint8Array.from(this.seed))).toString('hex');
+
     this.restore();
   }
 
@@ -235,7 +229,6 @@ export class KeyRingStore {
     const msg = new LockKeyRingMsg();
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
-    localStorage.removeItem('passcode');
   }
 
   @flow
@@ -251,14 +244,6 @@ export class KeyRingStore {
 
     this.dispatchKeyStoreChangeEvent();
     this.selectablesMap.forEach((selectables) => selectables.refresh());
-
-    const key = this.getKeyExpired();
-    const aesCtr = new AES.ModeOfOperation.ctr(key);
-    const prefix = Buffer.alloc(password.length);
-    // add prefix to make passcode more obfuscated
-    crypto.getRandomValues(prefix);
-    const encryptedBytes = aesCtr.encrypt(Buffer.from(this._iv + password));
-    localStorage.setItem('passcode', Buffer.from(encryptedBytes).toString('base64'));
   }
 
   @flow
@@ -272,44 +257,6 @@ export class KeyRingStore {
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
-
-    // unlock with store password
-    if (this.password) {
-      const msg = new UnlockKeyRingMsg(this.password);
-      const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
-      this.status = result.status;
-    }
-  }
-
-  // default expired is 1 hour, seed is gen using crypto.randomBytes(12)
-  getKeyExpired(expired = 3_600_000) {
-    const key = Buffer.allocUnsafe(16);
-    key.writeUInt32BE((Date.now() / expired) >> 1);
-    key.set(this.seed, 4);
-    return key;
-  }
-
-  get password() {
-    if (!this._password) {
-      const key = this.getKeyExpired();
-      // The counter is optional, and if omitted will begin at 1
-      const aesCtr = new AES.ModeOfOperation.ctr(key);
-      try {
-        // decode encrypted password
-        const encryptedBytes = Buffer.from(localStorage.getItem('passcode'), 'base64');
-        const decryptedBytes = aesCtr.decrypt(encryptedBytes);
-        // hex length = 2 * length password
-        const decryptedStr = Buffer.from(decryptedBytes).toString();
-        if (!decryptedStr.startsWith(this._iv)) {
-          throw new Error('Passcode is expired');
-        }
-        this._password = decryptedStr.substring(this._iv.length);
-      } catch {
-        localStorage.removeItem('passcode');
-      }
-    }
-
-    return this._password;
   }
 
   async showKeyRing(index: number, password: string) {
