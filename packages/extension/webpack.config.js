@@ -124,7 +124,7 @@ const extensionConfig = {
     maxAssetSize: 512000
   },
   optimization: {
-    minimize: true,
+    minimize: !isEnvDevelopment,
     minimizer: [
       new TerserPlugin({
         test: /\.js(\?.*)?$/i, // you should add this property
