@@ -282,10 +282,10 @@ export class KeyRingStore {
   }
 
   // default expired is 1 hour, seed is gen using crypto.randomBytes(12)
-  getKeyExpired(expired = 3600000, seed = [87, 235, 226, 143, 100, 250, 250, 208, 174, 131, 56, 214]) {
+  getKeyExpired(expired = 3_600_000) {
     const key = Buffer.allocUnsafe(16);
     key.writeUInt32BE((Date.now() / expired) >> 1);
-    key.set(seed, 4);
+    key.set(this.seed, 4);
     return key;
   }
 
@@ -300,9 +300,10 @@ export class KeyRingStore {
         const decryptedBytes = aesCtr.decrypt(encryptedBytes);
         // hex length = 2 * length password
         const decryptedStr = Buffer.from(decryptedBytes).toString();
-        if (decryptedStr.startsWith(this._iv)) {
-          this._password = decryptedStr.substring(this._iv.length);
+        if (!decryptedStr.startsWith(this._iv)) {
+          throw new Error('Passcode is expired');
         }
+        this._password = decryptedStr.substring(this._iv.length);
       } catch {
         localStorage.removeItem('passcode');
       }
