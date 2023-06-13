@@ -229,6 +229,7 @@ export class KeyRingStore {
     const msg = new LockKeyRingMsg();
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
+    localStorage.removeItem('persistent');
   }
 
   @flow
@@ -244,6 +245,7 @@ export class KeyRingStore {
 
     this.dispatchKeyStoreChangeEvent();
     this.selectablesMap.forEach((selectables) => selectables.refresh());
+    localStorage.setItem('persistent', '');
   }
 
   @flow
@@ -252,11 +254,20 @@ export class KeyRingStore {
   }
 
   @flow
-  protected *restore() {
+  public *restore() {
     const msg = new RestoreKeyRingMsg();
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
+    if (this.status !== KeyRingStatus.UNLOCKED) {
+      localStorage.removeItem('persistent');
+    } else {
+      localStorage.setItem('persistent', '');
+    }
+  }
+
+  get persistent() {
+    return localStorage.getItem('persistent') !== null;
   }
 
   async showKeyRing(index: number, password: string) {

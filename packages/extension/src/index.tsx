@@ -123,7 +123,7 @@ Modal.defaultStyles = {
 
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
-  if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
+  if (keyRingStore.persistent || keyRingStore.status === KeyRingStatus.UNLOCKED) {
     return <MainPage />;
   } else if (keyRingStore.status === KeyRingStatus.LOCKED) {
     return <LockPage />;
