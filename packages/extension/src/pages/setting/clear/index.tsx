@@ -65,6 +65,7 @@ export const ClearPage: FunctionComponent<{
               await keyRingStore.deleteKeyRing(parseInt(indexPage || match.params.index), data.password);
               if (!keyRingStore.multiKeyStoreInfo.length) {
                 localStorage.removeItem('password');
+                localStorage.removeItem('initchain');
               }
               analyticsStore.logEvent('Account removed');
 

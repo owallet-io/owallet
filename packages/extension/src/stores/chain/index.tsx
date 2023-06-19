@@ -24,10 +24,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   protected _isInitializing: boolean = false;
   protected deferChainIdSelect: string = '';
 
-  constructor(
-    embedChainInfos: ChainInfo[],
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(embedChainInfos: ChainInfo[], protected readonly requester: MessageRequester, initChain?: string) {
     super(
       embedChainInfos.map((chainInfo) => {
         return {
@@ -39,7 +36,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
       })
     );
 
-    this._selectedChainId = embedChainInfos[0].chainId;
+    this._selectedChainId = initChain ?? embedChainInfos[0].chainId;
 
     makeObservable(this);
 
@@ -87,9 +84,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
 
     // Get last view chain id to persistent background
     const msg = new GetPersistentMemoryMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     if (!this.deferChainIdSelect) {
       if (result && result.lastViewChainId) {
@@ -107,18 +102,14 @@ export class ChainStore extends BaseChainStore<ChainInfoWithEmbed> {
   @flow
   protected *getChainInfosFromBackground() {
     const msg = new GetChainInfosMsg();
-    const result = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.setChainInfos(result.chainInfos);
   }
 
   @flow
   *removeChainInfo(chainId: string) {
     const msg = new RemoveSuggestedChainInfoMsg(chainId);
-    const chainInfos = yield* toGenerator(
-      this.requester.sendMessage(BACKGROUND_PORT, msg)
-    );
+    const chainInfos = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
 
     this.setChainInfos(chainInfos);
   }

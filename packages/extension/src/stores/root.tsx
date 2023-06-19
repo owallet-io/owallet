@@ -79,7 +79,7 @@ export class RootStore {
     // Order is important.
     this.interactionStore = new InteractionStore(router, new InExtensionMessageRequester());
 
-    this.chainStore = new ChainStore(EmbedChainInfos, new InExtensionMessageRequester());
+    this.chainStore = new ChainStore(EmbedChainInfos, new InExtensionMessageRequester(), localStorage.getItem('initchain'));
 
     this.keyRingStore = new KeyRingStore(
       {
