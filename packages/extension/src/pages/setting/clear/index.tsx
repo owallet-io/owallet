@@ -64,12 +64,14 @@ export const ClearPage: FunctionComponent<{
               // Make sure that password is valid and keyring is cleared.
               await keyRingStore.deleteKeyRing(parseInt(indexPage || match.params.index), data.password);
               if (!keyRingStore.multiKeyStoreInfo.length) {
-                localStorage.removeItem('password');
                 localStorage.removeItem('initchain');
+                browser.tabs.create({
+                  url: '/popup.html#/register'
+                });
+              } else {
+                history.push('/');
               }
               analyticsStore.logEvent('Account removed');
-
-              history.push('/');
             } catch (e) {
               console.log('Fail to decrypt: ' + e.message);
               setError(

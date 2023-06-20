@@ -54,15 +54,14 @@ export const ImportSocialPage: FunctionComponent<{
   const [userInfo, setUserInfo] = useState({ email: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState('empty');
-  const { register, handleSubmit, getValues, errors, setValue } =
-    useForm<FormData>({
-      defaultValues: {
-        name: '',
-        password: '',
-        confirmPassword: '',
-        recoveryPassword: ''
-      }
-    });
+  const { register, handleSubmit, getValues, errors, setValue } = useForm<FormData>({
+    defaultValues: {
+      name: '',
+      password: '',
+      confirmPassword: '',
+      recoveryPassword: ''
+    }
+  });
 
   useEffect(() => {
     const init = async () => {
@@ -81,20 +80,11 @@ export const ImportSocialPage: FunctionComponent<{
   }, []);
 
   // import private key
-  const handleCreateSocialAccount = async (
-    data,
-    privateKey,
-    shareDescriptions
-  ) => {
+  const handleCreateSocialAccount = async (data, privateKey, shareDescriptions) => {
     try {
-      await registerConfig.createPrivateKey(
-        data?.name,
-        privateKey,
-        data?.password,
-        {
-          email: data?.email
-        }
-      );
+      await registerConfig.createPrivateKey(data?.name, privateKey, data?.password, {
+        email: data?.email
+      });
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'privateKey'
@@ -102,24 +92,16 @@ export const ImportSocialPage: FunctionComponent<{
 
       // recovery password
       let isExistSecurityQuestions = false;
-      Object.values(shareDescriptions).forEach(
-        (descriptions: Array<string>) => {
-          descriptions.forEach((el) => {
-            const description = JSON.parse(el);
-            if (
-              description.module ===
-              (tKey.modules.securityQuestions as any).moduleName
-            ) {
-              isExistSecurityQuestions = true;
-            }
-          });
-        }
-      );
+      Object.values(shareDescriptions).forEach((descriptions: Array<string>) => {
+        descriptions.forEach((el) => {
+          const description = JSON.parse(el);
+          if (description.module === (tKey.modules.securityQuestions as any).moduleName) {
+            isExistSecurityQuestions = true;
+          }
+        });
+      });
       if (!isExistSecurityQuestions) {
-        await tKey.modules.securityQuestions.generateNewShareWithSecurityQuestions(
-          data.recoveryPassword,
-          'whats your password?'
-        );
+        await tKey.modules.securityQuestions.generateNewShareWithSecurityQuestions(data.recoveryPassword, 'whats your password?');
       }
     } catch (error) {
       console.log(error);
@@ -142,10 +124,7 @@ export const ImportSocialPage: FunctionComponent<{
       const { requiredShares, shareDescriptions } = tKey.getKeyDetails();
       if (requiredShares <= 0) {
         const reconstructedKey = await tKey.reconstructKey();
-        const privateKey = Buffer.from(
-          reconstructedKey?.privKey.toString('hex').trim().replace('0x', ''),
-          'hex'
-        );
+        const privateKey = Buffer.from(reconstructedKey?.privKey.toString(16, 64).trim().replace('0x', ''), 'hex');
         await handleCreateSocialAccount(data, privateKey, shareDescriptions);
       }
     } catch (error) {
@@ -157,23 +136,16 @@ export const ImportSocialPage: FunctionComponent<{
     if (!tKey) return;
     try {
       if (data?.recoveryPassword.length > 7) {
-        await tKey.modules.securityQuestions.inputShareFromSecurityQuestions(
-          data?.recoveryPassword
-        );
+        await tKey.modules.securityQuestions.inputShareFromSecurityQuestions(data?.recoveryPassword);
         const { requiredShares, shareDescriptions } = tKey.getKeyDetails();
         if (requiredShares <= 0) {
           const reconstructedKey = await tKey.reconstructKey();
-          const privateKey = Buffer.from(
-            reconstructedKey?.privKey.toString('hex').trim().replace('0x', ''),
-            'hex'
-          );
+          const privateKey = Buffer.from(reconstructedKey?.privKey.toString(16, 64).trim().replace('0x', ''), 'hex');
 
           await handleCreateSocialAccount(data, privateKey, shareDescriptions);
           // share store
           const shareStore = await tKey.generateNewShare();
-          await tKey.modules.chromeStorageModule.storeDeviceShare(
-            shareStore.newShareStores[shareStore.newShareIndex.toString('hex')]
-          );
+          await tKey.modules.chromeStorageModule.storeDeviceShare(shareStore.newShareStores[shareStore.newShareIndex.toString('hex')]);
         }
       }
     } catch (err) {
@@ -350,15 +322,7 @@ export const ImportSocialPage: FunctionComponent<{
             error={errors.recoveryPassword && errors.recoveryPassword.message}
           />
         )}
-        <Button
-          color=""
-          type="submit"
-          block
-          data-loading={
-            isLoading || registerConfig.isLoading || !userInfo?.email?.length
-          }
-          className={style.nextBtn}
-        >
+        <Button color="" type="submit" block data-loading={isLoading || registerConfig.isLoading || !userInfo?.email?.length} className={style.nextBtn}>
           <FormattedMessage id="register.create.button.next" />
         </Button>
       </Form>
