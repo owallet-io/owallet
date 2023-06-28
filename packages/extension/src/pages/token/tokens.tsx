@@ -70,7 +70,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       // call api get token tron network
       getTokenTron();
     }
-    return () => {};
+    return () => { };
   }, [accountInfo.evmosHexAddress]);
 
   const getTokenTron = async () => {
@@ -117,7 +117,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
       {uiConfigStore.showAdvancedIBCTransfer &&
-      chainStore.current.features?.includes('ibc-transfer') ? (
+        chainStore.current.features?.includes('ibc-transfer') ? (
         <>
           <Card className={classnames(style.card, 'shadow')}>
             <CardBody>
@@ -151,6 +151,7 @@ export const TokenPage: FunctionComponent = observer(() => {
               />
             ) : (
               <TokensView
+                setHasSend={setHasSend}
                 tokens={tokens}
                 coinMinimalDenom={coinMinimalDenom}
                 handleClickToken={handleClickToken}

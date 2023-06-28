@@ -16,6 +16,7 @@
     "version": "npx zx ./scripts/lerna-lifecyle-version.mjs"
   },
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.29.3",
     "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/proto-signing": "^0.29.3",
@@ -92,7 +93,6 @@
     "@types/w3c-web-usb": "^1.0.5",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^5.0.4",
-    "stream-http": "^3.2.0",
     "css-loader": "^3.2.0",
     "file-loader": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^1.5.0",
@@ -100,6 +100,7 @@
     "identity-obj-proxy": "^3.0.0",
     "sass": "~1.32.12",
     "sass-loader": "^7.3.1",
+    "stream-http": "^3.2.0",
     "style-loader": "^1.0.0",
     "webpack-bundle-analyzer": "^3.9.0",
     "write-file-webpack-plugin": "^4.5.1"

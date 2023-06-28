@@ -2,86 +2,95 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import styles from './nft.module.scss';
 import { useHistory } from 'react-router';
+import { useStore } from '../../stores';
+import { Limit, NftContract, StartAfter, InfoNft } from './types';
+import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
 
-const arrayTest = [
-  {
-    name: 'Monkey King',
-    amount: '1000',
-    denom: 'orai',
-    usd: '$58.23',
-    img: ''
-  },
-  {
-    name: 'Bleed',
-    amount: '1000',
-    denom: 'orai',
-    usd: '58.23',
-    img: ''
-  },
-  {
-    name: 'Bleed',
-    amount: '1000',
-    denom: 'orai',
-    usd: '58.23',
-    img: ''
-  }
-  // {
-  //   name: 'The Empire State Building',
-  //   amount: '1000',
-  //   denom: 'orai',
-  //   usd: '58.23',
-  //   img: ''
-  // }
-];
 export const NftPage: FunctionComponent = observer(() => {
-  const [token, setToken] = useState(null);
-  const [isDetails, setIsDetails] = useState(false);
+  const [token, setToken] = useState<InfoNft[]>(null);
   const history = useHistory();
+  const { chainStore, accountStore } = useStore();
+  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const getListNft = async () => {
+    try {
+      if (chainStore.current.chainId !== 'Oraichain' && chainStore.current.chainId !== 'Oraichain-testnet') {
+        return setToken([]);
+      }
+
+      const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
+      const res = await client.queryContractSmart(NftContract, {
+        tokens: {
+          limit: Limit,
+          owner: accountInfo.bech32Address,
+          start_after: StartAfter
+        }
+      });
+      if (res) {
+        fetchInfoNft(res?.tokens?.[0], client);
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
+  const fetchInfoNft = async (tokenId, client) => {
+    if (!tokenId) return;
+    const res = await client.queryContractSmart(NftContract, {
+      nft_info: {
+        token_id: tokenId
+      }
+    });
+    if (res) {
+      setToken([
+        {
+          ...res.extension,
+          token_uri: res?.token_uri,
+          tokenId
+        }
+      ]);
+    }
+  };
+
   useEffect(() => {
-    // code to fetch the token data and update state
-    setToken(arrayTest);
+    getListNft();
   }, []);
 
   if (!token) {
-    return <div>Loading...</div>;
+    return (
+      <span
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 100
+        }}
+      >
+        <i className="fas fa-spinner fa-spin" />
+      </span>
+    );
   }
 
   return (
     <div>
       <div>
-        <div className={styles.label}>ERC-721</div>
+        <div className={styles.label}>NFT-721</div>
+        <div style={{ height: 20 }} />
         <div className={styles.list}>
-          {/* {token.map((t) => {
+          {token.map((t) => {
             return <NftItem token={t} history={history} />;
-          })} */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          >
-            <img src={require('./no-data.png')} alt={'no-data'} />
-          </div>
+          })}
+          {(!token || !token?.length) && (
+            <div className={styles.nodata}>
+              <img src={require('./img/no-data.png')} alt={'no-data'} />
+            </div>
+          )}
         </div>
       </div>
-      <div style={{ height: 26 }} />
       <div>
-        <div className={styles.label}>ERC-1155</div>
+        <div className={styles.label}>NFT-1155</div>
         <div className={styles.list}>
-          {/* {token.map((t) => {
-            return <NftItem token={t} history={history} />;
-          })} */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          >
-            <img src={require('./no-data.png')} alt={'no-data'} />
+          <div className={styles.nodata}>
+            <img src={require('./img/no-data.png')} alt={'no-data'} />
           </div>
         </div>
       </div>
@@ -91,19 +100,14 @@ export const NftPage: FunctionComponent = observer(() => {
 
 export const NftItem = ({ token, history }) => {
   return (
-    <div
-      className={styles.card}
-      onClick={() => history.push(`/token/${token.name}`)}
-    >
+    <div className={styles.card} onClick={() => history.push(`/token/${token.tokenId}`)}>
       <div className={styles.img}>
-        <img src={require('./image.png')} alt={token.name} />
+        <img src={token.animation_url} alt={token.name} />
       </div>
       <div className={styles.info}>
-        <div>{token.name}</div>
-        <div>
-          {token.amount} {token.denom}
-        </div>
-        <div className={styles.usd}>{token.usd}</div>
+        <div className={styles.content}>{token.image} </div>
+        <div className={styles.content}>{token.name}</div>
+        <div className={styles.description}>{token.description}</div>
       </div>
     </div>
   );
