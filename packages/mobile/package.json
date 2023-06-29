@@ -75,6 +75,7 @@
     "@umijs/hooks": "^1.9.3",
     "appcenter": "^4.1.0",
     "appcenter-analytics": "^4.1.0",
+    "big-integer": "^1.6.51",
     "big.js": "^6.2.1",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",

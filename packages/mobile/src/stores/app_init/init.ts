@@ -1,6 +1,8 @@
-import { observable, action, makeObservable, computed } from 'mobx';
+import { observable, action, makeObservable, computed, flow } from 'mobx';
 import { create, persist } from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initBigInt } from '@src/utils/helper';
+import { toGenerator } from '@owallet/common';
 
 export class AppInit {
   @persist('object')
@@ -13,6 +15,8 @@ export class AppInit {
   };
   @observable
   protected notiData: {};
+  @observable
+  public static cosmwasm: typeof import('@cosmjs/cosmwasm-stargate');
 
   constructor() {
     makeObservable(this);
@@ -22,6 +26,7 @@ export class AppInit {
       date_updated: null,
       theme: 'light'
     };
+    this.initCosmWasmStargate();
   }
 
   @computed
@@ -46,6 +51,13 @@ export class AppInit {
   @action
   updateVisibleTabBar(visibleTabBar) {
     this.initApp = { ...this.initApp, visibleTabBar };
+  }
+
+  @flow
+  private *initCosmWasmStargate() {
+    yield* toGenerator(initBigInt());
+    let cosmwasm = yield* toGenerator(import('@cosmjs/cosmwasm-stargate'));
+    AppInit.cosmwasm = cosmwasm;
   }
 }
 

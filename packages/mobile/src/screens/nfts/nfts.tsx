@@ -29,7 +29,8 @@ import { OWEmpty } from '@src/components/empty';
 import { OWButton } from '@src/components/button';
 import { SoulboundNftInfoResponse } from '../home/types';
 import { useStore } from '@src/stores';
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
+import { AppInit } from '@src/stores/app_init';
+
 export const NftsScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -41,7 +42,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   const [soulboundNft, setSoulboundNft] = useState<SoulboundNftInfoResponse[]>(
     []
   );
-
+  const { cosmwasm } = AppInit;
   const { nfts } = props.route?.params;
   useEffect(() => {
     getAllToken();
@@ -104,8 +105,6 @@ export const NftsScreen: FunctionComponent = observer((props) => {
         setSoulboundNft([]);
         throw new Error('NFT is empty');
       }
-      console.log('tokensInfo: ', tokensInfo);
-
       setSoulboundNft(tokensInfo);
     } catch (error) {
       console.log('error: ', error);

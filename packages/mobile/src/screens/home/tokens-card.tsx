@@ -21,9 +21,8 @@ import {
   limitString
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
 import { SoulboundNftInfoResponse } from './types';
-import FastImage from 'react-native-fast-image';
+import { AppInit } from '@src/stores/app_init';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -36,7 +35,7 @@ export const TokensCard: FunctionComponent<{
   const [soulboundNft, setSoulboundNft] = useState<SoulboundNftInfoResponse[]>(
     []
   );
-
+  const { cosmwasm } = AppInit;
   const [tokens, setTokens] = useState([]);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
