@@ -24,7 +24,8 @@ const fallback = {
   http: require.resolve('stream-http'),
   crypto: require.resolve('crypto-browserify'),
   stream: require.resolve('stream-browserify'),
-  https: require.resolve('https-browserify')
+  https: require.resolve('https-browserify'),
+  assert: require.resolve('assert')
 };
 
 const commonResolve = (dir) => ({
