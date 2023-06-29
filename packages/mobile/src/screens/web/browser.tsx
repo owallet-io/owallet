@@ -191,12 +191,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
 
   const renderBrowser = () => {
     return (
-      <View
-        style={styles.container}
-        onLayout={() => {
-          if (isKeyboardVisible) Keyboard.dismiss();
-        }}
-      >
+      <View style={styles.container} onLayout={() => {}}>
         <TextInput
           containerStyle={{
             width: '100%',
@@ -238,6 +233,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
             ) : null
           }
         />
+
         <BrowserBookmark />
         <View
           style={{
