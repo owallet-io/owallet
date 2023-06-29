@@ -125,6 +125,7 @@ const modeColors = {
   'sub-primary-text': ['#E2DEEB', '#3A3A3C'],
   //background
   background: ['#01040D', '#F5F5F5'],
+  'box-nft': ['#2B2D3B', '#F6F6F9'],
   'sub-background': ['#2B2D3B', '#F8EFFF'],
   'card-background': ['#0E121D', '#fff'],
   'input-background': ['#2B2D3B', '#fff'],

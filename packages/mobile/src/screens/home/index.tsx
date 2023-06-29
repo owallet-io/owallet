@@ -9,6 +9,7 @@ import { AccountCard } from './account-card';
 import {
   AppState,
   AppStateStatus,
+  Button,
   RefreshControl,
   ScrollView,
   StyleSheet
@@ -210,7 +211,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     setRefreshing(false);
     setRefreshDate(Date.now());
   }, [accountStore, chainStore, priceStore, queriesStore]);
-
+  
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -220,6 +221,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       // backgroundColor={colors['background']}
       ref={scrollViewRef}
     >
+   
       <BIP44Selectable />
       {chainStore.current.networkType === 'cosmos' ? (
         <AccountCard containerStyle={styles.containerStyle} />

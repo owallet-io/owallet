@@ -1,6 +1,12 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { FlatList, TouchableOpacity, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  View,
+  SectionList
+} from 'react-native';
 import { metrics, spacing, typography } from '../../themes';
 import {
   convertAmount,
@@ -8,7 +14,10 @@ import {
   _keyExtract
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
-import { PageWithScrollViewInBottomTabView } from '../../components/page';
+import {
+  PageWithViewInBottomTabView,
+  PageWithView
+} from '../../components/page';
 import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
@@ -17,64 +26,129 @@ import { Text } from '@src/components/text';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWEmpty } from '@src/components/empty';
-
-export const NftsScreen: FunctionComponent = observer(props => {
+import { OWButton } from '@src/components/button';
+import { SoulboundNftInfoResponse } from '../home/types';
+import { useStore } from '@src/stores';
+import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
+export const NftsScreen: FunctionComponent = observer((props) => {
+  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const [index, setIndex] = useState<number>(0);
   const [activeSection, setActiveSection] = useState([0]);
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const { nfts } = props.route?.params;
+  const [soulboundNft, setSoulboundNft] = useState<SoulboundNftInfoResponse[]>(
+    []
+  );
 
-  //function shadow
-  const _renderSectionTitle = section => {};
-  const _renderHeader = (section, _, isActive) => {
+  const { nfts } = props.route?.params;
+  useEffect(() => {
+    getAllToken();
+  }, [chainStore.current.chainId]);
+
+  const onDetail = (item) => {
+    smartNavigation.navigateSmart('Nfts.Detail', { item });
+  };
+  const getAllToken = async () => {
+    const owallet = await accountStore
+      .getAccount(chainStore.current.chainId)
+      .getOWallet();
+
+    if (!owallet) {
+      throw new Error("Can't get the owallet API");
+    }
+    const wallet = owallet.getOfflineSigner(chainStore.current.chainId);
+
+    const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(
+      chainStore.current.rpc,
+      wallet
+    );
+
+    let tokensInfoPromise: Promise<any>[] = [];
+    try {
+      const { tokens } = await client.queryContractSmart(
+        'orai1wa7ruhstx6x35td5kc60x69a49enw8f2rwlr8a7vn9kaw9tmgwqqt5llpe',
+        {
+          tokens: {
+            limit: 10,
+            owner: account.bech32Address.toString(),
+            start_after: '0'
+          }
+        }
+      );
+      if (!tokens || !tokens?.length) {
+        setSoulboundNft([]);
+        throw new Error('NFT is empty');
+      }
+
+      for (let i = 0; i < tokens.length; i++) {
+        const qsContract = client.queryContractSmart(
+          'orai1wa7ruhstx6x35td5kc60x69a49enw8f2rwlr8a7vn9kaw9tmgwqqt5llpe',
+          {
+            nft_info: {
+              token_id: tokens[i]
+            }
+          }
+        );
+        tokensInfoPromise.push(qsContract);
+      }
+      if (!tokensInfoPromise?.length) {
+        setSoulboundNft([]);
+        throw new Error('NFT is empty');
+      }
+      const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(
+        tokensInfoPromise
+      );
+      if (!tokensInfo?.length) {
+        setSoulboundNft([]);
+        throw new Error('NFT is empty');
+      }
+      console.log('tokensInfo: ', tokensInfo);
+
+      setSoulboundNft(tokensInfo);
+    } catch (error) {
+      console.log('error: ', error);
+      setSoulboundNft([]);
+    }
+  };
+  const _renderFlatlistOrchai = ({
+    item
+  }: {
+    item: SoulboundNftInfoResponse;
+  }) => {
     return (
-      <View
-        style={{
-          ...styles.containerSectionTitle
-        }}
+      <TouchableOpacity
+        style={styles.ContainerBtnNft}
+        onPress={() => onDetail(item)}
       >
-        <Text
-          style={{
-            ...typography.h7,
-            fontWeight: '400'
-          }}
-        >
-          {section.title}
-        </Text>
         <View
-          style={{
-            marginLeft: spacing['14']
-          }}
+          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
-          <DownArrowIcon color={colors['text-title-login']} height={16} />
+          <ProgressiveImage
+            source={{
+              uri: item?.extension?.animation_url
+            }}
+            style={styles.containerImgNft}
+            resizeMode="cover"
+            styleContainer={styles.containerImgNft}
+          />
+          <Text
+            weight="700"
+            variant="body2"
+            numberOfLines={1}
+            style={styles.titleNft}
+          >
+            {item?.extension?.name}
+          </Text>
+          <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
+            {item?.extension?.description}
+          </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
-  const _renderContent = section => {
-    return (
-      <View
-        style={{
-          height: 456,
-          marginBottom: spacing['16']
-        }}
-      >
-        <FlatList
-          data={section.data}
-          renderItem={_renderFlatlistItem}
-          keyExtractor={_keyExtract}
-          showsHorizontalScrollIndicator={false}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
-    );
-  };
-  const _updateSections = activeSection => {
-    setActiveSection(activeSection);
-  };
+
   const _renderFlatlistItem = ({ item }) => (
     <TouchableOpacity
       style={styles.flatListItem}
@@ -82,117 +156,147 @@ export const NftsScreen: FunctionComponent = observer(props => {
         smartNavigation.navigateSmart('Nfts.Detail', { item });
       }}
     >
-      <ProgressiveImage
-        source={{
-          uri: item.picture ?? item.url
-        }}
-        style={styles.itemPhoto}
-        resizeMode="cover"
-      />
-      <View
-        style={{
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          marginTop: spacing['12'],
-          alignItems: 'flex-start'
-        }}
-      >
-        <Text
-          style={{
-            ...typography.h7,
-            fontWeight: '700'
-          }}
+      <View>
+        <View
+          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
-          {item.name.length > 8 ? formatContractAddress(item.name) : item.name}
-        </Text>
-
-        <Text
-          style={{
-            ...typography.h7,
-            fontWeight: '500'
-          }}
-        >
-          {item.offer
-            ? item.version === 1
-              ? `${convertAmount(item.offer.amount)} ${item.offer.denom}`
-              : `${convertAmount(item.offer.lowestPrice)} ${item.offer.denom}`
-            : ''}
-        </Text>
+          <ProgressiveImage
+            source={{
+              uri: item.picture ?? item.url
+            }}
+            style={styles.containerImgNft}
+            resizeMode="cover"
+            styleContainer={styles.containerImgNft}
+          />
+          <View
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              marginTop: spacing['12'],
+              alignItems: 'flex-start'
+            }}
+          >
+            <Text style={styles.itemText} numberOfLines={1}>
+              {item?.name}
+            </Text>
+            {item.version === 1 ? (
+              <Text
+                style={{
+                  ...styles.itemText,
+                  color: colors['gray-300']
+                }}
+                numberOfLines={1}
+              >
+                {item.offer
+                  ? `${convertAmount(item?.offer?.amount)} ${item.offer.denom}`
+                  : '0 $'}
+              </Text>
+            ) : item.offer ? (
+              <View>
+                <Text
+                  style={{
+                    ...styles.itemText,
+                    color: colors['gray-300']
+                  }}
+                  numberOfLines={1}
+                >
+                  From: {convertAmount(item.offer?.lowestPrice)}{' '}
+                  {item.offer?.denom}
+                </Text>
+                <Text
+                  style={{
+                    ...styles.itemText,
+                    color: colors['gray-300']
+                  }}
+                  numberOfLines={1}
+                >
+                  To: {convertAmount(item.offer?.highestPrice)}{' '}
+                  {item.offer?.denom}
+                </Text>
+              </View>
+            ) : (
+              <Text
+                style={{
+                  ...styles.itemText,
+                  color: colors['gray-300']
+                }}
+                numberOfLines={1}
+              >
+                0 $
+              </Text>
+            )}
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
-
+  const onActiveType = (i) => {
+    setIndex(i);
+  };
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
-      <View>
-        <OWSubTitleHeader title="My NFTs" />
-
-        <OWBox
+    <PageWithViewInBottomTabView>
+      <OWSubTitleHeader title="My NFTs" />
+      <OWBox
+        style={{
+          flex: 1,
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          paddingTop: 0
+        }}
+      >
+        <View
           style={{
-            padding: 0
+            flexDirection: 'row',
+            justifyContent: 'center'
           }}
         >
-          <View
-            style={{
-              marginTop: spacing['12'],
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              marginHorizontal: spacing['32']
-            }}
-          >
-            {['NFTs'].map((title: string, i: number) => (
-              <TouchableOpacity
-                key={i}
-                style={{ ...styles.containerTab }}
-                onPress={() => setIndex(i)}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: '700',
-                    color:
-                      index === i ? colors['primary-text'] : colors['gray-300']
-                  }}
-                >
-                  {title}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <View
-            style={{
-              ...styles.containerCollection
-            }}
-          >
-            {nfts.length > 0 ? (
-              <Accordion
-                sections={[
-                  {
-                    title: 'NFTs',
-                    data: nfts
-                  }
-                ]}
-                activeSections={activeSection}
-                renderHeader={_renderHeader}
-                renderContent={_renderContent}
-                onChange={_updateSections}
-                underlayColor={colors['transparent']}
-              />
-            ) : (
-              <OWEmpty
+          {['NFTs', 'SoulBound NFTs'].map((title: string, i: number) => (
+            <View key={i}>
+              <OWButton
+                type="link"
+                onPress={() => onActiveType(i)}
+                label={title}
+                textStyle={{
+                  color:
+                    index === i ? colors['primary-text'] : colors['gray-300'],
+                  fontWeight: '700'
+                }}
                 style={{
-                  paddingBottom: 60
+                  width: (metrics.screenWidth - 35) / 2,
+                  alignSelf: 'center',
+                  borderBottomColor:
+                    index === i ? colors['primary-text'] : colors['primary'],
+                  borderBottomWidth: 2
                 }}
               />
-            )}
-          </View>
-        </OWBox>
-      </View>
-    </PageWithScrollViewInBottomTabView>
+            </View>
+          ))}
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            padding: 10
+          }}
+        >
+          <FlatList
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            data={index == 0 ? nfts : soulboundNft}
+            renderItem={
+              index == 0 ? _renderFlatlistItem : _renderFlatlistOrchai
+            }
+            keyExtractor={_keyExtract}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={<OWEmpty />}
+          />
+        </View>
+      </OWBox>
+    </PageWithViewInBottomTabView>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     container: {
       backgroundColor: colors['primary'],
@@ -217,12 +321,9 @@ const styling = colors =>
       marginTop: spacing['12']
     },
     flatListItem: {
-      backgroundColor: colors['background-box'],
+      backgroundColor: colors['sub-nft'],
       borderRadius: spacing['12'],
-      width: (metrics.screenWidth - 60) / 2,
-      marginHorizontal: spacing['6'],
-      padding: spacing['12'],
-      marginVertical: spacing['6']
+      paddingVertical: spacing['8']
     },
     itemPhoto: {
       width: (metrics.screenWidth - 120) / 2,
@@ -241,5 +342,35 @@ const styling = colors =>
       justifyContent: 'center',
       alignItems: 'center',
       paddingBottom: 200
+    },
+    ContainerBtnNft: {
+      margin: 12,
+      marginLeft: 0
+    },
+    titleNft: {
+      paddingTop: 12
+    },
+    subTextNft: {
+      textAlign: 'justify'
+    },
+    containerImgNft: {
+      borderRadius: 6,
+      width: 128,
+      height: 128
+    },
+    itemImg: {
+      width: 128,
+      height: 128
+    },
+    wrapViewNft: {
+      padding: 12,
+      width: 150,
+      height: 222,
+      borderRadius: spacing['12']
+    },
+    itemText: {
+      ...typography.h7,
+      // color: colors['gray-900'],
+      fontWeight: '700'
     }
   });

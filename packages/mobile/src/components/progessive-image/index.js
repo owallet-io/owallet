@@ -17,11 +17,11 @@ const styles = StyleSheet.create({
   }
 });
 const withProgressiveImage = (WrappedComponent) => {
-  return function(props) {
-		const {colors} = useTheme();
+  return function (props) {
+    const { colors } = useTheme();
 
-		return <WrappedComponent colors={colors} {...props} />
-	}
+    return <WrappedComponent colors={colors} {...props} />;
+  };
 };
 
 class ProgressiveImage extends React.Component {
@@ -49,7 +49,8 @@ class ProgressiveImage extends React.Component {
   };
 
   render() {
-    const { thumbnailSource, source, style,colors,  ...props } = this.props;
+    const { thumbnailSource, source, style, colors, styleContainer, ...props } =
+      this.props;
     return (
       <View
         style={[
@@ -58,7 +59,8 @@ class ProgressiveImage extends React.Component {
             backgroundColor: this.state.loading
               ? '#e1e4e8'
               : colors['background-box']
-          }
+          },
+          styleContainer
         ]}
       >
         {this.state.loading ? (
@@ -68,10 +70,10 @@ class ProgressiveImage extends React.Component {
           {...props}
           source={thumbnailSource}
           style={[
-            style,
             {
               opacity: this.thumbnailAnimated
-            }
+            },
+            style
           ]}
           onLoad={this.handleThumbnailLoad}
           blurRadius={1}

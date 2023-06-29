@@ -212,44 +212,44 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
     // beta: true // use v1beta1
   },
-  // {
-  //   rpc: 'https://testnet-rpc.orai.io',
-  //   rest: 'https://testnet-lcd.orai.io',
-  //   chainId: 'Oraichain-testnet',
-  //   chainName: 'Oraichain-testnet',
-  //   networkType: 'cosmos',
-  //   stakeCurrency: {
-  //     coinDenom: 'ORAI',
-  //     coinMinimalDenom: 'orai',
-  //     coinDecimals: 6,
-  //     coinGeckoId: 'oraichain-token',
-  //     coinImageUrl:
-  //       'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-  //   },
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('orai'),
-  //   get currencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   get feeCurrencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   gasPriceStep: {
-  //     low: 0,
-  //     average: 0.000025,
-  //     high: 0.00004
-  //   },
-  //   features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
-  //   chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
-  //   txExplorer: {
-  //     name: 'Oraiscan',
-  //     txUrl: 'https://testnet.scan.orai.io/txs/{txHash}',
-  //     accountUrl: 'https://testnet.scan.orai.io/account/{address}'
-  //   },
-  //   beta: true // use v1beta1
-  // },
+  {
+    rpc: 'https://testnet-rpc.orai.io',
+    rest: 'https://testnet-lcd.orai.io',
+    chainId: 'Oraichain-testnet',
+    chainName: 'Oraichain-testnet',
+    networkType: 'cosmos',
+    stakeCurrency: {
+      coinDenom: 'ORAI',
+      coinMinimalDenom: 'orai',
+      coinDecimals: 6,
+      coinGeckoId: 'oraichain-token',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+    },
+    bip44: {
+      coinType: 118
+    },
+    bech32Config: Bech32Address.defaultBech32Config('orai'),
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    gasPriceStep: {
+      low: 0,
+      average: 0.000025,
+      high: 0.00004
+    },
+    features: ['stargate', 'no-legacy-stdTx', 'ibc-transfer', 'cosmwasm'],
+    chainSymbolImageUrl: 'https://orai.io/images/logos/logomark-dark.png',
+    txExplorer: {
+      name: 'Oraiscan',
+      txUrl: 'https://testnet.scan.orai.io/txs/{txHash}',
+      accountUrl: 'https://testnet.scan.orai.io/account/{address}'
+    },
+    beta: true // use v1beta1
+  },
   {
     chainId: 'oraibridge-subnet-2',
     chainName: 'OraiBridge',

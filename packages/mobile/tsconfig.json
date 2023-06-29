@@ -17,7 +17,7 @@
     "skipLibCheck": true /* Skip type checking of declaration files. */,
     "paths": {
       // This needs to be mirrored in babel.config.js
-      "@src/*": ["./src/*"]
+      "@src/*": ["src/*"]
     }
   },
   "exclude": [

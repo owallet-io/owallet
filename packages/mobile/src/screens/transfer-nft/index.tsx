@@ -24,6 +24,7 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWBox } from '@src/components/card';
+
 const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {

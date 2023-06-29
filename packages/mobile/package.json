@@ -35,6 +35,7 @@
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/plugin-syntax-bigint": "^7.8.3",
+    "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/proto-signing": "^0.29.3",
     "@formatjs/intl-datetimeformat": "^4.1.6",
