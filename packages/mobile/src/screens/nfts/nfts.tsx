@@ -1,24 +1,9 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import {
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  SectionList
-} from 'react-native';
+import { FlatList, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../themes';
-import {
-  convertAmount,
-  formatContractAddress,
-  _keyExtract
-} from '../../utils/helper';
-import { DownArrowIcon } from '../../components/icon';
-import {
-  PageWithViewInBottomTabView,
-  PageWithView
-} from '../../components/page';
-import Accordion from 'react-native-collapsible/Accordion';
+import { convertAmount, _keyExtract } from '../../utils/helper';
+import { PageWithViewInBottomTabView } from '../../components/page';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
@@ -29,104 +14,48 @@ import { OWEmpty } from '@src/components/empty';
 import { OWButton } from '@src/components/button';
 import { SoulboundNftInfoResponse } from '../home/types';
 import { useStore } from '@src/stores';
-import { AppInit } from '@src/stores/app_init';
+import { useSoulbound } from './hooks/useSoulboundNft';
 
 export const NftsScreen: FunctionComponent = observer((props) => {
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [index, setIndex] = useState<number>(0);
-  const [activeSection, setActiveSection] = useState([0]);
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [soulboundNft, setSoulboundNft] = useState<SoulboundNftInfoResponse[]>(
-    []
+  const { tokenIds, soulboundNft } = useSoulbound(
+    chainStore.current.chainId,
+    account,
+    chainStore.current.rpc
   );
-  const { cosmwasm } = AppInit;
   const { nfts } = props.route?.params;
-  useEffect(() => {
-    getAllToken();
-  }, [chainStore.current.chainId]);
-
-  const onDetail = (item) => {
-    smartNavigation.navigateSmart('Nfts.Detail', { item });
-  };
-  const getAllToken = async () => {
-    const owallet = await accountStore
-      .getAccount(chainStore.current.chainId)
-      .getOWallet();
-
-    if (!owallet) {
-      throw new Error("Can't get the owallet API");
-    }
-    const wallet = owallet.getOfflineSigner(chainStore.current.chainId);
-
-    const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(
-      chainStore.current.rpc,
-      wallet
-    );
-
-    let tokensInfoPromise: Promise<any>[] = [];
-    try {
-      const { tokens } = await client.queryContractSmart(
-        'orai1wa7ruhstx6x35td5kc60x69a49enw8f2rwlr8a7vn9kaw9tmgwqqt5llpe',
-        {
-          tokens: {
-            limit: 10,
-            owner: account.bech32Address.toString(),
-            start_after: '0'
-          }
-        }
-      );
-      if (!tokens || !tokens?.length) {
-        setSoulboundNft([]);
-        throw new Error('NFT is empty');
-      }
-
-      for (let i = 0; i < tokens.length; i++) {
-        const qsContract = client.queryContractSmart(
-          'orai1wa7ruhstx6x35td5kc60x69a49enw8f2rwlr8a7vn9kaw9tmgwqqt5llpe',
-          {
-            nft_info: {
-              token_id: tokens[i]
-            }
-          }
-        );
-        tokensInfoPromise.push(qsContract);
-      }
-      if (!tokensInfoPromise?.length) {
-        setSoulboundNft([]);
-        throw new Error('NFT is empty');
-      }
-      const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(
-        tokensInfoPromise
-      );
-      if (!tokensInfo?.length) {
-        setSoulboundNft([]);
-        throw new Error('NFT is empty');
-      }
-      setSoulboundNft(tokensInfo);
-    } catch (error) {
-      console.log('error: ', error);
-      setSoulboundNft([]);
-    }
-  };
   const _renderFlatlistOrchai = ({
-    item
+    item,
+    index
   }: {
     item: SoulboundNftInfoResponse;
+    index: number;
   }) => {
     return (
       <TouchableOpacity
         style={styles.ContainerBtnNft}
-        onPress={() => onDetail(item)}
+        onPress={() => {
+          smartNavigation.navigateSmart('Nfts.Detail', {
+            item: {
+              name: item.extension.name,
+              id: tokenIds[index],
+              picture: item.extension.image
+            }
+          });
+          return;
+        }}
       >
         <View
           style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
           <ProgressiveImage
             source={{
-              uri: item?.extension?.animation_url
+              uri: item?.extension?.image
             }}
             style={styles.containerImgNft}
             resizeMode="cover"
