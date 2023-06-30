@@ -5,57 +5,37 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="00: default_platform" time="0.000237">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000216">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="01: google_play_track_version_codes" time="3.223967">
+      <testcase classname="fastlane.lanes" name="1: firebase_app_distribution_get_latest_release" time="1.64017">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="02: android_get_version_code" time="0.004221">
+      <testcase classname="fastlane.lanes" name="2: increment_version_code" time="0.052326">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="03: google_play_track_release_names" time="3.568788">
+      <testcase classname="fastlane.lanes" name="3: assembleRelease" time="159.484469">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="04: android_get_version_name" time="0.002304">
+      <testcase classname="fastlane.lanes" name="4: firebase_app_distribution" time="30.815812">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="05: android_set_version_code" time="0.007515">
+      <testcase classname="fastlane.lanes" name="5: android_get_version_name" time="0.001274">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="06: android_get_version_code" time="0.001424">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="07: android_get_version_name" time="0.001265">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="08: clean bundleRelease" time="136.762238">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="09: upload_to_play_store" time="54.035046">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="10: discord_notifier" time="0.674316">
+      <testcase classname="fastlane.lanes" name="6: discord_notifier" time="0.845437">
         
       </testcase>
     

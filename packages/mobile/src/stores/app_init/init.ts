@@ -54,7 +54,7 @@ export class AppInit {
   }
 
   @flow
-  private *initCosmWasmStargate() {
+  protected *initCosmWasmStargate() {
     yield* toGenerator(initBigInt());
     let cosmwasm = yield* toGenerator(import('@cosmjs/cosmwasm-stargate'));
     AppInit.cosmwasm = cosmwasm;

@@ -9,7 +9,18 @@ import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { ToastShowParams } from 'react-native-toast-message';
 
-
+export function checkImageURL(URL) {
+  if (!URL) {
+    return false;
+  }
+  if (
+    URL.toUpperCase().startsWith('HTTP://') ||
+    URL.toUpperCase().startsWith('HTTPS://')
+  ) {
+    return true;
+  }
+  return false;
+}
 export const initBigInt = (): any => {
   new Promise<boolean>((resolve, reject) => {
     if (typeof BigInt === 'undefined') {

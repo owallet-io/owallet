@@ -5,7 +5,7 @@ import { StyleSheet, View, ActivityIndicator, FlatList } from 'react-native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { EthereumEndpoint } from '@owallet/common';
 import { metrics, spacing, typography } from '../../themes';
-import { convertAmount, _keyExtract } from '../../utils/helper';
+import { convertAmount, _keyExtract, checkImageURL } from '../../utils/helper';
 import { QuantityIcon } from '../../components/icon';
 import {
   TransactionItem,
@@ -22,13 +22,14 @@ import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import images from '@src/assets/images';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
 
 const commonDenom = { ORAI, AIRI };
 
-export const NftDetailScreen: FunctionComponent = observer(props => {
+export const NftDetailScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, modalStore } = useStore();
   const { colors } = useTheme();
@@ -95,7 +96,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
         );
 
         const currentOwner = res.data.find(
-          d => d.ownerAddress === account.bech32Address
+          (d) => d.ownerAddress === account.bech32Address
         );
         setLoading(false);
         setOwner(currentOwner);
@@ -137,9 +138,13 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
 
           <View style={styles.containerImage}>
             <ProgressiveImage
-              source={{
-                uri: item.picture ?? item.url
-              }}
+              source={
+                !checkImageURL(item.picture) && !checkImageURL(item.url)
+                  ? images.empty_img
+                  : {
+                      uri: item.picture ?? item.url
+                    }
+              }
               style={{
                 width: metrics.screenWidth - 110,
                 height: metrics.screenWidth - 110,

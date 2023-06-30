@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { FlatList, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { metrics, spacing, typography } from '../../themes';
-import { convertAmount, _keyExtract } from '../../utils/helper';
+import { convertAmount, _keyExtract, checkImageURL } from '../../utils/helper';
 import { PageWithViewInBottomTabView } from '../../components/page';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
@@ -15,6 +15,7 @@ import { OWButton } from '@src/components/button';
 import { SoulboundNftInfoResponse } from '../home/types';
 import { useStore } from '@src/stores';
 import { useSoulbound } from './hooks/useSoulboundNft';
+import images from '@src/assets/images';
 
 export const NftsScreen: FunctionComponent = observer((props) => {
   const { chainStore, accountStore } = useStore();
@@ -54,9 +55,13 @@ export const NftsScreen: FunctionComponent = observer((props) => {
           style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
           <ProgressiveImage
-            source={{
-              uri: item?.extension?.image
-            }}
+            source={
+              checkImageURL(item?.extension?.image)
+                ? {
+                    uri: item?.extension?.image
+                  }
+                : images.empty_img
+            }
             style={styles.containerImgNft}
             resizeMode="cover"
             styleContainer={styles.containerImgNft}

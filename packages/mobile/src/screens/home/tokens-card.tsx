@@ -15,11 +15,13 @@ import { metrics, spacing, typography } from '../../themes';
 import {
   capitalizedText,
   convertAmount,
-  _keyExtract
+  _keyExtract,
+  checkImageURL
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
+import images from '@src/assets/images';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -199,9 +201,13 @@ export const TokensCard: FunctionComponent<{
           style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
           <ProgressiveImage
-            source={{
-              uri: item?.extension?.image
-            }}
+            source={
+              checkImageURL(item?.extension?.image)
+                ? {
+                    uri: item?.extension?.image
+                  }
+                : images.empty_img
+            }
             style={styles.containerImgNft}
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
