@@ -18,7 +18,7 @@ import OWTransactionItem from './components/items/transaction-item';
 import { SCREENS, defaultAll } from '@src/common/constants';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
-// import { Skeleton } from '@rneui/themed';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 import TypeModal from './components/type-modal';
 import ButtonFilter from './components/button-filter';
@@ -338,32 +338,21 @@ const SkeletonTypeBtn = () => {
   const { colors } = useTheme();
   return (
     <View>
-      {/* <Skeleton
-        animation="pulse"
-        width={60}
-        height={15}
-        style={{
-          borderRadius: 12,
-          backgroundColor: colors['background-item-list'],
-          marginBottom: 5
-        }}
-        skeletonStyle={{
-          backgroundColor: colors['skeleton']
-        }}
-      />
-      <Skeleton
-        animation="pulse"
-        width={metrics.screenWidth / 2 - 30}
-        height={40}
-        style={{
-          borderRadius: 12,
-          backgroundColor: colors['background-item-list']
-          // marginVertical: 8
-        }}
-        skeletonStyle={{
-          backgroundColor: colors['skeleton']
-        }}
-      /> */}
+      <SkeletonPlaceholder borderRadius={12}>
+        <SkeletonPlaceholder.Item
+          width={60}
+          height={15}
+          backgroundColor={colors['background-item-list']}
+          marginBottom={5}
+        ></SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
+      <SkeletonPlaceholder borderRadius={12}>
+        <SkeletonPlaceholder.Item
+          width={metrics.screenWidth / 2 - 30}
+          height={40}
+          backgroundColor={colors['background-item-list']}
+        ></SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
     </View>
   );
 };
