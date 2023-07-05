@@ -338,19 +338,25 @@ const SkeletonTypeBtn = () => {
   const { colors } = useTheme();
   return (
     <View>
-      <SkeletonPlaceholder borderRadius={12}>
+      <SkeletonPlaceholder
+        highlightColor={colors['skeleton']}
+        backgroundColor={colors['background-item-list']}
+        borderRadius={12}
+      >
         <SkeletonPlaceholder.Item
           width={60}
           height={15}
-          backgroundColor={colors['background-item-list']}
           marginBottom={5}
         ></SkeletonPlaceholder.Item>
       </SkeletonPlaceholder>
-      <SkeletonPlaceholder borderRadius={12}>
+      <SkeletonPlaceholder
+        highlightColor={colors['skeleton']}
+        backgroundColor={colors['background-item-list']}
+        borderRadius={12}
+      >
         <SkeletonPlaceholder.Item
           width={metrics.screenWidth / 2 - 30}
           height={40}
-          backgroundColor={colors['background-item-list']}
         ></SkeletonPlaceholder.Item>
       </SkeletonPlaceholder>
     </View>

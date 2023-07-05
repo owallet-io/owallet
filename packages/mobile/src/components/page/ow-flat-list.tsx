@@ -26,10 +26,10 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
   const listRef = useRef(null);
   const {
     SkeletonComponent = (
-      <SkeletonPlaceholder borderRadius={12}>
+      <SkeletonPlaceholder highlightColor={colors['skeleton']} backgroundColor={colors['background-item-list']} borderRadius={12}>
         <SkeletonPlaceholder.Item
           width={metrics.screenWidth - 48}
-          backgroundColor={colors['background-item-list']}
+          
           marginVertical={8}
           height={65}
         ></SkeletonPlaceholder.Item>
