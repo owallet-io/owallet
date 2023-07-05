@@ -78,11 +78,9 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         checkAndUpdateChainInfo();
       }
     };
-
-    AppState.addEventListener('change', appStateHandler);
-
+    const subscription = AppState.addEventListener('change', appStateHandler);
     return () => {
-      AppState.removeEventListener('change', appStateHandler);
+      subscription.remove();
     };
   }, [checkAndUpdateChainInfo]);
   const onNavigateToTransaction = () => {

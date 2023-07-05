@@ -11,6 +11,7 @@ import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { FlatListProps } from 'react-native';
 import { OWEmpty } from '../empty';
 import { _keyExtract } from '@src/utils/helper';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 // import { Skeleton } from '@rneui/themed';
 import { metrics } from '@src/themes';
 import { useTheme } from '@src/themes/theme-provider';
@@ -26,20 +27,24 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
   const listRef = useRef(null);
   const {
     SkeletonComponent = (
-      // <Skeleton
-      //   animation="pulse"
-      //   width={metrics.screenWidth - 48}
-      //   height={65}
-      //   style={{
-      //     borderRadius: 12,
-      //     backgroundColor: colors['background-item-list'],
-      //     marginVertical: 8
-      //   }}
-      //   skeletonStyle={{
-      //     backgroundColor: colors['skeleton']
-      //   }}
-      // />
-      <View />
+      <SkeletonPlaceholder
+        borderRadius={12}
+        // animation="pulse"
+        // width={metrics.screenWidth - 48}
+        // height={65}
+        // style={{
+        //   borderRadius: 12,
+        //   backgroundColor: colors['background-item-list'],
+        //   marginVertical: 8
+        // }}
+        // skeletonStyle={{
+        //   backgroundColor: colors['skeleton']
+        // }}
+      >
+        <SkeletonPlaceholder.Item width={metrics.screenWidth - 48} backgroundColor={colors['background-item-list']} marginVertical={8} height={65}>
+         
+        </SkeletonPlaceholder.Item>
+      </SkeletonPlaceholder>
     ),
     loadMore,
     loading,

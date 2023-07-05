@@ -253,10 +253,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         setInstalling(false);
       }
     };
-    AppState.addEventListener('change', appStateHandler);
+    const subscription = AppState.addEventListener('change', appStateHandler);
 
     return () => {
-      // AppState.removeEventListener('change', appStateHandler);
+      subscription.remove();
     };
   }, []);
 
