@@ -1,4 +1,4 @@
-// import Web3 from 'web3';
+import Web3 from 'web3';
 import { TxsCurrencies } from './txs-currencies';
 import { find } from 'lodash';
 import { ChainInfoInner } from '@owallet/stores';
@@ -604,9 +604,9 @@ export class TxsHelper {
     if (!value) return value;
     if (networkType == 'evm') {
       try {
-        // if (!Web3.utils.isAddress(value)) {
-        //   return false;
-        // }
+        if (!Web3.utils.isAddress(value)) {
+          return false;
+        }
         return true;
       } catch (error) {
         return false;

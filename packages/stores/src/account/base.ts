@@ -26,7 +26,7 @@ import {
   fetchAdapter,
   EVMOS_NETWORKS
 } from '@owallet/common';
-// import Web3 from 'web3';
+import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20.json';
 import {
   BroadcastMode,
@@ -479,8 +479,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (msgs.type === 'erc20') {
         const { value } = msgs;
         const provider = this.chainGetter.getChain(this.chainId).rest;
-        // const web3 = new Web3(provider);
-        const web3 = null;
+        const web3 = new Web3(provider);
         const contract = new web3.eth.Contract(
           // @ts-ignore
           ERC20_ABI,

@@ -1,5 +1,5 @@
 import { ObservableChainQuery } from '../chain-query';
-// import Web3 from 'web3';
+import Web3 from 'web3';
 import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { CancelToken } from 'axios';
@@ -31,8 +31,7 @@ export class ObservableEvmContractChainQuery<
       const response = await super.fetchResponse(cancelToken);
       const resultFetchBalance = response.data;
       const provider = this.chainGetter.getChain(this.chainId).rest;
-      // const web3 = new Web3(provider);
-      const web3 = null;
+      const web3 = new Web3(provider);
       // @ts-ignore
       const tokenInfo = new web3.eth.Contract(ERC20_ABI, this.contractAddress)
       console.log("🚀 ~ file: contract-query.ts ~ line 37 ~ tokenInfo", tokenInfo)
