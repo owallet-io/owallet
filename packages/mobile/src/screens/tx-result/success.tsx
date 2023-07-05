@@ -19,7 +19,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { Card, OWBox } from '../../components/card';
 import { metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import * as WebBrowser from 'expo-web-browser';
+// import * as WebBrowser from 'expo-web-browser';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { TRON_ID } from '../../utils/helper';
@@ -139,14 +139,14 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 }}
                 onPress={() => {
                   if (chainInfo.raw.txExplorer) {
-                    WebBrowser.openBrowserAsync(
-                      chainInfo.raw.txExplorer.txUrl.replace(
-                        '{txHash}',
-                        chainInfo.chainId === TRON_ID
-                          ? txHash
-                          : txHash.toUpperCase()
-                      )
-                    );
+                    // WebBrowser.openBrowserAsync(
+                    //   chainInfo.raw.txExplorer.txUrl.replace(
+                    //     '{txHash}',
+                    //     chainInfo.chainId === TRON_ID
+                    //       ? txHash
+                    //       : txHash.toUpperCase()
+                    //   )
+                    // );
                   }
                 }}
               >

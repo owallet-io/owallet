@@ -13,7 +13,7 @@ import {
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
-import * as WebBrowser from 'expo-web-browser';
+// import * as WebBrowser from 'expo-web-browser';
 import { Card, OWBox } from '../../components/card';
 import {  metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -142,12 +142,12 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                 }}
                 onPress={() => {
                   if (chainInfo.raw.txExplorer) {
-                    WebBrowser.openBrowserAsync(
-                      chainInfo.raw.txExplorer.txUrl.replace(
-                        '{txHash}',
-                        txHash.toUpperCase()
-                      )
-                    );
+                    // WebBrowser.openBrowserAsync(
+                    //   chainInfo.raw.txExplorer.txUrl.replace(
+                    //     '{txHash}',
+                    //     txHash.toUpperCase()
+                    //   )
+                    // );
                   }
                 }}
               >

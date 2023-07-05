@@ -17,7 +17,7 @@ import { spacing } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
-import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
+// import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
 
 interface FormData {
   name: string;
@@ -167,18 +167,18 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
     );
   };
 
-  const requestPermissions = async () => {
-    if (Platform.OS === 'android') {
-      await requestMultiple([
-        PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-        PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
-      ]);
-    }
-  };
+  // const requestPermissions = async () => {
+  //   if (Platform.OS === 'android') {
+  //     await requestMultiple([
+  //       PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+  //       PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
+  //     ]);
+  //   }
+  // };
 
-  useEffect(() => {
-    requestPermissions();
-  }, []);
+  // useEffect(() => {
+  //   requestPermissions();
+  // }, []);
 
   const validateConfirmPass = (value: string) => {
     if (value.length < 8) {

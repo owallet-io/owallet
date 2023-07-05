@@ -8,14 +8,15 @@ import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
 import { InteractionModalsProivder } from './providers/interaction-modals-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoadingScreenProvider } from './providers/loading-screen';
-import * as SplashScreen from 'expo-splash-screen';
+// import * as SplashScreen from 'expo-splash-screen';
 import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
-import crashlytics from '@react-native-firebase/crashlytics';
 import ThemeProvider, { useTheme } from './themes/theme-provider';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { colorsCode } from './themes/mode-colors';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 const toastConfig = {
   /*
     Overwrite 'success' type,
@@ -24,7 +25,7 @@ const toastConfig = {
   success: (props) => (
     <BaseToast
       {...props}
-      style={{ borderLeftColor: colorsCode['purple-700'], height:90}}
+      style={{ borderLeftColor: colorsCode['purple-700'], height: 90 }}
       contentContainerStyle={{ paddingHorizontal: 15 }}
       text1Style={{
         fontSize: 16,
@@ -63,7 +64,7 @@ if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   require('@formatjs/intl-relativetimeformat/polyfill');
   require('@formatjs/intl-relativetimeformat/locale-data/en.js');
 
-  require('@formatjs/intl-datetimeformat/polyfill');
+  // require('@formatjs/intl-datetimeformat/polyfill');
   require('@formatjs/intl-datetimeformat/locale-data/en.js');
 
   require('@formatjs/intl-datetimeformat/add-golden-tz.js');
@@ -82,11 +83,11 @@ if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
 
 // Prevent native splash screen from autohiding.
 // UnlockScreen will hide the splash screen
-SplashScreen.preventAutoHideAsync()
-  .then((result) =>
-    console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
-  )
-  .catch(console.warn);
+// SplashScreen.preventAutoHideAsync()
+//   .then((result) =>
+//     console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
+//   )
+//   .catch(console.warn);
 
 // we already log in debugging tools
 LogBox.ignoreAllLogs();
@@ -131,25 +132,31 @@ const AppIntlProviderWithStorage = ({ children }) => {
 
 export const App = () => {
   return (
-    <StyleProvider>
-      <StoreProvider>
-        <ThemeProvider>
-          <AppIntlProviderWithStorage>
-            <SafeAreaProvider>
-              <ModalsProvider>
-                <LoadingScreenProvider>
-                  <ConfirmModalProvider>
-                    <InteractionModalsProivder>
-                      <AppNavigation />
-                    </InteractionModalsProivder>
-                  </ConfirmModalProvider>
-                </LoadingScreenProvider>
-              </ModalsProvider>
-            </SafeAreaProvider>
-          </AppIntlProviderWithStorage>
-          <Toast config={toastConfig} />
-        </ThemeProvider>
-      </StoreProvider>
-    </StyleProvider>
+    <GestureHandlerRootView
+      style={{
+        flex: 1
+      }}
+    >
+      <StyleProvider>
+        <StoreProvider>
+          <ThemeProvider>
+            <AppIntlProviderWithStorage>
+              <SafeAreaProvider>
+                <ModalsProvider>
+                  <LoadingScreenProvider>
+                    <ConfirmModalProvider>
+                      <InteractionModalsProivder>
+                        <AppNavigation />
+                      </InteractionModalsProivder>
+                    </ConfirmModalProvider>
+                  </LoadingScreenProvider>
+                </ModalsProvider>
+              </SafeAreaProvider>
+            </AppIntlProviderWithStorage>
+            <Toast config={toastConfig} />
+          </ThemeProvider>
+        </StoreProvider>
+      </StyleProvider>
+    </GestureHandlerRootView>
   );
 };

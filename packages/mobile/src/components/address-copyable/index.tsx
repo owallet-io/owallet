@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from 'react';
-import { ViewStyle, View } from 'react-native';
+import { ViewStyle, View, Clipboard } from 'react-native';
 import { Text } from '@src/components/text';
 import { Bech32Address } from '@owallet/cosmos';
-import Clipboard from 'expo-clipboard';
 import { RectButton } from '../rect-button';
 import { CheckIcon, CopyAccountIcon, CopyFillIcon, CopyIcon } from '../icon';
 import { useSimpleTimer } from '../../hooks';

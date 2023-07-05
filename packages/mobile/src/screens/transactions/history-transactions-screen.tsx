@@ -18,7 +18,7 @@ import OWTransactionItem from './components/items/transaction-item';
 import { SCREENS, defaultAll } from '@src/common/constants';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
-import { Skeleton } from '@rneui/themed';
+// import { Skeleton } from '@rneui/themed';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 import TypeModal from './components/type-modal';
 import ButtonFilter from './components/button-filter';
@@ -338,7 +338,7 @@ const SkeletonTypeBtn = () => {
   const { colors } = useTheme();
   return (
     <View>
-      <Skeleton
+      {/* <Skeleton
         animation="pulse"
         width={60}
         height={15}
@@ -363,7 +363,7 @@ const SkeletonTypeBtn = () => {
         skeletonStyle={{
           backgroundColor: colors['skeleton']
         }}
-      />
+      /> */}
     </View>
   );
 };

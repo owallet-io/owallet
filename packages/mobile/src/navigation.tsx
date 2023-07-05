@@ -43,7 +43,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
       });
     Linking.addEventListener('url', handleDeepLink);
     return () => {
-      Linking.removeEventListener('url', handleDeepLink);
+      // Linking.removeEventListener('url', handleDeepLink);
     };
   }, []);
 

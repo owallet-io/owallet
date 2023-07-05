@@ -12,7 +12,8 @@ module.exports = {
       {
         alias: {
           // This needs to be mirrored in tsconfig.json
-          '@src': './src'
+          '@src': './src',
+          '@ledgerhq/devices/hid-framing': '@ledgerhq/devices/lib/hid-framing'
         }
       }
     ],

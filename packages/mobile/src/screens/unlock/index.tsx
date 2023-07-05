@@ -16,7 +16,7 @@ import {
   View
 } from 'react-native';
 import { observer } from 'mobx-react-lite';
-import * as SplashScreen from 'expo-splash-screen';
+// import * as SplashScreen from 'expo-splash-screen';
 import { TextInput } from '../../components/input';
 import delay from 'delay';
 import { useStore } from '../../stores';
@@ -40,14 +40,14 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
 import { showToast } from '@src/utils/helper';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
-let splashScreenHided = false;
-async function hideSplashScreen() {
-  if (!splashScreenHided) {
-    if (await SplashScreen.hideAsync()) {
-      splashScreenHided = true;
-    }
-  }
-}
+// let splashScreenHided = false;
+// async function hideSplashScreen() {
+//   if (!splashScreenHided) {
+//     if (await SplashScreen.hideAsync()) {
+//       splashScreenHided = true;
+//     }
+//   }
+// }
 
 async function waitAccountLoad(
   accountStore: AccountStore<any, any, any, any>,
@@ -139,11 +139,11 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     keyRingStore.status === KeyRingStatus.LOCKED && loaded
   );
 
-  useEffect(() => {
-    (async () => {
-      await hideSplashScreen();
-    })();
-  }, [autoBiometryStatus, navigation]);
+  // useEffect(() => {
+  //   (async () => {
+  //     await hideSplashScreen();
+  //   })();
+  // }, [autoBiometryStatus, navigation]);
 
   useEffect(() => {
     if (__DEV__) {
@@ -206,7 +206,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await delay(10);
       await keychainStore.tryUnlockWithBiometry();
       setIsLoading(false);
-      await hideSplashScreen();
+      // await hideSplashScreen();
     } catch (e) {
       console.log(e);
       setIsLoading(false);
@@ -220,7 +220,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       await delay(10);
       await keyRingStore.unlock(password);
 
-      await hideSplashScreen();
+      // await hideSplashScreen();
     } catch (e) {
       console.log(e);
       setIsLoading(false);
@@ -234,8 +234,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       !routeToRegisterOnce.current &&
       keyRingStore.status === KeyRingStatus.EMPTY
     ) {
-      (async () => {
-        await hideSplashScreen();
+      (() => {
+        // await hideSplashScreen();
         routeToRegisterOnce.current = true;
         navigation.dispatch(
           StackActions.replace('Register', {
@@ -256,14 +256,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     AppState.addEventListener('change', appStateHandler);
 
     return () => {
-      AppState.removeEventListener('change', appStateHandler);
+      // AppState.removeEventListener('change', appStateHandler);
     };
   }, []);
 
   useEffect(() => {
     if (keyRingStore.status === KeyRingStatus.UNLOCKED) {
       (async () => {
-        await hideSplashScreen();
+        // await hideSplashScreen();
         if (!downloading) {
           navigateToHome();
         }

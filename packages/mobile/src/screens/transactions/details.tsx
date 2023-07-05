@@ -1,7 +1,7 @@
-import Clipboard from 'expo-clipboard';
+
 import React, { FunctionComponent, useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Divider } from '@rneui/base';
+import { StyleSheet, TouchableOpacity, View, Clipboard } from 'react-native';
+// import { Divider } from '@rneui/base';
 import { Text } from '@src/components/text';
 import { RectButton } from 'react-native-gesture-handler';
 import { CheckIcon, CopyTransactionIcon } from '../../components/icon';
@@ -169,7 +169,7 @@ const InfoItems: FunctionComponent<{
       >
         {renderChildren()}
       </View>
-      <Divider />
+      {/* <Divider /> */}
     </View>
   );
 };
@@ -252,7 +252,7 @@ const DetailItems: FunctionComponent<{
       >
         {renderChildren()}
       </RectButton>
-      <Divider />
+      {/* <Divider /> */}
     </View>
   );
 };

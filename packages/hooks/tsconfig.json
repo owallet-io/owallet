@@ -7,7 +7,5 @@
     "rootDir": "src",
     "jsx": "react"
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

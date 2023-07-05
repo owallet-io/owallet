@@ -13,10 +13,10 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  Clipboard
 } from 'react-native';
 import { Button } from '../../../components/button';
-import Clipboard from 'expo-clipboard';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
@@ -149,7 +149,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
     }
   });
   const onPaste = async () => {
-    const text = await Clipboard.getStringAsync();
+    const text = await Clipboard.getString();
     if (text) {
       setValue('mnemonic', text, {
         shouldValidate: true

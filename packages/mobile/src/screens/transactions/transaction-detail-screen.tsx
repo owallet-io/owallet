@@ -15,7 +15,7 @@ import {
   getValueFromDataEvents,
   limitString
 } from '@src/utils/helper';
-import * as WebBrowser from 'expo-web-browser';
+// import * as WebBrowser from 'expo-web-browser';
 import { useStore } from '@src/stores';
 import moment from 'moment';
 import { observer } from 'mobx-react-lite';
@@ -88,7 +88,7 @@ const TransactionDetailScreen = observer(() => {
       '{txHash}',
       txHash
     );
-    WebBrowser.openBrowserAsync(url);
+    // WebBrowser.openBrowserAsync(url);
   };
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
 

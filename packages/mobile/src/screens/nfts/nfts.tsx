@@ -9,7 +9,7 @@ import {
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
-import Accordion from 'react-native-collapsible/Accordion';
+// import Accordion from 'react-native-collapsible/Accordion';
 import { useSmartNavigation } from '../../navigation.provider';
 import ProgressiveImage from '../../components/progessive-image';
 import { useTheme } from '@src/themes/theme-provider';
@@ -164,7 +164,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
               ...styles.containerCollection
             }}
           >
-            {nfts.length > 0 ? (
+            {/* {nfts.length > 0 ? (
               <Accordion
                 sections={[
                   {
@@ -184,7 +184,7 @@ export const NftsScreen: FunctionComponent = observer(props => {
                   paddingBottom: 60
                 }}
               />
-            )}
+            )} */}
           </View>
         </OWBox>
       </View>

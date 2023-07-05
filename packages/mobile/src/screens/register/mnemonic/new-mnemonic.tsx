@@ -4,7 +4,7 @@ import React, {
   useEffect,
   useState
 } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform, Clipboard } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -14,7 +14,6 @@ import { PageWithScrollView } from '../../../components/page';
 import { CheckIcon } from '../../../components/icon';
 import { WordChip } from '../../../components/mnemonic';
 import { Text } from '@src/components/text';
-import Clipboard from 'expo-clipboard';
 import { TextInput } from '../../../components/input';
 import { Controller, useForm } from 'react-hook-form';
 import { useSmartNavigation } from '../../../navigation.provider';

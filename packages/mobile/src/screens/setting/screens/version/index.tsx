@@ -7,7 +7,7 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { spacing, typography } from '../../../../themes';
 import { View, Text } from 'react-native';
 import { useStyle } from '../../../../styles';
-import { Divider } from '@rneui/base';
+// import { Divider } from '@rneui/base';
 import { useStore } from '../../../../stores';
 import moment from 'moment';
 import { useTheme } from '@src/themes/theme-provider';
@@ -199,7 +199,7 @@ const SettingItem: FunctionComponent<{
               </Text>
             ) : null}
           </View>
-          {divider ? (
+          {/* {divider ? (
             <Divider
               orientation="vertical"
               width={1}
@@ -208,7 +208,7 @@ const SettingItem: FunctionComponent<{
                 marginTop: spacing['24']
               }}
             />
-          ) : null}
+          ) : null} */}
         </View>
       </React.Fragment>
     );

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
-import Web3 from 'web3';
+// import Web3 from 'web3';
 import { Button } from '../../components/button';
 import Big from 'big.js';
 import { observer } from 'mobx-react-lite';
@@ -89,7 +89,8 @@ export const SignEthereumModal: FunctionComponent<{
           }
           if (gasPrice !== '' && sendStore.sendObj) {
             // @ts-ignore
-            const web3 = new Web3(chainStore.current.rest);
+            // const web3 = new Web3(chainStore.current.rest);
+            const web3 = null;
             const tokenInfo = new web3.eth.Contract(
               ERC20_ABI as any,
               sendStore.sendObj?.contract_addr

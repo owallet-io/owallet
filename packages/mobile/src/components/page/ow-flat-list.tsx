@@ -11,7 +11,7 @@ import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { FlatListProps } from 'react-native';
 import { OWEmpty } from '../empty';
 import { _keyExtract } from '@src/utils/helper';
-import { Skeleton } from '@rneui/themed';
+// import { Skeleton } from '@rneui/themed';
 import { metrics } from '@src/themes';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonIcon from '../button/ow-button-icon';
@@ -26,19 +26,20 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
   const listRef = useRef(null);
   const {
     SkeletonComponent = (
-      <Skeleton
-        animation="pulse"
-        width={metrics.screenWidth - 48}
-        height={65}
-        style={{
-          borderRadius: 12,
-          backgroundColor: colors['background-item-list'],
-          marginVertical: 8
-        }}
-        skeletonStyle={{
-          backgroundColor: colors['skeleton']
-        }}
-      />
+      // <Skeleton
+      //   animation="pulse"
+      //   width={metrics.screenWidth - 48}
+      //   height={65}
+      //   style={{
+      //     borderRadius: 12,
+      //     backgroundColor: colors['background-item-list'],
+      //     marginVertical: 8
+      //   }}
+      //   skeletonStyle={{
+      //     backgroundColor: colors['skeleton']
+      //   }}
+      // />
+      <View />
     ),
     loadMore,
     loading,
