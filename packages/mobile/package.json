@@ -53,10 +53,12 @@
     "@react-navigation/drawer": "^5.12.4",
     "@react-navigation/native": "^5.9.3",
     "@react-navigation/stack": "^5.14.3",
+    "react-native-collapsible": "^1.6.0",
     "big.js": "^6.2.1",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",
     "delay": "^5.0.0",
+    "js-yaml": "^4.1.0",
     "esbuild": "^0.14.49",
     "eventemitter3": "^4.0.7",
     "http-browserify": "^1.7.0",
@@ -96,6 +98,7 @@
     "react-native-qrcode-svg": "6.2.0",
     "react-native-radio-buttons-group": "3.0.2",
     "react-native-randombytes": "3.6.1",
+    "react-native-localize": "^2.1.1",
     "react-native-reanimated": "=1.13.4",
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "2.18.1",
@@ -116,6 +119,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-decorators": "^7.13.5",
+    "@babel/plugin-proposal-class-properties": "^7.13.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.13.0",
     "@babel/preset-env": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@react-native/eslint-config": "^0.72.2",
@@ -139,7 +144,8 @@
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4",
     "webpack": "5.88.1",
-    "webpack-cli": "5.1.4"
+    "webpack-cli": "5.1.4",
+    "detox": "^19.7.1"
   },
   "engines": {
     "node": ">=16"
