@@ -12,6 +12,12 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		17021CB22A555542006892B2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 17021CB12A555542006892B2 /* GoogleService-Info.plist */; };
+		177E36842A56CC0F003072B1 /* DMSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E367E2A56CC0E003072B1 /* DMSans-Italic.ttf */; };
+		177E36852A56CC0F003072B1 /* DMSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E367F2A56CC0E003072B1 /* DMSans-BoldItalic.ttf */; };
+		177E36862A56CC0F003072B1 /* DMSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E36802A56CC0E003072B1 /* DMSans-Bold.ttf */; };
+		177E36872A56CC0F003072B1 /* DMSans-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E36812A56CC0E003072B1 /* DMSans-Medium.ttf */; };
+		177E36882A56CC0F003072B1 /* DMSans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E36822A56CC0F003072B1 /* DMSans-Regular.ttf */; };
+		177E36892A56CC0F003072B1 /* DMSans-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 177E36832A56CC0F003072B1 /* DMSans-MediumItalic.ttf */; };
 		17FC937C7DD19E8C218F61ED /* libPods-mobile-mobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		FB566D94A088B2DC59492949 /* libPods-mobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C8BC07455E264378C5A715 /* libPods-mobile.a */; };
@@ -39,6 +45,12 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = mobile/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = mobile/main.m; sourceTree = "<group>"; };
 		17021CB12A555542006892B2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "mobile/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		177E367E2A56CC0E003072B1 /* DMSans-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-Italic.ttf"; path = "../src/assets/fonts/DMSans-Italic.ttf"; sourceTree = "<group>"; };
+		177E367F2A56CC0E003072B1 /* DMSans-BoldItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-BoldItalic.ttf"; path = "../src/assets/fonts/DMSans-BoldItalic.ttf"; sourceTree = "<group>"; };
+		177E36802A56CC0E003072B1 /* DMSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-Bold.ttf"; path = "../src/assets/fonts/DMSans-Bold.ttf"; sourceTree = "<group>"; };
+		177E36812A56CC0E003072B1 /* DMSans-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-Medium.ttf"; path = "../src/assets/fonts/DMSans-Medium.ttf"; sourceTree = "<group>"; };
+		177E36822A56CC0F003072B1 /* DMSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-Regular.ttf"; path = "../src/assets/fonts/DMSans-Regular.ttf"; sourceTree = "<group>"; };
+		177E36832A56CC0F003072B1 /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-MediumItalic.ttf"; path = "../src/assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile-mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8EAB3454B0E84D19176D5A02 /* Pods-mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.release.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.release.xcconfig"; sourceTree = "<group>"; };
@@ -98,6 +110,19 @@
 			name = mobile;
 			sourceTree = "<group>";
 		};
+		177E367D2A56CBF6003072B1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				177E36802A56CC0E003072B1 /* DMSans-Bold.ttf */,
+				177E367F2A56CC0E003072B1 /* DMSans-BoldItalic.ttf */,
+				177E367E2A56CC0E003072B1 /* DMSans-Italic.ttf */,
+				177E36812A56CC0E003072B1 /* DMSans-Medium.ttf */,
+				177E36832A56CC0F003072B1 /* DMSans-MediumItalic.ttf */,
+				177E36822A56CC0F003072B1 /* DMSans-Regular.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,6 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				17021CB12A555542006892B2 /* GoogleService-Info.plist */,
+				177E367D2A56CBF6003072B1 /* Resources */,
 				13B07FAE1A68108700A75B9A /* mobile */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* mobileTests */,
@@ -247,8 +273,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				177E36852A56CC0F003072B1 /* DMSans-BoldItalic.ttf in Resources */,
+				177E36872A56CC0F003072B1 /* DMSans-Medium.ttf in Resources */,
+				177E36862A56CC0F003072B1 /* DMSans-Bold.ttf in Resources */,
+				177E36892A56CC0F003072B1 /* DMSans-MediumItalic.ttf in Resources */,
+				177E36882A56CC0F003072B1 /* DMSans-Regular.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				177E36842A56CC0F003072B1 /* DMSans-Italic.ttf in Resources */,
 				17021CB22A555542006892B2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
