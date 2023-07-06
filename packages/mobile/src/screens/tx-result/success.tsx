@@ -19,10 +19,10 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { Card, OWBox } from '../../components/card';
 import { metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-// import * as WebBrowser from 'expo-web-browser';
+
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-import { TRON_ID } from '../../utils/helper';
+import { TRON_ID, openLink } from '../../utils/helper';
 import imagesAssets from '@src/assets/images';
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
@@ -137,16 +137,16 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                   flexDirection: 'row',
                   alignItems: 'center'
                 }}
-                onPress={() => {
+                onPress={async () => {
                   if (chainInfo.raw.txExplorer) {
-                    // WebBrowser.openBrowserAsync(
-                    //   chainInfo.raw.txExplorer.txUrl.replace(
-                    //     '{txHash}',
-                    //     chainInfo.chainId === TRON_ID
-                    //       ? txHash
-                    //       : txHash.toUpperCase()
-                    //   )
-                    // );
+                    await openLink(
+                      chainInfo.raw.txExplorer.txUrl.replace(
+                        '{txHash}',
+                        chainInfo.chainId === TRON_ID
+                          ? txHash
+                          : txHash.toUpperCase()
+                      )
+                    );
                   }
                 }}
               >

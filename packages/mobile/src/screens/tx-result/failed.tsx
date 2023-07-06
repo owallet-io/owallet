@@ -13,14 +13,14 @@ import {
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '../../navigation.provider';
 import { RightArrowIcon } from '../../components/icon';
-// import * as WebBrowser from 'expo-web-browser';
 import { Card, OWBox } from '../../components/card';
-import {  metrics } from '../../themes';
+import { metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { PageWithView } from '@src/components/page';
 import imagesAssets from '@src/assets/images';
+import { openLink } from '@src/utils/helper';
 export const TxFailedResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
 
@@ -116,7 +116,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                 fontWeight: '400',
                 fontSize: 14,
                 lineHeight: 20,
-                color: colors['primary-text'],
+                color: colors['primary-text']
               }}
             >
               Please try again!
@@ -140,14 +140,14 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                   flexDirection: 'row',
                   alignItems: 'center'
                 }}
-                onPress={() => {
+                onPress={async () => {
                   if (chainInfo.raw.txExplorer) {
-                    // WebBrowser.openBrowserAsync(
-                    //   chainInfo.raw.txExplorer.txUrl.replace(
-                    //     '{txHash}',
-                    //     txHash.toUpperCase()
-                    //   )
-                    // );
+                    await openLink(
+                      chainInfo.raw.txExplorer.txUrl.replace(
+                        '{txHash}',
+                        txHash.toUpperCase()
+                      )
+                    );
                   }
                 }}
               >
@@ -155,7 +155,7 @@ export const TxFailedResultScreen: FunctionComponent = observer(() => {
                   style={{
                     width: 22,
                     height: 22,
-                    tintColor:colors['background-btn-primary']
+                    tintColor: colors['background-btn-primary']
                   }}
                   fadeDuration={0}
                   resizeMode="stretch"

@@ -13,9 +13,9 @@ import {
   createTxsHelper,
   formatContractAddress,
   getValueFromDataEvents,
-  limitString
+  limitString,
+  openLink
 } from '@src/utils/helper';
-// import * as WebBrowser from 'expo-web-browser';
 import { useStore } from '@src/stores';
 import moment from 'moment';
 import { observer } from 'mobx-react-lite';
@@ -83,12 +83,12 @@ const TransactionDetailScreen = observer(() => {
     }
   };
 
-  const onViewScan = () => {
+  const onViewScan = async () => {
     const url = chainStore?.current?.raw?.txExplorer.txUrl.replace(
       '{txHash}',
       txHash
     );
-    // WebBrowser.openBrowserAsync(url);
+    await openLink(url);
   };
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
 
@@ -280,7 +280,8 @@ const TransactionDetailScreen = observer(() => {
         )}
       </TransactionBox>
 
-      {chainStore.current?.networkType === 'evm' && chainStore.current.chainId !==  ChainIdEnum.KawaiiEvm &&
+      {chainStore.current?.networkType === 'evm' &&
+        chainStore.current.chainId !== ChainIdEnum.KawaiiEvm &&
         itemEvents?.typeId !== 0 &&
         itemEvents?.value?.map(handleMapData)}
       {infoTransaction?.length > 0 &&
