@@ -12,10 +12,23 @@ const tsRule = {
   loader: 'ts-loader',
   options: { transpileOnly: true, configFile: 'tsconfig.provider.json' }
 };
-
+const fallback = {
+  fs: false,
+  tls: false,
+  net: false,
+  os: false,
+  url: false,
+  path: false,
+  assert: false,
+  querystring: false,
+  http: require.resolve('stream-http'),
+  crypto: require.resolve('crypto-browserify'),
+  stream: require.resolve('stream-browserify'),
+  https: require.resolve('https-browserify')
+};
 module.exports = (env, args) => {
   return {
-    name: 'extension',
+    name: 'mobile',
     mode: isEnvDevelopment ? 'development' : 'production',
     // In development environment, turn on source map.
     devtool: isEnvDevelopment ? 'cheap-source-map' : false,
@@ -29,14 +42,8 @@ module.exports = (env, args) => {
       filename: '[name].bundle.js'
     },
     resolve: {
-      extensions: ['.ts', '.js']
-      // fallback: {
-      //   http: false,
-      //   stream: require.resolve('stream-browserify'),
-      //   buffer: require.resolve('buffer'),
-      //   crypto: require.resolve('crypto-browserify'),
-      //   https: require.resolve('https-browserify')
-      // }
+      extensions: ['.ts', '.js'],
+      fallback
     },
     module: {
       rules: [tsRule]
@@ -48,10 +55,8 @@ module.exports = (env, args) => {
     },
     plugins: [
       new webpack.ProvidePlugin({
+        process: 'process/browser',
         Buffer: ['buffer', 'Buffer']
-      }),
-      new webpack.ProvidePlugin({
-        process: 'process/browser'
       }),
       new webpack.EnvironmentPlugin(['NODE_ENV']),
       new BundleAnalyzerPlugin({

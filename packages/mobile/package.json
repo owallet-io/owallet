@@ -89,6 +89,7 @@
     "react-native-fast-image": "8.6.3",
     "react-native-gesture-handler": "2.12.0",
     "react-native-icomoon": "0.1.1",
+    "react-native-inappbrowser-reborn": "3.7.0",
     "react-native-keyboard-aware-scroll-view": "0.9.5",
     "react-native-keychain": "8.1.1",
     "react-native-linear-gradient": "2.7.3",
@@ -123,7 +124,7 @@
     "@types/react": "18.0.24",
     "@types/react-native-dotenv": "^0.2.0",
     "@types/react-test-renderer": "^18.0.0",
-    "@types/webpack": "^4.0.0",
+    "@types/webpack": "5.28.1",
     "babel-jest": "^29.2.1",
     "babel-plugin-module-resolver": "^5.0.0",
     "cross-env": "=5.2.0",
@@ -136,7 +137,7 @@
     "react-native-svg-transformer": "1.0.0",
     "react-test-renderer": "18.2.0",
     "typescript": "4.8.4",
-    "webpack": "=4.0.0",
+    "webpack": "5.88.1",
     "webpack-cli": "5.1.4"
   },
   "engines": {

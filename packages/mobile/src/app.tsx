@@ -64,7 +64,7 @@ if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   require('@formatjs/intl-relativetimeformat/polyfill');
   require('@formatjs/intl-relativetimeformat/locale-data/en.js');
 
-  // require('@formatjs/intl-datetimeformat/polyfill');
+  require('@formatjs/intl-datetimeformat/polyfill');
   require('@formatjs/intl-datetimeformat/locale-data/en.js');
 
   require('@formatjs/intl-datetimeformat/add-golden-tz.js');
