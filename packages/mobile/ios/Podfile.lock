@@ -510,6 +510,8 @@ PODS:
     - React-Core
   - react-native-safe-area-context (3.4.1):
     - React-Core
+  - react-native-splash-screen (3.3.0):
+    - React-Core
   - react-native-webview (13.2.2):
     - React-Core
   - React-NativeModulesApple (0.72.1):
@@ -647,7 +649,7 @@ PODS:
     - RNFBApp
   - RNGestureHandler (2.12.0):
     - React-Core
-  - RNInAppBrowser (3.5.1):
+  - RNInAppBrowser (3.7.0):
     - React-Core
   - RNKeychain (8.1.1):
     - React-Core
@@ -732,6 +734,7 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -867,6 +870,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-splash-screen:
+    :path: "../node_modules/react-native-splash-screen"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-NativeModulesApple:
@@ -996,6 +1001,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 87e5bfaf21ea5c6c110941290aa481dd8e849f98
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
+  react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-webview: b8ec89966713985111a14d6e4bf98d8b54bced0d
   React-NativeModulesApple: 4f31a812364443cee6ef768d256c594ad3b20f53
   React-perflogger: 3d501f34c8d4b10cb75f348e43591765788525ad
@@ -1022,7 +1028,7 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: b69333e28f4c100dbbf69be885f80288b75c8f13
   RNFBMessaging: 3aca7a5b3b1f79a9ee75026662ea57693436a338
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
-  RNInAppBrowser: 48b95ba7a4eaff5cc223bca338d3e319561dbd1b
+  RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d

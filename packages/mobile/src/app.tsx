@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { StoreProvider, useStore } from './stores';
+import SplashScreen from 'react-native-splash-screen';
 import { StyleProvider } from './styles';
 import { AppNavigation } from './navigation';
 import { ModalsProvider } from './modals/base';
@@ -8,7 +9,6 @@ import { AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
 import { InteractionModalsProivder } from './providers/interaction-modals-provider';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { LoadingScreenProvider } from './providers/loading-screen';
-// import * as SplashScreen from 'expo-splash-screen';
 import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
@@ -82,12 +82,6 @@ if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
 }
 
 // Prevent native splash screen from autohiding.
-// UnlockScreen will hide the splash screen
-// SplashScreen.preventAutoHideAsync()
-//   .then((result) =>
-//     console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`)
-//   )
-//   .catch(console.warn);
 
 // we already log in debugging tools
 LogBox.ignoreAllLogs();
@@ -131,6 +125,11 @@ const AppIntlProviderWithStorage = ({ children }) => {
 };
 
 export const App = () => {
+  useEffect(() => {
+    SplashScreen.hide();
+    return () => {};
+  }, []);
+
   return (
     <GestureHandlerRootView
       style={{
