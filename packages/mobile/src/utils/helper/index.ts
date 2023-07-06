@@ -221,7 +221,7 @@ export const delay = (timer = 300) => {
 };
 const configBrowser = {
   // iOS Properties
-  dismissButtonStyle: 'cancel',
+  dismissButtonStyle: 'Close',
   preferredBarTintColor: '#453AA4',
   preferredControlTintColor: 'white',
   readerMode: false,
@@ -237,7 +237,8 @@ const configBrowser = {
   secondaryToolbarColor: 'black',
   enableUrlBarHiding: false,
   enableDefaultShare: true,
-  forceCloseOnRedirection: true,
+  showInRecents:true,
+  forceCloseOnRedirection: false,
   // Specify full animation resource identifier(package:anim/name)
   // or only resource name(in case of animation bundled with app).
   animations: {
