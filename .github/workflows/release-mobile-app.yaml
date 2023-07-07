@@ -89,6 +89,7 @@ jobs:
           ALIAS: ${{ secrets.ALIAS }}
           PASS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
           PASS_ALIAS_KEY_STORE: ${{ secrets.PASS_KEY_STORE }}
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
           FILE_PATH: "/OWalletKeystore"
   release-ios-mobile:
     name: release-ios-mobile
@@ -170,4 +171,5 @@ jobs:
           MATCH_PASSWORD: ${{ secrets.PASS_KEY_STORE }}
           KEYCHAIN_NAME: "login"
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
 
