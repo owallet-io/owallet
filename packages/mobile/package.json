@@ -19,7 +19,7 @@
     "build:provider": "node ./src/scripts/create-sentry-properties.js && cross-env NODE_ENV=production webpack",
     "start": "react-native start",
     "start:reset": "react-native start --reset-cache",
-    "pod:install": "npx pod-install",
+    "pod:install": "cd ./ios && pod install",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config && yarn patch-package",
