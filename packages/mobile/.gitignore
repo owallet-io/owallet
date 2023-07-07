@@ -57,6 +57,9 @@ buck-out/
 /android/fastlane/.env.default
 /android/fastlane/OWalletKeystore
 
+/ios/sentry.properties
+/android/sentry.properties
+
 index.android.bundle
 *.hprof
 

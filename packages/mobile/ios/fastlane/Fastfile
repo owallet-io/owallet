@@ -149,6 +149,12 @@ platform :ios do
       profile_name: mapping[app_identifier],
       code_sign_identity:'iPhone Distribution'
     )
+    sentry_upload_dif(
+      auth_token: ENV["SENTRY_TOKEN"],
+      org_slug: 'oraichain',
+      project_slug: 'owallet-mobile',
+      include_sources: true, # Optional. For source context.
+    )
     build_app(workspace: "mobile.xcworkspace", scheme: "mobile")
     pilot(api_key: api_key)
     discord_notifier(
