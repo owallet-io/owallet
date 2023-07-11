@@ -1,4 +1,4 @@
-import { StyleSheet, View, ViewPropTypes, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import React from 'react';
 import { OWalletLogo, OWalletUnion } from '../owallet-logo';
 import { Text } from '@src/components/text';

@@ -27,16 +27,16 @@ export const MainTabNavigation: FC = observer(() => {
   const { visibleTabBar } = appInitStore.getInitApp;
   const insets = useSafeAreaInsets();
   const isNorthSafe = insets.bottom > 0;
-  const checkTabbarVisible = () => {
-    if (Platform.OS == 'android') {
-      return {
-        tabBarVisible: visibleTabBar
-          ? SCREENS_OPTIONS[visibleTabBar].showTabBar || false
-          : false
-      };
-    }
-    return {};
-  };
+  // const checkTabbarVisible = () => {
+  //   if (Platform.OS == 'android') {
+  //     return {
+  //       tabBarVisible: visibleTabBar
+  //         ? SCREENS_OPTIONS[visibleTabBar].showTabBar || false
+  //         : false
+  //     };
+  //   }
+  //   return {};
+  // };
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
@@ -65,36 +65,38 @@ export const MainTabNavigation: FC = observer(() => {
               />
             );
           },
+          headerShown:false,
           tabBarLabel: `${SCREENS_OPTIONS[route.name].title}`,
-          ...checkTabbarVisible()
+          
+          // ...checkTabbarVisible()
         };
       }}
-      tabBarOptions={{
-        activeTintColor: colors['purple-700'],
-        labelStyle: {
-          fontSize: 12,
-          textAlign: 'center'
-        },
-        tabStyle: {
-          paddingTop: isNorthSafe ? 10 : 3,
-          paddingBottom: isNorthSafe ? 0 : 3
-        },
-        inactiveTintColor: colors['label-bottom-bar'],
-        style: {
-          backgroundColor: colors['background-box'],
-          borderTopWidth: 0.5,
-          borderTopColor: colors['border-bottom-tab'],
-          paddingLeft: 10,
-          paddingRight: 10
-        }
-      }}
+      // tabBarOptions={{
+      //   activeTintColor: colors['purple-700'],
+      //   labelStyle: {
+      //     fontSize: 12,
+      //     textAlign: 'center'
+      //   },
+      //   tabStyle: {
+      //     paddingTop: isNorthSafe ? 10 : 3,
+      //     paddingBottom: isNorthSafe ? 0 : 3
+      //   },
+      //   inactiveTintColor: colors['label-bottom-bar'],
+      //   style: {
+      //     backgroundColor: colors['background-box'],
+      //     borderTopWidth: 0.5,
+      //     borderTopColor: colors['border-bottom-tab'],
+      //     paddingLeft: 10,
+      //     paddingRight: 10
+      //   }
+      // }}
       tabBar={(props) => (
         <BlurredBottomTabBar
-          visibleTabBar={
-            visibleTabBar
-              ? SCREENS_OPTIONS[visibleTabBar].showTabBar || false
-              : false
-          }
+          // visibleTabBar={
+          //   visibleTabBar
+          //     ? SCREENS_OPTIONS[visibleTabBar].showTabBar || false
+          //     : false
+          // }
           {...props}
         />
       )}
