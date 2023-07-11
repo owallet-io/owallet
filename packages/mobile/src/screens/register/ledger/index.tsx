@@ -2,12 +2,12 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-import { RegisterConfig } from '@owallet/hooks';
+import { RegisterConfig, useRegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { PageWithScrollView } from '../../../components/page';
 import { TextInput } from '../../../components/input';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, PermissionsAndroid, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
@@ -17,6 +17,8 @@ import { spacing } from '../../../themes';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
+import { delay } from '@src/utils/helper';
+import { KeyRingStatus } from '@owallet/background';
 // import { PERMISSIONS, requestMultiple } from 'react-native-permissions';
 
 interface FormData {
@@ -25,7 +27,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewLedgerScreen: FunctionComponent = observer(props => {
+export const NewLedgerScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -37,14 +39,16 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
       string
     >
   >();
+
   const { colors } = useTheme();
   const styles = useStyles();
 
-  const { analyticsStore, chainStore } = useStore();
+  const { analyticsStore, chainStore, keyRingStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
   const registerConfig: RegisterConfig = route.params.registerConfig;
+  // const registerConfig = useRegisterConfig(keyRingStore, []);
   const bip44Option = useBIP44Option(chainStore.current.coinType ?? 118);
   const [mode] = useState(registerConfig.mode);
 
@@ -78,7 +82,10 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
         registerType: 'ledger',
         accountType: 'ledger'
       });
-
+      await delay();
+      if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
+        return false;
+      }
       if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
         navigate(SCREENS.RegisterEnd, {
           password: getValues('password')
@@ -167,18 +174,32 @@ export const NewLedgerScreen: FunctionComponent = observer(props => {
     );
   };
 
-  // const requestPermissions = async () => {
-  //   if (Platform.OS === 'android') {
-  //     await requestMultiple([
-  //       PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-  //       PERMISSIONS.ANDROID.BLUETOOTH_CONNECT
-  //     ]);
-  //   }
-  // };
+  const requestPermissions = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+          PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+        ]);
+        if (
+          granted['android.permission.BLUETOOTH_CONNECT'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          granted['android.permission.BLUETOOTH_SCAN'] ===
+            PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          // alert('ok');
+        } else {
+          // alert('fail');
+        }
+      } catch (error) {
+        console.log('error: ', error);
+      }
+    }
+  };
 
-  // useEffect(() => {
-  //   requestPermissions();
-  // }, []);
+  useEffect(() => {
+    requestPermissions();
+  }, []);
 
   const validateConfirmPass = (value: string) => {
     if (value.length < 8) {

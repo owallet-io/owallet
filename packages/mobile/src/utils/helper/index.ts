@@ -214,11 +214,10 @@ const countAmountValue = (array) => {
   }
   return count;
 };
-export const delay = (timer = 300) => {
-  setTimeout(() => {
-    return true;
-  }, timer);
+export const delay = (delayInms = 300) => {
+  return new Promise((resolve) => setTimeout(resolve, delayInms));
 };
+
 const configBrowser = {
   // iOS Properties
   dismissButtonStyle: 'Close',
@@ -233,11 +232,11 @@ const configBrowser = {
   // Android Properties
   showTitle: true,
   toolbarColor: '#6200EE',
-  hasBackButton:true,
+  hasBackButton: true,
   secondaryToolbarColor: 'black',
   enableUrlBarHiding: false,
   enableDefaultShare: true,
-  showInRecents:true,
+  showInRecents: true,
   forceCloseOnRedirection: false,
   // Specify full animation resource identifier(package:anim/name)
   // or only resource name(in case of animation bundled with app).

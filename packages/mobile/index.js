@@ -2,8 +2,6 @@ import './shim';
 
 import 'text-encoding';
 
-
-
 import 'react-native-url-polyfill/auto';
 import * as Sentry from '@sentry/react-native';
 
@@ -24,18 +22,19 @@ const config = {
 
 firebase.initializeApp(config);
 
-messaging().setBackgroundMessageHandler(async remoteMessage => {
+messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   console.log('remoteMessage background', remoteMessage);
 });
 
 const { App } = require('./src/app');
 
-
-Sentry.init({
-  dsn: 'https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424',
-  environment: 'production',
-  tracesSampleRate: 0.7
-});
+if (!__DEV__) {
+  Sentry.init({
+    dsn: 'https://ab29c6e64d65418cb3b9f133dc601c23@o1323226.ingest.sentry.io/4504632450023424',
+    environment: 'production',
+    tracesSampleRate: 0.7
+  });
+}
 
 // not using CodePush for development
 const CodePushApp = __DEV__
