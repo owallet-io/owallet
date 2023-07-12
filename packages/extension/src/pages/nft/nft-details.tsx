@@ -4,115 +4,102 @@ import styles from './nft-details.module.scss';
 import { HeaderLayout } from '../../layouts';
 import { SelectChain } from '../../layouts/header';
 import { Button, Card, CardBody } from 'reactstrap';
-import { TokensView } from '../main/token';
+import { useStore } from '../../stores';
+import { InfoNft, NftContract } from './types';
+import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
 
-const arr = [
-  {
-    txHash: 'EA4031...85E5B8',
-    status: true,
-    amount: 1138,
-    denom: 'ORAI',
-    time: 'Wed 28, 2023'
-  },
-  {
-    txHash: 'EA4031...85E5B8',
-    status: false,
-    amount: 1138,
-    denom: 'ORAI',
-    time: 'Wed 28, 2023'
-  },
-  {
-    txHash: 'EA4031...85E5B8',
-    status: true,
-    amount: 1138,
-    denom: 'ORAI',
-    time: 'Wed 28, 2023'
-  }
-];
+export const NftDetailsPage: FunctionComponent<{
+  match?: {
+    params: {
+      nftId: string;
+    };
+  };
+}> = observer(({ match }) => {
+  const nftId = match?.params?.nftId || '';
+  const [info, setInfo] = useState<InfoNft>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const { chainStore } = useStore();
+  const getInfoNft = async () => {
+    try {
+      if (!nftId) return;
+      setIsLoading(true);
+      const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
+      const res = await client.queryContractSmart(NftContract, {
+        all_nft_info: {
+          token_id: nftId
+        }
+      });
+      if (res) {
+        setInfo({
+          ...res?.info?.extension,
+          ...res?.access,
+          tokenId: nftId
+        });
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-export const NftDetailsPage: FunctionComponent = observer(() => {
+  useEffect(() => {
+    getInfoNft();
+  }, []);
+
   return (
     <HeaderLayout showChainName canChangeChainInfo>
-      <SelectChain showChainName canChangeChainInfo />
+      <div
+        style={{
+          fontSize: 24,
+          fontWeight: 500,
+          textAlign: 'center'
+        }}
+      >
+        NFT Detail
+      </div>
       <Card className={styles.card}>
-        <div
-          style={{
-            width: '100%',
-            padding: 16
-          }}
-        >
-          <img src={require('./details.png')} alt={'details'} />
-          <div
-            style={{
-              fontSize: 20,
-              fontWeight: 500,
-              paddingTop: 16
-            }}
-          >
-            Racter-To-Go
-          </div>
-          <div
+        {isLoading ? (
+          <span
             style={{
               display: 'flex',
-              justifyContent: 'space-between',
-              paddingTop: 8,
-              color: 'rgba(53, 57, 69, 1)'
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: 300
             }}
           >
-            <div
-              style={{
-                width: 60,
-                height: 24,
-                backgroundColor: '#F3F1F5',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 4
-              }}
-            >
-              <img src={require('./layer.png')} alt={'layer'} />
-              <span style={{ fontSize: 16, paddingLeft: 4 }}>10</span>
+            <i className="fas fa-spinner fa-spin" />
+          </span>
+        ) : (
+          <div className={styles.cardBody}>
+            <img src={info?.animation_url} alt={'details'} />
+            <div className={styles.imgName}>{info?.image}</div>
+            <div className={styles.content}>
+              <div className={styles.tokenId}>
+                <img src={require('./img/layer.png')} alt={'layer'} />
+                <span>{info?.tokenId}</span>
+              </div>
+              <span>{info?.name}</span>
             </div>
-            <span
+            <div className={styles.rightContent}>{info?.description}</div>
+            <div className={styles.rightContent}>{info?.external_url}</div>
+            <div className={styles.rightContent}>{info?.image_data}</div>
+            <div className={styles.rightContent}>{info?.token_uri}</div>
+            <div
+              className={styles.rightContent}
               style={{
-                fontWeight: 600
+                cursor: 'pointer',
+                color: 'blue'
               }}
+              onClick={() => window.open(info?.youtube_url)}
             >
-              49.14 ORAI
-            </span>
+              {info?.youtube_url}
+            </div>
           </div>
-          <div
-            style={{
-              textAlign: 'right',
-              paddingTop: 4,
-              color: 'rgba(119, 126, 144, 1)',
-              fontSize: 14
-            }}
-          >
-            $58.23
-          </div>
-          <div
-            style={{
-              paddingTop: 10
-            }}
-          >
-            <Button
-              style={{
-                width: '100%',
-                border: '1px solid #7664E4'
-              }}
-              className={styles.button}
-              onClick={(e) => {
-                e.preventDefault();
-              }}
-            >
-              Transfer
-            </Button>
-          </div>
-        </div>
+        )}
       </Card>
 
-      <Card className={styles.card}>
+      {/* <Card className={styles.card}>
         <div
           style={{
             padding: 20
@@ -179,7 +166,7 @@ export const NftDetailsPage: FunctionComponent = observer(() => {
             );
           })}
         </div>
-      </Card>
+      </Card> */}
     </HeaderLayout>
   );
 });

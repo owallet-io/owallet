@@ -198,7 +198,8 @@ export const TokensView: FunctionComponent<{
   tokens: ObservableQueryBalanceInner[];
   handleClickToken?: (token) => void;
   coinMinimalDenom?: string;
-}> = observer(({ tokens, handleClickToken, coinMinimalDenom }) => {
+  setHasSend?: (status) => void;
+}> = observer(({ tokens, handleClickToken, coinMinimalDenom, setHasSend }) => {
   // const { chainStore, accountStore, queriesStore } = useStore();
 
   // const accountInfo = accountStore.getAccount(chainStore.current.chainId);
@@ -234,7 +235,12 @@ export const TokensView: FunctionComponent<{
                 color: tab == i && '#7664E4'
               }}
               className={styleToken.title}
-              onClick={() => setTab(i)}
+              onClick={() => {
+                if (i) {
+                  setHasSend(false)
+                }
+                setTab(i);
+              }}
             >
               {nft}
             </h1>
