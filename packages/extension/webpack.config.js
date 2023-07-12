@@ -6,17 +6,35 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
-const BundleAnalyzerPlugin =
-  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
+
+const fallback = {
+  fs: false,
+  tls: false,
+  net: false,
+  os: false,
+  url: false,
+  path: false,
+  assert: false,
+  querystring: false,
+  http: require.resolve('stream-http'),
+  crypto: require.resolve('crypto-browserify'),
+  stream: require.resolve('stream-browserify'),
+  https: require.resolve('https-browserify')
+};
+
 const commonResolve = (dir) => ({
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss'],
   alias: {
     assets: path.resolve(__dirname, dir)
-  }
+  },
+  fallback
 });
+
 const sassRule = {
   test: /(\.s?css)|(\.sass)$/,
   oneOf: [
@@ -93,7 +111,7 @@ const extensionConfig = {
     injectedScript: ['./src/content-scripts/inject/injected-script.ts']
   },
   output: {
-    path: path.resolve(__dirname, isEnvDevelopment ? 'dist' : 'prod'),
+    path: path.resolve(__dirname, process.env.OUT_DIR || (isEnvDevelopment ? 'dist' : 'prod')),
     filename: '[name].bundle.js'
   },
   resolve: commonResolve('src/public/assets'),
@@ -105,6 +123,22 @@ const extensionConfig = {
     maxEntrypointSize: 512000,
     maxAssetSize: 512000
   },
+  optimization: {
+    minimize: !isEnvDevelopment,
+    minimizer: [
+      new TerserPlugin({
+        test: /\.js(\?.*)?$/i, // you should add this property
+        extractComments: false,
+        terserOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+            pure_funcs: ['console.log', 'console.info'] // Delete console
+          }
+        }
+      })
+    ]
+  },
   plugins: [
     // Remove all and write anyway
     // TODO: Optimizing build process
@@ -113,10 +147,7 @@ const extensionConfig = {
     new CopyWebpackPlugin(
       [
         {
-          from:
-            process.env.GECKO === 'true'
-              ? './src/manifest-gecko.json'
-              : './src/manifest.json',
+          from: process.env.GECKO === 'true' ? './src/manifest-gecko.json' : './src/manifest.json',
           to: './manifest.json'
         },
         {
@@ -138,6 +169,10 @@ const extensionConfig = {
     new webpack.EnvironmentPlugin(['NODE_ENV']),
     new BundleAnalyzerPlugin({
       analyzerMode: isEnvAnalyzer ? 'server' : 'disabled'
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer']
     })
   ]
 };

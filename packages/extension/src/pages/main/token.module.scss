@@ -1,7 +1,7 @@
-@import "../../styles/var";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins";
-@import "../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables";
+@import '../../styles/var';
+@import '../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/functions';
+@import '../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/mixins';
+@import '../../../../../node_modules/argon-dashboard-react/src/assets/scss/argon-dashboard/custom/variables';
 
 .token-container {
   display: flex;
@@ -19,7 +19,7 @@
   .icon {
     width: 36px;
     height: 36px;
-    >div{
+    > div {
       overflow: hidden;
     }
     margin-right: 8px;
@@ -63,7 +63,7 @@
         text-overflow: ellipsis;
         overflow: hidden;
       }
-      .price{
+      .price {
         font-size: 14px;
         color: $color-gray-92;
       }
@@ -79,15 +79,30 @@
 }
 
 .tokens-container {
+  .tabs-container {
+    display: flex;
+    .tab {
+      width: 50%;
+      text-align: center;
+    }
+    hr {
+      width: 64px;
+      border: 1px solid $color;
+      border-radius: 2px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+  }
+
   .title {
     font-size: 14px;
     font-weight: bold;
     color: $color-gray-92;
-
-    margin-bottom: 12px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    // margin-bottom: 12px;
   }
 }
-
 
 .input {
   color: $color-gray-70 !important;
@@ -102,7 +117,6 @@
     border-radius: 4px;
   }
 }
-
 
 .input-group {
   display: flex;

@@ -4,32 +4,26 @@ import { HeaderLayout, LayoutHidePage } from '../../layouts';
 
 import { Card, CardBody } from 'reactstrap';
 
-import style from './style.module.scss';
-import { Menu } from './menu';
 import { AccountView } from './account';
-import { TxButtonEvmView, TxButtonView } from './tx-button';
 import { AssetView, AssetViewEvm } from './asset';
-import { StakeView, LinkStakeView } from './stake';
+import { LinkStakeView, StakeView } from './stake';
+import style from './style.module.scss';
+import { TxButtonEvmView, TxButtonView } from './tx-button';
 
-import classnames from 'classnames';
-import { useHistory } from 'react-router';
-import { observer } from 'mobx-react-lite';
-import { useStore } from '../../stores';
-import { TokensView } from './token';
-import { BIP44SelectModal } from './bip44-select-modal';
-import { useIntl } from 'react-intl';
-import { useConfirm } from '../../components/confirm';
 import { ChainUpdaterService } from '@owallet/background';
 import { TRON_ID } from '@owallet/common';
-import { IBCTransferView } from './ibc-transfer';
+import classnames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import { useIntl } from 'react-intl';
+import { useConfirm } from '../../components/confirm';
 import { SelectChain } from '../../layouts/header';
-import { AmountTokenCosmos, AmountTokenEvm } from './amount-tokens';
+import { useStore } from '../../stores';
 import { SendPage } from '../send';
 import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
+import { BIP44SelectModal } from './bip44-select-modal';
 
 export const MainPage: FunctionComponent = observer(() => {
-  const history = useHistory();
   const intl = useIntl();
 
   const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
@@ -41,9 +35,7 @@ export const MainPage: FunctionComponent = observer(() => {
   useEffect(() => {
     if (!chainStore.isInitializing && prevChainId.current !== currentChainId) {
       (async () => {
-        const result = await ChainUpdaterService.checkChainUpdate(
-          chainStore.current
-        );
+        const result = await ChainUpdaterService.checkChainUpdate(chainStore.current);
         if (result.explicit) {
           // If chain info has been changed, warning the user wether update the chain or not.
           if (
@@ -122,15 +114,7 @@ export const MainPage: FunctionComponent = observer(() => {
                   }}
                 />
                 <LayoutHidePage hidePage={() => setHasSend(false)} />
-                {chainStore.current.networkType === 'evm' ? (
-                  chainStore?.current.chainId === TRON_ID ? (
-                    <SendTronEvmPage />
-                  ) : (
-                    <SendEvmPage />
-                  )
-                ) : (
-                  <SendPage />
-                )}
+                {chainStore.current.networkType === 'evm' ? chainStore?.current.chainId === TRON_ID ? <SendTronEvmPage /> : <SendEvmPage /> : <SendPage />}
               </>
             ) : null}
           </div>
