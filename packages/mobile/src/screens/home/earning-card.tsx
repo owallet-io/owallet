@@ -207,7 +207,7 @@ export const EarningCard: FunctionComponent<{
                 </Text>
               </View>
             </View>
-            <OWButtonIcon
+            {/* <OWButtonIcon
               style={{
                 marginRight: -14
               }}
@@ -218,7 +218,7 @@ export const EarningCard: FunctionComponent<{
               name="add"
               sizeIcon={24}
               colorIcon={colors['gray-150']}
-            />
+            /> */}
           </View>
           <View>
             <OWButton

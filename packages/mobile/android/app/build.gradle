@@ -8,7 +8,7 @@ apply from: '../../node_modules/react-native-code-push/android/codepush.gradle'
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 project.ext.react = [
-    hermesCommand: '../../node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc',
+    hermesCommand: '../../node_modules/react-native/sdks/hermesc/osx-bin/hermesc',
 ]
 react {
     /* Folders */
@@ -85,7 +85,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 39
-        versionName '1.0.0'
+        versionName '1.1.0'
         missingDimensionStrategy 'react-native-camera', 'general' //
     }
     signingConfigs {
@@ -103,7 +103,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            debuggable true
+            // debuggable true
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
