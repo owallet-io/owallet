@@ -13,10 +13,6 @@ export const NftPage: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const getListNft = async () => {
     try {
-      if (chainStore.current.chainId !== 'Oraichain' && chainStore.current.chainId !== 'Oraichain-testnet') {
-        return setToken([]);
-      }
-
       const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
       const res = await client.queryContractSmart(NftContract, {
         tokens: {
@@ -30,11 +26,12 @@ export const NftPage: FunctionComponent = observer(() => {
       }
     } catch (error) {
       console.log({ error });
+      setToken([]);
     }
   };
 
   const fetchInfoNft = async (tokenId, client) => {
-    if (!tokenId) return;
+    if (!tokenId) return setToken([]);
     const res = await client.queryContractSmart(NftContract, {
       nft_info: {
         token_id: tokenId
