@@ -244,8 +244,9 @@ export const SelectNetworkScreen = () => {
       alert('Network added successfully!');
       smartNavigation.goBack();
     } catch (err) {
+      console.log('err: ', err);
       // alert('Oops! Something went wrong!');
-      alert(err.message);
+      // alert(err.message);
     }
   });
 

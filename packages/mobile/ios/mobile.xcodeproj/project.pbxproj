@@ -53,6 +53,7 @@
 		177E36822A56CC0F003072B1 /* DMSans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-Regular.ttf"; path = "../src/assets/fonts/DMSans-Regular.ttf"; sourceTree = "<group>"; };
 		177E36832A56CC0F003072B1 /* DMSans-MediumItalic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "DMSans-MediumItalic.ttf"; path = "../src/assets/fonts/DMSans-MediumItalic.ttf"; sourceTree = "<group>"; };
 		177E368A2A56CE2C003072B1 /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
+		17EE1FA32A5E5C6000C81E0F /* mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = mobile.entitlements; path = mobile/mobile.entitlements; sourceTree = "<group>"; };
 		4531CE77F5B7A735D9ACDB73 /* libPods-mobile-mobileTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mobile-mobileTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = mobile/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8EAB3454B0E84D19176D5A02 /* Pods-mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mobile.release.xcconfig"; path = "Target Support Files/Pods-mobile/Pods-mobile.release.xcconfig"; sourceTree = "<group>"; };
@@ -102,6 +103,7 @@
 		13B07FAE1A68108700A75B9A /* mobile */ = {
 			isa = PBXGroup;
 			children = (
+				17EE1FA32A5E5C6000C81E0F /* mobile.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -579,6 +581,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = mobile/mobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
@@ -610,6 +613,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = mobile/mobile.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;

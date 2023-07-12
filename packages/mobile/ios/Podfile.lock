@@ -522,7 +522,7 @@ PODS:
     - React-Core
   - react-native-camera/RN (4.2.1):
     - React-Core
-  - react-native-netinfo (7.1.9):
+  - react-native-netinfo (9.4.1):
     - React-Core
   - react-native-randombytes (3.6.1):
     - React-Core
@@ -1049,7 +1049,7 @@ SPEC CHECKSUMS:
   react-native-ble-plx: f10240444452dfb2d2a13a0e4f58d7783e92d76e
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
   react-native-camera: 3eae183c1d111103963f3dd913b65d01aef8110f
-  react-native-netinfo: 87e5bfaf21ea5c6c110941290aa481dd8e849f98
+  react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
   react-native-randombytes: 421f1c7d48c0af8dbcd471b0324393ebf8fe7846
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457

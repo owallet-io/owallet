@@ -296,12 +296,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
-            Alert.alert('[FCMService] User does not have a device token');
+            // Alert.alert('[FCMService] User does not have a device token');
           }
         })
         .catch((error) => {
-          let err = `FCM token get error: ${error}`;
-          Alert.alert(err);
+          // let err = `FCM token get error: ${error}`;
+          // Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
         });
     } else {

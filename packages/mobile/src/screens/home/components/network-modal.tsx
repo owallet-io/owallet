@@ -77,7 +77,8 @@ export const NetworkModal = ({
         modalStore.close();
       }
     } catch (error) {
-      alert(JSON.stringify(error.message));
+      console.log('error: ', error);
+      // alert(JSON.stringify(error.message));
       modalStore.close();
     }
   };

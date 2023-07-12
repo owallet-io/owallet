@@ -256,7 +256,8 @@ export const openLink = async (url) => {
       const result = await InAppBrowser.open(url, configBrowser);
     } else Linking.openURL(url);
   } catch (error) {
-    Alert.alert(error.message);
+    console.log('error: ', error);
+    // Alert.alert(error.message);
   }
 };
 export function parseObjectToQueryString(obj) {

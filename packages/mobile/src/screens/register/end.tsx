@@ -148,7 +148,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
             });
           } catch (e) {
             console.log(e);
-            alert(JSON.stringify(e));
+            // alert(JSON.stringify(e));
             setIsLoading(false);
           }
         }}

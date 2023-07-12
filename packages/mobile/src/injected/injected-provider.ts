@@ -11,6 +11,7 @@ export class RNInjectedEthereum extends InjectedEthereum {
       try {
         return JSON.parse(message);
       } catch (err) {
+        console.log('err: ', err);
         // alert(`parseWebviewMessage err`);
         // alert(err.message);
         // noop

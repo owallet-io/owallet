@@ -42,7 +42,7 @@
     "@ledgerhq/react-native-hw-transport-ble": "=6.28.3",
     "@react-native-async-storage/async-storage": "1.19.0",
     "@react-native-community/blur": "4.3.2",
-    "@react-native-community/netinfo": "7.1.9",
+    "@react-native-community/netinfo": "9.4.1",
     "@react-native-firebase/app": "^18.1.0",
     "@react-native-firebase/crashlytics": "^18.1.0",
     "@react-native-firebase/messaging": "^18.1.0",
