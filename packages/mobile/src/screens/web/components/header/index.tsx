@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { Platform, StyleSheet, View, TextInput } from 'react-native';
 import { Text } from '@src/components/text';
-// import { useHeaderHeight } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useStyle } from '../../../../styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useWebViewState } from '../context';
@@ -71,7 +71,7 @@ export const OnScreenWebpageScreenHeader: FunctionComponent = observer(() => {
 
   const style = useStyle();
   const safeAreaInsets = useSafeAreaInsets();
-  const headerHeight = 10;
+  const headerHeight = useHeaderHeight();
   const actualHeaderHeight = headerHeight - safeAreaInsets.top;
   const [onEdit, setOnEdit] = useState(false);
   const [isBookmark, setIsBookmark] = useState(false);

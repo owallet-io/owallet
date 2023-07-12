@@ -54,7 +54,8 @@ const useHeaderOptions = (
             colorIcon={colors['primary-text']}
             onPress={onGoBack}
             name="arrow-left"
-            // style={styles.btnIcon}
+            fullWidth={false}
+            style={styles.btnIcon}
             sizeIcon={!!data?.title ? 24 : 20}
           />
         );

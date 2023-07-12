@@ -2,7 +2,7 @@
 import React, { FunctionComponent, useEffect } from 'react';
 import { Linking } from 'react-native';
 import { KeyRingStatus } from '@owallet/background';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { useStore } from './stores';
 import { observer } from 'mobx-react-lite';
 import {
@@ -23,13 +23,14 @@ import {
   OtherNavigation,
   RegisterNavigation
 } from './navigations';
+import { useTheme } from './themes/theme-provider';
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
-
+  const { colors } = useTheme();
   useEffect(() => {
     Linking.getInitialURL()
-      .then(url => {
+      .then((url) => {
         if (url) {
           const SCHEME_IOS = 'owallet://open_url?url=';
           const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -38,7 +39,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn('Deeplinking error', err);
       });
     Linking.addEventListener('url', handleDeepLink);
@@ -51,7 +52,14 @@ export const AppNavigation: FunctionComponent = observer(() => {
     <PageScrollPositionProvider>
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
-          <NavigationContainer ref={navigationRef}>
+          <NavigationContainer
+            theme={{
+              colors: {
+                background: colors['background']
+              }
+            } as any}
+            ref={navigationRef}
+          >
             <Stack.Navigator
               initialRouteName={
                 keyRingStore.status !== KeyRingStatus.UNLOCKED
@@ -62,7 +70,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
                 headerShown: false,
                 ...TransitionPresets.SlideFromRightIOS
               }}
-              headerMode="screen"
+              // headerMode="screen"
             >
               <Stack.Screen
                 name={SCREENS.STACK.Unlock}

@@ -1,5 +1,5 @@
 import { useRegisterConfig } from '@owallet/hooks';
-// import { useHeaderHeight } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
@@ -24,7 +24,7 @@ export const RegisterNewUserScreen: FunctionComponent = observer(() => {
   const registerConfig = useRegisterConfig(keyRingStore, []);
 
   const safeAreaInsets = useSafeAreaInsets();
-  const headerHeight = 10;
+  const headerHeight = useHeaderHeight();
   const actualHeightHeight = headerHeight - safeAreaInsets.top;
 
   return (

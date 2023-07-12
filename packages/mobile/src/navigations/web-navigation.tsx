@@ -23,6 +23,7 @@ export const WebpageHeaderOptions = ({ navigation, title }):any => {
             colorIcon={colors['primary-text']}
             onPress={() => navigation.goBack()}
             name="arrow-left"
+            fullWidth={false}
             style={{
               paddingRight: 24,
               marginLeft: 4

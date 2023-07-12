@@ -1,5 +1,5 @@
 import { useRegisterConfig } from '@owallet/hooks';
-import { useHeaderHeight } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
