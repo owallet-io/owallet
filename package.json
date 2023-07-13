@@ -22,7 +22,7 @@
       "**/jetifier",
       "**/@bugsnag/**"
     ]
-  },
+},
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "test:package":"lerna run test --parallel --ignore @owallet/router-mock --ignore @owallet/unit --ignore @owallet/extension",

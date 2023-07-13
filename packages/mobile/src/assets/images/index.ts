@@ -8,6 +8,7 @@ const images = {
    crypto: require('./crypto.png'),
    empty: require('./empty.png'),
    empty_dark: require('./empty_dark.png'),
+   empty_img: require('./empty_img.png'),
    eye: require('./eye.png'),
    fail: require('./fail.png'),
    fail_dark: require('./fail_dark.png'),

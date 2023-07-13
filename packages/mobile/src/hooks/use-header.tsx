@@ -36,9 +36,9 @@ const useHeaderOptions = (
   return {
     headerStyle: {
       backgroundColor: colors['background-box'],
-      shadowColor: 'transparent',
-      shadowRadius: 0,
-      elevation: 0
+      shadowColor: colors['border-gray'],
+      // shadowRadius: 0,
+      // elevation: 1
     },
     headerTitle: () => <OWHeaderTitle title={data?.title} />,
     headerTitleAlign: 'center',

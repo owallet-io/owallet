@@ -1,6 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import settle from 'axios/lib/core/settle';
-import AxiosErrorFn from 'axios/lib/core/AxiosError';
+import AxiosErrorFn from 'axios/lib/core/enhanceError';
 import buildURL from 'axios/lib/helpers/buildURL';
 import buildFullPath from 'axios/lib/core/buildFullPath';
 import { isUndefined } from 'axios/lib/utils';
@@ -18,7 +18,7 @@ export const fetchAdapter = async (
 
   if (config.timeout && config.timeout > 0) {
     promiseChain.push(
-      new Promise(res => {
+      new Promise((res) => {
         setTimeout(() => {
           const message = config.timeoutErrorMessage
             ? config.timeoutErrorMessage
@@ -145,8 +145,8 @@ function createError(
 ): AxiosResponse<AxiosError> {
   return AxiosErrorFn(
     message ?? 'Unknown error',
-    AxiosErrorFn[code],
     config,
+    code,
     request,
     response
   );
