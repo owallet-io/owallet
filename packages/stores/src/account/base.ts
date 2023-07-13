@@ -70,7 +70,7 @@ export interface MsgOpt {
   If the chain has "no-legacy-stdTx" feature, we should send the tx based on protobuf.
   Expectedly, the sign doc should be formed as animo-json regardless of the tx type (animo or proto).
 */
-type AminoMsgsOrWithProtoMsgs =
+export type AminoMsgsOrWithProtoMsgs =
   | Msg[]
   | {
       aminoMsgs: Msg[];

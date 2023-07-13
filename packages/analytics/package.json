@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "rimraf node_modules build",
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
     "dev": "tsc -w",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""

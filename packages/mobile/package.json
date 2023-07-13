@@ -154,6 +154,17 @@
     "webpack-cli": "5.1.4",
     "pod-install": "0.1.38"
   },
+  "jest": {
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
   "engines": {
     "node": ">=16"
   }
