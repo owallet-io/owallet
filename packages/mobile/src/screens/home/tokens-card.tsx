@@ -191,21 +191,30 @@ export const TokensCard: FunctionComponent<{
                 paddingBottom: 10
               }}
             >
-              <View
+              {/* <View
                 style={{
                   marginTop: spacing['12'],
                   flexDirection: 'row'
                 }}
               >
                 <Text style={styles.sectionHeader}>{'NFTs'}</Text>
-              </View>
+              </View> */}
 
               <OWFlatList
                 horizontal
+                contentContainerStyle={
+                  !soulboundNft?.length && {
+                    flex: 1,
+                    justifyContent: 'center'
+                  }
+                }
+                containerSkeletonStyle={{
+                  flexDirection:"row"
+                }}
                 data={soulboundNft}
                 renderItem={_renderFlatlistOrchai}
                 keyExtractor={_keyExtract}
-                SkeletonComponent={SkeletonNft}
+                SkeletonComponent={<SkeletonNft />}
                 loading={isLoading}
                 showsHorizontalScrollIndicator={false}
               />

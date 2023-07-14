@@ -45,8 +45,8 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     loading,
     onRefresh,
     refreshing,
-    containerSkeletonStyle,
-    skeletonStyle,
+    containerSkeletonStyle = {},
+    skeletonStyle = {},
     ...rest
   } = props;
   const onScrollToTop = () => {
