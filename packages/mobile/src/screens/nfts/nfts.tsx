@@ -26,20 +26,16 @@ import { useTheme } from '@src/themes/theme-provider';
 import { Text } from '@src/components/text';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
-import { OWEmpty } from '@src/components/empty';
-import { OWButton } from '@src/components/button';
 import { SoulboundNftInfoResponse } from '../home/types';
 import { useStore } from '@src/stores';
-import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
 import images from '@src/assets/images';
 import { useSoulbound } from './hooks/useSoulboundNft';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { SkeletonNft } from '../home/tokens-card';
 export const NftsScreen: FunctionComponent = observer((props) => {
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { chainStore, accountStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const [index, setIndex] = useState<number>(0);
-  const [activeSection, setActiveSection] = useState([0]);
+
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -49,81 +45,16 @@ export const NftsScreen: FunctionComponent = observer((props) => {
     chainStore.current.rpc
   );
 
-  // const { nfts } = props.route?.params;
-  useEffect(() => {
-    getAllToken();
-  }, [chainStore.current.chainId]);
-
   const onDetail = (item) => {
     smartNavigation.navigateSmart('Nfts.Detail', { item });
   };
 
-  const getAllToken = async () => {
-    const owallet = await accountStore
-      .getAccount(chainStore.current.chainId)
-      .getOWallet();
-
-    if (!owallet) {
-      throw new Error("Can't get the owallet API");
-    }
-    const wallet = owallet.getOfflineSigner(chainStore.current.chainId);
-
-    const client = await cosmwasm.SigningCosmWasmClient.connectWithSigner(
-      chainStore.current.rpc,
-      wallet
-    );
-
-    let tokensInfoPromise: Promise<any>[] = [];
-    try {
-      const { tokens } = await client.queryContractSmart(
-        'orai1wa7ruhstx6x35td5kc60x69a49enw8f2rwlr8a7vn9kaw9tmgwqqt5llpe',
-        {
-          tokens: {
-            limit: 10,
-            owner: account.bech32Address.toString(),
-            start_after: '0'
-          }
-        }
-      );
-      if (!tokens || !tokens?.length) {
-        setSoulboundNft([]);
-        throw new Error('NFT is empty');
-      }
-
-      for (let i = 0; i < tokens.length; i++) {
-        const qsContract = client.queryContractSmart(
-          'orai1wa7ruhstx6x35td5kc60x69a49enw8f2rwlr8a7vn9kaw9tmgwqqt5llpe',
-          {
-            nft_info: {
-              token_id: tokens[i]
-            }
-          }
-        );
-        tokensInfoPromise.push(qsContract);
-      }
-      if (!tokensInfoPromise?.length) {
-        setSoulboundNft([]);
-        throw new Error('NFT is empty');
-      }
-      const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(
-        tokensInfoPromise
-      );
-      if (!tokensInfo?.length) {
-        setSoulboundNft([]);
-        throw new Error('NFT is empty');
-      }
-      console.log('tokensInfo: ', tokensInfo);
-
-      setSoulboundNft(tokensInfo);
-    } catch (error) {
-      console.log('error: ', error);
-      setSoulboundNft([]);
-    }
-  };
   const _renderFlatlistOrchai = ({
-    item
+    item,
+    index
   }: {
     item: SoulboundNftInfoResponse;
+    index: number;
   }) => {
     return (
       <TouchableOpacity
@@ -170,20 +101,8 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithView>
       <OWSubTitleHeader title="My NFTs" />
-      <OWBox
-        style={{
-          flex: 1,
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
-          paddingTop: 0
-        }}
-      >
-        <View
-          style={{
-            flex: 1,
-            padding: 10
-          }}
-        >
+      <OWBox style={styles.containerBox}>
+        <View style={styles.wrapFlatlist}>
           <OWFlatList
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
@@ -209,6 +128,16 @@ export const NftsScreen: FunctionComponent = observer((props) => {
 
 const styling = (colors) =>
   StyleSheet.create({
+    wrapFlatlist: {
+      flex: 1,
+      padding: 10
+    },
+    containerBox: {
+      flex: 1,
+      borderBottomLeftRadius: 0,
+      borderBottomRightRadius: 0,
+      paddingTop: 0
+    },
     container: {
       backgroundColor: colors['primary'],
       borderRadius: spacing['24']
