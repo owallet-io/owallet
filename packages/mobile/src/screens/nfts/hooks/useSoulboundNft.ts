@@ -19,8 +19,7 @@ export const useSoulbound = (
     soulboundNft: [],
     loading: true
   });
-  const contractAddress =
-    'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
+const contractAddress = "orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu";
   const tokenIds = useRef([]);
 
   useEffect(() => {
@@ -45,13 +44,16 @@ export const useSoulbound = (
 
     let tokensInfoPromise: Promise<any>[] = [];
     try {
-      const { tokens } = await client.queryContractSmart(contractAddress, {
-        tokens: {
-          limit: 10,
-          owner: 'orai1gzufd0e66zyk7a5gjalzy46tcqcgz0vuwkqlmv',
-          start_after: '0'
+      const { tokens } = await client.queryContractSmart(
+        contractAddress,
+        {
+          tokens: {
+            limit: 10,
+            owner: account.bech32Address.toString(),
+            start_after: '0'
+          }
         }
-      });
+      );
       if (!tokens || !tokens?.length) {
         setState((state) => ({
           soulboundNft: [],
@@ -62,11 +64,14 @@ export const useSoulbound = (
       }
       tokenIds.current = tokens;
       for (let i = 0; i < tokens.length; i++) {
-        const qsContract = client.queryContractSmart(contractAddress, {
-          nft_info: {
-            token_id: tokens[i]
+        const qsContract = client.queryContractSmart(
+          contractAddress,
+          {
+            nft_info: {
+              token_id: tokens[i]
+            }
           }
-        });
+        );
         tokensInfoPromise.push(qsContract);
       }
       if (!tokensInfoPromise?.length) {
@@ -91,8 +96,6 @@ export const useSoulbound = (
         soulboundNft: tokensInfo,
         loading: false
       }));
-      console.log('tokensInfo: ', tokensInfo);
-
     } catch (error) {
       console.log('error: ', error);
       setState((state) => ({
