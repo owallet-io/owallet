@@ -18,18 +18,7 @@ export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = 'FAILED';
 export const SUCCESS = 'SUCCESS';
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
-export function checkImageURL(URL) {
-  if (!URL) {
-    return false;
-  }
-  if (
-    URL.toUpperCase().startsWith('HTTP://') ||
-    URL.toUpperCase().startsWith('HTTPS://')
-  ) {
-    return true;
-  }
-  return false;
-}
+
 export const TRC20_LIST = [
   {
     contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',

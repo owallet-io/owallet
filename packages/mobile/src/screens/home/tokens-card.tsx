@@ -16,7 +16,7 @@ import {
   capitalizedText,
   convertAmount,
   _keyExtract,
-  checkImageURL
+  
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
@@ -93,7 +93,7 @@ export const TokensCard: FunctionComponent<{
             item: {
               name: item.extension.name,
               id: tokenIds[index],
-              picture: item.extension.image
+              picture: item.token_uri
             }
           });
           return;
@@ -103,13 +103,9 @@ export const TokensCard: FunctionComponent<{
           style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
           <ProgressiveImage
-            source={
-              checkImageURL(item?.extension?.image)
-                ? {
-                    uri: item?.extension?.image
-                  }
-                : images.empty_img
-            }
+            source={{
+              uri: item.token_uri
+            }}
             style={styles.containerImgNft}
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
@@ -209,7 +205,7 @@ export const TokensCard: FunctionComponent<{
                   }
                 }
                 containerSkeletonStyle={{
-                  flexDirection:"row"
+                  flexDirection: 'row'
                 }}
                 data={soulboundNft}
                 renderItem={_renderFlatlistOrchai}
@@ -249,7 +245,7 @@ export const SkeletonNft = () => {
       <SkeletonPlaceholder.Item
         width={150}
         padding={12}
-        height={222}
+        height={200}
         margin={12}
         marginLeft={0}
       ></SkeletonPlaceholder.Item>

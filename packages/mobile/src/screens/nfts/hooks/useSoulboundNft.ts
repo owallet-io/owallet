@@ -48,7 +48,7 @@ export const useSoulbound = (
       const { tokens } = await client.queryContractSmart(contractAddress, {
         tokens: {
           limit: 10,
-          owner: account.bech32Address.toString(),
+          owner: 'orai1gzufd0e66zyk7a5gjalzy46tcqcgz0vuwkqlmv',
           start_after: '0'
         }
       });
@@ -91,6 +91,8 @@ export const useSoulbound = (
         soulboundNft: tokensInfo,
         loading: false
       }));
+      console.log('tokensInfo: ', tokensInfo);
+
     } catch (error) {
       console.log('error: ', error);
       setState((state) => ({

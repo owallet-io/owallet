@@ -83,13 +83,9 @@ export const NftDetailScreen: FunctionComponent = observer((props) => {
 
           <View style={styles.containerImage}>
             <ProgressiveImage
-              source={
-                checkImageURL(item.picture)
-                  ? {
-                      uri: item.picture
-                    }
-                  : images.empty_img
-              }
+              source={{
+                uri: item.picture
+              }}
               style={{
                 width: metrics.screenWidth - 110,
                 height: metrics.screenWidth - 110,

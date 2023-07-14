@@ -1,3 +1,4 @@
+import images from '@src/assets/images';
 import { useTheme } from '@src/themes/theme-provider';
 import React from 'react';
 import { View, StyleSheet, Animated, ActivityIndicator } from 'react-native';
@@ -28,12 +29,20 @@ class ProgressiveImage extends React.Component {
   thumbnailAnimated = new Animated.Value(0);
   constructor(props) {
     super(props);
-    this.state = { loading: true };
+    this.state = { loading: true, isError: false };
   }
 
   imageAnimated = new Animated.Value(0);
-
+  onErrorLoadImage = () => {
+    this.setState({
+      isError: true,
+      loading: false
+    });
+  };
   handleThumbnailLoad = () => {
+    this.setState({
+      isError: false
+    });
     Animated.timing(this.thumbnailAnimated, {
       toValue: 1
     }).start();
@@ -41,7 +50,8 @@ class ProgressiveImage extends React.Component {
 
   onImageLoad = () => {
     this.setState({
-      loading: false
+      loading: false,
+      isError: false
     });
     Animated.timing(this.imageAnimated, {
       toValue: 1
@@ -68,7 +78,7 @@ class ProgressiveImage extends React.Component {
         ) : null}
         <Animated.Image
           {...props}
-          source={thumbnailSource}
+          source={this.state.isError?images.empty_img : thumbnailSource}
           style={[
             {
               opacity: this.thumbnailAnimated
@@ -77,6 +87,7 @@ class ProgressiveImage extends React.Component {
           ]}
           onLoad={this.handleThumbnailLoad}
           blurRadius={1}
+          onError={this.onErrorLoadImage}
         />
 
         <Animated.Image
@@ -84,6 +95,7 @@ class ProgressiveImage extends React.Component {
           source={source}
           style={[styles.imageOverlay, { opacity: this.imageAnimated }, style]}
           onLoad={this.onImageLoad}
+          onError={this.onErrorLoadImage}
         />
       </View>
     );

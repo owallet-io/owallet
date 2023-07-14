@@ -11,8 +11,7 @@ import { metrics, spacing, typography } from '../../themes';
 import {
   convertAmount,
   formatContractAddress,
-  _keyExtract,
-  checkImageURL
+  _keyExtract
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
 import {
@@ -63,7 +62,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
           onDetail({
             name: item.extension.name,
             id: tokenIds[index],
-            picture: item.extension.image
+            picture: item.token_uri
           })
         }
       >
@@ -71,13 +70,9 @@ export const NftsScreen: FunctionComponent = observer((props) => {
           style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
           <ProgressiveImage
-            source={
-              checkImageURL(item?.extension?.image)
-                ? {
-                    uri: item?.extension?.image
-                  }
-                : images.empty_img
-            }
+            source={{
+              uri: item.token_uri
+            }}
             style={styles.containerImgNft}
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
