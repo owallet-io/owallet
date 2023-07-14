@@ -11,7 +11,8 @@ import { metrics, spacing, typography } from '../../themes';
 import {
   convertAmount,
   formatContractAddress,
-  _keyExtract
+  _keyExtract,
+  checkImageURL
 } from '../../utils/helper';
 import { DownArrowIcon } from '../../components/icon';
 import {
@@ -30,6 +31,10 @@ import { OWButton } from '@src/components/button';
 import { SoulboundNftInfoResponse } from '../home/types';
 import { useStore } from '@src/stores';
 import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
+import images from '@src/assets/images';
+import { useSoulbound } from './hooks/useSoulboundNft';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { SkeletonNft } from '../home/tokens-card';
 export const NftsScreen: FunctionComponent = observer((props) => {
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -38,11 +43,13 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [soulboundNft, setSoulboundNft] = useState<SoulboundNftInfoResponse[]>(
-    []
+  const { tokenIds, soulboundNft, isLoading } = useSoulbound(
+    chainStore.current.chainId,
+    account,
+    chainStore.current.rpc
   );
 
-  const { nfts } = props.route?.params;
+  // const { nfts } = props.route?.params;
   useEffect(() => {
     getAllToken();
   }, [chainStore.current.chainId]);
@@ -50,6 +57,7 @@ export const NftsScreen: FunctionComponent = observer((props) => {
   const onDetail = (item) => {
     smartNavigation.navigateSmart('Nfts.Detail', { item });
   };
+
   const getAllToken = async () => {
     const owallet = await accountStore
       .getAccount(chainStore.current.chainId)
@@ -120,15 +128,25 @@ export const NftsScreen: FunctionComponent = observer((props) => {
     return (
       <TouchableOpacity
         style={styles.ContainerBtnNft}
-        onPress={() => onDetail(item)}
+        onPress={() =>
+          onDetail({
+            name: item.extension.name,
+            id: tokenIds[index],
+            picture: item.extension.image
+          })
+        }
       >
         <View
           style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
         >
           <ProgressiveImage
-            source={{
-              uri: item?.extension?.animation_url
-            }}
+            source={
+              checkImageURL(item?.extension?.image)
+                ? {
+                    uri: item?.extension?.image
+                  }
+                : images.empty_img
+            }
             style={styles.containerImgNft}
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
@@ -149,92 +167,8 @@ export const NftsScreen: FunctionComponent = observer((props) => {
     );
   };
 
-  const _renderFlatlistItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.flatListItem}
-      onPress={() => {
-        smartNavigation.navigateSmart('Nfts.Detail', { item });
-      }}
-    >
-      <View>
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
-        >
-          <ProgressiveImage
-            source={{
-              uri: item.picture ?? item.url
-            }}
-            style={styles.containerImgNft}
-            resizeMode="cover"
-            styleContainer={styles.containerImgNft}
-          />
-          <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              marginTop: spacing['12'],
-              alignItems: 'flex-start'
-            }}
-          >
-            <Text style={styles.itemText} numberOfLines={1}>
-              {item?.name}
-            </Text>
-            {item.version === 1 ? (
-              <Text
-                style={{
-                  ...styles.itemText,
-                  color: colors['gray-300']
-                }}
-                numberOfLines={1}
-              >
-                {item.offer
-                  ? `${convertAmount(item?.offer?.amount)} ${item.offer.denom}`
-                  : '0 $'}
-              </Text>
-            ) : item.offer ? (
-              <View>
-                <Text
-                  style={{
-                    ...styles.itemText,
-                    color: colors['gray-300']
-                  }}
-                  numberOfLines={1}
-                >
-                  From: {convertAmount(item.offer?.lowestPrice)}{' '}
-                  {item.offer?.denom}
-                </Text>
-                <Text
-                  style={{
-                    ...styles.itemText,
-                    color: colors['gray-300']
-                  }}
-                  numberOfLines={1}
-                >
-                  To: {convertAmount(item.offer?.highestPrice)}{' '}
-                  {item.offer?.denom}
-                </Text>
-              </View>
-            ) : (
-              <Text
-                style={{
-                  ...styles.itemText,
-                  color: colors['gray-300']
-                }}
-                numberOfLines={1}
-              >
-                0 $
-              </Text>
-            )}
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-  const onActiveType = (i) => {
-    setIndex(i);
-  };
   return (
-    <PageWithViewInBottomTabView>
+    <PageWithView>
       <OWSubTitleHeader title="My NFTs" />
       <OWBox
         style={{
@@ -246,53 +180,30 @@ export const NftsScreen: FunctionComponent = observer((props) => {
       >
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'center'
-          }}
-        >
-          {['NFTs', 'SoulBound NFTs'].map((title: string, i: number) => (
-            <View key={i}>
-              <OWButton
-                type="link"
-                onPress={() => onActiveType(i)}
-                label={title}
-                textStyle={{
-                  color:
-                    index === i ? colors['primary-text'] : colors['gray-300'],
-                  fontWeight: '700'
-                }}
-                style={{
-                  width: (metrics.screenWidth - 35) / 2,
-                  alignSelf: 'center',
-                  borderBottomColor:
-                    index === i ? colors['primary-text'] : colors['primary'],
-                  borderBottomWidth: 2
-                }}
-              />
-            </View>
-          ))}
-        </View>
-
-        <View
-          style={{
             flex: 1,
             padding: 10
           }}
         >
-          <FlatList
+          <OWFlatList
             numColumns={2}
             columnWrapperStyle={{ justifyContent: 'space-between' }}
-            data={index == 0 ? nfts : soulboundNft}
-            renderItem={
-              index == 0 ? _renderFlatlistItem : _renderFlatlistOrchai
-            }
+            data={soulboundNft}
+            renderItem={_renderFlatlistOrchai}
+            loading={isLoading}
+            SkeletonComponent={<SkeletonNft />}
             keyExtractor={_keyExtract}
+            containerSkeletonStyle={{
+              flexWrap: 'wrap',
+              flexDirection: 'row'
+            }}
+            skeletonStyle={{
+              flexBasis: '50%'
+            }}
             showsVerticalScrollIndicator={false}
-            ListEmptyComponent={<OWEmpty />}
           />
         </View>
       </OWBox>
-    </PageWithViewInBottomTabView>
+    </PageWithView>
   );
 });
 

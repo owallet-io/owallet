@@ -1,4 +1,3 @@
-
 import { SoulboundNftInfoResponse } from '@src/screens/home/types';
 import { useStore } from '@src/stores';
 
@@ -11,16 +10,26 @@ export const useSoulbound = (
 ): {
   tokenIds: String[];
   soulboundNft: SoulboundNftInfoResponse[];
+  isLoading: boolean;
 } => {
-  const [soulboundNft, setSoulboundNft] = useState<SoulboundNftInfoResponse[]>(
-    []
-  );
+  const [state, setState] = useState<{
+    soulboundNft: SoulboundNftInfoResponse[];
+    loading: boolean;
+  }>({
+    soulboundNft: [],
+    loading: true
+  });
+
   const tokenIds = useRef([]);
-  
+
   useEffect(() => {
     getAllToken();
   }, [chainId, rpc, account.bech32Address, account.evmosHexAddress]);
   const getAllToken = async () => {
+    setState((state) => ({
+      soulboundNft: [],
+      loading: true
+    }));
     const owallet = await account.getOWallet();
 
     if (!owallet) {
@@ -46,7 +55,10 @@ export const useSoulbound = (
         }
       );
       if (!tokens || !tokens?.length) {
-        setSoulboundNft([]);
+        setState((state) => ({
+          soulboundNft: [],
+          loading: false
+        }));
         tokenIds.current = [];
         throw new Error('NFT is empty');
       }
@@ -63,7 +75,10 @@ export const useSoulbound = (
         tokensInfoPromise.push(qsContract);
       }
       if (!tokensInfoPromise?.length) {
-        setSoulboundNft([]);
+        setState((state) => ({
+          soulboundNft: [],
+          loading: false
+        }));
         tokenIds.current = [];
         throw new Error('NFT is empty');
       }
@@ -71,17 +86,27 @@ export const useSoulbound = (
         tokensInfoPromise
       );
       if (!tokensInfo?.length) {
-        setSoulboundNft([]);
+        setState((state) => ({
+          soulboundNft: [],
+          loading: false
+        }));
         throw new Error('NFT is empty');
       }
-      setSoulboundNft(tokensInfo);
+      setState((state) => ({
+        soulboundNft: tokensInfo,
+        loading: false
+      }));
     } catch (error) {
       console.log('error: ', error);
-      setSoulboundNft([]);
+      setState((state) => ({
+        soulboundNft: [],
+        loading: false
+      }));
     }
   };
   return {
     tokenIds: tokenIds.current,
-    soulboundNft
+    soulboundNft: state.soulboundNft,
+    isLoading: state.loading
   };
 };

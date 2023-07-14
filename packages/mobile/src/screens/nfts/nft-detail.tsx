@@ -5,7 +5,7 @@ import { StyleSheet, View, ActivityIndicator, FlatList } from 'react-native';
 import { useSmartNavigation } from '../../navigation.provider';
 import { EthereumEndpoint } from '@owallet/common';
 import { metrics, spacing, typography } from '../../themes';
-import { convertAmount, _keyExtract } from '../../utils/helper';
+import { convertAmount, _keyExtract, checkImageURL } from '../../utils/helper';
 import { QuantityIcon } from '../../components/icon';
 import {
   TransactionItem,
@@ -22,15 +22,16 @@ import { OWBox } from '@src/components/card';
 import { OWButton } from '@src/components/button';
 import { OWEmpty } from '@src/components/empty';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import images from '@src/assets/images';
 
 const ORAI = 'oraichain-token';
 const AIRI = 'airight';
 
 const commonDenom = { ORAI, AIRI };
 
-export const NftDetailScreen: FunctionComponent = observer(props => {
+export const NftDetailScreen: FunctionComponent = observer((props) => {
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore, modalStore } = useStore();
+  // const { chainStore, accountStore, queriesStore, modalStore } = useStore();
   const { colors } = useTheme();
   const route = useRoute<
     RouteProp<
@@ -45,63 +46,8 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
       string
     >
   >();
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
-
-  const account = accountStore.getAccount(chainId);
-
-  const [loading, setLoading] = useState(false);
-
   const { item } = props.route?.params;
-
-  const _onPressTransfer = async () => {
-    smartNavigation.navigateSmart('TransferNFT', {
-      nft: {
-        ...item,
-        quantity: item?.version === 1 ? 1 : owner?.availableQuantity
-      }
-    });
-  };
-
-  const [prices, setPrices] = useState({});
-  const [owner, setOwner] = useState<any>({});
   const styles = styling();
-  useEffect(() => {
-    (async function get() {
-      try {
-        const res = await API.get(
-          `api/v3/simple/price?ids=${[ORAI, AIRI].join(',')}&vs_currencies=usd`,
-          {
-            baseURL: 'https://api.coingecko.com/'
-          }
-        );
-        setPrices(res.data);
-      } catch (error) {}
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async function get() {
-      try {
-        setLoading(true);
-        const res = await API.getNFTOwners(
-          {
-            token_id: item.id
-          },
-          {
-            baseURL: 'https://api.airight.io/'
-          }
-        );
-
-        const currentOwner = res.data.find(
-          d => d.ownerAddress === account.bech32Address
-        );
-        setLoading(false);
-        setOwner(currentOwner);
-      } catch (error) {}
-    })();
-  }, []);
 
   return (
     <PageWithScrollViewInBottomTabView>
@@ -137,9 +83,13 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
 
           <View style={styles.containerImage}>
             <ProgressiveImage
-              source={{
-                uri: item.picture ?? item.url
-              }}
+              source={
+                checkImageURL(item.picture)
+                  ? {
+                      uri: item.picture
+                    }
+                  : images.empty_img
+              }
               style={{
                 width: metrics.screenWidth - 110,
                 height: metrics.screenWidth - 110,
@@ -162,13 +112,7 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                     fontWeight: '700'
                   }}
                 >
-                  {item.version === 1
-                    ? `${convertAmount(item.offer?.amount)} ${
-                        item.offer?.denom ?? ''
-                      }`
-                    : `${convertAmount(item.offer?.lowestPrice)} ${
-                        item.offer?.denom ?? ''
-                      }`}
+                  0
                 </Text>
 
                 <Text
@@ -177,13 +121,9 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                     color: colors['gray-500'],
                     fontWeight: '700'
                   }}
-                >{`$ ${
-                  item.offer?.amount
-                    ? item.offer.amount *
-                      10 ** -6 *
-                      prices[commonDenom[item.offer.denom]]?.usd
-                    : 0
-                }`}</Text>
+                >
+                  $ 0
+                </Text>
               </View>
 
               <View style={styles.containerQuantity}>
@@ -199,42 +139,10 @@ export const NftDetailScreen: FunctionComponent = observer(props => {
                     color: colors['gray-150']
                   }}
                 >
-                  {item.version === 1 ? 1 : owner?.availableQuantity}
+                  0
                 </Text>
               </View>
             </View>
-          </View>
-
-          <View style={styles.containerBtn}>
-            {loading ? <ActivityIndicator /> : null}
-            {item?.version === 1 && item?.offer != null
-              ? ['Transfer'].map((e, i) => (
-                  <OWButton
-                    key={`transfer-1-${1}`}
-                    label="Transfer"
-                    size="small"
-                    fullWidth={false}
-                    icon={
-                      <OWIcon color={colors['white']} size={20} name="send" />
-                    }
-                    onPress={_onPressTransfer}
-                  />
-                ))
-              : null}
-            {item?.version === 2 && owner?.availableQuantity > 0
-              ? ['Transfer'].map((e, i) => (
-                  <OWButton
-                    key={`transfer-2-${i}`}
-                    label="Transfer"
-                    size="small"
-                    fullWidth={false}
-                    icon={
-                      <OWIcon color={colors['white']} size={20} name="send" />
-                    }
-                    onPress={_onPressTransfer}
-                  />
-                ))
-              : null}
           </View>
         </OWBox>
       </View>

@@ -22,6 +22,8 @@ import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
 import images from '@src/assets/images';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -30,13 +32,12 @@ export const TokensCard: FunctionComponent<{
   const { chainStore, queriesStore, accountStore, priceStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
-  const [nfts, setNFTs] = useState([]);
 
   const [tokens, setTokens] = useState([]);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
-  const { tokenIds, soulboundNft } = useSoulbound(
+  const { tokenIds, soulboundNft, isLoading } = useSoulbound(
     chainStore.current.chainId,
     account,
     chainStore.current.rpc
@@ -73,109 +74,10 @@ export const TokensCard: FunctionComponent<{
     refreshDate
   ]);
 
-  useEffect(() => {
-    (async function get() {
-      try {
-        const res = await API.getNFTs(
-          {
-            address: account.bech32Address
-          },
-          {
-            baseURL: 'https://api.airight.io/'
-          }
-        );
-
-        setNFTs(res.data.items);
-      } catch (error) {}
-    })();
-  }, [account.bech32Address]);
-
-  const _renderFlatlistItem = ({ item }) => {
-    return (
-      <TouchableOpacity
-        style={styles.ContainerBtnNft}
-        onPress={() => onDetail(item)}
-      >
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
-        >
-          <ProgressiveImage
-            source={{
-              uri: item.picture ?? item.url
-            }}
-            style={styles.containerImgNft}
-            resizeMode="cover"
-            styleContainer={styles.containerImgNft}
-          />
-          <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              marginTop: spacing['12'],
-              alignItems: 'flex-start'
-            }}
-          >
-            <Text style={styles.itemText} numberOfLines={1}>
-              {item?.name}
-            </Text>
-            {item.version === 1 ? (
-              <Text
-                style={{
-                  ...styles.itemText,
-                  color: colors['gray-300']
-                }}
-                numberOfLines={1}
-              >
-                {item.offer
-                  ? `${convertAmount(item?.offer?.amount)} ${item.offer.denom}`
-                  : '0 $'}
-              </Text>
-            ) : item.offer ? (
-              <View>
-                <Text
-                  style={{
-                    ...styles.itemText,
-                    color: colors['gray-300']
-                  }}
-                  numberOfLines={1}
-                >
-                  From: {convertAmount(item.offer?.lowestPrice)}{' '}
-                  {item.offer?.denom}
-                </Text>
-                <Text
-                  style={{
-                    ...styles.itemText,
-                    color: colors['gray-300']
-                  }}
-                  numberOfLines={1}
-                >
-                  To: {convertAmount(item.offer?.highestPrice)}{' '}
-                  {item.offer?.denom}
-                </Text>
-              </View>
-            ) : (
-              <Text
-                style={{
-                  ...styles.itemText,
-                  color: colors['gray-300']
-                }}
-                numberOfLines={1}
-              >
-                0 $
-              </Text>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   const onActiveType = (i) => {
     setIndex(i);
   };
-  const onDetail = (item) => {
-    smartNavigation.navigateSmart('Nfts.Detail', { item });
-  };
+
   const _renderFlatlistOrchai = ({
     item,
     index
@@ -227,43 +129,7 @@ export const TokensCard: FunctionComponent<{
       </TouchableOpacity>
     );
   };
-  const _renderSectionHeader = ({ section }) => {
-    {
-      return (
-        <View
-          style={{
-            paddingBottom: 10
-          }}
-        >
-          {section.data?.length > 0 ? (
-            <>
-              <View
-                style={{
-                  marginTop: spacing['12'],
-                  flexDirection: 'row'
-                }}
-              >
-                <Text style={styles.sectionHeader}>{section.title}</Text>
-                {/* <DownArrowIcon color={colors['text-title-login']} height={12} /> */}
-              </View>
 
-              <FlatList
-                horizontal
-                data={section.data}
-                renderItem={
-                  section.type == 'aiRight'
-                    ? _renderFlatlistItem
-                    : _renderFlatlistOrchai
-                }
-                keyExtractor={_keyExtract}
-                showsHorizontalScrollIndicator={false}
-              />
-            </>
-          ) : null}
-        </View>
-      );
-    }
-  };
   return (
     <View style={containerStyle}>
       <OWBox
@@ -320,27 +186,30 @@ export const TokensCard: FunctionComponent<{
               padding: 0
             }}
           >
-            {!nfts.length && !soulboundNft.length ? (
-              <OWEmpty />
-            ) : (
-              <SectionList
-                stickySectionHeadersEnabled={false}
-                sections={[
-                  {
-                    title: 'NFTs',
-                    data: nfts,
-                    type: 'aiRight'
-                  },
-                  {
-                    title: 'SoulBound NFTs',
-                    data: soulboundNft,
-                    type: 'orChai'
-                  }
-                ]}
-                renderSectionHeader={_renderSectionHeader}
-                renderItem={() => <View />}
+            <View
+              style={{
+                paddingBottom: 10
+              }}
+            >
+              <View
+                style={{
+                  marginTop: spacing['12'],
+                  flexDirection: 'row'
+                }}
+              >
+                <Text style={styles.sectionHeader}>{'NFTs'}</Text>
+              </View>
+
+              <OWFlatList
+                horizontal
+                data={soulboundNft}
+                renderItem={_renderFlatlistOrchai}
+                keyExtractor={_keyExtract}
+                SkeletonComponent={SkeletonNft}
+                loading={isLoading}
+                showsHorizontalScrollIndicator={false}
               />
-            )}
+            </View>
           </CardBody>
         )}
 
@@ -352,7 +221,7 @@ export const TokensCard: FunctionComponent<{
             if (index === 0) {
               smartNavigation.navigateSmart('Tokens', {});
             } else {
-              smartNavigation.navigateSmart('Nfts', { nfts });
+              smartNavigation.navigateSmart('Nfts', null);
             }
           }}
         />
@@ -360,7 +229,24 @@ export const TokensCard: FunctionComponent<{
     </View>
   );
 });
-
+export const SkeletonNft = () => {
+  const { colors } = useTheme();
+  return (
+    <SkeletonPlaceholder
+      highlightColor={colors['skeleton']}
+      backgroundColor={colors['background-item-list']}
+      borderRadius={12}
+    >
+      <SkeletonPlaceholder.Item
+        width={150}
+        padding={12}
+        height={222}
+        margin={12}
+        marginLeft={0}
+      ></SkeletonPlaceholder.Item>
+    </SkeletonPlaceholder>
+  );
+};
 const styling = (colors) =>
   StyleSheet.create({
     titleNft: {

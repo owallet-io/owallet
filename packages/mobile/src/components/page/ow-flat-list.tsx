@@ -5,7 +5,8 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
-  View
+  View,
+  ViewStyle
 } from 'react-native';
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { FlatListProps } from 'react-native';
@@ -19,6 +20,8 @@ import delay from 'delay';
 interface IOWFlatListProps extends FlatListProps<any> {
   loadMore?: boolean;
   loading?: boolean;
+  containerSkeletonStyle?: ViewStyle;
+  skeletonStyle?: ViewStyle;
   SkeletonComponent?: FlatListProps<any>['ListHeaderComponent'];
 }
 const OWFlatList: FC<IOWFlatListProps> = (props) => {
@@ -26,10 +29,13 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
   const listRef = useRef(null);
   const {
     SkeletonComponent = (
-      <SkeletonPlaceholder highlightColor={colors['skeleton']} backgroundColor={colors['background-item-list']} borderRadius={12}>
+      <SkeletonPlaceholder
+        highlightColor={colors['skeleton']}
+        backgroundColor={colors['background-item-list']}
+        borderRadius={12}
+      >
         <SkeletonPlaceholder.Item
           width={metrics.screenWidth - 48}
-          
           marginVertical={8}
           height={65}
         ></SkeletonPlaceholder.Item>
@@ -39,6 +45,8 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     loading,
     onRefresh,
     refreshing,
+    containerSkeletonStyle,
+    skeletonStyle,
     ...rest
   } = props;
   const onScrollToTop = () => {
@@ -84,15 +92,15 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         onScroll={handleScroll}
         ListEmptyComponent={
           loading ? (
-            <>
+            <View style={containerSkeletonStyle}>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((it, inde) => {
                 return (
-                  <View key={`SkeletonComponent-${inde}`}>
+                  <View style={skeletonStyle} key={`SkeletonComponent-${inde}`}>
                     {SkeletonComponent}
                   </View>
                 );
               })}
-            </>
+            </View>
           ) : (
             <OWEmpty />
           )
