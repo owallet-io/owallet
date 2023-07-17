@@ -1,7 +1,23 @@
+// we always make sure 'react-native' gets included first
+
 import 'reflect-metadata';
+import * as ReactNative from 'react-native';
+
+
+
+
+
+
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
+
+declare const tron; // eslint-disable-line @typescript-eslint/no-unused-vars
+
+jest.useFakeTimers();
+declare global {
+  let __TEST__;
+}
 
 var localStorageMock = (function () {
   var store = {};
@@ -21,7 +37,6 @@ var localStorageMock = (function () {
   };
 })();
 
-
 jest.mock('react-native-keychain', () => {
   const defaultOptions = {
     authenticationPrompt: {
@@ -30,11 +45,11 @@ jest.mock('react-native-keychain', () => {
     accessible: 'AccessibleWhenUnlockedThisDeviceOnly',
     accessControl: 'BiometryCurrentSet'
   };
-  
+
   return {
     setGenericPassword: jest.fn(),
     getGenericPassword: jest.fn(),
-    getSupportedBiometryType:jest.fn(),
+    getSupportedBiometryType: jest.fn(),
     resetGenericPassword: jest.fn(),
     ACCESSIBLE: {
       WHEN_UNLOCKED_THIS_DEVICE_ONLY: 'AccessibleWhenUnlockedThisDeviceOnly'
