@@ -108,7 +108,8 @@ export const NftsScreen: FunctionComponent = observer((props) => {
             keyExtractor={_keyExtract}
             containerSkeletonStyle={{
               flexWrap: 'wrap',
-              flexDirection: 'row'
+              flexDirection: 'row',
+              justifyContent: 'space-between'
             }}
             skeletonStyle={{
               flexBasis: '50%'
@@ -125,7 +126,7 @@ const styling = (colors) =>
   StyleSheet.create({
     wrapFlatlist: {
       flex: 1,
-      padding: 10
+      paddingVertical: 10
     },
     containerBox: {
       flex: 1,

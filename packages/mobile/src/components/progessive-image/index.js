@@ -29,20 +29,12 @@ class ProgressiveImage extends React.Component {
   thumbnailAnimated = new Animated.Value(0);
   constructor(props) {
     super(props);
-    this.state = { loading: true, isError: false };
+    this.state = { loading: true };
   }
 
   imageAnimated = new Animated.Value(0);
-  onErrorLoadImage = () => {
-    this.setState({
-      isError: true,
-      loading: false
-    });
-  };
+
   handleThumbnailLoad = () => {
-    this.setState({
-      isError: false
-    });
     Animated.timing(this.thumbnailAnimated, {
       toValue: 1
     }).start();
@@ -50,8 +42,7 @@ class ProgressiveImage extends React.Component {
 
   onImageLoad = () => {
     this.setState({
-      loading: false,
-      isError: false
+      loading: false
     });
     Animated.timing(this.imageAnimated, {
       toValue: 1
@@ -59,26 +50,32 @@ class ProgressiveImage extends React.Component {
   };
 
   render() {
-    const { thumbnailSource, source, style, colors, styleContainer, ...props } =
-      this.props;
+    const {
+      thumbnailSource = images.empty_img,
+      source,
+      style,
+      colors,
+      styleContainer,
+      ...props
+    } = this.props;
     return (
       <View
         style={[
           styles.container,
           {
-            backgroundColor: this.state.loading
-              ? '#e1e4e8'
-              : colors['background-box']
+            backgroundColor: colors['background-box']
           },
           styleContainer
         ]}
       >
-        {this.state.loading ? (
-          <ActivityIndicator style={{ marginTop: 20 }} />
-        ) : null}
+        <View style={{
+          position:"absolute"
+        }}>
+        {this.state.loading ? <ActivityIndicator /> : null}
+        </View>
         <Animated.Image
           {...props}
-          source={this.state.isError?images.empty_img : thumbnailSource}
+          source={thumbnailSource}
           style={[
             {
               opacity: this.thumbnailAnimated
@@ -87,15 +84,13 @@ class ProgressiveImage extends React.Component {
           ]}
           onLoad={this.handleThumbnailLoad}
           blurRadius={1}
-          onError={this.onErrorLoadImage}
         />
-
         <Animated.Image
           {...props}
           source={source}
           style={[styles.imageOverlay, { opacity: this.imageAnimated }, style]}
           onLoad={this.onImageLoad}
-          onError={this.onErrorLoadImage}
+          onError={this.onImageLoad}
         />
       </View>
     );

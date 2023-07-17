@@ -158,6 +158,16 @@
   },
   "jest": {
     "preset": "react-native",
+    "setupFilesAfterEnv": [
+      "./jest.setup.ts"
+    ],
+    "transform": {
+      "node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!@react-native|react-native)",
+      "node_modules/mobx-persist"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
