@@ -7,6 +7,7 @@ import { Button, Card, CardBody } from 'reactstrap';
 import { useStore } from '../../stores';
 import { InfoNft, NftContract } from './types';
 import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
+import { generateMsgAllNft } from '../helpers';
 
 export const NftDetailsPage: FunctionComponent<{
   match?: {
@@ -24,15 +25,13 @@ export const NftDetailsPage: FunctionComponent<{
       if (!nftId) return;
       setIsLoading(true);
       const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
-      const res = await client.queryContractSmart(NftContract, {
-        all_nft_info: {
-          token_id: nftId
-        }
-      });
+      const msg = generateMsgAllNft(nftId)
+      const res = await client.queryContractSmart(NftContract, msg);
       if (res) {
         setInfo({
           ...res?.info?.extension,
           ...res?.access,
+          token_uri: res?.info?.token_uri,
           tokenId: nftId
         });
       }
@@ -72,8 +71,16 @@ export const NftDetailsPage: FunctionComponent<{
           </span>
         ) : (
           <div className={styles.cardBody}>
-            <img src={info?.animation_url} alt={'details'} />
-            <div className={styles.imgName}>{info?.image}</div>
+            <img
+              src={info.token_uri}
+              className={styles.imgDetail}
+              alt={'details'}
+              onError={({ currentTarget }) => {
+                currentTarget.onerror = null;
+                currentTarget.src = require('./img/not-found.png');
+              }}
+            />
+            <div className={styles.imgName}>{info?.image || '-'}</div>
             <div className={styles.content}>
               <div className={styles.tokenId}>
                 <img src={require('./img/layer.png')} alt={'layer'} />
@@ -81,10 +88,9 @@ export const NftDetailsPage: FunctionComponent<{
               </div>
               <span>{info?.name}</span>
             </div>
-            <div className={styles.rightContent}>{info?.description}</div>
-            <div className={styles.rightContent}>{info?.external_url}</div>
-            <div className={styles.rightContent}>{info?.image_data}</div>
-            <div className={styles.rightContent}>{info?.token_uri}</div>
+            <div className={styles.rightContent}>{info?.description || '-'}</div>
+            <div className={styles.rightContent}>{info?.external_url || '-'}</div>
+            <div className={styles.rightContent}>{info?.image_data || '-'}</div>
             <div
               className={styles.rightContent}
               style={{

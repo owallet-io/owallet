@@ -1,6 +1,6 @@
 // contract address nft SOULBOUND_NFT
 export const NftContract = 'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
-
+export const RPC_ORAICHAIN = 'https://rpc.orai.io';
 export const Limit = 1;
 export const StartAfter = "0";
 

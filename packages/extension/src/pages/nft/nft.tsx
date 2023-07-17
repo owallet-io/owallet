@@ -5,6 +5,7 @@ import { useHistory } from 'react-router';
 import { useStore } from '../../stores';
 import { Limit, NftContract, StartAfter, InfoNft } from './types';
 import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
+import { generateMsgInfoNft, generateMsgNft } from '../helpers';
 
 export const NftPage: FunctionComponent = observer(() => {
   const [token, setToken] = useState<InfoNft[]>(null);
@@ -14,13 +15,8 @@ export const NftPage: FunctionComponent = observer(() => {
   const getListNft = async () => {
     try {
       const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
-      const res = await client.queryContractSmart(NftContract, {
-        tokens: {
-          limit: Limit,
-          owner: accountInfo.bech32Address,
-          start_after: StartAfter
-        }
-      });
+      const msg = generateMsgNft(Limit, accountInfo.bech32Address, StartAfter);
+      const res = await client.queryContractSmart(NftContract, msg);
       if (res) {
         fetchInfoNft(res?.tokens?.[0], client);
       }
@@ -32,11 +28,8 @@ export const NftPage: FunctionComponent = observer(() => {
 
   const fetchInfoNft = async (tokenId, client) => {
     if (!tokenId) return setToken([]);
-    const res = await client.queryContractSmart(NftContract, {
-      nft_info: {
-        token_id: tokenId
-      }
-    });
+    const msg = generateMsgInfoNft(tokenId);
+    const res = await client.queryContractSmart(NftContract, msg);
     if (res) {
       setToken([
         {
@@ -99,12 +92,19 @@ export const NftItem = ({ token, history }) => {
   return (
     <div className={styles.card} onClick={() => history.push(`/token/${token.tokenId}`)}>
       <div className={styles.img}>
-        <img src={token.animation_url} alt={token.name} />
+        <img
+          src={token.token_uri}
+          onError={({ currentTarget }) => {
+            currentTarget.onerror = null;
+            currentTarget.src = require('./img/not-found.png');
+          }}
+          alt={token.name}
+        />
       </div>
       <div className={styles.info}>
-        <div className={styles.content}>{token.image} </div>
-        <div className={styles.content}>{token.name}</div>
-        <div className={styles.description}>{token.description}</div>
+        <div className={styles.content}>{token.image || '-'} </div>
+        <div className={styles.content}>{token.name || '-'}</div>
+        <div className={styles.description}>{token.description || '-'}</div>
       </div>
     </div>
   );
