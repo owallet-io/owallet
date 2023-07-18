@@ -75,6 +75,10 @@ export const NftDetailsPage: FunctionComponent<{
               src={info.token_uri}
               className={styles.imgDetail}
               alt={'details'}
+              style={{
+                border: '0.5px solid #E4E4E4',
+                borderRadius: 12
+              }}
               onError={({ currentTarget }) => {
                 currentTarget.onerror = null;
                 currentTarget.src = require('./img/not-found.png');

@@ -15,8 +15,7 @@ export const NftPage: FunctionComponent = observer(() => {
   const getListNft = async () => {
     try {
       const client = await cosmwasm.CosmWasmClient.connect(chainStore.current.rpc);
-      // accountInfo.bech32Address
-      const msg = generateMsgNft(Limit, 'orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x', StartAfter);
+      const msg = generateMsgNft(Limit, accountInfo.bech32Address, StartAfter);
       const res = await client.queryContractSmart(NftContract, msg);
       if (res) {
         fetchInfoNft(res?.tokens?.[0], client);
@@ -100,6 +99,10 @@ export const NftItem = ({ token, history }) => {
             currentTarget.src = require('./img/not-found.png');
           }}
           alt={token.name}
+          style={{
+            border: '0.5px solid #E4E4E4',
+            borderRadius: 6
+          }}
         />
       </div>
       <div className={styles.info}>
