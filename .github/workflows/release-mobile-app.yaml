@@ -36,6 +36,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: nvm use 18
+        run: nvm use 18
       - name: Install dependencies # install project deps with --frozen-lockfile to make sure we will have the same packages version ( very recommended  on running yarn install on ci)
         run: yarn install --frozen-lockfile
       - name: Install mobile packages
@@ -44,7 +46,7 @@ jobs:
       - name: restore lerna
         uses: actions/cache@v3
         with:
-          path: '**/node_modules'
+          path: "**/node_modules"
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
@@ -58,7 +60,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-      - name: Setup Ruby 
+      - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.10
@@ -66,8 +68,8 @@ jobs:
       - name: Setup JDK 11
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
-          distribution: 'temurin'
+          java-version: "11"
+          distribution: "temurin"
           cache: gradle
       - name: Grant execute permission for gradlew
         working-directory: packages/mobile/android
@@ -78,7 +80,7 @@ jobs:
         with:
           fileName: "OWalletKeystore"
           encodedString: ${{ secrets.KEYSTORE_FILE }}
-          fileDir: 'packages/mobile/android/fastlane'
+          fileDir: "packages/mobile/android/fastlane"
       - name: Setup Fastlane android
         working-directory: packages/mobile/android/fastlane
         run: cd .. && bundle update && fastlane release
@@ -129,7 +131,7 @@ jobs:
       - name: restore lerna
         uses: actions/cache@v3
         with:
-          path: '**/node_modules'
+          path: "**/node_modules"
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Build Libs
         run: yarn build:libs
@@ -143,7 +145,7 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-      - name: Setup Ruby 
+      - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.6.10
@@ -172,4 +174,3 @@ jobs:
           KEYCHAIN_NAME: "login"
           MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
           SENTRY_TOKEN: ${{ secrets.SENTRY_TOKEN }}
-
