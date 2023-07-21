@@ -97,9 +97,10 @@ export const PasswordInputModal: FunctionComponent<{
               <Text />
             )}
             <TextInput
+              isBottomSheet
               label="Enter your password to continue"
               error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={text => {
+              onChangeText={(text) => {
                 setPassword(text);
               }}
               labelStyle={{

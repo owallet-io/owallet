@@ -7,14 +7,14 @@ import React, {
 } from 'react';
 import { View } from 'react-native';
 import { Text } from '@src/components/text';
-// import Animated, { Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { AlertIcon, RefreshIcon } from '../../components/icon';
 import { useStyle } from '../../styles';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-// import { useSpinAnimated } from '../../components/spinner';
+import { useSpinAnimated } from '../../components/spinner';
 import { ObservableQuery } from '@owallet/stores';
 
 export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
@@ -83,7 +83,7 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
   }, [queryStakable?.error, networkIsConnected]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  // const spinAnimated = useSpinAnimated(isRefreshing);
+  const spinAnimated = useSpinAnimated();
 
   useEffect(() => {
     if (isRefreshing) {
@@ -130,7 +130,7 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
     <View
       style={{
         overflow: 'hidden',
-        // height: animatedHeight,
+        // height: childLayout.height + extraHeight,
         justifyContent: 'center'
       }}
     >
@@ -143,7 +143,7 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
           'padding-right-24',
           'height-80'
         ])}
-        onLayout={e => {
+        onLayout={(e) => {
           setChildLayout(e.nativeEvent.layout);
         }}
       >
@@ -178,17 +178,11 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
               'margin-left-16'
             ])}
           >
-            {/* <Animated.View
-              style={{
-                transform: [
-                  {
-                    rotate: spinAnimated
-                  }
-                ]
-              }}
+            <Animated.View
+              style={spinAnimated}
             >
               <RefreshIcon color={style.get('color-danger').color} size={24} />
-            </Animated.View> */}
+            </Animated.View>
           </TouchableOpacity>
         ) : null}
       </View>

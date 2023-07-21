@@ -1,9 +1,8 @@
-import React, { FunctionComponent } from "react";
-import Svg, { Circle } from "react-native-svg";
-// import Animated from "react-native-reanimated";
-// import { useSpinAnimated } from "./hooks";
-import { colors } from "../../themes";
-import { View } from "react-native";
+import React, { FunctionComponent } from 'react';
+import Svg, { Circle } from 'react-native-svg';
+import Animated from 'react-native-reanimated';
+import { useSpinAnimated } from './hooks';
+import { colors } from '../../themes';
 
 export const SVGLoadingIcon: FunctionComponent<{
   color: string;
@@ -63,22 +62,19 @@ export const LoadingSpinner: FunctionComponent<{
 
   enabled?: boolean;
 }> = ({ color = colors['purple-700'], size, enabled }) => {
-  // const spinAnimated = useSpinAnimated(enabled ?? true);
+  const spinAnimated = useSpinAnimated();
 
   return (
-    // <Animated.View
-    //   style={{
-    //     width: size,
-    //     height: size,
-    //     transform: [
-    //       {
-    //         rotate: spinAnimated,
-    //       },
-    //     ],
-    //   }}
-    // >
-    //   <SVGLoadingIcon color={color} size={size} />
-    // </Animated.View>
-    <View></View>
+    <Animated.View
+      style={[
+        {
+          width: size,
+          height: size
+        },
+        spinAnimated
+      ]}
+    >
+      <SVGLoadingIcon color={color} size={size} />
+    </Animated.View>
   );
 };
