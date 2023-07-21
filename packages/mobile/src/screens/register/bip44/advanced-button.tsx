@@ -128,6 +128,7 @@ export const BIP44SelectModal: FunctionComponent<{
               minWidth: 58,
               paddingBottom: 0
             }}
+            isBottomSheet
             inputStyle={styles.borderInput}
             style={{ textAlign: 'right', color: 'red' }}
             keyboardType="number-pad"
@@ -141,6 +142,7 @@ export const BIP44SelectModal: FunctionComponent<{
             ’/
           </Text>
           <TextInput
+            isBottomSheet
             value={account.value}
             containerStyle={{
               minWidth: 58,
@@ -159,6 +161,7 @@ export const BIP44SelectModal: FunctionComponent<{
             ’/
           </Text>
           <TextInput
+            isBottomSheet
             value={change.value}
             containerStyle={{
               minWidth: 58,
@@ -177,6 +180,7 @@ export const BIP44SelectModal: FunctionComponent<{
             /
           </Text>
           <TextInput
+            isBottomSheet
             value={index.value}
             containerStyle={{
               minWidth: 58,
@@ -223,7 +227,7 @@ export const BIP44SelectModal: FunctionComponent<{
   }
 );
 
-const styling = scheme => {
+const styling = (scheme) => {
   const { colors } = useTheme();
   return StyleSheet.create({
     borderInput: {

@@ -3,13 +3,18 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
+  useRef
 } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { Keyboard, StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStyle } from '../../styles';
 
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import {
+  BottomSheetModal,
+  BottomSheetBackdrop,
+  BottomSheetView,
+  useBottomSheetDynamicSnapPoints
+} from '@gorhom/bottom-sheet';
 
 export interface ModalBaseProps {
   align?: 'top' | 'center' | 'bottom';
@@ -32,7 +37,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
   // variables
-  const snapPoints = useMemo(() => ['50%', '65%'], []);
+  // const snapPoints = useMemo(() => ['35%'], []);
 
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
@@ -68,10 +73,19 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     []
   );
   const handleDismiss = useCallback(() => {
+    Keyboard.dismiss();
     if (closeTransitionRef.current) {
       closeTransitionRef.current();
     }
   }, []);
+  const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
+
+  const {
+    animatedHandleHeight,
+    animatedSnapPoints,
+    animatedContentHeight,
+    handleContentLayout
+  } = useBottomSheetDynamicSnapPoints(initialSnapPoints);
   return (
     <View
       style={style.flatten(['absolute-fill', 'overflow-visible'])}
@@ -91,13 +105,21 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         >
           <BottomSheetModal
             ref={bottomSheetModalRef}
-            index={1}
-            snapPoints={snapPoints}
+            index={0}
+            snapPoints={animatedSnapPoints}
+            handleHeight={animatedHandleHeight}
+            contentHeight={animatedContentHeight}
             backdropComponent={renderBackdrop}
             onChange={handleSheetChanges}
+            keyboardBlurBehavior={'restore'}
             onDismiss={handleDismiss}
           >
-            {children}
+            <BottomSheetView
+              // style={contentContainerStyle}
+              onLayout={handleContentLayout}
+            >
+              {children}
+            </BottomSheetView>
           </BottomSheetModal>
         </SafeAreaView>
       ) : (
@@ -114,13 +136,21 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         >
           <BottomSheetModal
             ref={bottomSheetModalRef}
-            index={1}
-            snapPoints={snapPoints}
+            index={0}
+            snapPoints={animatedSnapPoints}
+            handleHeight={animatedHandleHeight}
+            contentHeight={animatedContentHeight}
             backdropComponent={renderBackdrop}
             onChange={handleSheetChanges}
+            keyboardBlurBehavior={'restore'}
             onDismiss={handleDismiss}
           >
-            {children}
+            <BottomSheetView
+              // style={contentContainerStyle}
+              onLayout={handleContentLayout}
+            >
+              {children}
+            </BottomSheetView>
           </BottomSheetModal>
         </View>
       )}
