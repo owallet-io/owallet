@@ -652,15 +652,15 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFBApp (18.2.0):
+  - RNFBApp (18.3.0):
     - Firebase/CoreOnly (= 10.12.0)
     - React-Core
-  - RNFBCrashlytics (18.2.0):
+  - RNFBCrashlytics (18.3.0):
     - Firebase/Crashlytics (= 10.12.0)
     - FirebaseCoreExtension (= 10.12.0)
     - React-Core
     - RNFBApp
-  - RNFBMessaging (18.2.0):
+  - RNFBMessaging (18.3.0):
     - Firebase/Messaging (= 10.12.0)
     - FirebaseCoreExtension (= 10.12.0)
     - React-Core
@@ -1075,9 +1075,9 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 25d818c85db769cc0e7083d39efaa01a6f450df3
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
-  RNFBApp: 9a54c7fd5a1c33684a862b51b9c00914a358061c
-  RNFBCrashlytics: 2dafa9f70bb721ce0de23337de776a669c75a92d
-  RNFBMessaging: 5fa69e7c4f9641fc222327208d90d3b56e907f58
+  RNFBApp: f0b5cf917b0b91a0ae890fbbaec0fb5d3285ea46
+  RNFBCrashlytics: 7bb4840e45b15b56859c03afd8c3707e7a0eb2eb
+  RNFBMessaging: dec20e8fa230fb776b94c33384676da33c605d2e
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
