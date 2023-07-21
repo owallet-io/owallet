@@ -70,10 +70,10 @@ export const PasswordInputModal: FunctionComponent<{
       Platform.OS === 'ios' ? metrics.screenHeight / 2.1 : 0;
 
     return (
-      <KeyboardAvoidingView
-        behavior="position"
-        keyboardVerticalOffset={keyboardVerticalOffset}
-      >
+      // <KeyboardAvoidingView
+      //   behavior="position"
+      //   keyboardVerticalOffset={keyboardVerticalOffset}
+      // >
         <CardModal title={title} labelStyle={labelStyle}>
           <TouchableWithoutFeedback
             onPress={() => {
@@ -143,7 +143,7 @@ export const PasswordInputModal: FunctionComponent<{
             />
           </View>
         </CardModal>
-      </KeyboardAvoidingView>
+      // </KeyboardAvoidingView>
     );
   },
   {
