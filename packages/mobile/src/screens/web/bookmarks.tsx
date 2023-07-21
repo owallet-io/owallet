@@ -15,7 +15,7 @@ import { observer } from 'mobx-react-lite';
 import { PageWithScrollView } from '../../components/page';
 import { checkValidDomain, formatContractAddress } from '../../utils/helper';
 import { useNavigation } from '@react-navigation/native';
-import DraggableFlatList from 'react-native-draggable-flatlist';
+// import DraggableFlatList from 'react-native-draggable-flatlist';
 import { useTheme } from '@src/themes/theme-provider';
 export const BrowserSection: FunctionComponent<{}> = ({}) => {
   const style = useStyle();
@@ -188,7 +188,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
               }
             ])}
           >
-            <DraggableFlatList
+            {/* <DraggableFlatList
               data={data}
               onDragEnd={({ data }) => {
                 browserStore.updateBookmarks(data);
@@ -196,7 +196,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
               }}
               keyExtractor={(item: any) => item?.uri}
               renderItem={renderItem}
-            />
+            /> */}
           </View>
         </View>
       </View>
