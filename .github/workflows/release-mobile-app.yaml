@@ -58,9 +58,6 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-      - name: Android codepush
-        working-directory: packages/mobile
-        run: yarn code-push-android
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -146,9 +143,6 @@ jobs:
           API_KEY: ${{ secrets.API_KEY_FIREBASE }}
           SENDER_ID: ${{ secrets.SENDER_ID_FIREBASE }}
           APP_ID: ${{ secrets.APP_ID_FIREBASE }}
-      - name: IOS codepush
-        working-directory: packages/mobile
-        run: yarn code-push-ios
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
