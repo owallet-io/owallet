@@ -115,7 +115,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onDismiss={handleDismiss}
           >
             <BottomSheetView
-              // style={contentContainerStyle}
+              style={containerStyle}
               onLayout={handleContentLayout}
             >
               {children}
@@ -146,7 +146,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onDismiss={handleDismiss}
           >
             <BottomSheetView
-              // style={contentContainerStyle}
+              style={containerStyle}
               onLayout={handleContentLayout}
             >
               {children}
