@@ -36,9 +36,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
 }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  // variables
-  // const snapPoints = useMemo(() => ['35%'], []);
-
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
     if (openTransitionRef.current && index > 0) {
@@ -113,6 +110,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
             onDismiss={handleDismiss}
+            android_keyboardInputMode="adjustResize"
           >
             <BottomSheetView
               style={containerStyle}
@@ -144,6 +142,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
             onDismiss={handleDismiss}
+            android_keyboardInputMode="adjustResize"
           >
             <BottomSheetView
               style={containerStyle}

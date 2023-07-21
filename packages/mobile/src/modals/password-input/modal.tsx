@@ -70,80 +70,66 @@ export const PasswordInputModal: FunctionComponent<{
       Platform.OS === 'ios' ? metrics.screenHeight / 2.1 : 0;
 
     return (
-      // <KeyboardAvoidingView
-      //   behavior="position"
-      //   keyboardVerticalOffset={keyboardVerticalOffset}
-      // >
-        <CardModal title={title} labelStyle={labelStyle}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              Keyboard.dismiss();
-            }}
-          >
-            {paragraph ? (
-              <Text
-                style={{
-                  ...typography['body2'],
-                  marginBottom: 32,
-                  color:
-                    scheme === 'dark'
-                      ? colors['sub-text']
-                      : colors['text-black-medium']
-                }}
-              >
-                {paragraph || 'Do not reveal your mnemonic to anyone'}
-              </Text>
-            ) : (
-              <Text />
-            )}
-            <TextInput
-              isBottomSheet
-              label="Enter your password to continue"
-              error={isInvalidPassword ? 'Invalid password' : undefined}
-              onChangeText={(text) => {
-                setPassword(text);
-              }}
-              labelStyle={{
-                color:
-                  scheme === 'dark'
-                    ? colors['white']
-                    : colors['text-black-high']
-              }}
-              inputStyle={{
-                borderWidth: 1,
-                backgroundColor: colors['background-input-modal'],
-                paddingLeft: 11,
-                paddingRight: 11,
-                paddingTop: 12,
-                borderRadius: 8,
-                color:
-                  scheme === 'dark'
-                    ? colors['white']
-                    : colors['text-black-high']
-              }}
-              value={password}
-              returnKeyType="done"
-              secureTextEntry={true}
-              onSubmitEditing={submitPassword}
-            />
-          </TouchableWithoutFeedback>
-          <View
+      <CardModal title={title} labelStyle={labelStyle}>
+        {paragraph ? (
+          <Text
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between'
+              ...typography['body2'],
+              marginBottom: 32,
+              color:
+                scheme === 'dark'
+                  ? colors['sub-text']
+                  : colors['text-black-medium']
             }}
           >
-            <OWButtonGroup
-              labelApprove={textButtonRight}
-              onPressApprove={submitPassword}
-              disabledApprove={!password || disabled}
-              loadingApprove={isLoading}
-              labelClose={textButtonLeft}
-              onPressClose={close}
-            />
-          </View>
-        </CardModal>
-      // </KeyboardAvoidingView>
+            {paragraph || 'Do not reveal your mnemonic to anyone'}
+          </Text>
+        ) : (
+          <Text />
+        )}
+        <TextInput
+          isBottomSheet
+          label="Enter your password to continue"
+          error={isInvalidPassword ? 'Invalid password' : undefined}
+          onChangeText={(text) => {
+            setPassword(text);
+          }}
+          labelStyle={{
+            color:
+              scheme === 'dark' ? colors['white'] : colors['text-black-high']
+          }}
+          inputStyle={{
+            borderWidth: 1,
+            backgroundColor: colors['background-input-modal'],
+            paddingLeft: 11,
+            paddingRight: 11,
+            paddingTop: 12,
+            borderRadius: 8,
+            color:
+              scheme === 'dark' ? colors['white'] : colors['text-black-high']
+          }}
+          value={password}
+          returnKeyType="done"
+          secureTextEntry={true}
+          onSubmitEditing={submitPassword}
+        />
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          <OWButtonGroup
+            labelApprove={textButtonRight}
+            onPressApprove={submitPassword}
+            disabledApprove={!password || disabled}
+            loadingApprove={isLoading}
+            labelClose={textButtonLeft}
+            onPressClose={close}
+          />
+        </View>
+      </CardModal>
     );
   },
   {
