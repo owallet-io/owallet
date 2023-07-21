@@ -6,14 +6,15 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, TouchableOpacity, View } from 'react-native';
 import { PageWithView } from '../../components/page';
 import { useStore } from '../../stores';
-import { _keyExtract } from '../../utils/helper';
+import { _keyExtract, findLedgerAddressWithChainId } from '../../utils/helper';
 import { TokenItem } from './components/token-item';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '@src/navigation.provider';
 
 export const TokensScreen: FunctionComponent = observer(() => {
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
+    useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -21,7 +22,12 @@ export const TokensScreen: FunctionComponent = observer(() => {
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       chainStore.current.networkType === 'evm'
-        ? account.evmosHexAddress
+        ? keyRingStore.keyRingType === 'ledger'
+          ? findLedgerAddressWithChainId(
+              keyRingStore.keyRingLedgerAddresses,
+              chainStore.current.chainId
+            )
+          : account.evmosHexAddress
         : account.bech32Address
     );
 
