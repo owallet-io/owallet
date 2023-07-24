@@ -250,6 +250,8 @@ export const ModalRenderer: FunctionComponent<{
         onCloseTransitionEnd={() => {
           globalModalRendererState.removeModal(modal.key);
           modal.onCloseTransitionEnd();
+        }}
+        close={() => {
           modal.close();
         }}
         containerStyle={modal.options.containerStyle}

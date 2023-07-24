@@ -21,6 +21,7 @@ export interface ModalBaseProps {
   isOpen: boolean;
   onOpenTransitionEnd?: () => void;
   onCloseTransitionEnd?: () => void;
+  close?: () => void;
   containerStyle?: ViewStyle;
   disableSafeArea?: boolean;
 }
@@ -32,7 +33,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   onOpenTransitionEnd,
   onCloseTransitionEnd,
   containerStyle,
-  disableSafeArea
+  disableSafeArea,
+  close
 }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -49,7 +51,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   openTransitionRef.current = onOpenTransitionEnd;
   const closeTransitionRef = useRef(onCloseTransitionEnd);
   closeTransitionRef.current = onCloseTransitionEnd;
-
+  const closeRef = useRef(close);
+  closeRef.current = close;
   useEffect(() => {
     if (isOpen) {
       bottomSheetModalRef.current.present();
@@ -70,7 +73,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     []
   );
   const handleDismiss = useCallback(() => {
-    Keyboard.dismiss();
+    
+    if (closeRef.current) {
+      closeRef.current();
+      Keyboard.dismiss();
+    }
     if (closeTransitionRef.current) {
       closeTransitionRef.current();
     }
