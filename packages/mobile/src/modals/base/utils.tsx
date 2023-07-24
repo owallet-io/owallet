@@ -41,11 +41,11 @@ export const registerModal: <P>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.isOpen]);
 
-    useEffect(() => {
-      if (key.current) {
-        globalModalRendererState.updateModal(key.current, props);
-      }
-    });
+    // useEffect(() => {
+    //   if (key.current) {
+    //     globalModalRendererState.updateModal(key.current, props);
+    //   }
+    // });
 
     return null;
   };

@@ -61,8 +61,8 @@ export const PasswordInputModal: FunctionComponent<{
       setIsLoading(true);
       try {
         await onEnterPassword(password);
-        setIsInvalidPassword(false);
         close();
+        setIsInvalidPassword(false);
       } catch (e) {
         console.log(e);
         setIsInvalidPassword(true);

@@ -57,7 +57,7 @@ const MnemonicSeed = () => {
             analyticsStore.logEvent('Account changed');
             await selectKeyStore(item);
             await modalStore.close();
-            setIsLoading(false);
+            // setIsLoading(false);
           }}
         >
           <View
@@ -149,7 +149,7 @@ const MnemonicSeed = () => {
         renderItem={renderItem}
         keyExtractor={_keyExtract}
       />
-      {/* <View style={{ position: 'relative', flex: 1 }}>
+      <View style={{ position: 'relative' }}>
         <View
           style={{
             position: 'absolute',
@@ -162,8 +162,7 @@ const MnemonicSeed = () => {
             <LoadingSpinner size={24} color={colors['purple-700']} />
           )}
         </View>
-      </View> */}
-      
+      </View>
     </View>
   );
 };

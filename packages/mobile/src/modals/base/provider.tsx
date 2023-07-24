@@ -38,9 +38,9 @@ export interface Modal {
   close: () => void;
   onCloseTransitionEnd: () => void;
   readonly bottomSheetModalConfig?: Omit<
-  BottomSheetModalProps,
-  'snapPoints' | 'children'
->;
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
   options: ModalOptions;
 }
 

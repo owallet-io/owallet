@@ -51,7 +51,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (
           <LedgerGranterModal
-            {...modalStore.getOptions}
             isOpen={true}
             close={() => ledgerInitStore.abortAll()}
           />
@@ -61,14 +60,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
         {signInteractionStore.waitingData ? (
           <SignModal
-            {...modalStore.getOptions}
             isOpen={true}
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
         {signInteractionStore.waitingEthereumData ? (
           <SignEthereumModal
-            {...modalStore.getOptions}
             isOpen={true}
             close={() => {
               signInteractionStore.rejectAll();
@@ -78,7 +75,6 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         ) : null}
         {signInteractionStore.waitingTronData ? (
           <SignTronModal
-            {...modalStore.getOptions}
             isOpen={true}
             close={() => signInteractionStore.rejectAll()}
           />

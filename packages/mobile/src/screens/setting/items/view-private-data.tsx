@@ -28,11 +28,13 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
       <PasswordInputModal
         isOpen={isOpenModal}
         paragraph={'Do not reveal your mnemonic to anyone'}
-        close={() => setIsOpenModal(false)}
+        close={() => {
+          setIsOpenModal(false);
+        }}
         title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
-        onEnterPassword={async password => {
+        onEnterPassword={async (password) => {
           const index = keyRingStore.multiKeyStoreInfo.findIndex(
-            keyStore => keyStore.selected
+            (keyStore) => keyStore.selected
           );
 
           if (index >= 0) {
