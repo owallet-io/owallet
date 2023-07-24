@@ -12,7 +12,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ModalBase } from './base';
 import { ModalContext, useModalState } from './hooks';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export interface ModalOptions {
   readonly align?: 'top' | 'center' | 'bottom';
   readonly transitionVelocity?: number;
@@ -37,6 +37,10 @@ export interface Modal {
   props: any;
   close: () => void;
   onCloseTransitionEnd: () => void;
+  readonly bottomSheetModalConfig?: Omit<
+  BottomSheetModalProps,
+  'snapPoints' | 'children'
+>;
   options: ModalOptions;
 }
 
@@ -64,6 +68,7 @@ export class ModalsRendererState {
     modal: React.ElementType<P>,
     props: P,
     close: () => void,
+    bottomSheetModalConfig,
     onCloseTransitionEnd: () => void,
     options: ModalOptions = {
       align: 'bottom'
@@ -78,6 +83,7 @@ export class ModalsRendererState {
       close,
       onCloseTransitionEnd,
       props,
+      bottomSheetModalConfig,
       options
     });
 
@@ -221,6 +227,7 @@ export const ModalRenderer: FunctionComponent<{
           transparentBackdrop: modal.options.transparentBackdrop,
           backdropMaxOpacity: modal.options.backdropMaxOpacity,
           blurBackdropOnIOS: modal.options.blurBackdropOnIOS,
+          bottomSheetModalConfig: modal.bottomSheetModalConfig,
           close: modal.close
         };
       }, [
@@ -238,7 +245,8 @@ export const ModalRenderer: FunctionComponent<{
         modal.options.transitionAcceleration,
         modal.options.transitionVelocity,
         modal.options.transparentBackdrop,
-        modal.props.isOpen
+        modal.props.isOpen,
+        modal.bottomSheetModalConfig
       ])}
     >
       <ModalBase
@@ -254,6 +262,7 @@ export const ModalRenderer: FunctionComponent<{
         close={() => {
           modal.close();
         }}
+        bottomSheetModalConfig={modal.bottomSheetModalConfig}
         containerStyle={modal.options.containerStyle}
         disableSafeArea={modal.options.disableSafeArea}
       >

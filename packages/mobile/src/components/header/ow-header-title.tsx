@@ -23,7 +23,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   const bip44Option = useBIP44Option();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
-  const deterministicNumber = useCallback(chainInfo => {
+  const deterministicNumber = useCallback((chainInfo) => {
     const bytes = Hash.sha256(
       Buffer.from(chainInfo.stakeCurrency.coinMinimalDenom)
     );
@@ -33,7 +33,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   }, []);
 
   const profileColor = useCallback(
-    chainInfo => {
+    (chainInfo) => {
       const random = [colors['purple-400']];
 
       return random[deterministicNumber(chainInfo) % random.length];
@@ -42,7 +42,11 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   );
   // const navigation = useNavigation();
   const _onPressNetworkModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions({
+      bottomSheetModalConfig:{
+        enablePanDownToClose:false
+      }
+    });
     modalStore.setChildren(
       NetworkModal({
         profileColor,

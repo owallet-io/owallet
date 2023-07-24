@@ -13,7 +13,7 @@ import { RectButton } from '../../components/rect-button';
 import { Button } from '../../components/button';
 import { Bech32Address } from '@owallet/cosmos';
 import { WalletIcon } from '../setting/components';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export const BIP44Selectable: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -132,6 +132,10 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
 export const BIP44SelectableModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
 }> = registerModal(
   observer(() => {
     const { chainStore, keyRingStore, queriesStore } = useStore();

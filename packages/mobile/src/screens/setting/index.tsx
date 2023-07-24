@@ -41,7 +41,11 @@ export const SettingScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
   const _onPressCountryModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions({
+      bottomSheetModalConfig:{
+        enablePanDownToClose:false
+      }
+    });
     modalStore.setChildren(
       CountryModal({
         data: currencyItems,

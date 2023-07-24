@@ -12,6 +12,7 @@ import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
 import { TRON_ID } from '@owallet/common';
+import OWFlatList from '@src/components/page/ow-flat-list';
 
 const COINTYPE_NETWORK = {
   118: 'Cosmos',
@@ -30,7 +31,7 @@ export const NetworkModal = ({
 }) => {
   const styles = styling(colors);
 
-  const handleSwitchNetwork = item => {
+  const handleSwitchNetwork = (item) => {
     try {
       if (keyRingStore.keyRingType === 'ledger') {
         Alert.alert(
@@ -229,25 +230,25 @@ export const NetworkModal = ({
           height: metrics.screenHeight / 2
         }}
       >
-        <FlatList
-          showsVerticalScrollIndicator={false}
+        <OWFlatList
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
+          isBottomSheet
           keyExtractor={_keyExtract}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: spacing['10']
-              }}
-            />
-          )}
+          // ListFooterComponent={() => (
+          //   <View
+          //     style={{
+          //       height: spacing['10']
+          //     }}
+          //   />
+          // )}
         />
       </View>
     </View>
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

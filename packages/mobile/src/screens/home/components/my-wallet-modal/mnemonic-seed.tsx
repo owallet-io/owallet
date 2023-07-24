@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { FlatList, Image, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { RectButton } from '../../../../components/rect-button';
@@ -9,6 +9,8 @@ import { MultiKeyStoreInfoWithSelectedElem } from '@owallet/background';
 import { LoadingSpinner } from '../../../../components/spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import { useStyleMyWallet } from './styles';
+import OWFlatList from '@src/components/page/ow-flat-list';
+import { OWButton } from '@src/components/button';
 
 const MnemonicSeed = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,30 +19,31 @@ const MnemonicSeed = () => {
   const { colors } = useTheme();
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => !keyStore.type || keyStore.type === 'mnemonic'
+      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'privateKey' && !keyStore.meta?.email
+      (keyStore) => keyStore.type === 'privateKey' && !keyStore.meta?.email
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'ledger'
+      (keyStore) => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
-  const selectKeyStore = async (
-    keyStore: MultiKeyStoreInfoWithSelectedElem
-  ) => {
-    const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
-    if (index >= 0) {
-      await keyRingStore.changeKeyRing(index);
-    }
-  };
+  const selectKeyStore = useCallback(
+    async (keyStore: MultiKeyStoreInfoWithSelectedElem) => {
+      const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
+      if (index >= 0) {
+        await keyRingStore.changeKeyRing(index);
+      }
+    },
+    []
+  );
 
   const renderItem = ({ item }) => {
     return (
@@ -140,13 +143,13 @@ const MnemonicSeed = () => {
           data?.length > 1 ? metrics.screenHeight / 4 : metrics.screenHeight / 7
       }}
     >
-      <View style={{ position: 'relative' }}>
-        <FlatList
-          data={data}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem}
-          keyExtractor={_keyExtract}
-        />
+      <OWFlatList
+        data={data}
+        isBottomSheet
+        renderItem={renderItem}
+        keyExtractor={_keyExtract}
+      />
+      {/* <View style={{ position: 'relative', flex: 1 }}>
         <View
           style={{
             position: 'absolute',
@@ -159,7 +162,8 @@ const MnemonicSeed = () => {
             <LoadingSpinner size={24} color={colors['purple-700']} />
           )}
         </View>
-      </View>
+      </View> */}
+      
     </View>
   );
 };

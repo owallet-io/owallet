@@ -15,7 +15,7 @@ import {
   BottomSheetView,
   useBottomSheetDynamicSnapPoints
 } from '@gorhom/bottom-sheet';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export interface ModalBaseProps {
   align?: 'top' | 'center' | 'bottom';
   isOpen: boolean;
@@ -24,6 +24,10 @@ export interface ModalBaseProps {
   close?: () => void;
   containerStyle?: ViewStyle;
   disableSafeArea?: boolean;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
 }
 
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
@@ -34,7 +38,8 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   onCloseTransitionEnd,
   containerStyle,
   disableSafeArea,
-  close
+  close,
+  bottomSheetModalConfig
 }) => {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
@@ -73,7 +78,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     []
   );
   const handleDismiss = useCallback(() => {
-    
     if (closeRef.current) {
       closeRef.current();
       Keyboard.dismiss();
@@ -108,6 +112,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           pointerEvents="box-none"
         >
           <BottomSheetModal
+            {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             index={0}
             snapPoints={animatedSnapPoints}
@@ -119,12 +124,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onDismiss={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
-            <BottomSheetView
-              style={containerStyle}
-              onLayout={handleContentLayout}
-            >
+            <View style={containerStyle} onLayout={handleContentLayout}>
               {children}
-            </BottomSheetView>
+            </View>
           </BottomSheetModal>
         </SafeAreaView>
       ) : (
@@ -140,6 +142,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           pointerEvents="box-none"
         >
           <BottomSheetModal
+            {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             index={0}
             snapPoints={animatedSnapPoints}
@@ -151,12 +154,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onDismiss={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
-            <BottomSheetView
-              style={containerStyle}
-              onLayout={handleContentLayout}
-            >
+            <View style={containerStyle} onLayout={handleContentLayout}>
               {children}
-            </BottomSheetView>
+            </View>
           </BottomSheetModal>
         </View>
       )}

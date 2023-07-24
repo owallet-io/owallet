@@ -194,7 +194,7 @@ const HistoryTransactionsScreen = observer(() => {
   );
 
   const onType = useCallback(() => {
-    modalStore.setOpen();
+    modalStore.setOptions();
     modalStore.setChildren(
       <TypeModal
         actionType={onActionType}

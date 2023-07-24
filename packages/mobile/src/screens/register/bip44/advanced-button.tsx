@@ -15,7 +15,7 @@ import { CardModal } from '../../../modals/card';
 import { useStore } from '../../../stores';
 import { typography } from '../../../themes';
 import { BIP44Option } from './bip44-option';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ bip44Option }) => {
@@ -72,6 +72,10 @@ const useZeroOrPositiveIntegerString = (initialValue: string) => {
 export const BIP44SelectModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {

@@ -75,7 +75,7 @@ export const AccountCardEVM: FunctionComponent<{
   };
 
   const _onPressReceiveModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions();
     modalStore.setChildren(
       AddressQRCodeModal({
         account,

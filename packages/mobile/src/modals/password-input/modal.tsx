@@ -18,10 +18,14 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonGroup from '@src/components/button/OWButtonGroup';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
   title: string;
   paragraph?: string;
   labelStyle?: TextStyle;

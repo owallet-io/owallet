@@ -28,7 +28,7 @@ import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 const AlertIcon: FunctionComponent<{
   size: number;
   color: string;
@@ -68,6 +68,10 @@ enum BLEPermissionGrantStatus {
 export const LedgerGranterModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
 }> = registerModal(
   observer(() => {
     const { ledgerInitStore, chainStore } = useStore();

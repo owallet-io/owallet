@@ -8,6 +8,7 @@ import { HomeBaseModal } from '../../modals/home-base';
 import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
 import { SignTronModal } from '../../modals/sign/sign-tron';
 import { AccessModal } from '@src/modals/permission';
+import { useModalState } from '@src/modals/base';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -34,7 +35,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         permissionStore.waitingDatas &&
         navigationRef?.current?.getCurrentRoute().name === 'Web.dApp'
       ) {
-        return permissionStore.waitingDatas.map(wd => {
+        return permissionStore.waitingDatas.map((wd) => {
           return (
             <AccessModal
               waitingData={wd}
@@ -50,6 +51,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (
           <LedgerGranterModal
+            {...modalStore.getOptions}
             isOpen={true}
             close={() => ledgerInitStore.abortAll()}
           />
@@ -59,12 +61,14 @@ export const InteractionModalsProivder: FunctionComponent = observer(
 
         {signInteractionStore.waitingData ? (
           <SignModal
+            {...modalStore.getOptions}
             isOpen={true}
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
         {signInteractionStore.waitingEthereumData ? (
           <SignEthereumModal
+            {...modalStore.getOptions}
             isOpen={true}
             close={() => {
               signInteractionStore.rejectAll();
@@ -74,12 +78,17 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         ) : null}
         {signInteractionStore.waitingTronData ? (
           <SignTronModal
+            {...modalStore.getOptions}
             isOpen={true}
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
-        {modalStore.getState ? (
-          <HomeBaseModal isOpen={true} close={() => modalStore.close()} />
+        {modalStore.getOptions?.isOpen ? (
+          <HomeBaseModal
+            {...modalStore.getOptions}
+            isOpen={true}
+            close={() => modalStore.close()}
+          />
         ) : null}
 
         {children}

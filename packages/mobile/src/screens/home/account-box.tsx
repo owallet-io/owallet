@@ -58,7 +58,11 @@ export const AccountBox: FunctionComponent<{
     ).stakable;
 
     const _onPressMyWallet = () => {
-      modalStore.setOpen();
+      modalStore.setOptions({
+        bottomSheetModalConfig:{
+          enablePanDownToClose:false
+        }
+      });
       modalStore.setChildren(MyWalletModal());
     };
 

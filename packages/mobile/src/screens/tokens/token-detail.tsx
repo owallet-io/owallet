@@ -111,7 +111,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     };
   }, [chainStore?.current?.rest, account?.bech32Address]);
   const _onPressReceiveModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions();
     modalStore.setChildren(
       AddressQRCodeModal({
         account,

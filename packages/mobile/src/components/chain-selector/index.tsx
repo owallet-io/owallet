@@ -9,10 +9,14 @@ import { useStore } from "../../stores";
 import { RectButton } from "../rect-button";
 import FastImage from "react-native-fast-image";
 import { VectorCharacter } from "../vector-character";
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export const ChainSelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
   chainIds: string[];
   onSelectChain: (chainId: string) => void;
 }> = registerModal(
