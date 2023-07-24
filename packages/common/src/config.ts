@@ -400,12 +400,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uatom',
       coinDecimals: 6,
       coinGeckoId: 'cosmos',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
-      gasPriceStep: {
-        low: 0,
-        average: 0.025,
-        high: 0.04
-      }
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
     },
     bip44: {
       coinType: 118
@@ -443,12 +438,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
       coinGeckoId: 'osmosis',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
-      gasPriceStep: {
-        low: 0,
-        average: 0.025,
-        high: 0.04
-      }
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
     },
     bip44: {
       coinType: 118
