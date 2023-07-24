@@ -16,6 +16,7 @@ import {
   useBottomSheetDynamicSnapPoints
 } from '@gorhom/bottom-sheet';
 import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { useTheme } from '@src/themes/theme-provider';
 export interface ModalBaseProps {
   align?: 'top' | 'center' | 'bottom';
   isOpen: boolean;
@@ -94,6 +95,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
     animatedContentHeight,
     handleContentLayout
   } = useBottomSheetDynamicSnapPoints(initialSnapPoints);
+  const { colors } = useTheme();
   return (
     <View
       style={style.flatten(['absolute-fill', 'overflow-visible'])}
@@ -144,6 +146,13 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           <BottomSheetModal
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
+            backgroundStyle={{
+              backgroundColor: colors['background-box']
+            }}
+            handleIndicatorStyle={{
+              backgroundColor: colors['title-modal-login-failed'],
+              width:50
+            }}
             index={0}
             snapPoints={animatedSnapPoints}
             handleHeight={animatedHandleHeight}
