@@ -63,24 +63,33 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   const closeRef = useRef(close);
   closeRef.current = close;
   const isVisible = useKeyboardVisible();
+  console.log('isVisible: ', isVisible);
+  const keyboardVisible = useRef(isVisible);
+  console.log('keyboardVisible: ', keyboardVisible.current);
   useEffect(() => {
     if (isOpen) {
       bottomSheetModalRef.current?.present();
       return;
     }
-    if (!isOpen && isVisible) {
-      Keyboard.dismiss();
-      delay(200).then(() => {
+    if (!isOpen) {
+      if (keyboardVisible.current) {
+        Keyboard.dismiss();
+        delay(200).then(() => {
+          if (bottomSheetModalRef.current?.dismiss) {
+            bottomSheetModalRef.current?.dismiss();
+          }
+        });
+      } else {
         if (bottomSheetModalRef.current?.dismiss) {
           bottomSheetModalRef.current?.dismiss();
         }
-      });
-    } else if (!isOpen && !isVisible) {
-      if (bottomSheetModalRef.current?.dismiss) {
-        bottomSheetModalRef.current?.dismiss();
       }
     }
-  }, [isOpen, isVisible]);
+  }, [isOpen]);
+  useEffect(() => {
+    keyboardVisible.current = isVisible;
+    return () => {};
+  }, [isVisible]);
 
   const renderBackdrop = useCallback(
     (props) => (
