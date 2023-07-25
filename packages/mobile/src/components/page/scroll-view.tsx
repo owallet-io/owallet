@@ -92,6 +92,7 @@ export const PageWithScrollView = forwardRef<
             ],
             { useNativeDriver: true, listener: onScroll }
           )}
+          keyboardShouldPersistTaps="handled"
           {...restProps}
         />
         <View
