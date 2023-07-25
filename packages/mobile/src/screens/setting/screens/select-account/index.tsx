@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../../stores';
 import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
@@ -61,19 +61,19 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
 
   const mnemonicKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => !keyStore.type || keyStore.type === 'mnemonic'
+      (keyStore) => !keyStore.type || keyStore.type === 'mnemonic'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const ledgerKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'ledger'
+      (keyStore) => keyStore.type === 'ledger'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
   const privateKeyStores = useMemo(() => {
     return keyRingStore.multiKeyStoreInfo.filter(
-      keyStore => keyStore.type === 'privateKey'
+      (keyStore) => keyStore.type === 'privateKey'
     );
   }, [keyRingStore.multiKeyStoreInfo]);
 
@@ -84,14 +84,16 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
   ) => {
     const index = keyRingStore.multiKeyStoreInfo.indexOf(keyStore);
     if (index >= 0) {
-      await loadingScreen.openAsync();
       await keyRingStore.changeKeyRing(index);
-      loadingScreen.setIsLoading(false);
-
       smartNavigation.navigateSmart('Home', {});
     }
   };
-
+  const handleOnKeyStore = useCallback(async (keyStore) => {
+    loadingScreen.setIsLoading(true);
+    analyticsStore.logEvent('Account changed');
+    await selectKeyStore(keyStore);
+    loadingScreen.setIsLoading(false);
+  }, []);
   const renderKeyStores = (
     title: string,
     keyStores: MultiKeyStoreInfoWithSelectedElem[]
@@ -111,10 +113,7 @@ export const SettingSelectAccountScreen: FunctionComponent = observer(() => {
                   topBorder={i === 0}
                   bottomBorder={keyStores.length - 1 !== i}
                   active={keyStore.selected}
-                  onPress={async () => {
-                    analyticsStore.logEvent('Account changed');
-                    await selectKeyStore(keyStore);
-                  }}
+                  onPress={() => handleOnKeyStore(keyStore)}
                 />
               );
             })}

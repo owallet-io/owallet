@@ -8,7 +8,6 @@ import { HomeBaseModal } from '../../modals/home-base';
 import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
 import { SignTronModal } from '../../modals/sign/sign-tron';
 import { AccessModal } from '@src/modals/permission';
-import { useModalState } from '@src/modals/base';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {

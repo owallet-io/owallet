@@ -21,9 +21,9 @@ const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-  BottomSheetModalProps,
-  'snapPoints' | 'children'
->;
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
   feeConfig: IFeeConfig;
   gasConfig: IGasConfig;
 }> = registerModal(
@@ -120,8 +120,7 @@ const FeeButtonsModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    backdropMaxOpacity: 0.5
+    disableSafeArea: true
   }
 );
 

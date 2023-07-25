@@ -300,6 +300,6 @@ export const SignModal: FunctionComponent<{
   }),
   {
     disableSafeArea: true,
-    blurBackdropOnIOS: true
+   
   }
 );

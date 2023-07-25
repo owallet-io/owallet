@@ -212,7 +212,7 @@ export const SignEthereumModal: FunctionComponent<{
           </View>
           <TextInput
             label="Memo"
-            onChangeText={txt => {
+            onChangeText={(txt) => {
               setMemo(txt);
             }}
             defaultValue={''}
@@ -295,7 +295,6 @@ export const SignEthereumModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

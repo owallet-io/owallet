@@ -53,7 +53,6 @@ export const HomeBaseModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

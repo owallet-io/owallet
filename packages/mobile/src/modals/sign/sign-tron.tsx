@@ -155,7 +155,6 @@ export const SignTronModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

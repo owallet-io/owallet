@@ -28,7 +28,7 @@ export const SettingScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const currencyItems = useMemo(() => {
-    return Object.keys(priceStore.supportedVsCurrencies).map(key => {
+    return Object.keys(priceStore.supportedVsCurrencies).map((key) => {
       return {
         key,
         label: key.toUpperCase()
@@ -36,14 +36,15 @@ export const SettingScreen: FunctionComponent = observer(() => {
     });
   }, [priceStore.supportedVsCurrencies]);
   const selected = keyRingStore.multiKeyStoreInfo.find(
-    keyStore => keyStore.selected
+    (keyStore) => keyStore.selected
   );
 
   const smartNavigation = useSmartNavigation();
   const _onPressCountryModal = () => {
     modalStore.setOptions({
-      bottomSheetModalConfig:{
-        enablePanDownToClose:false
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag: false
       }
     });
     modalStore.setChildren(

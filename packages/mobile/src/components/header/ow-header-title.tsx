@@ -43,8 +43,9 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
   // const navigation = useNavigation();
   const _onPressNetworkModal = () => {
     modalStore.setOptions({
-      bottomSheetModalConfig:{
-        enablePanDownToClose:false
+      bottomSheetModalConfig: {
+        enablePanDownToClose: false,
+        enableOverDrag:false
       }
     });
     modalStore.setChildren(

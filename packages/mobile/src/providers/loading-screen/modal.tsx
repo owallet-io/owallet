@@ -3,9 +3,10 @@ import { registerModal, useModalState } from '../../modals/base';
 import { LoadingSpinner } from '../../components/spinner';
 import { View } from 'react-native';
 import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { metrics } from '@src/themes';
 export const LoadingScreenModal: FunctionComponent<{
   isOpen: boolean;
-  close: () => void;
+  close?: () => void;
   bottomSheetModalConfig?: Omit<
     BottomSheetModalProps,
     'snapPoints' | 'children'
@@ -13,11 +14,12 @@ export const LoadingScreenModal: FunctionComponent<{
   onOpenComplete?: () => void;
 }> = registerModal(
   ({ onOpenComplete }) => {
-
     const onOpenCompleteRef = useRef(onOpenComplete);
     onOpenCompleteRef.current = onOpenComplete;
 
     const modal = useModalState();
+    console.log('🚀 ~ file: modal.tsx:20 ~ modal:', modal);
+
     useEffect(() => {
       if (!modal.isTransitionOpening) {
         if (onOpenCompleteRef.current) {
@@ -30,7 +32,7 @@ export const LoadingScreenModal: FunctionComponent<{
       <View
         style={{
           justifyContent: 'center',
-          alignItems: 'center',
+          alignItems: 'center'
         }}
       >
         <LoadingSpinner size={30} color="white" />
@@ -39,7 +41,9 @@ export const LoadingScreenModal: FunctionComponent<{
   },
   {
     align: 'center',
-    transitionVelocity: 0,
-    backdropMaxOpacity: 1
+    containerStyle: {
+      height: metrics.screenHeight,
+      justifyContent: 'center'
+    }
   }
 );

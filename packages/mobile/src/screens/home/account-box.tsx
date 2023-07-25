@@ -60,7 +60,8 @@ export const AccountBox: FunctionComponent<{
     const _onPressMyWallet = () => {
       modalStore.setOptions({
         bottomSheetModalConfig:{
-          enablePanDownToClose:false
+          enablePanDownToClose:false,
+          enableOverDrag:false
         }
       });
       modalStore.setChildren(MyWalletModal());

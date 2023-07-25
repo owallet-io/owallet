@@ -13,7 +13,8 @@ import { RectButton } from '../../components/rect-button';
 import { Button } from '../../components/button';
 import { Bech32Address } from '@owallet/cosmos';
 import { WalletIcon } from '../setting/components';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import LoadingScreenOverlay from '@src/providers/loading-screen/loading-screen-overlay';
+
 export const BIP44Selectable: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, queriesStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -113,12 +114,7 @@ export const BIP44Selectable: FunctionComponent = observer(() => {
 
   return (
     <React.Fragment>
-      <LoadingScreenModal
-        isOpen={needSelectBIP44 && !isSelectorModalShow}
-        close={() => {
-          // noop
-        }}
-      />
+      <LoadingScreenOverlay isOpen={needSelectBIP44 && !isSelectorModalShow} />
       <BIP44SelectableModal
         isOpen={needSelectBIP44 && isSelectorModalShow}
         close={() => {

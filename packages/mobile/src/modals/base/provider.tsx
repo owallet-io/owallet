@@ -15,17 +15,6 @@ import { ModalContext, useModalState } from './hooks';
 import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export interface ModalOptions {
   readonly align?: 'top' | 'center' | 'bottom';
-  readonly transitionVelocity?: number;
-  readonly openTransitionVelocity?: number;
-  readonly closeTransitionVelocity?: number;
-  // Acceleration based on 100
-  readonly transitionAcceleration?: number;
-  readonly disableBackdrop?: boolean;
-  readonly disableClosingOnBackdropPress?: boolean;
-  readonly transparentBackdrop?: boolean;
-  readonly backdropMaxOpacity?: number;
-  readonly blurBackdropOnIOS?: boolean;
-
   readonly containerStyle?: ViewStyle;
   readonly disableSafeArea?: boolean;
 }
@@ -152,13 +141,13 @@ export const ModalsProvider: FunctionComponent = observer(({ children }) => {
         );
         // The topmost modal can be closed by the back button if this modal can be closed by pressing the backdrop.
         if (openedModals.length > 0) {
-          const topmost = openedModals[openedModals.length - 1];
-          if (
-            !topmost.options.disableBackdrop &&
-            !topmost.options.disableClosingOnBackdropPress
-          ) {
-            topmost.close();
-          }
+          // const topmost = openedModals[openedModals.length - 1];
+          // if (
+          //   !topmost.options.disableBackdrop &&
+          //   !topmost.options.disableClosingOnBackdropPress
+          // ) {
+          //   topmost.close();
+          // }
 
           return true;
         }
@@ -207,7 +196,7 @@ export const ModalRenderer: FunctionComponent<{
   modal: Modal;
 }> = observer(({ modal }) => {
   const [isOpenTransitioning, setIsOpenTransitioning] = useState(true);
-
+  const stateModal = useModalState();
   return (
     <ModalContext.Provider
       value={useMemo(() => {
@@ -217,16 +206,6 @@ export const ModalRenderer: FunctionComponent<{
           isTransitionOpening: isOpenTransitioning,
           align: modal.options.align,
           isOpen: modal.props.isOpen,
-          transitionVelocity: modal.options.transitionVelocity,
-          openTransitionVelocity: modal.options.openTransitionVelocity,
-          closeTransitionVelocity: modal.options.closeTransitionVelocity,
-          transitionAcceleration: modal.options.transitionAcceleration,
-          disableBackdrop: modal.options.disableBackdrop,
-          disableClosingOnBackdropPress:
-            modal.options.disableClosingOnBackdropPress,
-          transparentBackdrop: modal.options.transparentBackdrop,
-          backdropMaxOpacity: modal.options.backdropMaxOpacity,
-          blurBackdropOnIOS: modal.options.blurBackdropOnIOS,
           bottomSheetModalConfig: modal.bottomSheetModalConfig,
           close: modal.close
         };
@@ -236,15 +215,6 @@ export const ModalRenderer: FunctionComponent<{
         modal.isOpen,
         modal.key,
         modal.options.align,
-        modal.options.backdropMaxOpacity,
-        modal.options.blurBackdropOnIOS,
-        modal.options.closeTransitionVelocity,
-        modal.options.disableBackdrop,
-        modal.options.disableClosingOnBackdropPress,
-        modal.options.openTransitionVelocity,
-        modal.options.transitionAcceleration,
-        modal.options.transitionVelocity,
-        modal.options.transparentBackdrop,
         modal.props.isOpen,
         modal.bottomSheetModalConfig
       ])}
