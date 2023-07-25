@@ -59,11 +59,13 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   closeTransitionRef.current = onCloseTransitionEnd;
   const closeRef = useRef(close);
   closeRef.current = close;
+
   useEffect(() => {
     if (isOpen) {
-      bottomSheetModalRef.current.present();
-    } else {
-      bottomSheetModalRef.current.close();
+      bottomSheetModalRef.current?.present();
+    }
+    if (bottomSheetModalRef.current.dismiss) {
+      bottomSheetModalRef.current?.dismiss();
     }
   }, [isOpen]);
 
@@ -151,7 +153,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             }}
             handleIndicatorStyle={{
               backgroundColor: colors['title-modal-login-failed'],
-              width:50
+              width: 50
             }}
             index={0}
             snapPoints={animatedSnapPoints}

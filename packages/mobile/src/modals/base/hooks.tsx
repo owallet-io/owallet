@@ -24,15 +24,7 @@ export interface ModalStateContext {
   readonly close: () => void;
 }
 
-export const ModalContext = React.createContext<ModalStateContext | null>({
-  bottomSheetModalConfig: null,
-  align: 'bottom',
-  isOpen: false,
-  isTransitionOpening: true,
-  isTransitionClosing: false,
-  key: 'key1',
-  close: null
-});
+export const ModalContext = React.createContext<ModalStateContext | null>(null);
 
 export const useModalState = () => {
   const state = useContext(ModalContext);

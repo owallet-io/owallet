@@ -35,17 +35,19 @@ export const registerModal: <P>(
           options
         );
       }
+      
       if (!props.isOpen && key.current) {
+        console.log('props.isOpen: ', props.isOpen);
         globalModalRendererState.closeModal(key.current);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.isOpen]);
 
-    // useEffect(() => {
-    //   if (key.current) {
-    //     globalModalRendererState.updateModal(key.current, props);
-    //   }
-    // });
+    useEffect(() => {
+      if (key.current) {
+        globalModalRendererState.updateModal(key.current, props);
+      }
+    });
 
     return null;
   };

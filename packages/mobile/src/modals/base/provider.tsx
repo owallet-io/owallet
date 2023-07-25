@@ -141,14 +141,8 @@ export const ModalsProvider: FunctionComponent = observer(({ children }) => {
         );
         // The topmost modal can be closed by the back button if this modal can be closed by pressing the backdrop.
         if (openedModals.length > 0) {
-          // const topmost = openedModals[openedModals.length - 1];
-          // if (
-          //   !topmost.options.disableBackdrop &&
-          //   !topmost.options.disableClosingOnBackdropPress
-          // ) {
-          //   topmost.close();
-          // }
-
+          const topmost = openedModals[openedModals.length - 1];
+          topmost.close();
           return true;
         }
       };
@@ -196,7 +190,6 @@ export const ModalRenderer: FunctionComponent<{
   modal: Modal;
 }> = observer(({ modal }) => {
   const [isOpenTransitioning, setIsOpenTransitioning] = useState(true);
-  const stateModal = useModalState();
   return (
     <ModalContext.Provider
       value={useMemo(() => {
