@@ -15,7 +15,7 @@ import { colors, typography } from '../../themes';
 
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 import { navigationRef } from '../../router/root';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
@@ -23,6 +23,10 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 export const SignTronModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
 }> = registerModal(
   observer(() => {
     const { chainStore, signInteractionStore } = useStore();
@@ -151,7 +155,6 @@ export const SignTronModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

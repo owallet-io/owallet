@@ -22,10 +22,14 @@ import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { colors } from '../../themes';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
 }> = registerModal(
   observer(({}) => {
     const {
@@ -296,6 +300,6 @@ export const SignModal: FunctionComponent<{
   }),
   {
     disableSafeArea: true,
-    blurBackdropOnIOS: true
+   
   }
 );

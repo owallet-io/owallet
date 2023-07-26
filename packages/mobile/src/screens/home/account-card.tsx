@@ -84,11 +84,11 @@ export const AccountCard: FunctionComponent<{
   };
 
   const _onPressMyWallet = () => {
-    modalStore.setOpen();
+    modalStore.setOptions();
     modalStore.setChildren(MyWalletModal());
   };
   const _onPressReceiveModal = () => {
-    modalStore.setOpen();
+    modalStore.setOptions();
     modalStore.setChildren(
       AddressQRCodeModal({
         account,

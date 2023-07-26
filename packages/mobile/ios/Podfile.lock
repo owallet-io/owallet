@@ -204,9 +204,9 @@ PODS:
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
   - OpenSSL-Universal (1.1.1100)
-  - PromisesObjC (2.2.0)
-  - PromisesSwift (2.2.0):
-    - PromisesObjC (= 2.2.0)
+  - PromisesObjC (2.3.1)
+  - PromisesSwift (2.3.1):
+    - PromisesObjC (= 2.3.1)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -615,15 +615,15 @@ PODS:
     - React-Core
     - SDWebImage (~> 5.11.1)
     - SDWebImageWebPCoder (~> 0.8.4)
-  - RNFBApp (18.2.0):
+  - RNFBApp (18.3.0):
     - Firebase/CoreOnly (= 10.12.0)
     - React-Core
-  - RNFBCrashlytics (18.2.0):
+  - RNFBCrashlytics (18.3.0):
     - Firebase/Crashlytics (= 10.12.0)
     - FirebaseCoreExtension (= 10.12.0)
     - React-Core
     - RNFBApp
-  - RNFBMessaging (18.2.0):
+  - RNFBMessaging (18.3.0):
     - Firebase/Messaging (= 10.12.0)
     - FirebaseCoreExtension (= 10.12.0)
     - React-Core
@@ -636,8 +636,33 @@ PODS:
     - React-Core
   - RNLocalize (2.2.6):
     - React-Core
-  - RNReanimated (1.13.4):
+  - RNReanimated (3.3.0):
+    - DoubleConversion
+    - FBLazyVector
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
     - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTAppDelegate
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNScreens (3.22.1):
     - React-Core
     - React-RCTImage
@@ -986,8 +1011,8 @@ SPEC CHECKSUMS:
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
-  PromisesSwift: cf9eb58666a43bbe007302226e510b16c1e10959
+  PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
+  PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: c52ee8fb2b35c1b54031dd8e92d88ad4dba8f2ce
   RCTTypeSafety: 75fa444becadf0ebfa0a456b8c64560c7c89c7df
@@ -1032,14 +1057,14 @@ SPEC CHECKSUMS:
   RNCMaskedView: 949696f25ec596bfc697fc88e6f95cf0c79669b6
   RNDeviceInfo: 25d818c85db769cc0e7083d39efaa01a6f450df3
   RNFastImage: 5c9c9fed9c076e521b3f509fe79e790418a544e8
-  RNFBApp: 9a54c7fd5a1c33684a862b51b9c00914a358061c
-  RNFBCrashlytics: 2dafa9f70bb721ce0de23337de776a669c75a92d
-  RNFBMessaging: 5fa69e7c4f9641fc222327208d90d3b56e907f58
+  RNFBApp: f0b5cf917b0b91a0ae890fbbaec0fb5d3285ea46
+  RNFBCrashlytics: 7bb4840e45b15b56859c03afd8c3707e7a0eb2eb
+  RNFBMessaging: dec20e8fa230fb776b94c33384676da33c605d2e
   RNGestureHandler: dec4645026e7401a0899f2846d864403478ff6a5
   RNInAppBrowser: e36d6935517101ccba0e875bac8ad7b0cb655364
   RNKeychain: ff836453cba46938e0e9e4c22e43d43fa2c90333
   RNLocalize: d4b8af4e442d4bcca54e68fc687a2129b4d71a81
-  RNReanimated: c1b56d030d1616239861534d9adb531f8cffab68
+  RNReanimated: 3ffa3d63576ecd26a4f8772d03029cccaf41b5d7
   RNScreens: 50ffe2fa2342eabb2d0afbe19f7c1af286bc7fb3
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
   RNSentry: 4e4fc87b53002c015f644cb7207d4b598bc3703f

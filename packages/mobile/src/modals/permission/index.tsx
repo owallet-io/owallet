@@ -13,12 +13,16 @@ import { useStore } from '../../stores';
 import { Button } from '../../components/button';
 import { observer } from 'mobx-react-lite';
 import { colors } from '../../themes';
-
+import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
 export const AccessModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetModalProps,
+    'snapPoints' | 'children'
+  >;
   waitingData: any;
 }> = registerModal(
   observer(({ waitingData }) => {
@@ -130,7 +134,6 @@ export const AccessModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

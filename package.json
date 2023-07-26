@@ -20,7 +20,8 @@
       "**/@react-native-async-storage/async-storage",
       "**/@ledgerhq/react-native-hw-transport-ble",
       "**/jetifier",
-      "**/@bugsnag/**"
+      "**/@bugsnag/**",
+      "**/@gorhom/**"
     ]
 },
   "scripts": {
@@ -34,7 +35,7 @@
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
     "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/mobile",
-    "postinstall": "patch-package",
+    "postinstall": "patch-package && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config",
     "test": "lerna run test --parallel",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
     "lint-test": "lerna run lint-test",

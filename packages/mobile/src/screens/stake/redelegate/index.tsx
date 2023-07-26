@@ -269,7 +269,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             borderColor: colors['border-input-login']
           }}
           onPress={() => {
-            modalStore.setOpen();
+            modalStore.setOptions();
             modalStore.setChildren(
               <ValidatorsList
                 onPressSelectValidator={onPressSelectValidator}

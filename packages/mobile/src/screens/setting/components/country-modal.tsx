@@ -6,6 +6,7 @@ import { Text } from '@src/components/text';
 import { KeyStoreItem } from '.';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { ModalStore } from '../../../stores/modal';
+import OWFlatList from '@src/components/page/ow-flat-list';
 
 interface CountryModalProps {
   data: any;
@@ -70,18 +71,19 @@ export const CountryModal: FunctionComponent<CountryModalProps> = ({
           height: metrics.screenHeight / 2
         }}
       >
-        <FlatList
-          showsVerticalScrollIndicator={false}
+        <OWFlatList
+          isBottomSheet
+          // showsVerticalScrollIndicator={false}
           data={data}
           renderItem={_renderItem}
           keyExtractor={_keyExtract}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: spacing['10']
-              }}
-            />
-          )}
+          // ListFooterComponent={() => (
+          //   <View
+          //     style={{
+          //       height: spacing['10']
+          //     }}
+          //   />
+          // )}
         />
       </View>
     </View>
