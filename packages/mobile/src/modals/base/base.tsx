@@ -17,8 +17,7 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet';
 import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 import { useTheme } from '@src/themes/theme-provider';
-import { delay } from '@src/utils/helper';
-import { useKeyboardVisible } from '@src/hooks/use-keyboard-visible';
+
 export interface ModalBaseProps {
   align?: 'top' | 'center' | 'bottom';
   isOpen: boolean;
@@ -62,34 +61,17 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   closeTransitionRef.current = onCloseTransitionEnd;
   const closeRef = useRef(close);
   closeRef.current = close;
-  const isVisible = useKeyboardVisible();
-  console.log('isVisible: ', isVisible);
-  const keyboardVisible = useRef(isVisible);
-  console.log('keyboardVisible: ', keyboardVisible.current);
+
   useEffect(() => {
     if (isOpen) {
       bottomSheetModalRef.current?.present();
       return;
-    }
-    if (!isOpen) {
-      if (keyboardVisible.current) {
-        Keyboard.dismiss();
-        delay(200).then(() => {
-          if (bottomSheetModalRef.current?.dismiss) {
-            bottomSheetModalRef.current?.dismiss();
-          }
-        });
-      } else {
-        if (bottomSheetModalRef.current?.dismiss) {
-          bottomSheetModalRef.current?.dismiss();
-        }
+    } else if (!isOpen) {
+      if (bottomSheetModalRef.current?.dismiss) {
+        bottomSheetModalRef.current?.dismiss();
       }
     }
   }, [isOpen]);
-  useEffect(() => {
-    keyboardVisible.current = isVisible;
-    return () => {};
-  }, [isVisible]);
 
   const renderBackdrop = useCallback(
     (props) => (

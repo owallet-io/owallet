@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleSheet, TextStyle, View, ViewStyle, ScrollView } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,7 +29,9 @@ export const CardModal: FunctionComponent<{
   const scheme = appInitStore.getInitApp.theme;
 
   return (
-    <View
+    <ScrollView
+      keyboardDismissMode='interactive'
+      keyboardShouldPersistTaps="handled"
       style={[
         StyleSheet.flatten([
           style.flatten([
@@ -91,6 +93,6 @@ export const CardModal: FunctionComponent<{
       >
         {children}
       </View>
-    </View>
+    </ScrollView>
   );
 };

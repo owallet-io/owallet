@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '../base';
 import { Text } from '@src/components/text';
 import { CardModal } from '../card';
@@ -6,6 +6,7 @@ import { TextInput } from '../../components/input';
 import { Button } from '../../components/button';
 import {
   ActivityIndicator,
+  InteractionManager,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -19,6 +20,8 @@ import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonGroup from '@src/components/button/OWButtonGroup';
 import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { useKeyboardVisible } from '@src/hooks/use-keyboard-visible';
+import { delay } from '@src/utils/helper';
 export const PasswordInputModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
@@ -56,19 +59,31 @@ export const PasswordInputModal: FunctionComponent<{
     const scheme = appInitStore.getInitApp.theme;
     const { colors } = useTheme();
     const [isLoading, setIsLoading] = useState(false);
-
-    const submitPassword = async () => {
-      setIsLoading(true);
+    const isVisible = useKeyboardVisible();
+    const handleOnterPassword = async () => {
       try {
+        await delay(50);
         await onEnterPassword(password);
-        close();
         setIsInvalidPassword(false);
+        close();
       } catch (e) {
         console.log(e);
         setIsInvalidPassword(true);
       } finally {
         setIsLoading(false);
       }
+    };
+    useEffect(() => {
+      if (isLoading && !isVisible) {
+        InteractionManager.runAfterInteractions(handleOnterPassword);
+      }
+
+      return () => {};
+    }, [isLoading, isVisible]);
+
+    const submitPassword = () => {
+      Keyboard.dismiss();
+      setIsLoading(true);
     };
     const keyboardVerticalOffset =
       Platform.OS === 'ios' ? metrics.screenHeight / 2.1 : 0;
