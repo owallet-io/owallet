@@ -2,3 +2,4 @@ export const NAMESPACE = 'owallet';
 export const NAMESPACE_ETHEREUM = 'ethereum';
 export const NAMESPACE_ETHEREUM_OWALLET = 'eth_owallet';
 export const NAMESPACE_TRONWEB = 'tronWeb';
+export const NAMESPACE_BITCOIN = 'bitcoin';

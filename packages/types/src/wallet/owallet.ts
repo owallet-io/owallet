@@ -146,7 +146,7 @@ export type EthereumMode =
   | 'extension'
   | 'mobile-web'
   | 'walletconnect';
-
+export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 
 export interface RequestArguments {
@@ -193,4 +193,14 @@ export interface TronWeb {
   initChainId: string;
   sign(transaction: object): Promise<object>;
   getDefaultAddress(): object;
+}
+export interface Bitcoin {
+  readonly version: string;
+  /**
+   * mode means that how Ethereum is connected.
+   * If the connected Ethereum is browser's extension, the mode should be "extension".
+   * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
+   */
+  readonly mode: BitcoinMode;
+  initChainId: string;
 }

@@ -3,6 +3,7 @@ import {
   OWallet as IOWallet,
   Ethereum as IEthereum,
   TronWeb as ITronWeb,
+  Bitcoin as IBitcoin,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
@@ -10,7 +11,8 @@ import {
   EthereumMode,
   RequestArguments,
   TronWebMode,
-  ChainInfoWithoutEndpoints
+  ChainInfoWithoutEndpoints,
+  BitcoinMode
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import {
@@ -416,5 +418,15 @@ export class TronWeb implements ITronWeb {
   async getDefaultAddress(): Promise<object> {
     const msg = new GetDefaultAddressTronMsg(TRON_ID);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+}
+export class Bitcoin implements IBitcoin {
+  constructor(
+    public readonly version: string,
+    public readonly mode: BitcoinMode,
+    public initChainId: string,
+    protected readonly requester: MessageRequester
+  ) {
+    this.initChainId = initChainId;
   }
 }

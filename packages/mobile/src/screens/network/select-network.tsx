@@ -242,7 +242,6 @@ export const SelectNetworkScreen = () => {
       };
 
       await chainStore.addChain(chainInfo);
-      alert('Network added successfully!');
       smartNavigation.goBack();
     } catch (err) {
       console.log('err: ', err);
@@ -253,7 +252,10 @@ export const SelectNetworkScreen = () => {
 
   const handleChangeNetwork = (selected) => {
     setValue('networkType', selected.value);
-    console.log("🚀 ~ file: select-network.tsx:256 ~ handleChangeNetwork ~ selected.value:", selected.value)
+    console.log(
+      '🚀 ~ file: select-network.tsx:256 ~ handleChangeNetwork ~ selected.value:',
+      selected.value
+    );
     setNetworkType(selected.value);
   };
 
