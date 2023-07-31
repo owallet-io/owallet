@@ -242,9 +242,9 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
           }}
         >
           <TouchableOpacity
-            key={`https://orderbook.orai.io/`}
+            key={`https://orderbook.oraidex.io/`}
             style={style.flatten(['height-44', 'margin-bottom-15', 'flex-row'])}
-            onPress={() => onHandleUrl(`https://orderbook.orai.io/`)}
+            onPress={() => onHandleUrl(`https://orderbook.oraidex.io/`)}
           >
             <View style={style.flatten(['padding-top-5'])}>
               <Image
@@ -267,7 +267,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer((props) => {
                 {`Orderbook`}
               </Text>
               <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-                {`https://orderbook.orai.io/`}
+                {`https://orderbook.oraidex.io/`}
               </Text>
             </View>
           </TouchableOpacity>

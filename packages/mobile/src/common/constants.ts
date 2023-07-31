@@ -56,13 +56,15 @@ export const SCREENS = {
   DelegateDetail: 'Delegate.Detail',
   Redelegate: 'Redelegate',
   Undelegate: 'Undelegate',
+  UniversalSwap: 'UniversalSwap',
   TABS: {
     Main: 'Main',
     Home: 'Home',
     Browser: 'Browser',
     Invest: 'Invest_Tab',
     Settings: 'Settings',
-    SendNavigation: 'SendNavigation'
+    SendNavigation: 'SendNavigation',
+    UniversalSwap: 'Universal_Swap_Tab'
   },
   STACK: {
     Unlock: 'Unlock',
@@ -77,7 +79,7 @@ export const ICONS_TITLE = {
   [SCREENS.TABS.Main]: 'home',
   [SCREENS.TABS.Browser]: 'browser',
   [SCREENS.TABS.Settings]: 'setting',
-  [SCREENS.TABS.SendNavigation]: ''
+  [SCREENS.TABS.UniversalSwap]: ''
 };
 
 export const SCREENS_OPTIONS: IScreenOption = {
@@ -95,6 +97,13 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.TABS.SendNavigation]: {
     title: ''
+  },
+  [SCREENS.TABS.UniversalSwap]: {
+    title: ''
+  },
+  [SCREENS.UniversalSwap]: {
+    title: 'Universal Swap',
+    showTabBar: true
   },
   [SCREENS.Home]: {
     title: HEADER_KEY.showNetworkHeader,
@@ -238,6 +247,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: HEADER_KEY.showNetworkHeader,
     showTabBar: true
   },
+  // [SCREENS.UniversalSwap]: {
+  //   title: ''
+  // },
   [SCREENS.Delegate]: {
     title: HEADER_KEY.showNetworkHeader
   },
