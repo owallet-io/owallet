@@ -23,13 +23,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           ...styles.containerScreen
         }}
       >
-        <Text
-          style={{
-            ...styles.title
-          }}
-        >
-          Universal Swap
-        </Text>
+        
         <View
           style={{
             ...styles.contentBlock

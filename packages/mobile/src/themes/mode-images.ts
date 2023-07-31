@@ -15,7 +15,8 @@ const modeImages = {
   carbon_notification:[images.carbon_notification_dark, images.carbon_notification],
   crash_empty:[images.launch_dark, images.launch],
   list_empty:[images.empty_dark, images.empty],
-  btn_center_bottom_tab:[images.push_inactive_dark, images.push_inactive],
+  btn_center_bottom_tab:[images.swap_inactive_dark, images.swap_inactive],
+  btn_center_bottom_tab_active:[images.swap_dark, images.swap],
   scroll_to_top:[images.scroll_top_dark, images.scroll_top]
 };
 const typeImagesTheme = () => modeImages;

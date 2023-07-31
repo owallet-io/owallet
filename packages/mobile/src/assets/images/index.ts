@@ -35,5 +35,9 @@ const images = {
    scroll_top_dark: require('./scroll_top_dark.png'),
    success: require('./success.png'),
    success_dark: require('./success_dark.png'),
+   swap: require('./swap.png'),
+   swap_dark: require('./swap_dark.png'),
+   swap_inactive: require('./swap_inactive.png'),
+   swap_inactive_dark: require('./swap_inactive_dark.png'),
 };
 export default images;

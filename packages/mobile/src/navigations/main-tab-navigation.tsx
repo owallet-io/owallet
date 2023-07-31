@@ -38,7 +38,6 @@ export const MainTabNavigation: FC = observer(() => {
   }, [visibleTabBar]);
   return (
     <Tab.Navigator
-      
       screenOptions={({ route }) => {
         return {
           tabBarIcon: ({ color, focused }) => {
@@ -48,7 +47,9 @@ export const MainTabNavigation: FC = observer(() => {
                   <OWIcon
                     type="images"
                     source={
-                      focused ? imagesGlobal.push : images.btn_center_bottom_tab
+                      focused
+                        ? images.btn_center_bottom_tab_active
+                        : images.btn_center_bottom_tab
                     }
                     size={44}
                   />
@@ -123,7 +124,7 @@ export const MainTabNavigation: FC = observer(() => {
           chainId: chainStore.current.chainId
         }}
       /> */}
-       <Tab.Screen
+      <Tab.Screen
         name={SCREENS.TABS.UniversalSwap}
         component={UniversalSwapStackScreen}
         options={{
