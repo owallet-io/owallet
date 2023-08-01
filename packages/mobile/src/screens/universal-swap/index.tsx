@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useMemo } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
+import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
@@ -12,28 +12,30 @@ import { OWBox } from '@src/components/card';
 import OWButtonGroup from '@src/components/button/OWButtonGroup';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import { BalanceText } from './components/BalanceText';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   const { colors, images } = useTheme();
+
   const styles = styling(colors);
   const renderSetting = () => {
     return (
       <View style={styles.fDr}>
         <OWButtonIcon
           fullWidth={false}
-          style={[styles.btnTitleRight, styles.mr8]}
+          style={[styles.btnTitleRight]}
           sizeIcon={16}
           colorIcon="#777E90"
           name="setting-bold"
         />
-        <OWButtonIcon
+        {/* <OWButtonIcon
           fullWidth={false}
           style={styles.btnTitleRight}
           colorIcon="#777E90"
           sizeIcon={16}
           name="round_refresh"
-        />
+        /> */}
       </View>
     );
   };
@@ -43,6 +45,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <OWButton
           style={[styles.btnLabelInputRight, styles.mr8]}
           type="secondary"
+          textStyle={{
+            fontSize: 10
+          }}
           size="small"
           label="MAX"
           fullWidth={false}
@@ -51,6 +56,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
         />
         <OWButton
+          textStyle={{
+            fontSize: 10
+          }}
           style={styles.btnLabelInputRight}
           type="secondary"
           size="small"
@@ -64,8 +72,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={styles.container}
+      showsVerticalScrollIndicator={false}
     >
       <OWBox type="swap">
+        <OWBox
+          style={{
+            borderRadius: 12,
+            padding: 10,
+            backgroundColor: colors['background-box'],
+            marginTop: 4,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <BalanceText weight="600" size={13}>
+            1 0RAI ≈ 352347.32 AIRI
+          </BalanceText>
+          {renderSetting()}
+        </OWBox>
         <View>
           <SwapBox
             titleRight={renderSetting}
@@ -74,17 +99,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             titleLeft={'FROM'}
             tokensData={[]}
             labelInputRight={renderLabelInputRight}
-            labelInputLeft={'8,291.09 orai'}
+            labelInputLeft={'8,291.09 ORAI'}
           />
-
           <SwapBox
             feeValue="0"
             feeLabel={'Token Fee'}
             titleLeft={'TO'}
             tokensData={[]}
-            labelInputLeft={'8,291.09 orai'}
-            labelInputRight={'1 0RAI ≈ 357.32 AIRI'}
+            labelInputLeft={'8,291.09 AIRI'}
           />
+
           <View style={styles.containerBtnCenter}>
             <OWButtonIcon
               fullWidth={false}
@@ -95,6 +119,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             />
           </View>
         </View>
+
         <OWButton
           label="Swap"
           style={styles.btnSwap}
@@ -106,7 +131,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   );
 });
 
-const styling = (colors: object) =>
+const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
     fDr: {
       flexDirection: 'row'

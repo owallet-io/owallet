@@ -5,7 +5,10 @@ import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '@src/components/card';
 import { checkFnComponent } from '../helpers';
-import { ISwapBox } from '../types';
+import { BalanceTextProps, ISwapBox } from '../types';
+import InputSelectToken from './InputSelectToken';
+import { OWTextProps } from '@src/components/text/ow-text';
+import { BalanceText } from './BalanceText';
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
@@ -22,20 +25,17 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     const handleShowTitle = useMemo(() => {
       return checkFnComponent(
         titleRight,
-        <Text color="#777E90">{titleRight}</Text>
+        <BalanceText>{titleRight}</BalanceText>
       );
     }, [titleRight]);
     const handleShowLabelRight = useMemo(() => {
       return checkFnComponent(
         labelInputRight,
-        <Text color="#777E90">{labelInputRight}</Text>
+        <BalanceText>{labelInputRight}</BalanceText>
       );
     }, [labelInputRight]);
     const handleShowfeeLabel = useMemo(() => {
-      return checkFnComponent(
-        feeLabel,
-        <Text color="#777E90">{feeLabel}</Text>
-      );
+      return checkFnComponent(feeLabel, <BalanceText>{feeLabel}</BalanceText>);
     }, [feeLabel]);
     return (
       <OWBox
@@ -43,26 +43,21 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
           ...styles.containerInfo
         }}
       >
-        <View style={[styles.flr, styles.h30]}>
-          <Text weight="900">{titleLeft}</Text>
-          {handleShowTitle}
-        </View>
-        <View style={[styles.flr, styles.pt16, styles.h40]}>
+        <View style={[styles.flr, styles.h35]}>
           {!!labelInputLeft && (
-            <Text color={'#777E90'}>Balance: {labelInputLeft}</Text>
+            <View style={styles.flR}>
+              <BalanceText>Balance:</BalanceText>
+              <BalanceText> {labelInputLeft}</BalanceText>
+            </View>
           )}
           {handleShowLabelRight}
         </View>
         <View style={[styles.flr, styles.priceInput]}>
-          <View style={[styles.flr, styles.pt16]}>
-            <View style={styles.ic} />
-            <View style={styles.ic} />
-          </View>
-          <View style={styles.ic} />
+          <InputSelectToken />
         </View>
-        <View style={[styles.flr, styles.pt16]}>
+        <View style={[styles.flr]}>
           {handleShowfeeLabel}
-          {!!feeValue && <Text color={'#777E90'}>{feeValue}%</Text>}
+          {!!feeValue && <BalanceText>{feeValue}%</BalanceText>}
         </View>
       </OWBox>
     );
@@ -71,15 +66,19 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
 
 const styling = (colors: object) =>
   StyleSheet.create({
-    h40: {
-      height: 40
+    flR: {
+      flexDirection: 'row'
+    },
+    h35: {
+      height: 25
     },
     h30: {
       height: 30
     },
     containerInfo: {
       borderRadius: 12,
-      padding: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
       backgroundColor: colors['background-box'],
       marginTop: 4
     },
@@ -114,7 +113,7 @@ const styling = (colors: object) =>
     priceInput: {
       justifyContent: 'space-between',
       backgroundColor: colors['content-background'],
-      marginTop: 16
+      paddingVertical: 10
     },
     swapIcon: {
       width: 32,

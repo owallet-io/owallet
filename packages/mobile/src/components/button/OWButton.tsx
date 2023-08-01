@@ -6,9 +6,10 @@ import {
   StyleSheet,
   StyleProp,
   TextStyle,
-  ViewStyle
+  ViewStyle,
+  Keyboard
 } from 'react-native';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
@@ -47,17 +48,30 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   contentAlign,
   ...props
 }) => {
+  const handleOnPress = useCallback(
+    (event) => {
+      if (Keyboard.dismiss) {
+        Keyboard.dismiss();
+      }
+      if (props.onPress) {
+        props.onPress(event);
+      }
+    },
+    [props.onPress]
+  );
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const { colors } = useTheme();
   const styles = styling();
   return (
     <TouchableOpacity
       {...props}
+      onPress={handleOnPress}
       disabled={disabled}
       style={[
         styles.containerBtn,
         styleMapped.btn,
-        (!fullWidth || (!!icon && !!label == false)) && styles.paddingHaveIconAndNotFullwidth,
+        (!fullWidth || (!!icon && !!label == false)) &&
+          styles.paddingHaveIconAndNotFullwidth,
         fullWidth ? styles.fullWidth : styles.widthAuto,
         borderStyle == 'dashed' && styles.dashed,
         !!icon && !label && styles.hasIcon,

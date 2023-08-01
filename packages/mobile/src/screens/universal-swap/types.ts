@@ -1,6 +1,8 @@
+import { OWTextProps } from '@src/components/text/ow-text';
+
 export type voidNode = () => React.ReactNode;
 export type NodeElement = React.ReactNode | voidNode;
-type TokenItem = {
+type TokenÌno = {
   symbol: string;
   logo: string;
   name: string;
@@ -13,5 +15,11 @@ export interface ISwapBox {
   labelInputRight?: TypeTextAndCustomizeComponent;
   feeLabel?: TypeTextAndCustomizeComponent;
   feeValue?: string;
-  tokensData: TokenItem[];
+  tokensData: TokenÌno[];
+}
+
+export interface IInputSelectToken {
+  TokenÌno?: TokenÌno;
+  amount: string;
+  amountCurrency: string;
 }
