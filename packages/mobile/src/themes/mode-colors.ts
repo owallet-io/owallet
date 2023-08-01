@@ -199,7 +199,8 @@ const modeColors = {
   'bg-icon-token': ['#E5E5EA', '#F3F1F5'],
   'bg-circle-select-modal': [colorsCode['gray-400'], colorsCode['purple-100']],
   'divided-border-transaction-detail': ['#2B2D3B', '#EDEDF8'],
-  skeleton: ['#36384a', '#f3f2f2']
+  skeleton: ['#36384a', '#f3f2f2'],
+  'bg-tonner': ['#191B21', '#F6EDFF']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };

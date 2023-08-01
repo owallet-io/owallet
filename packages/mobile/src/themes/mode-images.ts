@@ -27,6 +27,7 @@ const modeImages = {
   btn_center_bottom_tab: [images.swap_inactive_dark, images.swap_inactive],
   btn_center_bottom_tab_active: [images.swap_dark, images.swap],
   swap_center: [images.swap_center_dark, images.swap_center],
+  down_center: [images.down_center_dark, images.down_center],
   scroll_to_top: [images.scroll_top_dark, images.scroll_top]
 };
 const typeImagesTheme = () => modeImages;

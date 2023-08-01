@@ -45,9 +45,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <OWButton
           style={[styles.btnLabelInputRight, styles.mr8]}
           type="secondary"
-          textStyle={{
-            fontSize: 10
-          }}
+          textStyle={styles.ts10}
           size="small"
           label="MAX"
           fullWidth={false}
@@ -56,9 +54,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }}
         />
         <OWButton
-          textStyle={{
-            fontSize: 10
-          }}
+          textStyle={styles.ts10}
           style={styles.btnLabelInputRight}
           type="secondary"
           size="small"
@@ -86,7 +82,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             justifyContent: 'space-between'
           }}
         >
-          <BalanceText weight="600" size={13}>
+          <BalanceText weight="600" >
             1 0RAI ≈ 352347.32 AIRI
           </BalanceText>
           {renderSetting()}
@@ -113,7 +109,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             <OWButtonIcon
               fullWidth={false}
               typeIcon="images"
-              source={images.swap_center}
+              source={images.down_center}
               circle
               sizeIcon={35}
             />
@@ -124,8 +120,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           label="Swap"
           style={styles.btnSwap}
           loading={false}
+          size="medium"
+          textStyle={styles.textBtnSwap}
           onPress={() => {}}
         />
+        <View style={styles.theFirstLabel}>
+          <BalanceText >Minimum Received</BalanceText>
+          <BalanceText >0 USDT</BalanceText>
+        </View>
+        <View style={styles.taxRate}>
+          <BalanceText >Tax rate</BalanceText>
+          <BalanceText >0</BalanceText>
+        </View>
       </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
@@ -133,6 +139,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
+    textBtnSwap: {
+      fontWeight: '700',
+      fontSize: 16
+    },
+    taxRate: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
+    theFirstLabel: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingBottom: 10
+    },
+    ts10: {
+      fontSize: 10
+    },
     fDr: {
       flexDirection: 'row'
     },
@@ -149,13 +171,14 @@ const styling = (colors: TypeTheme['colors']) =>
       flexDirection: 'row'
     },
     btnLabelInputRight: {
-      backgroundColor: '#EFE7F8',
+      backgroundColor: colors['bg-tonner'],
       borderRadius: 2,
       height: 22,
       borderWidth: 0
     },
     btnSwap: {
-      marginTop: 16
+      marginVertical: 16,
+      borderRadius: 8
     },
     container: {
       marginHorizontal: 16

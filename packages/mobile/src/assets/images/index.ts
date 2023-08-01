@@ -6,6 +6,8 @@ const images = {
    carbon_notification: require('./carbon_notification.png'),
    carbon_notification_dark: require('./carbon_notification_dark.png'),
    crypto: require('./crypto.png'),
+   down_center: require('./down_center.png'),
+   down_center_dark: require('./down_center_dark.png'),
    empty: require('./empty.png'),
    empty_dark: require('./empty_dark.png'),
    empty_img: require('./empty_img.png'),

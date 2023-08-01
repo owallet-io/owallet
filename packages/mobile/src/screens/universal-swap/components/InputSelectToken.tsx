@@ -11,29 +11,27 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
+import { useTheme } from '@src/themes/theme-provider';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
+  const { colors } = useTheme();
   return (
-    <View style={styles.containerInputSelectToken}>
+    <View
+      style={[
+        styles.containerInputSelectToken,
+        {
+          backgroundColor: colors['box-nft']
+        }
+      ]}
+    >
       <TouchableOpacity style={styles.btnChainContainer}>
         <OWIcon type="images" source={images.swap} size={24} />
         <View style={styles.ml8}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}
-          >
-            <Text
-              style={{
-                paddingRight: 5
-              }}
-              weight="700"
-              size={14}
-            >
+          <View style={styles.itemTopBtn}>
+            <Text style={styles.labelSymbol} weight="700" size={14}>
               ORAI
             </Text>
-            <OWIcon name="down" size={10} />
+            <OWIcon color={colors['text-title']} name="down" size={10} />
           </View>
           <BalanceText>Oraichain</BalanceText>
         </View>
@@ -43,7 +41,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
           placeholder="0"
           textAlign="right"
           keyboardType="number-pad"
-          style={styles.textInput}
+          style={[styles.textInput,{
+            color:colors['text-title']
+          }]}
+          placeholderTextColor={colors['text-place-holder']}
         />
         <BalanceText style={Platform.OS == 'android' ? styles.mtde5 : {}}>
           $0.0001
@@ -56,6 +57,13 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
 export default InputSelectToken;
 
 const styles = StyleSheet.create({
+  labelSymbol: {
+    paddingRight: 5
+  },
+  itemTopBtn: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
   mtde5: {
     marginTop: -5
   },
@@ -77,7 +85,6 @@ const styles = StyleSheet.create({
     paddingRight: 20
   },
   containerInputSelectToken: {
-    backgroundColor: '#F2F2F7',
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
