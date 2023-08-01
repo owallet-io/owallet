@@ -5,7 +5,7 @@ import { useTheme } from '@src/themes/theme-provider';
 import OWLinearGradientBox from './ow-linear-gradient-box';
 
 export interface IOWBoxProps extends ViewProps {
-  type?: 'shadow' | 'gradient' | 'normal';
+  type?: 'shadow' | 'gradient' | 'normal' | 'swap';
 }
 const useStyleType = ({ type }) => {
   const { colors, dark } = useTheme();
@@ -22,7 +22,7 @@ const useStyleType = ({ type }) => {
           shadowOpacity: 0.26,
           shadowRadius: 2.62,
           borderRadius: spacing['12'],
-          elevation:4,
+          elevation: 4,
           width: '100%',
           backgroundColor: colors['background-box-shadow']
         };
@@ -47,16 +47,25 @@ const useStyleType = ({ type }) => {
     case 'normal':
       styles = {
         marginTop: spacing['top-pad'],
-        width: metrics.screenWidth,
+        width: '100%',
         padding: spacing['horizontal-pad'],
         borderRadius: spacing['horizontal-pad'],
         backgroundColor: colors['background-box']
       };
       break;
+    case 'swap':
+      styles = {
+        marginTop: spacing['top-pad'],
+        padding: spacing[12],
+        width: '100%',
+        borderRadius: spacing[12],
+        backgroundColor: colors['box-nft']
+      };
+      break;
     default:
       styles = {
         marginTop: 24,
-        width: metrics.screenWidth,
+        width: '100%',
         padding: spacing['24'],
         borderRadius: spacing['24'],
         backgroundColor: colors['background-box']

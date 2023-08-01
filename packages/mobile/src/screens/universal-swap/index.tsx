@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -8,50 +8,139 @@ import { useStore } from '../../stores';
 import { typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
+import { OWBox } from '@src/components/card';
+import OWButtonGroup from '@src/components/button/OWButtonGroup';
+import OWButtonIcon from '@src/components/button/ow-button-icon';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
-  const { colors } = useTheme();
+  const { colors, images } = useTheme();
   const styles = styling(colors);
-
+  const renderSetting = () => {
+    return (
+      <View style={styles.fDr}>
+        <OWButtonIcon
+          fullWidth={false}
+          style={[styles.btnTitleRight, styles.mr8]}
+          sizeIcon={16}
+          colorIcon="#777E90"
+          name="setting-bold"
+        />
+        <OWButtonIcon
+          fullWidth={false}
+          style={styles.btnTitleRight}
+          colorIcon="#777E90"
+          sizeIcon={16}
+          name="round_refresh"
+        />
+      </View>
+    );
+  };
+  const renderLabelInputRight = () => {
+    return (
+      <View style={styles.containerBtnLabelInputRight}>
+        <OWButton
+          style={[styles.btnLabelInputRight, styles.mr8]}
+          type="secondary"
+          size="small"
+          label="MAX"
+          fullWidth={false}
+          onPress={() => {
+            alert('ok');
+          }}
+        />
+        <OWButton
+          style={styles.btnLabelInputRight}
+          type="secondary"
+          size="small"
+          label="HALF"
+          fullWidth={false}
+        />
+      </View>
+    );
+  };
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
+      style={styles.container}
     >
-      <View
-        style={{
-          ...styles.containerScreen
-        }}
-      >
-        
-        <View
-          style={{
-            ...styles.contentBlock
-          }}
-        >
-          <SwapBox token={{}} withSwapIcon={true} />
-          <SwapBox token={{}} />
-          <OWButton
-            label="Swap"
-            size="medium"
-            style={{
-              borderRadius: 8,
-              marginTop: 16
-            }}
-            textStyle={{
-              fontWeight:'bold'
-            }}
-            loading={false}
-            onPress={() => {}}
+      <OWBox type="swap">
+        <View>
+          <SwapBox
+            titleRight={renderSetting}
+            feeValue="0.1"
+            feeLabel={'Token Fee'}
+            titleLeft={'FROM'}
+            tokensData={[]}
+            labelInputRight={renderLabelInputRight}
+            labelInputLeft={'8,291.09 orai'}
           />
+
+          <SwapBox
+            feeValue="0"
+            feeLabel={'Token Fee'}
+            titleLeft={'TO'}
+            tokensData={[]}
+            labelInputLeft={'8,291.09 orai'}
+            labelInputRight={'1 0RAI ≈ 357.32 AIRI'}
+          />
+          <View style={styles.containerBtnCenter}>
+            <OWButtonIcon
+              fullWidth={false}
+              typeIcon="images"
+              source={images.swap_center}
+              circle
+              sizeIcon={35}
+            />
+          </View>
         </View>
-      </View>
+        <OWButton
+          label="Swap"
+          style={styles.btnSwap}
+          loading={false}
+          onPress={() => {}}
+        />
+      </OWBox>
     </PageWithScrollViewInBottomTabView>
   );
 });
 
 const styling = (colors: object) =>
   StyleSheet.create({
+    fDr: {
+      flexDirection: 'row'
+    },
+    mr8: {
+      marginRight: 8
+    },
+    btnTitleRight: {
+      backgroundColor: colors['box-nft'],
+      height: 30,
+      width: 30,
+      borderRadius: 5
+    },
+    containerBtnLabelInputRight: {
+      flexDirection: 'row'
+    },
+    btnLabelInputRight: {
+      backgroundColor: '#EFE7F8',
+      borderRadius: 2,
+      height: 22,
+      borderWidth: 0
+    },
+    btnSwap: {
+      marginTop: 16
+    },
+    container: {
+      marginHorizontal: 16
+    },
+    containerBtnCenter: {
+      position: 'absolute',
+      top: '50%',
+      alignSelf: 'center',
+      marginTop: -16
+    },
     shadowBox: {
       shadowColor: colors['splash-background'],
       shadowOffset: {

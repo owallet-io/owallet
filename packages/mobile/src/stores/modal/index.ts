@@ -22,10 +22,6 @@ export class ModalStore {
     makeObservable(this);
   }
 
-  // @action
-  // setOpen() {
-  //   this.isOpen = true;
-  // }
   @action
   setOptions(options?: IOptions) {
     this.options = {
@@ -34,10 +30,6 @@ export class ModalStore {
     };
   }
 
-  // @computed
-  // get getState() {
-  //   return this.isOpen;
-  // }
   @computed
   get getOptions() {
     return this.options;

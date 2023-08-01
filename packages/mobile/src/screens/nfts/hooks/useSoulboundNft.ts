@@ -1,7 +1,6 @@
 import React from 'react';
 import { SoulboundNftInfoResponse } from '@src/screens/home/types';
 import { CWStargate } from '@src/common/cw-stargate';
-// 'orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x'
 const contractAddress =
   'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
 
@@ -29,10 +28,13 @@ export const useSoulbound = (
       const client = await CWStargate.init(account, chainId, rpc);
       const tokensInfo = await getTokensInfoFromContract(
         client,
-        'orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x'
-        // account.bech32Address
+        // 'orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x'
+        account.bech32Address
       );
-      console.log("🚀 ~ file: useSoulboundNft.ts:35 ~ init ~ tokensInfo:", tokensInfo)
+      console.log(
+        '🚀 ~ file: useSoulboundNft.ts:35 ~ init ~ tokensInfo:',
+        tokensInfo
+      );
       setState({
         soulboundNft: tokensInfo,
         loading: false

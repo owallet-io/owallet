@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import React from 'react';
 import OWButton, { IOWButtonProps } from './OWButton';
 
@@ -35,6 +35,7 @@ interface IOWButtonGroupProps
   disabledApprove?: IOWButtonProps['disabled'];
   sizeApprove?: IOWButtonProps['size'];
   onPressApprove?: IOWButtonProps['onPress'];
+  contentContainer?: ViewStyle;
 }
 const OWButtonGroup = ({
   labelClose,
@@ -57,10 +58,11 @@ const OWButtonGroup = ({
   sizeApprove,
   onPressClose,
   onPressApprove,
+  contentContainer,
   ...props
 }: IOWButtonGroupProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, contentContainer]}>
       <OWButton
         label={labelClose}
         style={[styles.btnClose, styleClose]}

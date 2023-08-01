@@ -18,6 +18,7 @@ prepare_react_native_project!
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
+# flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -40,7 +41,8 @@ target 'mobile' do
   use_react_native!(
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
-    :hermes_enabled => flags[:hermes_enabled],
+    # :hermes_enabled => flags[:hermes_enabled],
+    :hermes_enabled => false,
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #

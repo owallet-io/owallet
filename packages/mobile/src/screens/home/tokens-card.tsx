@@ -16,7 +16,7 @@ import {
   capitalizedText,
   convertAmount,
   _keyExtract,
-  
+  findLedgerAddressWithChainId
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
@@ -29,7 +29,8 @@ export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   refreshDate: number;
 }> = observer(({ containerStyle, refreshDate }) => {
-  const { chainStore, queriesStore, accountStore, priceStore } = useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
+    useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
 
@@ -47,7 +48,12 @@ export const TokensCard: FunctionComponent<{
     .get(chainStore.current.chainId)
     .queryBalances.getQueryBech32Address(
       chainStore.current.networkType === 'evm'
-        ? account.evmosHexAddress
+        ? keyRingStore.keyRingType === 'ledger'
+          ? findLedgerAddressWithChainId(
+              keyRingStore.keyRingLedgerAddresses,
+              chainStore.current.chainId
+            )
+          : account.evmosHexAddress
         : account.bech32Address
     );
 
@@ -58,10 +64,9 @@ export const TokensCard: FunctionComponent<{
     );
 
     const uniqTokens = [];
-    queryTokens.map((token) =>
+    queryTokens.map(token =>
       uniqTokens.filter(
-        (ut) =>
-          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -74,7 +79,7 @@ export const TokensCard: FunctionComponent<{
     refreshDate
   ]);
 
-  const onActiveType = (i) => {
+  const onActiveType = i => {
     setIndex(i);
   };
 
@@ -158,8 +163,10 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map((token) => {
+              tokens.slice(0, 3).map(token => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
+                console.log('token', token.balance);
+
                 return (
                   <TokenItem
                     key={token.currency?.coinMinimalDenom}
@@ -252,7 +259,7 @@ export const SkeletonNft = () => {
     </SkeletonPlaceholder>
   );
 };
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     titleNft: {
       paddingTop: 12

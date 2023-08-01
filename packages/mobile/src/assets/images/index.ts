@@ -36,6 +36,8 @@ const images = {
    success: require('./success.png'),
    success_dark: require('./success_dark.png'),
    swap: require('./swap.png'),
+   swap_center: require('./swap_center.png'),
+   swap_center_dark: require('./swap_center_dark.png'),
    swap_dark: require('./swap_dark.png'),
    swap_inactive: require('./swap_inactive.png'),
    swap_inactive_dark: require('./swap_inactive_dark.png'),
