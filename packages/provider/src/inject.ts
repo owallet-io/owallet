@@ -590,7 +590,7 @@ export class InjectedEthereum implements Ethereum {
               });
             } catch (error) {
               // Will catch here if receipt is not ready yet
-              console.log('Error on getting receipt : ', error);
+              console.log('Error on getting receipt: ', error);
             }
             break;
           default:
@@ -1361,7 +1361,6 @@ export class InjectedTronWebOWallet implements ITronWeb {
     },
     parseMessage?: (message: any) => any
   ) {
-    InjectedTronWebOWallet.tronweb = tronweb;
     eventListener.addMessageListener(async (e: MessageEvent) => {
       const message: ProxyRequest = parseMessage
         ? parseMessage(e.data)

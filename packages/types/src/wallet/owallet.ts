@@ -59,6 +59,7 @@ export interface OWallet {
   getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   enable(chainIds: string | string[]): Promise<void>;
   getKey(chainId: string): Promise<Key>;
+  handleUniversalSwap?(chainId: string, data: any): Promise<any>;
   signAmino(
     chainId: string,
     signer: string,
@@ -172,6 +173,7 @@ export interface Ethereum {
     data: object
   ): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
+  handleUniversalSwap?(chainId: string, data: any): Promise<any>;
   signEthereumTypeData(
     chainId: string,
     data: SignEthereumTypedDataObject
@@ -194,6 +196,7 @@ export interface TronWeb {
   initChainId: string;
   sign(transaction: object): Promise<object>;
   getDefaultAddress(): Promise<object>;
+  handleUniversalSwap?(chainId: string, data: any): Promise<any>;
 }
 export interface Bitcoin {
   readonly version: string;
