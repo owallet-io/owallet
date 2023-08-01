@@ -498,6 +498,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           <>
             <OrText />
             <OWButton
+              disabled={isBiometricLoading || isLoading}
               label="Use Biometric Authentication"
               style={styles.useBiometric}
               onPress={tryBiometric}
