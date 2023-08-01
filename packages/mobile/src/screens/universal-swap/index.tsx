@@ -71,20 +71,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       showsVerticalScrollIndicator={false}
     >
       <OWBox type="swap">
-        <OWBox
-          style={{
-            borderRadius: 12,
-            padding: 10,
-            backgroundColor: colors['background-box'],
-            marginTop: 4,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between'
-          }}
-        >
-          <BalanceText weight="600" >
-            1 0RAI ≈ 352347.32 AIRI
-          </BalanceText>
+        <OWBox style={styles.boxTop}>
+          <BalanceText weight="600">1 0RAI ≈ 352347.32 AIRI</BalanceText>
           {renderSetting()}
         </OWBox>
         <View>
@@ -125,12 +113,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           onPress={() => {}}
         />
         <View style={styles.theFirstLabel}>
-          <BalanceText >Minimum Received</BalanceText>
-          <BalanceText >0 USDT</BalanceText>
+          <BalanceText>Minimum Received</BalanceText>
+          <BalanceText>0 USDT</BalanceText>
         </View>
         <View style={styles.taxRate}>
-          <BalanceText >Tax rate</BalanceText>
-          <BalanceText >0</BalanceText>
+          <BalanceText>Tax rate</BalanceText>
+          <BalanceText>0</BalanceText>
         </View>
       </OWBox>
     </PageWithScrollViewInBottomTabView>
@@ -139,6 +127,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
+    boxTop: {
+      borderRadius: 8,
+      padding: 10,
+      backgroundColor: colors['background-box'],
+      marginTop: 4,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
     textBtnSwap: {
       fontWeight: '700',
       fontSize: 16

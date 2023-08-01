@@ -76,7 +76,7 @@ const styling = (colors: object) =>
       height: 30
     },
     containerInfo: {
-      borderRadius: 12,
+      borderRadius: 8,
       paddingHorizontal: 14,
       paddingVertical: 10,
       backgroundColor: colors['background-box'],
