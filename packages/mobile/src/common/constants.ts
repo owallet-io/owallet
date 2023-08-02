@@ -102,7 +102,7 @@ export const SCREENS_OPTIONS: IScreenOption = {
     title: ''
   },
   [SCREENS.UniversalSwap]: {
-    title: 'Universal Swap',
+    title: HEADER_KEY.notShowHeader,
     showTabBar: true
   },
   [SCREENS.Home]: {

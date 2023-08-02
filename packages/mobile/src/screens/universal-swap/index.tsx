@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
-import { typography } from '../../themes';
+import { metrics, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import { OWBox } from '@src/components/card';
@@ -13,11 +13,13 @@ import OWButtonGroup from '@src/components/button/OWButtonGroup';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { BalanceText } from './components/BalanceText';
+import SettingModal from './components/SettingModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   const { colors, images } = useTheme();
-
+  const [isModalSetting, setIsModalSetting] = useState(true);
   const styles = styling(colors);
   const renderSetting = () => {
     return (
@@ -28,6 +30,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           sizeIcon={16}
           colorIcon="#777E90"
           name="setting-bold"
+          onPress={() => {
+            setIsModalSetting(true);
+          }}
         />
         {/* <OWButtonIcon
           fullWidth={false}
@@ -65,21 +70,40 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
   return (
+    //  <SafeAreaView>
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={styles.container}
+      disableSafeArea={false}
       showsVerticalScrollIndicator={false}
     >
-      <OWBox type="swap">
-        <OWBox style={styles.boxTop}>
-          <BalanceText weight="600">1 0RAI ≈ 352347.32 AIRI</BalanceText>
-          {renderSetting()}
-        </OWBox>
+      <SettingModal
+        close={() => {
+          setIsModalSetting(false);
+        }}
+        isOpen={isModalSetting}
+      />
+      <View>
+        <View style={styles.boxTop}>
+          <Text variant="h3" weight="700">
+            Swap
+          </Text>
+          <OWButtonIcon
+            fullWidth={false}
+            style={[styles.btnTitleRight]}
+            sizeIcon={24}
+            colorIcon={colors['blue-300']}
+            name="setting-bold"
+            onPress={() => {
+              setIsModalSetting(true);
+            }}
+          />
+        </View>
         <View>
           <SwapBox
             titleRight={renderSetting}
             feeValue="0.1"
-            feeLabel={'Token Fee'}
+            feeLabel={'Fee: 0.1%'}
             titleLeft={'FROM'}
             tokensData={[]}
             labelInputRight={renderLabelInputRight}
@@ -87,7 +111,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           />
           <SwapBox
             feeValue="0"
-            feeLabel={'Token Fee'}
+            feeLabel={'Fee: 0.1%'}
             titleLeft={'TO'}
             tokensData={[]}
             labelInputLeft={'8,291.09 AIRI'}
@@ -96,41 +120,88 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.containerBtnCenter}>
             <OWButtonIcon
               fullWidth={false}
-              typeIcon="images"
-              source={images.down_center}
+              // typeIcon="images"
+              // source={images.down_center}
+              name="arrow_down_2"
               circle
-              sizeIcon={35}
+              style={{
+                backgroundColor: colors['bg-swap-box'],
+                borderRadius: 20,
+                width: 40,
+                height: 40,
+                borderWidth: 4,
+                borderColor: 'white'
+              }}
+              colorIcon={colors['blue-300']}
+              sizeIcon={24}
             />
           </View>
         </View>
-
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingTop: 16
+          }}
+        >
+          {[25, 50, 75, 100].map((item, index) => {
+            return (
+              <OWButton
+                key={item}
+                size="small"
+                style={{
+                  width: metrics.screenWidth / 4 - 16,
+                  backgroundColor: colors['bg-swap-box']
+                }}
+                textStyle={{
+                  color: colors['purple-700']
+                }}
+                label={`${item}%`}
+                fullWidth={false}
+              />
+            );
+          })}
+        </View>
         <OWButton
           label="Swap"
           style={styles.btnSwap}
           loading={false}
-          size="medium"
           textStyle={styles.textBtnSwap}
           onPress={() => {}}
         />
-        <View style={styles.theFirstLabel}>
-          <BalanceText>Minimum Received</BalanceText>
-          <BalanceText>0 USDT</BalanceText>
+        <View
+          style={{
+            backgroundColor: colors['bg-swap-box'],
+            paddingHorizontal: 16,
+            borderRadius: 8
+          }}
+        >
+          <View style={styles.itemBottom}>
+            <BalanceText>Quote</BalanceText>
+            <BalanceText>1 0RAI ≈ 357.32 AIRI</BalanceText>
+          </View>
+          <View style={styles.itemBottom}>
+            <BalanceText>Minimum Received</BalanceText>
+            <BalanceText>0 USDT</BalanceText>
+          </View>
+          <View style={styles.itemBottom}>
+            <BalanceText>Tax rate</BalanceText>
+            <BalanceText>0</BalanceText>
+          </View>
         </View>
-        <View style={styles.taxRate}>
-          <BalanceText>Tax rate</BalanceText>
-          <BalanceText>0</BalanceText>
-        </View>
-      </OWBox>
+      </View>
     </PageWithScrollViewInBottomTabView>
+    //  </SafeAreaView>
   );
 });
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
     boxTop: {
-      borderRadius: 8,
-      padding: 10,
-      backgroundColor: colors['background-box'],
+      // borderRadius: 8,
+      paddingTop: 10,
+      paddingBottom: 20,
+      // backgroundColor: colors['background-box'],
       marginTop: 4,
       flexDirection: 'row',
       alignItems: 'center',
@@ -140,9 +211,12 @@ const styling = (colors: TypeTheme['colors']) =>
       fontWeight: '700',
       fontSize: 16
     },
-    taxRate: {
+    itemBottom: {
       flexDirection: 'row',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      paddingVertical: 5,
+      borderBottomWidth: 1,
+      borderBottomColor: 'white'
     },
     theFirstLabel: {
       flexDirection: 'row',
@@ -159,10 +233,10 @@ const styling = (colors: TypeTheme['colors']) =>
       marginRight: 8
     },
     btnTitleRight: {
-      backgroundColor: colors['box-nft'],
+      // backgroundColor: colors['box-nft'],
       height: 30,
-      width: 30,
-      borderRadius: 5
+      width: 30
+      // borderRadius: 5
     },
     containerBtnLabelInputRight: {
       flexDirection: 'row'

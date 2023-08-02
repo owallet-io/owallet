@@ -6,7 +6,7 @@ import { colorsCode } from '@src/themes/mode-colors';
 
 export const BalanceText: FunctionComponent<OWTextProps> = (props) => {
   return (
-    <Text size={12} color={colorsCode['blue-300']} {...props}>
+    <Text size={14} color={colorsCode['blue-300']} {...props}>
       {props.children}
     </Text>
   );

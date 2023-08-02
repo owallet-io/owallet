@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import React, { FunctionComponent, ReactNode, useMemo } from 'react';
 import { Text } from '@src/components/text';
-import { useTheme } from '@src/themes/theme-provider';
+import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '@src/components/card';
 import { checkFnComponent } from '../helpers';
@@ -43,7 +43,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
           ...styles.containerInfo
         }}
       >
-        <View style={[styles.flr, styles.h35]}>
+        {/* <View style={[styles.flr, styles.h35]}>
           {!!labelInputLeft && (
             <View style={styles.flR}>
               <BalanceText>Balance:</BalanceText>
@@ -51,20 +51,30 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
             </View>
           )}
           {handleShowLabelRight}
-        </View>
-        <View style={[styles.flr, styles.priceInput]}>
-          <InputSelectToken />
-        </View>
-        <View style={[styles.flr]}>
-          {handleShowfeeLabel}
-          {!!feeValue && <BalanceText>{feeValue}%</BalanceText>}
+        </View> */}
+
+        <InputSelectToken />
+
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
+          {/* {handleShowfeeLabel} */}
+          <View>
+            <BalanceText size={12}>Balance: 1000000000</BalanceText>
+            <BalanceText size={12}>Fee: 0.1%</BalanceText>
+          </View>
+          {/* {!!feeValue && <BalanceText>{feeValue}%</BalanceText>} */}
+          <BalanceText>≈ $2000</BalanceText>
         </View>
       </OWBox>
     );
   }
 );
 
-const styling = (colors: object) =>
+const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
     flR: {
       flexDirection: 'row'
@@ -77,9 +87,8 @@ const styling = (colors: object) =>
     },
     containerInfo: {
       borderRadius: 8,
-      paddingHorizontal: 14,
-      paddingVertical: 10,
-      backgroundColor: colors['background-box'],
+      padding: 16,
+      backgroundColor: colors['bg-swap-box'],
       marginTop: 4
     },
     flr: {
@@ -112,7 +121,6 @@ const styling = (colors: object) =>
     },
     priceInput: {
       justifyContent: 'space-between',
-      backgroundColor: colors['content-background'],
       paddingVertical: 10
     },
     swapIcon: {
