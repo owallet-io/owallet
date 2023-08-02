@@ -19,7 +19,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
   return (
     <View style={[styles.containerInputSelectToken]}>
       <TouchableOpacity style={styles.btnChainContainer}>
-        <OWIcon type="images" source={images.swap} size={28} />
+        <OWIcon type="images" source={images.swap} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View
             style={{
@@ -30,7 +30,8 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
               ORAI
             </Text>
             <BalanceText
-              size={11}
+              size={12}
+              weight='500'
               style={{
                 marginTop: -4
               }}
@@ -38,14 +39,14 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
               Oraichain
             </BalanceText>
           </View>
-          <OWIcon color={colors['text-title']} name="down" size={16} />
+          <OWIcon color={colors['blue-300']} name="down" size={16} />
         </View>
       </TouchableOpacity>
       <View style={styles.containerInput}>
         <TextInput
           placeholder="0"
           textAlign="right"
-          keyboardType="number-pad"
+          keyboardType="numeric"
           style={[
             styles.textInput,
             {

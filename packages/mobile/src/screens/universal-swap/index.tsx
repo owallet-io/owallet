@@ -73,7 +73,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     //  <SafeAreaView>
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
-      style={styles.container}
+      style={[styles.container, Platform.OS === "android"?{
+        paddingTop:30
+      }:{}]}
       disableSafeArea={false}
       showsVerticalScrollIndicator={false}
     >
@@ -151,7 +153,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 size="small"
                 style={{
                   width: metrics.screenWidth / 4 - 16,
-                  backgroundColor: colors['bg-swap-box']
+                  backgroundColor: colors['bg-swap-box'],
+                  height:40
                 }}
                 textStyle={{
                   color: colors['purple-700']
@@ -173,7 +176,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           style={{
             backgroundColor: colors['bg-swap-box'],
             paddingHorizontal: 16,
-            borderRadius: 8
+            borderRadius: 8,
+            paddingVertical:11
           }}
         >
           <View style={styles.itemBottom}>
@@ -215,8 +219,7 @@ const styling = (colors: TypeTheme['colors']) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       paddingVertical: 5,
-      borderBottomWidth: 1,
-      borderBottomColor: 'white'
+      
     },
     theFirstLabel: {
       flexDirection: 'row',
@@ -252,7 +255,8 @@ const styling = (colors: TypeTheme['colors']) =>
       borderRadius: 8
     },
     container: {
-      marginHorizontal: 16
+      marginHorizontal: 16,
+      
     },
     containerBtnCenter: {
       position: 'absolute',

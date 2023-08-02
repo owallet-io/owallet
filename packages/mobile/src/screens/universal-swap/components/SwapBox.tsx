@@ -63,11 +63,13 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
         >
           {/* {handleShowfeeLabel} */}
           <View>
-            <BalanceText size={12}>Balance: 1000000000</BalanceText>
-            <BalanceText size={12}>Fee: 0.1%</BalanceText>
+            <BalanceText weight='500'>Balance: 1000000000</BalanceText>
+            <BalanceText size={13} style={{
+              paddingTop:2
+            }} weight='500' >Fee: 0.1%</BalanceText>
           </View>
           {/* {!!feeValue && <BalanceText>{feeValue}%</BalanceText>} */}
-          <BalanceText>≈ $2000</BalanceText>
+          <BalanceText weight='500'>≈ $2000</BalanceText>
         </View>
       </OWBox>
     );
