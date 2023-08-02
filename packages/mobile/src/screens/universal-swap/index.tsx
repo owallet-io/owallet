@@ -94,7 +94,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             fullWidth={false}
             style={[styles.btnTitleRight]}
             sizeIcon={24}
-            colorIcon={colors['blue-300']}
+            colorIcon={'#7C8397'}
             name="setting-bold"
             onPress={() => {
               setIsModalSetting(true);
@@ -134,7 +134,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 borderWidth: 4,
                 borderColor: 'white'
               }}
-              colorIcon={colors['blue-300']}
+              colorIcon={'#7C8397'}
               sizeIcon={24}
             />
           </View>

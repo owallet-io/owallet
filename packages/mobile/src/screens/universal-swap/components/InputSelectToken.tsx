@@ -23,7 +23,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View
             style={{
-              paddingRight: 7
+              paddingRight: 4
             }}
           >
             <Text weight="700" size={20}>
@@ -92,10 +92,11 @@ const styling = (colors: TypeTheme['colors']) =>
     btnChainContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: 15,
+      paddingHorizontal: 7,
       borderRadius: 24,
       backgroundColor: colors['bg-btn-select-token'],
-      paddingVertical: 5
+      paddingVertical: 2,
+      marginRight:3
     },
     containerInputSelectToken: {
       width: '100%',
