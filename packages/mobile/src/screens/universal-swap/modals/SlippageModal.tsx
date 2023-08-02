@@ -8,7 +8,7 @@ import { Text } from '@src/components/text';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { OWButton } from '@src/components/button';
 
-const SettingModal = registerModal(() => {
+export const SlippageModal = registerModal(() => {
   return (
     <View>
       <View
@@ -80,6 +80,6 @@ const SettingModal = registerModal(() => {
   );
 });
 
-export default SettingModal;
+
 
 const styles = StyleSheet.create({});

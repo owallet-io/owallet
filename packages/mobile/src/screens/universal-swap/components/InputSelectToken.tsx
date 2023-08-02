@@ -5,20 +5,34 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { IInputSelectToken } from '../types';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
+import { SelectTokenModal } from '../modals';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
   const { colors } = useTheme();
   const styles = styling(colors);
+  const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   return (
     <View style={[styles.containerInputSelectToken]}>
-      <TouchableOpacity style={styles.btnChainContainer}>
+      <SelectTokenModal
+        bottomSheetModalConfig={{
+            snapPoints:['50%','90%'],
+            index:1
+        }}
+        close={() => {
+          setIsSelectTokenModal(false);
+        }}
+        isOpen={isSelectTokenModal}
+      />
+      <TouchableOpacity onPress={() => {
+        setIsSelectTokenModal(true);
+      }} style={styles.btnChainContainer}>
         <OWIcon type="images" source={images.swap} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View
@@ -31,7 +45,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
             </Text>
             <BalanceText
               size={12}
-              weight='500'
+              weight="500"
               style={{
                 marginTop: -4
               }}
@@ -42,6 +56,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
           <OWIcon color={colors['blue-300']} name="down" size={16} />
         </View>
       </TouchableOpacity>
+
       <View style={styles.containerInput}>
         <TextInput
           placeholder="0"
@@ -96,7 +111,7 @@ const styling = (colors: TypeTheme['colors']) =>
       borderRadius: 24,
       backgroundColor: colors['bg-btn-select-token'],
       paddingVertical: 2,
-      marginRight:3
+      marginRight: 3
     },
     containerInputSelectToken: {
       width: '100%',

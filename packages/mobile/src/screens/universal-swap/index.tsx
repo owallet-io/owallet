@@ -13,13 +13,14 @@ import OWButtonGroup from '@src/components/button/OWButtonGroup';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { BalanceText } from './components/BalanceText';
-import SettingModal from './components/SettingModal';
+import { SelectTokenModal, SlippageModal } from './modals/';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   const { colors, images } = useTheme();
-  const [isModalSetting, setIsModalSetting] = useState(true);
+  const [isModalSetting, setIsModalSetting] = useState(false);
+  const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const styles = styling(colors);
   const renderSetting = () => {
     return (
@@ -73,17 +74,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     //  <SafeAreaView>
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
-      style={[styles.container, Platform.OS === "android"?{
-        paddingTop:30
-      }:{}]}
+      style={[
+        styles.container,
+        Platform.OS === 'android'
+          ? {
+              paddingTop: 30
+            }
+          : {}
+      ]}
       disableSafeArea={false}
       showsVerticalScrollIndicator={false}
     >
-      <SettingModal
+      <SlippageModal
         close={() => {
           setIsModalSetting(false);
         }}
         isOpen={isModalSetting}
+      />
+      <SelectTokenModal
+        close={() => {
+          setIsSelectTokenModal(false);
+        }}
+        isOpen={isSelectTokenModal}
       />
       <View>
         <View style={styles.boxTop}>
@@ -122,8 +134,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.containerBtnCenter}>
             <OWButtonIcon
               fullWidth={false}
-              // typeIcon="images"
-              // source={images.down_center}
               name="arrow_down_2"
               circle
               style={{
@@ -146,7 +156,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             paddingTop: 16
           }}
         >
-          {[25, 50, 75, 100].map((item, index) => {
+          {[25, 50, 75].map((item, index) => {
             return (
               <OWButton
                 key={item}
@@ -154,16 +164,32 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 style={{
                   width: metrics.screenWidth / 4 - 16,
                   backgroundColor: colors['bg-swap-box'],
-                  height:40
+                  height: 40
                 }}
                 textStyle={{
-                  color: colors['purple-700']
+                  color: '#7C8397'
                 }}
                 label={`${item}%`}
                 fullWidth={false}
               />
             );
           })}
+          <OWButton
+            // key={item}
+            size="small"
+            style={{
+              width: metrics.screenWidth / 4 - 16,
+              backgroundColor: colors['bg-swap-box'],
+              height: 40,
+              borderWidth: 1,
+              borderColor: colors['purple-700']
+            }}
+            textStyle={{
+              color: colors['purple-700']
+            }}
+            label={'100%'}
+            fullWidth={false}
+          />
         </View>
         <OWButton
           label="Swap"
@@ -177,7 +203,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             backgroundColor: colors['bg-swap-box'],
             paddingHorizontal: 16,
             borderRadius: 8,
-            paddingVertical:11
+            paddingVertical: 11
           }}
         >
           <View style={styles.itemBottom}>
@@ -218,8 +244,7 @@ const styling = (colors: TypeTheme['colors']) =>
     itemBottom: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      paddingVertical: 5,
-      
+      paddingVertical: 5
     },
     theFirstLabel: {
       flexDirection: 'row',
@@ -255,8 +280,7 @@ const styling = (colors: TypeTheme['colors']) =>
       borderRadius: 8
     },
     container: {
-      marginHorizontal: 16,
-      
+      marginHorizontal: 16
     },
     containerBtnCenter: {
       position: 'absolute',

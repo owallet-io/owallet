@@ -201,8 +201,8 @@ const modeColors = {
   'divided-border-transaction-detail': ['#2B2D3B', '#EDEDF8'],
   skeleton: ['#36384a', '#f3f2f2'],
   'bg-tonner': ['#191B21', '#F6EDFF'],
-  'bg-swap-box':['#F6F9FF','#F6F9FF'],
-  'bg-btn-select-token':['#EAF1FF','#EAF1FF']
+  'bg-swap-box':['#F5F9FE','#F6F9FF'],
+  'bg-btn-select-token':['#E3EDFA','#EAF1FF']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
