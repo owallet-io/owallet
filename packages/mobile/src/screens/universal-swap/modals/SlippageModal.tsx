@@ -12,8 +12,9 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { OWButton } from '@src/components/button';
 import { useTheme } from '@src/themes/theme-provider';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { metrics } from '@src/themes';
 
-export const SlippageModal = registerModal(({close}) => {
+export const SlippageModal = registerModal(({ close }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
   return (
@@ -31,29 +32,14 @@ export const SlippageModal = registerModal(({close}) => {
           alignItems: 'center'
         }}
       >
-        <OWButtonIcon
-          fullWidth={false}
-          style={{
-            width: 40,
-            height: 40,
-            backgroundColor: colors['purple-50'],
-            paddingVertical: 10
-          }}
-          sizeIcon={22}
-          colorIcon={colors['blue-300']}
-          name="setting-bold"
-          onPress={() => {
-            // setIsModalSetting(true);
-          }}
-        />
         <Text
           style={{
             paddingVertical: 10
           }}
           size={16}
-          weight="900"
+          weight="500"
         >
-          Maximum slippage
+          Slippage tolerance
         </Text>
         <Text
           style={{
@@ -62,8 +48,7 @@ export const SlippageModal = registerModal(({close}) => {
           }}
           color={colors['blue-300']}
         >
-          Your transaction will revert if the price changes more than the
-          slippage percentage.
+          {`Your transaction will be suspended \nif the price exceeds the slippage percentage.`}
         </Text>
         <View
           style={{
@@ -72,91 +57,112 @@ export const SlippageModal = registerModal(({close}) => {
             alignItems: 'center'
           }}
         >
-         <OWButton
-            fullWidth={false}
-            label="-"
-            circle
-            textStyle={{
-              fontSize: 18,
-              color: colors['white']
-            }}
-            style={{
-              backgroundColor: colors['blue-300'],
-              width:35,
-              height:35
-            }}
-            type="primary"
-            size="small"
-          />
           <View
             style={{
-              height: 48,
-              borderRadius: 24,
-              borderWidth: 1,
-              borderColor: colors['blue-300'],
+              height: 40,
+              borderRadius: 12,
+              borderWidth: 0.5,
+              borderColor: colors['gray-300'],
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
               marginHorizontal: 10
             }}
           >
-            <OWButton
+            <OWButtonIcon
+              colorIcon="#AEAEB2"
+              name="minus"
+              sizeIcon={20}
               style={{
                 width: 60
               }}
-              type="link"
-              label="Auto"
               fullWidth={false}
-              size="small"
             />
-            <BottomSheetTextInput
+            <View
               style={{
-                fontSize: 18,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+            >
+              <BottomSheetTextInput
+                style={{
+                  fontSize: 18,
+                  width: 30,
+                  color: colors['gray-600']
+                }}
+                placeholder="0"
+                keyboardType="decimal-pad"
+                defaultValue="0"
+                textAlign="right"
+              />
+              <Text size={18} color={colors['gray-600']}>
+                %
+              </Text>
+            </View>
+            <OWButtonIcon
+              style={{
                 width: 60
               }}
-              placeholder="0"
-              keyboardType='decimal-pad'
-              defaultValue="0"
-              textAlign="center"
+              colorIcon="#AEAEB2"
+              name="add_ic"
+              sizeIcon={20}
+              fullWidth={false}
             />
-            <Text
-              size={18}
-              style={{
-                width: 60,
-                textAlign: 'center'
-              }}
-              color={colors['blue-300']}
-            >
-              %
-            </Text>
           </View>
+        </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingVertical: 16,
+            width: '100%'
+          }}
+        >
+          {[1, 3, 5].map((item, index) => {
+            return (
+              <OWButton
+                key={item}
+                size="medium"
+                style={{
+                  width: metrics.screenWidth / 4 - 20,
+                  backgroundColor: colors['bg-swap-box'],
+                  height: 40
+                }}
+                textStyle={{
+                  color: '#7C8397'
+                }}
+                label={`${item}%`}
+                fullWidth={false}
+              />
+            );
+          })}
           <OWButton
-            fullWidth={false}
-            label="+"
-            circle
-            textStyle={{
-              fontSize: 18,
-              color: colors['white']
-            }}
+            // key={item}
+            size="medium"
             style={{
-              backgroundColor: colors['blue-300'],
-              width:35,
-              height:35
+              width: metrics.screenWidth / 4 - 20,
+              backgroundColor: colors['bg-swap-box'],
+              height: 40,
+              borderWidth: 1,
+              borderColor: colors['purple-700']
             }}
-            type="primary"
-            size="small"
+            textStyle={{
+              color: colors['purple-700']
+            }}
+            label={'7%'}
+            fullWidth={false}
           />
-          
         </View>
         <OWButton
           style={{
             marginVertical: 10
           }}
+          isBottomSheet
           type="secondary"
           label="Confirm"
           size="medium"
-          onPress={()=>{
-            close()
+          onPress={() => {
+            close();
           }}
         />
       </View>

@@ -177,7 +177,8 @@ export const SelectTokenModal: FunctionComponent<{
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          paddingVertical:10
         }}
       >
         <Text color={'#7C8397'} weight="500">

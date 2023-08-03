@@ -2,7 +2,7 @@ import {
   View,
   Text,
   TouchableOpacityProps,
-  TouchableOpacity,
+  TouchableOpacity as NativeButton,
   StyleSheet,
   StyleProp,
   TextStyle,
@@ -14,6 +14,7 @@ import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import OWText, { OWTextProps } from '../text/ow-text';
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 
 export interface IOWButtonProps extends TouchableOpacityProps {
   type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
@@ -29,6 +30,7 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   icon?: React.ReactNode;
   contentAlign?: 'left' | 'center' | 'right';
   borderStyle?: 'dashed' | 'none';
+  isBottomSheet?: boolean;
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
@@ -47,6 +49,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   borderStyle,
   contentAlign,
   circle,
+  isBottomSheet,
   ...props
 }) => {
   const handleOnPress = useCallback(
@@ -63,8 +66,9 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const { colors } = useTheme();
   const styles = styling();
+  const ELementButton = isBottomSheet ? TouchableOpacity : NativeButton;
   return (
-    <TouchableOpacity
+    <ELementButton
       {...props}
       onPress={handleOnPress}
       disabled={disabled}
@@ -101,7 +105,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
           )}
         </>
       )}
-    </TouchableOpacity>
+    </ELementButton>
   );
 };
 
