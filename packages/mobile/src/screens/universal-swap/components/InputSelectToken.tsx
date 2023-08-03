@@ -12,27 +12,48 @@ import images from '@src/assets/images';
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { SelectTokenModal } from '../modals';
+import { SelectNetworkModal, SelectTokenModal, SlippageModal } from '../modals';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
+  const [isSlippageModal, setIsSlippageModal] = useState(false);
+  const [isNetworkModal, setIsNetworkModal] = useState(false);
   return (
     <View style={[styles.containerInputSelectToken]}>
+      <SlippageModal
+        isOpen={isSlippageModal}
+        close={() => {
+          setIsSlippageModal('false');
+        }}
+      />
       <SelectTokenModal
         bottomSheetModalConfig={{
-            snapPoints:['50%','90%'],
-            index:1
+          snapPoints: ['50%', '90%'],
+          index: 1
         }}
         close={() => {
           setIsSelectTokenModal(false);
         }}
+        onNetworkModal={() => {
+            setIsNetworkModal(true);
+          // alert('ok');
+        }}
         isOpen={isSelectTokenModal}
       />
-      <TouchableOpacity onPress={() => {
-        setIsSelectTokenModal(true);
-      }} style={styles.btnChainContainer}>
+      <SelectNetworkModal
+        close={() => {
+          setIsNetworkModal(false);
+        }}
+        isOpen={isNetworkModal}
+      />
+      <TouchableOpacity
+        onPress={() => {
+          setIsSelectTokenModal(true);
+        }}
+        style={styles.btnChainContainer}
+      >
         <OWIcon type="images" source={images.swap} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View

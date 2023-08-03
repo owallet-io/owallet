@@ -95,6 +95,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         close={() => {
           setIsSelectTokenModal(false);
         }}
+        onSlippage={()=>{
+          console.log('ok')
+        }}
         isOpen={isSelectTokenModal}
       />
       <View>
