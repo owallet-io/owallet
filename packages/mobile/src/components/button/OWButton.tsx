@@ -46,6 +46,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   children,
   borderStyle,
   contentAlign,
+  circle,
   ...props
 }) => {
   const handleOnPress = useCallback(
@@ -75,6 +76,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
         fullWidth ? styles.fullWidth : styles.widthAuto,
         borderStyle == 'dashed' && styles.dashed,
         !!icon && !label && styles.hasIcon,
+        circle && styles.maxBR,
         style
       ]}
     >
@@ -107,6 +109,7 @@ export default OWButton;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    maxBR: { borderRadius: 99999 },
     paddingHaveIconAndNotFullwidth: { paddingHorizontal: 12 },
     iconInBtn: { paddingLeft: 6 },
     dashed: {

@@ -100,7 +100,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       <View>
         <View style={styles.boxTop}>
           <Text variant="h3" weight="700">
-            Swap
+            Universal Swap
           </Text>
           <OWButtonIcon
             fullWidth={false}
