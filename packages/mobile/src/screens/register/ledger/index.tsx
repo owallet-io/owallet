@@ -83,29 +83,41 @@ export const NewLedgerScreen: FunctionComponent = observer((props) => {
         accountType: 'ledger'
       });
       await delay();
-      if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
-        return false;
+      if (keyRingStore.multiKeyStoreInfo?.length > 0) {
+        const hasKeyStore = keyRingStore.multiKeyStoreInfo?.filter(
+          (keystore) => keystore?.meta?.name == getValues('name')
+        );
+        if (
+          hasKeyStore?.length > 0 &&
+          keyRingStore.status == KeyRingStatus.UNLOCKED
+        ) {
+          if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
+            navigate(SCREENS.RegisterEnd, {
+              password: getValues('password')
+            });
+          } else {
+            smartNavigation.reset({
+              index: 0,
+              routes: [
+                {
+                  name: SCREENS.RegisterEnd,
+                  params: {
+                    password: getValues('password')
+                  }
+                }
+              ]
+            });
+          }
+        }
       }
-      if (checkRouter(props?.route?.name, 'RegisterNewLedgerMain')) {
-        navigate(SCREENS.RegisterEnd, {
-          password: getValues('password')
-        });
-      } else {
-        smartNavigation.reset({
-          index: 0,
-          routes: [
-            {
-              name: SCREENS.RegisterEnd,
-              params: {
-                password: getValues('password')
-              }
-            }
-          ]
-        });
-      }
+      // if (keyRingStore.status !== KeyRingStatus.UNLOCKED) {
+      return false;
+      // }
     } catch (e) {
       // Definitely, the error can be thrown when the ledger connection failed
       console.log(e);
+      setIsCreating(false);
+    } finally {
       setIsCreating(false);
     }
   });

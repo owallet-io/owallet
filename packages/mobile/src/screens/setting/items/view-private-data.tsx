@@ -5,6 +5,8 @@ import { PasswordInputModal } from '../../../modals/password-input/modal';
 import { useStore } from '../../../stores';
 import { getPrivateDataTitle } from '../screens/view-private-data';
 import { useSmartNavigation } from '../../../navigation.provider';
+import { Platform } from 'react-native';
+import { metrics } from '@src/themes';
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
@@ -26,6 +28,13 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
         topBorder={topBorder}
       />
       <PasswordInputModal
+        bottomSheetModalConfig={
+          Platform.OS === 'android' && metrics.screenHeight > 800
+            ? {
+                snapPoints: ['60%']
+              }
+            : null
+        }
         isOpen={isOpenModal}
         paragraph={'Do not reveal your mnemonic to anyone'}
         close={() => {
