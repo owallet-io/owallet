@@ -146,7 +146,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             }
             autoCorrect={false}
             autoCapitalize="none"
-            autoCompleteType="off"
+            autoComplete="off"
           />
           <AmountInput
             placeholder="ex. 1000 ORAI"

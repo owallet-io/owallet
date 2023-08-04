@@ -728,6 +728,20 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'kawaii-islands',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+      },
+      {
+        coinDenom: 'MILKY',
+        coinMinimalDenom: 'bep20_milky',
+        contractAddress: '0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717',
+        coinDecimals: 18,
+        coinGeckoId: 'milky-token'
+      },
+      {
+        coinDenom: 'USDT',
+        coinMinimalDenom: 'bep20_usdt',
+        contractAddress: '0x55d398326f99059fF775485246999027B3197955',
+        coinDecimals: 18,
+        coinGeckoId: 'tether'
       }
     ],
     get feeCurrencies() {
