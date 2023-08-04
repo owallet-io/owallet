@@ -26,90 +26,93 @@ export const SlippageModal = registerModal(({ close }) => {
         paddingHorizontal: 24
       }}
     >
-      <View
-        style={{
-          flex: 1,
-          alignItems: 'center'
-        }}
-      >
-        <Text
-          style={{
-            paddingVertical: 10
-          }}
-          size={16}
-          weight="500"
-        >
-          Slippage tolerance
-        </Text>
-        <Text
-          style={{
-            textAlign: 'center',
-            paddingVertical: 10
-          }}
-          color={colors['blue-300']}
-        >
-          {`Your transaction will be suspended \nif the price exceeds the slippage percentage.`}
-        </Text>
+      <View>
         <View
           style={{
-            flexDirection: 'row',
-            paddingVertical: 10,
             alignItems: 'center'
           }}
         >
+          <Text
+            style={{
+              paddingVertical: 10
+            }}
+            size={16}
+            weight="500"
+          >
+            Slippage tolerance
+          </Text>
+          <Text
+            style={{
+              textAlign: 'center',
+              paddingVertical: 10
+            }}
+            color={colors['blue-300']}
+          >
+            {`Your transaction will be suspended \nif the price exceeds the slippage percentage.`}
+          </Text>
           <View
             style={{
-              height: 40,
-              borderRadius: 12,
-              borderWidth: 0.5,
-              borderColor: colors['gray-300'],
               flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginHorizontal: 10
+              paddingVertical: 10,
+              alignItems: 'center'
             }}
           >
-            <OWButtonIcon
-              colorIcon="#AEAEB2"
-              name="minus"
-              sizeIcon={20}
-              style={{
-                width: 60
-              }}
-              fullWidth={false}
-            />
             <View
               style={{
+                height: 40,
+                borderRadius: 12,
+                borderWidth: 0.5,
+                borderColor: colors['gray-300'],
                 flexDirection: 'row',
-                alignItems: 'center'
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginHorizontal: 10
               }}
             >
-              <BottomSheetTextInput
+              <OWButtonIcon
+                colorIcon="#AEAEB2"
+                name="minus"
+                sizeIcon={20}
                 style={{
-                  fontSize: 18,
-                  width: 30,
-                  color: colors['gray-600']
+                  width: 60
                 }}
-                placeholder="0"
-                keyboardType="decimal-pad"
-                defaultValue="0"
-                textAlign="right"
+                fullWidth={false}
               />
-              <Text size={18} color={colors['gray-600']}>
-                %
-              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center'
+                }}
+              >
+                <BottomSheetTextInput
+                  style={{
+                    fontSize: 18,
+                    width: 30,
+                    color: colors['gray-600'],
+                    paddingVertical: 0
+                  }}
+                  placeholder="0"
+                  keyboardType="decimal-pad"
+                  defaultValue="0"
+                  textAlign="right"
+                />
+                <Text size={18} color={colors['gray-600']}>
+                  %
+                </Text>
+              </View>
+              <OWButtonIcon
+                style={{
+                  width: 60
+                }}
+                colorIcon="#AEAEB2"
+                name="add_ic"
+                sizeIcon={20}
+                fullWidth={false}
+              />
             </View>
-            <OWButtonIcon
-              style={{
-                width: 60
-              }}
-              colorIcon="#AEAEB2"
-              name="add_ic"
-              sizeIcon={20}
-              fullWidth={false}
-            />
           </View>
         </View>
+
         <View
           style={{
             flexDirection: 'row',
@@ -158,11 +161,17 @@ export const SlippageModal = registerModal(({ close }) => {
             marginVertical: 10
           }}
           isBottomSheet
-          type="secondary"
+          textStyle={{
+            fontWeight: '700',
+            fontSize: 16
+          }}
+          type="tonner"
           label="Confirm"
           size="medium"
           onPress={() => {
-            close();
+            setTimeout(() => {
+              close();
+            }, 100);
           }}
         />
       </View>

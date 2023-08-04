@@ -17,7 +17,7 @@ import OWText, { OWTextProps } from '../text/ow-text';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 
 export interface IOWButtonProps extends TouchableOpacityProps {
-  type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
+  type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger' | 'tonner';
   size?: 'medium' | 'small' | 'large';
   textVariant?: OWTextProps['variant'];
   textTypo?: OWTextProps['typo'];

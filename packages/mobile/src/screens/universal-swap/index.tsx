@@ -106,6 +106,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             Universal Swap
           </Text>
           <OWButtonIcon
+            isBottomSheet
             fullWidth={false}
             style={[styles.btnTitleRight]}
             sizeIcon={24}
