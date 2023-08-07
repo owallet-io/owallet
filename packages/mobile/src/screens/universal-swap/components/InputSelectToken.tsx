@@ -1,60 +1,25 @@
-import {
-  Platform,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import React, { FunctionComponent, useState } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { FunctionComponent } from 'react';
 import { IInputSelectToken } from '../types';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import images from '@src/assets/images';
+
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import { SelectNetworkModal, SelectTokenModal, SlippageModal } from '../modals';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
   amount,
-  onAmount
+  onAmount,
+  onOpenTokenModal
 }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
-  const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
-  const [isSlippageModal, setIsSlippageModal] = useState(false);
-  const [isNetworkModal, setIsNetworkModal] = useState(false);
+
   return (
     <View style={[styles.containerInputSelectToken]}>
-      <SlippageModal
-        isOpen={isSlippageModal}
-        close={() => {
-          setIsSlippageModal(false);
-        }}
-      />
-      <SelectTokenModal
-        bottomSheetModalConfig={{
-          snapPoints: ['50%', '90%'],
-          index: 1
-        }}
-        close={() => {
-          setIsSelectTokenModal(false);
-        }}
-        onNetworkModal={() => {
-          setIsNetworkModal(true);
-        }}
-        isOpen={isSelectTokenModal}
-      />
-      <SelectNetworkModal
-        close={() => {
-          setIsNetworkModal(false);
-        }}
-        isOpen={isNetworkModal}
-      />
       <TouchableOpacity
-        onPress={() => {
-          setIsSelectTokenModal(true);
-        }}
+        onPress={onOpenTokenModal}
         style={styles.btnChainContainer}
       >
         <OWIcon type="images" source={tokenActive?.logo} size={30} />

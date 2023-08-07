@@ -17,189 +17,82 @@ import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
 import { OWButton } from '@src/components/button';
+import { TokenInfo } from '../types';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
-}> = registerModal(({ close, onNetworkModal }) => {
-  const dataFake = [
-    {
-      symbol: 'USDT',
-      networkChain: 'Ethereum',
-      available: 0,
-      symbolLogo: images.push
-    },
-    {
-      symbol: 'USDT',
-      networkChain: 'BSC',
-      available: 0,
-      symbolLogo: images.push_inactive
-    },
-    {
-      symbol: 'ORAI',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.crypto
-    },
-    {
-      symbol: 'AIRI',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.down_center
-    },
-    {
-      symbol: 'ORAIX',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.down_center_dark
-    },
-    {
-      symbol: 'ETH',
-      networkChain: 'Ethereum',
-      available: 0,
-      symbolLogo: images.push
-    },
-    {
-      symbol: 'USDT',
-      networkChain: 'Ethereum',
-      available: 0,
-      symbolLogo: images.push
-    },
-    {
-      symbol: 'USDT',
-      networkChain: 'BSC',
-      available: 0,
-      symbolLogo: images.push_inactive
-    },
-    {
-      symbol: 'ORAI',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.crypto
-    },
-    {
-      symbol: 'AIRI',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.down_center
-    },
-    {
-      symbol: 'ORAIX',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.down_center_dark
-    },
-    {
-      symbol: 'ETH',
-      networkChain: 'Ethereum',
-      available: 0,
-      symbolLogo: images.push
-    },
-    {
-      symbol: 'USDT',
-      networkChain: 'Ethereum',
-      available: 0,
-      symbolLogo: images.push
-    },
-    {
-      symbol: 'USDT',
-      networkChain: 'BSC',
-      available: 0,
-      symbolLogo: images.push_inactive
-    },
-    {
-      symbol: 'ORAI',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.crypto
-    },
-    {
-      symbol: 'AIRI',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.down_center
-    },
-    {
-      symbol: 'ORAIX',
-      networkChain: 'Oraichain',
-      available: 0,
-      symbolLogo: images.down_center_dark
-    },
-    {
-      symbol: 'ETH',
-      networkChain: 'Ethereum',
-      available: 0,
-      symbolLogo: images.push
-    }
-  ];
-
+  data: TokenInfo[];
+  onActiveToken:(token:TokenInfo)=>void;
+}> = registerModal(({ close, onNetworkModal, data,onActiveToken }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
-    <ScrollView
-      keyboardDismissMode="interactive"
-      keyboardShouldPersistTaps="handled"
+    <View
+      style={[styles.containerModal, { paddingBottom: safeAreaInsets.bottom }]}
     >
-      <View
-        style={[
-          styles.containerModal,
-          { paddingBottom: safeAreaInsets.bottom }
-        ]}
-      >
-        <View>
-          <TextInput style={styles.textInput} placeholderTextColor={colors['text-place-holder']} placeholder="Search Token" />
-          <View style={styles.iconSearch}>
-            <OWIcon color={colors['blue-400']} text name="search" size={16} />
-          </View>
-        </View>
-
-        <View style={styles.containerTitle}>
-          <Text color={colors['blue-400']} weight="500">
-            List Token
-          </Text>
-          <TouchableOpacity
-            onPress={() => {
-              onNetworkModal();
-            }}
-            style={styles.btnNetwork}
-          >
-            <OWIcon type="images" source={images.push} size={16} />
-            <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
-              Network
-            </Text>
-            <OWIcon size={16} color={colors['blue-400']} name="down" />
-          </TouchableOpacity>
-        </View>
-        <OWFlatList
-          isBottomSheet
-          keyboardShouldPersistTaps="handled"
-          data={dataFake}
-          renderItem={({ item }) => {
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  close();
-                }}
-                style={styles.btnItem}
-              >
-                <View style={styles.leftBoxItem}>
-                  <OWIcon type="images" source={item.symbolLogo} size={35} />
-                  <View style={styles.pl10}>
-                    <Text size={16} color={colors['text-title']} weight="500">
-                      {item.symbol}
-                    </Text>
-                    <Text weight="500" color={colors['blue-400']}>
-                      {item.networkChain}
-                    </Text>
-                  </View>
-                </View>
-                <Text color={colors['text-title']}>{item.available}</Text>
-              </TouchableOpacity>
-            );
-          }}
+      <View>
+        <TextInput
+          style={styles.textInput}
+          placeholderTextColor={colors['text-place-holder']}
+          placeholder="Search Token"
         />
+        <View style={styles.iconSearch}>
+          <OWIcon color={colors['blue-400']} text name="search" size={16} />
+        </View>
       </View>
-    </ScrollView>
+
+      <View style={styles.containerTitle}>
+        <Text color={colors['blue-400']} weight="500">
+          List Token
+        </Text>
+        <TouchableOpacity
+          onPress={() => {
+            onNetworkModal();
+          }}
+          style={styles.btnNetwork}
+        >
+          <OWIcon type="images" source={images.push} size={16} />
+          <Text
+            style={styles.txtNetwork}
+            color={colors['blue-400']}
+            weight="500"
+          >
+            Network
+          </Text>
+          <OWIcon size={16} color={colors['blue-400']} name="down" />
+        </TouchableOpacity>
+      </View>
+      <OWFlatList
+        isBottomSheet
+        keyboardShouldPersistTaps="handled"
+        data={data}
+        renderItem={({ item }) => {
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                close();
+                onActiveToken(item);
+              }}
+              style={styles.btnItem}
+            >
+              <View style={styles.leftBoxItem}>
+                <OWIcon type="images" source={item?.logo} size={35} />
+                <View style={styles.pl10}>
+                  <Text size={16} color={colors['text-title']} weight="500">
+                    {item?.symbol}
+                  </Text>
+                  <Text weight="500" color={colors['blue-400']}>
+                    {item?.network}
+                  </Text>
+                </View>
+              </View>
+              <Text color={colors['text-title']}>{item?.available}</Text>
+            </TouchableOpacity>
+          );
+        }}
+      />
+    </View>
   );
 });
 
@@ -243,7 +136,7 @@ const styling = (colors: TypeTheme['colors']) =>
       borderRadius: 8,
       paddingLeft: 35,
       fontSize: 16,
-      color:colors['text-title'],
+      color: colors['text-title'],
       marginVertical: 10
     },
     containerModal: {

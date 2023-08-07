@@ -7,11 +7,12 @@ export type TokenInfo = {
   symbol: string;
   logo: ImageProps['source'];
   network: string;
+  available?: string;
+  networkLogo?:ImageProps['source'];
 };
 export type TypeTextAndCustomizeComponent = NodeElement | string;
 export interface ISwapBox extends IInputSelectToken {
   feeValue: string;
-  tokensData: TokenInfo[];
   currencyValue: string;
   balanceValue: string;
 }
@@ -20,4 +21,5 @@ export interface IInputSelectToken {
   tokenActive: TokenInfo;
   amount: string;
   onAmount: (txt?: string) => void;
+  onOpenTokenModal: (ev: any) => void;
 }

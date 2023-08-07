@@ -15,10 +15,122 @@ import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
-import { SelectTokenModal, SlippageModal } from './modals/';
+import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { isAndroid } from '@src/utils/helper';
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
+import images from '@src/assets/images';
+const tokens: TokenInfo[] = [
+  {
+    symbol: 'USDT',
+    network: 'Ethereum',
+    available: '0',
+    logo: images.push
+  },
+  {
+    symbol: 'USDT',
+    network: 'BSC',
+    available: '0',
+    logo: images.push_inactive
+  },
+  {
+    symbol: 'ORAI',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.crypto
+  },
+  {
+    symbol: 'AIRI',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.down_center
+  },
+  {
+    symbol: 'ORAIX',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.down_center_dark
+  },
+  {
+    symbol: 'ETH',
+    network: 'Ethereum',
+    available: '0',
+    logo: images.push
+  },
+  {
+    symbol: 'USDT',
+    network: 'Ethereum',
+    available: '0',
+    logo: images.push
+  },
+  {
+    symbol: 'USDT',
+    network: 'BSC',
+    available: '0',
+    logo: images.push_inactive
+  },
+  {
+    symbol: 'ORAI',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.crypto
+  },
+  {
+    symbol: 'AIRI',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.down_center
+  },
+  {
+    symbol: 'ORAIX',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.down_center_dark
+  },
+  {
+    symbol: 'ETH',
+    network: 'Ethereum',
+    available: '0',
+    logo: images.push
+  },
+  {
+    symbol: 'USDT',
+    network: 'Ethereum',
+    available: '0',
+    logo: images.push
+  },
+  {
+    symbol: 'USDT',
+    network: 'BSC',
+    available: '0',
+    logo: images.push_inactive
+  },
+  {
+    symbol: 'ORAI',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.crypto
+  },
+  {
+    symbol: 'AIRI',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.down_center
+  },
+  {
+    symbol: 'ORAIX',
+    network: 'Oraichain',
+    available: '0',
+    logo: images.down_center_dark
+  },
+  {
+    symbol: 'ETH',
+    network: 'Ethereum',
+    available: '0',
+    logo: images.push
+  }
+];
+
 type BalanceType = {
   id: string;
   value: string;
@@ -44,8 +156,9 @@ const balances: BalanceType[] = [
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   const { colors, images } = useTheme();
-  const [isModalSetting, setIsModalSetting] = useState(false);
+  const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
+  const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
   const [amount, setAmount] = useState({
     from: '1.273',
@@ -103,6 +216,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     },
     [balanceActive]
   );
+  const handleOpenTokensFromModal = useCallback(() => {
+    setIsSelectTokenModal(true);
+  }, []);
+  const handleOpenTokensToModal = useCallback(() => {
+    setIsSelectTokenModal(true);
+  }, []);
+  const handleOnActiveToken = useCallback((token) => {
+    setActiveToken({
+      from: token,
+      to: token
+    });
+  }, []);
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
@@ -112,18 +238,30 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     >
       <SlippageModal
         close={() => {
-          setIsModalSetting(false);
+          setIsSlippageModal(false);
         }}
-        isOpen={isModalSetting}
+        isOpen={isSlippageModal}
       />
       <SelectTokenModal
+        bottomSheetModalConfig={{
+          snapPoints: ['50%', '90%'],
+          index: 1
+        }}
+        data={tokens}
         close={() => {
           setIsSelectTokenModal(false);
         }}
-        onSlippage={() => {
-          console.log('ok');
+        onNetworkModal={() => {
+          setIsNetworkModal(true);
         }}
+        onActiveToken={handleOnActiveToken}
         isOpen={isSelectTokenModal}
+      />
+      <SelectNetworkModal
+        close={() => {
+          setIsNetworkModal(false);
+        }}
+        isOpen={isNetworkModal}
       />
       <View>
         <View style={styles.boxTop}>
@@ -138,7 +276,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             colorIcon={'#7C8397'}
             name="setting-bold"
             onPress={() => {
-              setIsModalSetting(true);
+              setIsSlippageModal(true);
             }}
           />
         </View>
@@ -146,11 +284,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <SwapBox
             feeValue={fee?.from}
             amount={amount?.from}
-            tokensData={[]}
             balanceValue={balance?.from}
             currencyValue={currencyAmount?.from}
             onAmount={handleAmountFrom}
             tokenActive={activeToken?.from}
+            onOpenTokenModal={handleOpenTokensFromModal}
           />
           <SwapBox
             feeValue={fee?.to}
@@ -159,7 +297,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             currencyValue={currencyAmount?.to}
             tokenActive={activeToken?.to}
             onAmount={handleAmountTo}
-            tokensData={[]}
+            onOpenTokenModal={handleOpenTokensToModal}
           />
 
           <View style={styles.containerBtnCenter}>
