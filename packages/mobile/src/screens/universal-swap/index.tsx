@@ -1,4 +1,9 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState
+} from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
@@ -16,6 +21,8 @@ import { BalanceText } from './components/BalanceText';
 import { SelectTokenModal, SlippageModal } from './modals/';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { isAndroid } from '@src/utils/helper';
+import { TokenInfo } from './types';
+import imagesGlobal from '@src/assets/images';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -23,7 +30,55 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isModalSetting, setIsModalSetting] = useState(false);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const styles = styling(colors);
-
+  const [amount, setAmount] = useState({
+    from: '1.273',
+    to: '0.26'
+  });
+  const [fee, setFee] = useState({
+    from: '0.1',
+    to: '0.001'
+  });
+  const [currencyAmount, setCurrencyAmount] = useState({
+    from: '100',
+    to: '2000'
+  });
+  const [balance, setBalance] = useState({
+    from: '10',
+    to: '200'
+  });
+  const [activeToken, setActiveToken] = useState<{
+    from:TokenInfo,
+    to:TokenInfo
+  }>({
+    from:{
+      symbol:'ORAI',
+      logo:imagesGlobal.push,
+      network:'Oraichain'
+    },
+    to:{
+      symbol:'ETH',
+      logo:imagesGlobal.crypto,
+      network:'Ethereum'
+    }
+  });
+  const handleAmountFrom = useCallback(
+    (valueAmount) => {
+      setAmount((prevAmount) => ({
+        ...prevAmount,
+        from: valueAmount
+      }));
+    },
+    [amount?.from]
+  );
+  const handleAmountTo = useCallback(
+    (valueAmount) => {
+      setAmount((prevAmount) => ({
+        ...prevAmount,
+        to: valueAmount
+      }));
+    },
+    [amount?.to]
+  );
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
@@ -65,18 +120,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
         <View>
           <SwapBox
-            feeValue="0.1"
-            feeLabel={'Fee: 0.1%'}
-            titleLeft={'FROM'}
+            feeValue={fee?.from}
+            amount={amount?.from}
             tokensData={[]}
-            labelInputLeft={'8,291.09 ORAI'}
+            balanceValue={balance?.from}
+            currencyValue={currencyAmount?.from}
+            onAmount={handleAmountFrom}
+            tokenActive={activeToken?.from}
           />
           <SwapBox
-            feeValue="0"
-            feeLabel={'Fee: 0.1%'}
-            titleLeft={'TO'}
+            feeValue={fee?.to}
+            amount={amount?.to}
+            balanceValue={balance?.to}
+            currencyValue={currencyAmount?.to}
+            tokenActive={activeToken?.to}
+            onAmount={handleAmountTo}
             tokensData={[]}
-            labelInputLeft={'8,291.09 AIRI'}
           />
 
           <View style={styles.containerBtnCenter}>

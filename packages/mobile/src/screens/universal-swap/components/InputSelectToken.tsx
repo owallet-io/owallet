@@ -14,7 +14,11 @@ import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from '../modals';
 
-const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
+const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
+  tokenActive,
+  amount,
+  onAmount
+}) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
@@ -53,20 +57,14 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
         }}
         style={styles.btnChainContainer}
       >
-        <OWIcon type="images" source={images.swap} size={30} />
+        <OWIcon type="images" source={tokenActive?.logo} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
             <Text weight="700" size={20}>
-              ORAI
+              {tokenActive?.symbol}
             </Text>
-            <BalanceText
-              size={12}
-              weight="500"
-              style={{
-                marginTop: -4
-              }}
-            >
-              Oraichain
+            <BalanceText size={12} weight="500" style={styles.mt_4}>
+              {tokenActive?.network}
             </BalanceText>
           </View>
           <OWIcon color={colors['blue-300']} name="down" size={16} />
@@ -77,6 +75,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
         <TextInput
           placeholder="0"
           textAlign="right"
+          value={amount}
+          defaultValue={amount}
+          onTextInput={onAmount}
           keyboardType="numeric"
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors['text-place-holder']}
@@ -90,6 +91,9 @@ export default InputSelectToken;
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
+    mt_4: {
+      marginTop: -4
+    },
     colorInput: {
       color: colors['text-title']
     },
