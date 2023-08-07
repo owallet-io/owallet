@@ -48,8 +48,9 @@ export const SlippageModal = registerModal(({ close }) => {
                   keyboardType="decimal-pad"
                   defaultValue="0"
                   textAlign="right"
+                  placeholderTextColor={colors['text-place-holder']}
                 />
-                <Text size={18} color={colors['gray-600']}>
+                <Text size={18} color={colors['text-value-input-modal']}>
                   %
                 </Text>
               </View>
@@ -118,7 +119,7 @@ const styling = (colors: TypeTheme['colors']) =>
     },
     btnSlippgaePercentInActive: {
       width: metrics.screenWidth / 4 - 20,
-      backgroundColor: colors['bg-swap-box'],
+      backgroundColor: colors['background-item-list'],
       height: 40
     },
     txtSlippgaePercentActive: {
@@ -126,7 +127,7 @@ const styling = (colors: TypeTheme['colors']) =>
     },
     btnSlippgaePercentActive: {
       width: metrics.screenWidth / 4 - 20,
-      backgroundColor: colors['bg-swap-box'],
+      backgroundColor: colors['background-item-list'],
       height: 40,
       borderWidth: 1,
       borderColor: colors['purple-700']
@@ -143,7 +144,7 @@ const styling = (colors: TypeTheme['colors']) =>
     input: {
       fontSize: 18,
       width: 30,
-      color: colors['gray-600'],
+      color: colors['text-value-input-modal'],
       paddingVertical: 0
     },
     inputWrap: {
@@ -157,7 +158,7 @@ const styling = (colors: TypeTheme['colors']) =>
       height: 40,
       borderRadius: 12,
       borderWidth: 0.5,
-      borderColor: colors['gray-300'],
+      borderColor: colors['border-input-slippage'],
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',

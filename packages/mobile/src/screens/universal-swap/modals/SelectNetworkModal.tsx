@@ -111,12 +111,13 @@ const styling = (colors: TypeTheme['colors']) =>
       paddingHorizontal: 35,
       paddingVertical: 15,
       borderTopWidth: 0.5,
-      borderColor: colors['blue/Border-50']
+      borderColor: colors['border-network-modal']
     },
     title: {
       textAlign: 'center',
       paddingBottom: 20,
-      paddingTop: 10
+      paddingTop: 10,
+      color:colors['text-title']
     },
     container: {
       height: metrics.screenHeight / 2

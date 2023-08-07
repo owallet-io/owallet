@@ -147,14 +147,14 @@ export const SelectTokenModal: FunctionComponent<{
         ]}
       >
         <View>
-          <TextInput style={styles.textInput} placeholder="Search Token" />
+          <TextInput style={styles.textInput} placeholderTextColor={colors['text-place-holder']} placeholder="Search Token" />
           <View style={styles.iconSearch}>
-            <OWIcon color={colors['blue-300']} name="search" size={16} />
+            <OWIcon color={colors['blue-400']} text name="search" size={16} />
           </View>
         </View>
 
         <View style={styles.containerTitle}>
-          <Text color={'#7C8397'} weight="500">
+          <Text color={colors['blue-400']} weight="500">
             List Token
           </Text>
           <TouchableOpacity
@@ -164,10 +164,10 @@ export const SelectTokenModal: FunctionComponent<{
             style={styles.btnNetwork}
           >
             <OWIcon type="images" source={images.push} size={16} />
-            <Text style={styles.txtNetwork} color={'#7C8397'} weight="500">
+            <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
               Network
             </Text>
-            <OWIcon size={16} color={'#7C8397'} name="down" />
+            <OWIcon size={16} color={colors['blue-400']} name="down" />
           </TouchableOpacity>
         </View>
         <OWFlatList
@@ -185,15 +185,15 @@ export const SelectTokenModal: FunctionComponent<{
                 <View style={styles.leftBoxItem}>
                   <OWIcon type="images" source={item.symbolLogo} size={35} />
                   <View style={styles.pl10}>
-                    <Text size={16} weight="500">
+                    <Text size={16} color={colors['text-title']} weight="500">
                       {item.symbol}
                     </Text>
-                    <Text weight="500" color="#7C8397">
+                    <Text weight="500" color={colors['blue-400']}>
                       {item.networkChain}
                     </Text>
                   </View>
                 </View>
-                <Text>{item.available}</Text>
+                <Text color={colors['text-title']}>{item.available}</Text>
               </TouchableOpacity>
             );
           }}
@@ -243,6 +243,7 @@ const styling = (colors: TypeTheme['colors']) =>
       borderRadius: 8,
       paddingLeft: 35,
       fontSize: 16,
+      color:colors['text-title'],
       marginVertical: 10
     },
     containerModal: {

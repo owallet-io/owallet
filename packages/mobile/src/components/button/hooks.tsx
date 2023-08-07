@@ -143,7 +143,7 @@ export const useMapStyles = ({
         btn: {
           borderRadius: formatSize.btn.borderRadius,
           height: formatSize.btn.height,
-          backgroundColor: colors['purple-10']
+          backgroundColor: colors['background-item-list']
         },
         text: {
           color: disabled
