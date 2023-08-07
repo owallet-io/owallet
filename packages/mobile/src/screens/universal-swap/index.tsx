@@ -23,7 +23,28 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { isAndroid } from '@src/utils/helper';
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
-
+type BalanceType = {
+  id: string;
+  value: string;
+};
+const balances: BalanceType[] = [
+  {
+    id: '1',
+    value: '25'
+  },
+  {
+    id: '2',
+    value: '50'
+  },
+  {
+    id: '3',
+    value: '75'
+  },
+  {
+    id: '4',
+    value: '100'
+  }
+];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
   const { colors, images } = useTheme();
@@ -47,20 +68,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     to: '200'
   });
   const [activeToken, setActiveToken] = useState<{
-    from:TokenInfo,
-    to:TokenInfo
+    from: TokenInfo;
+    to: TokenInfo;
   }>({
-    from:{
-      symbol:'ORAI',
-      logo:imagesGlobal.push,
-      network:'Oraichain'
+    from: {
+      symbol: 'ORAI',
+      logo: imagesGlobal.push,
+      network: 'Oraichain'
     },
-    to:{
-      symbol:'ETH',
-      logo:imagesGlobal.crypto,
-      network:'Ethereum'
+    to: {
+      symbol: 'ETH',
+      logo: imagesGlobal.crypto,
+      network: 'Ethereum'
     }
   });
+  const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
   const handleAmountFrom = useCallback(
     (valueAmount) => {
       setAmount((prevAmount) => ({
@@ -78,6 +100,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }));
     },
     [amount?.to]
+  );
+  const handleBalanceActive = useCallback(
+    (item: BalanceType) => {
+      setBalanceActive(item);
+    },
+    [balanceActive]
   );
   return (
     <PageWithScrollViewInBottomTabView
@@ -150,26 +178,27 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </View>
         </View>
         <View style={styles.containerBtnBalance}>
-          {[25, 50, 75].map((item, index) => {
+          {balances.map((item, index) => {
             return (
               <OWButton
-                key={item}
+                key={item?.id}
                 size="small"
-                style={styles.btnBalanceInactive}
-                textStyle={styles.textBtnBalanceInActive}
-                label={`${item}%`}
+                style={
+                  balanceActive?.id === item?.id
+                    ? styles.btnBalanceActive
+                    : styles.btnBalanceInactive
+                }
+                textStyle={
+                  balanceActive?.id === item?.id
+                    ? styles.textBtnBalanceAtive
+                    : styles.textBtnBalanceInActive
+                }
+                label={`${item?.value}%`}
                 fullWidth={false}
+                onPress={() => handleBalanceActive(item)}
               />
             );
           })}
-          <OWButton
-            // key={item}
-            size="small"
-            style={styles.btnBalanceActive}
-            textStyle={styles.textBtnBalanceAtive}
-            label={'100%'}
-            fullWidth={false}
-          />
         </View>
         <OWButton
           label="Swap"
