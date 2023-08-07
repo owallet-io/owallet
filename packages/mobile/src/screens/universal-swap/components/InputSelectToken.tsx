@@ -60,7 +60,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
         <OWIcon type="images" source={tokenActive?.logo} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
-            <Text weight="700" size={20}>
+            <Text weight="700" size={20} color={colors['text-title']}>
               {tokenActive?.symbol}
             </Text>
             <BalanceText size={12} weight="500" style={styles.mt_4}>
@@ -77,7 +77,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           textAlign="right"
           value={amount}
           defaultValue={amount}
-          onTextInput={onAmount}
+          onChangeText={onAmount}
           keyboardType="numeric"
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors['text-place-holder']}

@@ -13,13 +13,9 @@ import { useStore } from '../../stores';
 import { metrics, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
-import { OWBox } from '@src/components/card';
-import OWButtonGroup from '@src/components/button/OWButtonGroup';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
-import OWIcon from '@src/components/ow-icon/ow-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectTokenModal, SlippageModal } from './modals/';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { isAndroid } from '@src/utils/helper';
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
@@ -131,7 +127,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       />
       <View>
         <View style={styles.boxTop}>
-          <Text variant="h3" weight="700">
+          <Text color={colors['text-title-login']} variant="h3" weight="700">
             Universal Swap
           </Text>
           <OWButtonIcon
@@ -263,7 +259,7 @@ const styling = (colors: TypeTheme['colors']) =>
       width: 40,
       height: 40,
       borderWidth: 4,
-      borderColor: 'white'
+      borderColor: colors['plain-background']
     },
     pt30: {
       paddingTop: 30
