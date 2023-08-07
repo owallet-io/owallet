@@ -610,7 +610,7 @@ PODS:
     - React-RCTImage
   - RNScrypt (1.2.1):
     - React
-  - RNSentry (5.8.0):
+  - RNSentry (5.8.1):
     - React-Core
     - Sentry/HybridSDK (= 8.9.3)
   - RNSVG (13.9.0):
@@ -962,7 +962,7 @@ SPEC CHECKSUMS:
   RNReanimated: 3ffa3d63576ecd26a4f8772d03029cccaf41b5d7
   RNScreens: 50ffe2fa2342eabb2d0afbe19f7c1af286bc7fb3
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
-  RNSentry: f9e637773502a61c7b455c4ce65bc7008ce22a6e
+  RNSentry: 221d8c3f0bf0d951e9ecc89d3e42ee97aab9d7c0
   RNSVG: 53c661b76829783cdaf9b7a57258f3d3b4c28315
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
@@ -974,4 +974,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 5bc3f9641ac5869842eccf7fcc9ea8075a7bad12
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
