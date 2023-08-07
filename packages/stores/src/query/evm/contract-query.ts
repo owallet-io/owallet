@@ -8,7 +8,7 @@ import ERC20_ABI from './erc20.json';
 
 export class ObservableEvmContractChainQuery<
   T
-  > extends ObservableChainQuery<T> {
+> extends ObservableChainQuery<T> {
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -21,7 +21,7 @@ export class ObservableEvmContractChainQuery<
   }
 
   protected canFetch(): boolean {
-    return this.contractAddress.length !== 0;
+    return this.contractAddress?.length !== 0;
   }
 
   protected async fetchResponse(
@@ -33,12 +33,18 @@ export class ObservableEvmContractChainQuery<
       const provider = this.chainGetter.getChain(this.chainId).rest;
       const web3 = new Web3(provider);
       // @ts-ignore
-      const tokenInfo = new web3.eth.Contract(ERC20_ABI, this.contractAddress)
-      console.log("🚀 ~ file: contract-query.ts ~ line 37 ~ tokenInfo", tokenInfo)
-      const tokenDecimal = await tokenInfo.methods.decimals().call()
+      const tokenInfo = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
+      console.log(
+        '🚀 ~ file: contract-query.ts ~ line 37 ~ tokenInfo',
+        tokenInfo
+      );
+      const tokenDecimal = await tokenInfo.methods.decimals().call();
       const tokenSymbol = await tokenInfo.methods.symbol().call();
       const tokenName = await tokenInfo.methods.name().call();
-      console.log("🚀 ~ file: contract-query.ts ~ line 41 ~ tokenName", tokenName)
+      console.log(
+        '🚀 ~ file: contract-query.ts ~ line 41 ~ tokenName',
+        tokenName
+      );
 
       if (!resultFetchBalance) {
         throw new Error('Failed to get the response from the contract');
@@ -48,15 +54,15 @@ export class ObservableEvmContractChainQuery<
         decimals: parseInt(tokenDecimal),
         symbol: tokenSymbol,
         name: tokenName,
-        total_supply: resultFetchBalance,
-      }
+        total_supply: resultFetchBalance
+      };
 
       return {
         data: resultFetchBalance,
         status: response.status,
         staled: false,
         timestamp: Date.now(),
-        info: tokenInfoData,
+        info: tokenInfoData
       };
     } catch (error) {
       console.log('Error on fetch response: ', error);
