@@ -319,17 +319,17 @@ export const API = {
 const retryWrapper = (axios, options) => {
   const max_time = 1;
   let counter = 0;
-  axios.interceptors.response.use(null, (error) => {
+  axios.interceptors.response.use(null, error => {
     /** @type {import("axios").AxiosRequestConfig} */
     const config = error.config;
     // you could defined status you want to retry, such as 503
     // if (counter < max_time && error.response.status === retry_status_code) {
     if (
-      (counter < max_time && error.response.status === 400) ||
-      (counter < max_time && error.response.status === 502)
+      (counter < max_time && error.response?.status === 400) ||
+      (counter < max_time && error.response?.status === 502)
     ) {
       counter++;
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve(axios(config));
       });
     }
