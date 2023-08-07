@@ -7,7 +7,7 @@ import { Text } from '@src/components/text';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import images from '@src/assets/images';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-import { useTheme } from '@src/themes/theme-provider';
+import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { metrics } from '@src/themes';
 const dataFake = [
@@ -52,21 +52,10 @@ const dataFake = [
 ];
 export const SelectNetworkModal = registerModal(({ close }) => {
   const { colors } = useTheme();
+  const styles = styling(colors);
   return (
-    <View
-      style={{
-        height: metrics.screenHeight / 2
-      }}
-    >
-      <Text
-        style={{
-          textAlign: 'center',
-          paddingBottom: 20,
-          paddingTop: 10
-        }}
-        weight="500"
-        size={16}
-      >
+    <View style={styles.container}>
+      <Text style={styles.title} weight="500" size={16}>
         Select Network
       </Text>
       <OWFlatList
@@ -78,27 +67,12 @@ export const SelectNetworkModal = registerModal(({ close }) => {
               onPress={() => {
                 close();
               }}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingHorizontal: 35,
-                paddingVertical: 15,
-                borderTopWidth: 0.5,
-                borderColor: colors['blue/Border-50']
-              }}
+              style={styles.btn}
             >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems:"center"
-                }}
-              >
+              <View style={styles.logo}>
                 <OWIcon type="images" size={30} source={item.networkLogo} />
                 <Text
-                  style={{
-                    paddingLeft: 24
-                  }}
+                  style={styles.pl24}
                   size={16}
                   weight="500"
                   color={colors['gray-500']}
@@ -121,4 +95,30 @@ export const SelectNetworkModal = registerModal(({ close }) => {
   );
 });
 
-const styles = StyleSheet.create({});
+const styling = (colors: TypeTheme['colors']) =>
+  StyleSheet.create({
+    pl24: {
+      paddingLeft: 24
+    },
+    logo: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    btn: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: 35,
+      paddingVertical: 15,
+      borderTopWidth: 0.5,
+      borderColor: colors['blue/Border-50']
+    },
+    title: {
+      textAlign: 'center',
+      paddingBottom: 20,
+      paddingTop: 10
+    },
+    container: {
+      height: metrics.screenHeight / 2
+    }
+  });

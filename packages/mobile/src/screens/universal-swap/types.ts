@@ -8,18 +8,14 @@ type TokenÌno = {
   name: string;
 };
 export type TypeTextAndCustomizeComponent = NodeElement | string;
-export interface ISwapBox {
-  titleLeft: string;
-  titleRight?: TypeTextAndCustomizeComponent;
-  labelInputLeft: string;
-  labelInputRight?: TypeTextAndCustomizeComponent;
-  feeLabel?: TypeTextAndCustomizeComponent;
-  feeValue?: string;
+export interface ISwapBox extends IInputSelectToken {
+  feeValue: string;
   tokensData: TokenÌno[];
+  currencyValue: string;
+  balanceValue: string;
 }
 
 export interface IInputSelectToken {
-  TokenÌno?: TokenÌno;
+  tokenActive: TokenÌno;
   amount: string;
-  amountCurrency: string;
 }

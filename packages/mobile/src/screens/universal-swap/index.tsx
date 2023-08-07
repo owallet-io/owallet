@@ -15,6 +15,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectTokenModal, SlippageModal } from './modals/';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { isAndroid } from '@src/utils/helper';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -22,66 +23,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isModalSetting, setIsModalSetting] = useState(false);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const styles = styling(colors);
-  const renderSetting = () => {
-    return (
-      <View style={styles.fDr}>
-        <OWButtonIcon
-          fullWidth={false}
-          style={[styles.btnTitleRight]}
-          sizeIcon={16}
-          colorIcon="#777E90"
-          name="setting-bold"
-          onPress={() => {
-            setIsModalSetting(true);
-          }}
-        />
-        {/* <OWButtonIcon
-          fullWidth={false}
-          style={styles.btnTitleRight}
-          colorIcon="#777E90"
-          sizeIcon={16}
-          name="round_refresh"
-        /> */}
-      </View>
-    );
-  };
-  const renderLabelInputRight = () => {
-    return (
-      <View style={styles.containerBtnLabelInputRight}>
-        <OWButton
-          style={[styles.btnLabelInputRight, styles.mr8]}
-          type="secondary"
-          textStyle={styles.ts10}
-          size="small"
-          label="MAX"
-          fullWidth={false}
-          onPress={() => {
-            alert('ok');
-          }}
-        />
-        <OWButton
-          textStyle={styles.ts10}
-          style={styles.btnLabelInputRight}
-          type="secondary"
-          size="small"
-          label="HALF"
-          fullWidth={false}
-        />
-      </View>
-    );
-  };
+
   return (
-    //  <SafeAreaView>
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
-      style={[
-        styles.container,
-        Platform.OS === 'android'
-          ? {
-              paddingTop: 30
-            }
-          : {}
-      ]}
+      style={[styles.container, isAndroid ? styles.pt30 : {}]}
       disableSafeArea={false}
       showsVerticalScrollIndicator={false}
     >
@@ -95,8 +41,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         close={() => {
           setIsSelectTokenModal(false);
         }}
-        onSlippage={()=>{
-          console.log('ok')
+        onSlippage={() => {
+          console.log('ok');
         }}
         isOpen={isSelectTokenModal}
       />
@@ -119,12 +65,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
         <View>
           <SwapBox
-            titleRight={renderSetting}
             feeValue="0.1"
             feeLabel={'Fee: 0.1%'}
             titleLeft={'FROM'}
             tokensData={[]}
-            labelInputRight={renderLabelInputRight}
             labelInputLeft={'8,291.09 ORAI'}
           />
           <SwapBox
@@ -140,39 +84,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               fullWidth={false}
               name="arrow_down_2"
               circle
-              style={{
-                backgroundColor: colors['bg-swap-box'],
-                borderRadius: 20,
-                width: 40,
-                height: 40,
-                borderWidth: 4,
-                borderColor: 'white'
-              }}
+              style={styles.btnSwapBox}
               colorIcon={'#7C8397'}
               sizeIcon={24}
             />
           </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingTop: 16
-          }}
-        >
+        <View style={styles.containerBtnBalance}>
           {[25, 50, 75].map((item, index) => {
             return (
               <OWButton
                 key={item}
                 size="small"
-                style={{
-                  width: metrics.screenWidth / 4 - 16,
-                  backgroundColor: colors['bg-swap-box'],
-                  height: 40
-                }}
-                textStyle={{
-                  color: '#7C8397'
-                }}
+                style={styles.btnBalanceInactive}
+                textStyle={styles.textBtnBalanceInActive}
                 label={`${item}%`}
                 fullWidth={false}
               />
@@ -181,16 +106,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <OWButton
             // key={item}
             size="small"
-            style={{
-              width: metrics.screenWidth / 4 - 16,
-              backgroundColor: colors['bg-swap-box'],
-              height: 40,
-              borderWidth: 1,
-              borderColor: colors['purple-700']
-            }}
-            textStyle={{
-              color: colors['purple-700']
-            }}
+            style={styles.btnBalanceActive}
+            textStyle={styles.textBtnBalanceAtive}
             label={'100%'}
             fullWidth={false}
           />
@@ -202,14 +119,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           textStyle={styles.textBtnSwap}
           onPress={() => {}}
         />
-        <View
-          style={{
-            backgroundColor: colors['bg-swap-box'],
-            paddingHorizontal: 16,
-            borderRadius: 8,
-            paddingVertical: 11
-          }}
-        >
+        <View style={styles.containerInfoToken}>
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>1 0RAI ≈ 357.32 AIRI</BalanceText>
@@ -225,12 +135,51 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
-    //  </SafeAreaView>
   );
 });
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
+    textBtnBalanceAtive: {
+      color: colors['purple-700']
+    },
+    textBtnBalanceInActive: {
+      color: '#7C8397'
+    },
+    containerInfoToken: {
+      backgroundColor: colors['bg-swap-box'],
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      paddingVertical: 11
+    },
+    btnBalanceActive: {
+      width: metrics.screenWidth / 4 - 16,
+      backgroundColor: colors['bg-swap-box'],
+      height: 40,
+      borderWidth: 1,
+      borderColor: colors['purple-700']
+    },
+    btnBalanceInactive: {
+      width: metrics.screenWidth / 4 - 16,
+      backgroundColor: colors['bg-swap-box'],
+      height: 40
+    },
+    containerBtnBalance: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingTop: 16
+    },
+    btnSwapBox: {
+      backgroundColor: colors['bg-swap-box'],
+      borderRadius: 20,
+      width: 40,
+      height: 40,
+      borderWidth: 4,
+      borderColor: 'white'
+    },
+    pt30: {
+      paddingTop: 30
+    },
     boxTop: {
       // borderRadius: 8,
       paddingTop: 10,

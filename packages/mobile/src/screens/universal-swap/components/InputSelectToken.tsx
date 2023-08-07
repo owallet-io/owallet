@@ -25,7 +25,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
       <SlippageModal
         isOpen={isSlippageModal}
         close={() => {
-          setIsSlippageModal('false');
+          setIsSlippageModal(false);
         }}
       />
       <SelectTokenModal
@@ -37,8 +37,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
           setIsSelectTokenModal(false);
         }}
         onNetworkModal={() => {
-            setIsNetworkModal(true);
-          // alert('ok');
+          setIsNetworkModal(true);
         }}
         isOpen={isSelectTokenModal}
       />
@@ -56,11 +55,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
       >
         <OWIcon type="images" source={images.swap} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
-          <View
-            style={{
-              paddingRight: 4
-            }}
-          >
+          <View style={styles.pr4}>
             <Text weight="700" size={20}>
               ORAI
             </Text>
@@ -83,17 +78,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = () => {
           placeholder="0"
           textAlign="right"
           keyboardType="numeric"
-          style={[
-            styles.textInput,
-            {
-              color: colors['text-title']
-            }
-          ]}
+          style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors['text-place-holder']}
         />
-        {/* <BalanceText style={Platform.OS == 'android' ? styles.mtde5 : {}}>
-          $0.0001
-        </BalanceText> */}
       </View>
     </View>
   );
@@ -103,6 +90,12 @@ export default InputSelectToken;
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
+    colorInput: {
+      color: colors['text-title']
+    },
+    pr4: {
+      paddingRight: 4
+    },
     labelSymbol: {
       paddingRight: 5
     },

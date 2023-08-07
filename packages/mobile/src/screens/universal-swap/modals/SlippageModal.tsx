@@ -10,87 +10,40 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { OWButton } from '@src/components/button';
-import { useTheme } from '@src/themes/theme-provider';
+import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 import { metrics } from '@src/themes';
 
 export const SlippageModal = registerModal(({ close }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
+  const styles = styling(colors);
   return (
     <ScrollView
       keyboardDismissMode="interactive"
       keyboardShouldPersistTaps="handled"
-      style={{
-        paddingBottom: safeAreaInsets.bottom,
-        paddingHorizontal: 24
-      }}
+      style={[styles.container, { paddingBottom: safeAreaInsets.bottom }]}
     >
       <View>
-        <View
-          style={{
-            alignItems: 'center'
-          }}
-        >
-          <Text
-            style={{
-              paddingVertical: 10
-            }}
-            size={16}
-            weight="500"
-          >
+        <View style={styles.containerTitle}>
+          <Text style={styles.title} size={16} weight="500">
             Slippage tolerance
           </Text>
-          <Text
-            style={{
-              textAlign: 'center',
-              paddingVertical: 10
-            }}
-            color={colors['blue-300']}
-          >
+          <Text style={styles.des} color={colors['blue-300']}>
             {`Your transaction will be suspended \nif the price exceeds the slippage percentage.`}
           </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              paddingVertical: 10,
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={{
-                height: 40,
-                borderRadius: 12,
-                borderWidth: 0.5,
-                borderColor: colors['gray-300'],
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginHorizontal: 10
-              }}
-            >
+          <View style={styles.containerInputSlippage}>
+            <View style={styles.subContainerInputSlippage}>
               <OWButtonIcon
                 colorIcon="#AEAEB2"
                 name="minus"
                 sizeIcon={20}
-                style={{
-                  width: 60
-                }}
+                style={styles.minusBtn}
                 fullWidth={false}
               />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center'
-                }}
-              >
+              <View style={styles.inputWrap}>
                 <BottomSheetTextInput
-                  style={{
-                    fontSize: 18,
-                    width: 30,
-                    color: colors['gray-600'],
-                    paddingVertical: 0
-                  }}
+                  style={styles.input}
                   placeholder="0"
                   keyboardType="decimal-pad"
                   defaultValue="0"
@@ -101,9 +54,7 @@ export const SlippageModal = registerModal(({ close }) => {
                 </Text>
               </View>
               <OWButtonIcon
-                style={{
-                  width: 60
-                }}
+                style={styles.addBtn}
                 colorIcon="#AEAEB2"
                 name="add_ic"
                 sizeIcon={20}
@@ -113,27 +64,14 @@ export const SlippageModal = registerModal(({ close }) => {
           </View>
         </View>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingVertical: 16,
-            width: '100%'
-          }}
-        >
+        <View style={styles.containerSlippagePercent}>
           {[1, 3, 5].map((item, index) => {
             return (
               <OWButton
                 key={item}
                 size="medium"
-                style={{
-                  width: metrics.screenWidth / 4 - 20,
-                  backgroundColor: colors['bg-swap-box'],
-                  height: 40
-                }}
-                textStyle={{
-                  color: '#7C8397'
-                }}
+                style={styles.btnSlippgaePercentInActive}
+                textStyle={styles.txtSlippgaePercentInActive}
                 label={`${item}%`}
                 fullWidth={false}
               />
@@ -142,29 +80,16 @@ export const SlippageModal = registerModal(({ close }) => {
           <OWButton
             // key={item}
             size="medium"
-            style={{
-              width: metrics.screenWidth / 4 - 20,
-              backgroundColor: colors['bg-swap-box'],
-              height: 40,
-              borderWidth: 1,
-              borderColor: colors['purple-700']
-            }}
-            textStyle={{
-              color: colors['purple-700']
-            }}
+            style={styles.btnSlippgaePercentActive}
+            textStyle={styles.txtSlippgaePercentActive}
             label={'7%'}
             fullWidth={false}
           />
         </View>
         <OWButton
-          style={{
-            marginVertical: 10
-          }}
+          style={styles.confirmBtn}
           isBottomSheet
-          textStyle={{
-            fontWeight: '700',
-            fontSize: 16
-          }}
+          textStyle={styles.txtBtn}
           type="tonner"
           label="Confirm"
           size="medium"
@@ -179,4 +104,81 @@ export const SlippageModal = registerModal(({ close }) => {
   );
 });
 
-const styles = StyleSheet.create({});
+const styling = (colors: TypeTheme['colors']) =>
+  StyleSheet.create({
+    txtBtn: {
+      fontWeight: '700',
+      fontSize: 16
+    },
+    confirmBtn: {
+      marginVertical: 10
+    },
+    txtSlippgaePercentInActive: {
+      color: '#7C8397'
+    },
+    btnSlippgaePercentInActive: {
+      width: metrics.screenWidth / 4 - 20,
+      backgroundColor: colors['bg-swap-box'],
+      height: 40
+    },
+    txtSlippgaePercentActive: {
+      color: colors['purple-700']
+    },
+    btnSlippgaePercentActive: {
+      width: metrics.screenWidth / 4 - 20,
+      backgroundColor: colors['bg-swap-box'],
+      height: 40,
+      borderWidth: 1,
+      borderColor: colors['purple-700']
+    },
+    containerSlippagePercent: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 16,
+      width: '100%'
+    },
+    addBtn: {
+      width: 60
+    },
+    input: {
+      fontSize: 18,
+      width: 30,
+      color: colors['gray-600'],
+      paddingVertical: 0
+    },
+    inputWrap: {
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    minusBtn: {
+      width: 60
+    },
+    subContainerInputSlippage: {
+      height: 40,
+      borderRadius: 12,
+      borderWidth: 0.5,
+      borderColor: colors['gray-300'],
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginHorizontal: 10
+    },
+    containerInputSlippage: {
+      flexDirection: 'row',
+      paddingVertical: 10,
+      alignItems: 'center'
+    },
+    des: {
+      textAlign: 'center',
+      paddingVertical: 10
+    },
+    title: {
+      paddingVertical: 10
+    },
+    containerTitle: {
+      alignItems: 'center'
+    },
+    container: {
+      paddingHorizontal: 24
+    }
+  });

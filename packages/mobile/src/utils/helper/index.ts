@@ -9,7 +9,7 @@ import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { ToastShowParams } from 'react-native-toast-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { Alert, Linking } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -18,7 +18,8 @@ export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = 'FAILED';
 export const SUCCESS = 'SUCCESS';
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
-
+export const isAndroid = Platform.OS === "android";
+export const isIos = Platform.OS === "ios";
 export const TRC20_LIST = [
   {
     contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
