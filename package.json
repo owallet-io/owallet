@@ -23,16 +23,17 @@
       "**/@bugsnag/**",
       "**/@gorhom/**"
     ]
-},
+  },
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "test:package":"lerna run test --parallel --ignore @owallet/router-mock --ignore @owallet/unit --ignore @owallet/extension",
-    "setup:mobile":"yarn && yarn bootstrap &&  yarn build:libs && cd packages/mobile && yarn build:provider && yarn pod:install",
+    "test:package": "lerna run test --parallel --ignore @owallet/router-mock --ignore @owallet/unit --ignore @owallet/extension",
+    "setup:mobile": "yarn && yarn bootstrap && yarn build:libs && cd packages/mobile && yarn build:provider && yarn pod:install",
     "dev": "lerna run dev --parallel --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/wc-client --ignore @owallet/wc-qrcode-modal",
-    "clean:setup":"yarn clean:all && yarn setup:mobile",
+    "clean:setup": "yarn clean:all && yarn setup:mobile",
     "clean": "lerna run clean && rimraf node_modules && yarn clean:watchman",
-    "clean:all": "rimraf yarn.lock && yarn clean",
+    "clean:all": "rimraf yarn.lock && yarn clean:pod && yarn clean",
     "clean:watchman": "watchman watch-del-all",
+    "clean:pod": "rimraf packages/mobile/ios/Podfile.lock",
     "build": "lerna run build",
     "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/mobile",
     "postinstall": "patch-package && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config",
