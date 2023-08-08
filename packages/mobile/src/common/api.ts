@@ -230,6 +230,25 @@ export const API = {
       return Promise.reject(error);
     }
   },
+  getContractTron: async (url, contractAddress) => {
+    try {
+      const rs = await API.get(`/wallet/getcontract?value=${contractAddress}`, {
+        baseURL: url
+      });
+      const data: { data: unknown } = rs.data;
+      if (data?.data) {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `/wallet/getcontract?value=${contractAddress}`,
+        'getContractTron'
+      );
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig
