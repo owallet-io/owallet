@@ -8,6 +8,12 @@ export class Address {
       : '-';
   }
 
+  static getHexString(base58Address: string): string {
+    return base58Address
+      ? Buffer.from(bs58.decode(base58Address)).toString('hex')
+      : '-';
+  }
+
   static getBase58Address(address: string): string {
     const evmAddress = Buffer.from('41' + address.slice(2), 'hex');
     const hash = Hash.sha256(Hash.sha256(evmAddress));
