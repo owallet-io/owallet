@@ -1,6 +1,7 @@
 import { observable, action, makeObservable, computed } from 'mobx';
 import { create, persist } from 'mobx-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { TRC20_LIST } from '@owallet/common';
 
 export class AppInit {
   @persist('object')
@@ -13,6 +14,8 @@ export class AppInit {
   };
   @observable
   protected notiData: {};
+  @observable
+  protected trc20_list: {};
 
   constructor() {
     makeObservable(this);
@@ -22,6 +25,7 @@ export class AppInit {
       date_updated: null,
       theme: 'light'
     };
+    this.trc20_list = TRC20_LIST;
   }
 
   @computed
@@ -46,6 +50,10 @@ export class AppInit {
   @action
   updateVisibleTabBar(visibleTabBar) {
     this.initApp = { ...this.initApp, visibleTabBar };
+  }
+  @action
+  updateTRC20List(list) {
+    this.trc20_list = list;
   }
 }
 

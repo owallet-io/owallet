@@ -9,8 +9,6 @@ import { TextInput } from '../../components/input';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
-import CheckBox from 'react-native-check-box';
-import { CW20Currency, Secret20Currency } from '@owallet/types';
 import { observer } from 'mobx-react-lite';
 import { showToast } from '@src/utils/helper';
 import { API } from '@src/common/api';
@@ -26,16 +24,14 @@ export const AddTokenTronScreen = observer(() => {
     handleSubmit,
     watch,
     setValue,
-
     formState: { errors }
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore, accountStore, tokensStore } = useStore();
-  const tokensOf = tokensStore.getTokensOf(chainStore.current.chainId);
+  const { chainStore } = useStore();
 
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [loading, setLoading] = useState(false);
+  const [tokenInfo, setTokenInfo] = useState<any>();
 
   const form = useForm<FormData>({
     defaultValues: {
@@ -60,25 +56,11 @@ export const AddTokenTronScreen = observer(() => {
   //   }
   // }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
-  // const isSecret20 =
-  //   (chainStore.current.features ?? []).find(
-  //     feature => feature === 'secretwasm'
-  //   ) != null;
-
-  // const queries = queriesStore.get(chainStore.current.chainId);
-  // const query = isSecret20
-  //   ? queries.secret.querySecret20ContractInfo
-  //   : queries.cosmwasm.querycw20ContractInfo;
-  // const queryContractInfo = query.getQueryContract(contractAddress);
-
-  // const tokenInfo = queryContractInfo.tokenInfo;
-
   const getContractDetail = async (contractAddress: string) => {
     const res = await API.getContractTron(
       chainStore.current.rpc,
       contractAddress
     );
-
     console.log('res ===', res);
   };
 
@@ -96,35 +78,11 @@ export const AddTokenTronScreen = observer(() => {
     });
   };
 
-  const createViewingKey = async (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      accountInfo.secret
-        .createSecret20ViewingKey(
-          contractAddress,
-          '',
-          {},
-          {},
-          (_, viewingKey) => {
-            resolve(viewingKey);
-          }
-        )
-        .then(() => {})
-        .catch(reject);
-    });
-  };
-
-  const submit = handleSubmit(async data => {
+  const submit = handleSubmit(async (data: any) => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
-        const currency: CW20Currency = {
-          type: 'cw20',
-          contractAddress: data.contractAddress,
-          coinMinimalDenom: tokenInfo.name,
-          coinDenom: tokenInfo.symbol,
-          coinDecimals: tokenInfo.decimals
-        };
-        await tokensOf.addToken(currency);
+
         addTokenSuccess();
       }
     } catch (err) {
