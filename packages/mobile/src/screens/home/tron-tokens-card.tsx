@@ -222,6 +222,29 @@ export const TronTokensCard: FunctionComponent<{
           </View>
         </View>
 
+        <View
+          style={{
+            alignItems: 'flex-end',
+            width: '100%'
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => {
+              smartNavigation.navigateSmart('Network.token', {});
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                fontWeight: '700',
+                color: colors['purple-700']
+              }}
+            >
+              + Add token
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <CardBody>
           {tokens.length > 0 ? (
             <FlatList
