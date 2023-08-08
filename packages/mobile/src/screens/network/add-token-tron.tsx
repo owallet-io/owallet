@@ -10,8 +10,9 @@ import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
-import { showToast } from '@src/utils/helper';
+import { TRON_ID, isBase58, showToast } from '@src/utils/helper';
 import { API } from '@src/common/api';
+import { Address } from '@owallet/crypto';
 
 interface FormData {
   viewingKey: string;
@@ -41,6 +42,8 @@ export const AddTokenTronScreen = observer(() => {
 
   const contractAddress = watch('contractAddress');
 
+  console.log('contractAddress', contractAddress);
+
   // useEffect(() => {
   //   if (tokensStore.waitingSuggestedToken) {
   //     chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
@@ -57,14 +60,29 @@ export const AddTokenTronScreen = observer(() => {
   // }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
   const getContractDetail = async (contractAddress: string) => {
-    const res = await API.getContractTron(
-      chainStore.current.rpc,
-      contractAddress
-    );
-    console.log('res ===', res);
+    try {
+      const res = await API.getContractTron(
+        chainStore.current.rpc,
+        chainStore.current.chainId === TRON_ID && isBase58(contractAddress)
+          ? Address.getHexString(contractAddress)
+          : contractAddress
+      );
+      console.log('contractAddress ===', contractAddress);
+      console.log('res ===', res);
+      console.log(
+        'address ===',
+        chainStore.current.chainId === TRON_ID && isBase58(contractAddress)
+          ? Address.getHexString(contractAddress)
+          : contractAddress
+      );
+    } catch (error) {
+      console.log('error ===', error);
+    }
   };
 
   useEffect(() => {
+    console.log('get here');
+
     getContractDetail(contractAddress);
   }, [contractAddress]);
 
