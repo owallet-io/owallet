@@ -120,7 +120,7 @@ export const AddTokenTronScreen = observer(() => {
             fontWeight: '700'
           }}
         >
-          Add Token
+          Add Token (Tron)
         </Text>
         <View>
           <OWalletLogo size={72} />
