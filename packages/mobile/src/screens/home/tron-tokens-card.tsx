@@ -8,11 +8,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useTheme } from '@src/themes/theme-provider';
-import {
-  findLedgerAddressWithChainId,
-  TRC20_LIST,
-  _keyExtract
-} from '../../utils/helper';
+import { findLedgerAddressWithChainId, _keyExtract } from '../../utils/helper';
 import { Address } from '@owallet/crypto';
 import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
@@ -29,11 +25,13 @@ const USDT_DEFAULT_PRICE = 1;
 export const TronTokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const { chainStore, accountStore, priceStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, priceStore, keyRingStore, appInitStore } =
+    useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const [tokens, setTokens] = useState([]);
   const { colors } = useTheme();
   const styles = styling(colors);
+  const trc20_list = appInitStore.getTRC20_List;
 
   const smartNavigation = useSmartNavigation();
 
@@ -59,7 +57,7 @@ export const TronTokensCard: FunctionComponent<{
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            TRC20_LIST.map(tk => {
+            trc20_list.map(tk => {
               let token = res.data?.data[0].trc20.find(
                 t => tk.contractAddress in t
               );

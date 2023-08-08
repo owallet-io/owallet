@@ -15,7 +15,7 @@ export class AppInit {
   @observable
   protected notiData: {};
   @observable
-  protected trc20_list: {};
+  protected trc20_list: Array<any>;
 
   constructor() {
     makeObservable(this);
@@ -31,6 +31,11 @@ export class AppInit {
   @computed
   get getInitApp() {
     return this.initApp;
+  }
+
+  @computed
+  get getTRC20_List() {
+    return this.trc20_list;
   }
 
   @action
