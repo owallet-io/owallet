@@ -14,11 +14,11 @@ import { API } from '@src/common/api';
 import { Address } from '@owallet/crypto';
 
 interface FormData {
-  viewingKey: string;
   contractAddress: string;
   decimals: string;
-  symbol: string;
+  denom: string;
   name: string;
+  coinGeckoId: string;
 }
 
 export const AddTokenTronScreen = observer(() => {
@@ -173,7 +173,7 @@ export const AddTokenTronScreen = observer(() => {
             />
           );
         }}
-        name="contractAddress"
+        name="name"
         defaultValue=""
       />
 
@@ -182,14 +182,14 @@ export const AddTokenTronScreen = observer(() => {
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="Symbol"
+              label="denom"
               labelStyle={{
                 fontWeight: '700'
               }}
               inputStyle={{
                 ...styles.borderInput
               }}
-              error={errors.symbol?.message}
+              error={errors.denom?.message}
               onChangeText={onChange}
               value={value}
               ref={ref}
@@ -197,7 +197,7 @@ export const AddTokenTronScreen = observer(() => {
             />
           );
         }}
-        name="contractAddress"
+        name="denom"
         defaultValue=""
       />
 
@@ -213,7 +213,7 @@ export const AddTokenTronScreen = observer(() => {
               inputStyle={{
                 ...styles.borderInput
               }}
-              error={errors.symbol?.message}
+              error={errors.decimals?.message}
               onChangeText={onChange}
               value={value}
               ref={ref}
@@ -221,7 +221,31 @@ export const AddTokenTronScreen = observer(() => {
             />
           );
         }}
-        name="contractAddress"
+        name="decimals"
+        defaultValue=""
+      />
+
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="CoinGecko Id"
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              error={errors.coinGeckoId?.message}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+              defaultValue={''}
+            />
+          );
+        }}
+        name="coinGeckoId"
         defaultValue=""
       />
 
