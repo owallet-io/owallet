@@ -270,7 +270,7 @@ export const AddTokenTronScreen = observer(() => {
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="CoinGecko Id"
+              label="CoinGecko ID"
               labelStyle={{
                 fontWeight: '700'
               }}
@@ -286,7 +286,7 @@ export const AddTokenTronScreen = observer(() => {
           );
         }}
         rules={{
-          required: 'DecimCoinGecko Idals is required'
+          required: 'CoinGecko ID is required'
         }}
         name="coinGeckoId"
         defaultValue=""

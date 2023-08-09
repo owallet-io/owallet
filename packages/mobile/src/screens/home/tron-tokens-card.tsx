@@ -63,6 +63,8 @@ export const TronTokensCard: FunctionComponent<{
               );
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
+              } else {
+                tokenArr.push({ ...tk, amount: 0 });
               }
             });
 
