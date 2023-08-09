@@ -32,7 +32,7 @@ export const AddTokenTronScreen = observer(() => {
   const smartNavigation = useSmartNavigation();
   const { appInitStore } = useStore();
   const [loading, setLoading] = useState(false);
-  const trc20List = appInitStore.getTRC20_List;
+  const trc20List = appInitStore.getInitApp.trc20_list;
 
   // const contractAddress = watch('contractAddress');
 

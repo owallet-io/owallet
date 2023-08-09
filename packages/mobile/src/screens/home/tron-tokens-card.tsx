@@ -31,7 +31,7 @@ export const TronTokensCard: FunctionComponent<{
   const [tokens, setTokens] = useState([]);
   const { colors } = useTheme();
   const styles = styling(colors);
-  const trc20_list = appInitStore.getTRC20_List;
+  const trc20_list = appInitStore.getInitApp.trc20_list;
 
   const smartNavigation = useSmartNavigation();
 
