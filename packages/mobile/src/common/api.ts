@@ -236,7 +236,9 @@ export const API = {
         baseURL: url
       });
       const data: { data: unknown } = rs.data;
-      if (data?.data) {
+      console.log('rs', rs);
+
+      if (data) {
         return Promise.resolve(data);
       }
       return Promise.reject(data);
