@@ -73,7 +73,11 @@ export const TronTokensCard: FunctionComponent<{
         }
       } catch (error) {}
     })();
-  }, [account.evmosHexAddress, keyRingStore.keyRingLedgerAddresses]);
+  }, [
+    account.evmosHexAddress,
+    keyRingStore.keyRingLedgerAddresses,
+    trc20_list
+  ]);
 
   const _renderFlatlistItem = ({ item }) => {
     return (
