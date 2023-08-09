@@ -12,6 +12,7 @@ import { observer } from 'mobx-react-lite';
 import { TRON_ID, isBase58, showToast } from '@src/utils/helper';
 import { API } from '@src/common/api';
 import { Address } from '@owallet/crypto';
+import { useStore } from '@src/stores';
 
 interface FormData {
   contractAddress: string;
@@ -25,20 +26,13 @@ export const AddTokenTronScreen = observer(() => {
   const {
     control,
     handleSubmit,
-    watch,
-    setValue,
+    getValues,
     formState: { errors }
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
-
+  const { appInitStore } = useStore();
   const [loading, setLoading] = useState(false);
-  const [tokenInfo, setTokenInfo] = useState<any>();
-
-  const form = useForm<FormData>({
-    defaultValues: {
-      contractAddress: ''
-    }
-  });
+  const trc20List = appInitStore.getTRC20_List;
 
   // const contractAddress = watch('contractAddress');
 
@@ -71,10 +65,44 @@ export const AddTokenTronScreen = observer(() => {
 
   const submit = handleSubmit(async (data: any) => {
     try {
-      if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
+      const { decimals, name, coinGeckoId, denom, contractAddress } =
+        getValues();
+      if (
+        decimals != null &&
+        name &&
+        coinGeckoId &&
+        denom &&
+        contractAddress !== ''
+      ) {
         setLoading(true);
-
-        addTokenSuccess();
+        const currentTrc20List = [
+          ...trc20List,
+          {
+            contractAddress: contractAddress,
+            tokenName: name,
+            coinDenom: denom,
+            coinGeckoId: coinGeckoId,
+            coinImageUrl:
+              'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+            coinDecimals: decimals,
+            type: 'trc20'
+          }
+        ];
+        console.log('currentTrc20List', currentTrc20List);
+        try {
+          setLoading(false);
+          appInitStore.updateTRC20List(currentTrc20List);
+          addTokenSuccess();
+        } catch (err) {
+          setLoading(false);
+          smartNavigation.navigateSmart('Home', {});
+          showToast({
+            text1: 'Error',
+            text2: JSON.stringify(err.message),
+            type: 'error',
+            onPress: () => {}
+          });
+        }
       }
     } catch (err) {
       setLoading(false);
