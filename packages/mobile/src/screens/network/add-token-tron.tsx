@@ -177,6 +177,9 @@ export const AddTokenTronScreen = observer(() => {
             />
           );
         }}
+        rules={{
+          required: 'Contract address is required'
+        }}
         name="contractAddress"
         defaultValue=""
       />
@@ -200,6 +203,9 @@ export const AddTokenTronScreen = observer(() => {
               defaultValue={''}
             />
           );
+        }}
+        rules={{
+          required: 'Name is required'
         }}
         name="name"
         defaultValue=""
@@ -225,6 +231,9 @@ export const AddTokenTronScreen = observer(() => {
             />
           );
         }}
+        rules={{
+          required: 'Denom is required'
+        }}
         name="denom"
         defaultValue=""
       />
@@ -245,11 +254,14 @@ export const AddTokenTronScreen = observer(() => {
               onChangeText={onChange}
               value={value}
               ref={ref}
-              defaultValue={''}
+              defaultValue={'6'}
             />
           );
         }}
         name="decimals"
+        rules={{
+          required: 'Decimals is required'
+        }}
         defaultValue=""
       />
 
@@ -272,6 +284,9 @@ export const AddTokenTronScreen = observer(() => {
               defaultValue={''}
             />
           );
+        }}
+        rules={{
+          required: 'DecimCoinGecko Idals is required'
         }}
         name="coinGeckoId"
         defaultValue=""
