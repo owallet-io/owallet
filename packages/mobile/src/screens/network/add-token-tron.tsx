@@ -216,7 +216,7 @@ export const AddTokenTronScreen = observer(() => {
         render={({ field: { onChange, onBlur, value, ref } }) => {
           return (
             <TextInput
-              label="denom"
+              label="Denom"
               labelStyle={{
                 fontWeight: '700'
               }}
