@@ -8,7 +8,7 @@ export class Address {
       : '-';
   }
 
-  static getHexString(base58Address: string): string {
+  static getHexStringFromBase58(base58Address: string): string {
     return base58Address
       ? Buffer.from(bs58.decode(base58Address)).toString('hex')
       : '-';

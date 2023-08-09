@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PageWithScrollView } from '../../components/page';
 import { colors, typography } from '../../themes';
@@ -8,7 +8,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../components/input';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
-import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { TRON_ID, isBase58, showToast } from '@src/utils/helper';
 import { API } from '@src/common/api';
@@ -17,6 +16,9 @@ import { Address } from '@owallet/crypto';
 interface FormData {
   viewingKey: string;
   contractAddress: string;
+  decimals: string;
+  symbol: string;
+  name: string;
 }
 
 export const AddTokenTronScreen = observer(() => {
@@ -29,8 +31,6 @@ export const AddTokenTronScreen = observer(() => {
   } = useForm<FormData>();
   const smartNavigation = useSmartNavigation();
 
-  const { chainStore } = useStore();
-
   const [loading, setLoading] = useState(false);
   const [tokenInfo, setTokenInfo] = useState<any>();
 
@@ -40,51 +40,24 @@ export const AddTokenTronScreen = observer(() => {
     }
   });
 
-  const contractAddress = watch('contractAddress');
+  // const contractAddress = watch('contractAddress');
 
-  console.log('contractAddress', contractAddress);
+  // const getContractDetail = async (contractAddress: string) => {
+  //   try {
+  //     const res = await API.getContractTron(
+  //       chainStore.current.rpc,
+  //       chainStore.current.chainId === TRON_ID && isBase58(contractAddress)
+  //         ? Address.getHexStringFromBase58(contractAddress)
+  //         : contractAddress
+  //     );
+  //   } catch (error) {
+  //     console.log('error ===', error);
+  //   }
+  // };
 
   // useEffect(() => {
-  //   if (tokensStore.waitingSuggestedToken) {
-  //     chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
-  //     if (
-  //       contractAddress !==
-  //       tokensStore.waitingSuggestedToken.data.contractAddress
-  //     ) {
-  //       setValue(
-  //         'contractAddress',
-  //         tokensStore.waitingSuggestedToken.data.contractAddress
-  //       );
-  //     }
-  //   }
-  // }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
-
-  const getContractDetail = async (contractAddress: string) => {
-    try {
-      const res = await API.getContractTron(
-        chainStore.current.rpc,
-        chainStore.current.chainId === TRON_ID && isBase58(contractAddress)
-          ? Address.getHexString(contractAddress)
-          : contractAddress
-      );
-      console.log('contractAddress ===', contractAddress);
-      console.log('res ===', res);
-      console.log(
-        'address ===',
-        chainStore.current.chainId === TRON_ID && isBase58(contractAddress)
-          ? Address.getHexString(contractAddress)
-          : contractAddress
-      );
-    } catch (error) {
-      console.log('error ===', error);
-    }
-  };
-
-  useEffect(() => {
-    console.log('get here');
-
-    getContractDetail(contractAddress);
-  }, [contractAddress]);
+  //   getContractDetail(contractAddress);
+  // }, [contractAddress]);
 
   const addTokenSuccess = () => {
     setLoading(false);
@@ -168,9 +141,6 @@ export const AddTokenTronScreen = observer(() => {
               inputStyle={{
                 ...styles.borderInput
               }}
-              onSubmitEditing={() => {
-                submit();
-              }}
               error={errors.contractAddress?.message}
               onBlur={onBlur}
               onChangeText={onChange}
@@ -183,55 +153,76 @@ export const AddTokenTronScreen = observer(() => {
         defaultValue=""
       />
 
-      <TextInput
-        label="Name"
-        labelStyle={{
-          fontWeight: '700'
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Name"
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+              error={errors.name?.message}
+              defaultValue={''}
+            />
+          );
         }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        onSubmitEditing={() => {
-          submit();
-        }}
-        error={errors.contractAddress?.message}
-        value={tokenInfo?.name ?? '-'}
-        defaultValue={'-'}
-        editable={false}
+        name="contractAddress"
+        defaultValue=""
       />
 
-      <TextInput
-        label="Symbol"
-        labelStyle={{
-          fontWeight: '700'
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Symbol"
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              error={errors.symbol?.message}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+              defaultValue={''}
+            />
+          );
         }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        onSubmitEditing={() => {
-          submit();
-        }}
-        error={errors.contractAddress?.message}
-        value={tokenInfo?.symbol ?? '-'}
-        defaultValue={'-'}
-        editable={false}
+        name="contractAddress"
+        defaultValue=""
       />
 
-      <TextInput
-        label="Decimals"
-        labelStyle={{
-          fontWeight: '700'
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value, ref } }) => {
+          return (
+            <TextInput
+              label="Decimals"
+              labelStyle={{
+                fontWeight: '700'
+              }}
+              inputStyle={{
+                ...styles.borderInput
+              }}
+              error={errors.symbol?.message}
+              onChangeText={onChange}
+              value={value}
+              ref={ref}
+              defaultValue={''}
+            />
+          );
         }}
-        inputStyle={{
-          ...styles.borderInput
-        }}
-        onSubmitEditing={() => {
-          submit();
-        }}
-        error={errors.contractAddress?.message}
-        value={tokenInfo?.decimals.toString() ?? '-'}
-        defaultValue={'-'}
-        editable={false}
+        name="contractAddress"
+        defaultValue=""
       />
 
       <TouchableOpacity
