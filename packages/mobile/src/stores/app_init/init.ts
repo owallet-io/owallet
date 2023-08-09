@@ -11,11 +11,10 @@ export class AppInit {
     date_updated: null | number;
     theme: 'dark' | 'light';
     visibleTabBar?: string;
+    trc20_list: Array<any>;
   };
   @observable
   protected notiData: {};
-  @observable
-  protected trc20_list: Array<any>;
 
   constructor() {
     makeObservable(this);
@@ -23,19 +22,14 @@ export class AppInit {
       visibleTabBar: null,
       status: true,
       date_updated: null,
-      theme: 'light'
+      theme: 'light',
+      trc20_list: TRC20_LIST
     };
-    this.trc20_list = TRC20_LIST;
   }
 
   @computed
   get getInitApp() {
     return this.initApp;
-  }
-
-  @computed
-  get getTRC20_List() {
-    return this.trc20_list;
   }
 
   @action
@@ -58,7 +52,7 @@ export class AppInit {
   }
   @action
   updateTRC20List(list) {
-    this.trc20_list = list;
+    this.initApp = { ...this.initApp, trc20_list: list };
   }
 }
 
