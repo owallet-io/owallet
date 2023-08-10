@@ -32,8 +32,10 @@
   "dependencies": {
     "@amplitude/react-native": "2.17.2",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
+    "@cosmjs/stargate": "^0.31.0",
     "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/proto-signing": "^0.29.3",
+    "@oraichain/common-contracts-sdk": "^1.0.24",
     "@formatjs/intl-datetimeformat": "^4.1.6",
     "@formatjs/intl-displaynames": "^5.1.6",
     "@formatjs/intl-getcanonicallocales": "^1.7.1",

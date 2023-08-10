@@ -4203,6 +4203,11 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.15.1.tgz#3d745996b2bd11095b515515fd3d68d46092a02d"
   integrity sha512-n8Kur1/CZlYG32YCEj30CoUqA8R7UyDVZzoEU6SDP+13+kXDT2kFVu6MpcnEUTyGP3i058ID6Qjp5h6IJxdPPQ==
 
+"@oraichain/common-contracts-sdk@^1.0.24":
+  version "1.0.24"
+  resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.24.tgz#e856da3b0086a944a7f710cbcba9fa2dcab2cd74"
+  integrity sha512-dBmr6L9H82dm8EDjOycNTO6/S/VzBBwOifF4e2nrrbGnNtA42akCdA/e93S3bgoxiDZpFWEt4pPUkvZisWReJQ==
+
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
