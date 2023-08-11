@@ -290,6 +290,10 @@ export class InjectedOWallet implements IOWallet {
     return await this.requestMethod('sendTx', [chainId, tx, mode]);
   }
 
+  async handleUniversalSwap(chainId: string, data: any): Promise<object> {
+    return await this.requestMethod('handleUniversalSwap', [chainId, data]);
+  }
+
   async signAmino(
     chainId: string,
     signer: string,

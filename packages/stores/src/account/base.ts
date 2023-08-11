@@ -455,10 +455,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
 
   async handleUniversalSwap(
-    amount: string,
-    currency: AppCurrency,
-    recipient: string,
-    address: string,
+    chainId: string,
+    data,
     onTxEvents?: {
       onBroadcasted?: (txHash: Uint8Array) => void;
       onFulfill?: (tx: any) => void;
@@ -466,7 +464,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   ) {
     try {
       const owallet = (await this.getOWallet())!;
-      const swapResponse = {};
+      const swapResponse = owallet.handleUniversalSwap(chainId, data);
 
       if (onTxEvents?.onFulfill) {
         onTxEvents?.onFulfill(swapResponse);
