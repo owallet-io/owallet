@@ -93,7 +93,7 @@ export class OWallet implements IOWallet {
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async handleUniversalSwap(chainId, data): Promise<void> {
+  async handleUniversalSwap(chainId, data): Promise<object> {
     const msg = new RequestUniversalSwapMsg(chainId, data);
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }

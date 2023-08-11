@@ -92,14 +92,7 @@ export interface OWallet {
     mode: BroadcastMode
   ): Promise<Uint8Array>;
 
-  handleUniversalSwap(
-    chainId: string,
-    /*
-     If the type is `StdTx`, it is considered as legacy stdTx.
-     If the type is `Uint8Array`, it is considered as proto tx.
-     */
-    data: any
-  ): Promise<any>;
+  handleUniversalSwap(chainId: string, data: any): Promise<object>;
 
   signArbitrary(
     chainId: string,

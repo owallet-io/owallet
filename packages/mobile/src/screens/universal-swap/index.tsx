@@ -154,12 +154,15 @@ const balances: BalanceType[] = [
   }
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { keyRingStore } = useStore();
+  const { accountStore, chainStore } = useStore();
   const { colors, images } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
+  const chainId = chainStore?.current?.chainId;
+
+  const account = accountStore.getAccount(chainId);
   const [amount, setAmount] = useState({
     from: '1.273',
     to: '0.26'
@@ -193,8 +196,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   });
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
   const handleAmountFrom = useCallback(
-    (valueAmount) => {
-      setAmount((prevAmount) => ({
+    valueAmount => {
+      setAmount(prevAmount => ({
         ...prevAmount,
         from: valueAmount
       }));
@@ -202,8 +205,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [amount?.from]
   );
   const handleAmountTo = useCallback(
-    (valueAmount) => {
-      setAmount((prevAmount) => ({
+    valueAmount => {
+      setAmount(prevAmount => ({
         ...prevAmount,
         to: valueAmount
       }));
@@ -222,7 +225,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const handleOpenTokensToModal = useCallback(() => {
     setIsSelectTokenModal(true);
   }, []);
-  const handleOnActiveToken = useCallback((token) => {
+  const handleOnActiveToken = useCallback(token => {
     setActiveToken({
       from: token,
       to: token
@@ -339,7 +342,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           style={styles.btnSwap}
           loading={false}
           textStyle={styles.textBtnSwap}
-          onPress={() => {}}
+          onPress={() => {
+            account.handleUniversalSwap(chainId, { key: 'value' });
+          }}
         />
         <View style={styles.containerInfoToken}>
           <View style={styles.itemBottom}>
