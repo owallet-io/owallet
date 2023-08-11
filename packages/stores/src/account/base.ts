@@ -454,6 +454,30 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
 
+  async handleUniversalSwap(
+    amount: string,
+    currency: AppCurrency,
+    recipient: string,
+    address: string,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    }
+  ) {
+    try {
+      const owallet = (await this.getOWallet())!;
+      const swapResponse = {};
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(swapResponse);
+      }
+      return {
+        txHash: swapResponse
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
+  }
   async sendEvmMsgs(
     type: string | 'unknown',
     msgs: Msg,

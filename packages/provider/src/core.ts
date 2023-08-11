@@ -41,7 +41,8 @@ import {
   RequestSignDecryptDataMsg,
   RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg,
-  GetChainInfosWithoutEndpointsMsg
+  GetChainInfosWithoutEndpointsMsg,
+  RequestUniversalSwapMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -369,6 +370,11 @@ export class Ethereum implements IEthereum {
     data: object
   ): Promise<{ rawTxHex: string }> {
     const msg = new RequestSignTronMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async handleUniversalSwap(chainId: string, data: object): Promise<object> {
+    const msg = new RequestUniversalSwapMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
