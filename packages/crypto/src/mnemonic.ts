@@ -58,16 +58,20 @@ export class Mnemonic {
   static generateWalletFromMnemonic(
     mnemonic: string,
     path: string = `m/44'/118'/0'/0/0`,
-    password: string = ''
+    password: string = '',
+    network: any = null
   ): Uint8Array {
     const seed = bip39.mnemonicToSeedSync(mnemonic, password);
-    const masterKey = bip32.fromSeed(seed);
+    const masterKey = bip32.fromSeed(seed, network);
     const hd = masterKey.derivePath(path);
+    console.log("🚀 ~ file: mnemonic.ts:67 ~ Mnemonic ~ path:", path)
 
     const privateKey = hd.privateKey;
+    console.log("🚀 ~ file: mnemonic.ts:70 ~ Mnemonic ~ privateKey:", privateKey)
     if (!privateKey) {
       throw new Error('null hd key');
     }
     return privateKey;
   }
+  
 }

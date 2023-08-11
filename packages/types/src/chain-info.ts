@@ -4,7 +4,17 @@ import { AxiosRequestConfig } from 'axios';
 import { Bech32Config } from './bech32';
 
 export type NetworkType = 'cosmos' | 'evm' | 'bitcoin';
-
+export type NetworkChainConfigType = {
+  messagePrefix: string;
+  bech32: string;
+  bip32: {
+    public: number;
+    private: number;
+  };
+  pubKeyHash: number;
+  scriptHash: number;
+  wif: number;
+}
 export interface ChainInfo {
   readonly rpc?: string;
   readonly evmRpc?: string;
@@ -22,7 +32,7 @@ export interface ChainInfo {
   readonly bip44: BIP44;
   readonly alternativeBIP44s?: BIP44[];
   readonly bech32Config?: Bech32Config;
-
+  readonly networkChainConfig?: NetworkChainConfigType;
   readonly currencies: AppCurrency[];
   /**
    * This indicates which coin or token can be used for fee to send transaction.

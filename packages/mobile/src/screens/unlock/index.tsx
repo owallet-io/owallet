@@ -48,7 +48,7 @@ async function waitAccountLoad(
     return;
   }
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -69,7 +69,7 @@ enum AutoBiomtricStatus {
 
 const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
   const [status, setStatus] = useState(AutoBiomtricStatus.NO_NEED);
-  const tryBiometricAutoOnce = useRef(false);
+  // const tryBiometricAutoOnce = useRef(false);
 
   useEffect(() => {
     if (keychainStore.isBiometryOn && status === AutoBiomtricStatus.NO_NEED) {
@@ -77,25 +77,25 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
     }
   }, [keychainStore.isBiometryOn, status]);
 
-  useEffect(() => {
-    if (
-      !tryBiometricAutoOnce.current &&
-      status === AutoBiomtricStatus.NEED &&
-      tryEnabled
-    ) {
-      tryBiometricAutoOnce.current = true;
-      (async () => {
-        try {
-          await delay(2000);
-          await keychainStore.tryUnlockWithBiometry();
-          setStatus(AutoBiomtricStatus.SUCCESS);
-        } catch (e) {
-          console.log(e);
-          setStatus(AutoBiomtricStatus.FAILED);
-        }
-      })();
-    }
-  }, [keychainStore, status, tryEnabled]);
+  // useEffect(() => {
+  //   if (
+  //     !tryBiometricAutoOnce.current &&
+  //     status === AutoBiomtricStatus.NEED &&
+  //     tryEnabled
+  //   ) {
+  //     tryBiometricAutoOnce.current = true;
+  //     (async () => {
+  //       try {
+  //         await delay(2000);
+  //         await keychainStore.tryUnlockWithBiometry();
+  //         setStatus(AutoBiomtricStatus.SUCCESS);
+  //       } catch (e) {
+  //         console.log(e);
+  //         setStatus(AutoBiomtricStatus.FAILED);
+  //       }
+  //     })();
+  //   }
+  // }, [keychainStore, status, tryEnabled]);
 
   return status;
 };
@@ -125,10 +125,10 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
 
-  const autoBiometryStatus = useAutoBiomtric(
-    keychainStore,
-    keyRingStore.status === KeyRingStatus.LOCKED && loaded
-  );
+  // const autoBiometryStatus = useAutoBiomtric(
+  //   keychainStore,
+  //   keyRingStore.status === KeyRingStatus.LOCKED && loaded
+  // );
   useEffect(() => {
     if (__DEV__) {
       return;
@@ -141,7 +141,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // },
         installMode: CodePush.InstallMode.IMMEDIATE
       },
-      (status) => {
+      status => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             console.log('UP_TO_DATE');
@@ -251,7 +251,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [keyRingStore.status, navigateToHome, downloading]);
 
   useEffect(() => {
-    messaging().onNotificationOpenedApp((remoteMessage) => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage
@@ -268,8 +268,8 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     });
     messaging()
       .getInitialNotification()
-      .then(async (remoteMessage) => {});
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      .then(async remoteMessage => {});
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
       showToast({
         text1: remoteMessage?.notification?.title,
         text2: remoteMessage?.notification?.body,
@@ -281,7 +281,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, []);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async (FCMToken) => {
+  const regisFcmToken = useCallback(async FCMToken => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
@@ -291,7 +291,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async (FCMToken) => {
+        .then(async FCMToken => {
           console.log('FCMToken ===', FCMToken);
           if (FCMToken) {
             regisFcmToken(FCMToken);
@@ -299,7 +299,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             // Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch((error) => {
+        .catch(error => {
           // let err = `FCM token get error: ${error}`;
           // Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
@@ -313,7 +313,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (Platform.OS === 'ios') {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then((register) => {
+        .then(register => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -328,7 +328,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch((error) => {
+      .catch(error => {
         console.log('[FCMService] Requested persmission rejected ', error);
       });
   }, [registerAppWithFCM]);
@@ -336,7 +336,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then((enabled) => {
+      .then(enabled => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -345,7 +345,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch((error) => {
+      .catch(error => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -362,8 +362,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [requestPermission]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
-
+    const unsubscribe = messaging().onMessage(async remoteMessage => {});
     return unsubscribe;
   }, []);
 
@@ -499,6 +498,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           <>
             <OrText />
             <OWButton
+              disabled={isBiometricLoading || isLoading}
               label="Use Biometric Authentication"
               style={styles.useBiometric}
               onPress={tryBiometric}

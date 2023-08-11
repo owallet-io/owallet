@@ -35,6 +35,9 @@ export class Bech32Address {
   }
 
   static fromBech32(bech32Address: string, prefix?: string): Bech32Address {
+    if (prefix === 'bc') {
+      return Bech32Address.fromBech32Btc(bech32Address, prefix);
+    }
     const decoded = bech32.decode(bech32Address);
     if (prefix && decoded.prefix !== prefix) {
       throw new Error('Unmatched prefix');
@@ -42,7 +45,13 @@ export class Bech32Address {
 
     return new Bech32Address(new Uint8Array(fromWords(decoded.words)));
   }
-
+  static fromBech32Btc(address: string, prefix?: string): Bech32Address {
+    const decoded = bech32.decode(address);
+    if (prefix && decoded.prefix !== prefix) {
+      throw new Error('Unmatched prefix');
+    }
+    return new Bech32Address(new Uint8Array(fromWords(decoded.words.slice(1))));
+  }
   static validate(bech32Address: string, prefix?: string) {
     const { prefix: decodedPrefix } = bech32.decode(bech32Address);
     if (prefix && prefix !== decodedPrefix) {
@@ -74,7 +83,16 @@ export class Bech32Address {
   constructor(public readonly address: Uint8Array) {}
 
   toBech32(prefix: string): string {
+    if (prefix === 'bc') {
+      return this.toBech32Btc(prefix);
+    }
     const words = bech32.toWords(this.address);
+    return bech32.encode(prefix, words);
+  }
+  toBech32Btc(prefix: string): string {
+    const words = bech32.toWords(this.address);
+    words.unshift(0);
+
     return bech32.encode(prefix, words);
   }
 }

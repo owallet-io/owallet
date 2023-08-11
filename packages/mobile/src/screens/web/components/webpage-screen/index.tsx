@@ -10,7 +10,7 @@ import React, {
   useState
 } from 'react';
 import { useTheme } from '@src/themes/theme-provider';
-import { Animated, BackHandler, Platform, View } from 'react-native';
+import { BackHandler, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';

@@ -219,7 +219,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      {chainStore.current.networkType === 'cosmos' ? (
+      {chainStore.current.networkType !== 'evm' ? (
         <AccountCard containerStyle={styles.containerStyle} />
       ) : (
         <AccountCardEVM containerStyle={styles.containerStyle} />
