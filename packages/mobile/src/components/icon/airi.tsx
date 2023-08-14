@@ -9,7 +9,7 @@ import Svg, {
   ClipPath
 } from 'react-native-svg';
 
-export const ThreeDotIcon: FunctionComponent<{
+export const AIRI: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
