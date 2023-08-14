@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import Svg, { Path, G, ClipPath, Rect, Defs } from 'react-native-svg';
 
-export const BnbIcon: FunctionComponent<{
+export const OraiIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
