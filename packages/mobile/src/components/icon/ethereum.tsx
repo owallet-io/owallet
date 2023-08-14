@@ -1,15 +1,13 @@
 import React, { FunctionComponent } from 'react';
 import Svg, { Image } from 'react-native-svg';
 
-export const ThreeDotIcon: FunctionComponent<{
+export const EthIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
 }> = ({ color = '#AEAEB2', size = 20, onPress }) => {
   return (
     <Svg
-      version="1.1"
-      xmlns="http://www.w3.org/2000/svg"
       x="0px"
       y="0px"
       width="44"

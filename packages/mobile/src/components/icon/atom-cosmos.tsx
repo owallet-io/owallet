@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-export const ATOMCOSMOSIcon: FunctionComponent<{
+export const AtomIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
