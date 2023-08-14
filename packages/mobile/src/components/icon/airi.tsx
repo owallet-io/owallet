@@ -9,7 +9,7 @@ import Svg, {
   ClipPath
 } from 'react-native-svg';
 
-export const AIRI: FunctionComponent<{
+export const AIRIIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;

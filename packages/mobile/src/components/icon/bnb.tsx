@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-export const BNB: FunctionComponent<{
+export const BNBIcon: FunctionComponent<{
   color?: string;
   size?: number;
   onPress?: () => void;
