@@ -1,22 +1,4 @@
 import { Bech32Config, ChainInfo, Currency } from '@owallet/types';
-import { ReactComponent as AiriIcon } from 'assets/icons/airi.svg';
-import { ReactComponent as AtomIcon } from 'assets/icons/atom_cosmos.svg';
-import { ReactComponent as AtomLightIcon } from 'assets/icons/atom_light.svg';
-import { ReactComponent as BnbIcon } from 'assets/icons/bnb.svg';
-import { ReactComponent as EthIcon } from 'assets/icons/ethereum.svg';
-import { ReactComponent as KwtIcon } from 'assets/icons/kwt.svg';
-import { ReactComponent as MilkyIcon } from 'assets/icons/milky-token.svg';
-import { ReactComponent as OraiIcon } from 'assets/icons/oraichain.svg';
-import { ReactComponent as OraiLightIcon } from 'assets/icons/oraichain_light.svg';
-import { ReactComponent as OraixIcon } from 'assets/icons/oraix.svg';
-import { ReactComponent as OraixLightIcon } from 'assets/icons/oraix_light.svg';
-import { ReactComponent as OsmoLightIcon } from 'assets/icons/osmosis_light.svg';
-import { ReactComponent as ScOraiIcon } from 'assets/icons/orchai.svg';
-import { ReactComponent as OsmoIcon } from 'assets/icons/osmosis.svg';
-import { ReactComponent as UsdtIcon } from 'assets/icons/tether.svg';
-import { ReactComponent as TronIcon } from 'assets/icons/tron.svg';
-import { ReactComponent as UsdcIcon } from 'assets/icons/usd_coin.svg';
-import { ReactComponent as ScAtomIcon } from '@src/assets/icons/scatom.svg';
 
 import {
   AIRI_BSC_CONTRACT,
@@ -35,6 +17,23 @@ import {
   USDT_TRON_CONTRACT,
   WRAP_TRON_TRX_CONTRACT
 } from './constants';
+import { OraiIcon } from '@src/components/icon/orai';
+import { OraiLightIcon } from '@src/components/icon/orai-light';
+import { AtomIcon } from '@src/components/icon/atom-cosmos';
+import { AiriIcon } from '@src/components/icon/airi';
+import { UsdtIcon } from '@src/components/icon/tether';
+import { KwtIcon } from '@src/components/icon/kwt';
+import { OsmoLightIcon } from '@src/components/icon/osmos-light';
+import { OsmoIcon } from '@src/components/icon/osmos';
+import { UsdcIcon } from '@src/components/icon/usd-coin';
+import { ScOraiIcon } from '@src/components/icon/orchai';
+import { OraixLightIcon } from '@src/components/icon/oraix-light';
+import { OraixIcon } from '@src/components/icon/oraix';
+import { MilkyIcon } from '@src/components/icon/milky';
+import { TronIcon } from '@src/components/icon/tron';
+import { ScAtomIcon } from '@src/components/icon/scatom';
+import { EthIcon } from '@src/components/icon/ethereum';
+import { BnbIcon } from '@src/components/icon/bnb';
 
 export type NetworkName =
   | 'Oraichain'
@@ -206,7 +205,7 @@ export const oraichainNetwork: CustomChainInfo = {
       bridgeTo: ['cosmoshub-4'],
       coinDecimals: 6,
       Icon: AtomIcon,
-      IconLight: AtomLightIcon
+      IconLight: AtomIcon
     },
     // {
     //   coinDenom: 'BEP20 AIRI',
