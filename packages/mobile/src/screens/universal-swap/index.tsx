@@ -155,8 +155,12 @@ const balances: BalanceType[] = [
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, chainStore } = useStore();
-  const { colors, images } = useTheme();
+  const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
+  const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
+    [string, string]
+  >(['orai', 'usdt']);
+
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
