@@ -93,9 +93,9 @@ export class OWallet implements IOWallet {
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async handleUniversalSwap(chainId, data): Promise<object> {
+  async handleUniversalSwap(chainId: string, data: object): Promise<object> {
     const msg = new RequestUniversalSwapMsg(chainId, data);
-    await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async getKey(chainId: string): Promise<Key> {
@@ -375,11 +375,6 @@ export class Ethereum implements IEthereum {
     data: object
   ): Promise<{ rawTxHex: string }> {
     const msg = new RequestSignTronMsg(chainId, data);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async handleUniversalSwap(chainId: string, data: object): Promise<object> {
-    const msg = new RequestUniversalSwapMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

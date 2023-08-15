@@ -92,7 +92,7 @@ export interface OWallet {
     mode: BroadcastMode
   ): Promise<Uint8Array>;
 
-  handleUniversalSwap(chainId: string, data: any): Promise<object>;
+  handleUniversalSwap?(chainId: string, data: any): Promise<object>;
 
   signArbitrary(
     chainId: string,

@@ -1,4 +1,5 @@
 import Long from 'long';
+import bech32 from 'bech32';
 // import { network } from '../config/networks';
 import { Address } from '@owallet/crypto';
 import { CoinGeckoId } from '../config/chainInfos';
@@ -31,6 +32,14 @@ export const tronToEthAddress = (base58: string) =>
 
 export const ethToTronAddress = (address: string) => {
   return Address.getBase58Address(address);
+};
+
+export const getEvmAddress = (bech32Address: string) => {
+  if (!bech32Address) return;
+  const decoded = bech32.decode(bech32Address);
+  const evmAddress =
+    '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
+  return evmAddress;
 };
 
 export const validateNumber = (amount: number | string): number => {
