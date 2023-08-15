@@ -74,12 +74,12 @@ async function loadTokens(
     client
   }: LoadTokenParams
 ) {
-  console.log('tronAddress', tronAddress);
-
   await Promise.all(
     [
       oraiAddress && loadTokensCosmos(updateAmounts, oraiAddress),
-      oraiAddress && loadCw20Balance(updateAmounts, oraiAddress, client),
+      oraiAddress &&
+        client &&
+        loadCw20Balance(updateAmounts, oraiAddress, client),
       // different cointype but also require keplr connected by checking oraiAddress
       kwtAddress && loadKawaiiSubnetAmount(updateAmounts, kwtAddress),
       metamaskAddress &&

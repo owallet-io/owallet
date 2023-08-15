@@ -200,7 +200,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
       try {
         loadTokenAmounts({
-          tronAddress: Address.getBase58Address(accountTron?.evmosHexAddress)
+          metamaskAddress: accountEvm?.evmosHexAddress
         });
       } catch (err) {
         console.log('err= ====', err);
