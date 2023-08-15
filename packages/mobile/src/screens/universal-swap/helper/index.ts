@@ -1,26 +1,27 @@
 import Long from 'long';
-import { network } from '../config/networks';
+// import { network } from '../config/networks';
 import { Address } from '@owallet/crypto';
-import { MyBigInt } from '@owallet/common';
+import { CoinGeckoId } from '../config/chainInfos';
+import { oraichainTokens } from '../config/bridgeTokens';
 export const calculateTimeoutTimestamp = (timeout: number): string => {
   return Long.fromNumber(Math.floor(Date.now() / 1000) + timeout)
     .multiply(1000000000)
     .toString();
 };
 
-export const getNetworkGasPrice = async (): Promise<number> => {
-  try {
-    const chainInfosWithoutEndpoints =
-      await window.Keplr?.getChainInfosWithoutEndpoints();
-    const findToken = chainInfosWithoutEndpoints.find(
-      e => e.chainId == network.chainId
-    );
-    if (findToken) {
-      return findToken.feeCurrencies[0].gasPriceStep.average;
-    }
-  } catch {}
-  return 0;
-};
+// export const getNetworkGasPrice = async (): Promise<number> => {
+//   try {
+//     const chainInfosWithoutEndpoints =
+//       await window.Keplr?.getChainInfosWithoutEndpoints();
+//     const findToken = chainInfosWithoutEndpoints.find(
+//       e => e.chainId == network.chainId
+//     );
+//     if (findToken) {
+//       return findToken.feeCurrencies[0].gasPriceStep.average;
+//     }
+//   } catch {}
+//   return 0;
+// };
 
 export const truncDecimals = 6;
 export const atomic = 10 ** truncDecimals;
@@ -41,8 +42,15 @@ export const validateNumber = (amount: number | string): number => {
 // decimals always >= 6
 export const toAmount = (amount: number | string, decimals = 6): any => {
   const validatedAmount = validateNumber(amount);
-  // return (
-  //   new MyBigInt(Math.trunc(validatedAmount * atomic)) *
-  //   new MyBigInt(10 ** (decimals - truncDecimals))
-  // );
+  return (
+    BigInt(Math.trunc(validatedAmount * atomic)) *
+    BigInt(10 ** (decimals - truncDecimals))
+  );
+};
+
+export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
+  if (coingeckoId === 'kawaii-islands' || coingeckoId === 'milky-token') {
+    throw new Error('KWT and MILKY not supported in this function');
+  }
+  return oraichainTokens.find(token => token.coinGeckoId === coingeckoId);
 };

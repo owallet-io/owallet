@@ -20,6 +20,8 @@ import { isAndroid } from '@src/utils/helper';
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
 import images from '@src/assets/images';
+import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
+import { DEFAULT_SLIPPAGE } from './config/constants';
 const tokens: TokenInfo[] = [
   {
     symbol: 'USDT',
@@ -154,12 +156,22 @@ const balances: BalanceType[] = [
   }
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, chainStore } = useStore();
+  const { accountStore, chainStore, appInitStore } = useStore();
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
+  const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
+  const [swapLoading, setSwapLoading] = useState(false);
+  const [loadingRefresh, setLoadingRefresh] = useState(false);
+  const [taxRate, setTaxRate] = useState('');
+
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
   >(['orai', 'usdt']);
+  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+  const { data: prices } = useCoinGeckoPrices(
+    appInitStore.getInitApp.cachePrices,
+    appInitStore.updateCachePrices
+  );
 
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);

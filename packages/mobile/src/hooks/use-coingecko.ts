@@ -26,12 +26,12 @@ export type CoinGeckoPrices<T extends string> = {
  * @returns The CoinGecko prices.
  */
 export const useCoinGeckoPrices = <T extends CoinGeckoId>(
+  cachePrices: any,
+  setCachePrices: Function,
   options: Omit<
     UseQueryOptions<CoinGeckoPrices<T>, unknown, CoinGeckoPrices<T>, string[]>,
     'queryKey' | 'queryFn'
-  > = {},
-  cachePrices: any,
-  setCachePrices: Function
+  > = {}
 ): UseQueryResult<CoinGeckoPrices<T>, unknown> => {
   const tokens = [...new Set(cosmosTokens.map(t => t.coinGeckoId))];
   tokens.sort();
