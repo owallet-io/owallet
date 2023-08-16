@@ -121,7 +121,7 @@ export const AccountCardEVM: FunctionComponent<{
       networkType={'evm'}
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
-      totalAmount={`${
+      totalAmount={`$${
         chainStore.current.chainId !== TRON_ID && total
           ? (
               parseFloat(

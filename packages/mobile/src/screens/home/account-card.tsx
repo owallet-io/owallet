@@ -1,33 +1,15 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useCallback,
-  useEffect
-} from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card, CardBody } from '../../components/card';
 import { View, ViewStyle, Image, StyleSheet } from 'react-native';
-// import { CText as Text } from '../../components/text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
-import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
-import { NetworkErrorView } from './network-error-view';
-import { DownArrowIcon } from '../../components/icon';
-
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon
-} from '../../components/icon/button';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddressQRCodeModal } from './components';
-import LinearGradient from 'react-native-linear-gradient';
+
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 
 export const AccountCard: FunctionComponent<{
@@ -50,8 +32,28 @@ export const AccountCard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  const [totalBalance, setTotalBalance] = useState('0');
+  const [totalAmount, setTotalAmount] = useState('0');
+  const getBalanceBtc = async (address) => {
+    const balanceBtc = await queries.bitcoin.queryBitcoinBalance
+      .getQueryBalance(address)
+      ?.balance();
+    const totalPrice = priceStore.calculatePrice(balanceBtc);
+    setTotalBalance(totalPrice?.toString());
+    const amount = balanceBtc
+      .shrink(true)
+      .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
+      .toString();
+    setTotalAmount(amount);
+    console.log(
+      '🚀 ~ file: account-card.tsx:64 ~ getBalanceBtc ~ test:',
+      amount
+    );
+    return;
+  };
   useEffect(() => {
+    setTotalAmount(null);
+    setTotalBalance('0');
     if (
       chainStore.current.chainId === 'bitcoinTestnet' &&
       account?.bech32Address?.startsWith('tb')
@@ -59,48 +61,44 @@ export const AccountCard: FunctionComponent<{
       getBalanceBtc(account?.bech32Address);
     }
 
+    const queryStakable = queries.queryBalances.getQueryBech32Address(
+      account.bech32Address
+    ).stakable;
+
+    const stakable = queryStakable.balance;
+    const queryDelegated =
+      queries.cosmos.queryDelegations.getQueryBech32Address(
+        account.bech32Address
+      );
+    const delegated = queryDelegated.total;
+
+    const queryUnbonding =
+      queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
+        account.bech32Address
+      );
+    const unbonding = queryUnbonding.total;
+
+    const stakedSum = delegated.add(unbonding);
+
+    const total = stakable.add(stakedSum);
+
+    const totalPrice = priceStore.calculatePrice(total);
+    if (!!totalPrice) {
+      setTotalBalance(totalPrice.toString());
+      return;
+    }
+    setTotalBalance(
+      total
+        .shrink(true)
+        .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
+        .toString()
+    );
     return () => {};
   }, [chainStore.current.chainId, account?.bech32Address]);
-  const getBalanceBtc = async (address) => {
-    const balanceBtc = await queries.bitcoin.queryBitcoinBalance
-      .getQueryBalance(address)
-      ?.balance();
-    console.log(
-      '🚀 ~ file: account-card.tsx:67 ~ getBalanceBtc ~ balanceBtc:',
-      balanceBtc
-    );
-    const totalPrice = priceStore.calculatePrice(balanceBtc);
-    console.log(
-      '🚀 ~ file: account-card.tsx:69 ~ getBalanceBtc ~ totalPrice:',
-      totalPrice.toString()
-    );
-    return totalPrice;
-    // console.log(
-    //   '🚀 ~ file: account-card.tsx:70 ~ getBalanceBtc ~ balanceBtc:',
-    //   balanceBtc
-    // );
-  };
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
-
-  const stakable = queryStakable.balance;
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
+  console.log(
+    '🚀 ~ file: account-card.tsx:67 ~ totalBalance ~ totalBalance:',
+    totalBalance
   );
-  const delegated = queryDelegated.total;
-
-  const queryUnbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
-  const unbonding = queryUnbonding.total;
-
-  const stakedSum = delegated.add(unbonding);
-
-  const total = stakable.add(stakedSum);
-
-  const totalPrice = priceStore.calculatePrice(total);
 
   const safeAreaInsets = useSafeAreaInsets();
   const onPressBtnMain = (name) => {
@@ -132,11 +130,7 @@ export const AccountCard: FunctionComponent<{
   };
   return (
     <AccountBox
-      totalBalance={
-        totalPrice
-          ? totalPrice.toString()
-          : total.shrink(true).maxDecimals(6).toString()
-      }
+      totalBalance={totalBalance}
       addressComponent={
         <AddressCopyable address={account.bech32Address} maxCharacters={22} />
       }
@@ -147,6 +141,7 @@ export const AccountCard: FunctionComponent<{
           : selected?.bip44HDPath?.coinType ??
             chainStore?.current?.bip44?.coinType
       }`}
+      totalAmount={!!totalAmount ? totalAmount : null}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />

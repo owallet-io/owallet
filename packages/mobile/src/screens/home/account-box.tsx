@@ -141,7 +141,7 @@ export const AccountBox: FunctionComponent<{
                   fontSize: 16
                 }}
               >
-                ${totalAmount}
+                {totalAmount}
               </Text>
             )}
           </View>

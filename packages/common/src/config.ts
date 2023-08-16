@@ -603,7 +603,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 18,
       coinGeckoId: 'bitcoin',
       coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+        'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
     },
     bech32Config: Bech32Address.defaultBech32Config('tb'),
     networkType: 'bitcoin',
@@ -614,7 +614,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinDecimals: 18,
         coinGeckoId: 'bitcoin',
         coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
+          'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
       }
     ],
     get feeCurrencies() {
