@@ -34,6 +34,7 @@
     "clean:all": "rimraf yarn.lock && yarn clean",
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
+    "rebuild": "lerna run rebuild",
     "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/mobile",
     "postinstall": "patch-package && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config",
     "test": "lerna run test --parallel",

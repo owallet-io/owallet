@@ -1,61 +1,48 @@
-// import { QueriesSetBase } from '../queries';
-// import { ChainGetter } from '../../common';
-// import { KVStore } from '@owallet/common';
-// import { DeepReadonly } from 'utility-types';
-// // import { ObservableQueryErc20BalanceRegistry } from './erc20-balance';
-// import { QueriesWithCosmosAndSecretAndCosmwasmAndEvm } from '../evm';
-// import { OWallet } from '@owallet/types';
-// // import { ObservableQueryEvmBalance } from './evm-balance';
-// // import { ObservableQueryErc20ContractInfo } from './erc20-contract-info';
+import { QueriesWithCosmosAndSecretAndCosmwasmAndEvm } from './../evm/queries';
+import { QueriesSetBase } from '../queries';
+import { ChainGetter } from '../../common';
+import { KVStore } from '@owallet/common';
+import { DeepReadonly } from 'utility-types';
+import { OWallet } from '@owallet/types';
+import { ObservableQueryBitcoinBalance } from './bitcoin-balance';
 
-// export interface HasBtcQueries {
-//   evm: BtcQueries;
-// }
+export interface HasBtcQueries {
+  bitcoin: BitcoinQueries;
+}
 
-// export class QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBtc
-//   extends QueriesWithCosmosAndSecretAndCosmwasmAndEvm
-//   implements HasBtcQueries
-// {
-//   public evm: BtcQueries;
+export class QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
+  extends QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+  implements HasBtcQueries
+{
+  public bitcoin: BitcoinQueries;
 
-//   constructor(
-//     kvStore: KVStore,
-//     chainId: string,
-//     chainGetter: ChainGetter,
-//     apiGetter: () => Promise<OWallet | undefined>
-//   ) {
-//     super(kvStore, chainId, chainGetter, apiGetter);
+  constructor(
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter,
+    apiGetter: () => Promise<OWallet | undefined>
+  ) {
+    super(kvStore, chainId, chainGetter, apiGetter);
 
-//     this.evm = new BtcQueries(this, kvStore, chainId, chainGetter);
-//   }
-// }
+    this.bitcoin = new BitcoinQueries(this, kvStore, chainId, chainGetter);
+  }
+}
 
-// export class BtcQueries {
-//   public readonly queryBtcInfo: DeepReadonly<ObservableQueryErc20ContractInfo>;
-// //   public readonly queryEvmBalance: DeepReadonly<ObservableQueryEvmBalance>;
+export class BitcoinQueries {
+  public readonly queryBitcoinBalance: DeepReadonly<ObservableQueryBitcoinBalance>;
 
-//   constructor(
-//     base: QueriesSetBase,
-//     kvStore: KVStore,
-//     chainId: string,
-//     chainGetter: ChainGetter
-//   ) {
-//     // base.queryBalances.addBalanceRegistry(
-//     //   new ObservableQueryErc20BalanceRegistry(kvStore)
-//     // );
-
-//     // queryEvmBalance, we need to seperate native balance from cosmos as it is default implementation
-//     // other implementations will require corresponding templates
-//     // this.queryEvmBalance = new ObservableQueryEvmBalance(
-//     //   kvStore,
-//     //   chainId,
-//     //   chainGetter
-//     // );
-
-//     this.queryBtcInfo = new ObservableQueryErc20ContractInfo(
-//       kvStore,
-//       chainId,
-//       chainGetter
-//     );
-//   }
-// }
+  constructor(
+    base: QueriesSetBase,
+    kvStore: KVStore,
+    chainId: string,
+    chainGetter: ChainGetter
+  ) {
+    // queryEvmBalance, we need to seperate native balance from cosmos as it is default implementation
+    // other implementations will require corresponding templates
+    this.queryBitcoinBalance = new ObservableQueryBitcoinBalance(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+  }
+}

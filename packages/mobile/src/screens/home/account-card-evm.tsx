@@ -29,6 +29,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+  
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     (keyStore) => keyStore?.selected
   );

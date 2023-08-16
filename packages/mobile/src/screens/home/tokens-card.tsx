@@ -65,9 +65,10 @@ export const TokensCard: FunctionComponent<{
     );
 
     const uniqTokens = [];
-    queryTokens.map(token =>
+    queryTokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
@@ -80,7 +81,7 @@ export const TokensCard: FunctionComponent<{
     refreshDate
   ]);
 
-  const onActiveType = i => {
+  const onActiveType = (i) => {
     setIndex(i);
   };
 
@@ -164,9 +165,8 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map(token => {
+              tokens.slice(0, 3).map((token) => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
-                console.log('token', token.balance);
 
                 return (
                   <TokenItem
@@ -260,7 +260,7 @@ export const SkeletonNft = () => {
     </SkeletonPlaceholder>
   );
 };
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     titleNft: {
       paddingTop: 12

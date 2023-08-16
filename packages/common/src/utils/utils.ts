@@ -1,6 +1,6 @@
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
-import { NetworkChainConfigType, NetworkType } from '@owallet/types';
+import {  NetworkType } from '@owallet/types';
 import { EmbedChainInfos } from '../config';
 
 export const getAddressFromBech32 = bech32address => {
@@ -14,15 +14,7 @@ export const getNetworkTypeByChainId = (
   const network = EmbedChainInfos.find(nw => nw.chainId == chainId);
   return network?.networkType ?? 'cosmos';
 };
-export const getNetworkConfigByChainId = (
-  chainId: string | number
-): NetworkChainConfigType => {
-  const network = EmbedChainInfos.find(nw => nw.chainId == chainId);
-  if(!network?.networkChainConfig){
-    throw Error(`Not found networkChainConfig for ${chainId}`)
-  }
-  return network?.networkChainConfig ?? null;
-};
+
 export const getCoinTypeByChainId = chainId => {
   const network = EmbedChainInfos.find(nw => nw.chainId == chainId);
   return network?.bip44?.coinType ?? network?.coinType ?? 60;

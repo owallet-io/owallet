@@ -591,7 +591,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
   {
     rest: 'https://blockstream.info/testnet',
-    chainId: 'bitcoin-testnet',
+    chainId: 'bitcoinTestnet',
     chainName: 'Bitcoin Testnet',
     bip44: {
       coinType: 84
@@ -606,71 +606,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
         'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
     },
     bech32Config: Bech32Address.defaultBech32Config('tb'),
-    networkChainConfig: {
-      messagePrefix: '\x18Bitcoin Signed Message:\n',
-      bech32: 'tb',
-      bip32: {
-        public: 0x043587cf,
-        private: 0x04358394
-      },
-      pubKeyHash: 0x6f,
-      scriptHash: 0xc4,
-      wif: 0xef
-    },
-    networkType: 'bitcoin',
-    currencies: [
-      {
-        coinDenom: 'BTC',
-        coinMinimalDenom: 'btc',
-        coinDecimals: 18,
-        coinGeckoId: 'bitcoin',
-        coinImageUrl:
-          'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
-      }
-    ],
-    get feeCurrencies() {
-      return this.currencies;
-    },
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
-    },
-    features: ['isBtc'],
-    txExplorer: {
-      name: 'Etherscan',
-      txUrl: 'https://etherscan.io/tx/{txHash}',
-      accountUrl: 'https://etherscan.io/address/{address}'
-    }
-  },
-  {
-    rest: 'https://blockstream.info/testnet',
-    chainId: 'bitcoin',
-    chainName: 'Bitcoin',
-    bip44: {
-      coinType: 84
-    },
-    coinType: 84,
-    stakeCurrency: {
-      coinDenom: 'BTC',
-      coinMinimalDenom: 'btc',
-      coinDecimals: 18,
-      coinGeckoId: 'bitcoin',
-      coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
-    },
-    bech32Config: Bech32Address.defaultBech32Config('bc'),
-    networkChainConfig: {
-      messagePrefix: '\x18Bitcoin Signed Message:\n',
-      bech32: 'tb',
-      bip32: {
-        public: 0x043587cf,
-        private: 0x04358394
-      },
-      pubKeyHash: 0x6f,
-      scriptHash: 0xc4,
-      wif: 0xef
-    },
     networkType: 'bitcoin',
     currencies: [
       {

@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "rimraf node_modules build",
     "build": "tsc --project tsconfig.build.json",
+    "rebuild":"rimraf build && yarn build",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""

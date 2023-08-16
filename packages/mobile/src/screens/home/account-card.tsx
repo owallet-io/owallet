@@ -1,4 +1,9 @@
-import React, { FunctionComponent, ReactElement, useCallback } from 'react';
+import React, {
+  FunctionComponent,
+  ReactElement,
+  useCallback,
+  useEffect
+} from 'react';
 import { observer } from 'mobx-react-lite';
 import { Card, CardBody } from '../../components/card';
 import { View, ViewStyle, Image, StyleSheet } from 'react-native';
@@ -38,13 +43,26 @@ export const AccountCard: FunctionComponent<{
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
+    (keyStore) => keyStore?.selected
   );
 
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
+
+  useEffect(() => {
+    if (
+      chainStore.current.chainId === 'bitcoinTestnet' &&
+      account?.bech32Address?.startsWith('tb')
+    ) {
+      const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+        account?.bech32Address
+      )?.balance;
+    }
+
+    return () => {};
+  }, [chainStore.current.chainId, account?.bech32Address]);
 
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
@@ -69,7 +87,7 @@ export const AccountCard: FunctionComponent<{
   const totalPrice = priceStore.calculatePrice(total);
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }

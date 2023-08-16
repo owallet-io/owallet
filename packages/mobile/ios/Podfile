@@ -35,6 +35,7 @@ target 'mobile' do
   pod 'GoogleDataTransport', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
   pod 'nanopb', :modular_headers => true
+  
   # Flags change depending on the env values.
   flags = get_default_flags()
 
@@ -42,7 +43,7 @@ target 'mobile' do
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
     # :hermes_enabled => flags[:hermes_enabled],
-    :hermes_enabled => false,
+    :hermes_enabled => true,
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #

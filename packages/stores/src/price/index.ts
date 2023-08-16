@@ -155,8 +155,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     coin: CoinPretty,
     vsCurrrency?: string
   ): PricePretty | undefined {
-    console.log('coin.currency.coinGeckoId ===', coin.currency.coinGeckoId);
-
     if (!coin.currency.coinGeckoId) {
       return undefined;
     }
@@ -175,8 +173,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (price === undefined) {
       return new PricePretty(fiatCurrency, new Int(0)).ready(false);
     }
-
-    console.log('price ===', price);
 
     const dec = coin.toDec();
     const priceDec = new Dec(price.toString());

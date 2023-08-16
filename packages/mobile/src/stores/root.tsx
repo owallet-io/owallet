@@ -6,7 +6,7 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
+  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
@@ -52,7 +52,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -142,7 +142,7 @@ export class RootStore {
       async () => {
         return new OWallet(version, 'core', new RNMessageRequesterInternal());
       },
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
 
     this.accountStore = new AccountStore<AccountWithAll>(
