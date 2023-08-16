@@ -188,26 +188,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const accountKawaii = accountStore.getAccount('kawaii_6886-1');
   const loadTokenAmounts = useLoadTokens(universalSwapStore.updateAmounts);
 
-  useEffect(() => {
-    console.log('get here 1');
-    if (accountEvm?.evmosHexAddress && accountTron?.evmosHexAddress) {
-      console.log('get here');
+  if (accountEvm?.evmosHexAddress && accountKawaii?.evmosHexAddress) {
+    console.log('get here');
 
-      console.log('evm account', accountEvm?.evmosHexAddress);
-      console.log(
-        'tron,',
-        Address.getBase58Address(accountTron?.evmosHexAddress)
-      );
-      try {
-        loadTokenAmounts({
-          metamaskAddress: accountEvm?.evmosHexAddress
-        });
-      } catch (err) {
-        console.log('err= ====', err);
-      }
+    console.log('evm account', accountEvm?.evmosHexAddress);
+    console.log(
+      'tron,',
+      Address.getBase58Address(accountTron?.evmosHexAddress)
+    );
+    try {
+      loadTokenAmounts({
+        kwtAddress: accountKawaii?.bech32Address
+      });
+    } catch (err) {
+      console.log('err= ====', err);
     }
-  }, [accountStore]);
-
+  }
   console.log('cosmos,', accountOrai?.bech32Address);
 
   console.log('accountKawaii,', accountKawaii?.bech32Address);

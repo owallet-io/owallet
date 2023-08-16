@@ -9,7 +9,9 @@ import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import bech32 from 'bech32';
 import tokenABI from '@src/screens/universal-swap/config/abi/erc20.json';
 import flatten from 'lodash/flatten';
-import { ContractCallResults, Multicall } from 'ethereum-multicall';
+import { ContractCallResults } from 'ethereum-multicall';
+import { Multicall } from '@src/screens/universal-swap/libs/multicall';
+
 import {
   chainInfos,
   CustomChainInfo,
@@ -155,7 +157,8 @@ async function loadEvmEntries(
   if (!tokens.length) return [];
   const multicall = new Multicall({
     nodeUrl: chain.rpc,
-    multicallCustomContractAddress
+    multicallCustomContractAddress,
+    chainId: Number(chain.chainId)
   });
   const input = tokens.map(token => ({
     reference: token.denom,
@@ -209,17 +212,26 @@ async function loadKawaiiSubnetAmount(
   updateAmounts: Function,
   kwtAddress: string
 ) {
+  console.log('kwtAddress', kwtAddress);
+
   if (!kwtAddress) return;
   const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
-  loadNativeBalance(updateAmounts, kwtAddress, kawaiiInfo);
+  try {
+    loadNativeBalance(updateAmounts, kwtAddress, kawaiiInfo);
 
-  const kwtSubnetAddress = getEvmAddress(kwtAddress);
-  const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
-  let amountDetails = Object.fromEntries(
-    await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo)
-  );
-  // update amounts
-  updateAmounts(amountDetails);
+    const kwtSubnetAddress = getEvmAddress(kwtAddress);
+    const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
+    let amountDetails = Object.fromEntries(
+      await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo)
+    );
+
+    console.log('amountDetails kwt', amountDetails);
+
+    // update amounts
+    updateAmounts(amountDetails);
+  } catch (err) {
+    console.log('loadKawaiiSubnetAmount err', err);
+  }
 }
 
 export default function useLoadTokens(

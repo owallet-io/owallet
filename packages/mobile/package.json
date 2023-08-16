@@ -38,6 +38,7 @@
     "@oraichain/common-contracts-sdk": "^1.0.24",
     "@oraichain/oraidex-contracts-sdk": "^1.0.19",
     "ethereum-multicall": "^2.19.0",
+    "ethers": "^5.0.15",
     "@formatjs/intl-datetimeformat": "^4.1.6",
     "@formatjs/intl-displaynames": "^5.1.6",
     "@formatjs/intl-getcanonicallocales": "^1.7.1",
