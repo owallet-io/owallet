@@ -50,7 +50,7 @@ export class ObservableQueryBitcoinBalanceInner {
   //     };
   //   }
 
-  async balance(): Promise<Number> {
+  async balance(): Promise<CoinPretty | undefined> {
     // return 10;
     // if (!this.response?.data) {
     //   return undefined;
@@ -66,17 +66,29 @@ export class ObservableQueryBitcoinBalanceInner {
       '🚀 ~ file: bitcoin-balance.ts:71 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ scriptHash:',
       scriptHash
     );
-    return getBalanceFromUtxos({
+    const res = await getBalanceFromUtxos({
       addresses: [{ address: this.address, path, scriptHash }],
       changeAddresses: [],
       selectedCrypto: this.chainId
-    }).then((res) => {
-      if (!res.data.balance) {
-        console.log('Balance is 0');
-        return Promise.resolve(0);
-      }
-      return Promise.resolve(res.data?.balance);
     });
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+
+    if (!res.data.balance) {
+      console.log('Balance is 0');
+      return Promise.resolve(
+        new CoinPretty(
+          chainInfo.stakeCurrency,
+          new Int(new MyBigInt(0).toString())
+        )
+      );
+    }
+
+    return Promise.resolve(
+      new CoinPretty(
+        chainInfo.stakeCurrency,
+        new Int(new MyBigInt(res.data?.balance).toString())
+      )
+    );
     //
     // getBalanceFromUtxos({
     //   addresses: [{ address: this.address, path, scriptHash }],

@@ -66,9 +66,19 @@ export const AccountCard: FunctionComponent<{
       .getQueryBalance(address)
       ?.balance();
     console.log(
-      '🚀 ~ file: account-card.tsx:70 ~ getBalanceBtc ~ balanceBtc:',
+      '🚀 ~ file: account-card.tsx:67 ~ getBalanceBtc ~ balanceBtc:',
       balanceBtc
     );
+    const totalPrice = priceStore.calculatePrice(balanceBtc);
+    console.log(
+      '🚀 ~ file: account-card.tsx:69 ~ getBalanceBtc ~ totalPrice:',
+      totalPrice.toString()
+    );
+    return totalPrice;
+    // console.log(
+    //   '🚀 ~ file: account-card.tsx:70 ~ getBalanceBtc ~ balanceBtc:',
+    //   balanceBtc
+    // );
   };
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address

@@ -27,6 +27,7 @@ export const ChainSelectorModal: FunctionComponent<{
 
     return (
       <CardModal
+        disabledScrollView
         title="Select Chain"
         childrenContainerStyle={style.flatten(["padding-0"])}
       >
