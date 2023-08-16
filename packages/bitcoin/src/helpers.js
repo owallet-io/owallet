@@ -1,18 +1,19 @@
-const bitcoinUnits = require("bitcoin-units");
-const { walletHelpers } = require("./walletApi");
-const bitcoin = require("bitcoinjs-lib");
-const bitcoinMessage = require("bitcoinjs-message");
-const bip39 = require("bip39");
-const bip32 = require("bip32");
-const moment = require("moment");
-const bip21 = require("bip21");
-const Url = require("url-parse");
+const bitcoinUnits = require('bitcoin-units');
+const { walletHelpers } = require('./walletApi');
+const bitcoin = require('bitcoinjs-lib');
+const bitcoinMessage = require('bitcoinjs-message');
+const bip39 = require('bip39');
+const bip32 = require('bip32');
+const moment = require('moment');
+const bip21 = require('bip21');
+const Url = require('url-parse');
 const {
   networks,
   availableCoins,
   defaultWalletShape,
-} = require("./networks");
-const { getTransaction } = require("./electrum");
+  getCoinData
+} = require('./networks');
+const { getTransaction } = require('./electrum');
 
 /*
 This batch sends addresses and returns the balance of utxos from them
@@ -20,13 +21,13 @@ This batch sends addresses and returns the balance of utxos from them
 const getBalanceFromUtxos = async ({
   addresses = [],
   changeAddresses = [],
-  selectedCrypto,
+  selectedCrypto
 } = {}) => {
   try {
     const result = await walletHelpers.utxos.default({
       addresses,
       changeAddresses,
-      selectedCrypto,
+      selectedCrypto
     });
     return result;
   } catch (e) {
@@ -36,10 +37,10 @@ const getBalanceFromUtxos = async ({
 };
 
 //Returns: { error: bool, isPrivateKey: bool, network: Object }
-const validatePrivateKey = (privateKey = "") => {
+const validatePrivateKey = (privateKey = '') => {
   try {
     let verified = false;
-    let network = "";
+    let network = '';
     for (let key in networks) {
       if (verified === true) return;
       try {
@@ -58,10 +59,10 @@ const validatePrivateKey = (privateKey = "") => {
   }
 };
 
-const validateAddress = (address = "", selectedCrypto = "") => {
+const validateAddress = (address = '', selectedCrypto = '') => {
   try {
     //Validate address for a specific network
-    if (selectedCrypto !== "") {
+    if (selectedCrypto !== '') {
       const network = getCoinNetwork(selectedCrypto);
       bitcoin.address.toOutputScript(address, network);
     } else {
@@ -83,8 +84,8 @@ const validateAddress = (address = "", selectedCrypto = "") => {
   }
 };
 
-const parsePaymentRequest = (data = "") => {
-  const failure = (errorMsg = "Unable To Read The QR Code.") => {
+const parsePaymentRequest = (data = '') => {
+  const failure = (errorMsg = 'Unable To Read The QR Code.') => {
     return { error: true, data: errorMsg };
   };
   try {
@@ -94,29 +95,29 @@ const parsePaymentRequest = (data = "") => {
       //If is a string and Bitcoin Address
       if (
         validateAddressResult.isValid &&
-        typeof data === "string" &&
-        !data.includes(":" || "?" || "&" || "//")
+        typeof data === 'string' &&
+        !data.includes(':' || '?' || '&' || '//')
       ) {
         return {
           error: false,
           data: {
             address: data,
             coin: validateAddressResult.coin,
-            amount: "",
-            label: "",
-          },
+            amount: '',
+            label: ''
+          }
         };
       }
 
       //Determine if we need to parse the data.
-      if (data.includes(":" || "?" || "&" || "//")) {
+      if (data.includes(':' || '?' || '&' || '//')) {
         try {
           //Remove slashes
-          if (data.includes("//")) data = data.replace("//", "");
+          if (data.includes('//')) data = data.replace('//', '');
           //bip21.decode will throw if anything other than "bitcoin" is passed to it.
           //Replace any instance of "testnet" or "litecoin" with "bitcoin"
-          if (data.includes(":")) {
-            data = data.substring(data.indexOf(":") + 1);
+          if (data.includes(':')) {
+            data = data.substring(data.indexOf(':') + 1);
             data = `bitcoin:${data}`;
           }
           const result = bip21.decode(data);
@@ -126,14 +127,14 @@ const parsePaymentRequest = (data = "") => {
           if (!validateAddressResult.isValid) {
             return failure(data);
           }
-          let amount = "";
-          let message = "";
+          let amount = '';
+          let message = '';
           try {
-            amount = result.options.amount || "";
-          } catch (e) { }
+            amount = result.options.amount || '';
+          } catch (e) {}
           try {
-            message = result.options.message || "";
-          } catch (e) { }
+            message = result.options.message || '';
+          } catch (e) {}
           return {
             error: false,
             data: {
@@ -141,8 +142,8 @@ const parsePaymentRequest = (data = "") => {
               coin: validateAddressResult.coin,
               amount,
               message,
-              label: message,
-            },
+              label: message
+            }
           };
         } catch (e) {
           console.log(e);
@@ -161,9 +162,9 @@ const parsePaymentRequest = (data = "") => {
 };
 
 const getDifferenceBetweenDates = ({
-  start = "",
-  end = "",
-  time = "minutes",
+  start = '',
+  end = '',
+  time = 'minutes'
 } = {}) => {
   try {
     if (!moment.isMoment(start)) start = moment(start);
@@ -189,25 +190,25 @@ const convert_zpub_to_xpub = (z) => {
 */
 
 const getTransactionData = async ({
-  txId = "",
-  selectedCrypto = "bitcoin",
+  txId = '',
+  selectedCrypto = 'bitcoin'
 } = {}) => {
-  const failure = (data = "") => {
+  const failure = (data = '') => {
     return { error: true, data };
   };
   try {
     const network = getNetworkType(selectedCrypto);
     const url =
-      network === "mainnet"
+      network === 'mainnet'
         ? `https://api.blockcypher.com/v1/btc/main/txs/${txId}`
         : `https://api.blockcypher.com/v1/btc/test3/txs/${txId}`;
     const response = await fetch(url);
     const jsonResponse = await response.json();
     try {
       if (jsonResponse.error) {
-        return failure("No transaction data found.");
+        return failure('No transaction data found.');
       }
-    } catch (e) { }
+    } catch (e) {}
     return { error: false, data: jsonResponse };
   } catch (e) {
     console.log(e);
@@ -216,27 +217,27 @@ const getTransactionData = async ({
 };
 
 const getExchangeRate = async ({
-  selectedCrypto = "bitcoin",
-  selectedCurrency = "usd",
-  selectedService = "coingecko",
+  selectedCrypto = 'bitcoin',
+  selectedCurrency = 'usd',
+  selectedService = 'coingecko'
 } = {}) => {
-  const failure = (errorTitle = "", errorMsg = "") => {
+  const failure = (errorTitle = '', errorMsg = '') => {
     return { error: true, errorTitle, errorMsg };
   };
 
-  const isConnected = await isOnline();
-  if (!isConnected) {
-    return failure("Offline");
-  }
+  // const isConnected = await isOnline();
+  // if (!isConnected) {
+  //   return failure('Offline');
+  // }
 
   let exchangeRate = 0;
   try {
     exchangeRate = await walletHelpers.exchangeRate.default({
       service: selectedService,
       selectedCurrency,
-      selectedCrypto,
+      selectedCrypto
     });
-    if (exchangeRate.error) failure("Invalid Exchange Rate Data");
+    if (exchangeRate.error) failure('Invalid Exchange Rate Data');
     return { error: false, data: exchangeRate.data };
   } catch (e) {
     return failure(e.message);
@@ -244,19 +245,19 @@ const getExchangeRate = async ({
 };
 
 const getAddressTransactions = async ({
-  address = "",
+  address = '',
   addresses = [],
   changeAddresses = [],
   currentBlockHeight = 0,
-  selectedCrypto = "bitcoin",
+  selectedCrypto = 'bitcoin'
 } = {}) => {
-  const failure = (data = "") => {
+  const failure = (data = '') => {
     return { error: true, data };
   };
 
   const isConnected = await Promise.all(isOnline());
   if (!isConnected || isConnected === false) {
-    return failure("Offline");
+    return failure('Offline');
   }
 
   try {
@@ -265,10 +266,10 @@ const getAddressTransactions = async ({
       addresses,
       changeAddresses,
       currentBlockHeight,
-      selectedCrypto,
+      selectedCrypto
     });
     if (response.error === true) {
-      return failure("No transaction data found.");
+      return failure('No transaction data found.');
     }
     const transactions = response.data;
     return { error: false, data: transactions };
@@ -282,15 +283,15 @@ const getAllTransactions = async ({
   addresses = [],
   changeAddresses = [],
   currentBlockHeight = 0,
-  selectedCrypto = "bitcoin",
+  selectedCrypto = 'bitcoin'
 } = {}) => {
-  const failure = (data = "") => {
+  const failure = (data = '') => {
     return { error: true, data };
   };
 
   const isConnected = await isOnline();
   if (!isConnected || isConnected === false) {
-    return failure("Offline");
+    return failure('Offline');
   }
 
   try {
@@ -299,10 +300,10 @@ const getAllTransactions = async ({
       addresses,
       changeAddresses,
       currentBlockHeight,
-      selectedCrypto,
+      selectedCrypto
     });
     if (response.error === true) {
-      return failure("No transaction data found.");
+      return failure('No transaction data found.');
     }
     return response;
   } catch (e) {
@@ -320,11 +321,11 @@ const isOnline = async () => {
 };
 
 //Remove any duplicates based off of matches from the provided value
-const removeDupsFromArrOfObj = (arr = [], value = "") => {
+const removeDupsFromArrOfObj = (arr = [], value = '') => {
   try {
     return arr.reduce(
       (x, y) => (x.findIndex((e) => e[value] === y[value]) < 0 ? [...x, y] : x),
-      [],
+      []
     );
   } catch (e) {
     console.log(e);
@@ -333,13 +334,13 @@ const removeDupsFromArrOfObj = (arr = [], value = "") => {
 };
 
 //This returns either "mainnet" or "testnet" and assumes the following selectedCrypto format "coinTestnet"
-const getNetworkType = (selectedCrypto = "bitcoin") => {
+const getNetworkType = (selectedCrypto = 'bitcoin') => {
   try {
     selectedCrypto = selectedCrypto.toLowerCase();
-    const isTestnet = selectedCrypto.includes("testnet");
-    return isTestnet ? "testnet" : "mainnet";
+    const isTestnet = selectedCrypto.includes('testnet');
+    return isTestnet ? 'testnet' : 'mainnet';
   } catch (e) {
-    return "testnet";
+    return 'testnet';
   }
 };
 
@@ -350,17 +351,17 @@ const getTransactionSize = (numInputs, numOutputs) => {
 //amount = Amount to send to recipient.
 //transactionFee = fee per byte.
 const createTransaction = async ({
-  address = "",
+  address = '',
   transactionFee = 1,
   amount = 0,
   confirmedBalance = 0,
   utxos = [],
   blacklistedUtxos = [],
-  changeAddress = "",
+  changeAddress = '',
   mnemonic,
-  selectedCrypto = "bitcoin",
-  message = "",
-  addressType = "bech32",
+  selectedCrypto = 'bitcoin',
+  message = '',
+  addressType = 'bech32'
 } = {}) => {
   try {
     const network = networks[selectedCrypto];
@@ -368,7 +369,7 @@ const createTransaction = async ({
       getByteCount(
         { [addressType]: utxos.length },
         { [addressType]: changeAddress ? 2 : 1 },
-        message,
+        message
       ) * transactionFee;
     addressType = addressType.toLowerCase();
 
@@ -381,19 +382,19 @@ const createTransaction = async ({
     if (changeAddress) {
       targets.push({
         address: changeAddress,
-        value: confirmedBalance - (amount + totalFee),
+        value: confirmedBalance - (amount + totalFee)
       });
     }
 
     //Embed any OP_RETURN messages.
-    if (message !== "") {
+    if (message !== '') {
       const messageLength = message.length;
       const lengthMin = 5;
       //This is a patch for the following: https://github.com/coreyphillips/moonshine/issues/52
       const buffers = [message];
       if (messageLength > 0 && messageLength < lengthMin)
         buffers.push(
-          Buffer.from(" ".repeat(lengthMin - messageLength), "utf8"),
+          Buffer.from(' '.repeat(lengthMin - messageLength), 'utf8')
         );
       const data = Buffer.concat(buffers);
       const embed = bitcoin.payments.embed({ data: [data], network });
@@ -413,25 +414,25 @@ const createTransaction = async ({
         const path = utxo.path;
         const keyPair = root.derivePath(path);
         console.log(path);
-        if (addressType === "bech32") {
+        if (addressType === 'bech32') {
           const p2wpkh = bitcoin.payments.p2wpkh({
             pubkey: keyPair.publicKey,
-            network,
+            network
           });
           psbt.addInput({
             hash: utxo.txid,
             index: utxo.vout,
             witnessUtxo: {
               script: p2wpkh.output,
-              value: utxo.value,
-            },
+              value: utxo.value
+            }
           });
         }
 
-        if (addressType === "segwit") {
+        if (addressType === 'segwit') {
           const p2wpkh = bitcoin.payments.p2wpkh({
             pubkey: keyPair.publicKey,
-            network,
+            network
           });
           const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network });
           psbt.addInput({
@@ -439,22 +440,22 @@ const createTransaction = async ({
             index: utxo.vout,
             witnessUtxo: {
               script: p2sh.output,
-              value: utxo.value,
+              value: utxo.value
             },
-            redeemScript: p2sh.redeem.output,
+            redeemScript: p2sh.redeem.output
           });
         }
 
-        if (addressType === "legacy") {
+        if (addressType === 'legacy') {
           const transaction = await getTransaction({
             txHash: utxo.txid,
-            coin: selectedCrypto,
+            coin: selectedCrypto
           });
-          const nonWitnessUtxo = Buffer.from(transaction.data.hex, "hex");
+          const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
           psbt.addInput({
             hash: utxo.txid,
             index: utxo.vout,
-            nonWitnessUtxo,
+            nonWitnessUtxo
           });
         }
       } catch (e) {
@@ -465,23 +466,23 @@ const createTransaction = async ({
     //Shuffle and add outputs.
     try {
       targets = shuffleArray(targets);
-    } catch (e) { }
+    } catch (e) {}
 
     targets.forEach((target) => {
       //Check if OP_RETURN
       let isOpReturn = false;
       try {
         isOpReturn = !!target.script;
-      } catch (e) { }
+      } catch (e) {}
       if (isOpReturn) {
         psbt.addOutput({
           script: target.script,
-          value: target.value,
+          value: target.value
         });
       } else {
         psbt.addOutput({
           address: target.address,
-          value: target.value,
+          value: target.value
         });
       }
     });
@@ -513,37 +514,37 @@ const createTransaction = async ({
 
 const fetchData = (type, params) => {
   switch (type.toLowerCase()) {
-    case "post":
+    case 'post':
       return {
-        method: "POST",
+        method: 'POST',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          ...params,
-        }),
+          ...params
+        })
       };
     default:
       return {
-        method: "GET",
+        method: 'GET',
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
       };
   }
 };
 
-const getCoinNetwork = (coin = "") => {
+const getCoinNetwork = (coin = '') => {
   return networks[coin];
 };
 
 const getKeyPair = ({
-  selectedCrypto = "bitcoin",
-  keyDerivationPath = "84",
+  selectedCrypto = 'bitcoin',
+  keyDerivationPath = '84',
   addressIndex = 0,
-  mnemonic,
+  mnemonic
 }) => {
   const coinTypePath = defaultWalletShape.coinTypePath[selectedCrypto];
   const network = networks[selectedCrypto]; //Returns the network object based on the selected crypto.
@@ -560,9 +561,9 @@ const generateAddresses = async ({
   mnemonic,
   addressIndex = 0,
   changeAddressIndex = 0,
-  selectedCrypto = "bitcoin",
-  keyDerivationPath = "84",
-  addressType = "bech32",
+  selectedCrypto = 'bitcoin',
+  keyDerivationPath = '84',
+  addressType = 'bech32'
 } = {}) => {
   const failure = (data) => {
     return { error: true, data };
@@ -584,34 +585,36 @@ const generateAddresses = async ({
     await Promise.all(
       addressArray.map(async (item, i) => {
         try {
-          const addressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/0/${i + addressIndex
-            }`;
+          const addressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/0/${
+            i + addressIndex
+          }`;
           const addressKeypair = root.derivePath(addressPath);
           const address = getAddress(addressKeypair, network, addressType);
           const scriptHash = getScriptHash(address, network);
           addresses.push({ address, path: addressPath, scriptHash });
           return { address, path: addressPath, scriptHash };
-        } catch (e) { }
+        } catch (e) {}
       }),
       changeAddressArray.map(async (item, i) => {
         try {
-          const changeAddressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/1/${i + changeAddressIndex
-            }`;
+          const changeAddressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/1/${
+            i + changeAddressIndex
+          }`;
           const changeAddressKeypair = root.derivePath(changeAddressPath);
           const address = getAddress(
             changeAddressKeypair,
             network,
-            addressType,
+            addressType
           );
           const scriptHash = getScriptHash(address, network);
           changeAddresses.push({
             address,
             path: changeAddressPath,
-            scriptHash,
+            scriptHash
           });
           return { address, path: changeAddressPath, scriptHash };
-        } catch (e) { }
-      }),
+        } catch (e) {}
+      })
     );
     return { error: false, data: { addresses, changeAddresses } };
   } catch (e) {
@@ -620,31 +623,31 @@ const generateAddresses = async ({
   }
 };
 
-const getAddress = (keyPair, network, type = "bech32") => {
+const getAddress = (keyPair, network, type = 'bech32') => {
   try {
-    if (typeof network === "string" && network in networks)
+    if (typeof network === 'string' && network in networks)
       network = networks[network];
     switch (type) {
-      case "bech32":
+      case 'bech32':
         //Get Native Bech32 (bc1) addresses
         return bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network })
           .address;
-      case "segwit":
+      case 'segwit':
         //Get Segwit P2SH Address (3)
         return bitcoin.payments.p2sh({
           redeem: bitcoin.payments.p2wpkh({
             pubkey: keyPair.publicKey,
-            network,
+            network
           }),
-          network,
+          network
         }).address;
       //Get Legacy Address (1)
-      case "legacy":
+      case 'legacy':
         return bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network })
           .address;
     }
   } catch {
-    return "";
+    return '';
   }
 };
 
@@ -653,27 +656,27 @@ const getAddress = (keyPair, network, type = "bech32") => {
 const parseFiat = (text) => {
   function removeDecimals(str) {
     return str.replace(/^([^.]*\.)(.*)$/, function (a, b, c) {
-      return b + c.replace(/\./g, "");
+      return b + c.replace(/\./g, '');
     });
   }
   try {
     text = text.toString();
     text = removeDecimals(text);
-    const decimalIndex = text.indexOf(".");
+    const decimalIndex = text.indexOf('.');
     if (decimalIndex !== -1) {
       text = text.substr(0, decimalIndex + 3);
     }
-    text = text.replace(/[^\d\.]/g, "");
+    text = text.replace(/[^\d\.]/g, '');
     return text;
   } catch (e) {
     console.log(e);
   }
 };
 
-const capitalize = (str = "") => {
+const capitalize = (str = '') => {
   try {
     //Add a space before any non-consecutive capital letter
-    str = str.replace(/([A-Z]+)/g, " $1").trim();
+    str = str.replace(/([A-Z]+)/g, ' $1').trim();
     //Capitalize the first letter of the final string
     return str.charAt(0).toUpperCase() + str.slice(1);
   } catch (e) {
@@ -681,7 +684,7 @@ const capitalize = (str = "") => {
   }
 };
 
-const openUrl = (url = "") => {
+const openUrl = (url = '') => {
   try {
     Linking.canOpenURL(url)
       .then((supported) => {
@@ -691,20 +694,20 @@ const openUrl = (url = "") => {
           return Linking.openURL(url);
         }
       })
-      .catch((err) => console.error("An error occurred", err));
+      .catch((err) => console.error('An error occurred', err));
   } catch (e) {
     console.log(e);
   }
 };
 
-const openTxId = (txid = "", selectedCrypto = "") => {
+const openTxId = (txid = '', selectedCrypto = '') => {
   if (!txid || !selectedCrypto) return;
-  let url = "";
-  if (selectedCrypto === "bitcoin") url = `https://blockstream.info/tx/${txid}`;
-  if (selectedCrypto === "bitcoinTestnet")
+  let url = '';
+  if (selectedCrypto === 'bitcoin') url = `https://blockstream.info/tx/${txid}`;
+  if (selectedCrypto === 'bitcoinTestnet')
     url = `https://blockstream.info/testnet/tx/${txid}`;
-  if (selectedCrypto === "litecoin") url = `https://chain.so/tx/LTC/${txid}`;
-  if (selectedCrypto === "litecoinTestnet")
+  if (selectedCrypto === 'litecoin') url = `https://chain.so/tx/LTC/${txid}`;
+  if (selectedCrypto === 'litecoinTestnet')
     url = `https://chain.so/tx/LTCTEST/${txid}`;
   openUrl(url);
 };
@@ -721,15 +724,15 @@ const pauseExecution = (duration = 500) => {
   });
 };
 
-const vibrate = (type = "impactHeavy") => {
+const vibrate = (type = 'impactHeavy') => {
   try {
-    if (type === "default") {
+    if (type === 'default') {
       Vibration.vibrate(1000);
       return;
     }
     const options = {
       enableVibrateFallback: true,
-      ignoreAndroidSystemSettings: false,
+      ignoreAndroidSystemSettings: false
     };
     ReactNativeHapticFeedback.trigger(type, options);
   } catch (e) {
@@ -757,13 +760,13 @@ const nthIndex = (str, pat, n) => {
 };
 
 //Get info from an address path ("m/49'/0'/0'/0/1")
-const getInfoFromAddressPath = async (path = "") => {
+const getInfoFromAddressPath = async (path = '') => {
   try {
-    if (path === "") return { error: true, data: "No path specified" };
+    if (path === '') return { error: true, data: 'No path specified' };
     let isChangeAddress = false;
-    const lastIndex = path.lastIndexOf("/");
+    const lastIndex = path.lastIndexOf('/');
     const addressIndex = Number(path.substr(lastIndex + 1));
-    const firstIndex = path.lastIndexOf("/", lastIndex - 1);
+    const firstIndex = path.lastIndexOf('/', lastIndex - 1);
     const addressType = path.substr(firstIndex + 1, lastIndex - firstIndex - 1);
     if (Number(addressType) === 1) isChangeAddress = true;
     return { error: false, isChangeAddress, addressIndex };
@@ -777,34 +780,34 @@ const getInfoFromAddressPath = async (path = "") => {
 //This inserts commas appropriately in a number and does not insert commas after a decimal.
 const formatNumber = (num) => {
   const n = String(num),
-    p = n.indexOf(".");
+    p = n.indexOf('.');
   return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, (m, i) =>
-    p < 0 || i < p ? `${m},` : m,
+    p < 0 || i < p ? `${m},` : m
   );
 };
 
 const removeDecimals = (str) => {
   return str.replace(/^([^.]*\.)(.*)$/, function (a, b, c) {
-    return b + c.replace(/\./g, "");
+    return b + c.replace(/\./g, '');
   });
 };
 
 const removeAllButFirstInstanceOfPeriod = (s) => {
   try {
-    if (s.length >= 2 && s.charAt(0) === "0" && s.charAt(1) !== ".") {
-      while (s.charAt(0) === "0" && s.charAt(1) !== ".") {
+    if (s.length >= 2 && s.charAt(0) === '0' && s.charAt(1) !== '.') {
+      while (s.charAt(0) === '0' && s.charAt(1) !== '.') {
         s = s.substr(1);
       }
     }
-    if (s.charAt(0) === "." && s.length === 1) s = "0.";
+    if (s.charAt(0) === '.' && s.length === 1) s = '0.';
     s = removeDecimals(s);
-    const decimalIndex = s.includes(".");
+    const decimalIndex = s.includes('.');
     if (decimalIndex) {
       s = s.substr(0, decimalIndex + 9);
     }
-    s = s.replace(/[^\d\.]/g, "");
+    s = s.replace(/[^\d\.]/g, '');
     //Remove Leading Zeroes
-    s = s.replace(/^00+/g, "0");
+    s = s.replace(/^00+/g, '0');
     return s;
   } catch (e) {
     console.log(e);
@@ -812,27 +815,27 @@ const removeAllButFirstInstanceOfPeriod = (s) => {
 };
 
 //Returns an array of messages from an OP_RETURN message
-const decodeOpReturnMessage = (opReturn = "") => {
+const decodeOpReturnMessage = (opReturn = '') => {
   try {
     //Remove OP_RETURN from the string & trim the string.
-    if (opReturn.includes("OP_RETURN")) {
-      opReturn = opReturn.replace("OP_RETURN", "");
+    if (opReturn.includes('OP_RETURN')) {
+      opReturn = opReturn.replace('OP_RETURN', '');
       opReturn = opReturn.trim();
     }
 
     const regex = /[0-9A-Fa-f]{6}/g;
     let messages = [];
     //Separate the string into an array based upon a space and insert each message into an array to be returned
-    const data = opReturn.split(" ");
+    const data = opReturn.split(' ');
     data.forEach((message) => {
       try {
         //Ensure the message is in fact a hex
         if (regex.test(message)) {
-          message = new Buffer(message, "hex");
+          message = new Buffer(message, 'hex');
           message = message.toString();
           messages.push(message);
         }
-      } catch (e) { }
+      } catch (e) {}
     });
     return messages;
   } catch (e) {
@@ -841,14 +844,14 @@ const decodeOpReturnMessage = (opReturn = "") => {
 };
 
 const signMessage = async ({
-  message = "",
-  addressType = "bech32",
+  message = '',
+  addressType = 'bech32',
   path = "m/84'/0'/0'/0/0",
   mnemonic,
-  selectedCrypto = "bitcoin",
+  selectedCrypto = 'bitcoin'
 } = {}) => {
   try {
-    if (message === "") return { error: true, data: "No message to sign." };
+    if (message === '') return { error: true, data: 'No message to sign.' };
     const network = networks[selectedCrypto];
     const messagePrefix = network.messagePrefix;
     const seed = bip39.mnemonicToSeedSync(mnemonic, bip39Passphrase);
@@ -857,16 +860,16 @@ const signMessage = async ({
     const privateKey = keyPair.privateKey;
 
     let sigOptions = { extraEntropy: randomBytes(32) };
-    if (addressType === "bech32") sigOptions["segwitType"] = "p2wpkh";
-    if (addressType === "segwit") sigOptions["segwitType"] = "p2sh(p2wpkh)";
+    if (addressType === 'bech32') sigOptions['segwitType'] = 'p2wpkh';
+    if (addressType === 'segwit') sigOptions['segwitType'] = 'p2sh(p2wpkh)';
 
-    let signature = "";
-    if (addressType === "legacy") {
+    let signature = '';
+    if (addressType === 'legacy') {
       signature = bitcoinMessage.signElectrum(
         message,
         privateKey,
         keyPair,
-        messagePrefix,
+        messagePrefix
       );
     } else {
       signature = bitcoinMessage.signElectrum(
@@ -874,31 +877,31 @@ const signMessage = async ({
         privateKey,
         keyPair.compressed,
         messagePrefix,
-        sigOptions,
+        sigOptions
       );
     }
-    signature = signature.toString("base64");
+    signature = signature.toString('base64');
 
     const address = getAddress(keyPair, network, addressType);
     const isVerified = verifyMessage({
       message,
       address,
       signature,
-      selectedCrypto,
+      selectedCrypto
     });
     if (isVerified === true)
       return { error: false, data: { address, message, signature } };
-    return { error: true, data: "Unable to verify signature." };
+    return { error: true, data: 'Unable to verify signature.' };
   } catch (e) {
     return { error: true, data: e };
   }
 };
 
 const verifyMessage = ({
-  message = "",
-  address = "",
-  signature = "",
-  selectedCrypto = "",
+  message = '',
+  address = '',
+  signature = '',
+  selectedCrypto = ''
 } = {}) => {
   try {
     const network = networks[selectedCrypto];
@@ -909,16 +912,16 @@ const verifyMessage = ({
         message,
         address,
         signature,
-        messagePrefix,
+        messagePrefix
       );
-    } catch (e) { }
+    } catch (e) {}
     //This is a fix for https://github.com/bitcoinjs/bitcoinjs-message/issues/20
     if (!isValid)
       isValid = bitcoinMessage.verifyElectrum(
         message,
         address,
         signature,
-        messagePrefix,
+        messagePrefix
       );
     return isValid;
   } catch (e) {
@@ -928,8 +931,8 @@ const verifyMessage = ({
 };
 
 const getBaseDerivationPath = ({
-  keyDerivationPath = "84",
-  selectedCrypto = "bitcoin",
+  keyDerivationPath = '84',
+  selectedCrypto = 'bitcoin'
 }) => {
   try {
     const networkValue = defaultWalletShape.coinTypePath[selectedCrypto];
@@ -940,9 +943,9 @@ const getBaseDerivationPath = ({
 };
 
 const decodeURLParams = (url) => {
-  const hashes = url.slice(url.indexOf("?") + 1).split("&");
+  const hashes = url.slice(url.indexOf('?') + 1).split('&');
   return hashes.reduce((params, hash) => {
-    const split = hash.indexOf("=");
+    const split = hash.indexOf('=');
     if (split < 0) return Object.assign(params, { [hash]: null });
     const key = hash.slice(0, split);
     const val = hash.slice(split + 1);
@@ -951,11 +954,11 @@ const decodeURLParams = (url) => {
 };
 
 const loginWithBitid = async ({
-  url = "",
-  addressType = "bech32",
+  url = '',
+  addressType = 'bech32',
   keyDerivationPath,
   selectedCrypto,
-  selectedWallet,
+  selectedWallet
 } = {}) => {
   try {
     //Get the base derivation path based on the current derivation path key.
@@ -966,7 +969,7 @@ const loginWithBitid = async ({
       addressType,
       path,
       selectedWallet,
-      selectedCrypto,
+      selectedCrypto
     });
     //Check for signing error
     if (signMessageResponse.error)
@@ -975,7 +978,7 @@ const loginWithBitid = async ({
     const parsedURL = new Url(url);
     const response = await fetch(
       `https://${parsedURL.hostname}${parsedURL.pathname}`,
-      fetchData("POST", { uri: url, address, signature }),
+      fetchData('POST', { uri: url, address, signature })
     );
     const responseJson = await response.json();
     return { error: false, data: responseJson };
@@ -985,7 +988,7 @@ const loginWithBitid = async ({
   }
 };
 
-const sortArrOfObjByKey = (arr = [], key = "", ascending = true) => {
+const sortArrOfObjByKey = (arr = [], key = '', ascending = true) => {
   try {
     if (ascending) return arr.sort((a, b) => a[key] - b[key]);
     return arr.sort((a, b) => b[key] - a[key]);
@@ -996,9 +999,9 @@ const sortArrOfObjByKey = (arr = [], key = "", ascending = true) => {
 
 const getFiatBalance = ({ balance = 0, exchangeRate = 0 } = {}) => {
   try {
-    bitcoinUnits.setFiat("usd", exchangeRate);
-    const fiatBalance = bitcoinUnits(balance, "satoshi")
-      .to("usd")
+    bitcoinUnits.setFiat('usd', exchangeRate);
+    const fiatBalance = bitcoinUnits(balance, 'satoshi')
+      .to('usd')
       .value()
       .toFixed(2);
     if (isNaN(fiatBalance)) return 0;
@@ -1008,11 +1011,11 @@ const getFiatBalance = ({ balance = 0, exchangeRate = 0 } = {}) => {
   }
 };
 
-const cryptoToFiat = ({ amount = 0, exchangeRate = 0 } = {}) => {
+const cryptoToFiat = ({ amount = 0, exchangeRate = 0, currencyFiat = 'usd' } = {}) => {
   try {
     amount = Number(amount);
-    bitcoinUnits.setFiat("usd", exchangeRate);
-    return bitcoinUnits(amount, "satoshi").to("usd").value().toFixed(2);
+    bitcoinUnits.setFiat(currencyFiat, exchangeRate);
+    return bitcoinUnits(amount, 'satoshi').to(currencyFiat).value().toFixed(2);
   } catch (e) {
     console.log(e);
   }
@@ -1021,7 +1024,7 @@ const cryptoToFiat = ({ amount = 0, exchangeRate = 0 } = {}) => {
 const satsToBtc = ({ amount = 0 } = {}) => {
   try {
     amount = Number(amount);
-    return bitcoinUnits(amount, "satoshi").to("BTC").value();
+    return bitcoinUnits(amount, 'satoshi').to('BTC').value();
   } catch (e) {
     return amount;
   }
@@ -1030,17 +1033,17 @@ const satsToBtc = ({ amount = 0 } = {}) => {
 const fiatToCrypto = ({ amount = 0, exchangeRate = 0 } = {}) => {
   try {
     amount = Number(amount);
-    bitcoinUnits.setFiat("usd", exchangeRate);
-    return bitcoinUnits(amount, "usd").to("satoshi").value().toFixed(0);
+    bitcoinUnits.setFiat('usd', exchangeRate);
+    return bitcoinUnits(amount, 'usd').to('satoshi').value().toFixed(0);
   } catch (e) {
     console.log(e);
   }
 };
 
-const getLastWordInString = (phrase = "") => {
+const getLastWordInString = (phrase = '') => {
   try {
     //const n = phrase.trim().split(" ");
-    const n = phrase.split(" ");
+    const n = phrase.split(' ');
     return n[n.length - 1];
   } catch (e) {
     return phrase;
@@ -1054,7 +1057,7 @@ const getLastWordInString = (phrase = "") => {
   getByteCount({'MULTISIG-P2SH:2-4':45},{'P2PKH':1}) Means "45 inputs of P2SH Multisig and 1 output of P2PKH"
   getByteCount({'P2PKH':1,'MULTISIG-P2SH:2-3':2},{'P2PKH':2}) means "1 P2PKH input and 2 Multisig P2SH (2 of 3) inputs along with 2 P2PKH outputs"
 */
-const getByteCount = (inputs, outputs, message = "") => {
+const getByteCount = (inputs, outputs, message = '') => {
   try {
     let totalWeight = 0;
     let hasWitness = false;
@@ -1063,15 +1066,15 @@ const getByteCount = (inputs, outputs, message = "") => {
     // assumes compressed pubkeys in all cases.
     let types = {
       inputs: {
-        "MULTISIG-P2SH": 49 * 4,
-        "MULTISIG-P2WSH": 6 + 41 * 4,
-        "MULTISIG-P2SH-P2WSH": 6 + 76 * 4,
+        'MULTISIG-P2SH': 49 * 4,
+        'MULTISIG-P2WSH': 6 + 41 * 4,
+        'MULTISIG-P2SH-P2WSH': 6 + 76 * 4,
         P2PKH: 148 * 4,
         P2WPKH: 108 + 41 * 4,
-        "P2SH-P2WPKH": 108 + 64 * 4,
+        'P2SH-P2WPKH': 108 + 64 * 4,
         bech32: 108 + 41 * 4 + 1,
         segwit: 108 + 64 * 4 + 1,
-        legacy: 148 * 4 + 1,
+        legacy: 148 * 4 + 1
       },
       outputs: {
         P2SH: 32 * 4,
@@ -1080,13 +1083,13 @@ const getByteCount = (inputs, outputs, message = "") => {
         P2WSH: 43 * 4,
         bech32: 31 * 4 + 1,
         segwit: 32 * 4 + 1,
-        legacy: 34 * 4 + 1,
-      },
+        legacy: 34 * 4 + 1
+      }
     };
 
     const checkUInt53 = (n) => {
       if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0)
-        throw new RangeError("value out of range");
+        throw new RangeError('value out of range');
     };
 
     const varIntLength = (number) => {
@@ -1095,32 +1098,32 @@ const getByteCount = (inputs, outputs, message = "") => {
       return number < 0xfd
         ? 1
         : number <= 0xffff
-          ? 3
-          : number <= 0xffffffff
-            ? 5
-            : 9;
+        ? 3
+        : number <= 0xffffffff
+        ? 5
+        : 9;
     };
 
     Object.keys(inputs).forEach(function (key) {
       checkUInt53(inputs[key]);
-      if (key.slice(0, 8) === "MULTISIG") {
+      if (key.slice(0, 8) === 'MULTISIG') {
         // ex. "MULTISIG-P2SH:2-3" would mean 2 of 3 P2SH MULTISIG
-        var keyParts = key.split(":");
-        if (keyParts.length !== 2) throw new Error("invalid input: " + key);
+        var keyParts = key.split(':');
+        if (keyParts.length !== 2) throw new Error('invalid input: ' + key);
         var newKey = keyParts[0];
-        var mAndN = keyParts[1].split("-").map(function (item) {
+        var mAndN = keyParts[1].split('-').map(function (item) {
           return parseInt(item);
         });
 
         totalWeight += types.inputs[newKey] * inputs[key];
-        var multiplyer = newKey === "MULTISIG-P2SH" ? 4 : 1;
+        var multiplyer = newKey === 'MULTISIG-P2SH' ? 4 : 1;
         totalWeight +=
           (73 * mAndN[0] + 34 * mAndN[1]) * multiplyer * inputs[key];
       } else {
         totalWeight += types.inputs[key] * inputs[key];
       }
       inputCount += inputs[key];
-      if (key.indexOf("W") >= 0) hasWitness = true;
+      if (key.indexOf('W') >= 0) hasWitness = true;
     });
 
     Object.keys(outputs).forEach(function (key) {
@@ -1140,20 +1143,48 @@ const getByteCount = (inputs, outputs, message = "") => {
       messageByteCount = message.length;
       //Multiply by 2 to help ensure Electrum servers will broadcast the tx.
       messageByteCount = messageByteCount * 2;
-    } catch { }
+    } catch {}
     return Math.ceil(totalWeight / 4) + messageByteCount;
   } catch (e) {
     return 256;
   }
 };
 
-const getScriptHash = (address = "", network = networks["bitcoin"]) => {
-  if (typeof network === "string" && network in networks)
+const getScriptHash = (address = '', network = networks['bitcoin']) => {
+  if (typeof network === 'string' && network in networks)
     network = networks[network];
   const script = bitcoin.address.toOutputScript(address, network);
   let hash = bitcoin.crypto.sha256(script);
   const reversedHash = Buffer.from(hash.reverse());
-  return reversedHash.toString("hex");
+  return reversedHash.toString('hex');
+};
+const getBalanceValue = ({ cryptoUnit = 'satoshi', balance = 0 }) => {
+  if (balance < 50000 && cryptoUnit === 'BTC') {
+    return (Number(balance) * 0.00000001).toFixed(8);
+  } else {
+    return bitcoinUnits(balance, 'satoshi').to(cryptoUnit).value();
+  }
+};
+const formatBalance = ({ coin = '', cryptoUnit = 'satoshi', balance = 0 }) => {
+  try {
+    let formattedBalance = '0';
+    if (balance === 0 && cryptoUnit === 'BTC') {
+      formattedBalance = '0';
+    } else {
+      //This prevents the view from displaying 0 for values less than 50000 BTC
+      formattedBalance = getBalanceValue({
+        cryptoUnit,
+        balance
+      });
+    }
+    formattedBalance = formatNumber(formattedBalance);
+    return `${formattedBalance} ${
+      getCoinData({ selectedCrypto: coin, cryptoUnit }).acronym
+    }`;
+  } catch (e) {
+    console.log('🚀 ~ file: helpers.js:1175 ~ formatBalance ~ e:', e);
+    return '0';
+  }
 };
 
 module.exports = {
@@ -1203,4 +1234,6 @@ module.exports = {
   getLastWordInString,
   getByteCount,
   getScriptHash,
+  formatBalance,
+  getBalanceValue
 };

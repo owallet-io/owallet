@@ -5,6 +5,7 @@ import { ChainGetter, QueryResponse } from '../../common';
 import { computed } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
+
 import {
   getScriptHash,
   getBalanceFromUtxos,
@@ -82,39 +83,12 @@ export class ObservableQueryBitcoinBalanceInner {
         )
       );
     }
-
     return Promise.resolve(
       new CoinPretty(
         chainInfo.stakeCurrency,
         new Int(new MyBigInt(res.data?.balance).toString())
       )
     );
-    //
-    // getBalanceFromUtxos({
-    //   addresses: [{ address: this.address, path, scriptHash }],
-    //   changeAddresses: [],
-    //   selectedCrypto
-    // })
-    //   .then((res) => {
-    //     console.log(
-    //       '🚀 ~ file: bitcoin-balance.ts:61 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ res:',
-    //       res
-    //     );
-    //     if (!res.data.balance) {
-    //       console.log('Balance is 0');
-    //       return;
-    //     }
-    //   })
-    //   .catch((err) => console.log(err, 'kakakaa'));
-
-    // if (!res.data.balance) {
-    //   console.log('Balance is 0');
-    //   return;
-    // }
-
-    // const chainInfo = this.chainGetter.getChain(this.chainId);
-
-    // return new CoinPretty(chainInfo.stakeCurrency, '100.283674');
   }
 }
 

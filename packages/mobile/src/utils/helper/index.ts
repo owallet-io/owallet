@@ -10,6 +10,7 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { ToastShowParams } from 'react-native-toast-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Alert, Linking } from 'react-native';
+import BitcoinUnits, { BitcoinUnit } from 'bitcoin-units';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -596,3 +597,12 @@ export function createTxsHelper() {
 }
 
 export { get };
+export const btcToFiat = ({
+  amount = 0,
+  exchangeRate = 0,
+  currencyFiat = 'usd'
+}) => {
+  amount = Number(amount);
+  BitcoinUnit.setFiat(currencyFiat, exchangeRate);
+  return new BitcoinUnit(amount, 'BTC').to(currencyFiat).getValue().toFixed(2);
+};

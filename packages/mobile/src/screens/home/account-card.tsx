@@ -9,8 +9,14 @@ import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddressQRCodeModal } from './components';
 
+import {
+  formatBalance,
+  getExchangeRate,
+  getBalanceValue
+} from '@owallet/bitcoin';
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { AccountBox } from './account-box';
+import { btcToFiat } from '@src/utils/helper';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -34,30 +40,39 @@ export const AccountCard: FunctionComponent<{
   const queries = queriesStore.get(chainStore.current.chainId);
   const [totalBalance, setTotalBalance] = useState('0');
   const [totalAmount, setTotalAmount] = useState('0');
+
   const getBalanceBtc = async (address) => {
     const balanceBtc = await queries.bitcoin.queryBitcoinBalance
       .getQueryBalance(address)
       ?.balance();
-    const totalPrice = priceStore.calculatePrice(balanceBtc);
-    setTotalBalance(totalPrice?.toString());
-    const amount = balanceBtc
-      .shrink(true)
-      .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
-      .toString();
+    const exchange = await getExchangeRate({
+      selectedCurrency: priceStore.defaultVsCurrency
+    });
+
+    const amountData = getBalanceValue({
+      balance: Number(balanceBtc?.toCoin().amount),
+      cryptoUnit: 'BTC'
+    });
+    const exchangeRate = Number(exchange?.data);
+    const currencyFiat = priceStore.defaultVsCurrency;
+    const fiat = btcToFiat({
+      amount: amountData,
+      exchangeRate,
+      currencyFiat
+    });
+    setTotalBalance(`$${fiat}`);
+    const amount = formatBalance({
+      balance: Number(balanceBtc?.toCoin().amount),
+      cryptoUnit: 'BTC',
+      coin: chainStore.current.chainId
+    });
     setTotalAmount(amount);
-    console.log(
-      '🚀 ~ file: account-card.tsx:64 ~ getBalanceBtc ~ test:',
-      amount
-    );
     return;
   };
   useEffect(() => {
     setTotalAmount(null);
     setTotalBalance('0');
-    if (
-      chainStore.current.chainId === 'bitcoinTestnet' &&
-      account?.bech32Address?.startsWith('tb')
-    ) {
+    if (chainStore.current.networkType === 'bitcoin') {
       getBalanceBtc(account?.bech32Address);
     }
 
