@@ -50,8 +50,7 @@ export class ObservableQueryBitcoinBalanceInner {
   //     };
   //   }
 
-  @computed
-  get balance(): CoinPretty | undefined {
+  async balance(): Promise<Number> {
     // return 10;
     // if (!this.response?.data) {
     //   return undefined;
@@ -59,31 +58,24 @@ export class ObservableQueryBitcoinBalanceInner {
 
     const path = `m/84'/1'/0'/0/0`;
     // console.log("🚀 ~ file: bitcoin-balance.ts:66 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ address:", address)
-    const scriptHash = getScriptHash(this.address, getCoinNetwork(this.chainId));
+    const scriptHash = getScriptHash(
+      this.address,
+      getCoinNetwork(this.chainId)
+    );
     console.log(
       '🚀 ~ file: bitcoin-balance.ts:71 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ scriptHash:',
       scriptHash
     );
-    getBalanceFromUtxos({
+    return getBalanceFromUtxos({
       addresses: [{ address: this.address, path, scriptHash }],
       changeAddresses: [],
       selectedCrypto: this.chainId
     }).then((res) => {
-      console.log(
-        '🚀 ~ file: bitcoin-balance.ts:75 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ res:',
-        res
-      );
-      console.dir(res, { depth: null });
-
       if (!res.data.balance) {
         console.log('Balance is 0');
-        return;
+        return Promise.resolve(0);
       }
-
-      // if (!res.data.utxos.length) {
-      //   setTimeout(run, 3000, message);
-      //   return;
-      // }
+      return Promise.resolve(res.data?.balance);
     });
     //
     // getBalanceFromUtxos({
@@ -108,9 +100,9 @@ export class ObservableQueryBitcoinBalanceInner {
     //   return;
     // }
 
-    const chainInfo = this.chainGetter.getChain(this.chainId);
+    // const chainInfo = this.chainGetter.getChain(this.chainId);
 
-    return new CoinPretty(chainInfo.stakeCurrency, '100.283674');
+    // return new CoinPretty(chainInfo.stakeCurrency, '100.283674');
   }
 }
 

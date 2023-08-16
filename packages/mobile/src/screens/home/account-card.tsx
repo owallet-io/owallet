@@ -56,14 +56,20 @@ export const AccountCard: FunctionComponent<{
       chainStore.current.chainId === 'bitcoinTestnet' &&
       account?.bech32Address?.startsWith('tb')
     ) {
-      const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-        account?.bech32Address
-      )?.balance;
+      getBalanceBtc(account?.bech32Address);
     }
 
     return () => {};
   }, [chainStore.current.chainId, account?.bech32Address]);
-
+  const getBalanceBtc = async (address) => {
+    const balanceBtc = await queries.bitcoin.queryBitcoinBalance
+      .getQueryBalance(address)
+      ?.balance();
+    console.log(
+      '🚀 ~ file: account-card.tsx:70 ~ getBalanceBtc ~ balanceBtc:',
+      balanceBtc
+    );
+  };
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
