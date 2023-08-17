@@ -1,41 +1,42 @@
 import { EthereumAccount, EthereumMsgOpts } from './ethereum';
-import { AccountSetBase, AccountSetOpts } from "./base";
+import { AccountSetBase, AccountSetOpts } from './base';
 import {
   AccountWithCosmos,
   CosmosAccount,
   CosmosMsgOpts,
-  HasCosmosAccount,
-} from "./cosmos";
+  HasCosmosAccount
+} from './cosmos';
 import {
   AccountWithSecret,
   HasSecretAccount,
   SecretAccount,
-  SecretMsgOpts,
-} from "./secret";
+  SecretMsgOpts
+} from './secret';
 import {
   HasCosmosQueries,
   HasCosmwasmQueries,
   HasEvmQueries,
   HasSecretQueries,
   QueriesSetBase,
-  QueriesStore,
-} from "../query";
-import deepmerge from "deepmerge";
-import { DeepReadonly } from "utility-types";
-import { ChainGetter } from "../common";
+  QueriesStore
+} from '../query';
+import deepmerge from 'deepmerge';
+import { DeepReadonly } from 'utility-types';
+import { ChainGetter } from '../common';
 import {
   AccountWithCosmwasm,
   CosmwasmAccount,
   CosmwasmMsgOpts,
-  HasCosmwasmAccount,
-} from "./cosmwasm";
+  HasCosmwasmAccount
+} from './cosmwasm';
 
 export class AccountWithAll
   extends AccountSetBase<
     CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & EthereumMsgOpts,
     HasCosmosQueries & HasSecretQueries & HasCosmwasmQueries & HasEvmQueries
   >
-  implements HasCosmosAccount, HasSecretAccount, HasCosmwasmAccount {
+  implements HasCosmosAccount, HasSecretAccount, HasCosmwasmAccount
+{
   static readonly defaultMsgOpts: CosmosMsgOpts &
     SecretMsgOpts &
     CosmwasmMsgOpts = deepmerge(
@@ -57,9 +58,13 @@ export class AccountWithAll
       removeEventListener: (type: string, fn: () => unknown) => void;
     },
     protected readonly chainGetter: ChainGetter,
-    protected readonly chainId: string,
+    readonly chainId: string,
     protected readonly queriesStore: QueriesStore<
-      QueriesSetBase & HasCosmosQueries & HasSecretQueries & HasCosmwasmQueries & HasEvmQueries
+      QueriesSetBase &
+        HasCosmosQueries &
+        HasSecretQueries &
+        HasCosmwasmQueries &
+        HasEvmQueries
     >,
     protected readonly opts: AccountSetOpts<
       CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts

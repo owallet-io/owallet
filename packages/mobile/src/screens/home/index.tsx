@@ -32,8 +32,10 @@ import { API } from '../../common/api';
 import { TRON_ID, showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import { Address } from '@owallet/crypto';
+import { toJS } from 'mobx';
 
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
@@ -45,7 +47,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountStore,
     queriesStore,
     priceStore,
-    notificationStore
+    notificationStore,
+    universalSwapStore
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -59,6 +62,26 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     chainStoreIsInitializing,
     true
   );
+
+  // const accountOrai = accountStore.getAccount('Oraichain');
+  // const accountEvm = accountStore.getAccount('0x01');
+  // const accountTron = accountStore.getAccount('0x2b6653dc');
+  // const accountKawaii = accountStore.getAccount('kawaii_6886-1');
+
+  // if (
+  //   accountEvm?.evmosHexAddress &&
+  //   accountKawaii?.evmosHexAddress &&
+  //   accountTron?.evmosHexAddress &&
+  //   accountOrai?.bech32Address
+  // ) {
+  //   universalSwapStore.updateMetaMaskAddress(accountOrai?.bech32Address);
+  //   universalSwapStore.updateMetaMaskAddress(accountEvm?.evmosHexAddress);
+  //   universalSwapStore.updateMetaMaskAddress(accountKawaii?.bech32Address);
+  //   universalSwapStore.updateMetaMaskAddress(
+  //     Address.getBase58Address(accountTron?.evmosHexAddress)
+  //   );
+  // }
+
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
@@ -91,7 +114,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     return;
   };
   useEffect(() => {
-    messaging().onNotificationOpenedApp((remoteMessage) => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
         remoteMessage
@@ -100,7 +123,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     });
     messaging()
       .getInitialNotification()
-      .then(async (remoteMessage) => {
+      .then(async remoteMessage => {
         // showToast({
         //   title:remoteMessage?.notification?.title,
         //   text:remoteMessage?.notification?.body,
@@ -109,7 +132,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
         // const data = JSON.parse(remoteMessage?.data?.data);
         // console.log('message', data.message);
       });
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
       showToast({
         text1: remoteMessage?.notification?.title,
         text2: remoteMessage?.notification?.body,
@@ -157,29 +180,28 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   }, [chainStore.current.chainId]);
 
-  useEffect(() => {
-    onSubscribeToTopic();
-  }, []);
+  // useEffect(() => {
+  //   onSubscribeToTopic();
+  // }, []);
 
-  const onSubscribeToTopic = React.useCallback(async () => {
-    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
-    console.log('fcmToken ===', fcmToken);
+  // const onSubscribeToTopic = React.useCallback(async () => {
+  //   const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
 
-    if (fcmToken) {
-      const subcriber = await API.subcribeToTopic(
-        {
-          subcriber: fcmToken,
-          topic:
-            chainStore.current.networkType === 'cosmos'
-              ? account.bech32Address.toString()
-              : account.evmosHexAddress.toString()
-        },
-        {
-          baseURL: 'https://tracking-tx.orai.io'
-        }
-      );
-    }
-  }, []);
+  //   if (fcmToken) {
+  //     const subcriber = await API.subcribeToTopic(
+  //       {
+  //         subcriber: fcmToken,
+  //         topic:
+  //           chainStore.current.networkType === 'cosmos'
+  //             ? account.bech32Address.toString()
+  //             : account.evmosHexAddress.toString()
+  //       },
+  //       {
+  //         baseURL: 'https://tracking-tx.orai.io'
+  //       }
+  //     );
+  //   }
+  // }, []);
 
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -191,7 +213,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       priceStore.waitFreshResponse(),
       ...queries.queryBalances
         .getQueryBech32Address(account.bech32Address)
-        .balances.map((bal) => {
+        .balances.map(bal => {
           return bal.waitFreshResponse();
         }),
       queries.cosmos.queryRewards
@@ -242,7 +264,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,

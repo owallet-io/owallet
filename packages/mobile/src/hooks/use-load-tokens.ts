@@ -67,7 +67,7 @@ async function loadNativeBalance(
 }
 
 async function loadTokens(
-  updateAmounts: Function,
+  universalSwapStore: any,
   {
     oraiAddress,
     metamaskAddress,
@@ -78,17 +78,17 @@ async function loadTokens(
 ) {
   await Promise.all(
     [
-      oraiAddress && loadTokensCosmos(updateAmounts, oraiAddress),
+      oraiAddress && loadTokensCosmos(universalSwapStore, oraiAddress),
       oraiAddress &&
         client &&
-        loadCw20Balance(updateAmounts, oraiAddress, client),
+        loadCw20Balance(universalSwapStore, oraiAddress, client),
       // different cointype but also require keplr connected by checking oraiAddress
-      kwtAddress && loadKawaiiSubnetAmount(updateAmounts, kwtAddress),
+      kwtAddress && loadKawaiiSubnetAmount(universalSwapStore, kwtAddress),
       metamaskAddress &&
-        loadEvmAmounts(updateAmounts, metamaskAddress, evmChains),
+        loadEvmAmounts(universalSwapStore, metamaskAddress, evmChains),
       tronAddress &&
         loadEvmAmounts(
-          updateAmounts,
+          universalSwapStore,
           Address.getEvmAddress(tronAddress),
           chainInfos.filter(c => c.chainId == '0x2b6653dc')
         )
@@ -111,7 +111,7 @@ async function loadTokensCosmos(updateAmounts: Function, address: string) {
 }
 
 async function loadCw20Balance(
-  updateAmounts: Function,
+  universalSwapStore: any,
   address: string,
   client: CosmWasmClient
 ) {
@@ -143,7 +143,7 @@ async function loadCw20Balance(
       return [t.denom, amount];
     })
   );
-  updateAmounts(amountDetails);
+  //   updateAmounts(amountDetails);
 }
 
 async function loadEvmEntries(
@@ -191,7 +191,7 @@ async function loadEvmEntries(
 }
 
 async function loadEvmAmounts(
-  updateAmounts: Function,
+  universalSwapStore: any,
   evmAddress: string,
   chains: CustomChainInfo[]
 ) {
@@ -203,13 +203,11 @@ async function loadEvmAmounts(
     )
   );
 
-  console.log('amountDetails', amountDetails);
-
-  updateAmounts(amountDetails);
+  universalSwapStore.updateAmounts(amountDetails);
 }
 
-async function loadKawaiiSubnetAmount(
-  updateAmounts: Function,
+export async function loadKawaiiSubnetAmount(
+  universalSwapStore: any,
   kwtAddress: string
 ) {
   console.log('kwtAddress', kwtAddress);
@@ -217,7 +215,7 @@ async function loadKawaiiSubnetAmount(
   if (!kwtAddress) return;
   const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
   try {
-    loadNativeBalance(updateAmounts, kwtAddress, kawaiiInfo);
+    loadNativeBalance(universalSwapStore, kwtAddress, kawaiiInfo);
 
     const kwtSubnetAddress = getEvmAddress(kwtAddress);
     const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
@@ -228,14 +226,14 @@ async function loadKawaiiSubnetAmount(
     console.log('amountDetails kwt', amountDetails);
 
     // update amounts
-    updateAmounts(amountDetails);
+    universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log('loadKawaiiSubnetAmount err', err);
   }
 }
 
 export default function useLoadTokens(
-  updateAmounts
+  universalSwapStore
 ): (params: LoadTokenParams) => Promise<void> {
-  return loadTokens.bind(null, updateAmounts);
+  return loadTokens.bind(null, universalSwapStore);
 }

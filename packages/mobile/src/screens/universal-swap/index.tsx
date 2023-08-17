@@ -2,7 +2,6 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useMemo,
   useState
 } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
@@ -24,8 +23,9 @@ import images from '@src/assets/images';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
-import { Bech32Address } from '@owallet/cosmos';
 import useLoadTokens from '@src/hooks/use-load-tokens';
+import { toJS } from 'mobx';
+
 const tokens: TokenInfo[] = [
   {
     symbol: 'USDT',
@@ -164,6 +164,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
+  const [tokensAmount, setTokensAmount] = useState({});
   const [swapLoading, setSwapLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [taxRate, setTaxRate] = useState('');
@@ -173,40 +174,31 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   >(['orai', 'usdt']);
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
   // const { data: prices } = useCoinGeckoPrices(
-  //   appInitStore.getInitApp.cachePrices,
-  //   appInitStore.updateCachePrices
+  //   universalSwapStore.getInitApp.cachePrices,
+  //   universalSwapStore.updateCachePrices
   // );
 
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
   const chainId = chainStore?.current?.chainId;
+  const loadTokenAmounts = useLoadTokens(universalSwapStore);
 
   const accountOrai = accountStore.getAccount('Oraichain');
   const accountEvm = accountStore.getAccount('0x01');
   const accountTron = accountStore.getAccount('0x2b6653dc');
   const accountKawaii = accountStore.getAccount('kawaii_6886-1');
-  const loadTokenAmounts = useLoadTokens(universalSwapStore.updateAmounts);
 
-  if (accountEvm?.evmosHexAddress && accountKawaii?.evmosHexAddress) {
-    console.log('get here');
-
-    console.log('evm account', accountEvm?.evmosHexAddress);
-    console.log(
-      'tron,',
-      Address.getBase58Address(accountTron?.evmosHexAddress)
-    );
-    try {
-      loadTokenAmounts({
-        kwtAddress: accountKawaii?.bech32Address
-      });
-    } catch (err) {
-      console.log('err= ====', err);
-    }
+  if (accountEvm?.evmosHexAddress && accountKawaii?.bech32Address) {
+    loadTokenAmounts({
+      kwtAddress: accountKawaii?.bech32Address,
+      metamaskAddress: accountEvm?.evmosHexAddress,
+      oraiAddress: accountOrai?.bech32Address,
+      tronAddress: Address.getBase58Address(accountTron?.evmosHexAddress)
+    });
   }
-  console.log('cosmos,', accountOrai?.bech32Address);
 
-  console.log('accountKawaii,', accountKawaii?.bech32Address);
+  console.log('universalSwapStore', universalSwapStore.getAmount);
 
   const [amount, setAmount] = useState({
     from: '1.273',
@@ -327,6 +319,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               setIsSlippageModal(true);
             }}
           />
+        </View>
+        <View>
+          {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
+            return <Text style={{ color: 'red' }}>{a}</Text>;
+          })}
         </View>
         <View>
           <SwapBox

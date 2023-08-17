@@ -110,7 +110,7 @@ export const MainTabNavigation: FC = observer(() => {
           )
         };
       }}
-      tabBar={(props) =>
+      tabBar={props =>
         checkTabbarVisible ? <BottomTabBar {...props} /> : null
       }
     >

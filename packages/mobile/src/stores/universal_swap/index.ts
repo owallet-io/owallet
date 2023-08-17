@@ -1,35 +1,20 @@
-import { observable, action, makeObservable, computed } from 'mobx';
-import { create, persist } from 'mobx-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { observable, action, makeAutoObservable, computed } from 'mobx';
 
-export class UniversalSwap {
-  @persist('object')
+export class UniversalSwapStore {
   @observable
-  protected amounts: {};
+  protected amounts: any;
 
   constructor() {
-    makeObservable(this);
-    this.amounts = {};
+    makeAutoObservable(this);
   }
 
   @computed
-  get getAmounts() {
+  get getAmount() {
     return this.amounts;
   }
 
   @action
   updateAmounts(amounts) {
-    this.amounts = amounts;
+    this.amounts = { ...this?.amounts, ...amounts };
   }
 }
-
-const hydrate = create({
-  storage: AsyncStorage, // or AsyncStorage in react-native.
-  jsonify: true // if you use AsyncStorage, here shoud be true
-});
-
-export const universalSwap = new UniversalSwap();
-
-hydrate('universalSwap', universalSwap).then(() =>
-  console.log('universalSwap hydrated')
-);

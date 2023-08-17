@@ -12,7 +12,6 @@ export class AppInit {
     theme: 'dark' | 'light';
     visibleTabBar?: string;
     trc20_list: Array<any>;
-    cachePrices: Object;
   };
   @observable
   protected notiData: {};
@@ -24,8 +23,7 @@ export class AppInit {
       status: true,
       date_updated: null,
       theme: 'light',
-      trc20_list: TRC20_LIST,
-      cachePrices: {}
+      trc20_list: TRC20_LIST
     };
   }
 
@@ -55,10 +53,6 @@ export class AppInit {
   @action
   updateTRC20List(list) {
     this.initApp = { ...this.initApp, trc20_list: list };
-  }
-  @action
-  updateCachePrices(prices) {
-    this.initApp = { ...this.initApp, cachePrices: prices };
   }
 }
 

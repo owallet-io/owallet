@@ -21,7 +21,7 @@ import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import { AppInit, appInit } from './app_init';
 import { Notification, notification } from './notification';
 import EventEmitter from 'eventemitter3';
-import { OWallet, Ethereum } from '@owallet/provider';
+import { OWallet, Ethereum, TronWeb } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { FeeType } from '@owallet/hooks';
 import {
@@ -35,13 +35,12 @@ import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { FiatCurrency } from '@owallet/types';
 import { ModalStore } from './modal';
-
 import { version } from '../../package.json';
 import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
-import { UniversalSwap, universalSwap } from './universal_swap';
+import { UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -89,7 +88,7 @@ export class RootStore {
   public readonly modalStore: ModalStore;
   public readonly sendStore: SendStore;
   public readonly appInitStore: AppInit;
-  public readonly universalSwapStore: UniversalSwap;
+  public readonly universalSwapStore: UniversalSwapStore;
   public readonly notificationStore: Notification;
   public readonly txsStore: (
     currentChain: ChainInfoInner<ChainInfo>
@@ -173,6 +172,14 @@ export class RootStore {
           },
           getEthereum: async () => {
             return new Ethereum(
+              version,
+              'core',
+              '0x38',
+              new RNMessageRequesterInternal()
+            );
+          },
+          getTronWeb: async () => {
+            return new TronWeb(
               version,
               'core',
               '0x38',
@@ -277,7 +284,7 @@ export class RootStore {
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
-    this.universalSwapStore = universalSwap;
+    this.universalSwapStore = new UniversalSwapStore();
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>
