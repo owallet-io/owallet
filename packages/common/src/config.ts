@@ -600,7 +600,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     stakeCurrency: {
       coinDenom: 'BTC',
       coinMinimalDenom: 'btc',
-      coinDecimals: 18,
+      coinDecimals: 8,
       coinGeckoId: 'bitcoin',
       coinImageUrl:
         'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
@@ -611,7 +611,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         coinDenom: 'BTC',
         coinMinimalDenom: 'btc',
-        coinDecimals: 18,
+        coinDecimals: 8,
         coinGeckoId: 'bitcoin',
         coinImageUrl:
           'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'

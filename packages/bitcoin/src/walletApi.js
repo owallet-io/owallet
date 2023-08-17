@@ -1,23 +1,23 @@
-const fetch = require("node-fetch").default;
-const bitcoinUnits = require("bitcoin-units");
-const electrum = require("./electrum");
-const moment = require("moment");
+const fetch = require('node-fetch').default;
+const { BitcoinUnit } = require('bitcoin-units');
+const electrum = require('./electrum');
+const moment = require('moment');
 
-const { networks } = require("./networks");
-const { currencies } = require("./currencies");
+const { networks } = require('./networks');
+const { currencies } = require('./currencies');
 
 //Get info from an address path ("m/49'/0'/0'/0/1")
-const getInfoFromAddressPath = async (path = "") => {
+const getInfoFromAddressPath = async (path = '') => {
   return new Promise(async (resolve) => {
     try {
-      if (path === "") return { error: true, data: "No path specified" };
+      if (path === '') return { error: true, data: 'No path specified' };
       let isChangeAddress = false;
-      const lastIndex = path.lastIndexOf("/");
+      const lastIndex = path.lastIndexOf('/');
       const addressIndex = Number(path.substr(lastIndex + 1));
-      const firstIndex = path.lastIndexOf("/", lastIndex - 1);
+      const firstIndex = path.lastIndexOf('/', lastIndex - 1);
       const addressType = path.substr(
         firstIndex + 1,
-        lastIndex - firstIndex - 1,
+        lastIndex - firstIndex - 1
       );
       if (Number(addressType) === 1) isChangeAddress = true;
       resolve({ error: false, isChangeAddress, addressIndex });
@@ -29,23 +29,23 @@ const getInfoFromAddressPath = async (path = "") => {
 };
 
 //Returns an array of messages from an OP_RETURN message
-const decodeOpReturnMessage = (opReturn = "") => {
+const decodeOpReturnMessage = (opReturn = '') => {
   try {
     //Remove OP_RETURN from the string & trim the string.
-    if (opReturn.includes("OP_RETURN")) {
-      opReturn = opReturn.replace("OP_RETURN", "");
+    if (opReturn.includes('OP_RETURN')) {
+      opReturn = opReturn.replace('OP_RETURN', '');
       opReturn = opReturn.trim();
     }
 
     const regex = /[0-9A-Fa-f]{6}/g;
     let messages = [];
     //Separate the string into an array based upon a space and insert each message into an array to be returned
-    const data = opReturn.split(" ");
+    const data = opReturn.split(' ');
     data.forEach((message) => {
       try {
         //Ensure the message is in fact a hex
         if (regex.test(message)) {
-          message = new Buffer(message, "hex");
+          message = new Buffer(message, 'hex');
           message = message.toString();
           messages.push(message);
         }
@@ -58,23 +58,23 @@ const decodeOpReturnMessage = (opReturn = "") => {
 };
 
 const coinCapExchangeRateHelper = async ({
-  selectedCrypto = "bitcoin",
-  selectedCurrency = "usd",
+  selectedCrypto = 'bitcoin',
+  selectedCurrency = 'usd'
 } = {}) => {
   let exchangeRate = 0;
   try {
     let coin = selectedCrypto.toLowerCase();
-    coin = coin.replace("testnet", "");
+    coin = coin.replace('testnet', '');
     //Get coin rate in usd.
     const coinRateResponse = await fetch(
-      `https://api.coincap.io/v2/rates/${coin}`,
+      `https://api.coincap.io/v2/rates/${coin}`
     );
     const jsonCoinRateResponse = await coinRateResponse.json();
     const coinRate = Number(jsonCoinRateResponse.data.rateUsd);
     //Get selected fiat rate in usd.
     const fiatId = currencies[selectedCurrency].id;
     const fiatRateResponse = await fetch(
-      `https://api.coincap.io/v2/rates/${fiatId}`,
+      `https://api.coincap.io/v2/rates/${fiatId}`
     );
     const jsonFiatRateResponse = await fiatRateResponse.json();
     const fiatRate = Number(jsonFiatRateResponse.data.rateUsd);
@@ -82,34 +82,34 @@ const coinCapExchangeRateHelper = async ({
     exchangeRate = (coinRate * (1 / fiatRate)).toFixed(2);
 
     if (exchangeRate === 0 || isNaN(exchangeRate))
-      return { error: true, data: "Invalid Exchange Rate Data." };
+      return { error: true, data: 'Invalid Exchange Rate Data.' };
     return { error: false, data: exchangeRate };
   } catch (e) {
-    return { error: true, data: "Invalid Exchange Rate Data." };
+    return { error: true, data: 'Invalid Exchange Rate Data.' };
   }
 };
 
 const coinGeckoExchangeRateHelper = async ({
-  selectedCrypto = "bitcoin",
-  selectedCurrency = "usd",
+  selectedCrypto = 'bitcoin',
+  selectedCurrency = 'usd'
 } = {}) => {
   let exchangeRate = 0;
   try {
     let coin = selectedCrypto.toLowerCase();
-    coin = coin.replace("testnet", "");
+    coin = coin.replace('testnet', '');
 
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${selectedCurrency}`,
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coin}&vs_currencies=${selectedCurrency}`
     );
     const jsonResponse = await response.json();
     exchangeRate = Number(
-      jsonResponse[selectedCrypto][selectedCurrency],
+      jsonResponse[selectedCrypto][selectedCurrency]
     ).toFixed(2);
     if (exchangeRate === 0 || isNaN(exchangeRate))
-      return { error: true, data: "Invalid Exchange Rate Data." };
+      return { error: true, data: 'Invalid Exchange Rate Data.' };
     return { error: false, data: exchangeRate };
   } catch (e) {
-    return { error: true, data: "Invalid Exchange Rate Data." };
+    return { error: true, data: 'Invalid Exchange Rate Data.' };
   }
 };
 
@@ -117,7 +117,7 @@ const electrumHistoryHelper = async ({
   allAddresses = [],
   addresses = [],
   changeAddresses = [],
-  selectedCrypto = "bitcoin",
+  selectedCrypto = 'bitcoin'
 } = {}) => {
   try {
     const combinedAddresses = addresses.concat(changeAddresses);
@@ -126,7 +126,7 @@ const electrumHistoryHelper = async ({
       addresses: allAddresses,
       id: Math.random(),
       network: networks[selectedCrypto],
-      coin: selectedCrypto,
+      coin: selectedCrypto
     });
     //Check that the transaction isn't pending in the mempool (Returns { error, data: { height, tx_hash } })
     let scriptHashMempoolResults = await electrum.getAddressScriptHashesMempool(
@@ -134,8 +134,8 @@ const electrumHistoryHelper = async ({
         addresses: allAddresses,
         id: Math.random(),
         network: networks[selectedCrypto],
-        coin: selectedCrypto,
-      },
+        coin: selectedCrypto
+      }
     );
 
     if (addressHistory.error === true)
@@ -143,7 +143,7 @@ const electrumHistoryHelper = async ({
     if (scriptHashMempoolResults.error === true)
       scriptHashMempoolResults = {
         error: scriptHashMempoolResults.error,
-        data: [],
+        data: []
       };
     if (
       scriptHashMempoolResults.error === true &&
@@ -151,10 +151,10 @@ const electrumHistoryHelper = async ({
     )
       return {
         error: true,
-        data: "No transaction data found.",
+        data: 'No transaction data found.'
       };
     const allTransactions = addressHistory.data.concat(
-      scriptHashMempoolResults.data,
+      scriptHashMempoolResults.data
     );
 
     let decodedTransactions = [];
@@ -162,7 +162,7 @@ const electrumHistoryHelper = async ({
       const result = await electrum.getTransactions({
         id: Math.random(),
         txHashes: allTransactions,
-        coin: selectedCrypto,
+        coin: selectedCrypto
       });
       if (!result.error) decodedTransactions = result.data;
     } catch {}
@@ -172,7 +172,7 @@ const electrumHistoryHelper = async ({
     await Promise.all(
       decodedTransactions.map(async (tx) => {
         try {
-          let txHash = "";
+          let txHash = '';
           let height = 0;
           try {
             txHash = tx.txid;
@@ -181,7 +181,7 @@ const electrumHistoryHelper = async ({
             height = tx.height;
           } catch {}
 
-          if (txHash === "") return;
+          if (txHash === '') return;
 
           const { error, isChangeAddress, addressIndex } =
             await getInfoFromAddressPath(tx.path);
@@ -204,13 +204,13 @@ const electrumHistoryHelper = async ({
             error: true,
             inputs: [],
             outputs: [],
-            format: "",
+            format: ''
           };
           try {
             decodedTransaction = await electrum.getTransaction({
               id: Math.random(),
               txHash,
-              coin: selectedCrypto,
+              coin: selectedCrypto
             });
             if (
               decodedTransaction.error === false &&
@@ -227,7 +227,7 @@ const electrumHistoryHelper = async ({
           } catch {}
 
           //Get type and amount
-          let type = "sent";
+          let type = 'sent';
           let outputAmount = 0;
           let transactionOutputAmount = 0;
           let inputAmount = 0;
@@ -250,7 +250,7 @@ const electrumHistoryHelper = async ({
                   //Push any OP_RETURN messages to messages array
                   try {
                     const asm = decodedInput.scriptSig.asm;
-                    if (asm !== "" && asm.includes("OP_RETURN")) {
+                    if (asm !== '' && asm.includes('OP_RETURN')) {
                       const OpReturnMessages = decodeOpReturnMessage(asm);
                       messages = messages.concat(OpReturnMessages);
                     }
@@ -261,7 +261,7 @@ const electrumHistoryHelper = async ({
                   let inputDecodedTransaction = await electrum.getTransaction({
                     id: Math.random(),
                     txHash: decodedInput.txid,
-                    coin: selectedCrypto,
+                    coin: selectedCrypto
                   });
                   if (inputDecodedTransaction.error) return;
                   inputDecodedTransaction = inputDecodedTransaction.data;
@@ -275,7 +275,7 @@ const electrumHistoryHelper = async ({
                     nIndexIsUndefined = true;
                   }
                   try {
-                    if (!("value" in vout)) nIndexIsUndefined = true;
+                    if (!('value' in vout)) nIndexIsUndefined = true;
                   } catch {
                     nIndexIsUndefined = true;
                   }
@@ -298,21 +298,21 @@ const electrumHistoryHelper = async ({
                             inputAddressMatch = true;
                           }
                         } catch {}
-                      }),
+                      })
                     );
                   }
 
                   try {
                     if (isInputMatch)
                       inputAmount = Number(
-                        (inputAmount + Number(vout.value)).toFixed(8),
+                        (inputAmount + Number(vout.value)).toFixed(8)
                       );
                     transactionInputAmount = Number(
-                      (transactionInputAmount + Number(vout.value)).toFixed(8),
+                      (transactionInputAmount + Number(vout.value)).toFixed(8)
                     );
                   } catch {}
                 } catch {}
-              }),
+              })
             );
 
             //Iterate over each output and add it's satoshi value to outputAmount
@@ -323,7 +323,7 @@ const electrumHistoryHelper = async ({
                   //Push any OP_RETURN messages to messages array
                   try {
                     const asm = output.scriptPubKey.asm;
-                    if (asm !== "" && asm.includes("OP_RETURN")) {
+                    if (asm !== '' && asm.includes('OP_RETURN')) {
                       const OpReturnMessages = decodeOpReturnMessage(asm);
                       messages = messages.concat(OpReturnMessages);
                     }
@@ -337,7 +337,7 @@ const electrumHistoryHelper = async ({
                           isOutputMatch = true;
                           outputAddressMatch = true;
                         }
-                      }),
+                      })
                     );
                   } catch {
                     nIndexIsUndefined = true;
@@ -347,39 +347,42 @@ const electrumHistoryHelper = async ({
                   try {
                     if (isOutputMatch) {
                       outputAmount = Number(
-                        (outputAmount + Number(output.value)).toFixed(8),
+                        (outputAmount + Number(output.value)).toFixed(8)
                       );
                     }
                     transactionOutputAmount = Number(
                       (transactionOutputAmount + Number(output.value)).toFixed(
-                        8,
-                      ),
+                        8
+                      )
                     );
                   } catch {}
                 } catch {}
-              }),
+              })
             );
           } catch {}
           try {
-            inputAmount = bitcoinUnits(inputAmount, "BTC")
-              .to("satoshi")
-              .value();
-            transactionInputAmount = bitcoinUnits(transactionInputAmount, "BTC")
-              .to("satoshi")
-              .value();
-            receivedAmount = bitcoinUnits(receivedAmount, "BTC")
-              .to("satoshi")
-              .value();
-            outputAmount = bitcoinUnits(outputAmount, "BTC")
-              .to("satoshi")
-              .value();
-            transactionOutputAmount = bitcoinUnits(
-              transactionOutputAmount,
-              "BTC",
+            inputAmount = new BitcoinUnit(inputAmount, 'BTC')
+              .to('satoshi')
+              .getValue();
+            transactionInputAmount = new BitcoinUnit(
+              transactionInputAmount,
+              'BTC'
             )
-              .to("satoshi")
-              .value();
-            sentAmount = bitcoinUnits(sentAmount, "BTC").to("satoshi").value();
+              .to('satoshi')
+              .getValue();
+            receivedAmount = new BitcoinUnit(receivedAmount, 'BTC')
+              .to('satoshi')
+              .getValue();
+            outputAmount = new BitcoinUnit(outputAmount, 'BTC')
+              .to('satoshi')
+              .getValue();
+            transactionOutputAmount = new BitcoinUnit(
+              transactionOutputAmount,
+              'BTC'
+            )
+              .to('satoshi')
+              .getValue();
+            sentAmount = new BitcoinUnit(sentAmount, 'BTC').to('satoshi').getValue();
             fee = transactionInputAmount - transactionOutputAmount;
           } catch {}
           inputAmount = Number(inputAmount);
@@ -387,9 +390,9 @@ const electrumHistoryHelper = async ({
           outputAmount = Number(outputAmount);
           transactionOutputAmount = Number(transactionOutputAmount);
           fee = Number(fee);
-          type = inputAmount > outputAmount ? "sent" : "received";
+          type = inputAmount > outputAmount ? 'sent' : 'received';
           const totalAmount = Math.abs(inputAmount - outputAmount);
-          if (type === "sent") {
+          if (type === 'sent') {
             sentAmount = totalAmount; //What the total tx cost
             amount = totalAmount - fee; //What the receiver acquired
           } else {
@@ -402,7 +405,7 @@ const electrumHistoryHelper = async ({
             outputAddressMatch &&
             transactionOutputAmount === outputAmount
           ) {
-            type = "sent";
+            type = 'sent';
             amount = 0;
             sentAmount = fee;
           }
@@ -411,7 +414,7 @@ const electrumHistoryHelper = async ({
             outputAddressMatch &&
             inputAmount - fee === outputAmount
           ) {
-            type = "sent";
+            type = 'sent';
             amount = 0;
             sentAmount = fee;
           }
@@ -421,7 +424,7 @@ const electrumHistoryHelper = async ({
             path: tx.path,
             timestamp: height <= 0 ? moment().unix() : timestamp,
             hash: decodedTransaction.txid,
-            data: "",
+            data: '',
             type, //sent or received
             block: height <= 0 ? 0 : height,
             amount,
@@ -432,21 +435,21 @@ const electrumHistoryHelper = async ({
             fee,
             sentAmount,
             receivedAmount,
-            messages,
+            messages
           };
           transactions.push(transaction);
         } catch {}
-      }),
+      })
     );
     return {
       error: false,
       data: transactions,
       lastUsedAddress,
-      lastUsedChangeAddress,
+      lastUsedChangeAddress
     };
   } catch (e) {
     console.log(e);
-    return { error: true, data: "No transaction data found." };
+    return { error: true, data: 'No transaction data found.' };
   }
 };
 
@@ -454,7 +457,7 @@ const electrumUtxoHelper = async ({
   addresses = [],
   changeAddresses = [],
   currentBlockHeight = 0,
-  selectedCrypto = "bitcoin",
+  selectedCrypto = 'bitcoin'
 } = {}) => {
   try {
     let utxos = [];
@@ -463,14 +466,17 @@ const electrumUtxoHelper = async ({
 
     const allUtxos = await electrum.listUnspentAddressScriptHashes({
       addresses: allAddresses,
-      coin: selectedCrypto,
+      coin: selectedCrypto
     });
-    console.log("🚀 ~ file: walletApi.js:468 ~ allUtxos:", allUtxos)
+    console.log('🚀 ~ file: walletApi.js:468 ~ allUtxos:', allUtxos);
 
     allUtxos.error === false &&
       allUtxos.data &&
       allUtxos.data.forEach((utxo) => {
-        console.log("🚀 ~ file: walletApi.js:472 ~ allUtxos.data.forEach ~ utxo:", utxo)
+        console.log(
+          '🚀 ~ file: walletApi.js:472 ~ allUtxos.data.forEach ~ utxo:',
+          utxo
+        );
         balance = balance + Number(utxo.value);
         const data = {
           address: utxo.address, //Required
@@ -485,7 +491,7 @@ const electrumUtxoHelper = async ({
           //script_type: utxo.script_type,
           tx_hash: utxo.tx_hash,
           tx_hash_big_endian: utxo.tx_hash,
-          tx_output_n: utxo.tx_pos,
+          tx_output_n: utxo.tx_pos
         };
         utxos.push(data);
       });
@@ -498,52 +504,52 @@ const electrumUtxoHelper = async ({
 };
 
 const fallbackBroadcastTransaction = async ({
-  rawTx = "",
-  selectedCrypto = "bitcoin",
+  rawTx = '',
+  selectedCrypto = 'bitcoin'
 } = {}) => {
-  const { fetchData } = require("./helpers");
+  const { fetchData } = require('./helpers');
   try {
     let config = {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "text/plain",
+        'Content-Type': 'text/plain'
       },
-      body: rawTx,
+      body: rawTx
     };
-    let response = "";
+    let response = '';
     switch (selectedCrypto) {
-      case "bitcoin":
+      case 'bitcoin':
         response = await fetch(`https://blockstream.info/api/tx`, config);
         response = await response.text();
-        if (response.includes("error")) response = "";
+        if (response.includes('error')) response = '';
         break;
-      case "bitcoinTestnet":
+      case 'bitcoinTestnet':
         response = await fetch(
           `https://blockstream.info/testnet/api/tx`,
-          config,
+          config
         );
         response = await response.text();
-        if (response.includes("error")) response = "";
+        if (response.includes('error')) response = '';
         break;
-      case "litecoin":
+      case 'litecoin':
         response = await fetch(
           `https://chain.so/api/v2/send_tx/ltc`,
-          fetchData("POST", { tx_hex: rawTx }),
+          fetchData('POST', { tx_hex: rawTx })
         );
         response = await response.json();
-        response = response.status === "success" ? response.data.txid : "";
+        response = response.status === 'success' ? response.data.txid : '';
         break;
-      case "litecoinTestnet":
+      case 'litecoinTestnet':
         response = await fetch(
           `https://chain.so/api/v2/send_tx/ltctest`,
-          fetchData("POST", { tx_hex: rawTx }),
+          fetchData('POST', { tx_hex: rawTx })
         );
         response = await response.json();
-        response = response.status === "success" ? response.data.txid : "";
+        response = response.status === 'success' ? response.data.txid : '';
         break;
     }
-    if (response !== "") return { error: false, data: response };
-    return { error: true, data: "" };
+    if (response !== '') return { error: false, data: response };
+    return { error: true, data: '' };
   } catch (e) {
     console.log(e);
     return { error: true, data: e };
@@ -556,13 +562,13 @@ const walletHelpers = {
       addresses = [],
       changeAddresses = [],
       currentBlockHeight = 0,
-      selectedCrypto = "bitcoin",
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       const utxos = await electrumUtxoHelper({
         addresses,
         changeAddresses,
         currentBlockHeight,
-        selectedCrypto,
+        selectedCrypto
       });
       if (utxos.error === false) {
         return { error: false, data: utxos.data };
@@ -574,23 +580,23 @@ const walletHelpers = {
       addresses = [],
       changeAddresses = [],
       currentBlockHeight = 0,
-      service = "electrum",
-      selectedCrypto = "bitcoin",
+      service = 'electrum',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       return await walletHelpers.utxos[service]({
         addresses,
         changeAddresses,
         currentBlockHeight,
-        selectedCrypto,
+        selectedCrypto
       });
-    },
+    }
   },
   getBlockHeight: {
-    electrum: async ({ selectedCrypto = "bitcoin" } = {}) => {
+    electrum: async ({ selectedCrypto = 'bitcoin' } = {}) => {
       try {
         const response = await electrum.getNewBlockHeadersSubscribe({
           id: Math.random(),
-          coin: selectedCrypto,
+          coin: selectedCrypto
         });
         if (response.error === false) {
           let blockHeight = 0;
@@ -607,25 +613,25 @@ const walletHelpers = {
       }
     },
     default: async ({
-      service = "electrum",
-      selectedCrypto = "bitcoin",
+      service = 'electrum',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       return await walletHelpers.getBlockHeight[service]({ selectedCrypto });
-    },
+    }
   },
   history: {
     electrum: async ({
       allAddresses = [],
       addresses = [],
       changeAddresses = [],
-      selectedCrypto = "bitcoin",
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       try {
         const transactions = await electrumHistoryHelper({
           allAddresses,
           addresses,
           changeAddresses,
-          selectedCrypto,
+          selectedCrypto
         });
         if (transactions.error === true) return { error: true, data: [] };
         return transactions;
@@ -637,114 +643,114 @@ const walletHelpers = {
       allAddresses = [],
       addresses = [],
       changeAddresses = [],
-      service = "electrum",
-      selectedCrypto = "bitcoin",
+      service = 'electrum',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       return await walletHelpers.history[service]({
         allAddresses,
         addresses,
         changeAddresses,
-        selectedCrypto,
+        selectedCrypto
       });
-    },
+    }
   },
   pushtx: {
-    electrum: async ({ rawTx = "", selectedCrypto = "bitcoin" } = {}) => {
+    electrum: async ({ rawTx = '', selectedCrypto = 'bitcoin' } = {}) => {
       return await electrum.broadcastTransaction({
         rawTx,
-        coin: selectedCrypto,
+        coin: selectedCrypto
       });
     },
-    fallback: async ({ rawTx = "", selectedCrypto = "bitcoin" } = {}) => {
+    fallback: async ({ rawTx = '', selectedCrypto = 'bitcoin' } = {}) => {
       return await fallbackBroadcastTransaction({ rawTx, selectedCrypto });
     },
     default: async ({
-      rawTx = "",
-      service = "electrum",
-      selectedCrypto = "bitcoin",
+      rawTx = '',
+      service = 'electrum',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       return await walletHelpers.pushtx[service]({ rawTx, selectedCrypto });
-    },
+    }
   },
   exchangeRate: {
     coingecko: async ({
-      selectedCurrency = "usd",
-      selectedCrypto = "bitcoin",
+      selectedCurrency = 'usd',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       const exchangeRate = await coinGeckoExchangeRateHelper({
         selectedCrypto,
-        selectedCurrency,
+        selectedCurrency
       });
       if (exchangeRate.error === false) {
         return { error: false, data: exchangeRate.data };
       } else {
-        return { error: true, data: "Invalid Exchange Rate Data." };
+        return { error: true, data: 'Invalid Exchange Rate Data.' };
       }
     },
     coincap: async ({
-      selectedCurrency = "usd",
-      selectedCrypto = "bitcoin",
+      selectedCurrency = 'usd',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       const exchangeRate = await coinCapExchangeRateHelper({
         selectedCrypto,
-        selectedCurrency,
+        selectedCurrency
       });
       if (exchangeRate.error === false) {
         return { error: false, data: exchangeRate.data };
       } else {
-        return { error: true, data: "Invalid Exchange Rate Data." };
+        return { error: true, data: 'Invalid Exchange Rate Data.' };
       }
     },
     default: async ({
-      service = "coingecko",
-      selectedCurrency = "usd",
-      selectedCrypto = "bitcoin",
+      service = 'coingecko',
+      selectedCurrency = 'usd',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       selectedCrypto = selectedCrypto.toLowerCase();
-      selectedCrypto = selectedCrypto.replace("testnet", "");
+      selectedCrypto = selectedCrypto.replace('testnet', '');
       return await walletHelpers.exchangeRate[service]({
         selectedCurrency,
-        selectedCrypto,
+        selectedCrypto
       });
-    },
+    }
   },
   feeEstimate: {
     electrum: async ({
-      selectedCrypto = "bitcoin",
-      blocksWillingToWait = 8,
+      selectedCrypto = 'bitcoin',
+      blocksWillingToWait = 8
     } = {}) => {
       return await electrum.getFeeEstimate({
         coin: selectedCrypto,
-        blocksWillingToWait,
+        blocksWillingToWait
       });
     },
     default: async ({
-      service = "electrum",
-      selectedCrypto = "bitcoin",
-      blocksWillingToWait = 8,
+      service = 'electrum',
+      selectedCrypto = 'bitcoin',
+      blocksWillingToWait = 8
     } = {}) => {
       return await walletHelpers.feeEstimate[service]({
         selectedCrypto,
-        blocksWillingToWait,
+        blocksWillingToWait
       });
-    },
+    }
   },
 
   relayFee: {
-    electrum: async ({ selectedCrypto = "bitcoin" } = {}) => {
+    electrum: async ({ selectedCrypto = 'bitcoin' } = {}) => {
       return await electrum.relayFee({ coin: selectedCrypto });
     },
     default: async ({
-      service = "electrum",
-      selectedCrypto = "bitcoin",
+      service = 'electrum',
+      selectedCrypto = 'bitcoin'
     } = {}) => {
       return await walletHelpers.relayFee[service]({
-        selectedCrypto,
+        selectedCrypto
       });
-    },
-  },
+    }
+  }
 };
 
 module.exports = {
-  walletHelpers,
+  walletHelpers
 };

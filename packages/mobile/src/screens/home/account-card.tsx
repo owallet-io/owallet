@@ -17,6 +17,8 @@ import {
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { AccountBox } from './account-box';
 import { btcToFiat } from '@src/utils/helper';
+import { useNavigation } from '@react-navigation/native';
+import { SCREENS } from '@src/common/constants';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -54,10 +56,16 @@ export const AccountCard: FunctionComponent<{
       cryptoUnit: 'BTC'
     });
     const exchangeRate = Number(exchange?.data);
+    const priceNative = Number(
+      priceStore.getPrice(
+        balanceBtc.currency?.coinGeckoId,
+        priceStore.defaultVsCurrency
+      )
+    );
     const currencyFiat = priceStore.defaultVsCurrency;
     const fiat = btcToFiat({
-      amount: amountData,
-      exchangeRate,
+      amount: amountData as number,
+      exchangeRate: !!exchangeRate ? exchangeRate : priceNative,
       currencyFiat
     });
     setTotalBalance(`$${fiat}`);
@@ -110,12 +118,7 @@ export const AccountCard: FunctionComponent<{
     );
     return () => {};
   }, [chainStore.current.chainId, account?.bech32Address]);
-  console.log(
-    '🚀 ~ file: account-card.tsx:67 ~ totalBalance ~ totalBalance:',
-    totalBalance
-  );
 
-  const safeAreaInsets = useSafeAreaInsets();
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
@@ -124,6 +127,12 @@ export const AccountCard: FunctionComponent<{
       _onPressReceiveModal();
     }
     if (name === 'Send') {
+      if (chainStore.current.networkType === 'bitcoin') {
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendBtc
+        });
+        return;
+      }
       smartNavigation.navigateSmart('Send', {
         currency: chainStore.current.stakeCurrency.coinMinimalDenom
       });

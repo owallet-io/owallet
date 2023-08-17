@@ -19,53 +19,13 @@ export class ObservableQueryBitcoinBalanceInner {
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly address: string
-  ) {
-    // super(kvStore, chainId, chainGetter, '', {
-    //   jsonrpc: '2.0',
-    //   method: 'eth_getBalance',
-    //   params: [address, 'latest'],
-    //   id: 'evm-balance'
-    // });
-  }
-
-  //   protected canFetch(): boolean {
-  //     return this.address.length !== 0;
-  //   }
-
-  //   protected async fetchResponse(
-  //     cancelToken: CancelToken
-  //   ): Promise<QueryResponse<Result>> {
-  //     const response = await super.fetchResponse(cancelToken);
-
-  //     const evmResult = response.data;
-
-  //     if (!evmResult) {
-  //       throw new Error('Failed to get the response from the contract');
-  //     }
-
-  //     return {
-  //       data: evmResult,
-  //       status: response.status,
-  //       staled: false,
-  //       timestamp: Date.now()
-  //     };
-  //   }
-
+  ) {}
+  @computed
   async balance(): Promise<CoinPretty | undefined> {
-    // return 10;
-    // if (!this.response?.data) {
-    //   return undefined;
-    // }
-
     const path = `m/84'/1'/0'/0/0`;
-    // console.log("🚀 ~ file: bitcoin-balance.ts:66 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ address:", address)
     const scriptHash = getScriptHash(
       this.address,
       getCoinNetwork(this.chainId)
-    );
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:71 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ scriptHash:',
-      scriptHash
     );
     const res = await getBalanceFromUtxos({
       addresses: [{ address: this.address, path, scriptHash }],
@@ -89,6 +49,19 @@ export class ObservableQueryBitcoinBalanceInner {
         new Int(new MyBigInt(res.data?.balance).toString())
       )
     );
+  }
+  @computed
+  async balances(): Promise<
+    {
+      balance: CoinPretty;
+    }[]
+  > {
+    const balances: {
+      balance: CoinPretty;
+    }[] = [];
+    balances.push({ balance: await this.balance() });
+
+    return balances;
   }
 }
 

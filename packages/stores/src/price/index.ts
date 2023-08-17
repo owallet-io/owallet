@@ -117,7 +117,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
   }
 
   getPrice(coinId: string, vsCurrency?: string): number | undefined {
-    console.log("🚀 ~ file: index.ts:120 ~ CoinGeckoPriceStore ~ getPrice ~ coinId:", coinId)
     if (!vsCurrency) {
       vsCurrency = this.defaultVsCurrency;
     }
@@ -146,7 +145,6 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     }
 
     const coinPrices = this.response.data[coinId];
-    console.log("🚀 ~ file: index.ts:149 ~ CoinGeckoPriceStore ~ getPrice ~ coinPrices:", coinPrices)
     if (!coinPrices) {
       return undefined;
     }
@@ -160,31 +158,21 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     if (!coin.currency.coinGeckoId) {
       return undefined;
     }
-
     if (!vsCurrrency) {
       vsCurrrency = this.defaultVsCurrency;
     }
-
     const fiatCurrency =
       this.supportedVsCurrencies[vsCurrrency.toLocaleLowerCase()];
     if (!fiatCurrency) {
       return undefined;
     }
-
     const price = this.getPrice(coin.currency.coinGeckoId, vsCurrrency);
-    console.log("🚀 ~ file: index.ts:175 ~ CoinGeckoPriceStore ~ price:", price)
     if (price === undefined) {
       return new PricePretty(fiatCurrency, new Int(0)).ready(false);
     }
-
     const dec = coin.toDec();
-    console.log("🚀 ~ file: index.ts:181 ~ CoinGeckoPriceStore ~ dec:", dec)
     const priceDec = new Dec(price.toString());
-    console.log("🚀 ~ file: index.ts:182 ~ CoinGeckoPriceStore ~ priceDec:", priceDec)
-    console.log("🚀 ~ file: index.ts:186 ~ CoinGeckoPriceStore ~ fiatCurrency:", fiatCurrency)
-    const pricePretty = new PricePretty(fiatCurrency, dec.mul(priceDec))
-    console.log("🚀 ~ file: index.ts:186 ~ CoinGeckoPriceStore ~ pricePretty:", pricePretty)
+    const pricePretty = new PricePretty(fiatCurrency, dec.mul(priceDec));
     return pricePretty;
-    
   }
 }

@@ -1,4 +1,4 @@
-const bitcoinUnits = require('bitcoin-units');
+const { BitcoinUnit } = require('bitcoin-units');
 const { walletHelpers } = require('./walletApi');
 const bitcoin = require('bitcoinjs-lib');
 const bitcoinMessage = require('bitcoinjs-message');
@@ -999,10 +999,10 @@ const sortArrOfObjByKey = (arr = [], key = '', ascending = true) => {
 
 const getFiatBalance = ({ balance = 0, exchangeRate = 0 } = {}) => {
   try {
-    bitcoinUnits.setFiat('usd', exchangeRate);
-    const fiatBalance = bitcoinUnits(balance, 'satoshi')
+    BitcoinUnit.setFiat('usd', exchangeRate);
+    const fiatBalance = new BitcoinUnit(balance, 'satoshi')
       .to('usd')
-      .value()
+      .getValue()
       .toFixed(2);
     if (isNaN(fiatBalance)) return 0;
     return Number(fiatBalance);
@@ -1011,11 +1011,15 @@ const getFiatBalance = ({ balance = 0, exchangeRate = 0 } = {}) => {
   }
 };
 
-const cryptoToFiat = ({ amount = 0, exchangeRate = 0, currencyFiat = 'usd' } = {}) => {
+const cryptoToFiat = ({
+  amount = 0,
+  exchangeRate = 0,
+  currencyFiat = 'usd'
+} = {}) => {
   try {
     amount = Number(amount);
-    bitcoinUnits.setFiat(currencyFiat, exchangeRate);
-    return bitcoinUnits(amount, 'satoshi').to(currencyFiat).value().toFixed(2);
+    BitcoinUnit.setFiat(currencyFiat, exchangeRate);
+    return new BitcoinUnit(amount, 'satoshi').to(currencyFiat).getValue().toFixed(2);
   } catch (e) {
     console.log(e);
   }
@@ -1024,7 +1028,7 @@ const cryptoToFiat = ({ amount = 0, exchangeRate = 0, currencyFiat = 'usd' } = {
 const satsToBtc = ({ amount = 0 } = {}) => {
   try {
     amount = Number(amount);
-    return bitcoinUnits(amount, 'satoshi').to('BTC').value();
+    return new BitcoinUnit(amount, 'satoshi').to('BTC').getValue();
   } catch (e) {
     return amount;
   }
@@ -1033,8 +1037,8 @@ const satsToBtc = ({ amount = 0 } = {}) => {
 const fiatToCrypto = ({ amount = 0, exchangeRate = 0 } = {}) => {
   try {
     amount = Number(amount);
-    bitcoinUnits.setFiat('usd', exchangeRate);
-    return bitcoinUnits(amount, 'usd').to('satoshi').value().toFixed(0);
+    BitcoinUnit.setFiat('usd', exchangeRate);
+    return new BitcoinUnit(amount, 'usd').to('satoshi').getValue().toFixed(0);
   } catch (e) {
     console.log(e);
   }
@@ -1162,7 +1166,7 @@ const getBalanceValue = ({ cryptoUnit = 'satoshi', balance = 0 }) => {
   if (balance < 50000 && cryptoUnit === 'BTC') {
     return (Number(balance) * 0.00000001).toFixed(8);
   } else {
-    return bitcoinUnits(balance, 'satoshi').to(cryptoUnit).value();
+    return new BitcoinUnit(balance, 'satoshi').to(cryptoUnit).getValue();
   }
 };
 const formatBalance = ({ coin = '', cryptoUnit = 'satoshi', balance = 0 }) => {

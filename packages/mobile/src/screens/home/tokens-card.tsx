@@ -16,7 +16,8 @@ import {
   capitalizedText,
   convertAmount,
   _keyExtract,
-  findLedgerAddressWithChainId
+  findLedgerAddressWithChainId,
+  delay
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
@@ -45,20 +46,39 @@ export const TokensCard: FunctionComponent<{
     chainStore.current.rpc
   );
   // const [price, setPrice] = useState<object>({});
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? keyRingStore.keyRingType === 'ledger'
-          ? findLedgerAddressWithChainId(
-              keyRingStore.keyRingLedgerAddresses,
-              chainStore.current.chainId
-            )
-          : account.evmosHexAddress
-        : account.bech32Address
+  const queries = queriesStore.get(chainStore.current.chainId);
+
+  const queryBalances = queries.queryBalances.getQueryBech32Address(
+    chainStore.current.networkType === 'evm'
+      ? keyRingStore.keyRingType === 'ledger'
+        ? findLedgerAddressWithChainId(
+            keyRingStore.keyRingLedgerAddresses,
+            chainStore.current.chainId
+          )
+        : account.evmosHexAddress
+      : account.bech32Address
+  );
+  const getBalancesBtc = async (address) => {
+    await delay(2000);
+    const queriesBalancesBtc = await queries.bitcoin.queryBitcoinBalance
+      .getQueryBalance(address)
+      .balances();
+    console.log(
+      '🚀 ~ file: tokens-card.tsx:66 ~ getBalancesBtc ~ queriesBalancesBtc:',
+      queriesBalancesBtc
     );
 
+    setTokens(queriesBalancesBtc);
+  };
   useEffect(() => {
+    if (
+      chainStore.current.networkType === 'bitcoin' &&
+      account?.bech32Address
+    ) {
+      getBalancesBtc(account?.bech32Address);
+      return;
+    }
+
     const queryTokens = queryBalances.balances.concat(
       queryBalances.nonNativeBalances,
       queryBalances.positiveNativeUnstakables
@@ -165,15 +185,15 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map((token) => {
+              tokens.slice(0, 3).map((token,index) => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
-
                 return (
                   <TokenItem
-                    key={token.currency?.coinMinimalDenom}
+                    key={index?.toString()}
                     chainInfo={{
                       stakeCurrency: chainStore.current.stakeCurrency,
-                      networkType: chainStore.current.networkType
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.networkType
                     }}
                     balance={token.balance}
                     priceBalance={priceBalance}

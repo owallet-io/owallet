@@ -4,19 +4,21 @@ import { CoinPretty, PricePretty } from '@owallet/unit';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { formatContractAddress } from '@src/utils/helper';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { RightArrowIcon } from '../../../components/icon';
 import { TokenSymbol } from '../../../components/token-symbol';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing, typography } from '../../../themes';
+import { formatBalance } from '@owallet/bitcoin';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
   chainInfo: {
     stakeCurrency: Currency;
     networkType?: string;
+    chainId?: string;
   };
   balance: CoinPretty;
   totalBalance?: number;
@@ -49,16 +51,28 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       console.log('nam', name, denomHelper.contractAddress);
     }
   }
-  const amountBalance = balance
-    .trim(true)
-    .shrink(true)
-    .maxDecimals(6)
-    .upperCase(true)
-    .hideDenom(true)
-    .toString();
 
+  const amountBalance = useMemo(() => {
+    if (chainInfo.networkType === 'bitcoin') {
+      const amount = formatBalance({
+        balance: Number(balance?.toCoin()?.amount),
+        cryptoUnit: 'BTC',
+        coin: chainInfo.chainId
+      });
+      return amount;
+    }
+    const amount = balance
+      .trim(true)
+      .shrink(true)
+      .maxDecimals(6)
+      .upperCase(true)
+      .hideDenom(true)
+      .toString();
+    return `${amount} ${balanceCoinDenom}`;
+  }, [chainInfo, balance, balanceCoinDenom]);
   return (
     <TouchableOpacity
+      key={chainInfo.chainId}
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
@@ -111,7 +125,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
               fontWeight: '700'
             }}
           >
-            {`${amountBalance} ${balanceCoinDenom}`}
+            {amountBalance}
           </Text>
 
           <Text
