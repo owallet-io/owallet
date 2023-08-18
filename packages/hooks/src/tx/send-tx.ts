@@ -2,6 +2,7 @@ import {
   ChainGetter,
   CosmosMsgOpts,
   CosmwasmMsgOpts,
+  ObservableQueryBitcoinBalance,
   SecretMsgOpts
 } from '@owallet/stores';
 import { ObservableQueryBalances, ObservableQueryEvmBalance } from '@owallet/stores';
@@ -22,6 +23,7 @@ export const useSendTxConfig = (
   ensEndpoint?: string,
   queryEvmBalances?: ObservableQueryEvmBalance,
   senderEvm?: string,
+  queryBtcBalances?: ObservableQueryBitcoinBalance,
 ) => {
   const chainInfo = chainGetter.getChain(chainId);
   const amountConfig = useAmountConfig(
@@ -31,6 +33,7 @@ export const useSendTxConfig = (
     queryBalances,
     chainInfo.networkType === "evm" && queryEvmBalances,
     chainInfo.networkType === "evm" && senderEvm,
+    chainInfo.networkType === "bitcoin" && queryBtcBalances
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);

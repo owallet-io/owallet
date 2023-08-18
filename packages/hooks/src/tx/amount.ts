@@ -3,6 +3,7 @@ import { TxChainSetter } from './chain';
 import {
   ChainGetter,
   CoinPrimitive,
+  ObservableQueryBitcoinBalance,
   ObservableQueryEvmBalance
 } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
@@ -15,7 +16,7 @@ import {
   NegativeAmountError,
   ZeroAmountError
 } from './errors';
-import { Dec, DecUtils } from '@owallet/unit';
+import { CoinPretty, Dec, DecUtils } from '@owallet/unit';
 import { useState } from 'react';
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
@@ -27,10 +28,12 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   @observable.ref
   protected queryEvmBalances?: ObservableQueryEvmBalance;
-
+  @observable.ref
+  protected queryBtcBalance?: ObservableQueryBitcoinBalance;
   @observable
   protected _sender: string;
-
+  @observable
+  protected _balance: CoinPretty;
   @observable
   protected _senderEvm?: string;
 
@@ -50,7 +53,8 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     feeConfig: IFeeConfig | undefined,
     queryBalances: ObservableQueryBalances,
     queryEvmBalances?: ObservableQueryEvmBalance,
-    senderEvm?: string
+    senderEvm?: string,
+    queryBtcBalance?: ObservableQueryBitcoinBalance
   ) {
     super(chainGetter, initialChainId);
 
@@ -59,6 +63,15 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     this.feeConfig = feeConfig;
     this.queryBalances = queryBalances;
     this.queryEvmBalances = queryEvmBalances;
+    if (!!queryBtcBalance) {
+      this.queryBtcBalance = queryBtcBalance;
+      queryBtcBalance
+        .getQueryBalance(sender)
+        .balance()
+        .then((balance) => {
+          this._balance = balance;
+        });
+    }
     this._amount = '';
 
     makeObservable(this);
@@ -77,6 +90,10 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @action
   setQueryEvmBalances(queryEvmBalances: ObservableQueryEvmBalance) {
     this.queryEvmBalances = queryEvmBalances;
+  }
+  @action
+  setQueryBtcBalance(queryBtcBalance: ObservableQueryBitcoinBalance) {
+    this.queryBtcBalance = queryBtcBalance;
   }
 
   @action
@@ -108,6 +125,14 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   @action
   setIsMax(isMax: boolean) {
+    if (!!this.queryBtcBalance) {
+      this.queryBtcBalance
+        .getQueryBalance(this.sender)
+        .balance()
+        .then((balance) => {
+          this._balance = balance;
+        });
+    }
     this._fraction = isMax ? 1 : undefined;
   }
 
@@ -136,6 +161,17 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @computed
   get amount(): string {
     if (this.fraction != null) {
+      if (!!this._balance) {
+        if (this._balance.toDec().lte(new Dec(0))) {
+          return '0';
+        }
+        return this._balance
+          .mul(new Dec(this.fraction))
+          .trim(true)
+          .locale(false)
+          .hideDenom(true)
+          .toString();
+      }
       const balance = this.queryBalances
         .getQueryBech32Address(this.sender)
         .getBalanceFromCurrency(this.sendCurrency);
@@ -195,7 +231,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     if (this._sendCurrency) {
       const find = chainInfo.currencies.find(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        cur => cur.coinMinimalDenom === this._sendCurrency!.coinMinimalDenom
+        (cur) => cur.coinMinimalDenom === this._sendCurrency!.coinMinimalDenom
       );
       if (find) {
         return this._sendCurrency;
@@ -254,11 +290,19 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     //     return new InsufficientAmountError('Insufficient amount');
     //   }
     // }
-    if (this.chainInfo.networkType !== 'evm') {
+    if (
+      this.chainInfo.networkType !== 'evm' &&
+      this.chainInfo.networkType !== 'bitcoin'
+    ) {
       const balance = this.queryBalances
         .getQueryBech32Address(this.sender)
         .getBalanceFromCurrency(this.sendCurrency);
       const balanceDec = balance.toDec();
+      if (dec.gt(balanceDec)) {
+        return new InsufficientAmountError('Insufficient amount');
+      }
+    } else if (this.chainInfo.networkType === 'bitcoin') {
+      const balanceDec = this._balance.toDec();
       if (dec.gt(balanceDec)) {
         return new InsufficientAmountError('Insufficient amount');
       }
@@ -274,7 +318,8 @@ export const useAmountConfig = (
   sender: string,
   queryBalances: ObservableQueryBalances,
   queryEvmBalances?: ObservableQueryEvmBalance,
-  senderEvm?: string
+  senderEvm?: string,
+  queryBtcBalance?: ObservableQueryBitcoinBalance
 ) => {
   const [txConfig] = useState(
     () =>
@@ -285,12 +330,16 @@ export const useAmountConfig = (
         undefined,
         queryBalances,
         queryEvmBalances,
-        senderEvm
+        senderEvm,
+        queryBtcBalance
       )
   );
   txConfig.setChain(chainId);
   txConfig.setQueryBalances(queryBalances);
   txConfig.setQueryEvmBalances(queryEvmBalances);
+  if (!!queryBtcBalance) {
+    txConfig.setQueryBtcBalance(queryBtcBalance);
+  }
   txConfig.setSenderEvm(senderEvm);
   txConfig.setSender(sender);
 
