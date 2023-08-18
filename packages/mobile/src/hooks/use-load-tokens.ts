@@ -128,6 +128,8 @@ async function loadCw20Balance(
 
   const multicall = new MulticallQueryClient(client, network.multicall);
 
+  console.log('multicall', multicall);
+
   const res = await multicall.aggregate({
     queries: cw20Tokens.map(t => ({
       address: t.contractAddress,
@@ -147,7 +149,10 @@ async function loadCw20Balance(
       return [t.denom, amount];
     })
   );
-  //   updateAmounts(amountDetails);
+
+  console.log('amountDetails', amountDetails);
+
+  //   universalSwapStore.updateAmounts(amountDetails);
 }
 
 async function loadEvmEntries(

@@ -16,7 +16,13 @@ import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { isAndroid } from '@src/utils/helper';
+import {
+  ETH_ID,
+  KAWAII_ID,
+  ORAICHAIN_ID,
+  TRON_ID,
+  isAndroid
+} from '@src/utils/helper';
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
 import images from '@src/assets/images';
@@ -184,19 +190,61 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const chainId = chainStore?.current?.chainId;
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
 
-  const accountOrai = accountStore.getAccount('Oraichain');
-  const accountEvm = accountStore.getAccount('0x01');
-  const accountTron = accountStore.getAccount('0x2b6653dc');
-  const accountKawaii = accountStore.getAccount('kawaii_6886-1');
+  const handleFetchAmounts = async () => {
+    const ids = await Promise.all([
+      accountStore.getAccount(ORAICHAIN_ID),
+      accountStore.getAccount(ETH_ID),
+      accountStore.getAccount(TRON_ID),
+      accountStore.getAccount(KAWAII_ID)
+    ]);
 
-  if (accountEvm?.evmosHexAddress && accountKawaii?.bech32Address) {
-    loadTokenAmounts({
-      kwtAddress: accountKawaii?.bech32Address,
-      metamaskAddress: accountEvm?.evmosHexAddress,
-      oraiAddress: accountOrai?.bech32Address,
-      tronAddress: Address.getBase58Address(accountTron?.evmosHexAddress)
+    const client = '';
+
+    let addresses = {};
+
+    ids.map(id => {
+      if (id.chainId === ORAICHAIN_ID) {
+        addresses = { ...addresses, oraiAddress: id.bech32Address };
+      }
+      if (id.chainId === ETH_ID) {
+        addresses = { ...addresses, metamaskAddress: id.evmosHexAddress };
+      }
+      if (id.chainId === TRON_ID) {
+        addresses = {
+          ...addresses,
+          tronAddress: Address.getBase58Address(id.evmosHexAddress)
+        };
+      }
+      if (id.chainId === KAWAII_ID) {
+        addresses = { ...addresses, kwtAddress: id.bech32Address };
+      }
     });
-  }
+
+    loadTokenAmounts(addresses);
+  };
+
+  useEffect(() => {
+    handleFetchAmounts();
+  }, []);
+
+  // const accountOrai = accountStore.getAccount('Oraichain');
+  // const accountEvm = accountStore.getAccount('0x01');
+  // const accountTron = accountStore.getAccount('0x2b6653dc');
+  // const accountKawaii = accountStore.getAccount('kawaii_6886-1');
+
+  // if (
+  //   accountEvm?.evmosHexAddress &&
+  //   accountKawaii?.bech32Address &&
+  //   accountTron?.evmosHexAddress &&
+  //   accountOrai?.bech32Address
+  // ) {
+  //   loadTokenAmounts({
+  //     kwtAddress: accountKawaii?.bech32Address,
+  //     metamaskAddress: accountEvm?.evmosHexAddress,
+  //     oraiAddress: accountOrai?.bech32Address,
+  //     tronAddress: Address.getBase58Address(accountTron?.evmosHexAddress)
+  //   });
+  // }
 
   console.log('universalSwapStore', universalSwapStore.getAmount);
 
