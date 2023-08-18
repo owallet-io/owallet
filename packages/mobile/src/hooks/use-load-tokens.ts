@@ -1,8 +1,4 @@
-import {
-  CosmWasmClient,
-  fromBinary,
-  toBinary
-} from '@cosmjs/cosmwasm-stargate';
+import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
@@ -27,6 +23,14 @@ import {
 } from '@src/screens/universal-swap/config/bridgeTokens';
 import { getEvmAddress } from '@src/screens/universal-swap/helper';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
+import { CWStargate } from '@src/common/cw-stargate';
+import { OWallet } from '@owallet/provider';
+
+export type CWStargateType = {
+  account: OWallet;
+  chainId: string;
+  rpc: string;
+};
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -34,7 +38,7 @@ export type LoadTokenParams = {
   oraiAddress?: string;
   tronAddress?: string;
   kwtAddress?: string;
-  client?: CosmWasmClient;
+  client?: CWStargateType;
 };
 type AmountDetails = { [denom: string]: string };
 
@@ -117,7 +121,7 @@ async function loadTokensCosmos(
 async function loadCw20Balance(
   universalSwapStore: UniversalSwapStore,
   address: string,
-  client: CosmWasmClient
+  cwStargate: CWStargateType
 ) {
   if (!address) return;
   // get all cw20 token contract
@@ -125,6 +129,13 @@ async function loadCw20Balance(
   const data = toBinary({
     balance: { address }
   });
+
+  const client = await CWStargate.init(
+    cwStargate.account,
+    cwStargate.chainId,
+    cwStargate.rpc
+  );
+  console.log('client 2', client);
 
   const multicall = new MulticallQueryClient(client, network.multicall);
 
@@ -152,7 +163,7 @@ async function loadCw20Balance(
 
   console.log('amountDetails', amountDetails);
 
-  //   universalSwapStore.updateAmounts(amountDetails);
+  universalSwapStore.updateAmounts(amountDetails);
 }
 
 async function loadEvmEntries(

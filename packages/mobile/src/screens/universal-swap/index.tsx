@@ -33,6 +33,7 @@ import useLoadTokens from '@src/hooks/use-load-tokens';
 import { toJS } from 'mobx';
 import { CWStargate } from '@src/common/cw-stargate';
 import { oraichainNetwork } from './config/chainInfos';
+import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 
 const tokens: TokenInfo[] = [
   {
@@ -192,59 +193,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
   const chainId = chainStore?.current?.chainId;
+
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
-
-  const handleFetchAmounts = async () => {
-    const accounts = await Promise.all([
-      accountStore.getAccount(ORAICHAIN_ID),
-      accountStore.getAccount(ETH_ID),
-      accountStore.getAccount(TRON_ID),
-      accountStore.getAccount(KAWAII_ID)
-    ]);
-
-    let loadTokenParams = {};
-
-    accounts.map(async account => {
-      if (account.chainId === ORAICHAIN_ID) {
-        console.log('account =--', account);
-
-        const client = await CWStargate.init(
-          account,
-          account.chainId,
-          oraichainNetwork.rpc
-        );
-        loadTokenParams = {
-          ...loadTokenParams,
-          oraiAddress: account.bech32Address,
-          client
-        };
-      }
-      if (account.chainId === ETH_ID) {
-        loadTokenParams = {
-          ...loadTokenParams,
-          metamaskAddress: account.evmosHexAddress
-        };
-      }
-      if (account.chainId === TRON_ID) {
-        loadTokenParams = {
-          ...loadTokenParams,
-          tronAddress: Address.getBase58Address(account.evmosHexAddress)
-        };
-      }
-      if (account.chainId === KAWAII_ID) {
-        loadTokenParams = {
-          ...loadTokenParams,
-          kwtAddress: account.bech32Address
-        };
-      }
-    });
-
-    loadTokenAmounts(loadTokenParams);
-  };
-
-  useEffect(() => {
-    handleFetchAmounts();
-  }, []);
 
   // const accountOrai = accountStore.getAccount('Oraichain');
   // const accountEvm = accountStore.getAccount('0x01');
@@ -257,15 +207,73 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   //   accountTron?.evmosHexAddress &&
   //   accountOrai?.bech32Address
   // ) {
+  //   // console.log('client', client);
+
   //   loadTokenAmounts({
   //     kwtAddress: accountKawaii?.bech32Address,
   //     metamaskAddress: accountEvm?.evmosHexAddress,
   //     oraiAddress: accountOrai?.bech32Address,
   //     tronAddress: Address.getBase58Address(accountTron?.evmosHexAddress)
+  //     // client
   //   });
   // }
 
-  console.log('universalSwapStore', universalSwapStore.getAmount);
+  const handleFetchAmounts = async () => {
+    const accounts = await Promise.all([
+      accountStore.getAccount(ORAICHAIN_ID),
+      accountStore.getAccount(ETH_ID),
+      accountStore.getAccount(TRON_ID),
+      accountStore.getAccount(KAWAII_ID)
+    ]);
+
+    let loadTokenParams = {};
+
+    try {
+      accounts.map(async account => {
+        if (account.chainId === ORAICHAIN_ID) {
+          const client = {
+            account,
+            chainId: account.chainId,
+            rpc: oraichainNetwork.rpc
+          };
+
+          loadTokenParams = {
+            ...loadTokenParams,
+            oraiAddress: account.bech32Address,
+            client
+          };
+        }
+        if (account.chainId === ETH_ID) {
+          loadTokenParams = {
+            ...loadTokenParams,
+            metamaskAddress: account.evmosHexAddress
+          };
+        }
+        if (account.chainId === TRON_ID) {
+          loadTokenParams = {
+            ...loadTokenParams,
+            tronAddress: Address.getBase58Address(account.evmosHexAddress)
+          };
+        }
+        if (account.chainId === KAWAII_ID) {
+          loadTokenParams = {
+            ...loadTokenParams,
+            kwtAddress: account.bech32Address
+          };
+        }
+      });
+
+      loadTokenAmounts(loadTokenParams);
+    } catch (error) {
+      console.log('error loadTokenAmounts', error);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchAmounts();
+  }, []);
+
+  console.log('universalSwapStore 2', universalSwapStore.getAmount);
 
   const [amount, setAmount] = useState({
     from: '1.273',
