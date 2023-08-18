@@ -231,7 +231,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       accounts.map(async account => {
         if (account.chainId === ORAICHAIN_ID) {
-          const client = {
+          const cwStargate = {
             account,
             chainId: account.chainId,
             rpc: oraichainNetwork.rpc
@@ -240,7 +240,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           loadTokenParams = {
             ...loadTokenParams,
             oraiAddress: account.bech32Address,
-            client
+            cwStargate
           };
         }
         if (account.chainId === ETH_ID) {

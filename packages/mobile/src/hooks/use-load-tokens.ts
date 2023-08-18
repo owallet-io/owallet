@@ -38,7 +38,7 @@ export type LoadTokenParams = {
   oraiAddress?: string;
   tronAddress?: string;
   kwtAddress?: string;
-  client?: CWStargateType;
+  cwStargate?: CWStargateType;
 };
 type AmountDetails = { [denom: string]: string };
 
@@ -78,15 +78,15 @@ async function loadTokens(
     metamaskAddress,
     tronAddress,
     kwtAddress,
-    client
+    cwStargate
   }: LoadTokenParams
 ) {
   await Promise.all(
     [
       oraiAddress && loadTokensCosmos(universalSwapStore, oraiAddress),
       oraiAddress &&
-        client &&
-        loadCw20Balance(universalSwapStore, oraiAddress, client),
+        cwStargate &&
+        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
       // different cointype but also require keplr connected by checking oraiAddress
       kwtAddress && loadKawaiiSubnetAmount(universalSwapStore, kwtAddress),
       metamaskAddress &&
@@ -135,11 +135,8 @@ async function loadCw20Balance(
     cwStargate.chainId,
     cwStargate.rpc
   );
-  console.log('client 2', client);
 
   const multicall = new MulticallQueryClient(client, network.multicall);
-
-  console.log('multicall', multicall);
 
   const res = await multicall.aggregate({
     queries: cw20Tokens.map(t => ({
@@ -160,8 +157,6 @@ async function loadCw20Balance(
       return [t.denom, amount];
     })
   );
-
-  console.log('amountDetails', amountDetails);
 
   universalSwapStore.updateAmounts(amountDetails);
 }
@@ -201,7 +196,7 @@ async function loadEvmEntries(
       return [token.denom, amount];
     });
   } catch (err) {
-    console.log('err 2', err);
+    console.log('loadEvmEntries error', err);
   }
 }
 
@@ -234,7 +229,6 @@ export async function loadKawaiiSubnetAmount(
       await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo)
     );
 
-    // update amounts
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
     console.log('loadKawaiiSubnetAmount err', err);
