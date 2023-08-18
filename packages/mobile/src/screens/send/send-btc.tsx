@@ -94,6 +94,7 @@ export const SendBtcScreen: FunctionComponent = ({ amount }) => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
+          <OWButton label="Send" />
         </OWBox>
       </View>
     </PageWithScrollView>
