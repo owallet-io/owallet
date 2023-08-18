@@ -594,9 +594,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     chainId: 'bitcoinTestnet',
     chainName: 'Bitcoin Testnet',
     bip44: {
-      coinType: 84
+      coinType: 1
     },
-    coinType: 84,
+    coinType: 1,
     stakeCurrency: {
       coinDenom: 'BTC',
       coinMinimalDenom: 'btc',

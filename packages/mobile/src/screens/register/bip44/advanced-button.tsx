@@ -80,6 +80,7 @@ export const BIP44SelectModal: FunctionComponent<{
 }> = registerModal(
   observer(({ bip44Option, close }) => {
     const { chainStore, appInitStore } = useStore();
+
     const scheme = appInitStore.getInitApp.theme;
 
     const styles = styling(scheme);
@@ -125,7 +126,9 @@ export const BIP44SelectModal: FunctionComponent<{
               ...typography['body2'],
               color: scheme === 'dark' ? colors['label'] : colors['sub-text']
             }}
-          >{`m/44’/`}</Text>
+          >{`m/${
+            chainStore.current.networkType === 'bitcoin' ? '84' : '44'
+          }’/`}</Text>
           <TextInput
             value={coinType.value}
             containerStyle={{

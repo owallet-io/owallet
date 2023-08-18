@@ -5,7 +5,7 @@ import { ChainGetter, QueryResponse } from '../../common';
 import { computed } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
-
+import { getBaseDerivationPath } from '@owallet/bitcoin';
 import {
   getScriptHash,
   getBalanceFromUtxos,
@@ -22,7 +22,12 @@ export class ObservableQueryBitcoinBalanceInner {
   ) {}
   @computed
   async balance(): Promise<CoinPretty | undefined> {
-    const path = `m/84'/1'/0'/0/0`;
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+
+    const path = getBaseDerivationPath({
+      selectedCrypto: this.chainId as string
+    }) as string;
+    console.log("🚀 ~ file: bitcoin-balance.ts:30 ~ ObservableQueryBitcoinBalanceInner ~ balance ~ path:", path)
     const scriptHash = getScriptHash(
       this.address,
       getCoinNetwork(this.chainId)
@@ -32,7 +37,6 @@ export class ObservableQueryBitcoinBalanceInner {
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-    const chainInfo = this.chainGetter.getChain(this.chainId);
 
     if (!res.data.balance) {
       console.log('Balance is 0');
