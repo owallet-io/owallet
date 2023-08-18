@@ -32,6 +32,7 @@ import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { toJS } from 'mobx';
 import { CWStargate } from '@src/common/cw-stargate';
+import { oraichainNetwork } from './config/chainInfos';
 
 const tokens: TokenInfo[] = [
   {
@@ -201,7 +202,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       accountStore.getAccount(KAWAII_ID)
     ]);
 
-    let addresses = {};
+    let loadTokenParams = {};
 
     accounts.map(async account => {
       if (account.chainId === ORAICHAIN_ID) {
@@ -210,29 +211,35 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         const client = await CWStargate.init(
           account,
           account.chainId,
-          chainStore.current.rpc
+          oraichainNetwork.rpc
         );
-        addresses = {
-          ...addresses,
+        loadTokenParams = {
+          ...loadTokenParams,
           oraiAddress: account.bech32Address,
           client
         };
       }
       if (account.chainId === ETH_ID) {
-        addresses = { ...addresses, metamaskAddress: account.evmosHexAddress };
+        loadTokenParams = {
+          ...loadTokenParams,
+          metamaskAddress: account.evmosHexAddress
+        };
       }
       if (account.chainId === TRON_ID) {
-        addresses = {
-          ...addresses,
+        loadTokenParams = {
+          ...loadTokenParams,
           tronAddress: Address.getBase58Address(account.evmosHexAddress)
         };
       }
       if (account.chainId === KAWAII_ID) {
-        addresses = { ...addresses, kwtAddress: account.bech32Address };
+        loadTokenParams = {
+          ...loadTokenParams,
+          kwtAddress: account.bech32Address
+        };
       }
     });
 
-    loadTokenAmounts(addresses);
+    loadTokenAmounts(loadTokenParams);
   };
 
   useEffect(() => {
