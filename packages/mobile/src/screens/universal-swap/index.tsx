@@ -195,29 +195,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const chainId = chainStore?.current?.chainId;
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
-
-  // const accountOrai = accountStore.getAccount('Oraichain');
-  // const accountEvm = accountStore.getAccount('0x01');
-  // const accountTron = accountStore.getAccount('0x2b6653dc');
-  // const accountKawaii = accountStore.getAccount('kawaii_6886-1');
-
-  // if (
-  //   accountEvm?.evmosHexAddress &&
-  //   accountKawaii?.bech32Address &&
-  //   accountTron?.evmosHexAddress &&
-  //   accountOrai?.bech32Address
-  // ) {
-  //   // console.log('client', client);
-
-  //   loadTokenAmounts({
-  //     kwtAddress: accountKawaii?.bech32Address,
-  //     metamaskAddress: accountEvm?.evmosHexAddress,
-  //     oraiAddress: accountOrai?.bech32Address,
-  //     tronAddress: Address.getBase58Address(accountTron?.evmosHexAddress)
-  //     // client
-  //   });
-  // }
-
   const handleFetchAmounts = async () => {
     const accounts = await Promise.all([
       accountStore.getAccount(ORAICHAIN_ID),
@@ -225,9 +202,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       accountStore.getAccount(TRON_ID),
       accountStore.getAccount(KAWAII_ID)
     ]);
-
     let loadTokenParams = {};
-
     try {
       accounts.map(async account => {
         if (account.chainId === ORAICHAIN_ID) {
@@ -272,8 +247,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     handleFetchAmounts();
   }, []);
-
-  console.log('universalSwapStore 2', universalSwapStore.getAmount);
 
   const [amount, setAmount] = useState({
     from: '1.273',

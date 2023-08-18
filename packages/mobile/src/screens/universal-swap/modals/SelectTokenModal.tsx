@@ -21,9 +21,12 @@ import { TokenInfo } from '../types';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
+  close?: () => void;
   data: TokenInfo[];
-  onActiveToken:(token:TokenInfo)=>void;
-}> = registerModal(({ close, onNetworkModal, data,onActiveToken }) => {
+  isOpen?: boolean;
+  onActiveToken: (token: TokenInfo) => void;
+  bottomSheetModalConfig?: unknown;
+}> = registerModal(({ close, onNetworkModal, data, onActiveToken }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { colors } = useTheme();
   const styles = styling(colors);
