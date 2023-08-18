@@ -68,7 +68,6 @@ export const AccountCard: FunctionComponent<{
 
   const totalPrice = priceStore.calculatePrice(total);
 
-  const safeAreaInsets = useSafeAreaInsets();
   const onPressBtnMain = name => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });

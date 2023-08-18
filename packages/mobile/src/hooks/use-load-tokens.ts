@@ -26,6 +26,7 @@ import {
   tokenMap
 } from '@src/screens/universal-swap/config/bridgeTokens';
 import { getEvmAddress } from '@src/screens/universal-swap/helper';
+import { UniversalSwapStore } from '@src/stores/universal_swap';
 
 export type LoadTokenParams = {
   refresh?: boolean;
@@ -38,7 +39,7 @@ export type LoadTokenParams = {
 type AmountDetails = { [denom: string]: string };
 
 async function loadNativeBalance(
-  updateAmounts: Function,
+  updateAmounts: UniversalSwapStore,
   address: string,
   tokenInfo: { chainId?: string; rpc?: string }
 ) {
@@ -63,7 +64,7 @@ async function loadNativeBalance(
     )
   );
 
-  updateAmounts(amountDetails);
+  updateAmounts.updateAmounts(amountDetails);
 }
 
 async function loadTokens(
@@ -96,7 +97,10 @@ async function loadTokens(
   );
 }
 
-async function loadTokensCosmos(updateAmounts: Function, address: string) {
+async function loadTokensCosmos(
+  updateAmounts: UniversalSwapStore,
+  address: string
+) {
   //   await handleCheckWallet();
   const { words, prefix } = bech32.decode(address);
   const cosmosInfos = chainInfos.filter(
@@ -111,7 +115,7 @@ async function loadTokensCosmos(updateAmounts: Function, address: string) {
 }
 
 async function loadCw20Balance(
-  universalSwapStore: any,
+  universalSwapStore: UniversalSwapStore,
   address: string,
   client: CosmWasmClient
 ) {
@@ -152,7 +156,6 @@ async function loadEvmEntries(
   multicallCustomContractAddress?: string
 ): Promise<[string, string][]> {
   const tokens = evmTokens.filter(t => t.chainId === chain.chainId);
-  console.log('tokens === 1', tokens, chain.rpc);
 
   if (!tokens.length) return [];
   const multicall = new Multicall({
@@ -173,12 +176,8 @@ async function loadEvmEntries(
     ]
   }));
 
-  console.log('input', input);
-
   try {
     const results: ContractCallResults = await multicall.call(input);
-
-    console.log('results', results);
 
     return tokens.map(token => {
       const amount =
@@ -191,12 +190,10 @@ async function loadEvmEntries(
 }
 
 async function loadEvmAmounts(
-  universalSwapStore: any,
+  universalSwapStore: UniversalSwapStore,
   evmAddress: string,
   chains: CustomChainInfo[]
 ) {
-  console.log('get here 2');
-
   const amountDetails = Object.fromEntries(
     flatten(
       await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain)))
@@ -207,11 +204,9 @@ async function loadEvmAmounts(
 }
 
 export async function loadKawaiiSubnetAmount(
-  universalSwapStore: any,
+  universalSwapStore: UniversalSwapStore,
   kwtAddress: string
 ) {
-  console.log('kwtAddress', kwtAddress);
-
   if (!kwtAddress) return;
   const kawaiiInfo = chainInfos.find(c => c.chainId === 'kawaii_6886-1');
   try {
@@ -223,8 +218,6 @@ export async function loadKawaiiSubnetAmount(
       await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo)
     );
 
-    console.log('amountDetails kwt', amountDetails);
-
     // update amounts
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
@@ -233,7 +226,7 @@ export async function loadKawaiiSubnetAmount(
 }
 
 export default function useLoadTokens(
-  universalSwapStore
+  universalSwapStore: UniversalSwapStore
 ): (params: LoadTokenParams) => Promise<void> {
   return loadTokens.bind(null, universalSwapStore);
 }
