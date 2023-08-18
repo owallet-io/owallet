@@ -31,6 +31,7 @@ import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { toJS } from 'mobx';
+import { CWStargate } from '@src/common/cw-stargate';
 
 const tokens: TokenInfo[] = [
   {
@@ -167,6 +168,8 @@ const balances: BalanceType[] = [
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, chainStore, universalSwapStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
+
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
@@ -191,32 +194,41 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
 
   const handleFetchAmounts = async () => {
-    const ids = await Promise.all([
+    const accounts = await Promise.all([
       accountStore.getAccount(ORAICHAIN_ID),
       accountStore.getAccount(ETH_ID),
       accountStore.getAccount(TRON_ID),
       accountStore.getAccount(KAWAII_ID)
     ]);
 
-    const client = '';
-
     let addresses = {};
 
-    ids.map(id => {
-      if (id.chainId === ORAICHAIN_ID) {
-        addresses = { ...addresses, oraiAddress: id.bech32Address };
-      }
-      if (id.chainId === ETH_ID) {
-        addresses = { ...addresses, metamaskAddress: id.evmosHexAddress };
-      }
-      if (id.chainId === TRON_ID) {
+    accounts.map(async account => {
+      if (account.chainId === ORAICHAIN_ID) {
+        console.log('account =--', account);
+
+        const client = await CWStargate.init(
+          account,
+          account.chainId,
+          chainStore.current.rpc
+        );
         addresses = {
           ...addresses,
-          tronAddress: Address.getBase58Address(id.evmosHexAddress)
+          oraiAddress: account.bech32Address,
+          client
         };
       }
-      if (id.chainId === KAWAII_ID) {
-        addresses = { ...addresses, kwtAddress: id.bech32Address };
+      if (account.chainId === ETH_ID) {
+        addresses = { ...addresses, metamaskAddress: account.evmosHexAddress };
+      }
+      if (account.chainId === TRON_ID) {
+        addresses = {
+          ...addresses,
+          tronAddress: Address.getBase58Address(account.evmosHexAddress)
+        };
+      }
+      if (account.chainId === KAWAII_ID) {
+        addresses = { ...addresses, kwtAddress: account.bech32Address };
       }
     });
 
