@@ -30,10 +30,7 @@ import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
-import { toJS } from 'mobx';
-import { CWStargate } from '@src/common/cw-stargate';
 import { oraichainNetwork } from './config/chainInfos';
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 
 const tokens: TokenInfo[] = [
   {

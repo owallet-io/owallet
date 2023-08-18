@@ -22,18 +22,13 @@ import { BIP44Selectable } from './bip44-selectable';
 import { useTheme } from '@src/themes/theme-provider';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
-import { colors, spacing } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
-import { API } from '../../common/api';
 import { TRON_ID, showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
-import { Address } from '@owallet/crypto';
-import { toJS } from 'mobx';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -47,8 +42,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
     accountStore,
     queriesStore,
     priceStore,
-    notificationStore,
-    universalSwapStore
+    notificationStore
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -62,25 +56,6 @@ export const HomeScreen: FunctionComponent = observer(props => {
     chainStoreIsInitializing,
     true
   );
-
-  // const accountOrai = accountStore.getAccount('Oraichain');
-  // const accountEvm = accountStore.getAccount('0x01');
-  // const accountTron = accountStore.getAccount('0x2b6653dc');
-  // const accountKawaii = accountStore.getAccount('kawaii_6886-1');
-
-  // if (
-  //   accountEvm?.evmosHexAddress &&
-  //   accountKawaii?.evmosHexAddress &&
-  //   accountTron?.evmosHexAddress &&
-  //   accountOrai?.bech32Address
-  // ) {
-  //   universalSwapStore.updateMetaMaskAddress(accountOrai?.bech32Address);
-  //   universalSwapStore.updateMetaMaskAddress(accountEvm?.evmosHexAddress);
-  //   universalSwapStore.updateMetaMaskAddress(accountKawaii?.bech32Address);
-  //   universalSwapStore.updateMetaMaskAddress(
-  //     Address.getBase58Address(accountTron?.evmosHexAddress)
-  //   );
-  // }
 
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
