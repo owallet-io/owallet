@@ -300,8 +300,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       subAmountTo
     : BigInt(0);
 
-  console.log('fromTokenBalance', fromTokenBalance);
-
   useEffect(() => {
     handleFetchAmounts();
     setTimeout(() => {

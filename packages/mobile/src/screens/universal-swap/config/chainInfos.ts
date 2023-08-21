@@ -76,6 +76,8 @@ export type CoinGeckoId =
   | 'oraidex'
   | 'usd-coin'
   | 'tron'
+  | 'weth'
+  | 'wbnb'
   | 'scatom';
 
 export type NetworkType = 'cosmos' | 'evm';

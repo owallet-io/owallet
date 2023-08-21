@@ -3,12 +3,16 @@ import { network } from '../config/networks';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { TokenItemType } from '../config/bridgeTokens';
 import {
+  AssetInfo,
   OraiswapTokenQueryClient,
-  OraiswapTokenTypes
+  OraiswapTokenTypes,
+  SwapOperation
 } from '@oraichain/oraidex-contracts-sdk';
 import { TokenInfo } from '../types/token';
 import { toTokenInfo } from '../libs/utils';
-import { swapEvmRoutes } from '../config/constants';
+import { ORAI_INFO, swapEvmRoutes } from '../config/constants';
+import { Pairs } from '../config/pools';
+import isEqual from 'lodash/isEqual';
 
 async function fetchTokenInfo(
   token: TokenItemType,
@@ -100,4 +104,58 @@ export function isEvmSwappable(data: {
   return true;
 }
 
-export { fetchTokenInfo, fetchTokenInfos };
+function parseTokenInfo(tokenInfo: TokenItemType, amount?: string | number) {
+  if (!tokenInfo?.contractAddress) {
+    if (amount)
+      return {
+        fund: { denom: tokenInfo.denom, amount: amount.toString() },
+        info: { native_token: { denom: tokenInfo.denom } }
+      };
+    return { info: { native_token: { denom: tokenInfo.denom } } };
+  }
+  return { info: { token: { contract_addr: tokenInfo?.contractAddress } } };
+}
+
+const generateSwapOperationMsgs = (
+  offerInfo: AssetInfo,
+  askInfo: AssetInfo
+): SwapOperation[] => {
+  const pairExist = Pairs.pairs.some(pair => {
+    let assetInfos = pair.asset_infos;
+    return (
+      (isEqual(assetInfos[0], offerInfo) && isEqual(assetInfos[1], askInfo)) ||
+      (isEqual(assetInfos[1], offerInfo) && isEqual(assetInfos[0], askInfo))
+    );
+  });
+
+  return pairExist
+    ? [
+        {
+          orai_swap: {
+            offer_asset_info: offerInfo,
+            ask_asset_info: askInfo
+          }
+        }
+      ]
+    : [
+        {
+          orai_swap: {
+            offer_asset_info: offerInfo,
+            ask_asset_info: ORAI_INFO
+          }
+        },
+        {
+          orai_swap: {
+            offer_asset_info: ORAI_INFO,
+            ask_asset_info: askInfo
+          }
+        }
+      ];
+};
+
+export {
+  fetchTokenInfo,
+  fetchTokenInfos,
+  parseTokenInfo,
+  generateSwapOperationMsgs
+};
