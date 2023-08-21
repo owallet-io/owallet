@@ -181,10 +181,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [string, string]
   >(['orai', 'usdt']);
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
-  // const { data: prices } = useCoinGeckoPrices(
-  //   universalSwapStore.getInitApp.cachePrices,
-  //   universalSwapStore.updateCachePrices
-  // );
+  const { data: prices } = useCoinGeckoPrices([], () => {});
 
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
@@ -373,7 +370,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             {Object.keys(universalSwapStore?.getAmount ?? {}).length}
           </Text>
           {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
-            return <Text style={{ color: 'red' }}>{a}</Text>;
+            return (
+              <View style={{ flexDirection: 'row' }}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    color: colors['title-modal-login-failed']
+                  }}
+                >
+                  {a}:{' '}
+                </Text>
+                <Text style={{ color: colors['text-primary'] }}>
+                  {universalSwapStore?.getAmount[a]}
+                </Text>
+              </View>
+            );
           })}
         </View>
         <View>

@@ -85,18 +85,5 @@ const styling = (colors: TypeTheme['colors']) =>
     },
     jc: {
       alignItems: 'center'
-    },
-    priceInput: {
-      justifyContent: 'space-between',
-      paddingVertical: 10
-    },
-    swapIcon: {
-      width: 32,
-      height: 32,
-      borderRadius: 32,
-      backgroundColor: colors['content-background'],
-      position: 'absolute',
-      bottom: -16,
-      alignSelf: 'center'
     }
   });

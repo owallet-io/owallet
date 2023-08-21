@@ -30,7 +30,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   useEffect(() => {
     Linking.getInitialURL()
-      .then((url) => {
+      .then(url => {
         if (url) {
           const SCHEME_IOS = 'owallet://open_url?url=';
           const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
@@ -39,7 +39,7 @@ export const AppNavigation: FunctionComponent = observer(() => {
           );
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.warn('Deeplinking error', err);
       });
     Linking.addEventListener('url', handleDeepLink);
@@ -53,11 +53,13 @@ export const AppNavigation: FunctionComponent = observer(() => {
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
           <NavigationContainer
-            theme={{
-              colors: {
-                background: colors['background']
-              }
-            } as any}
+            theme={
+              {
+                colors: {
+                  background: colors['background']
+                }
+              } as any
+            }
             ref={navigationRef}
           >
             <Stack.Navigator

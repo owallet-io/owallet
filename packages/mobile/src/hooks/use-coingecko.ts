@@ -1,7 +1,5 @@
-import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
 import { cosmosTokens } from '@src/screens/universal-swap/config/bridgeTokens';
-import { CoinGeckoId } from '@src/screens/universal-swap/config/chainInfos';
+import { useEffect, useState } from 'react';
 
 /**
  * Constructs the URL to retrieve prices from CoinGecko.
@@ -25,50 +23,35 @@ export type CoinGeckoPrices<T extends string> = {
  * Fetches prices of tokens from CoinGecko.
  * @returns The CoinGecko prices.
  */
-export const useCoinGeckoPrices = <T extends CoinGeckoId>(
-  cachePrices: any,
-  setCachePrices: Function,
-  options: Omit<
-    UseQueryOptions<CoinGeckoPrices<T>, unknown, CoinGeckoPrices<T>, string[]>,
-    'queryKey' | 'queryFn'
-  > = {}
-): UseQueryResult<CoinGeckoPrices<T>, unknown> => {
+export const useCoinGeckoPrices = () => {
+  const [data, setData] = useState();
   const tokens = [...new Set(cosmosTokens.map(t => t.coinGeckoId))];
   tokens.sort();
 
-  // use cached first then update by query, if is limited then return cached version
+  const getCoingeckoPrices = async () => {
+    const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
 
-  return useQuery({
-    initialData: cachePrices,
-    ...options,
-    // make unique
-    queryKey: ['coinGeckoPrices', ...tokens],
-    queryFn: async ({ signal }) => {
-      const coingeckoPricesURL = buildCoinGeckoPricesURL(tokens);
+    const prices = {};
 
-      const prices = { ...cachePrices };
-
-      // by default not return data then use cached version
-      try {
-        const resp = await fetch(coingeckoPricesURL, { signal });
-        const rawData = (await resp.json()) as {
-          [C in T]?: {
-            usd: number;
-          };
-        };
-        // update cached
-        for (const key in rawData) {
-          prices[key] = rawData[key].usd;
-        }
-
-        setCachePrices(prices);
-      } catch {
-        // remain old cache
+    // by default not return data then use cached version
+    try {
+      const resp = await fetch(coingeckoPricesURL, {});
+      const rawData = await resp.json();
+      // update cached
+      for (const key in rawData) {
+        prices[key] = rawData[key].usd;
       }
-
-      return Object.fromEntries(
-        tokens.map((token: any) => [token, prices[token]])
-      ) as CoinGeckoPrices<T>;
+    } catch {
+      // remain old cache
     }
-  });
+    setData(
+      Object.fromEntries(tokens.map((token: any) => [token, prices[token]]))
+    );
+  };
+
+  useEffect(() => {
+    getCoingeckoPrices();
+  }, []);
+  return { data };
+  // use cached first then update by query, if is limited then return cached version
 };

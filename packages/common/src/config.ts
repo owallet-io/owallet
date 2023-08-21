@@ -415,8 +415,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm']
   },
   {
-    rpc: 'https://rpc-cosmoshub.keplr.app',
-    rest: 'https://lcd-cosmoshub.keplr.app',
+    rpc: 'https://rpc-cosmos.oraidex.io',
+    rest: 'https://lcd-cosmos.oraidex.io',
     chainId: 'cosmoshub-4',
     chainName: 'Cosmos Hub',
     networkType: 'cosmos',

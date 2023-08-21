@@ -56,12 +56,13 @@ import {
  * @returns
  */
 export const getTransferTokenFee = async ({
-  remoteTokenDenom
+  remoteTokenDenom,
+  client
 }): Promise<Ratio | undefined> => {
   try {
     const ibcWasmContractAddress = process.env.REACT_APP_IBC_WASM_CONTRACT;
     const ibcWasmContract = new CwIcs20LatestQueryClient(
-      window.client,
+      client,
       ibcWasmContractAddress
     );
     const ratio = await ibcWasmContract.getTransferTokenFee({
