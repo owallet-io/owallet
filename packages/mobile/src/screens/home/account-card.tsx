@@ -42,39 +42,46 @@ export const AccountCard: FunctionComponent<{
   const queries = queriesStore.get(chainStore.current.chainId);
   const [totalBalance, setTotalBalance] = useState('0');
   const [totalAmount, setTotalAmount] = useState('0');
-
+  // const queryBitcoin = queries.queryBalances.getQueryBech32Address(account.bech32Address).balances
+  const queryStakable = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+    account.bech32Address
+  ).balance;
+  console.log("🚀 ~ file: account-card.tsx:49 ~ queryStakable:", queryStakable)
+  
   const getBalanceBtc = async (address) => {
-    const balanceBtc = await queries.bitcoin.queryBitcoinBalance
-      .getQueryBalance(address)
-      ?.balance();
-    const exchange = await getExchangeRate({
-      selectedCurrency: priceStore.defaultVsCurrency
-    });
+    // const balanceBtc = await queryBitcoin.balance();
+    // const ngon = queryBitcoin.balance;
+    // console.log("🚀 ~ file: account-card.tsx:49 ~ ngon:", ngon)
+    // const ngon = queryBitcoin.balance;
+    // console.log('🚀 ~ file: account-card.tsx:55 ~ getBalanceBtc ~ ngon:', ngon);
+    // const exchange = await getExchangeRate({
+    //   selectedCurrency: priceStore.defaultVsCurrency
+    // });
 
-    const amountData = getBalanceValue({
-      balance: Number(balanceBtc?.toCoin().amount),
-      cryptoUnit: 'BTC'
-    });
-    const exchangeRate = Number(exchange?.data);
-    const priceNative = Number(
-      priceStore.getPrice(
-        balanceBtc.currency?.coinGeckoId,
-        priceStore.defaultVsCurrency
-      )
-    );
-    const currencyFiat = priceStore.defaultVsCurrency;
-    const fiat = btcToFiat({
-      amount: amountData as number,
-      exchangeRate: !!exchangeRate ? exchangeRate : priceNative,
-      currencyFiat
-    });
-    setTotalBalance(`$${fiat}`);
-    const amount = formatBalance({
-      balance: Number(balanceBtc?.toCoin().amount),
-      cryptoUnit: 'BTC',
-      coin: chainStore.current.chainId
-    });
-    setTotalAmount(amount);
+    // const amountData = getBalanceValue({
+    //   balance: Number(balanceBtc?.toCoin().amount),
+    //   cryptoUnit: 'BTC'
+    // });
+    // const exchangeRate = Number(exchange?.data);
+    // const priceNative = Number(
+    //   priceStore.getPrice(
+    //     balanceBtc.currency?.coinGeckoId,
+    //     priceStore.defaultVsCurrency
+    //   )
+    // );
+    // const currencyFiat = priceStore.defaultVsCurrency;
+    // const fiat = btcToFiat({
+    //   amount: amountData as number,
+    //   exchangeRate: !!exchangeRate ? exchangeRate : priceNative,
+    //   currencyFiat
+    // });
+    // setTotalBalance(`$${fiat}`);
+    // const amount = formatBalance({
+    //   balance: Number(balanceBtc?.toCoin().amount),
+    //   cryptoUnit: 'BTC',
+    //   coin: chainStore.current.chainId
+    // });
+    // setTotalAmount(amount);
     return;
   };
   useEffect(() => {

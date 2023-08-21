@@ -8,3 +8,4 @@ export * from './cosmos-secret';
 export * from './store';
 export * from './cosmwasm';
 export * from './all';
+export * from './bitcoin';

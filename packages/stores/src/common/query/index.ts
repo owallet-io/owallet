@@ -51,7 +51,7 @@ type TokenInfo = {
   symbol: string;
   decimals: number;
   total_supply: any;
-}
+};
 
 /**
  * Base of the observable query classes.

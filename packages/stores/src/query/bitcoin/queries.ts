@@ -4,7 +4,8 @@ import { ChainGetter } from '../../common';
 import { KVStore } from '@owallet/common';
 import { DeepReadonly } from 'utility-types';
 import { OWallet } from '@owallet/types';
-import { ObservableQueryBitcoinBalance } from './bitcoin-balance';
+import { ObservableQueryBitcoinBalanceRegistry, ObservableQueryBitcoinBalance } from './bitcoin-balance';
+// import { ObservableQueryBitcoinBalance, } from './bitcoin-balance';
 
 export interface HasBtcQueries {
   bitcoin: BitcoinQueries;
@@ -37,7 +38,12 @@ export class BitcoinQueries {
     chainId: string,
     chainGetter: ChainGetter
   ) {
-    // queryEvmBalance, we need to seperate native balance from cosmos as it is default implementation
+    base.queryBalances.addBalanceRegistry(
+      new ObservableQueryBitcoinBalanceRegistry(kvStore)
+    );
+
+    
+    // queryBitcoinBalance, we need to seperate native balance from cosmos as it is default implementation
     // other implementations will require corresponding templates
     this.queryBitcoinBalance = new ObservableQueryBitcoinBalance(
       kvStore,

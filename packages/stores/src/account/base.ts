@@ -385,7 +385,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         wsObject: this.opts.wsObject
       }
     );
-    txTracer.traceTx(txHash).then(tx => {
+    txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
       runInAction(() => {
@@ -397,7 +397,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
           .balances.find(
-            bal => bal.currency.coinMinimalDenom === feeAmount.denom
+            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
           );
 
         if (bal) {
@@ -543,8 +543,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    const sleep = (milliseconds) => {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (
@@ -587,52 +587,23 @@ export class AccountSetBase<MsgOpts, Queries> {
     };
 
     waitForPendingTransaction(rpc, txHash, onFulfill);
+  }
+  async sendBtcMsgs(
+    type: string | 'unknown',
+    msgs: Msg,
+    memo: string = '',
+    fee: StdFeeEthereum,
+    signOptions?: OWalletSignOptions,
+    onTxEvents?:
+      | ((tx: any) => void)
+      | {
+          onBroadcastFailed?: (e?: Error) => void;
+          onBroadcasted?: (txHash: Uint8Array) => void;
+          onFulfill?: (tx: any) => void;
+        }
+  ) {
+    
 
-    // if (this.opts.preTxEvents?.onFulfill) {
-    //   this.opts.preTxEvents.onFulfill(txInfo);
-    // }
-
-    // if (onFulfill) {
-    //   onFulfill(txInfo);
-    // }
-
-    // const txTracer = new TendermintTxTracer(
-    //   this.chainGetter.getChain(this.chainId).rpc,
-    //   '/websocket',
-    //   {
-    //     wsObject: this.opts.wsObject
-    //   }
-    // );
-
-    // txTracer.traceTx(txHash).then((tx) => {
-    //   txTracer.close();
-
-    //   runInAction(() => {
-    //     this._isSendingMsg = false;
-    //   });
-
-    //   // After sending tx, the balances is probably changed due to the fee.
-    //   // for (const feeAmount of fee.amount) {
-    //   //   const queryEvmBalance = this.queries.queryEvmBalances.getQueryBalance(this.evmosHexAddress)
-
-    //   //   if (queryEvmBalance) {
-    //   //     queryEvmBalance.fetch();
-    //   //   }
-    //   // }
-
-    //   // Always add the tx hash data.
-    //   if (tx && !tx.hash) {
-    //     tx.hash = Buffer.from(txHash).toString('hex');
-    //   }
-
-    //   if (this.opts.preTxEvents?.onFulfill) {
-    //     this.opts.preTxEvents.onFulfill(tx);
-    //   }
-
-    //   if (onFulfill) {
-    //     onFulfill(tx);
-    //   }
-    // });
   }
 
   async sendToken(

@@ -59,16 +59,16 @@ export const TokensCard: FunctionComponent<{
       : account.bech32Address
   );
   const getBalancesBtc = async (address) => {
-    await delay(2000);
-    const queriesBalancesBtc = await queries.bitcoin.queryBitcoinBalance
-      .getQueryBalance(address)
-      .balances();
-    console.log(
-      '🚀 ~ file: tokens-card.tsx:66 ~ getBalancesBtc ~ queriesBalancesBtc:',
-      queriesBalancesBtc
-    );
+    // await delay(2000);
+    // const queriesBalancesBtc = await queries.bitcoin.queryBitcoinBalance
+    //   .getQueryBalance(address)
+    //   .balances();
+    // console.log(
+    //   '🚀 ~ file: tokens-card.tsx:66 ~ getBalancesBtc ~ queriesBalancesBtc:',
+    //   queriesBalancesBtc
+    // );
 
-    setTokens(queriesBalancesBtc);
+    // setTokens(queriesBalancesBtc);
   };
   useEffect(() => {
     if (
