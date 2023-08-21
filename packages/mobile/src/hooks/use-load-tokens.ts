@@ -25,9 +25,10 @@ import { getEvmAddress } from '@src/screens/universal-swap/helper';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
 import { CWStargate } from '@src/common/cw-stargate';
 import { OWallet } from '@owallet/provider';
+import { AccountWithAll } from '@owallet/stores';
 
 export type CWStargateType = {
-  account: OWallet;
+  account: AccountWithAll;
   chainId: string;
   rpc: string;
 };

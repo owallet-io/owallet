@@ -36,6 +36,7 @@ import { getTokenOnOraichain } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
 import { toSubAmount } from './libs/utils';
+import { useSimulate } from '@src/hooks/useSimulate';
 
 const tokens: TokenInfo[] = [
   {
@@ -173,6 +174,7 @@ const balances: BalanceType[] = [
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, chainStore, universalSwapStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
 
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
@@ -185,7 +187,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
   >(['orai', 'usdt']);
-  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState([
+    {},
+    {}
+  ]);
+
   const { data: prices } = useCoinGeckoPrices();
 
   console.log('prices ===', prices);
@@ -211,8 +217,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       tokenMap[toTokenDenom];
 
   const getTokenInfos = async () => {
-    const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
-
     const client = await CWStargate.init(
       accountOrai,
       ORAICHAIN_ID,
@@ -220,7 +224,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
 
     const data = await fetchTokenInfos([fromToken!, toToken!], client);
-    console.log('data ===', data);
 
     return;
   };
@@ -292,13 +295,46 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     originalToToken
   );
   const fromTokenBalance = originalFromToken
-    ? BigInt(universalSwapStore.getAmount[originalFromToken.denom] ?? '0') +
+    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? '0') +
       subAmountFrom
     : BigInt(0);
+
+  console.log('initAmountfromTokenBalance', fromTokenBalance);
+
   const toTokenBalance = originalToToken
-    ? BigInt(universalSwapStore.getAmount[originalToToken.denom] ?? '0') +
+    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') +
       subAmountTo
     : BigInt(0);
+
+  console.log('toTokenBalance', toTokenBalance);
+
+  const { simulateData, setSwapAmount, fromAmountToken, toAmountToken } =
+    useSimulate(
+      {
+        account: accountOrai,
+        chainId: ORAICHAIN_ID,
+        rpc: oraichainNetwork.rpc
+      },
+      fromTokenInfoData,
+      toTokenInfoData,
+      originalFromToken,
+      originalToToken
+    );
+
+  console.log('simulateData', simulateData);
+
+  const { toAmountToken: averageRatio } = useSimulate(
+    {
+      account: accountOrai,
+      chainId: ORAICHAIN_ID,
+      rpc: oraichainNetwork.rpc
+    },
+    fromTokenInfoData,
+    toTokenInfoData,
+    originalFromToken,
+    originalToToken,
+    1
+  );
 
   useEffect(() => {
     handleFetchAmounts();
