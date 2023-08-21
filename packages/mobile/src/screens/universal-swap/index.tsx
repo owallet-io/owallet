@@ -243,6 +243,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     handleFetchAmounts();
+    setTimeout(() => {
+      handleFetchAmounts();
+    }, 1000);
   }, []);
 
   const [amount, setAmount] = useState({
@@ -366,6 +369,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           />
         </View>
         <View>
+          <Text style={{ color: 'red' }}>
+            {Object.keys(universalSwapStore?.getAmount ?? {}).length}
+          </Text>
           {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
             return <Text style={{ color: 'red' }}>{a}</Text>;
           })}

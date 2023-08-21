@@ -40,7 +40,7 @@ import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
-import { UniversalSwapStore, universalSwap } from './universal_swap';
+import { UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -284,7 +284,7 @@ export class RootStore {
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
-    this.universalSwapStore = universalSwap;
+    this.universalSwapStore = new UniversalSwapStore();
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore =>
