@@ -41,8 +41,10 @@ import {
 } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
-import { toDisplay, toSubAmount } from './libs/utils';
+import { getTotalUsd, toDisplay, toSubAmount } from './libs/utils';
 import { useSimulate } from '@src/hooks/useSimulate';
+import { AmountDetails } from './types/token';
+import { OraiIcon } from '@src/components/icon/orai';
 
 const tokens: TokenInfo[] = [
   {
@@ -532,10 +534,35 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </Text>
           {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
             const foundToken = filteredFromTokens.find(t => t.denom === a);
-            console.log('foundToken', foundToken);
+            let totalUsd;
+            if (foundToken) {
+              console.log('foundToken', foundToken);
+
+              const subAmounts = Object.fromEntries(
+                Object.entries(universalSwapStore?.getAmount).filter(
+                  ([denom]) => tokenMap?.[denom]?.chainId === foundToken.chainId
+                )
+              ) as AmountDetails;
+              console.log('prices', prices);
+
+              totalUsd = getTotalUsd(subAmounts, prices);
+            }
 
             return (
               <View style={{ flexDirection: 'row' }}>
+                {foundToken ? (
+                  <View
+                    style={{
+                      backgroundColor: colors['background-btn-primary'],
+                      borderRadius: 32
+                    }}
+                  >
+                    <OraiIcon />
+                    {/* {foundToken.Icon()} */}
+                  </View>
+                ) : (
+                  <Text>? - </Text>
+                )}
                 <Text
                   numberOfLines={1}
                   style={{
@@ -549,6 +576,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                     universalSwapStore?.getAmount[a],
                     foundToken?.decimals
                   )}
+                  :{' '}
+                </Text>
+                <Text style={{ color: colors['text-primary'] }}>
+                  {totalUsd ? '$' + totalUsd.toFixed(2) : '$0'}
                 </Text>
               </View>
             );

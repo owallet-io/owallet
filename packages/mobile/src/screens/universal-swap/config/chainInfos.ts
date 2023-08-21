@@ -85,8 +85,8 @@ export type CoinIcon = React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 export type BridgeAppCurrency = any & {
   readonly bridgeTo?: NetworkChainId[];
   readonly coinGeckoId?: CoinGeckoId;
-  readonly Icon?: CoinIcon;
-  readonly IconLight?: CoinIcon;
+  readonly Icon?: any;
+  readonly IconLight?: any;
   readonly bridgeNetworkIdentifier?: EvmChainId;
   readonly coinDecimals: 6 | 18;
   readonly contractAddress?: string;
@@ -106,8 +106,8 @@ export interface CustomChainInfo
   > {
   readonly chainId: NetworkChainId;
   readonly chainName: NetworkName;
-  readonly Icon?: CoinIcon;
-  readonly IconLight?: CoinIcon;
+  readonly Icon?: any;
+  readonly IconLight?: any;
   readonly networkType: NetworkType;
   readonly bip44: {
     coinType: CoinType;

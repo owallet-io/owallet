@@ -11,3 +11,4 @@ export type TokenInfo = TokenItemType & {
 export type PairInfoExtend = PairInfo & {
   asset_infos_raw: [string, string];
 };
+export type AmountDetails = { [denom: string]: string };

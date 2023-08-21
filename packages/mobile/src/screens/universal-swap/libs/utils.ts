@@ -1,7 +1,8 @@
 import { TokenInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapToken.types';
 import { TokenItemType, tokenMap } from '../config/bridgeTokens';
 import { TokenInfo } from '../types';
-type AmountDetails = { [denom: string]: string };
+import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
+import { AmountDetails } from '../types/token';
 export const truncDecimals = 6;
 export const atomic = 10 ** truncDecimals;
 export class Utils {
@@ -79,6 +80,22 @@ export const toDisplay = (
     Number(returnAmount) /
     (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals)
   );
+};
+
+export const getTotalUsd = (
+  amounts: AmountDetails,
+  prices: CoinGeckoPrices<string>
+): number => {
+  let usd = 0;
+
+  for (const denom in amounts) {
+    const tokenInfo = tokenMap[denom];
+    if (!tokenInfo) continue;
+    const amount = toDisplay(amounts[denom], tokenInfo.decimals);
+
+    usd += amount * (prices[tokenInfo.coinGeckoId] ?? 0);
+  }
+  return usd;
 };
 
 export const getSubAmountDetails = (
