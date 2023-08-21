@@ -8,6 +8,7 @@ import {
 } from '@oraichain/oraidex-contracts-sdk';
 import { TokenInfo } from '../types/token';
 import { toTokenInfo } from '../libs/utils';
+import { swapEvmRoutes } from '../config/constants';
 
 async function fetchTokenInfo(
   token: TokenItemType,
@@ -56,3 +57,47 @@ async function fetchTokenInfos(
   }
   return tokenInfos;
 }
+export function buildSwapRouterKey(
+  fromContractAddr: string,
+  toContractAddr: string
+) {
+  return `${fromContractAddr}-${toContractAddr}`;
+}
+
+export function getEvmSwapRoute(
+  chainId: string,
+  fromContractAddr: string,
+  toContractAddr: string
+): string[] | undefined {
+  const chainRoutes = swapEvmRoutes[chainId];
+  let route: string[] | undefined =
+    chainRoutes[buildSwapRouterKey(fromContractAddr, toContractAddr)];
+  if (route) return route;
+  // because the route can go both ways. Eg: WBNB->AIRI, if we want to swap AIRI->WBNB, then first we find route WBNB->AIRI, then we reverse the route
+  route = chainRoutes[buildSwapRouterKey(toContractAddr, fromContractAddr)];
+  if (route) {
+    return [].concat(route).reverse();
+  }
+  return undefined;
+}
+
+export function isEvmSwappable(data: {
+  fromChainId: string;
+  toChainId: string;
+  fromContractAddr?: string;
+  toContractAddr?: string;
+}): boolean {
+  const { fromChainId, fromContractAddr, toChainId, toContractAddr } = data;
+  // cant swap if they are not on the same evm chain
+  if (fromChainId !== toChainId) return false;
+  // cant swap on evm if chain id is not eth or bsc
+  if (fromChainId !== '0x01' && fromChainId !== '0x38') return false;
+  // if the tokens do not have contract addresses then we skip
+  if (!fromContractAddr || !toContractAddr) return false;
+  // only swappable if there's a route to swap from -> to
+  if (!getEvmSwapRoute(fromChainId, fromContractAddr, toContractAddr))
+    return false;
+  return true;
+}
+
+export { fetchTokenInfo, fetchTokenInfos };

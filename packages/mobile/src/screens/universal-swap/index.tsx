@@ -31,6 +31,11 @@ import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { oraichainNetwork } from './config/chainInfos';
+import { tokenMap } from './config/bridgeTokens';
+import { getTokenOnOraichain } from './helper';
+import { fetchTokenInfos, isEvmSwappable } from './api';
+import { CWStargate } from '@src/common/cw-stargate';
+import { toSubAmount } from './libs/utils';
 
 const tokens: TokenInfo[] = [
   {
@@ -181,8 +186,48 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [string, string]
   >(['orai', 'usdt']);
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
-  const { data: prices } = useCoinGeckoPrices([], () => {});
+  const { data: prices } = useCoinGeckoPrices();
 
+  console.log('prices ===', prices);
+
+  // get token on oraichain to simulate swap amount.
+  const originalFromToken = tokenMap[fromTokenDenom];
+  const originalToToken = tokenMap[toTokenDenom];
+  const isEvmSwap = isEvmSwappable({
+    fromChainId: originalFromToken.chainId,
+    toChainId: originalToToken.chainId,
+    fromContractAddr: originalFromToken.contractAddress,
+    toContractAddr: originalToToken.contractAddress
+  });
+
+  // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
+  const fromToken = isEvmSwap
+    ? tokenMap[fromTokenDenom]
+    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ??
+      tokenMap[fromTokenDenom];
+  const toToken = isEvmSwap
+    ? tokenMap[toTokenDenom]
+    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
+      tokenMap[toTokenDenom];
+
+  const getTokenInfos = async () => {
+    const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
+
+    const client = await CWStargate.init(
+      accountOrai,
+      ORAICHAIN_ID,
+      oraichainNetwork.rpc
+    );
+
+    const data = await fetchTokenInfos([fromToken!, toToken!], client);
+    console.log('data ===', data);
+
+    return;
+  };
+
+  useEffect(() => {
+    getTokenInfos();
+  }, []);
   const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
@@ -237,6 +282,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error loadTokenAmounts', error);
     }
   };
+
+  const subAmountFrom = toSubAmount(
+    universalSwapStore.getAmount,
+    originalFromToken
+  );
+  const subAmountTo = toSubAmount(
+    universalSwapStore.getAmount,
+    originalToToken
+  );
+  const fromTokenBalance = originalFromToken
+    ? BigInt(universalSwapStore.getAmount[originalFromToken.denom] ?? '0') +
+      subAmountFrom
+    : BigInt(0);
+  const toTokenBalance = originalToToken
+    ? BigInt(universalSwapStore.getAmount[originalToToken.denom] ?? '0') +
+      subAmountTo
+    : BigInt(0);
+
+  console.log('fromTokenBalance', fromTokenBalance);
 
   useEffect(() => {
     handleFetchAmounts();

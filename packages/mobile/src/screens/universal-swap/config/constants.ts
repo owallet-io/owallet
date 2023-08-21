@@ -83,9 +83,63 @@ export const OPTIONS_SLIPPAGE = [1, 3, 5];
 export const DEFAULT_SLIPPAGE = OPTIONS_SLIPPAGE[0];
 export const DEFAULT_MANUAL_SLIPPAGE = 2.5;
 
+export const WRAP_BNB_CONTRACT = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+
+export const WRAP_ETH_CONTRACT = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
 // create cw20 token
 export const CODE_ID_CW20 = 761;
 export const CW20_DECIMALS = 6;
 
 // type switch wallet between keplr and owallet
 export type WalletType = 'keplr' | 'owallet';
+
+export const swapEvmRoutes: {
+  [network: string]: {
+    [pair: string]: string[];
+  };
+} = {
+  '0x38': {
+    [`${WRAP_BNB_CONTRACT}-${USDT_BSC_CONTRACT}`]: [
+      WRAP_BNB_CONTRACT,
+      USDT_BSC_CONTRACT
+    ],
+    [`${WRAP_BNB_CONTRACT}-${USDT_TRON_CONTRACT}`]: [
+      WRAP_BNB_CONTRACT,
+      USDT_BSC_CONTRACT
+    ],
+    [`${WRAP_BNB_CONTRACT}-${ORAI_BSC_CONTRACT}`]: [
+      WRAP_BNB_CONTRACT,
+      ORAI_BSC_CONTRACT
+    ],
+    [`${WRAP_BNB_CONTRACT}-${AIRI_BSC_CONTRACT}`]: [
+      WRAP_BNB_CONTRACT,
+      AIRI_BSC_CONTRACT
+    ],
+    [`${USDT_BSC_CONTRACT}-${AIRI_BSC_CONTRACT}`]: [
+      USDT_BSC_CONTRACT,
+      WRAP_BNB_CONTRACT,
+      AIRI_BSC_CONTRACT
+    ],
+    [`${USDT_BSC_CONTRACT}-${ORAI_BSC_CONTRACT}`]: [
+      USDT_BSC_CONTRACT,
+      WRAP_BNB_CONTRACT,
+      ORAI_BSC_CONTRACT
+    ],
+    [`${ORAI_BSC_CONTRACT}-${AIRI_BSC_CONTRACT}`]: [
+      ORAI_BSC_CONTRACT,
+      WRAP_BNB_CONTRACT,
+      AIRI_BSC_CONTRACT
+    ]
+  },
+  '0x01': {
+    [`${WRAP_ETH_CONTRACT}-${USDC_ETH_CONTRACT}`]: [
+      WRAP_ETH_CONTRACT,
+      USDC_ETH_CONTRACT
+    ],
+    [`${WRAP_ETH_CONTRACT}-${ORAI_ETH_CONTRACT}`]: [
+      WRAP_ETH_CONTRACT,
+      ORAI_ETH_CONTRACT
+    ]
+  }
+};
