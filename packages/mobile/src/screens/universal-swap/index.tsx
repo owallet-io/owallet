@@ -31,8 +31,14 @@ import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { oraichainNetwork } from './config/chainInfos';
-import { TokenItemType, tokenMap } from './config/bridgeTokens';
-import { SwapDirection, filterTokens, getTokenOnOraichain } from './helper';
+import { TokenItemType, evmTokens, tokenMap } from './config/bridgeTokens';
+import {
+  SwapDirection,
+  filterTokens,
+  getTokenOnOraichain,
+  getTokenOnSpecificChainId,
+  isSupportedNoPoolSwapEvm
+} from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
 import { toDisplay, toSubAmount } from './libs/utils';
@@ -198,9 +204,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     TokenInfo[]
   >([]);
 
+  console.log('[fromTokenDenom, toTokenDenom]', [fromTokenDenom, toTokenDenom]);
+
   const { data: prices } = useCoinGeckoPrices();
 
   console.log('prices ===', prices);
+  useEffect(() => {
+    handleFetchAmounts();
+    setTimeout(() => {
+      handleFetchAmounts();
+    }, 1000);
+  }, []);
 
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
@@ -324,6 +338,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     setFilteredToTokens(filteredToTokens);
 
+    console.log('filteredToTokens', filteredToTokens);
+
     const filteredFromTokens = filterTokens(
       toToken.chainId,
       toToken.coinGeckoId,
@@ -332,6 +348,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       SwapDirection.From
     );
     setFilteredFromTokens(filteredFromTokens);
+
+    console.log('filteredFromTokens', filteredFromTokens);
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken]);
@@ -364,11 +382,29 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   );
 
   useEffect(() => {
-    handleFetchAmounts();
-    setTimeout(() => {
-      handleFetchAmounts();
-    }, 1000);
-  }, []);
+    // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
+    if (
+      isSupportedNoPoolSwapEvm(toToken.coinGeckoId) &&
+      !isSupportedNoPoolSwapEvm(fromToken.coinGeckoId)
+    ) {
+      const fromTokenSameToChainId = getTokenOnSpecificChainId(
+        fromToken.coinGeckoId,
+        toToken.chainId
+      );
+      if (!fromTokenSameToChainId) {
+        const sameChainIdTokens = evmTokens.find(
+          t => t.chainId === toToken.chainId
+        );
+        if (!sameChainIdTokens)
+          throw Error(
+            'Impossible case!. An evm chain should at least have one token'
+          );
+        setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
+        return;
+      }
+      setSwapTokens([fromTokenSameToChainId.denom, toToken.denom]);
+    }
+  }, [fromToken]);
 
   const [amount, setAmount] = useState({
     from: '1.273',
