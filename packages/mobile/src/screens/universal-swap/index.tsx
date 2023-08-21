@@ -31,8 +31,8 @@ import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { oraichainNetwork } from './config/chainInfos';
-import { tokenMap } from './config/bridgeTokens';
-import { getTokenOnOraichain } from './helper';
+import { TokenItemType, tokenMap } from './config/bridgeTokens';
+import { SwapDirection, filterTokens, getTokenOnOraichain } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
 import { toDisplay, toSubAmount } from './libs/utils';
@@ -183,14 +183,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [swapLoading, setSwapLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [taxRate, setTaxRate] = useState('');
+  const [searchTokenName, setSearchTokenName] = useState('');
+  const [filteredToTokens, setFilteredToTokens] = useState(
+    [] as TokenItemType[]
+  );
+  const [filteredFromTokens, setFilteredFromTokens] = useState(
+    [] as TokenItemType[]
+  );
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
   >(['orai', 'usdt']);
-  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState([
-    {},
-    {}
-  ]);
+  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<
+    TokenInfo[]
+  >([]);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -224,7 +230,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
 
     const data = await fetchTokenInfos([fromToken!, toToken!], client);
-
+    setTokenInfoData(data);
     return;
   };
 
@@ -307,7 +313,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     : BigInt(0);
 
   console.log('toTokenBalance', toDisplay(toTokenBalance));
+  // process filter from & to tokens
+  useEffect(() => {
+    const filteredToTokens = filterTokens(
+      fromToken.chainId,
+      fromToken.coinGeckoId,
+      fromTokenDenom,
+      searchTokenName,
+      SwapDirection.To
+    );
+    setFilteredToTokens(filteredToTokens);
 
+    const filteredFromTokens = filterTokens(
+      toToken.chainId,
+      toToken.coinGeckoId,
+      toTokenDenom,
+      searchTokenName,
+      SwapDirection.From
+    );
+    setFilteredFromTokens(filteredFromTokens);
+
+    // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
+  }, [fromToken, toToken]);
   const { simulateData, setSwapAmount, fromAmountToken, toAmountToken } =
     useSimulate(
       {

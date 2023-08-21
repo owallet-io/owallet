@@ -6,7 +6,8 @@ import { CoinGeckoId, NetworkChainId } from '../config/chainInfos';
 import {
   TokenItemType,
   flattenTokens,
-  oraichainTokens
+  oraichainTokens,
+  swapToTokens
 } from '../config/bridgeTokens';
 import { TokenInfo } from '../types/token';
 import { SimulateSwapOperationsResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapRouter.types';
@@ -19,12 +20,17 @@ import {
 import { toDisplay } from '../libs/utils';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
-import { proxyContractInfo } from '../config/constants';
+import { proxyContractInfo, swapEvmRoutes } from '../config/constants';
 import {
   CosmWasmClient,
   OraiswapRouterQueryClient
 } from '@oraichain/oraidex-contracts-sdk';
 import { AssetInfo } from '@oraichain/common-contracts-sdk';
+
+export enum SwapDirection {
+  From,
+  To
+}
 
 export const calculateTimeoutTimestamp = (timeout: number): string => {
   return Long.fromNumber(Math.floor(Date.now() / 1000) + timeout)
@@ -216,4 +222,38 @@ export async function handleSimulateSwap(
     });
   }
   return simulateSwap(query, client);
+}
+
+export function filterTokens(
+  chainId: string,
+  coingeckoId: CoinGeckoId,
+  denom: string,
+  searchTokenName: string,
+  direction: SwapDirection
+) {
+  // basic filter. Dont include itself & only collect tokens with searched letters
+  let filteredToTokens = swapToTokens.filter(
+    token => token.denom !== denom && token.name.includes(searchTokenName)
+  );
+  // special case for tokens not having a pool on Oraichain
+  if (isSupportedNoPoolSwapEvm(coingeckoId)) {
+    const swappableTokens = Object.keys(swapEvmRoutes[chainId]).map(
+      key => key.split('-')[1]
+    );
+    const filteredTokens = filteredToTokens.filter(token =>
+      swappableTokens.includes(token.contractAddress)
+    );
+
+    // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
+    if (direction === SwapDirection.To)
+      return [
+        ...new Set(
+          filteredTokens.concat(
+            filteredTokens.map(token => getTokenOnOraichain(token.coinGeckoId))
+          )
+        )
+      ];
+    filteredToTokens = filteredTokens;
+  }
+  return filteredToTokens;
 }
