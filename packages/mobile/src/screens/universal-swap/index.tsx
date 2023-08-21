@@ -35,7 +35,7 @@ import { tokenMap } from './config/bridgeTokens';
 import { getTokenOnOraichain } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
-import { toSubAmount } from './libs/utils';
+import { toDisplay, toSubAmount } from './libs/utils';
 import { useSimulate } from '@src/hooks/useSimulate';
 
 const tokens: TokenInfo[] = [
@@ -299,14 +299,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       subAmountFrom
     : BigInt(0);
 
-  console.log('initAmountfromTokenBalance', fromTokenBalance);
+  console.log('initAmountfromTokenBalance', toDisplay(fromTokenBalance));
 
   const toTokenBalance = originalToToken
     ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') +
       subAmountTo
     : BigInt(0);
 
-  console.log('toTokenBalance', toTokenBalance);
+  console.log('toTokenBalance', toDisplay(toTokenBalance));
 
   const { simulateData, setSwapAmount, fromAmountToken, toAmountToken } =
     useSimulate(
@@ -479,7 +479,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                   {a}:{' '}
                 </Text>
                 <Text style={{ color: colors['text-primary'] }}>
-                  {universalSwapStore?.getAmount[a]}
+                  {toDisplay(universalSwapStore?.getAmount[a])}
                 </Text>
               </View>
             );
