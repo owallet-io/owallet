@@ -531,6 +531,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             {Object.keys(universalSwapStore?.getAmount ?? {}).length}
           </Text>
           {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
+            const foundToken = filteredFromTokens.find(t => t.denom === a);
+            console.log('foundToken', foundToken);
+
             return (
               <View style={{ flexDirection: 'row' }}>
                 <Text
@@ -539,10 +542,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                     color: colors['title-modal-login-failed']
                   }}
                 >
-                  {a}:{' '}
+                  {foundToken?.name ?? '?'} - {foundToken?.org ?? '?'}:{' '}
                 </Text>
                 <Text style={{ color: colors['text-primary'] }}>
-                  {toDisplay(universalSwapStore?.getAmount[a])}
+                  {toDisplay(
+                    universalSwapStore?.getAmount[a],
+                    foundToken?.decimals
+                  )}
                 </Text>
               </View>
             );
