@@ -47,8 +47,10 @@ import {
 } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
-import { toDisplay, toSubAmount } from './libs/utils';
+import { getTotalUsd, toDisplay, toSubAmount } from './libs/utils';
 import { useSimulate } from '@src/hooks/useSimulate';
+import { AmountDetails } from './types/token';
+import FastImage from 'react-native-fast-image';
 
 type BalanceType = {
   id: string;
@@ -430,6 +432,72 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       disableSafeArea={false}
       showsVerticalScrollIndicator={false}
     >
+      <View>
+        <Text style={{ color: 'red' }}>
+          {Object.keys(universalSwapStore?.getAmount ?? {}).length}
+        </Text>
+        {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
+          const foundToken = filteredToTokens.find(t => t.denom === a);
+          let totalUsd;
+          if (foundToken) {
+            const subAmounts = Object.fromEntries(
+              Object.entries(universalSwapStore?.getAmount).filter(
+                ([denom]) => tokenMap?.[denom]?.chainId === foundToken.chainId
+              )
+            ) as AmountDetails;
+            totalUsd = getTotalUsd(subAmounts, prices, foundToken);
+          }
+
+          return (
+            <View style={{ flexDirection: 'row' }}>
+              {foundToken ? (
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    backgroundColor: colors['gray-10']
+                  }}
+                >
+                  <FastImage
+                    style={{
+                      width: 24,
+                      height: 24
+                    }}
+                    resizeMode={FastImage.resizeMode.contain}
+                    source={{
+                      uri: foundToken.Icon
+                    }}
+                  />
+                </View>
+              ) : (
+                <Text>? - </Text>
+              )}
+              <Text
+                numberOfLines={1}
+                style={{
+                  color: colors['title-modal-login-failed']
+                }}
+              >
+                {foundToken?.name ?? '?'} - {foundToken?.org ?? '?'}:{' '}
+              </Text>
+              <Text style={{ color: colors['text-primary'] }}>
+                {toDisplay(
+                  universalSwapStore?.getAmount[a],
+                  foundToken?.decimals
+                )}
+                :{' '}
+              </Text>
+              <Text style={{ color: colors['text-primary'] }}>
+                {totalUsd ? '$' + totalUsd.toFixed(2) : '$0'}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
       <SlippageModal
         close={() => {
           setIsSlippageModal(false);

@@ -41,7 +41,7 @@ export const MainTabNavigation: FC = observer(() => {
       screenOptions={({ route }) => {
         return {
           tabBarIcon: ({ color, focused }) => {
-            if (route?.name === SCREENS.TABS.SendNavigation) {
+            if (route?.name === SCREENS.TABS.UniversalSwap) {
               return (
                 <View style={styles.paddingIcon}>
                   <OWIcon
@@ -56,7 +56,6 @@ export const MainTabNavigation: FC = observer(() => {
                 </View>
               );
             }
-
             return (
               <OWIcon
                 name={`${ICONS_TITLE[route.name]}-${
@@ -117,21 +116,21 @@ export const MainTabNavigation: FC = observer(() => {
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
-      <Tab.Screen
+      {/* <Tab.Screen
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
         initialParams={{
           currency: chainStore.current.stakeCurrency.coinMinimalDenom,
           chainId: chainStore.current.chainId
         }}
-      />
-      {/* <Tab.Screen
+      /> */}
+      <Tab.Screen
         name={SCREENS.TABS.UniversalSwap}
         component={UniversalSwapStackScreen}
         options={{
           unmountOnBlur: true
         }}
-      /> */}
+      />
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
         name={SCREENS.TABS.Settings}
