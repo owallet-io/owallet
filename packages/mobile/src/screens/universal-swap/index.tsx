@@ -10,7 +10,7 @@ import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { Platform, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
-import { metrics, spacing, typography } from '../../themes';
+import { metrics, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
@@ -26,24 +26,29 @@ import {
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
-import { DEFAULT_SLIPPAGE } from './config/constants';
+import {
+  DEFAULT_SLIPPAGE,
+  GAS_ESTIMATION_SWAP_DEFAULT,
+  ORAI
+} from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { oraichainNetwork } from './config/chainInfos';
 import { TokenItemType, evmTokens, tokenMap } from './config/bridgeTokens';
 import {
   SwapDirection,
+  feeEstimate,
   filterTokens,
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
-  isSupportedNoPoolSwapEvm
+  handleSimulateSwap,
+  isSupportedNoPoolSwapEvm,
+  toAmount
 } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
-import { getTotalUsd, toDisplay, toSubAmount } from './libs/utils';
+import { toDisplay, toSubAmount } from './libs/utils';
 import { useSimulate } from '@src/hooks/useSimulate';
-import { AmountDetails } from './types/token';
-import FastImage from 'react-native-fast-image';
 
 type BalanceType = {
   id: string;
@@ -90,9 +95,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
     [string, string]
   >(['orai', 'usdt']);
+
   const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<
-    TokenInfo[]
+    TokenItemType[]
   >([]);
+
+  console.log('[fromTokenDenom, toTokenDenom]', [fromTokenDenom, toTokenDenom]);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -102,6 +110,39 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       handleFetchAmounts();
     }, 2000);
   }, []);
+
+  const onChangeFromAmount = (amount: number | undefined) => {
+    if (!amount) return setSwapAmount([undefined, toAmountToken]);
+    setSwapAmount([amount, toAmountToken]);
+  };
+
+  const onMaxFromAmount = (amount: bigint, type: 'max' | 'half') => {
+    const displayAmount = toDisplay(amount, originalFromToken?.decimals);
+    let finalAmount = displayAmount;
+
+    // hardcode fee when swap token orai
+    if (fromTokenDenom === ORAI) {
+      const estimatedFee = feeEstimate(
+        originalFromToken,
+        GAS_ESTIMATION_SWAP_DEFAULT
+      );
+      const fromTokenBalanceDisplay = toDisplay(
+        fromTokenBalance,
+        originalFromToken?.decimals
+      );
+      if (type === 'max') {
+        finalAmount =
+          estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
+      }
+      if (type === 'half') {
+        finalAmount =
+          estimatedFee > fromTokenBalanceDisplay - displayAmount
+            ? 0
+            : displayAmount;
+      }
+    }
+    setSwapAmount([finalAmount, toAmountToken]);
+  };
 
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
@@ -123,6 +164,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
       tokenMap[toTokenDenom];
 
+  // const fromTokenFee = useTokenFee(
+  //   originalFromToken.prefix + originalFromToken.contractAddress,
+  //   fromToken.chainId,
+  //   toToken.chainId
+  // );
+  // const toTokenFee = useTokenFee(
+  //   originalToToken.prefix + originalToToken.contractAddress,
+  //   fromToken.chainId,
+  //   toToken.chainId
+  // );
+
   const getTokenInfos = async () => {
     const client = await CWStargate.init(
       accountOrai,
@@ -138,6 +190,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getTokenInfos();
   }, []);
+
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
@@ -145,6 +198,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const chainId = chainStore?.current?.chainId;
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
+  // handle fetch all tokens of all chains
   const handleFetchAmounts = async () => {
     const accounts = await Promise.all([
       accountStore.getAccount(ORAICHAIN_ID),
@@ -234,33 +288,48 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken]);
-  const { simulateData, setSwapAmount, fromAmountToken, toAmountToken } =
-    useSimulate(
-      {
-        account: accountOrai,
-        chainId: ORAICHAIN_ID,
-        rpc: oraichainNetwork.rpc
-      },
-      fromTokenInfoData,
-      toTokenInfoData,
-      originalFromToken,
-      originalToToken
+  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+
+  const [simulateData, setSimulateData] = useState<any>();
+
+  const getSimulateSwap = async () => {
+    const client = await CWStargate.init(
+      accountOrai,
+      ORAICHAIN_ID,
+      oraichainNetwork.rpc
     );
+    const data = await handleSimulateSwap(
+      {
+        fromInfo: fromTokenInfoData!,
+        toInfo: toTokenInfoData!,
+        originalFromInfo: originalFromToken,
+        originalToInfo: originalToToken,
+        amount: toAmount(
+          fromAmountToken,
+          fromTokenInfoData!.decimals
+        ).toString()
+      },
+      client
+    );
+    setSimulateData(data);
+  };
 
-  console.log('simulateData', simulateData);
+  useEffect(() => {
+    getSimulateSwap();
+  }, []);
 
-  const { toAmountToken: averageRatio } = useSimulate(
-    {
-      account: accountOrai,
-      chainId: ORAICHAIN_ID,
-      rpc: oraichainNetwork.rpc
-    },
-    fromTokenInfoData,
-    toTokenInfoData,
-    originalFromToken,
-    originalToToken,
-    1
-  );
+  useEffect(() => {
+    setSwapAmount([
+      fromAmountToken,
+      toDisplay(
+        simulateData?.amount,
+        fromTokenInfoData?.decimals,
+        toTokenInfoData?.decimals
+      )
+    ]);
+  }, [simulateData, fromAmountToken, fromTokenInfoData, toTokenInfoData]);
+
+  console.log('averageRatio', toAmountToken);
 
   useEffect(() => {
     // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
@@ -382,7 +451,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
-        onActiveToken={handleOnActiveToken}
+        setToken={denom => {
+          setSwapTokens([denom, toTokenDenom]);
+        }}
+        setSearchTokenName={setSearchTokenName}
         isOpen={isSelectFromTokenModal}
       />
       <SelectTokenModal
@@ -398,7 +470,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
-        onActiveToken={handleOnActiveToken}
+        setToken={denom => {
+          setSwapTokens([fromTokenDenom, denom]);
+        }}
+        setSearchTokenName={setSearchTokenName}
         isOpen={isSelectToTokenModal}
       />
       <SelectNetworkModal
@@ -428,19 +503,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <View>
           <SwapBox
             feeValue={fee?.from}
-            amount={amount?.from}
-            balanceValue={balance?.from}
+            amount={0}
+            balanceValue={toDisplay(
+              fromTokenBalance,
+              originalFromToken?.decimals
+            )}
             currencyValue={currencyAmount?.from}
             onAmount={handleAmountFrom}
-            tokenActive={activeToken?.from}
+            tokenActive={originalFromToken}
             onOpenTokenModal={handleOpenTokensFromModal}
           />
           <SwapBox
             feeValue={fee?.to}
-            amount={amount?.to}
-            balanceValue={balance?.to}
+            balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             currencyValue={currencyAmount?.to}
-            tokenActive={activeToken?.to}
+            tokenActive={originalToToken}
             onAmount={handleAmountTo}
             onOpenTokenModal={handleOpenTokensToModal}
           />
@@ -491,7 +568,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <View style={styles.containerInfoToken}>
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
-            <BalanceText>1 0RAI ≈ 357.32 AIRI</BalanceText>
+            <BalanceText>
+              {`1 ${originalFromToken?.name} ≈ ${averageRatio} ${originalToToken?.name}`}
+            </BalanceText>
           </View>
           <View style={styles.itemBottom}>
             <BalanceText>Minimum Received</BalanceText>

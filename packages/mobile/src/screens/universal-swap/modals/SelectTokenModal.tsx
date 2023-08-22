@@ -20,9 +20,10 @@ export const SelectTokenModal: FunctionComponent<{
   data: TokenItemType[];
   isOpen?: boolean;
   prices: CoinGeckoPrices<string>;
-  onActiveToken: (token: TokenItemType) => void;
   bottomSheetModalConfig?: unknown;
-}> = registerModal(({ close, onNetworkModal, data, onActiveToken, prices }) => {
+  setToken: (denom: string) => void;
+  setSearchTokenName: Function;
+}> = registerModal(({ close, onNetworkModal, data, setToken, prices }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { universalSwapStore } = useStore();
 
@@ -69,19 +70,17 @@ export const SelectTokenModal: FunctionComponent<{
         keyboardShouldPersistTaps="handled"
         data={data}
         renderItem={({ item }) => {
-          let totalUsd;
           const subAmounts = Object.fromEntries(
             Object.entries(universalSwapStore?.getAmount).filter(
               ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
             )
           ) as AmountDetails;
-
-          totalUsd = getTotalUsd(subAmounts, prices, item);
+          const totalUsd = getTotalUsd(subAmounts, prices, item);
           return (
             <TouchableOpacity
               onPress={() => {
                 close();
-                onActiveToken(item);
+                setToken(item.denom);
               }}
               style={styles.btnItem}
             >

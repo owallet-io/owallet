@@ -20,7 +20,12 @@ import {
 import { toDisplay } from '../libs/utils';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
-import { proxyContractInfo, swapEvmRoutes } from '../config/constants';
+import {
+  HIGH_GAS_PRICE,
+  MULTIPLIER,
+  proxyContractInfo,
+  swapEvmRoutes
+} from '../config/constants';
 import {
   CosmWasmClient,
   OraiswapRouterQueryClient
@@ -38,19 +43,25 @@ export const calculateTimeoutTimestamp = (timeout: number): string => {
     .toString();
 };
 
-// export const getNetworkGasPrice = async (): Promise<number> => {
-//   try {
-//     const chainInfosWithoutEndpoints =
-//       await window.Keplr?.getChainInfosWithoutEndpoints();
-//     const findToken = chainInfosWithoutEndpoints.find(
-//       e => e.chainId == network.chainId
-//     );
-//     if (findToken) {
-//       return findToken.feeCurrencies[0].gasPriceStep.average;
-//     }
-//   } catch {}
-//   return 0;
-// };
+export const getNetworkGasPrice = async (): Promise<number> => {
+  try {
+    // const chainInfosWithoutEndpoints =
+    //   await window.Keplr?.getChainInfosWithoutEndpoints();
+    // const findToken = chainInfosWithoutEndpoints.find(
+    //   e => e.chainId == network.chainId
+    // );
+    // if (findToken) {
+    //   return findToken.feeCurrencies[0].gasPriceStep.average;
+    // }
+  } catch {}
+  return 0;
+};
+
+//hardcode fee
+export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
+  if (!tokenInfo) return 0;
+  return (gasDefault * MULTIPLIER * HIGH_GAS_PRICE) / 10 ** tokenInfo?.decimals;
+};
 
 export const truncDecimals = 6;
 export const atomic = 10 ** truncDecimals;
