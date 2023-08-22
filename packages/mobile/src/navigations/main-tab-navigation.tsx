@@ -41,7 +41,7 @@ export const MainTabNavigation: FC = observer(() => {
       screenOptions={({ route }) => {
         return {
           tabBarIcon: ({ color, focused }) => {
-            if (route?.name === SCREENS.TABS.UniversalSwap) {
+            if (route?.name === SCREENS.TABS.SendNavigation) {
               return (
                 <View style={styles.paddingIcon}>
                   <OWIcon
@@ -56,6 +56,7 @@ export const MainTabNavigation: FC = observer(() => {
                 </View>
               );
             }
+
             return (
               <OWIcon
                 name={`${ICONS_TITLE[route.name]}-${

@@ -30,7 +30,7 @@ export const AccountCardEVM: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
+    keyStore => keyStore?.selected
   );
 
   let total;
@@ -54,10 +54,7 @@ export const AccountCardEVM: FunctionComponent<{
     }
   }
 
-  const onPressBtnMain = (name) => {
-    if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
-    }
+  const onPressBtnMain = name => {
     if (name === 'Receive') {
       _onPressReceiveModal();
     }

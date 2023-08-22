@@ -69,9 +69,6 @@ export const AccountCard: FunctionComponent<{
   const totalPrice = priceStore.calculatePrice(total);
 
   const onPressBtnMain = name => {
-    if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
-    }
     if (name === 'Receive') {
       _onPressReceiveModal();
     }

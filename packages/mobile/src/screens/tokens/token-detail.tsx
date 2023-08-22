@@ -32,7 +32,7 @@ import { Text } from '@src/components/text';
 import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 
-export const TokenDetailScreen: FunctionComponent = observer((props) => {
+export const TokenDetailScreen: FunctionComponent = observer(props => {
   const { chainStore, modalStore, txsStore, accountStore, queriesStore } =
     useStore();
   const smartNavigation = useSmartNavigation();
@@ -121,9 +121,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   };
 
   const _onPressBtnMain = name => {
-    if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
-    }
     if (name === 'Receive') {
       _onPressReceiveModal();
     }
@@ -140,9 +137,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const RenderBtnMain = ({ name }) => {
     let icon: ReactElement;
     switch (name) {
-      case 'Buy':
-        icon = <BuyIcon />;
-        break;
       case 'Receive':
         icon = <DepositIcon />;
         break;
@@ -178,7 +172,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       );
     }
   }, [account?.bech32Address, data]);
-  const onTransactionDetail = (item) => {
+  const onTransactionDetail = item => {
     navigation.navigate(SCREENS.STACK.Others, {
       screen: SCREENS.TransactionDetail,
       params: {
@@ -288,7 +282,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
               justifyContent: 'space-around'
             }}
           >
-            {['Buy', 'Receive', 'Send'].map((e, i) => (
+            {['Receive', 'Send'].map((e, i) => (
               <RenderBtnMain key={i} name={e} />
             ))}
           </View>
@@ -320,7 +314,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerListTransaction: {
       flex: 1,
