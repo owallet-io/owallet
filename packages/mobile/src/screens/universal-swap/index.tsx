@@ -8,7 +8,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { Image, Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
@@ -25,7 +25,6 @@ import {
 } from '@src/utils/helper';
 import { TokenInfo } from './types';
 import imagesGlobal from '@src/assets/images';
-import images from '@src/assets/images';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import { DEFAULT_SLIPPAGE } from './config/constants';
 import { Address } from '@owallet/crypto';
@@ -44,119 +43,7 @@ import { CWStargate } from '@src/common/cw-stargate';
 import { getTotalUsd, toDisplay, toSubAmount } from './libs/utils';
 import { useSimulate } from '@src/hooks/useSimulate';
 import { AmountDetails } from './types/token';
-import { OraiIcon } from '@src/components/icon/orai';
 import FastImage from 'react-native-fast-image';
-
-const tokens: TokenInfo[] = [
-  {
-    symbol: 'USDT',
-    network: 'Ethereum',
-    available: '0',
-    logo: images.push
-  },
-  {
-    symbol: 'USDT',
-    network: 'BSC',
-    available: '0',
-    logo: images.push_inactive
-  },
-  {
-    symbol: 'ORAI',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.crypto
-  },
-  {
-    symbol: 'AIRI',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.down_center
-  },
-  {
-    symbol: 'ORAIX',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.down_center_dark
-  },
-  {
-    symbol: 'ETH',
-    network: 'Ethereum',
-    available: '0',
-    logo: images.push
-  },
-  {
-    symbol: 'USDT',
-    network: 'Ethereum',
-    available: '0',
-    logo: images.push
-  },
-  {
-    symbol: 'USDT',
-    network: 'BSC',
-    available: '0',
-    logo: images.push_inactive
-  },
-  {
-    symbol: 'ORAI',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.crypto
-  },
-  {
-    symbol: 'AIRI',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.down_center
-  },
-  {
-    symbol: 'ORAIX',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.down_center_dark
-  },
-  {
-    symbol: 'ETH',
-    network: 'Ethereum',
-    available: '0',
-    logo: images.push
-  },
-  {
-    symbol: 'USDT',
-    network: 'Ethereum',
-    available: '0',
-    logo: images.push
-  },
-  {
-    symbol: 'USDT',
-    network: 'BSC',
-    available: '0',
-    logo: images.push_inactive
-  },
-  {
-    symbol: 'ORAI',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.crypto
-  },
-  {
-    symbol: 'AIRI',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.down_center
-  },
-  {
-    symbol: 'ORAIX',
-    network: 'Oraichain',
-    available: '0',
-    logo: images.down_center_dark
-  },
-  {
-    symbol: 'ETH',
-    network: 'Ethereum',
-    available: '0',
-    logo: images.push
-  }
-];
 
 type BalanceType = {
   id: string;
@@ -207,11 +94,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     TokenInfo[]
   >([]);
 
-  console.log('[fromTokenDenom, toTokenDenom]', [fromTokenDenom, toTokenDenom]);
-
   const { data: prices } = useCoinGeckoPrices();
 
-  console.log('prices ===', prices);
   useEffect(() => {
     handleFetchAmounts();
     setTimeout(() => {
@@ -254,7 +138,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getTokenInfos();
   }, []);
-  const [isSelectTokenModal, setIsSelectTokenModal] = useState(false);
+  const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
+  const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
   const chainId = chainStore?.current?.chainId;
@@ -322,14 +207,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       subAmountFrom
     : BigInt(0);
 
-  console.log('initAmountfromTokenBalance', toDisplay(fromTokenBalance));
-
   const toTokenBalance = originalToToken
     ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') +
       subAmountTo
     : BigInt(0);
 
-  console.log('toTokenBalance', toDisplay(toTokenBalance));
   // process filter from & to tokens
   useEffect(() => {
     const filteredToTokens = filterTokens(
@@ -341,8 +223,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     setFilteredToTokens(filteredToTokens);
 
-    console.log('filteredToTokens', filteredToTokens);
-
     const filteredFromTokens = filterTokens(
       toToken.chainId,
       toToken.coinGeckoId,
@@ -351,8 +231,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       SwapDirection.From
     );
     setFilteredFromTokens(filteredFromTokens);
-
-    console.log('filteredFromTokens', filteredFromTokens);
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken]);
@@ -400,7 +278,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         );
         if (!sameChainIdTokens)
           throw Error(
-            'Impossible case!. An evm chain should at least have one token'
+            'Impossible case!. An EVM chain should at least have one token'
           );
         setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
         return;
@@ -466,10 +344,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [balanceActive]
   );
   const handleOpenTokensFromModal = useCallback(() => {
-    setIsSelectTokenModal(true);
+    setIsSelectFromTokenModal(true);
   }, []);
   const handleOpenTokensToModal = useCallback(() => {
-    setIsSelectTokenModal(true);
+    setIsSelectToTokenModal(true);
   }, []);
   const handleOnActiveToken = useCallback(token => {
     setActiveToken({
@@ -496,15 +374,32 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           snapPoints: ['50%', '90%'],
           index: 1
         }}
-        data={tokens}
+        prices={prices}
+        data={filteredFromTokens}
         close={() => {
-          setIsSelectTokenModal(false);
+          setIsSelectFromTokenModal(false);
         }}
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
         onActiveToken={handleOnActiveToken}
-        isOpen={isSelectTokenModal}
+        isOpen={isSelectFromTokenModal}
+      />
+      <SelectTokenModal
+        bottomSheetModalConfig={{
+          snapPoints: ['50%', '90%'],
+          index: 1
+        }}
+        prices={prices}
+        data={filteredToTokens}
+        close={() => {
+          setIsSelectToTokenModal(false);
+        }}
+        onNetworkModal={() => {
+          setIsNetworkModal(true);
+        }}
+        onActiveToken={handleOnActiveToken}
+        isOpen={isSelectToTokenModal}
       />
       <SelectNetworkModal
         close={() => {
@@ -529,7 +424,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }}
           />
         </View>
-        <View>
+        {/* <View>
           <Text style={{ color: 'red' }}>
             {Object.keys(universalSwapStore?.getAmount ?? {}).length}
           </Text>
@@ -595,7 +490,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               </View>
             );
           })}
-        </View>
+        </View> */}
         <View>
           <SwapBox
             feeValue={fee?.from}
