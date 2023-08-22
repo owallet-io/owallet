@@ -24,7 +24,6 @@ import {
 import { getEvmAddress } from '@src/screens/universal-swap/helper';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
 import { CWStargate } from '@src/common/cw-stargate';
-import { OWallet } from '@owallet/provider';
 import { AccountWithAll } from '@owallet/stores';
 
 export type CWStargateType = {
@@ -127,7 +126,6 @@ async function loadCw20Balance(
   if (!address) return;
   // get all cw20 token contract
   const cw20Tokens = oraichainTokens.filter(t => t.contractAddress);
-  console.log('loadCw20Balance oraichainTokens', oraichainTokens);
 
   const data = toBinary({
     balance: { address }
@@ -141,9 +139,6 @@ async function loadCw20Balance(
 
   try {
     const multicall = new MulticallQueryClient(client, network.multicall);
-    console.log('loadCw20Balance multicall', multicall);
-    console.log('loadCw20Balance cw20Tokens', cw20Tokens);
-    console.log('loadCw20Balance data', data);
 
     const res = await multicall.aggregate({
       queries: cw20Tokens.map(t => ({
@@ -151,7 +146,6 @@ async function loadCw20Balance(
         data
       }))
     });
-    console.log('loadCw20Balance res', res);
 
     const amountDetails = Object.fromEntries(
       cw20Tokens.map((t, ind) => {
@@ -165,8 +159,6 @@ async function loadCw20Balance(
         return [t.denom, amount];
       })
     );
-
-    console.log('loadCw20Balance amountDetails', amountDetails);
 
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
