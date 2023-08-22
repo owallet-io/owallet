@@ -290,16 +290,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken]);
+
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
 
-  const [simulateData, setSimulateData] = useState<any>();
-
-  const getSimulateSwap = async () => {
+  const getSimulateSwap = async (initAmount?) => {
     const client = await CWStargate.init(
       accountOrai,
       ORAICHAIN_ID,
       oraichainNetwork.rpc
     );
+
     const data = await handleSimulateSwap(
       {
         fromInfo: fromTokenInfoData!,
@@ -307,29 +307,34 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
         amount: toAmount(
-          fromAmountToken,
+          initAmount ?? fromAmountToken,
           fromTokenInfoData!.decimals
         ).toString()
       },
       client
     );
-    setSimulateData(data);
+
+    return data;
   };
 
-  useEffect(() => {
-    getSimulateSwap();
-  }, []);
+  const estimateAverageRatio = async (initAmount?) => {
+    const data = await getSimulateSwap();
 
-  useEffect(() => {
     setSwapAmount([
-      fromAmountToken,
+      initAmount ?? fromAmountToken,
       toDisplay(
-        simulateData?.amount,
+        data?.amount,
         fromTokenInfoData?.decimals,
         toTokenInfoData?.decimals
       )
     ]);
-  }, [simulateData, fromAmountToken, fromTokenInfoData, toTokenInfoData]);
+  };
+
+  useEffect(() => {
+    estimateAverageRatio(1);
+  }, [fromAmountToken, fromTokenInfoData, toTokenInfoData]);
+
+  console.log('toAmountToken', toAmountToken);
 
   useEffect(() => {
     // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
