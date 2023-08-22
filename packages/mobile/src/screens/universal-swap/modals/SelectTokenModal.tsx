@@ -86,7 +86,23 @@ export const SelectTokenModal: FunctionComponent<{
               style={styles.btnItem}
             >
               <View style={styles.leftBoxItem}>
-                <OWIcon type="images" source={{ uri: item?.Icon }} size={35} />
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 12,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    backgroundColor: colors['gray-10']
+                  }}
+                >
+                  <OWIcon
+                    type="images"
+                    source={{ uri: item?.Icon }}
+                    size={35}
+                  />
+                </View>
                 <View style={styles.pl10}>
                   <Text size={16} color={colors['text-title']} weight="500">
                     {item?.name}
