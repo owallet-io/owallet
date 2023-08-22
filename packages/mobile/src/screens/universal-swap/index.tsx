@@ -10,7 +10,7 @@ import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { Image, Platform, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
-import { metrics, typography } from '../../themes';
+import { metrics, spacing, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
@@ -45,6 +45,7 @@ import { getTotalUsd, toDisplay, toSubAmount } from './libs/utils';
 import { useSimulate } from '@src/hooks/useSimulate';
 import { AmountDetails } from './types/token';
 import { OraiIcon } from '@src/components/icon/orai';
+import FastImage from 'react-native-fast-image';
 
 const tokens: TokenInfo[] = [
   {
@@ -215,7 +216,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleFetchAmounts();
     setTimeout(() => {
       handleFetchAmounts();
-    }, 1000);
+    }, 2000);
   }, []);
 
   // get token on oraichain to simulate swap amount.
@@ -533,7 +534,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             {Object.keys(universalSwapStore?.getAmount ?? {}).length}
           </Text>
           {Object.keys(universalSwapStore?.getAmount ?? {}).map(a => {
-            const foundToken = filteredFromTokens.find(t => t.denom === a);
+            const foundToken = filteredToTokens.find(t => t.denom === a);
             let totalUsd;
             if (foundToken) {
               const subAmounts = Object.fromEntries(
@@ -550,16 +551,24 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 {foundToken ? (
                   <View
                     style={{
-                      borderRadius: 32
+                      width: 32,
+                      height: 32,
+                      borderRadius: spacing['8'],
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      backgroundColor: colors['gray-10']
                     }}
                   >
-                    <Image
+                    <FastImage
                       style={{
-                        width: 32,
-                        height: 32
+                        width: 24,
+                        height: 24
                       }}
-                      source={{ uri: foundToken.Icon }}
-                      fadeDuration={0}
+                      resizeMode={FastImage.resizeMode.contain}
+                      source={{
+                        uri: foundToken.Icon
+                      }}
                     />
                   </View>
                 ) : (
