@@ -137,29 +137,33 @@ async function loadCw20Balance(
     cwStargate.rpc
   );
 
-  const multicall = new MulticallQueryClient(client, network.multicall);
+  try {
+    const multicall = new MulticallQueryClient(client, network.multicall);
 
-  const res = await multicall.aggregate({
-    queries: cw20Tokens.map(t => ({
-      address: t.contractAddress,
-      data
-    }))
-  });
+    const res = await multicall.aggregate({
+      queries: cw20Tokens.map(t => ({
+        address: t.contractAddress,
+        data
+      }))
+    });
 
-  const amountDetails = Object.fromEntries(
-    cw20Tokens.map((t, ind) => {
-      if (!res.return_data[ind].success) {
-        return [t.denom, 0];
-      }
-      const balanceRes = fromBinary(
-        res.return_data[ind].data
-      ) as OraiswapTokenTypes.BalanceResponse;
-      const amount = balanceRes.balance;
-      return [t.denom, amount];
-    })
-  );
+    const amountDetails = Object.fromEntries(
+      cw20Tokens.map((t, ind) => {
+        if (!res.return_data[ind].success) {
+          return [t.denom, 0];
+        }
+        const balanceRes = fromBinary(
+          res.return_data[ind].data
+        ) as OraiswapTokenTypes.BalanceResponse;
+        const amount = balanceRes.balance;
+        return [t.denom, amount];
+      })
+    );
 
-  universalSwapStore.updateAmounts(amountDetails);
+    universalSwapStore.updateAmounts(amountDetails);
+  } catch (err) {
+    console.log('loadCw20Balance error', err);
+  }
 }
 
 async function loadEvmEntries(

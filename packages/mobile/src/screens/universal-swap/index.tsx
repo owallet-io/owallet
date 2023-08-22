@@ -329,8 +329,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     ]);
   }, [simulateData, fromAmountToken, fromTokenInfoData, toTokenInfoData]);
 
-  console.log('averageRatio', toAmountToken);
-
   useEffect(() => {
     // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
     if (
@@ -503,7 +501,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <View>
           <SwapBox
             feeValue={fee?.from}
-            amount={0}
+            amount={'0'}
             balanceValue={toDisplay(
               fromTokenBalance,
               originalFromToken?.decimals
@@ -569,7 +567,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>
-              {`1 ${originalFromToken?.name} ≈ ${averageRatio} ${originalToToken?.name}`}
+              {`1 ${originalFromToken?.name} ≈ ${toAmountToken} ${originalToToken?.name}`}
             </BalanceText>
           </View>
           <View style={styles.itemBottom}>

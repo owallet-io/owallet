@@ -9,8 +9,6 @@ import { BalanceText } from './BalanceText';
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({ feeValue, tokenActive, currencyValue, balanceValue, ...props }) => {
-    console.log('balanceValue', balanceValue);
-
     const { colors } = useTheme();
     const styles = styling(colors);
     return (

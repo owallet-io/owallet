@@ -21,7 +21,7 @@ export interface ISwapBox extends IInputSelectToken {
 
 export interface IInputSelectToken {
   tokenActive: TokenItemType;
-  amount: string;
+  amount?: string;
   onAmount: (txt?: string) => void;
   onOpenTokenModal: (ev: any) => void;
 }

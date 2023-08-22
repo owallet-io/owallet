@@ -144,8 +144,11 @@ async function simulateSwap(
       offerAmount: amount.toString(),
       operations
     });
+    console.log('data simulateSwap ===', data);
+
     return data;
   } catch (error) {
+    console.log('not heree error', error);
     throw new Error(
       `Error when trying to simulate swap using router v2: ${error}`
     );
@@ -182,6 +185,7 @@ async function simulateSwapEvm(query: {
       toTokenInfoOnSameChainId.contractAddress
     );
     const outs = await swapRouterV2.getAmountsOut(amount, route);
+    console.log('outs simulateSwapEvm ===', outs, outs.slice(-1)[0].toString());
     return {
       amount: outs.slice(-1)[0].toString() // get the final out amount, which is the token out amount we want
     };
@@ -232,6 +236,8 @@ export async function handleSimulateSwap(
       ).toString()
     });
   }
+  console.log('get heeee');
+
   return simulateSwap(query, client);
 }
 
