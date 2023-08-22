@@ -84,17 +84,14 @@ export const toDisplay = (
 
 export const getTotalUsd = (
   amounts: AmountDetails,
-  prices: CoinGeckoPrices<string>
+  prices: CoinGeckoPrices<string>,
+  token: TokenItemType
 ): number => {
   let usd = 0;
+  if (!token) return 0;
+  const amount = toDisplay(amounts[token.denom], token.decimals);
+  usd = amount * (prices?.[token.coinGeckoId] ?? 0);
 
-  for (const denom in amounts) {
-    const tokenInfo = tokenMap[denom];
-    if (!tokenInfo) continue;
-    const amount = toDisplay(amounts[denom], tokenInfo.decimals);
-
-    usd += amount * (prices[tokenInfo.coinGeckoId] ?? 0);
-  }
   return usd;
 };
 

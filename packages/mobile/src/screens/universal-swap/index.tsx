@@ -536,16 +536,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             const foundToken = filteredFromTokens.find(t => t.denom === a);
             let totalUsd;
             if (foundToken) {
-              console.log('foundToken', foundToken);
-
               const subAmounts = Object.fromEntries(
                 Object.entries(universalSwapStore?.getAmount).filter(
                   ([denom]) => tokenMap?.[denom]?.chainId === foundToken.chainId
                 )
               ) as AmountDetails;
-              console.log('prices', prices);
 
-              totalUsd = getTotalUsd(subAmounts, prices);
+              totalUsd = getTotalUsd(subAmounts, prices, foundToken);
             }
 
             return (
