@@ -19,165 +19,7 @@ import {
   ObservableQueryBalanceInner
 } from '../balances';
 import { Currency } from '@owallet/types';
-export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Result> {
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    protected readonly address: string
-  ) {
-    super(kvStore, chainId, chainGetter, '', {
-      jsonrpc: '2.0',
-      method: 'btc_getBalance',
-      params: [address, 'latest'],
-      id: 'btc-balance'
-    });
-  }
 
-  @computed
-  get balance() {
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:31 ~ ObservableQueryBitcoinBalanceInner ~ getbalance ~ this.response:',
-      this.response
-    );
-    if (!this.response?.data) {
-      return undefined;
-    }
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:29 ~ ObservableQueryBitcoinBalanceInner ~ gettestBalance ~ this.response?.data:',
-      this.response?.data
-    );
-    return null;
-  }
-  // @action
-  // async ferchBalance() {
-  //   const chainInfo = this.chainGetter.getChain(this.chainId);
-
-  //   const path = getBaseDerivationPath({
-  //     selectedCrypto: this.chainId as string
-  //   }) as string;
-  //   console.log(
-  //     '🚀 ~ file: bitcoin-balance.ts:30 ~ ObservableQueryBitcoinBalanceInner ~ balance ~ path:',
-  //     path
-  //   );
-  //   const scriptHash = getScriptHash(
-  //     this.address,
-  //     getCoinNetwork(this.chainId)
-  //   );
-  //   const res = await getBalanceFromUtxos({
-  //     addresses: [{ address: this.address, path, scriptHash }],
-  //     changeAddresses: [],
-  //     selectedCrypto: this.chainId
-  //   });
-  //   console.log(
-  //     '🚀 ~ file: bitcoin-balance.ts:63 ~ ObservableQueryBitcoinBalanceInner ~ ferchBalance ~ res:',
-  //     res
-  //   );
-  //   this.setResponse({
-  //     ...res,
-  //     timestamp: Date.now(),
-  //     staled: true
-  //   });
-  //   // if (!res.data.balance) {
-  //   //   console.log('Balance is 0');
-  //   //   return Promise.resolve(
-  //   //     new CoinPretty(
-  //   //       chainInfo.stakeCurrency,
-  //   //       new Int(new MyBigInt(0).toString())
-  //   //     )
-  //   //   );
-  //   // }
-  //   // return Promise.resolve(
-  //   //   new CoinPretty(
-  //   //     chainInfo.stakeCurrency,
-  //   //     new Int(new MyBigInt(res.data?.balance).toString())
-  //   //   )
-  //   // );
-  // }
-  // @computed
-  // async balances(): Promise<
-  //   {
-  //     balance: CoinPretty;
-  //   }[]
-  // > {
-  //   const balances: {
-  //     balance: CoinPretty;
-  //   }[] = [];
-  //   balances.push({ balance: await this.balance() });
-
-  //   return balances;
-  // }
-  protected canFetch(): boolean {
-    return this.address.length !== 0;
-  }
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
-    console.log('da vao day');
-    const res = await super.fetchResponse(cancelToken);
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:108 ~ ObservableQueryBitcoinBalanceInner ~ res:',
-      res
-    );
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-
-    const path = getBaseDerivationPath({
-      selectedCrypto: this.chainId as string
-    }) as string;
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:30 ~ ObservableQueryBitcoinBalanceInner ~ balance ~ path:',
-      path
-    );
-    const scriptHash = getScriptHash(
-      this.address,
-      getCoinNetwork(this.chainId)
-    );
-    const response = await getBalanceFromUtxos({
-      addresses: [{ address: this.address, path, scriptHash }],
-      changeAddresses: [],
-      selectedCrypto: this.chainId
-    });
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:112 ~ ObservableQueryBitcoinBalanceInner ~ response:',
-      response
-    );
-    const btcResult = response.data;
-
-    if (!btcResult) {
-      throw new Error('Failed to get the response from bitcoin');
-    }
-
-    return {
-      data: btcResult,
-      status: 1,
-      staled: false,
-      timestamp: Date.now()
-    };
-  }
-}
-
-export class ObservableQueryBitcoinBalance extends ObservableChainQueryMap<Result> {
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter
-  ) {
-    super(kvStore, chainId, chainGetter, (address: string) => {
-      return new ObservableQueryBitcoinBalanceInner(
-        this.kvStore,
-        this.chainId,
-        this.chainGetter,
-        address
-      );
-    });
-  }
-
-  getQueryBalance(address: string): ObservableQueryBitcoinBalanceInner {
-    if (!address) return null;
-    return this.get(address) as ObservableQueryBitcoinBalanceInner;
-    // return this.get(address) as ObservableQueryBitcoinBalanceInner;
-  }
-}
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected bech32Address: string;
 
@@ -203,21 +45,9 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
-    console.log('da vao day');
-    const res = await super.fetchResponse(cancelToken);
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:108 ~ ObservableQueryBitcoinBalanceInner ~ res:',
-      res
-    );
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string
     }) as string;
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:30 ~ ObservableQueryBitcoinBalanceInner ~ balance ~ path:',
-      path
-    );
     const scriptHash = getScriptHash(
       this.bech32Address,
       getCoinNetwork(this.chainId)
@@ -227,12 +57,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:112 ~ ObservableQueryBitcoinBalanceInner ~ response:',
-      response
-    );
     const btcResult = response.data;
-
     if (!btcResult) {
       throw new Error('Failed to get the response from bitcoin');
     }
@@ -244,31 +69,6 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
       timestamp: Date.now()
     };
   }
-  // @override
-  // *fetch() {
-  //   if (!this.duplicatedFetchCheck) {
-  //     // Because the native "bank" module's balance shares the querying result,
-  //     // it is inefficient to fetching duplicately in the same loop.
-  //     // So, if the fetching requests are in the same tick, this prevent to refetch the result and use the prior fetching.
-  //     this.duplicatedFetchCheck = true;
-  //     setTimeout(() => {
-  //       this.duplicatedFetchCheck = false;
-  //     }, 1);
-
-  //     yield super.fetch();
-  //   }
-  // }
-
-  // protected setResponse(response: Readonly<QueryResponse<Result>>) {
-  //   super.setResponse(response);
-
-  //   const chainInfo = this.chainGetter.getChain(this.chainId);
-  //   // Attempt to register the denom in the returned response.
-  //   // If it's already registered anyway, it's okay because the method below doesn't do anything.
-  //   // Better to set it as an array all at once to reduce computed.
-  //   // const denoms = response.data.result.map((coin) => coin.denom);
-  //   // chainInfo.addUnknownCurrencies(...denoms);
-  // }
 }
 export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceInner {
   constructor(
@@ -308,7 +108,6 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
 
   @override
   *fetch() {
-    console.log('fetch kkkkkkkkkk');
     yield this.nativeBalances.fetch();
   }
 
@@ -324,10 +123,18 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
       '🚀 ~ file: bitcoin-balance.ts:280 ~ ObservableQueryBitcoinBalanceNative ~ getbalance ~ this.nativeBalances.response:',
       this.nativeBalances.response
     );
-    // return StoreUtils.getBalanceFromCurrency(
-    //   currency,
-    //   this.nativeBalances.response.data.result
-    // );
+
+    if (
+      !this.nativeBalances.response?.data ||
+      !this.nativeBalances.response?.data?.balance ||
+      currency.coinDenom !== 'BTC'
+    ) {
+      return new CoinPretty(currency, new Int(new MyBigInt(0)?.toString()));
+    }
+    return new CoinPretty(
+      currency,
+      new Int(new MyBigInt(this.response?.data?.balance)?.toString())
+    );
   }
 }
 export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
@@ -343,20 +150,12 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:347 ~ ObservableQueryBitcoinBalanceRegistry ~ denomHelper:',
-      denomHelper
-    );
 
     if (denomHelper.type !== 'native') {
       return;
     }
 
     const key = `${chainId}/${bech32Address}`;
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:354 ~ ObservableQueryBitcoinBalanceRegistry ~ this.nativeBalances:',
-      this.nativeBalances
-    );
     if (!this.nativeBalances.has(key)) {
       this.nativeBalances.set(
         key,

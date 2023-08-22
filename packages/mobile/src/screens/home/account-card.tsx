@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { View, ViewStyle, Image, StyleSheet } from 'react-native';
 import { useStore } from '../../stores';
@@ -19,6 +19,7 @@ import { AccountBox } from './account-box';
 import { btcToFiat } from '@src/utils/helper';
 import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
+import { CoinPretty } from '@owallet/unit';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -40,91 +41,113 @@ export const AccountCard: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const [totalBalance, setTotalBalance] = useState('0');
-  const [totalAmount, setTotalAmount] = useState('0');
-  // const queryBitcoin = queries.queryBalances.getQueryBech32Address(account.bech32Address).balances
-  const queryStakable = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
+
+  const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
-  ).balance;
-  console.log("🚀 ~ file: account-card.tsx:49 ~ queryStakable:", queryStakable)
-  
-  const getBalanceBtc = async (address) => {
-    // const balanceBtc = await queryBitcoin.balance();
-    // const ngon = queryBitcoin.balance;
-    // console.log("🚀 ~ file: account-card.tsx:49 ~ ngon:", ngon)
-    // const ngon = queryBitcoin.balance;
-    // console.log('🚀 ~ file: account-card.tsx:55 ~ getBalanceBtc ~ ngon:', ngon);
-    // const exchange = await getExchangeRate({
-    //   selectedCurrency: priceStore.defaultVsCurrency
-    // });
+  ).stakable;
 
-    // const amountData = getBalanceValue({
-    //   balance: Number(balanceBtc?.toCoin().amount),
-    //   cryptoUnit: 'BTC'
-    // });
-    // const exchangeRate = Number(exchange?.data);
-    // const priceNative = Number(
-    //   priceStore.getPrice(
-    //     balanceBtc.currency?.coinGeckoId,
-    //     priceStore.defaultVsCurrency
-    //   )
-    // );
-    // const currencyFiat = priceStore.defaultVsCurrency;
-    // const fiat = btcToFiat({
-    //   amount: amountData as number,
-    //   exchangeRate: !!exchangeRate ? exchangeRate : priceNative,
-    //   currencyFiat
-    // });
-    // setTotalBalance(`$${fiat}`);
-    // const amount = formatBalance({
-    //   balance: Number(balanceBtc?.toCoin().amount),
-    //   cryptoUnit: 'BTC',
-    //   coin: chainStore.current.chainId
-    // });
-    // setTotalAmount(amount);
-    return;
-  };
-  useEffect(() => {
-    setTotalAmount(null);
-    setTotalBalance('0');
-    if (chainStore.current.networkType === 'bitcoin') {
-      getBalanceBtc(account?.bech32Address);
-    }
+  const stakable = queryStakable.balance;
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
+    account.bech32Address
+  );
+  const delegated = queryDelegated.total;
 
-    const queryStakable = queries.queryBalances.getQueryBech32Address(
+  const queryUnbonding =
+    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
       account.bech32Address
-    ).stakable;
-
-    const stakable = queryStakable.balance;
-    const queryDelegated =
-      queries.cosmos.queryDelegations.getQueryBech32Address(
-        account.bech32Address
-      );
-    const delegated = queryDelegated.total;
-
-    const queryUnbonding =
-      queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-        account.bech32Address
-      );
-    const unbonding = queryUnbonding.total;
-
-    const stakedSum = delegated.add(unbonding);
-
-    const total = stakable.add(stakedSum);
-
-    const totalPrice = priceStore.calculatePrice(total);
-    if (!!totalPrice) {
-      setTotalBalance(totalPrice.toString());
-      return;
-    }
-    setTotalBalance(
-      total
-        .shrink(true)
-        .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
-        .toString()
     );
+  const unbonding = queryUnbonding.total;
+
+  const stakedSum = delegated.add(unbonding);
+
+  const total = stakable.add(stakedSum);
+
+  const totalPrice = priceStore.calculatePrice(total);
+  let balanceBtc = null;
+  if (chainStore?.current?.networkType === 'bitcoin') {
+    balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+      account?.bech32Address
+    )?.balance;
+  } else {
+    balanceBtc = null;
+  }
+  const totalAmount = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      console.log(
+        '🚀 ~ file: account-card.tsx:74 ~ totalAmount ~ balanceBtc:',
+        balanceBtc
+      );
+      const amount = formatBalance({
+        balance: Number(balanceBtc?.toCoin().amount),
+        cryptoUnit: 'BTC',
+        coin: chainStore.current.chainId
+      });
+      return amount;
+    }
+    return '';
+  }, [
+    chainStore.current.chainId,
+    account?.bech32Address,
+    chainStore.current.networkType,
+    balanceBtc
+  ]);
+  useEffect(() => {
+    const getExchange = async () => {
+      const exchange = (await getExchangeRate({
+        selectedCurrency: priceStore.defaultVsCurrency
+      })) as { data: number };
+      if (Number(exchange?.data)) {
+        setExchangeRate(Number(exchange?.data));
+      }
+    };
+    getExchange();
     return () => {};
-  }, [chainStore.current.chainId, account?.bech32Address]);
+  }, [priceStore.defaultVsCurrency]);
+
+  const handleBalanceBtc = (balanceBtc: CoinPretty, exchangeRate: number) => {
+    const amountData = getBalanceValue({
+      balance: Number(balanceBtc?.toCoin().amount),
+      cryptoUnit: 'BTC'
+    });
+
+    const priceNative = Number(
+      priceStore.getPrice(
+        balanceBtc.currency?.coinGeckoId,
+        priceStore.defaultVsCurrency
+      )
+    );
+    const currencyFiat = priceStore.defaultVsCurrency;
+    const fiat = btcToFiat({
+      amount: amountData as number,
+      exchangeRate: !!exchangeRate ? exchangeRate : priceNative,
+      currencyFiat
+    });
+    return `$${fiat}`;
+  };
+  const totalBalance = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      if (!!exchangeRate && exchangeRate > 0) {
+        return handleBalanceBtc(balanceBtc, exchangeRate);
+      }
+    }
+    if (!!totalPrice) {
+      return totalPrice?.toString();
+    }
+    return total
+      .shrink(true)
+      .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
+      ?.toString();
+  }, [
+    totalPrice,
+    total,
+    chainStore.current.stakeCurrency.coinDecimals,
+    chainStore.current.networkType,
+    chainStore.current.chainId,
+    account?.bech32Address,
+    exchangeRate,
+    balanceBtc
+  ]);
 
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
@@ -146,10 +169,6 @@ export const AccountCard: FunctionComponent<{
     }
   };
 
-  const _onPressMyWallet = () => {
-    modalStore.setOptions();
-    modalStore.setChildren(MyWalletModal());
-  };
   const _onPressReceiveModal = () => {
     modalStore.setOptions();
     modalStore.setChildren(

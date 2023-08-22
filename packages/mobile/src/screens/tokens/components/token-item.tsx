@@ -69,7 +69,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       .hideDenom(true)
       .toString();
     return `${amount} ${balanceCoinDenom}`;
-  }, [chainInfo, balance, balanceCoinDenom]);
+  }, [chainInfo.networkType, chainInfo.chainId, balance, balanceCoinDenom]);
   return (
     <TouchableOpacity
       key={chainInfo.chainId}

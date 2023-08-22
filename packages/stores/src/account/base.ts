@@ -901,7 +901,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
 
   get hasEvmosHexAddress(): boolean {
-    return this.bech32Address.startsWith('evmos');
+    return this.bech32Address?.startsWith('evmos');
   }
 
   get evmosHexAddress(): string {

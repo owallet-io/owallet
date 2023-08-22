@@ -3,7 +3,7 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { API } from '../../common/api';
@@ -36,7 +36,6 @@ export const TokensCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
 
-  const [tokens, setTokens] = useState([]);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -45,9 +44,16 @@ export const TokensCard: FunctionComponent<{
     account,
     chainStore.current.rpc
   );
-  // const [price, setPrice] = useState<object>({});
-  const queries = queriesStore.get(chainStore.current.chainId);
 
+  const queries = queriesStore.get(chainStore.current.chainId);
+  let balanceBtc = null;
+  if (chainStore?.current?.networkType === 'bitcoin') {
+    balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+      account?.bech32Address
+    )?.balance;
+  } else {
+    balanceBtc = null;
+  }
   const queryBalances = queries.queryBalances.getQueryBech32Address(
     chainStore.current.networkType === 'evm'
       ? keyRingStore.keyRingType === 'ledger'
@@ -58,32 +64,22 @@ export const TokensCard: FunctionComponent<{
         : account.evmosHexAddress
       : account.bech32Address
   );
-  const getBalancesBtc = async (address) => {
-    // await delay(2000);
-    // const queriesBalancesBtc = await queries.bitcoin.queryBitcoinBalance
-    //   .getQueryBalance(address)
-    //   .balances();
-    // console.log(
-    //   '🚀 ~ file: tokens-card.tsx:66 ~ getBalancesBtc ~ queriesBalancesBtc:',
-    //   queriesBalancesBtc
-    // );
 
-    // setTokens(queriesBalancesBtc);
-  };
-  useEffect(() => {
-    if (
-      chainStore.current.networkType === 'bitcoin' &&
-      account?.bech32Address
-    ) {
-      getBalancesBtc(account?.bech32Address);
-      return;
+  const tokens = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      // const balancesBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+      //   account.bech32Address
+      // ).balance;
+      return [
+        {
+          balance: balanceBtc
+        }
+      ];
     }
-
     const queryTokens = queryBalances.balances.concat(
       queryBalances.nonNativeBalances,
       queryBalances.positiveNativeUnstakables
     );
-
     const uniqTokens = [];
     queryTokens.map((token) =>
       uniqTokens.filter(
@@ -93,12 +89,14 @@ export const TokensCard: FunctionComponent<{
         ? null
         : uniqTokens.push(token)
     );
-    setTokens(uniqTokens);
+    return uniqTokens;
   }, [
     chainStore.current.chainId,
     account.bech32Address,
     account.evmosHexAddress,
-    refreshDate
+    chainStore.current.networkType,
+    refreshDate,
+    balanceBtc
   ]);
 
   const onActiveType = (i) => {
@@ -185,7 +183,7 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map((token,index) => {
+              tokens.slice(0, 3).map((token, index) => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
                 return (
                   <TokenItem
@@ -193,7 +191,7 @@ export const TokensCard: FunctionComponent<{
                     chainInfo={{
                       stakeCurrency: chainStore.current.stakeCurrency,
                       networkType: chainStore.current.networkType,
-                      chainId: chainStore.current.networkType
+                      chainId: chainStore.current.chainId
                     }}
                     balance={token.balance}
                     priceBalance={priceBalance}
