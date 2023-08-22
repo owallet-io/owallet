@@ -8,7 +8,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Image, Platform, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
 import { metrics, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
@@ -550,12 +550,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 {foundToken ? (
                   <View
                     style={{
-                      backgroundColor: colors['background-btn-primary'],
                       borderRadius: 32
                     }}
                   >
-                    <OraiIcon />
-                    {/* {foundToken.Icon()} */}
+                    <Image
+                      style={{
+                        width: 32,
+                        height: 32
+                      }}
+                      source={{ uri: foundToken.Icon }}
+                      fadeDuration={0}
+                    />
                   </View>
                 ) : (
                   <Text>? - </Text>

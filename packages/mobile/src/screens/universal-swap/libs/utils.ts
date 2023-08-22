@@ -91,7 +91,6 @@ export const getTotalUsd = (
   if (!token) return 0;
   const amount = toDisplay(amounts[token.denom], token.decimals);
   usd = amount * (prices?.[token.coinGeckoId] ?? 0);
-
   return usd;
 };
 
