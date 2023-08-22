@@ -152,6 +152,7 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
         icon={icon}
         label={name}
         fullWidth={false}
+        style={{ width: '33.3%', marginHorizontal: 6 }}
       />
     );
   };
@@ -279,7 +280,8 @@ export const TokenDetailScreen: FunctionComponent = observer(props => {
               display: 'flex',
               flexDirection: 'row',
               paddingTop: spacing['6'],
-              justifyContent: 'space-around'
+              paddingHorizontal: spacing['6'],
+              justifyContent: 'center'
             }}
           >
             {['Receive', 'Send'].map((e, i) => (

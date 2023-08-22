@@ -139,7 +139,7 @@ export const TokensCard: FunctionComponent<{
         }}
       >
         <View style={styles.wrapHeaderTitle}>
-          {['Tokens', 'NFTs'].map((title: string, i: number) => (
+          {['Tokens'].map((title: string, i: number) => (
             <View key={i}>
               <OWButton
                 type="link"
@@ -151,7 +151,7 @@ export const TokensCard: FunctionComponent<{
                   fontWeight: '700'
                 }}
                 style={{
-                  width: '90%',
+                  width: '100%',
                   borderBottomColor:
                     index === i ? colors['primary-text'] : colors['primary'],
                   borderBottomWidth: 2
@@ -287,8 +287,8 @@ const styling = colors =>
       marginLeft: 0
     },
     wrapHeaderTitle: {
-      flexDirection: 'row',
-      marginHorizontal: spacing['page-pad']
+      // flexDirection: 'row',
+      // marginHorizontal: spacing['page-pad']
     },
     textLoadMore: {
       ...typography['h7'],
