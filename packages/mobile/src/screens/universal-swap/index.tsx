@@ -292,6 +292,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken]);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+  const [ratio, setRatio] = useState(0);
 
   const getSimulateSwap = async (initAmount?) => {
     const client = await CWStargate.init(
@@ -313,35 +314,24 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       },
       client
     );
-    console.log('originalToToken', toTokenInfoData!, data);
 
     return data;
   };
 
   const estimateAverageRatio = async (initAmount?) => {
-    const data = await getSimulateSwap();
-
-    setSwapAmount([
-      initAmount ?? fromAmountToken,
+    const data = await getSimulateSwap(initAmount);
+    setRatio(
       toDisplay(
         data?.amount,
         fromTokenInfoData?.decimals,
         toTokenInfoData?.decimals
       )
-    ]);
+    );
   };
 
   useEffect(() => {
     estimateAverageRatio(1);
-  }, [
-    fromAmountToken,
-    fromTokenInfoData,
-    originalFromToken,
-    toTokenInfoData,
-    originalToToken
-  ]);
-
-  console.log('toAmountToken', toAmountToken);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken]);
 
   useEffect(() => {
     // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
@@ -532,6 +522,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             tokenActive={originalToToken}
             onAmount={handleAmountTo}
             onOpenTokenModal={handleOpenTokensToModal}
+            editable={false}
           />
 
           <View style={styles.containerBtnCenter}>
@@ -581,7 +572,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>
-              {`1 ${originalFromToken?.name} ≈ ${toAmountToken} ${originalToToken?.name}`}
+              {`1 ${originalFromToken?.name} ≈ ${ratio} ${originalToToken?.name}`}
             </BalanceText>
           </View>
           <View style={styles.itemBottom}>

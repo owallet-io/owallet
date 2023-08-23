@@ -8,7 +8,14 @@ import InputSelectToken from './InputSelectToken';
 import { BalanceText } from './BalanceText';
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
-  ({ feeValue, tokenActive, currencyValue, balanceValue, ...props }) => {
+  ({
+    feeValue,
+    tokenActive,
+    currencyValue,
+    balanceValue,
+    editable,
+    ...props
+  }) => {
     const { colors } = useTheme();
     const styles = styling(colors);
     return (
@@ -17,7 +24,11 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
           ...styles.containerInfo
         }}
       >
-        <InputSelectToken tokenActive={tokenActive} {...props} />
+        <InputSelectToken
+          editable={editable}
+          tokenActive={tokenActive}
+          {...props}
+        />
         <View style={styles.containerItemBottom}>
           <View>
             <BalanceText weight="500">
@@ -27,7 +38,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
               Fee: {feeValue || 0}%
             </BalanceText> */}
           </View>
-          <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText>
+          {/* <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText> */}
         </View>
       </OWBox>
     );

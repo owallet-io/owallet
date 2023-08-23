@@ -11,7 +11,8 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
   amount,
   onAmount,
-  onOpenTokenModal
+  onOpenTokenModal,
+  editable
 }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -38,6 +39,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 
       <View style={styles.containerInput}>
         <TextInput
+          editable={editable}
           placeholder="0"
           textAlign="right"
           value={amount ?? '0'}
