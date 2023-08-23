@@ -113,9 +113,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }, 2000);
   }, []);
 
-  const onChangeFromAmount = (amount: number | undefined) => {
+  const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([undefined, toAmountToken]);
-    setSwapAmount([amount, toAmountToken]);
+    console.log('amount', amount);
+
+    setSwapAmount([Number(amount), toAmountToken]);
   };
 
   const onMaxFromAmount = (amount: bigint, type: 'max' | 'half') => {
@@ -292,6 +294,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken]);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
+
+  console.log('fromAmountToken', fromAmountToken);
+
   const [ratio, setRatio] = useState(0);
 
   const getSimulateSwap = async (initAmount?) => {
@@ -329,6 +334,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
+  const estimateSwapAmount = async () => {
+    const data = await getSimulateSwap();
+    setSwapAmount([
+      fromAmountToken,
+      toDisplay(
+        data?.amount,
+        fromTokenInfoData?.decimals,
+        toTokenInfoData?.decimals
+      )
+    ]);
+  };
+
+  useEffect(() => {
+    estimateSwapAmount();
+  }, [
+    originalFromToken,
+    toTokenInfoData,
+    fromTokenInfoData,
+    originalToToken,
+    fromAmountToken
+  ]);
+
   useEffect(() => {
     estimateAverageRatio(1);
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken]);
@@ -358,10 +385,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   }, [fromToken]);
 
-  const [amount, setAmount] = useState({
-    from: '1.273',
-    to: '0.26'
-  });
   const [fee, setFee] = useState({
     from: '0.1',
     to: '0.001'
@@ -390,24 +413,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   });
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
-  const handleAmountFrom = useCallback(
-    valueAmount => {
-      setAmount(prevAmount => ({
-        ...prevAmount,
-        from: valueAmount
-      }));
-    },
-    [amount?.from]
-  );
-  const handleAmountTo = useCallback(
-    valueAmount => {
-      setAmount(prevAmount => ({
-        ...prevAmount,
-        to: valueAmount
-      }));
-    },
-    [amount?.to]
-  );
+
   const handleBalanceActive = useCallback(
     (item: BalanceType) => {
       setBalanceActive(item);
@@ -505,22 +511,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <View>
           <SwapBox
             feeValue={fee?.from}
-            amount={'0'}
+            amount={fromAmountToken?.toString() ?? '0'}
             balanceValue={toDisplay(
               fromTokenBalance,
               originalFromToken?.decimals
             )}
             currencyValue={currencyAmount?.from}
-            onAmount={handleAmountFrom}
+            onChangeAmount={onChangeFromAmount}
             tokenActive={originalFromToken}
             onOpenTokenModal={handleOpenTokensFromModal}
           />
           <SwapBox
             feeValue={fee?.to}
+            amount={toAmountToken?.toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             currencyValue={currencyAmount?.to}
             tokenActive={originalToToken}
-            onAmount={handleAmountTo}
             onOpenTokenModal={handleOpenTokensToModal}
             editable={false}
           />

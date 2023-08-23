@@ -24,6 +24,6 @@ export interface IInputSelectToken {
   tokenActive: TokenItemType;
   amount?: string;
   editable?: boolean;
-  onAmount: (txt?: string) => void;
+  onChangeAmount?: (txt: any) => void;
   onOpenTokenModal: (ev: any) => void;
 }

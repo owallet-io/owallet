@@ -10,12 +10,14 @@ import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
   amount,
-  onAmount,
+  onChangeAmount,
   onOpenTokenModal,
   editable
 }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
+
+  console.log('amount2', amount);
 
   return (
     <View style={[styles.containerInputSelectToken]}>
@@ -44,7 +46,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           textAlign="right"
           value={amount ?? '0'}
           defaultValue={amount ?? '0'}
-          onChangeText={onAmount}
+          onChangeText={onChangeAmount}
           keyboardType="numeric"
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors['text-place-holder']}

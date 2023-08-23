@@ -32,7 +32,7 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
         <View style={styles.containerItemBottom}>
           <View>
             <BalanceText weight="500">
-              Balance: {balanceValue || 0.0}
+              Balance: {balanceValue || 0.0} {tokenActive.name}
             </BalanceText>
             {/* <BalanceText size={13} style={styles.pt2} weight="500">
               Fee: {feeValue || 0}%
