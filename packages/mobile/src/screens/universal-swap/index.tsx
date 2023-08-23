@@ -51,23 +51,20 @@ type BalanceType = {
   id: string;
   value: string;
 };
+
+const ONE_QUARTER = '25';
+const HALF = '50';
+const THREE_QUARTERS = '75';
+const MAX = '100';
+
 const balances: BalanceType[] = [
   {
     id: '1',
-    value: '25'
+    value: ONE_QUARTER
   },
-  {
-    id: '2',
-    value: '50'
-  },
-  {
-    id: '3',
-    value: '75'
-  },
-  {
-    id: '4',
-    value: '100'
-  }
+  { id: '2', value: HALF },
+  { id: '3', value: THREE_QUARTERS },
+  { id: '4', value: MAX }
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, chainStore, universalSwapStore } = useStore();
@@ -111,7 +108,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapAmount([parseFloat(amount), toAmountToken]);
   };
 
-  const onMaxFromAmount = (amount: bigint, type: 'max' | 'half') => {
+  const onMaxFromAmount = (amount: bigint, type: string) => {
     const displayAmount = toDisplay(amount, originalFromToken?.decimals);
     let finalAmount = displayAmount;
 
@@ -125,11 +122,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         fromTokenBalance,
         originalFromToken?.decimals
       );
-      if (type === 'max') {
+      if (type === MAX) {
         finalAmount =
           estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
-      }
-      if (type === 'half') {
+      } else {
         finalAmount =
           estimatedFee > fromTokenBalanceDisplay - displayAmount
             ? 0
@@ -519,7 +515,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 }
                 label={`${item?.value}%`}
                 fullWidth={false}
-                onPress={() => handleBalanceActive(item)}
+                onPress={() => {
+                  onMaxFromAmount(
+                    (fromTokenBalance * BigInt(Number(item.value))) /
+                      BigInt(Number(100)),
+                    item.value
+                  );
+                  handleBalanceActive(item);
+                }}
               />
             );
           })}
