@@ -35,6 +35,7 @@ export interface OWalletIntereactionOptions {
   readonly sign?: OWalletSignOptions;
 }
 
+
 export interface OWalletSignOptions {
   readonly preferNoSetFee?: boolean;
   readonly preferNoSetMemo?: boolean;

@@ -362,6 +362,140 @@ const calculatorFee = ({
     ) * transactionFee;
   return totalFee;
 };
+const createMsg = ({
+  address,
+  amount,
+  totalFee,
+  changeAddress,
+  confirmedBalance,
+  message,
+  selectedCrypto
+}) => {
+  console.log(
+    '🚀 ~ file: helpers.js:374 ~ confirmedBalance:',
+    confirmedBalance
+  );
+  console.log('🚀 ~ file: helpers.js:374 ~ totalFee:', totalFee);
+  console.log('🚀 ~ file: helpers.js:374 ~ amount:', amount);
+  console.log(
+    '🚀 ~ file: helpers.js:388 ~ confirmedBalance - (amount + totalFee):',
+    confirmedBalance - (amount + Number(totalFee))
+  );
+  const network = networks[selectedCrypto];
+  let targets = [];
+  if (amount > 0) {
+    targets.push({ address, value: amount });
+  }
+
+  //Change address and amount to send back to wallet.
+  if (changeAddress) {
+    targets.push({
+      address: changeAddress,
+      value: confirmedBalance - (amount + totalFee)
+    });
+  }
+
+  //Embed any OP_RETURN messages.
+  if (message !== '') {
+    const messageLength = message.length;
+    const lengthMin = 5;
+    //This is a patch for the following: https://github.com/coreyphillips/moonshine/issues/52
+    const buffers = [message];
+    if (messageLength > 0 && messageLength < lengthMin)
+      buffers.push(Buffer.from(' '.repeat(lengthMin - messageLength), 'utf8'));
+    const data = Buffer.concat(buffers);
+    const embed = bitcoin.payments.embed({ data: [data], network });
+    targets.push({ script: embed.output, value: 0 });
+  }
+  return targets;
+};
+const signAndCreateTransaction = async ({
+  selectedCrypto,
+  mnemonic,
+  utxos,
+  blacklistedUtxos,
+  targets
+}) => {
+  try {
+    const network = networks[selectedCrypto];
+    const seed = bip39.mnemonicToSeedSync(mnemonic);
+    const root = bip32.fromSeed(seed, network);
+    const psbt = new bitcoin.Psbt({ network });
+
+    //Add Inputs
+    const utxosLength = utxos.length;
+    for (let i = 0; i < utxosLength; i++) {
+      try {
+        const utxo = utxos[i];
+        if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
+        const path = utxo.path;
+        const keyPair = root.derivePath(path);
+
+        const p2wpkh = bitcoin.payments.p2wpkh({
+          pubkey: keyPair.publicKey,
+          network
+        });
+        psbt.addInput({
+          hash: utxo.txid,
+          index: utxo.vout,
+          witnessUtxo: {
+            script: p2wpkh.output,
+            value: utxo.value
+          }
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    //Shuffle and add outputs.
+    try {
+      targets = shuffleArray(targets);
+    } catch (e) {}
+
+    targets.forEach((target) => {
+      //Check if OP_RETURN
+      let isOpReturn = false;
+      try {
+        isOpReturn = !!target.script;
+      } catch (e) {}
+      if (isOpReturn) {
+        psbt.addOutput({
+          script: target.script,
+          value: target.value
+        });
+      } else {
+        psbt.addOutput({
+          address: target.address,
+          value: target.value
+        });
+      }
+    });
+
+    //Loop through and sign
+    let index = 0;
+    for (let i = 0; i < utxosLength; i++) {
+      try {
+        const utxo = utxos[i];
+        if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
+        const path = utxo.path;
+        const keyPair = root.derivePath(path);
+        psbt.signInput(index, keyPair);
+        index++;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    psbt.finalizeAllInputs();
+    const rawTx = psbt.extractTransaction(true).toHex();
+    const data = { error: false, data: rawTx };
+
+    return data;
+  } catch (e) {
+    console.log(e);
+    return { error: true, data: e };
+  }
+};
 //amount = Amount to send to recipient.
 //transactionFee = fee per byte.
 const createTransaction = async ({
@@ -1179,6 +1313,9 @@ const getScriptHash = (address = '', network = networks['bitcoin']) => {
   const reversedHash = Buffer.from(hash.reverse());
   return reversedHash.toString('hex');
 };
+const BtcToSats = (balance = 0) => {
+  return new BitcoinUnit(balance, 'BTC').to('sats').getValue();
+};
 const getBalanceValue = ({ cryptoUnit = 'satoshi', balance = 0 }) => {
   if (balance < 50000 && cryptoUnit === 'BTC') {
     return (Number(balance) * 0.00000001).toFixed(8);
@@ -1257,5 +1394,8 @@ module.exports = {
   getScriptHash,
   formatBalance,
   getBalanceValue,
-  calculatorFee
+  calculatorFee,
+  createMsg,
+  signAndCreateTransaction,
+  BtcToSats
 };

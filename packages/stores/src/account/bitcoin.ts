@@ -1,4 +1,4 @@
-import { MsgOpt } from './base';
+import { ExtraOptionSendToken, MsgOpt } from './base';
 import { AccountSetBase, AccountSetOpts } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
@@ -15,6 +15,7 @@ import {
 } from '../query';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter, StdFeeEthereum } from '../common';
+import { createMsg } from '@owallet/bitcoin';
 
 export interface HasBitcoinAccount {
   bitcoin: DeepReadonly<BitcoinAccount>;
@@ -84,7 +85,8 @@ export class BitcoinAccount {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    extraOptions?: ExtraOptionSendToken
   ): Promise<boolean> {
     if (signOptions.networkType === 'bitcoin') {
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
@@ -95,27 +97,24 @@ export class BitcoinAccount {
       );
       switch (denomHelper.type) {
         case 'native':
-          const actualAmount = (() => {
-            let dec = new Dec(amount);
-            dec = dec.mul(
-              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-            );
-            return dec.truncate().toString();
-          })();
+          //   const actualAmount = (() => {
+          //     let dec = new Dec(amount);
+          //     dec = dec.mul(
+          //       DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
+          //     );
+          //     return dec.truncate().toString();
+          //   })();
 
-          const msg: any = {
-            type: this.base.msgOpts.send.native.type,
-            value: {
-              from_address: this.base.bech32Address,
-              to_address: recipient,
-              amount: [
-                {
-                  denom: currency.coinMinimalDenom,
-                  amount: actualAmount
-                }
-              ]
-            }
-          };
+          const msg: any = createMsg({
+            address: recipient,
+            changeAddress: this.base.bech32Address,
+            amount: Number(extraOptions.amount),
+            message: memo,
+            totalFee: Number(stdFee.amount[0].amount),
+            selectedCrypto: signOptions.chainId,
+            confirmedBalance: extraOptions.confirmedBalance
+          });
+          console.log("🚀 ~ file: bitcoin.ts:117 ~ BitcoinAccount ~ msg:", msg)
 
           await this.base.sendBtcMsgs(
             'send',
@@ -136,7 +135,8 @@ export class BitcoinAccount {
               //       queryEvmBalance.fetch();
               //     }
               //   }
-            })
+            }),
+            extraOptions
           );
           return true;
       }

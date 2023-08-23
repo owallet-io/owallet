@@ -61,6 +61,17 @@ export enum WalletStatus {
   NotExist = 'NotExist',
   Rejected = 'Rejected'
 }
+export type ExtraOptionSendToken = {
+  type: string;
+  from?: string;
+  contract_addr: string;
+  token_id?: string;
+  recipient?: string;
+  amount?: string;
+  confirmedBalance?: number;
+  utxos?: any[];
+  blacklistedUtxos?: any[];
+};
 
 export interface MsgOpt {
   readonly type: string;
@@ -138,14 +149,7 @@ export class AccountSetBase<MsgOpts, Queries> {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
         },
-    extraOptions?: {
-      type: string;
-      contract_addr: string;
-      token_id?: string;
-      recipient?: string;
-      amount?: string;
-      to?: string;
-    }
+    extraOptions?: ExtraOptionSendToken
   ) => Promise<boolean>)[] = [];
 
   constructor(
@@ -595,7 +599,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
   async sendBtcMsgs(
     type: string | 'unknown',
-    msgs: AminoMsgsOrWithProtoMsgs,
+    msgs: any,
     memo: string = '',
     fee: StdFee,
     signOptions?: OWalletSignOptions,
@@ -605,7 +609,8 @@ export class AccountSetBase<MsgOpts, Queries> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        }
+        },
+    extraOptions?: ExtraOptionSendToken
   ) {
     runInAction(() => {
       this._isSendingMsg = type;
@@ -619,7 +624,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         fee,
         memo,
         signOptions,
-        this.broadcastMode
+        extraOptions
       );
 
       txHash = result.txHash;
@@ -642,6 +647,68 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       throw e;
     }
+    let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
+    let onFulfill: ((tx: any) => void) | undefined;
+
+    if (onTxEvents) {
+      if (typeof onTxEvents === 'function') {
+        onFulfill = onTxEvents;
+      } else {
+        onBroadcasted = onTxEvents.onBroadcasted;
+        onFulfill = onTxEvents.onFulfill;
+      }
+    }
+
+    // const rpc = this.chainGetter.getChain(this.chainId).rest;
+
+    runInAction(() => {
+      this._isSendingMsg = false;
+    });
+
+    const sleep = (milliseconds) => {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    };
+
+    // const waitForPendingTransaction = async (
+    //   rpc,
+    //   txHash,
+    //   onFulfill,
+    //   count = 0
+    // ) => {
+    //   if (count > 10) return;
+
+    //   try {
+    //     let expectedBlockTime = 3000;
+    //     let transactionReceipt = null;
+    //     let retryCount = 0;
+    //     while (!transactionReceipt) {
+    //       // Waiting expectedBlockTime until the transaction is mined
+    //       transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [
+    //         txHash
+    //       ]);
+    //       console.log(
+    //         '🚀 ~ file: base.ts ~ line ~ transactionReceipt',
+    //         transactionReceipt
+    //       );
+    //       retryCount += 1;
+    //       if (retryCount === 10) break;
+    //       await sleep(expectedBlockTime);
+    //     }
+
+    //     if (this.opts.preTxEvents?.onFulfill) {
+    //       this.opts.preTxEvents.onFulfill(transactionReceipt);
+    //     }
+
+    //     if (onFulfill) {
+    //       onFulfill(transactionReceipt);
+    //     }
+    //   } catch (error) {
+    //     await sleep(3000);
+    //     waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
+    //   }
+    // };
+
+    // waitForPendingTransaction(rpc, txHash, onFulfill);
   }
 
   async sendToken(
@@ -657,14 +724,7 @@ export class AccountSetBase<MsgOpts, Queries> {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
         },
-    extraOptions?: {
-      type: string;
-      from?: string;
-      contract_addr: string;
-      token_id?: string;
-      recipient?: string;
-      amount?: string;
-    }
+    extraOptions?: ExtraOptionSendToken
   ) {
     for (let i = 0; i < this.sendTokenFns.length; i++) {
       const fn = this.sendTokenFns[i];
@@ -827,11 +887,11 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
   protected async broadcastBtcMsgs(
-    msgs: AminoMsgsOrWithProtoMsgs,
+    msgs: any,
     fee: StdFee,
     memo: string = '',
     signOptions?: OWalletSignOptions,
-    mode: 'block' | 'async' | 'sync' = 'async'
+    extraOptions?: ExtraOptionSendToken
   ): Promise<{
     txHash: Uint8Array;
   }> {
@@ -840,56 +900,18 @@ export class AccountSetBase<MsgOpts, Queries> {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
 
-      // let aminoMsgs: Msg[];
-      // let protoMsgs: google.protobuf.IAny[] | undefined;
-      // if ('aminoMsgs' in msgs) {
-      //   aminoMsgs = msgs.aminoMsgs;
-      //   protoMsgs = msgs.protoMsgs;
-      // } else {
-      //   aminoMsgs = msgs;
-      // }
-      // console.log({ aminoMsgs });
-
-      // if (aminoMsgs.length === 0) {
-      //   throw new Error('There is no msg to send');
-      // }
-
-      // if (
-      //   this.hasNoLegacyStdFeature() &&
-      //   (!protoMsgs || protoMsgs.length === 0)
-      // ) {
-      //   throw new Error(
-      //     "Chain can't send legecy stdTx. But, proto any type msgs are not provided"
-      //   );
-      // }
-
-      // const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
-
+     
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const bitcoin = (await this.getBitcoin())!;
 
-      // const account = await BaseAccount.fetchFromRest(
-      //   this.instance,
-      //   this.bech32Address,
-      //   true
-      // );
-
-      // const signDocAmino = makeSignDoc(
-      //   aminoMsgs,
-      //   fee,
-      //   this.chainId,
-      //   memo,
-      //   account.getAccountNumber().toString(),
-      //   account.getSequence().toString()
-      // );
-      const signResponse = await bitcoin.signAndBroadcast(
-        this.chainId,
-        {
-          data:"ok"
-        }
-        // signDocAmino,
-        // signOptions
-      );
+  
+      const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
+        memo,
+        fee,
+        address: this.bech32Address,
+        msgs,
+        ...extraOptions
+      });
 
       // const signDoc = {
       //   bodyBytes: cosmos.tx.v1beta1.TxBody.encode({

@@ -17,7 +17,8 @@ import { PageWithScrollView } from '@src/components/page';
 import {
   createTransaction,
   calculatorFee,
-  formatBalance
+  formatBalance,
+  BtcToSats
 } from '@owallet/bitcoin';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWBox } from '@src/components/card';
@@ -46,16 +47,18 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     null,
     queries.bitcoin.queryBitcoinBalance
   );
-  const utxos = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
     account.bech32Address
-  )?.response?.data?.utxos;
+  )?.response?.data;
+  const utxos = data?.utxos;
+  const confirmedBalance = data?.balance;
   const sendConfigError =
-  sendConfigs.recipientConfig.getError() ??
-  sendConfigs.amountConfig.getError() ??
-  sendConfigs.memoConfig.getError() ??
-  sendConfigs.gasConfig.getError();
-// ?? sendConfigs.feeConfig.getError();
-const txStateIsValid = sendConfigError == null;
+    sendConfigs.recipientConfig.getError() ??
+    sendConfigs.amountConfig.getError() ??
+    sendConfigs.memoConfig.getError() ??
+    sendConfigs.gasConfig.getError();
+  // ?? sendConfigs.feeConfig.getError();
+  const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
   const totalFee = useMemo(() => {
     const feeAmount = calculatorFee({
@@ -111,9 +114,20 @@ const txStateIsValid = sendConfigError == null;
             txHash: Buffer.from(txHash).toString('hex')
           });
         }
+      },
+      {
+        confirmedBalance: confirmedBalance,
+        utxos: utxos,
+        blacklistedUtxos: [],
+        amount: BtcToSats(Number(sendConfigs.amountConfig.amount))
       }
     );
-  }, [chainStore.current.networkType, chainStore.current.chainId]);
+  }, [
+    chainStore.current.networkType,
+    chainStore.current.chainId,
+    utxos,
+    confirmedBalance
+  ]);
   console.log('🚀 ~ file: send-btc.tsx:59 ~ useEffect ~ totalFee:', totalFee);
   const styles = styling(colors);
   return (
