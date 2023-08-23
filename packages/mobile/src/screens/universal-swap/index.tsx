@@ -568,7 +568,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </View>
           <View style={styles.itemBottom}>
             <BalanceText>Tax rate</BalanceText>
-            <BalanceText>{taxRate}%</BalanceText>
+            <BalanceText>{Number(taxRate) * 100}%</BalanceText>
           </View>
         </View>
       </View>

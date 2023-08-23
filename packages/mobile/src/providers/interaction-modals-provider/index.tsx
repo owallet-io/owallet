@@ -34,7 +34,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         permissionStore.waitingDatas &&
         navigationRef?.current?.getCurrentRoute().name === 'Web.dApp'
       ) {
-        return permissionStore.waitingDatas.map((wd) => {
+        return permissionStore.waitingDatas.map(wd => {
           return (
             <AccessModal
               waitingData={wd}
@@ -68,7 +68,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             isOpen={true}
             close={() => {
               signInteractionStore.rejectAll();
-              navigationRef.current.goBack();
+              // navigationRef.current.goBack();
             }}
           />
         ) : null}
