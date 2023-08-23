@@ -28,6 +28,7 @@ import {
 } from '../config/constants';
 import {
   CosmWasmClient,
+  OraiswapOracleQueryClient,
   OraiswapRouterQueryClient
 } from '@oraichain/oraidex-contracts-sdk';
 import { AssetInfo } from '@oraichain/common-contracts-sdk';
@@ -116,6 +117,16 @@ export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
   }
   return oraichainTokens.find(token => token.coinGeckoId === coingeckoId);
 };
+
+export async function fetchTaxRate(client: CosmWasmClient) {
+  const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
+  try {
+    const data = await oracleContract.taxRate();
+    return data;
+  } catch (error) {
+    throw new Error(`Error when query TaxRate using oracle: ${error}`);
+  }
+}
 
 async function simulateSwap(
   query: {

@@ -37,6 +37,7 @@ import {
   SwapDirection,
   calculateMinimum,
   feeEstimate,
+  fetchTaxRate,
   filterTokens,
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
@@ -78,7 +79,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
-  const [taxRate, setTaxRate] = useState('');
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState(
     [] as TokenItemType[]
@@ -193,27 +193,24 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async () => {
     const accounts = await Promise.all([
-      accountStore.getAccount(ORAICHAIN_ID),
       accountStore.getAccount(ETH_ID),
       accountStore.getAccount(TRON_ID),
       accountStore.getAccount(KAWAII_ID)
     ]);
     let loadTokenParams = {};
     try {
-      accounts.map(async account => {
-        if (account.chainId === ORAICHAIN_ID) {
-          const cwStargate = {
-            account,
-            chainId: account.chainId,
-            rpc: oraichainNetwork.rpc
-          };
+      const cwStargate = {
+        account,
+        chainId: account.chainId,
+        rpc: oraichainNetwork.rpc
+      };
 
-          loadTokenParams = {
-            ...loadTokenParams,
-            oraiAddress: account.bech32Address,
-            cwStargate
-          };
-        }
+      loadTokenParams = {
+        ...loadTokenParams,
+        oraiAddress: accountOrai.bech32Address,
+        cwStargate
+      };
+      accounts.map(async account => {
         if (account.chainId === ETH_ID) {
           loadTokenParams = {
             ...loadTokenParams,
@@ -335,6 +332,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       )
     ]);
   };
+
+  const [taxRate, setTaxRate] = useState('');
+
+  const queryTaxRate = async () => {
+    const client = await CWStargate.init(
+      accountOrai,
+      ORAICHAIN_ID,
+      oraichainNetwork.rpc
+    );
+    const data = await fetchTaxRate(client);
+    setTaxRate(data?.rate);
+  };
+
+  useEffect(() => {
+    queryTaxRate();
+  }, []);
 
   useEffect(() => {
     estimateSwapAmount();
@@ -555,7 +568,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </View>
           <View style={styles.itemBottom}>
             <BalanceText>Tax rate</BalanceText>
-            <BalanceText>0</BalanceText>
+            <BalanceText>{taxRate}%</BalanceText>
           </View>
         </View>
       </View>
