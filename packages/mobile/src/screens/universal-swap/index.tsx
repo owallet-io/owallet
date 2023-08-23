@@ -47,10 +47,7 @@ import {
 } from './helper';
 import { fetchTokenInfos, isEvmSwappable } from './api';
 import { CWStargate } from '@src/common/cw-stargate';
-import { getTotalUsd, toDisplay, toSubAmount } from './libs/utils';
-import { useSimulate } from '@src/hooks/useSimulate';
-import { AmountDetails } from './types/token';
-import FastImage from 'react-native-fast-image';
+import { toDisplay, toSubAmount } from './libs/utils';
 
 type BalanceType = {
   id: string;
@@ -102,8 +99,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     TokenItemType[]
   >([]);
 
-  console.log('[fromTokenDenom, toTokenDenom]', [fromTokenDenom, toTokenDenom]);
-
   const { data: prices } = useCoinGeckoPrices();
 
   useEffect(() => {
@@ -115,8 +110,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([undefined, toAmountToken]);
-    console.log('amount', amount);
-
     setSwapAmount([parseFloat(amount), toAmountToken]);
   };
 
