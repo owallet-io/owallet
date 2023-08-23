@@ -29,7 +29,7 @@
     "clean": "lerna run clean && rimraf node_modules && yarn clean:watchman",
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
-    "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/mobile",
+    "build:libs": "lerna run build --ignore @owallet/extension --ignore @owallet/mobile --parallel",
     "postinstall": "patch-package",
     "test": "lerna run test --parallel",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
