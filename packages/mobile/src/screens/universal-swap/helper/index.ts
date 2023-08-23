@@ -274,3 +274,20 @@ export function filterTokens(
   }
   return filteredToTokens;
 }
+
+export const calculateMinimum = (
+  simulateAmount: number | string,
+  userSlippage: number
+): bigint | string => {
+  if (!simulateAmount) return '0';
+  try {
+    return (
+      BigInt(simulateAmount) -
+      (BigInt(simulateAmount) * BigInt(userSlippage * atomic)) /
+        (100n * BigInt(atomic))
+    );
+  } catch (error) {
+    console.log({ error });
+    return '0';
+  }
+};

@@ -35,6 +35,7 @@ import { oraichainNetwork } from './config/chainInfos';
 import { TokenItemType, evmTokens, tokenMap } from './config/bridgeTokens';
 import {
   SwapDirection,
+  calculateMinimum,
   feeEstimate,
   filterTokens,
   getTokenOnOraichain,
@@ -73,6 +74,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
+  const [minimumReceive, setMininumReceive] = useState(0);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [tokensAmount, setTokensAmount] = useState({});
   const [swapLoading, setSwapLoading] = useState(false);
@@ -317,6 +319,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         toTokenInfoData?.decimals
       )
     );
+    const minimumReceive = data?.amount
+      ? calculateMinimum(data?.amount, userSlippage)
+      : '0';
+
+    setMininumReceive(toDisplay(minimumReceive));
   };
 
   const estimateSwapAmount = async () => {
@@ -544,8 +551,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             </BalanceText>
           </View>
           <View style={styles.itemBottom}>
-            <BalanceText>Minimum Received</BalanceText>
-            <BalanceText>0 USDT</BalanceText>
+            <BalanceText>Minimum Amount</BalanceText>
+            <BalanceText>
+              {(fromToken.minAmountSwap || '0') + ' ' + fromToken.name}
+            </BalanceText>
+          </View>
+          <View style={styles.itemBottom}>
+            <BalanceText>Minimum Receive</BalanceText>
+            <BalanceText>
+              {(minimumReceive || '0') + ' ' + toToken.name}
+            </BalanceText>
           </View>
           <View style={styles.itemBottom}>
             <BalanceText>Tax rate</BalanceText>
