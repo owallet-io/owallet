@@ -53,6 +53,7 @@ import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 import { ETH } from '@hanchon/ethermint-address-converter';
 // can use this request from mobile ?
 import { request } from '@owallet/background';
+import { wallet } from '@owallet/bitcoin';
 
 export enum WalletStatus {
   NotInit = 'NotInit',
@@ -616,7 +617,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = type;
     });
 
-    let txHash: Uint8Array;
+    let txHash: string;
 
     try {
       const result = await this.broadcastBtcMsgs(
@@ -628,6 +629,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       );
 
       txHash = result.txHash;
+      console.log("🚀 ~ file: base.ts:632 ~ AccountSetBase<MsgOpts, ~ txHash:", txHash)
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -659,7 +661,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       }
     }
 
-    // const rpc = this.chainGetter.getChain(this.chainId).rest;
+    const rpc = this.chainGetter.getChain(this.chainId).rest;
 
     runInAction(() => {
       this._isSendingMsg = false;
@@ -669,46 +671,47 @@ export class AccountSetBase<MsgOpts, Queries> {
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
-    // const waitForPendingTransaction = async (
-    //   rpc,
-    //   txHash,
-    //   onFulfill,
-    //   count = 0
-    // ) => {
-    //   if (count > 10) return;
+    const waitForPendingTransaction = async (
+      rpc,
+      txHash,
+      onFulfill,
+      count = 0
+    ) => {
+      if (count > 10) return;
 
-    //   try {
-    //     let expectedBlockTime = 3000;
-    //     let transactionReceipt = null;
-    //     let retryCount = 0;
-    //     while (!transactionReceipt) {
-    //       // Waiting expectedBlockTime until the transaction is mined
-    //       transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [
-    //         txHash
-    //       ]);
-    //       console.log(
-    //         '🚀 ~ file: base.ts ~ line ~ transactionReceipt',
-    //         transactionReceipt
-    //       );
-    //       retryCount += 1;
-    //       if (retryCount === 10) break;
-    //       await sleep(expectedBlockTime);
-    //     }
+      try {
+        let expectedBlockTime = 1000;
+        let transactionReceipt = null;
+        let retryCount = 0;
+        while (!transactionReceipt) {
+          // Waiting expectedBlockTime until the transaction is mined
+          const { data: transactionReceipt } = await wallet.pushtx.default({
+            rawTx: txHash,
+            selectedCrypto: this.chainId
+          });
+          console.log(
+            '🚀 ~ file: base.ts ~ line ~ transactionReceipt',
+            transactionReceipt
+          );
+          retryCount += 1;
+          if (retryCount === 10) break;
+          await sleep(expectedBlockTime);
+        }
 
-    //     if (this.opts.preTxEvents?.onFulfill) {
-    //       this.opts.preTxEvents.onFulfill(transactionReceipt);
-    //     }
+        if (this.opts.preTxEvents?.onFulfill) {
+          this.opts.preTxEvents.onFulfill(transactionReceipt);
+        }
 
-    //     if (onFulfill) {
-    //       onFulfill(transactionReceipt);
-    //     }
-    //   } catch (error) {
-    //     await sleep(3000);
-    //     waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
-    //   }
-    // };
+        if (onFulfill) {
+          onFulfill(transactionReceipt);
+        }
+      } catch (error) {
+        await sleep(3000);
+        waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
+      }
+    };
 
-    // waitForPendingTransaction(rpc, txHash, onFulfill);
+    waitForPendingTransaction(rpc, txHash, onFulfill);
   }
 
   async sendToken(
@@ -893,18 +896,16 @@ export class AccountSetBase<MsgOpts, Queries> {
     signOptions?: OWalletSignOptions,
     extraOptions?: ExtraOptionSendToken
   ): Promise<{
-    txHash: Uint8Array;
+    txHash: string;
   }> {
     try {
       if (this.walletStatus !== WalletStatus.Loaded) {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
 
-     
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const bitcoin = (await this.getBitcoin())!;
 
-  
       const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
         memo,
         fee,
@@ -913,54 +914,9 @@ export class AccountSetBase<MsgOpts, Queries> {
         ...extraOptions
       });
 
-      // const signDoc = {
-      //   bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-      //     messages: protoMsgs,
-      //     memo: signResponse.signed.memo
-      //   }).finish(),
-      //   authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-      //     signerInfos: [
-      //       {
-      //         publicKey: {
-      //           type_url:
-      //             coinType === 60
-      //               ? '/ethermint.crypto.v1.ethsecp256k1.PubKey'
-      //               : '/cosmos.crypto.secp256k1.PubKey',
-      //           value: cosmos.crypto.secp256k1.PubKey.encode({
-      //             key: Buffer.from(
-      //               signResponse.signature.pub_key.value,
-      //               'base64'
-      //             )
-      //           }).finish()
-      //         },
-      //         modeInfo: {
-      //           single: {
-      //             mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
-      //           }
-      //         },
-      //         sequence: Long.fromString(signResponse.signed.sequence)
-      //       }
-      //     ],
-      //     fee: {
-      //       amount: signResponse.signed.fee.amount as ICoin[],
-      //       gasLimit: Long.fromString(signResponse.signed.fee.gas)
-      //     }
-      //   }).finish(),
-      //   accountNumber: Long.fromString(signResponse.signed.account_number),
-      //   chainId: this.chainId
-      // };
-
-      // const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-      //   bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
-      //   authInfoBytes: signDoc.authInfoBytes,
-      //   signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
-      // }).finish();
-      // console.log(
-      //   'signedTx ===',
-      //   Buffer.from(JSON.stringify(signedTx), 'base64')
-      // );
-
-      return null;
+      return {
+        txHash: signResponse.rawTxHex
+      };
     } catch (error) {
       console.log('Error on broadcastMsgs: ', error);
     }
