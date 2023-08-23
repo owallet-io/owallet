@@ -36,13 +36,10 @@ export const AccountCard: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     (keyStore) => keyStore?.selected
   );
-
   const smartNavigation = useSmartNavigation();
-
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
-
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
@@ -74,10 +71,6 @@ export const AccountCard: FunctionComponent<{
   }
   const totalAmount = useMemo(() => {
     if (chainStore.current.networkType === 'bitcoin') {
-      console.log(
-        '🚀 ~ file: account-card.tsx:74 ~ totalAmount ~ balanceBtc:',
-        balanceBtc
-      );
       const amount = formatBalance({
         balance: Number(balanceBtc?.toCoin().amount),
         cryptoUnit: 'BTC',
@@ -111,16 +104,10 @@ export const AccountCard: FunctionComponent<{
       cryptoUnit: 'BTC'
     });
 
-    const priceNative = Number(
-      priceStore.getPrice(
-        balanceBtc.currency?.coinGeckoId,
-        priceStore.defaultVsCurrency
-      )
-    );
     const currencyFiat = priceStore.defaultVsCurrency;
     const fiat = btcToFiat({
       amount: amountData as number,
-      exchangeRate: !!exchangeRate ? exchangeRate : priceNative,
+      exchangeRate: exchangeRate,
       currencyFiat
     });
     return `$${fiat}`;

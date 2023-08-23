@@ -32,8 +32,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   protected queryBtcBalance?: ObservableQueryBitcoinBalance;
   @observable
   protected _sender: string;
-  @observable
-  protected _balance: CoinPretty;
+
   @observable
   protected _senderEvm?: string;
 
@@ -65,12 +64,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     this.queryEvmBalances = queryEvmBalances;
     if (!!queryBtcBalance) {
       this.queryBtcBalance = queryBtcBalance;
-      queryBtcBalance
-        .getQueryBalance(sender)
-        .balance()
-        .then((balance) => {
-          this._balance = balance;
-        });
     }
     this._amount = '';
 
@@ -125,14 +118,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   @action
   setIsMax(isMax: boolean) {
-    if (!!this.queryBtcBalance) {
-      this.queryBtcBalance
-        .getQueryBalance(this.sender)
-        .balance()
-        .then((balance) => {
-          this._balance = balance;
-        });
-    }
     this._fraction = isMax ? 1 : undefined;
   }
 
@@ -161,21 +146,16 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @computed
   get amount(): string {
     if (this.fraction != null) {
-      if (!!this._balance) {
-        if (this._balance.toDec().lte(new Dec(0))) {
-          return '0';
-        }
-        return this._balance
-          .mul(new Dec(this.fraction))
-          .trim(true)
-          .locale(false)
-          .hideDenom(true)
-          .toString();
+      let balance = null;
+      if (!!this.queryBtcBalance) {
+        balance = this.queryBtcBalance.getQueryBalance(this.sender)?.balance;
+      } else {
+        balance = this.queryBalances
+          .getQueryBech32Address(this.sender)
+          .getBalanceFromCurrency(this.sendCurrency);
       }
-      const balance = this.queryBalances
-        .getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(this.sendCurrency);
 
+      if (!balance) return '0';
       const result = this.feeConfig?.fee
         ? balance.sub(this.feeConfig.fee)
         : balance;
@@ -273,23 +253,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return new NegativeAmountError('Amount is negative');
     }
 
-    // if (this.chainInfo.networkType === "evm") {
-    //   const balance = this.queryEvmBalances
-    //     .getQueryBalance(this._senderEvm).balance;
-    //   const balanceDec = balance.toDec();
-    //   if (dec.gt(balanceDec)) {
-    //     return new InsufficientAmountError('Insufficient amount');
-    //   }
-    // }
-    // else {
-    //   const balance = this.queryBalances
-    //     .getQueryBech32Address(this.sender)
-    //     .getBalanceFromCurrency(this.sendCurrency);
-    //   const balanceDec = balance.toDec();
-    //   if (dec.gt(balanceDec)) {
-    //     return new InsufficientAmountError('Insufficient amount');
-    //   }
-    // }
     if (
       this.chainInfo.networkType !== 'evm' &&
       this.chainInfo.networkType !== 'bitcoin'
@@ -302,7 +265,10 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
         return new InsufficientAmountError('Insufficient amount');
       }
     } else if (this.chainInfo.networkType === 'bitcoin') {
-      const balanceDec = this._balance.toDec();
+      const balance = this.queryBtcBalance.getQueryBalance(
+        this.sender
+      )?.balance;
+      const balanceDec = balance.toDec();
       if (dec.gt(balanceDec)) {
         return new InsufficientAmountError('Insufficient amount');
       }

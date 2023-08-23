@@ -429,4 +429,7 @@ export class Bitcoin implements IBitcoin {
   ) {
     this.initChainId = initChainId;
   }
+  signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string; }> {
+    return;
+  }
 }

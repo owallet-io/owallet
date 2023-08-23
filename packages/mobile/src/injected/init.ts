@@ -1,4 +1,4 @@
-import { OWallet, Ethereum, TronWeb } from '@owallet/types';
+import { OWallet, Ethereum, TronWeb, Bitcoin } from '@owallet/types';
 import { OfflineSigner } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
@@ -7,6 +7,7 @@ export function init(
   owallet: OWallet,
   ethereum: Ethereum,
   tronWeb: TronWeb,
+  bitcoin: Bitcoin,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
   getEnigmaUtils: (chainId: string) => SecretUtils
 ) {
@@ -18,6 +19,8 @@ export function init(
   window.owallet = owallet;
   // @ts-ignore
   window.ethereum = ethereum;
+  // @ts-ignore
+  window.bitcoin = bitcoin;
   // @ts-ignore
   window.tronLink = tronWeb;
   // @ts-ignore

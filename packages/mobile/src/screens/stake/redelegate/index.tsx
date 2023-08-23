@@ -26,6 +26,7 @@ import { DownArrowIcon } from '../../../components/icon';
 import { Toggle } from '../../../components/toggle';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWSubTitleHeader } from '@src/components/header';
+import { showToast } from '@src/utils/helper';
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -148,12 +149,18 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
+        
         if (e?.message === 'Request rejected') {
           return;
         }
         if (e?.message.includes('Cannot read properties of undefined')) {
           return;
         }
+        showToast({
+          type:'error',
+          text2:e?.message,
+          text1:'OWallet'
+        })
         console.log(e);
         if (smartNavigation.canGoBack) {
           smartNavigation.goBack();

@@ -77,28 +77,22 @@ export class BitcoinAccount {
     currency: AppCurrency,
     recipient: string,
     memo: string,
-    stdFee: Partial<StdFeeEthereum>,
+    stdFee: StdFee,
     signOptions?: OWalletSignOptions,
     onTxEvents?:
       | ((tx: any) => void)
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
-        },
-    extraOptions?: {
-      from: string;
-      contract_addr: string;
-      token_id?: string;
-      recipient?: string;
-      amount?: string;
-      to?: string;
-      gas?: string;
-    }
+        }
   ): Promise<boolean> {
-    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-    console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
-
     if (signOptions.networkType === 'bitcoin') {
+      const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+      console.log(stdFee, 'STD FEE BITCOIN!!!!!!!!!!!!!!!!!!!!!');
+      console.log(
+        '🚀 ~ file: bitcoin.ts:103 ~ BitcoinAccount ~ denomHelper.type:',
+        denomHelper.type
+      );
       switch (denomHelper.type) {
         case 'native':
           const actualAmount = (() => {
@@ -109,7 +103,7 @@ export class BitcoinAccount {
             return dec.truncate().toString();
           })();
 
-          const msg = {
+          const msg: any = {
             type: this.base.msgOpts.send.native.type,
             value: {
               from_address: this.base.bech32Address,
@@ -123,28 +117,25 @@ export class BitcoinAccount {
             }
           };
 
-          await this.base.sendEvmMsgs(
+          await this.base.sendBtcMsgs(
             'send',
             msg,
             memo,
-            {
-              gas: '0x' + parseInt(stdFee.gas).toString(16),
-              gasPrice: stdFee.gasPrice
-            },
+            stdFee,
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               console.log('Tx on fullfill: ', tx);
-            //   if (tx) {
-            //     // After succeeding to send token, refresh the balance.
-            //     const queryEvmBalance =
-            //       this.queries.evm.queryEvmBalance.getQueryBalance(
-            //         this.base.evmosHexAddress
-            //       );
+              //   if (tx) {
+              //     // After succeeding to send token, refresh the balance.
+              //     const queryEvmBalance =
+              //       this.queries.evm.queryEvmBalance.getQueryBalance(
+              //         this.base.evmosHexAddress
+              //       );
 
-            //     if (queryEvmBalance) {
-            //       queryEvmBalance.fetch();
-            //     }
-            //   }
+              //     if (queryEvmBalance) {
+              //       queryEvmBalance.fetch();
+              //     }
+              //   }
             })
           );
           return true;

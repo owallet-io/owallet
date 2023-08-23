@@ -347,7 +347,21 @@ const getNetworkType = (selectedCrypto = 'bitcoin') => {
 const getTransactionSize = (numInputs, numOutputs) => {
   return numInputs * 180 + numOutputs * 34 + 10 + numInputs;
 };
-
+const calculatorFee = ({
+  changeAddress = '',
+  utxos = [],
+  addressType = 'bech32',
+  transactionFee = 1,
+  message = ''
+}) => {
+  const totalFee =
+    getByteCount(
+      { [addressType]: utxos.length },
+      { [addressType]: changeAddress ? 2 : 1 },
+      message
+    ) * transactionFee;
+  return totalFee;
+};
 //amount = Amount to send to recipient.
 //transactionFee = fee per byte.
 const createTransaction = async ({
@@ -1019,7 +1033,10 @@ const cryptoToFiat = ({
   try {
     amount = Number(amount);
     BitcoinUnit.setFiat(currencyFiat, exchangeRate);
-    return new BitcoinUnit(amount, 'satoshi').to(currencyFiat).getValue().toFixed(2);
+    return new BitcoinUnit(amount, 'satoshi')
+      .to(currencyFiat)
+      .getValue()
+      .toFixed(2);
   } catch (e) {
     console.log(e);
   }
@@ -1239,5 +1256,6 @@ module.exports = {
   getByteCount,
   getScriptHash,
   formatBalance,
-  getBalanceValue
+  getBalanceValue,
+  calculatorFee
 };

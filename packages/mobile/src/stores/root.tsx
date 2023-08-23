@@ -21,7 +21,7 @@ import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import { AppInit, appInit } from './app_init';
 import { Notification, notification } from './notification';
 import EventEmitter from 'eventemitter3';
-import { OWallet, Ethereum } from '@owallet/provider';
+import { OWallet, Ethereum, Bitcoin, TronWeb } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { FeeType } from '@owallet/hooks';
 import {
@@ -174,6 +174,22 @@ export class RootStore {
               version,
               'core',
               '0x38',
+              new RNMessageRequesterInternal()
+            );
+          },
+          getBitcoin: async () => {
+            return new Bitcoin(
+              version,
+              'core',
+              'bitcoinTestnet',
+              new RNMessageRequesterInternal()
+            );
+          },
+          getTronWeb: async () => {
+            return new TronWeb(
+              version,
+              'core',
+              '0x2b6653dc',
               new RNMessageRequesterInternal()
             );
           }

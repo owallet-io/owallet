@@ -203,4 +203,8 @@ export interface Bitcoin {
    */
   readonly mode: BitcoinMode;
   initChainId: string;
+  signAndBroadcast(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
 }

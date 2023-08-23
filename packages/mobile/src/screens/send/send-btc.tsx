@@ -1,5 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
-import React, { FunctionComponent, useCallback } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo
+} from 'react';
 import {
   AddressInput,
   AmountInput,
@@ -9,28 +14,22 @@ import {
 } from '@src/components/input';
 import { OWButton } from '@src/components/button';
 import { PageWithScrollView } from '@src/components/page';
-import { createTransaction } from '@owallet/bitcoin';
+import {
+  createTransaction,
+  calculatorFee,
+  formatBalance
+} from '@owallet/bitcoin';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWBox } from '@src/components/card';
 import { useSendTxConfig } from '@owallet/hooks';
 import { useStore } from '@src/stores';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { spacing } from '@src/themes';
-export const SendBtcScreen: FunctionComponent = ({ amount }) => {
-  const onSend = useCallback(async () => {
-    // await createTransaction({
-    //   address: 'hieu',
-    //   transactionFee: 1,
-    //   amount: 12,
-    //   confirmedBalance: 1000,
-    //   utxos: [],
-    //   blacklistedUtxos: [],
-    //   changeAddress: 'toan',
-    //   mnemonic: '',
-    //   selectedCrypto: 'bitcoinTestnet',
-    //   message: ''
-    // });
-  }, []);
+import { Dec, DecUtils } from '@owallet/unit';
+import { observer } from 'mobx-react-lite';
+import { useSmartNavigation } from '@src/navigation.provider';
+
+export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
     useStore();
   const chainId = chainStore?.current?.chainId;
@@ -47,7 +46,75 @@ export const SendBtcScreen: FunctionComponent = ({ amount }) => {
     null,
     queries.bitcoin.queryBitcoinBalance
   );
+  const utxos = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+    account.bech32Address
+  )?.response?.data?.utxos;
+  const sendConfigError =
+  sendConfigs.recipientConfig.getError() ??
+  sendConfigs.amountConfig.getError() ??
+  sendConfigs.memoConfig.getError() ??
+  sendConfigs.gasConfig.getError();
+// ?? sendConfigs.feeConfig.getError();
+const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
+  const totalFee = useMemo(() => {
+    const feeAmount = calculatorFee({
+      changeAddress: sendConfigs.amountConfig.sender,
+      utxos: utxos,
+      message: sendConfigs.memoConfig.memo
+    });
+    sendConfigs.feeConfig.setManualFee({
+      amount: feeAmount.toString(),
+      denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+    });
+    const feeDisplay = formatBalance({
+      balance: Number(feeAmount),
+      cryptoUnit: 'BTC',
+      coin: chainStore.current.chainId
+    });
+    return {
+      feeAmount,
+      feeDisplay
+    };
+  }, [
+    sendConfigs.amountConfig.sender,
+    sendConfigs.memoConfig.memo,
+    utxos,
+    chainStore.current.chainId
+  ]);
+  const smartNavigation = useSmartNavigation();
+  const onSend = useCallback(async () => {
+    await account.sendToken(
+      sendConfigs.amountConfig.amount,
+      sendConfigs.amountConfig.sendCurrency,
+      sendConfigs.recipientConfig.recipient,
+      sendConfigs.memoConfig.memo,
+      sendConfigs.feeConfig.toStdFee(),
+      {
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
+        networkType: chainStore.current.networkType,
+        chainId: chainStore.current.chainId
+      },
+
+      {
+        onFulfill: (tx) => {
+          console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+        },
+        onBroadcasted: (txHash) => {
+          analyticsStore.logEvent('Send Btc tx broadcasted', {
+            chainId: chainStore.current.chainId,
+            chainName: chainStore.current.chainName,
+            feeType: sendConfigs.feeConfig.feeType
+          });
+          smartNavigation.pushSmart('TxPendingResult', {
+            txHash: Buffer.from(txHash).toString('hex')
+          });
+        }
+      }
+    );
+  }, [chainStore.current.networkType, chainStore.current.chainId]);
+  console.log('🚀 ~ file: send-btc.tsx:59 ~ useEffect ~ totalFee:', totalFee);
   const styles = styling(colors);
   return (
     <PageWithScrollView backgroundColor={colors['background']}>
@@ -94,12 +161,28 @@ export const SendBtcScreen: FunctionComponent = ({ amount }) => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <OWButton label="Send" />
+          <TextInput
+            label="Fee"
+            inputContainerStyle={{
+              backgroundColor: colors['background-box']
+            }}
+            placeholder="Type your Fee here"
+            keyboardType={'numeric'}
+            labelStyle={styles.sendlabelInput}
+            editable={false}
+            selectTextOnFocus={false}
+            value={totalFee.feeDisplay || '0'}
+          />
+          <OWButton
+            disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+            label="Send"
+            onPress={onSend}
+          />
         </OWBox>
       </View>
     </PageWithScrollView>
   );
-};
+});
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({

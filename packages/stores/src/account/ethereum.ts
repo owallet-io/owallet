@@ -100,13 +100,12 @@ export class EthereumAccount {
       gas?: string;
     }
   ): Promise<boolean> {
-    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-    console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
-
     if (
       signOptions.networkType === 'evm' ||
       EVMOS_NETWORKS.includes(signOptions.chainId)
     ) {
+      const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+      console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
       switch (denomHelper.type) {
         case 'erc20':
           const realAmount = (() => {
@@ -129,7 +128,7 @@ export class EthereumAccount {
               gasPrice: stdFee.gasPrice
             },
             signOptions,
-            this.txEventsWithPreOnFulfill(onTxEvents, tx => {
+            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
@@ -177,7 +176,7 @@ export class EthereumAccount {
               gasPrice: stdFee.gasPrice
             },
             signOptions,
-            this.txEventsWithPreOnFulfill(onTxEvents, tx => {
+            this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
