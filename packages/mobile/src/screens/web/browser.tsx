@@ -234,8 +234,8 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
           }
         />
 
-        <BrowserBookmark />
-        <View
+        {/* <BrowserBookmark /> */}
+        {/* <View
           style={{
             paddingHorizontal: 20,
             paddingTop: 20
@@ -271,9 +271,9 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <OWFlatList
+        {/* <OWFlatList
           style={{
             paddingHorizontal: 20
             // paddingTop: 20
@@ -319,7 +319,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
               </TouchableOpacity>
             );
           }}
-        />
+        /> */}
       </View>
     );
   };

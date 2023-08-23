@@ -1,14 +1,8 @@
-import { Image, Platform, StyleSheet, Text, View } from 'react-native';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+import React, { FC, useMemo } from 'react';
 import { useStore } from '@src/stores';
 import { useTheme } from '@src/themes/theme-provider';
-import {
-  EVENTS,
-  ICONS_TITLE,
-  SCREENS,
-  SCREENS_OPTIONS
-} from '@src/common/constants';
-import { BlurredBottomTabBar } from '@src/components/bottom-tabbar';
+import { ICONS_TITLE, SCREENS, SCREENS_OPTIONS } from '@src/common/constants';
 import {
   BottomTabBar,
   createBottomTabNavigator
@@ -21,7 +15,6 @@ import { SettingStackScreen } from './settings-navigation';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { observer } from 'mobx-react-lite';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import imagesGlobal from '@src/assets/images';
 import { UniversalSwapStackScreen } from './universal-navigation';
 import { BlurView } from '@react-native-community/blur';
 const Tab = createBottomTabNavigator();
@@ -41,7 +34,7 @@ export const MainTabNavigation: FC = observer(() => {
       screenOptions={({ route }) => {
         return {
           tabBarIcon: ({ color, focused }) => {
-            if (route?.name === SCREENS.TABS.UniversalSwap) {
+            if (route?.name === SCREENS.TABS.SendNavigation) {
               return (
                 <View style={styles.paddingIcon}>
                   <OWIcon
@@ -116,21 +109,21 @@ export const MainTabNavigation: FC = observer(() => {
     >
       <Tab.Screen name={SCREENS.TABS.Main} component={MainNavigation} />
       <Tab.Screen name={SCREENS.TABS.Browser} component={WebNavigation} />
-      {/* <Tab.Screen
+      <Tab.Screen
         name={SCREENS.TABS.SendNavigation}
         component={SendNavigation}
         initialParams={{
           currency: chainStore.current.stakeCurrency.coinMinimalDenom,
           chainId: chainStore.current.chainId
         }}
-      /> */}
-      <Tab.Screen
+      />
+      {/* <Tab.Screen
         name={SCREENS.TABS.UniversalSwap}
         component={UniversalSwapStackScreen}
         options={{
           unmountOnBlur: true
         }}
-      />
+      /> */}
       <Tab.Screen name={SCREENS.TABS.Invest} component={InvestNavigation} />
       <Tab.Screen
         name={SCREENS.TABS.Settings}
