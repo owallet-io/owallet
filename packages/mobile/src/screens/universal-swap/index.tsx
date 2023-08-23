@@ -191,7 +191,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     getTokenInfos();
-  }, []);
+  }, [toTokenDenom, fromTokenDenom]);
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
@@ -313,6 +313,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       },
       client
     );
+    console.log('originalToToken', toTokenInfoData!, data);
 
     return data;
   };
@@ -332,7 +333,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     estimateAverageRatio(1);
-  }, [fromAmountToken, fromTokenInfoData, toTokenInfoData]);
+  }, [
+    fromAmountToken,
+    fromTokenInfoData,
+    originalFromToken,
+    toTokenInfoData,
+    originalToToken
+  ]);
 
   console.log('toAmountToken', toAmountToken);
 
