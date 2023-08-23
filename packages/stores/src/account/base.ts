@@ -866,7 +866,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       // const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const owallet = (await this.getOWallet())!;
+      const bitcoin = (await this.getBitcoin())!;
 
       // const account = await BaseAccount.fetchFromRest(
       //   this.instance,
@@ -882,12 +882,14 @@ export class AccountSetBase<MsgOpts, Queries> {
       //   account.getAccountNumber().toString(),
       //   account.getSequence().toString()
       // );
-      // const signResponse = await owallet.signAmino(
-      //   this.chainId,
-      //   this.bech32Address,
-      //   signDocAmino,
-      //   signOptions
-      // );
+      const signResponse = await bitcoin.signAndBroadcast(
+        this.chainId,
+        {
+          data:"ok"
+        }
+        // signDocAmino,
+        // signOptions
+      );
 
       // const signDoc = {
       //   bodyBytes: cosmos.tx.v1beta1.TxBody.encode({

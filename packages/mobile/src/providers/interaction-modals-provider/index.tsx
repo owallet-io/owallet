@@ -8,6 +8,7 @@ import { HomeBaseModal } from '../../modals/home-base';
 import { SignEthereumModal } from '../../modals/sign/sign-ethereum';
 import { SignTronModal } from '../../modals/sign/sign-tron';
 import { AccessModal } from '@src/modals/permission';
+import { SignBitcoinModal } from '@src/modals/sign/sign-bitcoin';
 
 export const InteractionModalsProivder: FunctionComponent = observer(
   ({ children }) => {
@@ -74,6 +75,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         ) : null}
         {signInteractionStore.waitingTronData ? (
           <SignTronModal
+            isOpen={true}
+            close={() => signInteractionStore.rejectAll()}
+          />
+        ) : null}
+        {signInteractionStore.waitingBitcoinData ? (
+          <SignBitcoinModal
             isOpen={true}
             close={() => signInteractionStore.rejectAll()}
           />

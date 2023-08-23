@@ -58,6 +58,7 @@ import {
   RequestSignDirectMsg,
   RequestSignEthereumMsg,
   RequestSignTronMsg,
+  RequestSignBitcoinMsg,
   GetDefaultAddressTronMsg
 } from './msgs';
 import { TRON_ID } from '@owallet/common';
@@ -429,7 +430,11 @@ export class Bitcoin implements IBitcoin {
   ) {
     this.initChainId = initChainId;
   }
-  signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string; }> {
-    return;
+  async signAndBroadcast(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignBitcoinMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }
