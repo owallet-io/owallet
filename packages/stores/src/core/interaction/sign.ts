@@ -287,7 +287,7 @@ export class SignInteractionStore {
     });
   }
   protected waitBitcoinEnd(): Promise<void> {
-    if (this.isEthereumEnded()) {
+    if (this.isBitcoinEnded()) {
       return Promise.resolve();
     }
 
@@ -378,7 +378,7 @@ export class SignInteractionStore {
       }
       console.log('yield waitingBitcoinDatas length > 0');
     } finally {
-      yield this.waitTronEnd();
+      yield this.waitBitcoinEnd();
       console.log('this.111 ===', this.waitingBitcoinData);
       this._isLoading = false;
       this.interactionStore.removeData('request-sign-bitcoin', idBitcoin);

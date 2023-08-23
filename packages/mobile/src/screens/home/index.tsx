@@ -2,6 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useRef
 } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
@@ -32,6 +33,7 @@ import { API } from '../../common/api';
 import { TRON_ID, showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import { AccountCardBitcoin } from './account-card-bitcoin';
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -208,7 +210,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     setRefreshing(false);
     setRefreshDate(Date.now());
   }, [accountStore, chainStore, priceStore, queriesStore]);
-
+  const renderAccountCard = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
+    } else if (chainStore.current.networkType === 'evm') {
+      return <AccountCardEVM containerStyle={styles.containerStyle} />;
+    }
+    return <AccountCard containerStyle={styles.containerStyle} />;
+  }, [chainStore.current.networkType]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -219,12 +228,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      {chainStore.current.networkType !== 'evm' ? (
-        <AccountCard containerStyle={styles.containerStyle} />
-      ) : (
-        <AccountCardEVM containerStyle={styles.containerStyle} />
-      )}
-
+      {renderAccountCard}
       <DashboardCard />
       {chainStore.current.chainId === TRON_ID ? (
         <TronTokensCard />

@@ -29,6 +29,8 @@ import { spacing } from '@src/themes';
 import { Dec, DecUtils } from '@owallet/unit';
 import { observer } from 'mobx-react-lite';
 import { useSmartNavigation } from '@src/navigation.provider';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
@@ -85,7 +87,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     utxos,
     chainStore.current.chainId
   ]);
-  const smartNavigation = useSmartNavigation();
   const onSend = useCallback(async () => {
     await account.sendToken(
       sendConfigs.amountConfig.amount,
@@ -105,13 +106,18 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
         },
         onBroadcasted: (txHash) => {
+          console.log('🚀 ~ file: send-btc.tsx:108 ~ onSend ~ txHash:', txHash);
           analyticsStore.logEvent('Send Btc tx broadcasted', {
             chainId: chainStore.current.chainId,
             chainName: chainStore.current.chainName,
             feeType: sendConfigs.feeConfig.feeType
           });
-          smartNavigation.pushSmart('TxPendingResult', {
-            txHash: Buffer.from(txHash).toString('hex')
+          navigate(SCREENS.STACK.Others, {
+            screen: 'TxSuccessResult',
+            params: {
+              txHash: txHash,
+              chainId: chainStore.current.chainId
+            }
           });
         }
       },

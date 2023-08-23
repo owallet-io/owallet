@@ -39,7 +39,10 @@ export const SignBitcoinModal: FunctionComponent<{
     const [dataSign, setDataSign] = useState(null);
 
     useEffect(() => {
-      console.log('waitingBitcoinData', signInteractionStore.waitingBitcoinData);
+      console.log(
+        'waitingBitcoinData',
+        signInteractionStore.waitingBitcoinData
+      );
 
       if (signInteractionStore.waitingBitcoinData) {
         setDataSign(signInteractionStore.waitingBitcoinData);
@@ -115,7 +118,6 @@ export const SignBitcoinModal: FunctionComponent<{
                 color: colors['white']
               }}
               underlayColor={colors['danger-400']}
-              loading={signInteractionStore.isLoading}
               disabled={signInteractionStore.isLoading}
               onPress={_onPressReject}
             />
@@ -138,12 +140,6 @@ export const SignBitcoinModal: FunctionComponent<{
               onPress={async () => {
                 try {
                   await signInteractionStore.approveBitcoinAndWaitEnd();
-                  if (
-                    navigationRef.current.getCurrentRoute().name ===
-                    SCREENS.SendBtc
-                  ) {
-                    navigationRef.current.navigate('TxSuccessResult', {});
-                  }
                 } catch (error) {
                   signInteractionStore.rejectAll();
                   console.log('error approveBitcoinAndWaitEnd', error);

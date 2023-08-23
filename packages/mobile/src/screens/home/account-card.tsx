@@ -6,20 +6,9 @@ import { AddressCopyable } from '../../components/address-copyable';
 import { useSmartNavigation } from '../../navigation.provider';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddressQRCodeModal } from './components';
-
-import {
-  formatBalance,
-  getExchangeRate,
-  getBalanceValue
-} from '@owallet/bitcoin';
-import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { AccountBox } from './account-box';
-import { btcToFiat } from '@src/utils/helper';
-import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
-import { CoinPretty } from '@owallet/unit';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -39,7 +28,7 @@ export const AccountCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const [exchangeRate, setExchangeRate] = useState<number>(0);
+
   const queryStakable = queries.queryBalances.getQueryBech32Address(
     account.bech32Address
   ).stakable;
@@ -61,63 +50,7 @@ export const AccountCard: FunctionComponent<{
   const total = stakable.add(stakedSum);
 
   const totalPrice = priceStore.calculatePrice(total);
-  let balanceBtc = null;
-  if (chainStore?.current?.networkType === 'bitcoin') {
-    balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-      account?.bech32Address
-    )?.balance;
-  } else {
-    balanceBtc = null;
-  }
-  const totalAmount = useMemo(() => {
-    if (chainStore.current.networkType === 'bitcoin') {
-      const amount = formatBalance({
-        balance: Number(balanceBtc?.toCoin().amount),
-        cryptoUnit: 'BTC',
-        coin: chainStore.current.chainId
-      });
-      return amount;
-    }
-    return '';
-  }, [
-    chainStore.current.chainId,
-    account?.bech32Address,
-    chainStore.current.networkType,
-    balanceBtc
-  ]);
-  useEffect(() => {
-    const getExchange = async () => {
-      const exchange = (await getExchangeRate({
-        selectedCurrency: priceStore.defaultVsCurrency
-      })) as { data: number };
-      if (Number(exchange?.data)) {
-        setExchangeRate(Number(exchange?.data));
-      }
-    };
-    getExchange();
-    return () => {};
-  }, [priceStore.defaultVsCurrency]);
-
-  const handleBalanceBtc = (balanceBtc: CoinPretty, exchangeRate: number) => {
-    const amountData = getBalanceValue({
-      balance: Number(balanceBtc?.toCoin().amount),
-      cryptoUnit: 'BTC'
-    });
-
-    const currencyFiat = priceStore.defaultVsCurrency;
-    const fiat = btcToFiat({
-      amount: amountData as number,
-      exchangeRate: exchangeRate,
-      currencyFiat
-    });
-    return `$${fiat}`;
-  };
   const totalBalance = useMemo(() => {
-    if (chainStore.current.networkType === 'bitcoin') {
-      if (!!exchangeRate && exchangeRate > 0) {
-        return handleBalanceBtc(balanceBtc, exchangeRate);
-      }
-    }
     if (!!totalPrice) {
       return totalPrice?.toString();
     }
@@ -131,9 +64,7 @@ export const AccountCard: FunctionComponent<{
     chainStore.current.stakeCurrency.coinDecimals,
     chainStore.current.networkType,
     chainStore.current.chainId,
-    account?.bech32Address,
-    exchangeRate,
-    balanceBtc
+    account?.bech32Address
   ]);
 
   const onPressBtnMain = (name) => {
@@ -144,12 +75,6 @@ export const AccountCard: FunctionComponent<{
       _onPressReceiveModal();
     }
     if (name === 'Send') {
-      if (chainStore.current.networkType === 'bitcoin') {
-        navigate(SCREENS.STACK.Others, {
-          screen: SCREENS.SendBtc
-        });
-        return;
-      }
       smartNavigation.navigateSmart('Send', {
         currency: chainStore.current.stakeCurrency.coinMinimalDenom
       });
@@ -178,7 +103,6 @@ export const AccountCard: FunctionComponent<{
           : selected?.bip44HDPath?.coinType ??
             chainStore?.current?.bip44?.coinType
       }`}
-      totalAmount={!!totalAmount ? totalAmount : null}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />

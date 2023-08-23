@@ -629,7 +629,10 @@ export class AccountSetBase<MsgOpts, Queries> {
       );
 
       txHash = result.txHash;
-      console.log("🚀 ~ file: base.ts:632 ~ AccountSetBase<MsgOpts, ~ txHash:", txHash)
+      console.log(
+        '🚀 ~ file: base.ts:632 ~ AccountSetBase<MsgOpts, ~ txHash:',
+        txHash
+      );
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -660,58 +663,18 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill = onTxEvents.onFulfill;
       }
     }
-
-    const rpc = this.chainGetter.getChain(this.chainId).rest;
-
-    runInAction(() => {
-      this._isSendingMsg = false;
-    });
-
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
-    };
-
-    const waitForPendingTransaction = async (
-      rpc,
-      txHash,
-      onFulfill,
-      count = 0
-    ) => {
-      if (count > 10) return;
-
-      try {
-        let expectedBlockTime = 1000;
-        let transactionReceipt = null;
-        let retryCount = 0;
-        while (!transactionReceipt) {
-          // Waiting expectedBlockTime until the transaction is mined
-          const { data: transactionReceipt } = await wallet.pushtx.default({
-            rawTx: txHash,
-            selectedCrypto: this.chainId
-          });
-          console.log(
-            '🚀 ~ file: base.ts ~ line ~ transactionReceipt',
-            transactionReceipt
-          );
-          retryCount += 1;
-          if (retryCount === 10) break;
-          await sleep(expectedBlockTime);
-        }
-
-        if (this.opts.preTxEvents?.onFulfill) {
-          this.opts.preTxEvents.onFulfill(transactionReceipt);
-        }
-
-        if (onFulfill) {
-          onFulfill(transactionReceipt);
-        }
-      } catch (error) {
-        await sleep(3000);
-        waitForPendingTransaction(rpc, txHash, onFulfill, count + 1);
+    if (!!txHash) {
+      const { data: txReceipt } = await wallet.pushtx.default({
+        rawTx: txHash,
+        selectedCrypto: this.chainId
+      });
+      if (this.opts.preTxEvents?.onBroadcasted) {
+        this.opts.preTxEvents.onBroadcasted(txReceipt);
       }
-    };
-
-    waitForPendingTransaction(rpc, txHash, onFulfill);
+      if (onBroadcasted) {
+        onBroadcasted(txReceipt);
+      }
+    }
   }
 
   async sendToken(
