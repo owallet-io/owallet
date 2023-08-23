@@ -23,8 +23,6 @@ import {
   TRON_ID,
   isAndroid
 } from '@src/utils/helper';
-import { TokenInfo } from './types';
-import imagesGlobal from '@src/assets/images';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import {
   DEFAULT_SLIPPAGE,
@@ -287,8 +285,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken]);
 
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
-
-  console.log('fromAmountToken', fromAmountToken);
 
   const [ratio, setRatio] = useState(0);
 

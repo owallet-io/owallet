@@ -1,5 +1,5 @@
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { IInputSelectToken } from '../types';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 
@@ -16,6 +16,16 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
+  const [txt, setText] = useState('0');
+
+  useEffect(() => {
+    setText(amount);
+  }, [amount]);
+
+  const handleChangeAmount = () => {
+    const newAmount = Number(txt.replace(/,/g, '.'));
+    onChangeAmount(newAmount);
+  };
 
   return (
     <View style={[styles.containerInputSelectToken]}>
@@ -42,9 +52,10 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           editable={editable}
           placeholder="0"
           textAlign="right"
-          value={amount ?? '0'}
+          value={txt}
+          onChangeText={t => setText(t)}
           defaultValue={amount ?? '0'}
-          onSubmitEditing={onChangeAmount}
+          onBlur={handleChangeAmount}
           keyboardType="numeric"
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors['text-place-holder']}
