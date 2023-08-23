@@ -117,7 +117,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     if (!amount) return setSwapAmount([undefined, toAmountToken]);
     console.log('amount', amount);
 
-    setSwapAmount([Number(amount), toAmountToken]);
+    setSwapAmount([parseFloat(amount), toAmountToken]);
   };
 
   const onMaxFromAmount = (amount: bigint, type: 'max' | 'half') => {
