@@ -17,8 +17,6 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   const { colors } = useTheme();
   const styles = styling(colors);
 
-  console.log('amount2', amount);
-
   return (
     <View style={[styles.containerInputSelectToken]}>
       <TouchableOpacity

@@ -382,29 +382,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     from: '0.1',
     to: '0.001'
   });
-  const [currencyAmount, setCurrencyAmount] = useState({
-    from: '100',
-    to: '2000'
-  });
-  const [balance, setBalance] = useState({
-    from: '10',
-    to: '200'
-  });
-  const [activeToken, setActiveToken] = useState<{
-    from: TokenInfo;
-    to: TokenInfo;
-  }>({
-    from: {
-      symbol: 'ORAI',
-      logo: imagesGlobal.push,
-      network: 'Oraichain'
-    },
-    to: {
-      symbol: 'ETH',
-      logo: imagesGlobal.crypto,
-      network: 'Ethereum'
-    }
-  });
+
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
   const handleBalanceActive = useCallback(
@@ -418,12 +396,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
   const handleOpenTokensToModal = useCallback(() => {
     setIsSelectToTokenModal(true);
-  }, []);
-  const handleOnActiveToken = useCallback(token => {
-    setActiveToken({
-      from: token,
-      to: token
-    });
   }, []);
 
   return (
@@ -509,7 +481,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               fromTokenBalance,
               originalFromToken?.decimals
             )}
-            currencyValue={currencyAmount?.from}
             onChangeAmount={onChangeFromAmount}
             tokenActive={originalFromToken}
             onOpenTokenModal={handleOpenTokensFromModal}
@@ -518,7 +489,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             feeValue={fee?.to}
             amount={toAmountToken?.toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
-            currencyValue={currencyAmount?.to}
             tokenActive={originalToToken}
             onOpenTokenModal={handleOpenTokensToModal}
             editable={false}

@@ -14,7 +14,7 @@ export type TokenInfo = {
 export type TypeTextAndCustomizeComponent = NodeElement | string;
 export interface ISwapBox extends IInputSelectToken {
   feeValue: string;
-  currencyValue: string;
+  currencyValue?: string;
   balanceValue: string | number;
   tokenActive: TokenItemType;
   editable?: boolean;
