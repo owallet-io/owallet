@@ -8,14 +8,7 @@ import InputSelectToken from './InputSelectToken';
 import { BalanceText } from './BalanceText';
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
-  ({
-    feeValue,
-    tokenActive,
-    currencyValue,
-    balanceValue,
-    editable,
-    ...props
-  }) => {
+  ({ tokenActive, currencyValue, balanceValue, editable, ...props }) => {
     const { colors } = useTheme();
     const styles = styling(colors);
     return (

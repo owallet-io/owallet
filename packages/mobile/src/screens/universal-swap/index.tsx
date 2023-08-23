@@ -76,7 +76,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
-  const [tokensAmount, setTokensAmount] = useState({});
   const [swapLoading, setSwapLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [taxRate, setTaxRate] = useState('');
@@ -310,8 +309,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     return data;
   };
 
-  const estimateAverageRatio = async (initAmount?) => {
-    const data = await getSimulateSwap(initAmount);
+  const estimateAverageRatio = async () => {
+    const data = await getSimulateSwap(1);
     setRatio(
       toDisplay(
         data?.amount,
@@ -319,15 +318,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         toTokenInfoData?.decimals
       )
     );
-    const minimumReceive = data?.amount
-      ? calculateMinimum(data?.amount, userSlippage)
-      : '0';
-
-    setMininumReceive(toDisplay(minimumReceive));
   };
 
   const estimateSwapAmount = async () => {
     const data = await getSimulateSwap();
+    const minimumReceive = data?.amount
+      ? calculateMinimum(data?.amount, userSlippage)
+      : '0';
+    setMininumReceive(toDisplay(minimumReceive));
     setSwapAmount([
       fromAmountToken,
       toDisplay(
@@ -349,7 +347,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   ]);
 
   useEffect(() => {
-    estimateAverageRatio(1);
+    estimateAverageRatio();
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken]);
 
   useEffect(() => {
@@ -376,11 +374,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setSwapTokens([fromTokenSameToChainId.denom, toToken.denom]);
     }
   }, [fromToken]);
-
-  const [fee, setFee] = useState({
-    from: '0.1',
-    to: '0.001'
-  });
 
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
@@ -474,7 +467,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
         <View>
           <SwapBox
-            feeValue={fee?.from}
             amount={fromAmountToken?.toString() ?? '0'}
             balanceValue={toDisplay(
               fromTokenBalance,
@@ -485,7 +477,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             onOpenTokenModal={handleOpenTokensFromModal}
           />
           <SwapBox
-            feeValue={fee?.to}
             amount={toAmountToken?.toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
