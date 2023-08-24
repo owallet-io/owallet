@@ -57,6 +57,10 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+	<string>blob</string>
+	</array>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>App uses bluetooth to find, connect and communicate with Ledger Nano devices</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>

@@ -325,6 +325,9 @@ export const WebpageScreen: FunctionComponent<
             <>
               <WebView
                 ref={webviewRef}
+                allowFileAccess={true}
+                allowFileAccessFromFileURLs={true}
+                allowUniversalAccessFromFileURLs={true}
                 incognito={true}
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 containerStyle={{ marginBottom: bottomHeight }}
