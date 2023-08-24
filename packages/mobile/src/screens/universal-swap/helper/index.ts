@@ -31,7 +31,11 @@ import {
   OraiswapOracleQueryClient,
   OraiswapRouterQueryClient
 } from '@oraichain/oraidex-contracts-sdk';
-import { AssetInfo } from '@oraichain/common-contracts-sdk';
+import {
+  AssetInfo,
+  CwIcs20LatestQueryClient,
+  Ratio
+} from '@oraichain/common-contracts-sdk';
 
 export enum SwapDirection {
   From,
@@ -58,10 +62,39 @@ export const getNetworkGasPrice = async (): Promise<number> => {
   return 0;
 };
 
+export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {
+  switch (chainId) {
+    case '0x01':
+    case '0x38':
+      return true;
+    default:
+      return false;
+  }
+}
+
 //hardcode fee
 export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
   if (!tokenInfo) return 0;
   return (gasDefault * MULTIPLIER * HIGH_GAS_PRICE) / 10 ** tokenInfo?.decimals;
+};
+
+export const getTransferTokenFee = async ({
+  remoteTokenDenom,
+  client
+}): Promise<Ratio | undefined> => {
+  try {
+    const ibcWasmContractAddress = process.env.REACT_APP_IBC_WASM_CONTRACT;
+    const ibcWasmContract = new CwIcs20LatestQueryClient(
+      client,
+      ibcWasmContractAddress
+    );
+    const ratio = await ibcWasmContract.getTransferTokenFee({
+      remoteTokenDenom
+    });
+    return ratio;
+  } catch (error) {
+    console.log({ error });
+  }
 };
 
 export const truncDecimals = 6;

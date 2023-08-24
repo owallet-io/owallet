@@ -31,7 +31,7 @@ import {
 } from './config/constants';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
-import { oraichainNetwork } from './config/chainInfos';
+import { NetworkChainId, oraichainNetwork } from './config/chainInfos';
 import { TokenItemType, evmTokens, tokenMap } from './config/bridgeTokens';
 import {
   SwapDirection,
@@ -41,7 +41,9 @@ import {
   filterTokens,
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
+  getTransferTokenFee,
   handleSimulateSwap,
+  isEvmNetworkNativeSwapSupported,
   isSupportedNoPoolSwapEvm,
   toAmount
 } from './helper';
@@ -94,6 +96,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<
     TokenItemType[]
   >([]);
+
+  const [[fromTokenFee, toTokenFee], setTokenFee] = useState<number[]>([]);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -166,6 +170,58 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   //   fromToken.chainId,
   //   toToken.chainId
   // );
+
+  const getTokenFee = async (
+    remoteTokenDenom: string,
+    fromChainId: NetworkChainId,
+    toChainId: NetworkChainId,
+    type: 'from' | 'to'
+  ) => {
+    const client = await CWStargate.init(
+      accountOrai,
+      ORAICHAIN_ID,
+      oraichainNetwork.rpc
+    );
+
+    // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)
+    if (
+      isEvmNetworkNativeSwapSupported(fromChainId) &&
+      fromChainId === toChainId
+    )
+      return;
+    if (remoteTokenDenom) {
+      let tokenFee = 0;
+      const ratio = await getTransferTokenFee({ remoteTokenDenom, client });
+
+      if (ratio) {
+        tokenFee = (ratio.nominator / ratio.denominator) * 100;
+      }
+
+      if (type === 'from') {
+        setTokenFee([tokenFee, toTokenFee]);
+      } else {
+        setTokenFee([fromTokenFee, tokenFee]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getTokenFee(
+      originalToToken.prefix + originalToToken.contractAddress,
+      fromToken.chainId,
+      toToken.chainId,
+      'to'
+    );
+  }, [originalToToken, fromToken, toToken, originalToToken]);
+
+  useEffect(() => {
+    getTokenFee(
+      originalFromToken.prefix + originalFromToken.contractAddress,
+      fromToken.chainId,
+      toToken.chainId,
+      'from'
+    );
+  }, [originalToToken, fromToken, toToken, originalToToken]);
 
   const getTokenInfos = async () => {
     const client = await CWStargate.init(
