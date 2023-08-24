@@ -258,7 +258,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       const cwStargate = {
         account,
-        chainId: account.chainId,
+        chainId: accountOrai.chainId,
         rpc: oraichainNetwork.rpc
       };
 
