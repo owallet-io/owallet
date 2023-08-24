@@ -31,6 +31,7 @@ import { observer } from 'mobx-react-lite';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
+import { delay } from '@src/utils/helper';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
@@ -62,6 +63,8 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   // ?? sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
+
+  // console.log();
   const totalFee = useMemo(() => {
     const feeAmount = calculatorFee({
       changeAddress: sendConfigs.amountConfig.sender,
@@ -105,20 +108,39 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         onFulfill: (tx) => {
           console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
         },
-        onBroadcasted: (txHash) => {
-          console.log('🚀 ~ file: send-btc.tsx:108 ~ onSend ~ txHash:', txHash);
+        onBroadcasted: async (txHash) => {
           analyticsStore.logEvent('Send Btc tx broadcasted', {
             chainId: chainStore.current.chainId,
             chainName: chainStore.current.chainName,
             feeType: sendConfigs.feeConfig.feeType
           });
+          if (txHash?.code) {
+            navigate(SCREENS.STACK.Others, {
+              screen: 'TxFailedResult',
+              params: {
+                txHash: txHash?.code,
+                chainId: chainStore.current.chainId
+              }
+            });
+            return;
+          }
+          await delay(1000);
+          await queries.bitcoin.queryBitcoinBalance
+            .getQueryBalance(account.bech32Address)
+            .waitFreshResponse();
+          console.log(
+            '🚀 ~ file: send-btc.tsx:136 ~ onBroadcasted: ~ txHash:',
+            txHash
+          );
           navigate(SCREENS.STACK.Others, {
             screen: 'TxSuccessResult',
             params: {
               txHash: txHash,
+
               chainId: chainStore.current.chainId
             }
           });
+          return;
         }
       },
       {
@@ -132,6 +154,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     chainStore.current.networkType,
     chainStore.current.chainId,
     utxos,
+    account.bech32Address,
     confirmedBalance
   ]);
   console.log('🚀 ~ file: send-btc.tsx:59 ~ useEffect ~ totalFee:', totalFee);

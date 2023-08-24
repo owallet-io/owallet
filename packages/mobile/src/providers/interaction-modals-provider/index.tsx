@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import { SignModal } from '../../modals/sign';
@@ -46,7 +46,13 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         });
       }
     };
-
+    const waitingBitcoinData = useMemo(() => {
+      return signInteractionStore.waitingBitcoinData;
+    }, [signInteractionStore.waitingBitcoinData]);
+    console.log(
+      '🚀 ~ file: index.tsx:83 ~ signInteractionStore.waitingBitcoinData:',
+      signInteractionStore.waitingBitcoinData
+    );
     return (
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (
@@ -79,12 +85,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             close={() => signInteractionStore.rejectAll()}
           />
         ) : null}
-        {signInteractionStore.waitingBitcoinData ? (
-          <SignBitcoinModal
-            isOpen={true}
-            close={() => signInteractionStore.rejectAll()}
-          />
-        ) : null}
+
+        <SignBitcoinModal
+          isOpen={!!waitingBitcoinData}
+          close={() => signInteractionStore.rejectAll()}
+        />
+
         {modalStore.getOptions?.isOpen ? (
           <HomeBaseModal
             {...modalStore.getOptions}

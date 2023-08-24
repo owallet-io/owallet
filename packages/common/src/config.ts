@@ -628,8 +628,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isBtc'],
     txExplorer: {
       name: 'Etherscan',
-      txUrl: 'https://etherscan.io/tx/{txHash}',
-      accountUrl: 'https://etherscan.io/address/{address}'
+      txUrl: 'https://blockstream.info/testnet/tx/{txHash}',
+      accountUrl: 'https://blockstream.info/testnet/address/{address}'
     }
   },
   {

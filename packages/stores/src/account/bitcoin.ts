@@ -105,7 +105,7 @@ export class BitcoinAccount {
           //     return dec.truncate().toString();
           //   })();
 
-          const msg: any = createMsg({
+          const msg: any = {
             address: recipient,
             changeAddress: this.base.bech32Address,
             amount: Number(extraOptions.amount),
@@ -113,8 +113,8 @@ export class BitcoinAccount {
             totalFee: Number(stdFee.amount[0].amount),
             selectedCrypto: signOptions.chainId,
             confirmedBalance: extraOptions.confirmedBalance
-          });
-          console.log("🚀 ~ file: bitcoin.ts:117 ~ BitcoinAccount ~ msg:", msg)
+          };
+          console.log('🚀 ~ file: bitcoin.ts:117 ~ BitcoinAccount ~ msg:', msg);
 
           await this.base.sendBtcMsgs(
             'send',
@@ -124,17 +124,16 @@ export class BitcoinAccount {
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               console.log('Tx on fullfill: ', tx);
-              //   if (tx) {
-              //     // After succeeding to send token, refresh the balance.
-              //     const queryEvmBalance =
-              //       this.queries.evm.queryEvmBalance.getQueryBalance(
-              //         this.base.evmosHexAddress
-              //       );
-
-              //     if (queryEvmBalance) {
-              //       queryEvmBalance.fetch();
-              //     }
-              //   }
+              if (tx) {
+                // After succeeding to send token, refresh the balance.
+                const queryBtcBalance =
+                  this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+                    this.base.bech32Address
+                  );
+                if (queryBtcBalance) {
+                  queryBtcBalance.fetch();
+                }
+              }
             }),
             extraOptions
           );

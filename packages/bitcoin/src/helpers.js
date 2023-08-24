@@ -347,6 +347,12 @@ const getNetworkType = (selectedCrypto = 'bitcoin') => {
 const getTransactionSize = (numInputs, numOutputs) => {
   return numInputs * 180 + numOutputs * 34 + 10 + numInputs;
 };
+const convertStringToMessage = (str) => {
+  if (!str) return '';
+  const text = Buffer.from(str, 'utf8').toString('hex').toUpperCase();
+  const textHex = Buffer.from(text, 'hex');
+  return textHex;
+};
 const calculatorFee = ({
   changeAddress = '',
   utxos = [],
@@ -354,6 +360,7 @@ const calculatorFee = ({
   transactionFee = 1,
   message = ''
 }) => {
+  message = convertStringToMessage(message);
   const totalFee =
     getByteCount(
       { [addressType]: utxos.length },
@@ -368,19 +375,9 @@ const createMsg = ({
   totalFee,
   changeAddress,
   confirmedBalance,
-  message,
+  message = '',
   selectedCrypto
 }) => {
-  console.log(
-    '🚀 ~ file: helpers.js:374 ~ confirmedBalance:',
-    confirmedBalance
-  );
-  console.log('🚀 ~ file: helpers.js:374 ~ totalFee:', totalFee);
-  console.log('🚀 ~ file: helpers.js:374 ~ amount:', amount);
-  console.log(
-    '🚀 ~ file: helpers.js:388 ~ confirmedBalance - (amount + totalFee):',
-    confirmedBalance - (amount + Number(totalFee))
-  );
   const network = networks[selectedCrypto];
   let targets = [];
   if (amount > 0) {
@@ -492,7 +489,8 @@ const signAndCreateTransaction = async ({
 
     return data;
   } catch (e) {
-    console.log(e);
+    console.log('🚀 ~ file: helpers.js:501 ~ e:', e);
+
     return { error: true, data: e };
   }
 };
@@ -512,6 +510,10 @@ const createTransaction = async ({
   addressType = 'bech32'
 } = {}) => {
   try {
+    if (typeof message === 'string' && message !== '') {
+      message = convertStringToMessage(message);
+    }
+    console.log('🚀 ~ file: helpers.js:383 ~ message:', message);
     const network = networks[selectedCrypto];
     const totalFee =
       getByteCount(
@@ -1397,5 +1399,6 @@ module.exports = {
   calculatorFee,
   createMsg,
   signAndCreateTransaction,
-  BtcToSats
+  BtcToSats,
+  convertStringToMessage
 };

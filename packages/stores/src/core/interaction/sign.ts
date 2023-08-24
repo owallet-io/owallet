@@ -379,7 +379,7 @@ export class SignInteractionStore {
       console.log('yield waitingBitcoinDatas length > 0');
     } finally {
       yield this.waitBitcoinEnd();
-      console.log('this.111 ===', this.waitingBitcoinData);
+      console.log('thiswaitingBitcoinData.111 ===', this.waitingBitcoinData);
       this._isLoading = false;
       this.interactionStore.removeData('request-sign-bitcoin', idBitcoin);
     }
