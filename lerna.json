@@ -1,5 +1,16 @@
 {
   "version": "0.9.16",
-  "useWorkspaces": true,
-  "npmClient": "yarn"
+  "packages": ["packages/*"],
+  "npmClient": "npm",
+  "nohoist": [
+    "**/@react-native-*/**",
+    "**/react-native",
+    "**/react-native/**",
+    "**/*-react-native",
+    "**/react-native-*",
+    "**/@react-navigation/**",
+    "**/expo-*",
+    "**/@react-native-async-storage/async-storage"
+  ],
+  "useNx": true
 }
