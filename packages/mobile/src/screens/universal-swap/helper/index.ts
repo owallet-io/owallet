@@ -188,11 +188,10 @@ async function simulateSwap(
       offerAmount: amount.toString(),
       operations
     });
-    console.log('data simulateSwap ===', data);
 
     return data;
   } catch (error) {
-    console.log('not heree error', error);
+    console.log(`Error when trying to simulate swap using router v2: ${error}`);
     throw new Error(
       `Error when trying to simulate swap using router v2: ${error}`
     );

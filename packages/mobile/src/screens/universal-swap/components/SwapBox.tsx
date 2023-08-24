@@ -8,7 +8,14 @@ import InputSelectToken from './InputSelectToken';
 import { BalanceText } from './BalanceText';
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
-  ({ tokenActive, currencyValue, balanceValue, editable, ...props }) => {
+  ({
+    tokenActive,
+    currencyValue,
+    balanceValue,
+    editable,
+    tokenFee,
+    ...props
+  }) => {
     const { colors } = useTheme();
     const styles = styling(colors);
     return (
@@ -27,9 +34,11 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
             <BalanceText weight="500">
               Balance: {balanceValue || 0.0} {tokenActive.name}
             </BalanceText>
-            {/* <BalanceText size={13} style={styles.pt2} weight="500">
-              Fee: {feeValue || 0}%
-            </BalanceText> */}
+            {tokenFee > 0 ? (
+              <BalanceText size={13} style={styles.pt2} weight="500">
+                Fee: {tokenFee * 100 || 0}%
+              </BalanceText>
+            ) : null}
           </View>
           {/* <BalanceText weight="500">≈ ${currencyValue || 0}</BalanceText> */}
         </View>

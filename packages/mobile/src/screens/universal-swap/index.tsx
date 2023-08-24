@@ -544,6 +544,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             onChangeAmount={onChangeFromAmount}
             tokenActive={originalFromToken}
             onOpenTokenModal={handleOpenTokensFromModal}
+            tokenFee={fromTokenFee}
           />
           <SwapBox
             amount={toAmountToken?.toString() ?? '0'}
@@ -551,6 +552,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             tokenActive={originalToToken}
             onOpenTokenModal={handleOpenTokensToModal}
             editable={false}
+            tokenFee={toTokenFee}
           />
 
           <View style={styles.containerBtnCenter}>
@@ -622,10 +624,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               {(minimumReceive || '0') + ' ' + toToken.name}
             </BalanceText>
           </View>
-          <View style={styles.itemBottom}>
-            <BalanceText>Tax rate</BalanceText>
-            <BalanceText>{Number(taxRate) * 100}%</BalanceText>
-          </View>
+          {(!fromTokenFee && !toTokenFee) ||
+          (fromTokenFee === 0 && toTokenFee === 0) ? (
+            <View style={styles.itemBottom}>
+              <BalanceText>Tax rate</BalanceText>
+              <BalanceText>{Number(taxRate) * 100}%</BalanceText>
+            </View>
+          ) : null}
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>
