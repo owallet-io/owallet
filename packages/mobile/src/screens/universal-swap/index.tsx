@@ -257,7 +257,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     let loadTokenParams = {};
     try {
       const cwStargate = {
-        account,
+        account: accountOrai,
         chainId: accountOrai.chainId,
         rpc: oraichainNetwork.rpc
       };
