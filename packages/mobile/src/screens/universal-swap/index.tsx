@@ -97,7 +97,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     TokenItemType[]
   >([]);
 
-  const [[fromTokenFee, toTokenFee], setTokenFee] = useState<number[]>([]);
+  const [fromTokenFee, setFromTokenFee] = useState<number>(0);
+  const [toTokenFee, setToTokenFee] = useState<number>(0);
 
   const { data: prices } = useCoinGeckoPrices();
 
@@ -198,9 +199,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
 
       if (type === 'from') {
-        setTokenFee([tokenFee, toTokenFee]);
+        setFromTokenFee(tokenFee);
       } else {
-        setTokenFee([fromTokenFee, tokenFee]);
+        setToTokenFee(tokenFee);
       }
     }
   };
