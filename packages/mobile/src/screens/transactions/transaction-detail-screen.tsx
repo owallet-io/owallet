@@ -120,7 +120,7 @@ const TransactionDetailScreen = observer(() => {
                           ? itemDataTrans?.from
                           : itemDataTrans?.from?.value
                       }
-                      label="From"
+                      label={'From'}
                     />
                   )}
                   {itemDataTrans?.to && (
@@ -135,7 +135,25 @@ const TransactionDetailScreen = observer(() => {
                           ? itemDataTrans?.to
                           : itemDataTrans?.to?.value
                       }
-                      label="To"
+                      label={'To'}
+                    />
+                  )}
+                  {itemDataTrans?.address && (
+                    <ItemReceivedToken
+                      valueDisplay={formatContractAddress(
+                        itemDataTrans?.address
+                      )}
+                      value={itemDataTrans?.address}
+                      label={'Address'}
+                    />
+                  )}
+                  {itemDataTrans?.txId && (
+                    <ItemReceivedToken
+                      valueDisplay={formatContractAddress(
+                        itemDataTrans?.txId
+                      )}
+                      value={itemDataTrans?.txId}
+                      label={'TxID'}
                     />
                   )}
                   {itemDataTrans?.amount ||
@@ -282,6 +300,9 @@ const TransactionDetailScreen = observer(() => {
 
       {chainStore.current?.networkType === 'evm' &&
         chainStore.current.chainId !== ChainIdEnum.KawaiiEvm &&
+        itemEvents?.typeId !== 0 &&
+        itemEvents?.value?.map(handleMapData)}
+      {chainStore.current?.networkType === 'bitcoin' &&
         itemEvents?.typeId !== 0 &&
         itemEvents?.value?.map(handleMapData)}
       {infoTransaction?.length > 0 &&

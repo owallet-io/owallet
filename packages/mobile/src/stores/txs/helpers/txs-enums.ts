@@ -1,6 +1,7 @@
 export enum NetworkEnum {
   Cosmos = 'cosmos',
-  Evm = 'evm'
+  Evm = 'evm',
+  Bitcoin = 'bitcoin'
 }
 export enum ChainIdEnum {
   Oraichain = 'Oraichain',
@@ -14,5 +15,6 @@ export enum ChainIdEnum {
   Juno = 'juno-1',
   BNBChain = '0x38',
   BNBChainTestNet = '0x61',
-  TRON = '0x2b6653dc'
+  TRON = '0x2b6653dc',
+  BitcoinTestnet = 'bitcoinTestnet'
 }

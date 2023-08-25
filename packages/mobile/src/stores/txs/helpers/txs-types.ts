@@ -1,4 +1,3 @@
-
 interface CurrencyInfo {
   prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | '';
   coinDenom?: string;
@@ -86,12 +85,14 @@ interface TransferDetail {
   transferInfo: TransferInfo[];
 }
 interface TransferInfo {
-  from: string;
-  to: string;
-  isMinus: boolean;
-  isPlus: boolean;
-  amount: string;
-  token: string;
+  from?: string;
+  to?: string;
+  isMinus?: boolean;
+  isPlus?: boolean;
+  amount?: string;
+  token?: string;
+  address?: string;
+  txId?: string;
 }
 interface ResDataTxsTron {
   total: number;
@@ -196,7 +197,7 @@ interface ResTxsInfo {
   transfers: Partial<TransferDetail>[];
   isRefreshData?: boolean;
   isCosmos?: boolean;
-  infoTransaction?:any;
+  infoTransaction?: any;
 }
 interface ResTxs {
   current_page: number;
@@ -230,6 +231,53 @@ interface txsEthAndBscResult {
   message: string;
   result: InfoTxEthAndBsc[];
   status: string;
+}
+type txsBitcoinResult = txBitcoin[];
+
+interface txBitcoin {
+  txid: string;
+  version: number;
+  locktime: number;
+  vin: Vin[];
+  vout: Vout[];
+  size: number;
+  weight: number;
+  fee: number;
+  status: Status;
+}
+
+interface Vin {
+  txid: string;
+  vout: number;
+  prevout: Prevout;
+  scriptsig: string;
+  scriptsig_asm: string;
+  witness: string[];
+  is_coinbase: boolean;
+  sequence: number;
+}
+
+interface Prevout {
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_type: string;
+  scriptpubkey_address: string;
+  value: number;
+}
+
+interface Vout {
+  scriptpubkey: string;
+  scriptpubkey_asm: string;
+  scriptpubkey_type: string;
+  scriptpubkey_address?: string;
+  value: number;
+}
+
+interface Status {
+  confirmed: boolean;
+  block_height: number;
+  block_hash: string;
+  block_time: number;
 }
 
 //Cosmos type////////////////////////

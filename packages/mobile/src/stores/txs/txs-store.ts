@@ -5,15 +5,20 @@ import { TxsCosmos } from './cosmos/txs-cosmos';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { ChainIdEnum, NetworkEnum } from './helpers/txs-enums';
+import { TxsBitcoin } from './bitcoin/txs-bitcoin';
 export class TxsStore extends Txs {
   @observable
   public readonly txsEvm: TxsEVM;
+  @observable
+  public readonly txsBitcoin: TxsBitcoin;
+  @observable
   public readonly txsCosmos: TxsCosmos;
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     super(current_chain);
     makeObservable(this);
     this.txsEvm = new TxsEVM(current_chain);
     this.txsCosmos = new TxsCosmos(current_chain);
+    this.txsBitcoin = new TxsBitcoin(current_chain);
   }
 
   async getTxs(
@@ -26,6 +31,8 @@ export class TxsStore extends Txs {
         return await this.txsCosmos.getTxs(page, current_page, params);
       } else if (this.networkType === NetworkEnum.Evm) {
         return await this.txsEvm.getTxs(page, current_page, params);
+      } else if (this.networkType === NetworkEnum.Bitcoin) {
+        return await this.txsBitcoin.getTxs(page, current_page, params);
       }
       return;
     } catch (error) {
