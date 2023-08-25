@@ -629,7 +629,6 @@ export class AccountSetBase<MsgOpts, Queries> {
       );
 
       txHash = result.txHash;
-      
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -660,27 +659,13 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill = onTxEvents.onFulfill;
       }
     }
-    if (!!txHash) {
-      const { data: txReceipt } = await wallet.pushtx.default({
-        rawTx: txHash,
-        selectedCrypto: this.chainId
-      });
-      
-      console.log("🚀 ~ file: base.ts:671 ~ AccountSetBase<MsgOpts, ~ txReceipt:", txReceipt)
-      
-      if (this.opts.preTxEvents?.onFulfill) {
-        this.opts.preTxEvents.onFulfill(txReceipt);
-      }
 
-      if (onFulfill) {
-        onFulfill(txReceipt);
-      }
-      if (this.opts.preTxEvents?.onBroadcasted) {
-        this.opts.preTxEvents.onBroadcasted(txReceipt);
-      }
-      if (onBroadcasted) {
-        onBroadcasted(txReceipt);
-      }
+    if (this.opts.preTxEvents?.onFulfill && txHash) {
+      this.opts.preTxEvents.onFulfill(txHash);
+    }
+
+    if (onFulfill && txHash) {
+      onFulfill(txHash);
     }
   }
 

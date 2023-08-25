@@ -17,7 +17,8 @@ import {
   convertAmount,
   _keyExtract,
   findLedgerAddressWithChainId,
-  delay
+  delay,
+  btcToFiat
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
@@ -26,8 +27,9 @@ import images from '@src/assets/images';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { log } from 'console';
+import { getBalanceValue, getExchangeRate } from '@owallet/bitcoin';
 
-export const TokensCard: FunctionComponent<{
+export const TokensBitcoinCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   refreshDate: number;
 }> = observer(({ containerStyle, refreshDate }) => {
@@ -35,7 +37,7 @@ export const TokensCard: FunctionComponent<{
     useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
-
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -44,46 +46,33 @@ export const TokensCard: FunctionComponent<{
     account,
     chainStore.current.rpc
   );
-
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryBalances = queries.queryBalances.getQueryBech32Address(
-    chainStore.current.networkType === 'evm'
-      ? keyRingStore.keyRingType === 'ledger'
-        ? findLedgerAddressWithChainId(
-            keyRingStore.keyRingLedgerAddresses,
-            chainStore.current.chainId
-          )
-        : account.evmosHexAddress
-      : account.bech32Address
-  );
-
+  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+    account?.bech32Address
+  )?.balance;
   const tokens = useMemo(() => {
-    const queryTokens = queryBalances.balances.concat(
-      queryBalances.nonNativeBalances,
-      queryBalances.positiveNativeUnstakables
-    );
-    const uniqTokens = [];
-    queryTokens.map((token) =>
-      uniqTokens.filter(
-        (ut) =>
-          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
-      ).length > 0
-        ? null
-        : uniqTokens.push(token)
-    );
-    return uniqTokens;
-  }, [
-    chainStore.current.chainId,
-    account.bech32Address,
-    account.evmosHexAddress,
-    chainStore.current.networkType,
-    refreshDate
-  ]);
+    return [
+      {
+        balance: balanceBtc
+      }
+    ];
+  }, [balanceBtc]);
 
   const onActiveType = (i) => {
     setIndex(i);
   };
+  useEffect(() => {
+    const getExchange = async () => {
+      const exchange = (await getExchangeRate({
+        selectedCurrency: priceStore.defaultVsCurrency
+      })) as { data: number };
+      if (Number(exchange?.data)) {
+        setExchangeRate(Number(exchange?.data));
+      }
+    };
+    getExchange();
+    return () => {};
+  }, [priceStore.defaultVsCurrency]);
 
   const _renderFlatlistOrchai = ({
     item,
@@ -166,7 +155,20 @@ export const TokensCard: FunctionComponent<{
           <CardBody>
             {tokens?.length > 0 ? (
               tokens.slice(0, 3).map((token, index) => {
-                const priceBalance = priceStore.calculatePrice(token.balance);
+                const amountData = getBalanceValue({
+                  balance: Number(token?.balance?.toCoin().amount),
+                  cryptoUnit: 'BTC'
+                });
+                const currencyFiat = priceStore.defaultVsCurrency;
+                const fiat =
+                  exchangeRate > 0
+                    ? btcToFiat({
+                        amount: amountData as number,
+                        exchangeRate: exchangeRate,
+                        currencyFiat
+                      })
+                    : '0';
+                // const priceBalance = priceStore.calculatePrice(token.balance);
                 return (
                   <TokenItem
                     key={index?.toString()}
@@ -176,7 +178,7 @@ export const TokensCard: FunctionComponent<{
                       chainId: chainStore.current.chainId
                     }}
                     balance={token.balance}
-                    priceBalance={priceBalance}
+                    priceBalance={`$${fiat}`}
                   />
                 );
               })
@@ -225,19 +227,6 @@ export const TokensCard: FunctionComponent<{
             </View>
           </CardBody>
         )}
-
-        <OWButton
-          label={capitalizedText('view all')}
-          size="medium"
-          type="secondary"
-          onPress={() => {
-            if (index === 0) {
-              smartNavigation.navigateSmart('Tokens', {});
-            } else {
-              smartNavigation.navigateSmart('Nfts', null);
-            }
-          }}
-        />
       </OWBox>
     </View>
   );

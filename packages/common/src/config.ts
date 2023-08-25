@@ -627,9 +627,52 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['isBtc'],
     txExplorer: {
+      name: 'Blockcypher',
+      txUrl: 'https://live.blockcypher.com/btc-testnet/tx/{txHash}',
+      accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
+    }
+  },
+  {
+    rest: 'https://blockstream.info',
+    chainId: 'bitcoin',
+    chainName: 'Bitcoin',
+    bip44: {
+      coinType: 0
+    },
+    coinType: 0,
+    stakeCurrency: {
+      coinDenom: 'BTC',
+      coinMinimalDenom: 'btc',
+      coinDecimals: 8,
+      coinGeckoId: 'bitcoin',
+      coinImageUrl:
+        'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+    },
+    bech32Config: Bech32Address.defaultBech32Config('bc'),
+    networkType: 'bitcoin',
+    currencies: [
+      {
+        coinDenom: 'BTC',
+        coinMinimalDenom: 'btc',
+        coinDecimals: 8,
+        coinGeckoId: 'bitcoin',
+        coinImageUrl:
+          'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+      }
+    ],
+    get feeCurrencies() {
+      return this.currencies;
+    },
+    gasPriceStep: {
+      low: 10000000000,
+      average: 25000000000,
+      high: 40000000000
+    },
+    features: ['isBtc'],
+    txExplorer: {
       name: 'Etherscan',
-      txUrl: 'https://blockstream.info/testnet/tx/{txHash}',
-      accountUrl: 'https://blockstream.info/testnet/address/{address}'
+      txUrl: 'https://live.blockcypher.com/btc-testnet/tx/{txHash}',
+      accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
     }
   },
   {

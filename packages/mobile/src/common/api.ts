@@ -210,6 +210,25 @@ export const API = {
       return Promise.reject(error);
     }
   },
+  checkStatusTxBitcoinTestNet: async (url: string, txHash: string) => {
+    try {
+      const rs = await API.get(`/api/tx/${txHash}/status`, {
+        baseURL: url
+      });
+      console.log(
+        '🚀 ~ file: api.ts:217 ~ checkStatusBitcoinTestNet: ~ rs:',
+        rs
+      );
+      return Promise.reject(rs?.data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api/tx/${txHash}/status`,
+        'checkStatusBitcoinTestNet'
+      );
+      return Promise.reject(error);
+    }
+  },
   getTxsBitcoin: async (url, addressAccount) => {
     try {
       const rs = await API.get(`/address/${addressAccount}/txs`, {
@@ -224,7 +243,7 @@ export const API = {
     } catch (error) {
       handleError(
         error,
-        `${url}/api?module=account&action=txlist&address=${addressAccount}&sort=desc&page=${current_page}&offset=${page}&apikey=${apiKey}`,
+        `${url}/api?module=account&action=txlist&address=${addressAccount}`,
         'getTxsEthAndBsc'
       );
       return Promise.reject(error);

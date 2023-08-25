@@ -34,6 +34,7 @@ import { TRON_ID, showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { AccountCardBitcoin } from './account-card-bitcoin';
+import { TokensBitcoinCard } from './tokens-bitcoin-card';
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -225,6 +226,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
     return <AccountCard containerStyle={styles.containerStyle} />;
   }, [chainStore.current.networkType]);
+  const renderTokenCard = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      return <TokensBitcoinCard refreshDate={refreshDate} />;
+    } else if (chainStore.current.chainId === TRON_ID) {
+      return <TronTokensCard />;
+    }
+    return <TokensCard refreshDate={refreshDate} />;
+  }, [chainStore.current.networkType,chainStore.current.chainId]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -237,12 +246,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       <BIP44Selectable />
       {renderAccountCard}
       <DashboardCard />
-      {chainStore.current.chainId === TRON_ID ? (
-        <TronTokensCard />
-      ) : (
-        <TokensCard refreshDate={refreshDate} />
-      )}
-
+      {renderTokenCard}
       {chainStore.current.networkType === 'cosmos' ? (
         <UndelegationsCard />
       ) : null}

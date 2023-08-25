@@ -91,65 +91,60 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     chainStore.current.chainId
   ]);
   const onSend = useCallback(async () => {
-    await account.sendToken(
-      sendConfigs.amountConfig.amount,
-      sendConfigs.amountConfig.sendCurrency,
-      sendConfigs.recipientConfig.recipient,
-      sendConfigs.memoConfig.memo,
-      sendConfigs.feeConfig.toStdFee(),
-      {
-        preferNoSetFee: true,
-        preferNoSetMemo: true,
-        networkType: chainStore.current.networkType,
-        chainId: chainStore.current.chainId
-      },
-
-      {
-        onFulfill: (tx) => {
-          console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+    try {
+      await account.sendToken(
+        sendConfigs.amountConfig.amount,
+        sendConfigs.amountConfig.sendCurrency,
+        sendConfigs.recipientConfig.recipient,
+        sendConfigs.memoConfig.memo,
+        sendConfigs.feeConfig.toStdFee(),
+        {
+          preferNoSetFee: true,
+          preferNoSetMemo: true,
+          networkType: chainStore.current.networkType,
+          chainId: chainStore.current.chainId
         },
-        onBroadcasted: async (txHash) => {
-          analyticsStore.logEvent('Send Btc tx broadcasted', {
-            chainId: chainStore.current.chainId,
-            chainName: chainStore.current.chainName,
-            feeType: sendConfigs.feeConfig.feeType
-          });
-          if (txHash?.code) {
+
+        {
+          onFulfill: async (tx) => {
+            console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
+            await delay(1000);
+            await queries.bitcoin.queryBitcoinBalance
+              .getQueryBalance(account.bech32Address)
+              .waitFreshResponse();
             navigate(SCREENS.STACK.Others, {
-              screen: 'TxFailedResult',
+              screen: SCREENS.TxPendingResult,
               params: {
-                txHash: txHash?.code,
+                txHash: tx,
                 chainId: chainStore.current.chainId
               }
             });
             return;
-          }
-          await delay(1000);
-          await queries.bitcoin.queryBitcoinBalance
-            .getQueryBalance(account.bech32Address)
-            .waitFreshResponse();
-          console.log(
-            '🚀 ~ file: send-btc.tsx:136 ~ onBroadcasted: ~ txHash:',
-            txHash
-          );
-          navigate(SCREENS.STACK.Others, {
-            screen: 'TxSuccessResult',
-            params: {
-              txHash: txHash,
+          },
+          onBroadcasted: async (txHash) => {
+            console.log(
+              '🚀 ~ file: send-btc.tsx:126 ~ onBroadcasted: ~ txHash:',
+              txHash
+            );
+            analyticsStore.logEvent('Send Btc tx broadcasted', {
+              chainId: chainStore.current.chainId,
+              chainName: chainStore.current.chainName,
+              feeType: sendConfigs.feeConfig.feeType
+            });
 
-              chainId: chainStore.current.chainId
-            }
-          });
-          return;
+            return;
+          }
+        },
+        {
+          confirmedBalance: confirmedBalance,
+          utxos: utxos,
+          blacklistedUtxos: [],
+          amount: BtcToSats(Number(sendConfigs.amountConfig.amount))
         }
-      },
-      {
-        confirmedBalance: confirmedBalance,
-        utxos: utxos,
-        blacklistedUtxos: [],
-        amount: BtcToSats(Number(sendConfigs.amountConfig.amount))
-      }
-    );
+      );
+    } catch (error) {
+      console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
+    }
   }, [
     chainStore.current.networkType,
     chainStore.current.chainId,
