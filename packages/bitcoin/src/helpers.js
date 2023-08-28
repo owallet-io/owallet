@@ -510,7 +510,7 @@ const createTransaction = async ({
   addressType = 'bech32'
 } = {}) => {
   try {
-    if (typeof message === 'string' && message !== '') {
+    if (!!message && typeof message === 'string') {
       message = convertStringToMessage(message);
     }
     console.log('🚀 ~ file: helpers.js:383 ~ message:', message);

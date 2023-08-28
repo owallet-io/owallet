@@ -28,6 +28,7 @@ import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { log } from 'console';
 import { getBalanceValue, getExchangeRate } from '@owallet/bitcoin';
+import { TokenItemBitcoin } from '../tokens/components/token-item-bitcoin';
 
 export const TokensBitcoinCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -170,7 +171,7 @@ export const TokensBitcoinCard: FunctionComponent<{
                     : '0';
                 // const priceBalance = priceStore.calculatePrice(token.balance);
                 return (
-                  <TokenItem
+                  <TokenItemBitcoin
                     key={index?.toString()}
                     chainInfo={{
                       stakeCurrency: chainStore.current.stakeCurrency,

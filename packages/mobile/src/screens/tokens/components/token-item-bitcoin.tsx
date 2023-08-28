@@ -13,7 +13,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing, typography } from '../../../themes';
 import { formatBalance } from '@owallet/bitcoin';
 
-interface TokenItemProps {
+interface TokenItemBitcoinProps {
   containerStyle?: ViewStyle;
   chainInfo: {
     stakeCurrency: Currency;
@@ -25,7 +25,7 @@ interface TokenItemProps {
   priceBalance: PricePretty;
 }
 
-export const TokenItem: FunctionComponent<TokenItemProps> = ({
+export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
   containerStyle,
   chainInfo,
   balance,
@@ -36,53 +36,32 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
 
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
-  let balanceCoinDenom: string;
+
   let name = balance?.currency?.coinDenom;
 
-  if ('originCurrency' in balance?.currency && balance?.currency?.originCurrency) {
-    balanceCoinDenom = balance.currency.originCurrency.coinDenom;
-  } else {
-    const denomHelper = new DenomHelper(balance?.currency?.coinMinimalDenom);
-    balanceCoinDenom = balance?.currency?.coinDenom;
-
-    if (denomHelper?.contractAddress && denomHelper?.contractAddress !== '') {
-      name += ` (${formatContractAddress(denomHelper.contractAddress, 34)})`;
-
-      console.log('nam', name, denomHelper.contractAddress);
-    }
-  }
-
   const amountBalance = useMemo(() => {
-    if (chainInfo.networkType === 'bitcoin') {
-      const amount = formatBalance({
-        balance: Number(balance?.toCoin()?.amount),
-        cryptoUnit: 'BTC',
-        coin: chainInfo.chainId
-      });
-      return amount;
-    }
-    const amount = balance
-      .trim(true)
-      .shrink(true)
-      .maxDecimals(6)
-      .upperCase(true)
-      .hideDenom(true)
-      .toString();
-    return `${amount} ${balanceCoinDenom}`;
-  }, [chainInfo.networkType, chainInfo.chainId, balance, balanceCoinDenom]);
+    const amount = formatBalance({
+      balance: Number(balance?.toCoin()?.amount),
+      cryptoUnit: 'BTC',
+      coin: chainInfo.chainId
+    });
+    return amount;
+  }, [chainInfo.chainId, balance]);
   return (
     <TouchableOpacity
       key={chainInfo.chainId}
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
-        smartNavigation.navigateSmart('Tokens.Detail', {
-          balanceCoinDenom,
-          amountBalance,
-          balanceCurrency: balance?.currency,
-          priceBalance,
-          balanceCoinFull: balance?.currency.coinDenom ?? balanceCoinDenom
-        });
+        if (!!balance?.currency) {
+          smartNavigation.navigateSmart('Tokens.Detail', {
+            balanceCoinDenom: balance?.currency.coinDenom,
+            amountBalance,
+            balanceCurrency: balance?.currency,
+            priceBalance,
+            balanceCoinFull: balance?.currency.coinDenom
+          });
+        }
       }}
     >
       <View
@@ -93,16 +72,18 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           alignItems: 'center'
         }}
       >
-        <TokenSymbol
-          style={{
-            marginRight: spacing['12'],
-            backgroundColor: colors['bg-icon-token']
-          }}
-          size={44}
-          chainInfo={chainInfo}
-          currency={balance?.currency}
-          imageScale={0.54}
-        />
+        {!!balance?.currency && (
+          <TokenSymbol
+            style={{
+              marginRight: spacing['12'],
+              backgroundColor: colors['bg-icon-token']
+            }}
+            size={44}
+            chainInfo={chainInfo}
+            currency={balance?.currency}
+            imageScale={0.54}
+          />
+        )}
         <View
           style={{
             justifyContent: 'space-between'
@@ -148,34 +129,6 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
       >
         <RightArrowIcon height={10} color={colors['primary-text']} />
       </View>
-      {/* <View
-        style={{
-          flex: 0.5,
-          justifyContent: 'center',
-          alignItems: 'flex-end'
-        }}
-      >
-        <AnimatedCircularProgress
-          size={56}
-          width={6}
-          fill={amountBalance ? +amountBalance / totalBalance : 0}
-          tintColor={colors['purple-700']}
-          backgroundColor={colors['gray-50']}
-          rotation={0}
-        >
-          {(fill) => (
-            <Text
-              h4
-              h4Style={{
-                ...typography.h7,
-                fontSize: 11
-              }}
-            >
-              {balanceUsdInPercent}
-            </Text>
-          )}
-        </AnimatedCircularProgress>
-      </View> */}
     </TouchableOpacity>
   );
 };

@@ -113,7 +113,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               .getQueryBalance(account.bech32Address)
               .waitFreshResponse();
             navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.TxPendingResult,
+              screen: SCREENS.TxSuccessResult,
               params: {
                 txHash: tx,
                 chainId: chainStore.current.chainId
