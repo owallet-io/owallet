@@ -155,10 +155,12 @@ export const TokensBitcoinCard: FunctionComponent<{
           <CardBody>
             {tokens?.length > 0 ? (
               tokens.slice(0, 3).map((token, index) => {
-                const amountData = getBalanceValue({
+                const balanceValueParams = {
                   balance: Number(token?.balance?.toCoin().amount),
                   cryptoUnit: 'BTC'
-                });
+                };
+                console.log("🚀 ~ file: tokens-bitcoin-card.tsx:162 ~ tokens.slice ~ balanceValueParams:", balanceValueParams)
+                const amountData = getBalanceValue(balanceValueParams);
                 const currencyFiat = priceStore.defaultVsCurrency;
                 const fiat =
                   exchangeRate > 0

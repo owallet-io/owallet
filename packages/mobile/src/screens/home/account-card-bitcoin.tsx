@@ -67,10 +67,12 @@ export const AccountCardBitcoin: FunctionComponent<{
   }, [priceStore.defaultVsCurrency]);
 
   const handleBalanceBtc = (balanceBtc: CoinPretty, exchangeRate: number) => {
-    const amountData = getBalanceValue({
+    const balanceValueParams = {
       balance: Number(balanceBtc?.toCoin().amount),
       cryptoUnit: 'BTC'
-    });
+    };
+    console.log("🚀 ~ file: account-card-bitcoin.tsx:74 ~ handleBalanceBtc ~ balanceValueParams:", balanceValueParams)
+    const amountData = getBalanceValue(balanceValueParams);
 
     const currencyFiat = priceStore.defaultVsCurrency;
     const fiat = btcToFiat({
