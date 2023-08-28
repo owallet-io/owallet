@@ -597,12 +597,4 @@ export function createTxsHelper() {
 }
 
 export { get };
-export const btcToFiat = ({
-  amount = 0,
-  exchangeRate = 0,
-  currencyFiat = 'usd'
-}) => {
-  amount = Number(amount);
-  BitcoinUnit.setFiat(currencyFiat, exchangeRate);
-  return new BitcoinUnit(amount, 'BTC').to(currencyFiat).getValue().toFixed(2);
-};
+

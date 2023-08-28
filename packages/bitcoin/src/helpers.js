@@ -243,7 +243,15 @@ const getExchangeRate = async ({
     return failure(e.message);
   }
 };
-
+const btcToFiat = ({
+  amount = 0,
+  exchangeRate = 0,
+  currencyFiat = 'usd'
+}) => {
+  amount = Number(amount);
+  BitcoinUnit.setFiat(currencyFiat, exchangeRate);
+  return new BitcoinUnit(amount, 'BTC').to(currencyFiat).getValue().toFixed(2);
+};
 const getAddressTransactions = async ({
   address = '',
   addresses = [],
@@ -1318,7 +1326,7 @@ const getScriptHash = (address = '', network = networks['bitcoin']) => {
 const BtcToSats = (balance = 0) => {
   return new BitcoinUnit(balance, 'BTC').to('sats').getValue();
 };
-const getBalanceValue = ({ cryptoUnit = 'satoshi', balance = 0 }) => {
+const getBalanceValue = ({ cryptoUnit = 'BTC', balance = 0 }) => {
   if (balance < 50000 && cryptoUnit === 'BTC') {
     return (Number(balance) * 0.00000001).toFixed(8);
   } else {
@@ -1400,5 +1408,6 @@ module.exports = {
   createMsg,
   signAndCreateTransaction,
   BtcToSats,
-  convertStringToMessage
+  convertStringToMessage,
+  btcToFiat
 };

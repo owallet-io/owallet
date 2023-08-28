@@ -13,7 +13,7 @@ import {
   getBalanceValue
 } from '@owallet/bitcoin';
 import { AccountBox } from './account-box';
-import { btcToFiat } from '@src/utils/helper';
+import { btcToFiat } from '@owallet/bitcoin';
 import { CoinPretty } from '@owallet/unit';
 import { SCREENS } from '@src/common/constants';
 export const AccountCardBitcoin: FunctionComponent<{

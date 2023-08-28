@@ -17,8 +17,7 @@ import {
   convertAmount,
   _keyExtract,
   findLedgerAddressWithChainId,
-  delay,
-  btcToFiat
+  delay
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
@@ -27,7 +26,7 @@ import images from '@src/assets/images';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { log } from 'console';
-import { getBalanceValue, getExchangeRate } from '@owallet/bitcoin';
+import { getBalanceValue, getExchangeRate, btcToFiat } from '@owallet/bitcoin';
 import { TokenItemBitcoin } from '../tokens/components/token-item-bitcoin';
 
 export const TokensBitcoinCard: FunctionComponent<{
