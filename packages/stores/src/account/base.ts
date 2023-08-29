@@ -88,7 +88,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   @observable
   protected _bech32Address: string = '';
-
+  @observable
+  protected _legacyAddress: string = '';
   @observable
   protected _isSendingMsg: string | boolean = false;
 
@@ -231,10 +232,14 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
+    console.log(
+      '🚀 ~ file: base.ts:276 ~ AccountSetBase<MsgOpts, ~ *init ~ key:',
+      key
+    );
     this._bech32Address = key.bech32Address;
     this._name = key.name;
     this.pubKey = key.pubKey;
-
+    this._legacyAddress = key.legacyAddress;
     // Set the wallet status as loaded after getting all necessary infos.
     this._walletStatus = WalletStatus.Loaded;
   }
@@ -246,6 +251,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.eventListener.removeEventListener('keplr_keystorechange', this.handleInit);
     this._bech32Address = '';
     this._name = '';
+    this._legacyAddress = '';
     this.pubKey = new Uint8Array(0);
   }
 
@@ -833,6 +839,9 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   get bech32Address(): string {
     return this._bech32Address;
+  }
+  get legacyAddress(): string {
+    return this._legacyAddress;
   }
 
   get isSendingMsg(): string | boolean {

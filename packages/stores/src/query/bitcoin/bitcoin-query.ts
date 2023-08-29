@@ -50,7 +50,8 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
     const path = getBaseDerivationPath({
-      selectedCrypto: this.chainId as string
+      selectedCrypto: this.chainId as string,
+      keyDerivationPath:'44'
     }) as string;
 
     const scriptHash = getScriptHash(

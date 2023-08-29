@@ -10,7 +10,6 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { ToastShowParams } from 'react-native-toast-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Alert, Linking } from 'react-native';
-import { BitcoinUnit } from 'bitcoin-units';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -597,4 +596,3 @@ export function createTxsHelper() {
 }
 
 export { get };
-

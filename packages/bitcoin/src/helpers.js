@@ -80,6 +80,7 @@ const validateAddress = (address = '', selectedCrypto = '') => {
     }
     return { isValid: true, coin: selectedCrypto };
   } catch (e) {
+    console.log("🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:", e)
     return { isValid: false, coin: selectedCrypto };
   }
 };

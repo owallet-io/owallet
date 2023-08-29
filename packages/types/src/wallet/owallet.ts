@@ -12,6 +12,7 @@ export interface Key {
   readonly pubKey: Uint8Array;
   readonly address: Uint8Array;
   readonly bech32Address: string;
+  readonly legacyAddress?: string;
   // Indicate whether the selected account is from the nano ledger.
   // Because current cosmos app in the nano ledger doesn't support the direct (proto) format msgs,
   // this can be used to select the amino or direct signer.

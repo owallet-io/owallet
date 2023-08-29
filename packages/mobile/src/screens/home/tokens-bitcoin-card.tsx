@@ -48,7 +48,7 @@ export const TokensBitcoinCard: FunctionComponent<{
   );
   const queries = queriesStore.get(chainStore.current.chainId);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account?.bech32Address
+    account?.legacyAddress
   )?.balance;
   const tokens = useMemo(() => {
     return [

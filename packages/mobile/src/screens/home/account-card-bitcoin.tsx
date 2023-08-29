@@ -10,7 +10,8 @@ import { AddressQRCodeModal } from './components';
 import {
   formatBalance,
   getExchangeRate,
-  getBalanceValue
+  getBalanceValue,
+  getBaseDerivationPath
 } from '@owallet/bitcoin';
 import { AccountBox } from './account-box';
 import { btcToFiat } from '@owallet/bitcoin';
@@ -37,7 +38,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   const [exchangeRate, setExchangeRate] = useState<number>(0);
 
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account?.bech32Address
+    account?.legacyAddress
   )?.balance;
 
   const totalAmount = useMemo(() => {
@@ -49,7 +50,7 @@ export const AccountCardBitcoin: FunctionComponent<{
     return amount;
   }, [
     chainStore.current.chainId,
-    account?.bech32Address,
+    account?.legacyAddress,
     chainStore.current.networkType,
     balanceBtc
   ]);
@@ -71,7 +72,10 @@ export const AccountCardBitcoin: FunctionComponent<{
       balance: Number(balanceBtc?.toCoin().amount),
       cryptoUnit: 'BTC'
     };
-    console.log("🚀 ~ file: account-card-bitcoin.tsx:74 ~ handleBalanceBtc ~ balanceValueParams:", balanceValueParams)
+    console.log(
+      '🚀 ~ file: account-card-bitcoin.tsx:74 ~ handleBalanceBtc ~ balanceValueParams:',
+      balanceValueParams
+    );
     const amountData = getBalanceValue(balanceValueParams);
 
     const currencyFiat = priceStore.defaultVsCurrency;
@@ -90,7 +94,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   }, [
     chainStore.current.stakeCurrency.coinDecimals,
     chainStore.current.chainId,
-    account?.bech32Address,
+    account?.legacyAddress,
     exchangeRate,
     balanceBtc
   ]);
@@ -123,7 +127,7 @@ export const AccountCardBitcoin: FunctionComponent<{
     <AccountBox
       totalBalance={totalBalance}
       addressComponent={
-        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+        <AddressCopyable address={account.legacyAddress} maxCharacters={22} />
       }
       name={account?.name || '..'}
       coinType={`${
@@ -132,6 +136,14 @@ export const AccountCardBitcoin: FunctionComponent<{
           : selected?.bip44HDPath?.coinType ??
             chainStore?.current?.bip44?.coinType
       }`}
+      hdPath={
+        chainStore?.current?.networkType === 'bitcoin'
+          ? (getBaseDerivationPath({
+              selectedCrypto: chainStore?.current?.chainId as string,
+              keyDerivationPath: '44'
+            }) as string)
+          : ''
+      }
       totalAmount={!!totalAmount ? totalAmount : null}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
