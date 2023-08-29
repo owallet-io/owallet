@@ -1,5 +1,5 @@
 import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
-import { OWalletMode, EthereumMode, BitcoinMode, TronWeb } from '@owallet/types';
+import { OWalletMode, EthereumMode, BitcoinMode } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
   static parseWebviewMessage(message: any): any {
@@ -15,6 +15,14 @@ export class RNInjectedEthereum extends InjectedEthereum {
     }
 
     return message;
+  }
+
+  protected override async requestMethod(method: string, args: any[]): Promise<any> {
+    const result = await super.requestMethod(method, args);
+    if (method === 'wallet_switchEthereumChain') {
+      this.chainId = result;
+    }
+    return result;
   }
 
   constructor(version: string, mode: EthereumMode) {
@@ -106,7 +114,7 @@ export class RNInjectedOWallet extends InjectedOWallet {
 export class RNInjectedTronWeb extends InjectedTronWebOWallet {
   trx: { sign: (transaction: object) => Promise<object> };
 
-  protected override async requestMethod(method: keyof TronWeb | string, args: any[]): Promise<any> {
+  protected override async requestMethod(method: string, args: any[]): Promise<any> {
     const result = await super.requestMethod(method, args);
     if (method === 'tron_requestAccounts') {
       this.defaultAddress = result;
