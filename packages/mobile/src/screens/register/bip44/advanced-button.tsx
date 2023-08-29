@@ -126,9 +126,7 @@ export const BIP44SelectModal: FunctionComponent<{
               ...typography['body2'],
               color: scheme === 'dark' ? colors['label'] : colors['sub-text']
             }}
-          >{`m/${
-            chainStore.current.networkType === 'bitcoin' ? '84' : '44'
-          }’/`}</Text>
+          >{`m/44’/`}</Text>
           <TextInput
             value={coinType.value}
             containerStyle={{

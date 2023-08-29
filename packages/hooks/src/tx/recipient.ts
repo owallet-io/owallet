@@ -20,7 +20,7 @@ import {
 import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
 import { ObservableEnsFetcher } from '@owallet/ens';
-
+import { validateAddress } from '@owallet/bitcoin';
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
   protected _rawRecipient: string = '';
@@ -138,12 +138,23 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
     }
 
     try {
-      if (this.chainInfo.networkType === "evm") {
-        if (!Web3.utils.isAddress(this.recipient)) return new InvalidEvmAddressError(
-          `Invalid evm address`
+      if (this.chainInfo.networkType === 'evm') {
+        if (!Web3.utils.isAddress(this.recipient))
+          return new InvalidEvmAddressError(`Invalid evm address`);
+      } else if (this.chainInfo.networkType === 'bitcoin') {
+        const { isValid } = validateAddress(
+          this.recipient,
+          this.chainInfo.chainId
         );
-      }
-      else Bech32Address.validate(this.recipient, this.bech32Prefix);
+        // console.log("🚀 ~ file: recipient.ts:147 ~ RecipientConfig ~ getError ~ this.recipient:", this.recipient)
+        // console.log(
+        //   '🚀 ~ file: recipient.ts:146 ~ RecipientConfig ~ getError ~ isValid:',
+        //   isValid
+        // );
+        if (!isValid) {
+          return new InvalidBech32Error(`Invalid bitcoin address`);
+        }
+      } else Bech32Address.validate(this.recipient, this.bech32Prefix);
     } catch (e) {
       return new InvalidBech32Error(
         `Invalid bech32: ${e.message || e.toString()}`

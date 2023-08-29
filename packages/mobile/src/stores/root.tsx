@@ -181,7 +181,7 @@ export class RootStore {
             return new Bitcoin(
               version,
               'core',
-              'bitcoinTestnet',
+              'bitcoin',
               new RNMessageRequesterInternal()
             );
           },

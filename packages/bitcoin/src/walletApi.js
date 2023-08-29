@@ -382,7 +382,9 @@ const electrumHistoryHelper = async ({
             )
               .to('satoshi')
               .getValue();
-            sentAmount = new BitcoinUnit(sentAmount, 'BTC').to('satoshi').getValue();
+            sentAmount = new BitcoinUnit(sentAmount, 'BTC')
+              .to('satoshi')
+              .getValue();
             fee = transactionInputAmount - transactionOutputAmount;
           } catch {}
           inputAmount = Number(inputAmount);
@@ -468,15 +470,9 @@ const electrumUtxoHelper = async ({
       addresses: allAddresses,
       coin: selectedCrypto
     });
-    console.log('🚀 ~ file: walletApi.js:468 ~ allUtxos:', allUtxos);
-
     allUtxos.error === false &&
       allUtxos.data &&
       allUtxos.data.forEach((utxo) => {
-        console.log(
-          '🚀 ~ file: walletApi.js:472 ~ allUtxos.data.forEach ~ utxo:',
-          utxo
-        );
         balance = balance + Number(utxo.value);
         const data = {
           address: utxo.address, //Required

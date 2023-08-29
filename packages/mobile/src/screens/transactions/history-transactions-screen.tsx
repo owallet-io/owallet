@@ -209,7 +209,7 @@ const HistoryTransactionsScreen = observer(() => {
       if (chainStore.current.networkType === 'bitcoin') {
         fetchData(
           {
-            address: account.bech32Address,
+            address: account.legacyAddress,
             action: activeType?.value,
             activePage
           },

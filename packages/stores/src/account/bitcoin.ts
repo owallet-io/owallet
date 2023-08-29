@@ -97,17 +97,9 @@ export class BitcoinAccount {
       );
       switch (denomHelper.type) {
         case 'native':
-          //   const actualAmount = (() => {
-          //     let dec = new Dec(amount);
-          //     dec = dec.mul(
-          //       DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-          //     );
-          //     return dec.truncate().toString();
-          //   })();
-
           const msg: any = {
             address: recipient,
-            changeAddress: this.base.bech32Address,
+            changeAddress: this.base.legacyAddress,
             amount: Number(extraOptions.amount),
             message: memo,
             totalFee: Number(stdFee.amount[0].amount),
@@ -128,7 +120,7 @@ export class BitcoinAccount {
                 // After succeeding to send token, refresh the balance.
                 const queryBtcBalance =
                   this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-                    this.base.bech32Address
+                    this.base.legacyAddress
                   );
                 if (queryBtcBalance) {
                   queryBtcBalance.fetch();

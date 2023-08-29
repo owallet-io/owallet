@@ -18,7 +18,8 @@ import {
   createTransaction,
   calculatorFee,
   formatBalance,
-  BtcToSats
+  BtcToSats,
+  validateAddress
 } from '@owallet/bitcoin';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWBox } from '@src/components/card';
@@ -43,7 +44,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     chainStore,
     chainId,
     account.msgOpts['send'],
-    account.bech32Address,
+    account.legacyAddress,
     queries.queryBalances,
     null,
     null,
@@ -51,7 +52,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     queries.bitcoin.queryBitcoinBalance
   );
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account.bech32Address
+    account.legacyAddress
   )?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
@@ -110,7 +111,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
             await delay(1000);
             await queries.bitcoin.queryBitcoinBalance
-              .getQueryBalance(account.bech32Address)
+              .getQueryBalance(account.legacyAddress)
               .waitFreshResponse();
             navigate(SCREENS.STACK.Others, {
               screen: SCREENS.TxSuccessResult,
@@ -149,9 +150,14 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     chainStore.current.networkType,
     chainStore.current.chainId,
     utxos,
-    account.bech32Address,
+    account.legacyAddress,
     confirmedBalance
   ]);
+  const validate = validateAddress(
+    "miugoiPNShxYhj5f849Y2FaynjBTGd4eKW",
+    "bitcoinTestnet",
+  );
+  console.log("🚀 ~ file: send-btc.tsx:160 ~ constSendBtcScreen:FunctionComponent=observer ~ validate:", validate)
   console.log('🚀 ~ file: send-btc.tsx:59 ~ useEffect ~ totalFee:', totalFee);
   const styles = styling(colors);
   return (

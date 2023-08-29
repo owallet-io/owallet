@@ -26,6 +26,7 @@ export const AccountBox: FunctionComponent<{
   coinType?: any;
   networkType?: 'cosmos' | 'evm';
   name?: string;
+  hdPath?: string;
   addressComponent?: React.ReactNode;
   onPressBtnMain?: (name?: string) => void;
 }> = observer(
@@ -35,6 +36,7 @@ export const AccountBox: FunctionComponent<{
     addressComponent,
     networkType,
     name,
+    hdPath,
     totalAmount,
     onPressBtnMain
   }) => {
@@ -59,9 +61,9 @@ export const AccountBox: FunctionComponent<{
 
     const _onPressMyWallet = () => {
       modalStore.setOptions({
-        bottomSheetModalConfig:{
-          enablePanDownToClose:false,
-          enableOverDrag:false
+        bottomSheetModalConfig: {
+          enablePanDownToClose: false,
+          enableOverDrag: false
         }
       });
       modalStore.setChildren(MyWalletModal());
@@ -220,7 +222,7 @@ export const AccountBox: FunctionComponent<{
                   color: colors['primary-text']
                 }}
               >
-                {`Coin type: ${coinType}`}
+                {hdPath ? `Path: ${hdPath}` : `Coin type: ${coinType}`}
               </Text>
             </View>
             <TouchableOpacity onPress={_onPressMyWallet}>
@@ -251,7 +253,7 @@ export const AccountBox: FunctionComponent<{
   }
 );
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerLoading: {
       position: 'absolute',
