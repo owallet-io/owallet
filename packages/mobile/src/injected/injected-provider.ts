@@ -1,9 +1,4 @@
-import {
-  InjectedOWallet,
-  InjectedEthereum,
-  InjectedTronWebOWallet,
-  InjectedBitcoin
-} from '@owallet/provider';
+import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
 import { OWalletMode, EthereumMode, BitcoinMode } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
@@ -30,9 +25,8 @@ export class RNInjectedEthereum extends InjectedEthereum {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
-        postMessage: message => {
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -66,9 +60,8 @@ export class RNInjectedBitcoin extends InjectedBitcoin {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
-        postMessage: message => {
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -97,11 +90,9 @@ export class RNInjectedOWallet extends InjectedOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
-        postMessage: message => {
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -130,11 +121,9 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
-        postMessage: message => {
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));

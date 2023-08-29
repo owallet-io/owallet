@@ -1,16 +1,5 @@
-import {
-  ChainInfo,
-  ChainInfoWithoutEndpoints,
-  NetworkType
-} from '../chain-info';
-import {
-  BroadcastMode,
-  AminoSignResponse,
-  StdSignDoc,
-  StdTx,
-  OfflineSigner,
-  StdSignature
-} from '@cosmjs/launchpad';
+import { ChainInfo, ChainInfoWithoutEndpoints, NetworkType } from '../chain-info';
+import { BroadcastMode, AminoSignResponse, StdSignDoc, StdTx, OfflineSigner, StdSignature } from '@cosmjs/launchpad';
 import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import Long from 'long';
@@ -35,7 +24,6 @@ export interface OWalletIntereactionOptions {
   readonly sign?: OWalletSignOptions;
 }
 
-
 export interface OWalletSignOptions {
   readonly preferNoSetFee?: boolean;
   readonly preferNoSetMemo?: boolean;
@@ -59,12 +47,7 @@ export interface OWallet {
   getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   enable(chainIds: string | string[]): Promise<void>;
   getKey(chainId: string): Promise<Key>;
-  signAmino(
-    chainId: string,
-    signer: string,
-    signDoc: StdSignDoc,
-    signOptions?: OWalletSignOptions
-  ): Promise<AminoSignResponse>;
+  signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions?: OWalletSignOptions): Promise<AminoSignResponse>;
   signDirect(
     chainId: string,
     signer: string,
@@ -93,60 +76,31 @@ export interface OWallet {
     mode: BroadcastMode
   ): Promise<Uint8Array>;
 
-  signArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array
-  ): Promise<StdSignature>;
-  verifyArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    signature: StdSignature
-  ): Promise<boolean>;
+  signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature>;
+  verifyArbitrary(chainId: string, signer: string, data: string | Uint8Array, signature: StdSignature): Promise<boolean>;
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner;
   getOfflineSignerOnlyAmino(chainId: string): OfflineSigner;
-  getOfflineSignerAuto(
-    chainId: string
-  ): Promise<OfflineSigner | OfflineDirectSigner>;
+  getOfflineSignerAuto(chainId: string): Promise<OfflineSigner | OfflineDirectSigner>;
 
-  suggestToken(
-    chainId: string,
-    contractAddress: string,
-    viewingKey?: string
-  ): Promise<void>;
-  getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string
-  ): Promise<string>;
+  suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void>;
+  getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string>;
   getEnigmaUtils(chainId: string): SecretUtils;
 
   // Related to Enigma.
   // But, recommended to use `getEnigmaUtils` rather than using below.
   getEnigmaPubKey(chainId: string): Promise<Uint8Array>;
-  getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array>;
+  getEnigmaTxEncryptionKey(chainId: string, nonce: Uint8Array): Promise<Uint8Array>;
   enigmaEncrypt(
     chainId: string,
     contractCodeHash: string,
     // eslint-disable-next-line @typescript-eslint/ban-types
     msg: object
   ): Promise<Uint8Array>;
-  enigmaDecrypt(
-    chainId: string,
-    ciphertext: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array>;
+  enigmaDecrypt(chainId: string, ciphertext: Uint8Array, nonce: Uint8Array): Promise<Uint8Array>;
 }
 
-export type EthereumMode =
-  | 'core'
-  | 'extension'
-  | 'mobile-web'
-  | 'walletconnect';
+export type EthereumMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 
@@ -167,22 +121,13 @@ export interface Ethereum {
   initChainId: string;
   // send(): Promise<void>;
   request(args: RequestArguments): Promise<any>;
-  signAndBroadcastEthereum(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }>;
+  signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }>;
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
-  signEthereumTypeData(
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<void>;
+  signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void>;
   signReEncryptData(chainId: string, data: object): Promise<object>;
   signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
-  signAndBroadcastTron(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }>;
+  signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string }>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }
@@ -193,7 +138,7 @@ export interface TronWeb {
   defaultAddress?: object;
   initChainId: string;
   sign(transaction: object): Promise<object>;
-  getDefaultAddress(): object;
+  getDefaultAddress(): Promise<object>;
 }
 export interface Bitcoin {
   readonly version: string;
@@ -204,8 +149,5 @@ export interface Bitcoin {
    */
   readonly mode: BitcoinMode;
   initChainId: string;
-  signAndBroadcast(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }>;
+  signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }>;
 }
