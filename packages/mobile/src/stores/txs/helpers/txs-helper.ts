@@ -32,7 +32,11 @@ export class TxsHelper {
   };
   public readonly INFO_API_BITCOIN = {
     [ChainIdEnum.BitcoinTestnet]: {
-      BASE_URL: 'https://blockstream.info/testnet/api',
+      BASE_URL: 'https://api.blockcypher.com/v1/btc/test3',
+      API_KEY: ''
+    },
+    [ChainIdEnum.Bitcoin]: {
+      BASE_URL: 'https://api.blockcypher.com/v1/btc/main',
       API_KEY: ''
     }
   };
@@ -175,6 +179,33 @@ export class TxsHelper {
         timeLong: relative + ' (' + formatted + ')',
         timeShort: relative,
         timestamp,
+        date: formatted
+      };
+    } else {
+      return {
+        timeLong: '',
+        timeShort: '',
+        date: '',
+        timestamp: 0
+      };
+    }
+  }
+  formatTimeBitcoin(time): timeTxs {
+    if (time) {
+      // Create a moment object from the timestamp
+      var myMoment = moment(time);
+
+      // Format the moment object using tokens
+      var formatted = myMoment.format('YYYY-MM-DD HH:mm:ss');
+
+      // Get the relative time from the moment object to now
+      var relative = this.capitalizeFirstLetter(myMoment.fromNow());
+
+      // Combine the formatted and relative strings
+      return {
+        timeLong: relative + ' (' + formatted + ')',
+        timeShort: relative,
+        timestamp: 0,
         date: formatted
       };
     } else {
@@ -344,38 +375,36 @@ export class TxsHelper {
     return [transferItem];
   }
   handleTransferDetailBtc(
-    data: txBitcoin,
+    data: TxBitcoin,
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<TransferDetail>[] {
     let transferItem: Partial<TransferDetail> = {};
     transferItem.transferInfo = [];
-    if (data?.vin?.length > 0) {
-      for (let i = 0; i < data?.vin.length; i++) {
-        const element = data?.vin[i]?.prevout;
+    if (data?.inputs?.length > 0) {
+      for (let i = 0; i < data?.inputs.length; i++) {
+        const element = data?.inputs[i];
         if (
-          element?.scriptpubkey_address &&
-          element?.scriptpubkey_address?.toLowerCase() ===
-            addressAccount?.toLowerCase()
+          element?.addresses?.length > 0 &&
+          element?.addresses[0]?.toLowerCase() === addressAccount?.toLowerCase()
         ) {
           transferItem.transferInfo.push({
-            txId: data?.vin[i]?.txid,
+            txId: data?.hash,
             amount: formatBalance({
-              balance: Number(element?.value),
+              balance: Number(element?.output_value),
               cryptoUnit: 'BTC',
               coin: currentChain.chainId
             }),
             isMinus: true
           });
         } else if (
-          element?.scriptpubkey_address &&
-          element?.scriptpubkey_address?.toLowerCase() !==
-            addressAccount?.toLowerCase()
+          element?.addresses?.length > 0 &&
+          element?.addresses[0]?.toLowerCase() !== addressAccount?.toLowerCase()
         ) {
           transferItem.transferInfo.push({
-            txId: data?.vin[i]?.txid,
+            txId: data?.hash,
             amount: formatBalance({
-              balance: Number(element?.value),
+              balance: Number(element?.output_value),
               cryptoUnit: 'BTC',
               coin: currentChain.chainId
             }),
@@ -388,14 +417,14 @@ export class TxsHelper {
 
     let transferItemIn: Partial<TransferDetail> = {};
     transferItemIn.transferInfo = [];
-    if (data?.vin?.length > 0) {
-      for (let i = 0; i < data?.vin.length; i++) {
-        const element = data?.vin[i]?.prevout;
-        if (element?.scriptpubkey_address) {
+    if (data?.inputs?.length > 0) {
+      for (let i = 0; i < data?.inputs.length; i++) {
+        const element = data?.inputs[i];
+        if (element?.addresses?.length > 0) {
           transferItemIn.transferInfo.push({
-            address: element?.scriptpubkey_address,
+            address: element?.addresses[0],
             amount: formatBalance({
-              balance: Number(element?.value),
+              balance: Number(element?.output_value),
               cryptoUnit: 'BTC',
               coin: currentChain.chainId
             }),
@@ -407,19 +436,18 @@ export class TxsHelper {
     transferItemIn.typeEvent = 'From';
     let transferItemOut: Partial<TransferDetail> = {};
     transferItemOut.transferInfo = [];
-    if (data?.vout?.length > 0) {
-      for (let i = 0; i < data?.vout.length; i++) {
-        const element = data?.vout[i];
-        if (element?.scriptpubkey_address) {
+    if (data?.outputs?.length > 0) {
+      for (let i = 0; i < data?.outputs.length; i++) {
+        const element = data?.outputs[i];
+        if (element?.addresses?.length > 0) {
           transferItemOut.transferInfo.push({
-            address: element?.scriptpubkey_address,
+            address: element?.addresses[0],
             amount: formatBalance({
               balance: Number(element?.value),
               cryptoUnit: 'BTC',
               coin: currentChain.chainId
             }),
-            isPlus: true,
-            isMinus: null
+            isPlus: true
           });
         }
       }
@@ -461,21 +489,21 @@ export class TxsHelper {
   }
 
   handleItemTxsBtc(
-    data: txBitcoin,
+    data: TxBitcoin,
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo> {
     let item: Partial<ResTxsInfo> = {};
     item.fee = formatBalance({
-      balance: Number(data.fee),
+      balance: Number(data.fees),
       cryptoUnit: 'BTC',
       coin: currentChain.chainId
     });
     item.denomFee = '';
-    item.time = this.formatTime(data?.status?.block_time);
-    item.txHash = data?.txid;
-    item.height = this.formatNumberSeparateThousand(data?.status?.block_height);
-    item.status = data?.status?.confirmed ? 'success' : 'fail';
+    item.time = this.formatTimeBitcoin(data?.received);
+    item.txHash = data?.hash;
+    item.height = this.formatNumberSeparateThousand(data?.block_height);
+    item.status = data?.confirmations > 0 ? 'success' : 'fail';
     item.memo = null;
     item.countTypeEvent = 0;
     item.gasUsed = null;
@@ -522,7 +550,7 @@ export class TxsHelper {
     return dataConverted;
   }
   cleanDataBtcResToStandFormat(
-    data: txsBitcoinResult,
+    data: TxBitcoin[],
     currentChain: ChainInfoInner<ChainInfo>,
     addressAccount: string
   ): Partial<ResTxsInfo>[] {

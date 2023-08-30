@@ -231,15 +231,12 @@ export const API = {
   },
   getTxsBitcoin: async (url, addressAccount) => {
     try {
-      const rs = await API.get(`/address/${addressAccount}/txs`, {
+      const rs = await API.get(`/addrs/${addressAccount}/full`, {
         baseURL: url
       });
-      const data: txsBitcoinResult = rs.data;
-
-      if (data?.length > 0) {
-        return Promise.resolve(data);
-      }
-      return Promise.reject(data);
+      console.log('🚀 ~ file: api.ts:236 ~ getTxsBitcoin: ~ rs:', rs);
+      const data: txBitcoinResult = rs.data;
+      return Promise.resolve(data);
     } catch (error) {
       handleError(
         error,
