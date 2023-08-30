@@ -6,7 +6,8 @@ const {
   formatBalance,
   getBaseDerivationPath,
   getCoinNetwork,
-  getScriptHash
+  getScriptHash,
+  getKeyPair
 } = require('../helpers');
 
 describe('helper', () => {
@@ -199,5 +200,28 @@ describe('helper', () => {
   ])('Test getScriptHash for %p', (param1, param2, expected) => {
     const res = getScriptHash(param1, param2);
     expect(res).toBe(expected);
+  });
+  it.each([
+    [
+      {
+        selectedCrypto: 'bitcoin',
+        keyDerivationPath: '44',
+        mnemonic:
+          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+      },
+      'xprvA2xb1gzb6ibQFvnGexAMHFFbyuh4Jw2ugatoi2aWYuLtfwmH4B7zg1ZonqoMJP3hQq4CnL6MKB8gcXcaYjiX2wAy8Txsc8ZaTsh1KZdYukQ'
+    ],
+    [
+      {
+        selectedCrypto: 'bitcoinTestnet',
+        keyDerivationPath: '44',
+        mnemonic:
+          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+      },
+      'tprv8kJffQMaAirLokZKSXKr9Av1nPHu3gDjrZhgM1qjaV67XehMoz1M1cequrN7jodKQathN8ty8Kuiqya9NuZcjVHqk6rtFhJTErfpyrjQBQm'
+    ]
+  ])('Test getKeyPair for %p', (param, expected) => {
+    const res = getKeyPair(param);
+    expect(res.toBase58()).toEqual(expected);
   });
 });
