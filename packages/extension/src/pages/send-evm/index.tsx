@@ -24,11 +24,7 @@ import { Button } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router';
 import queryString from 'querystring';
 import Web3 from 'web3';
-import {
-  useFeeEthereumConfig,
-  useGasEthereumConfig,
-  useSendTxConfig
-} from '@owallet/hooks';
+import { useFeeEthereumConfig, useGasEthereumConfig, useSendTxConfig } from '@owallet/hooks';
 import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
 import { EthereumEndpoint } from '@owallet/common';
 import classNames from 'classnames';
@@ -69,8 +65,7 @@ export const SendEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } =
-    useStore();
+  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } = useStore();
   const current = chainStore.current;
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
 
@@ -85,8 +80,7 @@ export const SendEvmPage: FunctionComponent<{
     accountInfo.evmosHexAddress,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
-    chainStore.current.networkType === 'evm' &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
+    chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
   );
 
@@ -116,11 +110,7 @@ export const SendEvmPage: FunctionComponent<{
         },
         params: []
       });
-      setGasPrice(
-        new Big(parseInt(response.data.result, 16))
-          .div(new Big(10).pow(decimals))
-          .toFixed(decimals)
-      );
+      setGasPrice(new Big(parseInt(response.data.result, 16)).div(new Big(10).pow(decimals)).toFixed(decimals));
     } catch (error) {
       console.log(error);
     }
@@ -132,24 +122,14 @@ export const SendEvmPage: FunctionComponent<{
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
         if (coinMinimalDenom) {
-          // @ts-ignore
           const tokenInfo = new web3.eth.Contract(
+            // @ts-ignore
             ERC20_ABI,
             query?.defaultDenom?.split(':')?.[1]
           );
-          estimate = await tokenInfo.methods
-            .transfer(
-              accountInfo?.evmosHexAddress,
-              '0x' +
-                parseFloat(
-                  new Big(sendConfigs.amountConfig.amount)
-                    .mul(new Big(10).pow(decimals))
-                    .toString()
-                ).toString(16)
-            )
-            .estimateGas({
-              from: query?.defaultDenom?.split(':')?.[1]
-            });
+          estimate = await tokenInfo.methods.transfer(accountInfo?.evmosHexAddress, '0x' + parseFloat(new Big(sendConfigs.amountConfig.amount).mul(new Big(10).pow(decimals)).toString()).toString(16)).estimateGas({
+            from: query?.defaultDenom?.split(':')?.[1]
+          });
         } else {
           estimate = await web3.eth.estimateGas({
             to: accountInfo?.evmosHexAddress,
@@ -157,24 +137,18 @@ export const SendEvmPage: FunctionComponent<{
           });
         }
         gasConfig.setGas(estimate ?? 21000);
-        feeConfig.setFee(
-          new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
-        );
+        feeConfig.setFee(new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals));
       } catch (error) {
         console.log(error, 'zzz');
         gasConfig.setGas(21000);
-        feeConfig.setFee(
-          new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
-        );
+        feeConfig.setFee(new Big(21000).mul(new Big(gasPrice)).toFixed(decimals));
       }
     })();
   }, [gasPrice, sendConfigs.amountConfig.amount]);
 
   useEffect(() => {
     if (query.defaultDenom) {
-      const currency = current.currencies.find(
-        cur => cur.coinMinimalDenom === query.defaultDenom
-      );
+      const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -203,12 +177,7 @@ export const SendEvmPage: FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultMemo, query.defaultRecipient]);
 
-  const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError() ??
-    sendConfigs.memoConfig.getError() ??
-    sendConfigs.gasConfig.getError() ??
-    sendConfigs.feeConfig.getError();
+  const sendConfigError = sendConfigs.recipientConfig.getError() ?? sendConfigs.amountConfig.getError() ?? sendConfigs.memoConfig.getError() ?? sendConfigs.gasConfig.getError() ?? sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
   return (
@@ -285,14 +254,7 @@ export const SendEvmPage: FunctionComponent<{
 
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
-              const gasPrice =
-                '0x' +
-                parseInt(
-                  new Big(parseFloat(feeConfig.feeRaw))
-                    .mul(new Big(10).pow(decimals))
-                    .div(parseFloat(gasConfig.gasRaw))
-                    .toFixed(decimals)
-                ).toString(16);
+              const gasPrice = '0x' + parseInt(new Big(parseFloat(feeConfig.feeRaw)).mul(new Big(10).pow(decimals)).div(parseFloat(gasConfig.gasRaw)).toFixed(decimals)).toString(16);
               console.log(gasPrice, 'GAS PRICE ON SUBMIT');
               const stdFee = {
                 gas: '0x' + parseFloat(gasConfig.gasRaw).toString(16),
@@ -319,19 +281,13 @@ export const SendEvmPage: FunctionComponent<{
                       feeType: sendConfigs.feeConfig.feeType
                     });
                   },
-                  onFulfill: tx => {
-                    console.log(
-                      tx,
-                      'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                    );
+                  onFulfill: (tx) => {
+                    console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
                     notification.push({
                       placement: 'top-center',
                       type: tx?.status === '0x1' ? 'success' : 'danger',
                       duration: 5,
-                      content:
-                        tx?.status === '0x1'
-                          ? `Transaction successful with tx: ${tx?.transactionHash}`
-                          : `Transaction failed with tx: ${tx?.transactionHash}`,
+                      content: tx?.status === '0x1' ? `Transaction successful with tx: ${tx?.transactionHash}` : `Transaction failed with tx: ${tx?.transactionHash}`,
                       canDelete: true,
                       transition: {
                         duration: 0.25
@@ -339,16 +295,11 @@ export const SendEvmPage: FunctionComponent<{
                     });
                   }
                 },
-                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                  'erc20'
-                )
+                sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')
                   ? {
                       type: 'erc20',
                       from: accountInfo.evmosHexAddress,
-                      contract_addr:
-                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                          ':'
-                        )[1],
+                      contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
                       recipient: sendConfigs.recipientConfig.recipient,
                       amount: sendConfigs.amountConfig.amount
                     }
@@ -394,13 +345,7 @@ export const SendEvmPage: FunctionComponent<{
       >
         <div className={style.formInnerContainer}>
           <div>
-            <AddressInput
-              inputRef={inputRef}
-              recipientConfig={sendConfigs.recipientConfig}
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.recipient' })}
-              placeholder="Enter recipient address"
-            />
+            <AddressInput inputRef={inputRef} recipientConfig={sendConfigs.recipientConfig} memoConfig={sendConfigs.memoConfig} label={intl.formatMessage({ id: 'send.input.recipient' })} placeholder="Enter recipient address" />
             <CoinInputEvm
               amountConfig={sendConfigs.amountConfig}
               feeConfig={feeConfig.feeRaw}
@@ -410,11 +355,7 @@ export const SendEvmPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
-              placeholder="Enter your memo message"
-            />
+            <MemoInput memoConfig={sendConfigs.memoConfig} label={intl.formatMessage({ id: 'send.input.memo' })} placeholder="Enter your memo message" />
             <GasEthereumInput
               label={intl.formatMessage({ id: 'sign.info.gas' })}
               gasConfig={gasConfig}
@@ -455,10 +396,7 @@ export const SendEvmPage: FunctionComponent<{
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? 'default'
-                  : 'pointer'
+              cursor: accountInfo.isReadyToSendMsgs || !txStateIsValid ? 'default' : 'pointer'
             }}
           >
             <span className={style.sendBtnText}>

@@ -2,20 +2,22 @@ import {
   View,
   Text,
   TouchableOpacityProps,
-  TouchableOpacity,
+  TouchableOpacity as NativeButton,
   StyleSheet,
   StyleProp,
   TextStyle,
-  ViewStyle
+  ViewStyle,
+  Keyboard
 } from 'react-native';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
 import OWText, { OWTextProps } from '../text/ow-text';
+import { TouchableOpacity } from '@gorhom/bottom-sheet';
 
 export interface IOWButtonProps extends TouchableOpacityProps {
-  type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger';
+  type?: 'primary' | 'secondary' | 'link' | 'modal' | 'danger' | 'tonner';
   size?: 'medium' | 'small' | 'large';
   textVariant?: OWTextProps['variant'];
   textTypo?: OWTextProps['typo'];
@@ -28,6 +30,7 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   icon?: React.ReactNode;
   contentAlign?: 'left' | 'center' | 'right';
   borderStyle?: 'dashed' | 'none';
+  isBottomSheet?: boolean;
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
@@ -45,22 +48,39 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   children,
   borderStyle,
   contentAlign,
+  circle,
+  isBottomSheet,
   ...props
 }) => {
+  const handleOnPress = useCallback(
+    (event) => {
+      if (Keyboard.dismiss) {
+        Keyboard.dismiss();
+      }
+      if (props.onPress) {
+        props.onPress(event);
+      }
+    },
+    [props.onPress]
+  );
   const styleMapped = useMapStyles({ type, disabled, size, contentAlign });
   const { colors } = useTheme();
   const styles = styling();
+  const ELementButton = isBottomSheet ? TouchableOpacity : NativeButton;
   return (
-    <TouchableOpacity
+    <ELementButton
       {...props}
+      onPress={handleOnPress}
       disabled={disabled}
       style={[
         styles.containerBtn,
         styleMapped.btn,
-        (!fullWidth || (!!icon && !!label == false)) && styles.paddingHaveIconAndNotFullwidth,
+        (!fullWidth || (!!icon && !!label == false)) &&
+          styles.paddingHaveIconAndNotFullwidth,
         fullWidth ? styles.fullWidth : styles.widthAuto,
         borderStyle == 'dashed' && styles.dashed,
         !!icon && !label && styles.hasIcon,
+        circle && styles.maxBR,
         style
       ]}
     >
@@ -85,7 +105,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
           )}
         </>
       )}
-    </TouchableOpacity>
+    </ELementButton>
   );
 };
 
@@ -93,6 +113,7 @@ export default OWButton;
 const styling = () => {
   const { colors } = useTheme();
   return StyleSheet.create({
+    maxBR: { borderRadius: 99999 },
     paddingHaveIconAndNotFullwidth: { paddingHorizontal: 12 },
     iconInBtn: { paddingLeft: 6 },
     dashed: {

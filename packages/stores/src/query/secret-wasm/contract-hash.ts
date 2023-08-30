@@ -19,7 +19,7 @@ export class ObservableQuerySecretContractCodeHashInner extends ObservableChainQ
   }
 
   protected canFetch(): boolean {
-    return this.contractAddress.length > 0;
+    return this.contractAddress?.length > 0;
   }
 }
 

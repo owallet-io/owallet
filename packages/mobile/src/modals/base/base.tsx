@@ -119,7 +119,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           pointerEvents="box-none"
         >
           <BottomSheetModal
-            {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
               backgroundColor: colors['background-box']
@@ -130,6 +129,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             }}
             index={0}
             snapPoints={animatedSnapPoints}
+            {...bottomSheetModalConfig}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
             backdropComponent={renderBackdrop}
@@ -156,7 +156,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           pointerEvents="box-none"
         >
           <BottomSheetModal
-            {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
               backgroundColor: colors['background-box']
@@ -167,6 +166,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             }}
             index={0}
             snapPoints={animatedSnapPoints}
+            {...bottomSheetModalConfig}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
             backdropComponent={renderBackdrop}

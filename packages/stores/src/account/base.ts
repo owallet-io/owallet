@@ -403,6 +403,28 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
   }
 
+  async handleUniversalSwap(
+    chainId: string,
+    data,
+    onTxEvents?: {
+      onBroadcasted?: (txHash: Uint8Array) => void;
+      onFulfill?: (tx: any) => void;
+    }
+  ) {
+    try {
+      const owallet = (await this.getOWallet())!;
+      const swapResponse = owallet.handleUniversalSwap(chainId, data);
+
+      if (onTxEvents?.onFulfill) {
+        onTxEvents?.onFulfill(swapResponse);
+      }
+      return {
+        txHash: swapResponse
+      };
+    } catch (error) {
+      console.log('error sendTronToken', error);
+    }
+  }
   async sendEvmMsgs(
     type: string | 'unknown',
     msgs: Msg,

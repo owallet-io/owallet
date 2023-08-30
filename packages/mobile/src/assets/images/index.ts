@@ -6,6 +6,8 @@ const images = {
    carbon_notification: require('./carbon_notification.png'),
    carbon_notification_dark: require('./carbon_notification_dark.png'),
    crypto: require('./crypto.png'),
+   down_center: require('./down_center.png'),
+   down_center_dark: require('./down_center_dark.png'),
    empty: require('./empty.png'),
    empty_dark: require('./empty_dark.png'),
    empty_img: require('./empty_img.png'),
@@ -35,5 +37,11 @@ const images = {
    scroll_top_dark: require('./scroll_top_dark.png'),
    success: require('./success.png'),
    success_dark: require('./success_dark.png'),
+   swap: require('./swap.png'),
+   swap_center: require('./swap_center.png'),
+   swap_center_dark: require('./swap_center_dark.png'),
+   swap_dark: require('./swap_dark.png'),
+   swap_inactive: require('./swap_inactive.png'),
+   swap_inactive_dark: require('./swap_inactive_dark.png'),
 };
 export default images;

@@ -20,11 +20,11 @@
     "@walletconnect/browser-utils": "^1.6.5",
     "@walletconnect/types": "^1.6.5",
     "qrcode.react": "^1.0.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0"
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@types/react": "^16.14.4",
-    "@types/react-dom": "^16.9.11"
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0"
   }
 }

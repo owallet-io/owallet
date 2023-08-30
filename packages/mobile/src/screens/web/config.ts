@@ -19,7 +19,7 @@ export const DAppInfos: DAppInfo[] = [
   },
   {
     name: 'Orderbook',
-    uri: 'https://orderbook.orai.io',
+    uri: 'https://orderbook.oraidex.io',
     logo: oraiLogo
   },
   // {

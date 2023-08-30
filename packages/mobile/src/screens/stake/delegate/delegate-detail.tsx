@@ -127,7 +127,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                   color: colors['sub-primary-text']
                 }}
               >
-                {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+                {staked?.trim(true).shrink(true).maxDecimals(6).toString()}
               </Text>
             </View>
             <View

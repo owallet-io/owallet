@@ -72,9 +72,6 @@ export const AccountBox: FunctionComponent<{
     const RenderBtnMain = ({ name }) => {
       let icon: ReactElement;
       switch (name) {
-        case 'Buy':
-          icon = <BuyIcon />;
-          break;
         case 'Receive':
           icon = <DepositIcon />;
           break;
@@ -148,7 +145,7 @@ export const AccountBox: FunctionComponent<{
             )}
           </View>
           <View style={styles.containerBtnHeader}>
-            {['Buy', 'Receive', 'Send'].map((e, i) => (
+            {['Receive', 'Send'].map((e, i) => (
               <RenderBtnMain key={i} name={e} />
             ))}
           </View>

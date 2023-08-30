@@ -1,16 +1,8 @@
-import React, {
-  FunctionComponent,
-  ChangeEvent,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, ChangeEvent, useEffect, useState } from 'react';
 
 import { Button } from 'reactstrap';
 
-import {
-  LedgerInternal as Ledger,
-  LedgerInitErrorOn
-} from '@owallet/background';
+import { LedgerInternal as Ledger, LedgerInitErrorOn } from '@owallet/background';
 
 import style from './style.module.scss';
 import { EmptyLayout } from '../../layouts/empty-layout';
@@ -62,16 +54,10 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
       // If ledger init is aborted due to the timeout on the background, just close the window.
       window.close();
     }
-  }, [
-    ledgerInitStore.isGetPubKeySucceeded,
-    ledgerInitStore.isSignCompleted,
-    ledgerInitStore.isInitAborted
-  ]);
+  }, [ledgerInitStore.isGetPubKeySucceeded, ledgerInitStore.isSignCompleted, ledgerInitStore.isInitAborted]);
 
   const [initTryCount, setInitTryCount] = useState(0);
-  const [initErrorOn, setInitErrorOn] = useState<LedgerInitErrorOn | undefined>(
-    undefined
-  );
+  const [initErrorOn, setInitErrorOn] = useState<LedgerInitErrorOn | undefined>(undefined);
   const [tryInitializing, setTryInitializing] = useState(false);
   const [initSucceed, setInitSucceed] = useState(false);
 
@@ -81,9 +67,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
     let initErrorOn: LedgerInitErrorOn | undefined;
 
     try {
-      const ledger = await Ledger.init(
-        ledgerInitStore.isWebHID ? 'webhid' : 'webusb'
-      );
+      const ledger = await Ledger.init(ledgerInitStore.isWebHID ? 'webhid' : 'webusb', [], 'cosmos');
       // await ledger.close();
       // Unfortunately, closing ledger blocks the writing to Ledger on background process.
       // I'm not sure why this happens. But, not closing reduce this problem if transport is webhid.
@@ -118,43 +102,21 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
       ) : (
         <div className={style.instructions}>
           <Instruction
-            icon={
-              <img
-                src={require('../../public/assets/img/icons8-usb-2.svg')}
-                style={{ height: '50px' }}
-                alt="usb"
-              />
-            }
+            icon={<img src={require('../../public/assets/img/icons8-usb-2.svg')} style={{ height: '50px' }} alt="usb" />}
             title={intl.formatMessage({ id: 'ledger.step1' })}
             paragraph={intl.formatMessage({ id: 'ledger.step1.paragraph' })}
             pass={initTryCount > 0 && initErrorOn === LedgerInitErrorOn.App}
           />
           <Instruction
-            icon={
-              <img
-                src={require('../../public/assets/img/atom-o.svg')}
-                style={{ height: '34px' }}
-                alt="atom"
-              />
-            }
+            icon={<img src={require('../../public/assets/img/atom-o.svg')} style={{ height: '34px' }} alt="atom" />}
             title={intl.formatMessage({ id: 'ledger.step2' })}
             paragraph={intl.formatMessage({ id: 'ledger.step2.paragraph' })}
             pass={initTryCount > 0 && initErrorOn == null}
           />
           <div style={{ flex: 1 }} />
           <div className="custom-control custom-checkbox mb-2">
-            <input
-              className="custom-control-input"
-              id="use-webhid"
-              type="checkbox"
-              checked={ledgerInitStore.isWebHID}
-              onChange={toggleWebHIDFlag}
-            />
-            <label
-              className="custom-control-label"
-              htmlFor="use-webhid"
-              style={{ color: '#666666', paddingTop: '1px' }}
-            >
+            <input className="custom-control-input" id="use-webhid" type="checkbox" checked={ledgerInitStore.isWebHID} onChange={toggleWebHIDFlag} />
+            <label className="custom-control-label" htmlFor="use-webhid" style={{ color: '#666666', paddingTop: '1px' }}>
               <FormattedMessage id="ledger.option.webhid.checkbox" />
             </label>
           </div>
@@ -175,24 +137,20 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => {
-                        navigator.clipboard
-                          .writeText(
-                            'chrome://flags/#enable-experimental-web-platform-features'
-                          )
-                          .then(() => {
-                            notification.push({
-                              placement: 'top-center',
-                              type: 'success',
-                              duration: 2,
-                              content: intl.formatMessage({
-                                id: 'ledger.option.webhid.link.copied'
-                              }),
-                              canDelete: true,
-                              transition: {
-                                duration: 0.25
-                              }
-                            });
+                        navigator.clipboard.writeText('chrome://flags/#enable-experimental-web-platform-features').then(() => {
+                          notification.push({
+                            placement: 'top-center',
+                            type: 'success',
+                            duration: 2,
+                            content: intl.formatMessage({
+                              id: 'ledger.option.webhid.link.copied'
+                            }),
+                            canDelete: true,
+                            transition: {
+                              duration: 0.25
+                            }
                           });
+                        });
                       }}
                     >
                       chrome://flags/#enable-experimental-web-platform-features
@@ -230,10 +188,7 @@ const ConfirmLedgerDialog: FunctionComponent = () => {
           justifyContent: 'flex-end'
         }}
       >
-        <img
-          src={require('../../public/assets/img/icons8-pen.svg')}
-          alt="pen"
-        />
+        <img src={require('../../public/assets/img/icons8-pen.svg')} alt="pen" />
       </div>
       <p>
         <FormattedMessage id="ledger.confirm.waiting.paragraph" />
@@ -267,23 +222,9 @@ const SignCompleteDialog: FunctionComponent<{
           justifyContent: 'flex-end'
         }}
       >
-        {!rejected ? (
-          <img
-            src={require('../../public/assets/img/icons8-checked.svg')}
-            alt="success"
-          />
-        ) : (
-          <img
-            src={require('../../public/assets/img/icons8-cancel.svg')}
-            alt="rejected"
-          />
-        )}
+        {!rejected ? <img src={require('../../public/assets/img/icons8-checked.svg')} alt="success" /> : <img src={require('../../public/assets/img/icons8-cancel.svg')} alt="rejected" />}
       </div>
-      <p>
-        {!rejected
-          ? intl.formatMessage({ id: 'ledger.confirm.success' })
-          : intl.formatMessage({ id: 'ledger.confirm.rejected' })}
-      </p>
+      <p>{!rejected ? intl.formatMessage({ id: 'ledger.confirm.success' }) : intl.formatMessage({ id: 'ledger.confirm.rejected' })}</p>
       <div
         style={{
           flex: 1,
@@ -292,11 +233,7 @@ const SignCompleteDialog: FunctionComponent<{
           justifyContent: 'flex-start'
         }}
       >
-        <div className={style.subParagraph}>
-          {!rejected
-            ? intl.formatMessage({ id: 'ledger.confirm.success.paragraph' })
-            : intl.formatMessage({ id: 'ledger.confirm.rejected.paragraph' })}
-        </div>
+        <div className={style.subParagraph}>{!rejected ? intl.formatMessage({ id: 'ledger.confirm.success.paragraph' }) : intl.formatMessage({ id: 'ledger.confirm.rejected.paragraph' })}</div>
       </div>
     </div>
   );
@@ -314,14 +251,9 @@ const Instruction: FunctionComponent<{
       <div className={style.inner}>
         <h1>
           {title}
-          {pass ? (
-            <i
-              className="fas fa-check"
-              style={{ marginLeft: '10px', color: '#2dce89' }}
-            />
-          ) : null}
+          {pass ? <i className="fas fa-check" style={{ marginLeft: '10px', color: '#2dce89' }} /> : null}
         </h1>
-        <p style={{ color: '#777e90'}}>{paragraph}</p>
+        <p style={{ color: '#777e90' }}>{paragraph}</p>
         {children}
       </div>
     </div>

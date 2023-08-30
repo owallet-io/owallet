@@ -87,7 +87,7 @@ export const TokenSymbol: FunctionComponent<{
             style={{
               width: size * imageScale,
               height: size * imageScale,
-              tintColor:colors['black']
+              tintColor: colors['black']
             }}
             resizeMode={'contain'}
             source={{

@@ -353,18 +353,18 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       });
   }, [registerAppWithFCM, requestPermission]);
 
-  useEffect(() => {
-    checkPermission();
-  }, [checkPermission]);
+  // useEffect(() => {
+  //   checkPermission();
+  // }, [checkPermission]);
 
-  useEffect(() => {
-    requestPermission();
-  }, [requestPermission]);
+  // useEffect(() => {
+  //   requestPermission();
+  // }, [requestPermission]);
 
-  useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {});
-    return unsubscribe;
-  }, []);
+  // useEffect(() => {
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {});
+  //   return unsubscribe;
+  // }, []);
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);

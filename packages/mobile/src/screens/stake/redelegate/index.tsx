@@ -162,6 +162,11 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           text1:'OWallet'
         })
         console.log(e);
+        showToast({
+          type: 'error',
+          text2: e?.message,
+          text1: 'OWallet'
+        });
         if (smartNavigation.canGoBack) {
           smartNavigation.goBack();
         } else {

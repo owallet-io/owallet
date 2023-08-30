@@ -15,10 +15,7 @@ import { SetKeyRingPage } from './pages/setting/keyring';
 
 import { Banner } from './components/banner';
 
-import {
-  NotificationProvider,
-  NotificationStoreProvider
-} from './components/notification';
+import { NotificationProvider, NotificationStoreProvider } from './components/notification';
 import { ConfirmProvider } from './components/confirm';
 import { LoadingIndicatorProvider } from './components/loading-indicator';
 
@@ -33,10 +30,7 @@ import Modal from 'react-modal';
 import { SettingPage } from './pages/setting';
 import { SettingLanguagePage } from './pages/setting/language';
 import { SettingFiatPage } from './pages/setting/fiat';
-import {
-  SettingConnectionsPage,
-  SettingSecret20ViewingKeyConnectionsPage
-} from './pages/setting/connections';
+import { SettingConnectionsPage, SettingSecret20ViewingKeyConnectionsPage } from './pages/setting/connections';
 import { AddressBookPage } from './pages/setting/address-book';
 import { CreditPage } from './pages/setting/credit';
 import { ChangeNamePage } from './pages/setting/keyring/change';
@@ -48,11 +42,7 @@ import { AddEvmTokenPage } from './pages/setting/token-evm/add';
 import { ManageTokenPage } from './pages/setting/token/manage';
 
 // import * as BackgroundTxResult from "../../background/tx/foreground";
-import {
-  AppIntlProvider,
-  AdditonalIntlMessages,
-  LanguageToFiatCurrency
-} from '@owallet/common';
+import { AppIntlProvider, AdditonalIntlMessages, LanguageToFiatCurrency } from '@owallet/common';
 
 import manifest from './manifest.json';
 import { Ethereum, OWallet } from '@owallet/provider';
@@ -67,18 +57,9 @@ import './ledger';
 import { TokenPage } from './pages/token';
 import { Menu } from './pages/main/menu';
 
-const owallet = new OWallet(
-  manifest.version,
-  'core',
-  new InExtensionMessageRequester()
-);
+const owallet = new OWallet(manifest.version, 'core', new InExtensionMessageRequester());
 
-const ethereum = new Ethereum(
-  manifest.version,
-  'core',
-  '',
-  new InExtensionMessageRequester()
-);
+const ethereum = new Ethereum(manifest.version, 'core', '', new InExtensionMessageRequester());
 
 // Sentry.init({
 //   dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
@@ -143,21 +124,13 @@ const StateRenderer: FunctionComponent = observer(() => {
     window.close();
     return (
       <div style={{ height: '100%' }}>
-        <Banner
-          icon={require('./public/assets/orai_wallet_logo.png')}
-          logo={require('./public/assets/logo.svg')}
-          subtitle="Cosmos x EVM in one Wallet"
-        />
+        <Banner icon={require('./public/assets/orai_wallet_logo.png')} logo={require('./public/assets/logo.svg')} subtitle="Cosmos x EVM in one Wallet" />
       </div>
     );
   } else if (keyRingStore.status === KeyRingStatus.NOTLOADED) {
     return (
       <div style={{ height: '100%' }}>
-        <Banner
-          icon={require('./public/assets/orai_wallet_logo.png')}
-          logo={require('./public/assets/logo.svg')}
-          subtitle="Cosmos x EVM in one Wallet"
-        />
+        <Banner icon={require('./public/assets/orai_wallet_logo.png')} logo={require('./public/assets/logo.svg')} subtitle="Cosmos x EVM in one Wallet" />
       </div>
     );
   } else {
@@ -177,11 +150,7 @@ const AppIntlProviderWithStorage = ({ children }) => {
       storage={store.uiConfigStore.Storage}
     >
       {({ language, messages, automatic }) => (
-        <IntlProvider
-          locale={language}
-          messages={messages}
-          key={`${language}${automatic ? '-auto' : ''}`}
-        >
+        <IntlProvider locale={language} messages={messages} key={`${language}${automatic ? '-auto' : ''}`}>
           {children}
         </IntlProvider>
       )}
@@ -203,96 +172,28 @@ ReactDOM.render(
                   <Route exact path="/access" component={AccessPage} />
                   <Route exact path="/token" component={TokenPage} />
                   <Route exact path="/menu" component={Menu} />
-                  <Route
-                    exact
-                    path="/access/viewing-key"
-                    component={Secret20ViewingKeyAccessPage}
-                  />
+                  <Route exact path="/access/viewing-key" component={Secret20ViewingKeyAccessPage} />
                   <Route exact path="/register" component={RegisterPage} />
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
-                  <Route
-                    exact
-                    path="/ibc-transfer"
-                    component={IBCTransferPage}
-                  />
+                  <Route exact path="/ibc-transfer" component={IBCTransferPage} />
                   <Route exact path="/setting" component={SettingPage} />
-                  <Route
-                    exact
-                    path="/ledger-grant"
-                    component={LedgerGrantPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/language"
-                    component={SettingLanguagePage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/fiat"
-                    component={SettingFiatPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/connections"
-                    component={SettingConnectionsPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/connections/viewing-key/:contractAddress"
-                    component={SettingSecret20ViewingKeyConnectionsPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/address-book"
-                    component={AddressBookPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/export-to-mobile"
-                    component={ExportToMobilePage}
-                  />
+                  <Route exact path="/ledger-grant" component={LedgerGrantPage} />
+                  <Route exact path="/setting/language" component={SettingLanguagePage} />
+                  <Route exact path="/setting/fiat" component={SettingFiatPage} />
+                  <Route exact path="/setting/connections" component={SettingConnectionsPage} />
+                  <Route exact path="/setting/connections/viewing-key/:contractAddress" component={SettingSecret20ViewingKeyConnectionsPage} />
+                  <Route exact path="/setting/address-book" component={AddressBookPage} />
+                  <Route exact path="/setting/export-to-mobile" component={ExportToMobilePage} />
                   <Route exact path="/setting/credit" component={CreditPage} />
-                  <Route
-                    exact
-                    path="/setting/set-keyring"
-                    component={SetKeyRingPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/export/:index"
-                    component={ExportPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/clear/:index"
-                    component={ClearPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/keyring/change/name/:index"
-                    component={ChangeNamePage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token/add"
-                    component={AddTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token-evm/add"
-                    component={AddEvmTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/setting/token/manage"
-                    component={ManageTokenPage}
-                  />
-                  <Route
-                    exact
-                    path="/stake/validator-list"
-                    component={ValidatorListPage}
-                  />
+                  <Route exact path="/setting/set-keyring" component={SetKeyRingPage} />
+                  <Route exact path="/setting/export/:index" component={ExportPage} />
+                  <Route exact path="/setting/clear/:index" component={ClearPage} />
+                  <Route exact path="/setting/keyring/change/name/:index" component={ChangeNamePage} />
+                  <Route exact path="/setting/token/add" component={AddTokenPage} />
+                  <Route exact path="/setting/token-evm/add" component={AddEvmTokenPage} />
+                  <Route exact path="/setting/token/manage" component={ManageTokenPage} />
+                  <Route exact path="/stake/validator-list" component={ValidatorListPage} />
                   <Route path="/sign" component={SignPage} />
                   <Route path="/sign-ethereum" component={SignEthereumPage} />
                   <Route path="/suggest-chain" component={ChainSuggestedPage} />

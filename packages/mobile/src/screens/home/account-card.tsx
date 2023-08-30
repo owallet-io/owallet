@@ -23,7 +23,7 @@ export const AccountCard: FunctionComponent<{
   } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
+    keyStore => keyStore?.selected
   );
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -67,10 +67,7 @@ export const AccountCard: FunctionComponent<{
     account?.bech32Address
   ]);
 
-  const onPressBtnMain = (name) => {
-    if (name === 'Buy') {
-      navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
-    }
+  const onPressBtnMain = name => {
     if (name === 'Receive') {
       _onPressReceiveModal();
     }
