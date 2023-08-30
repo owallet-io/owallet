@@ -3,7 +3,10 @@ const {
   getBalanceValue,
   btcToFiat,
   formatNumber,
-  formatBalance
+  formatBalance,
+  getBaseDerivationPath,
+  getCoinNetwork,
+  getScriptHash
 } = require('../helpers');
 
 describe('helper', () => {
@@ -127,8 +130,74 @@ describe('helper', () => {
       }
     ],
     ,
-  ])('should return %p', (param, expected) => {
+  ])('Test getCoinData for %p', (param, expected) => {
     const res = getCoinData(param);
     expect(res).toEqual(expected);
+  });
+  it.each([
+    [
+      {
+        keyDerivationPath: '44',
+        selectedCrypto: 'bitcoin'
+      },
+      `m/44'/0'/0'/0/0`
+    ],
+    [
+      {
+        keyDerivationPath: '44',
+        selectedCrypto: 'bitcoinTestnet'
+      },
+      `m/44'/1'/0'/0/0`
+    ]
+  ])('Test getBaseDerivationPath for %p', (param, expected) => {
+    const res = getBaseDerivationPath(param);
+    expect(res).toEqual(expected);
+  });
+  it.each([
+    [
+      'bitcoin',
+      {
+        bech32: 'bc',
+        bip32: { private: 76066276, public: 76067358 },
+        messagePrefix: '\x18Bitcoin Signed Message:\n',
+        pubKeyHash: 0,
+        scriptHash: 5,
+        wif: 128
+      }
+    ],
+    [
+      'bitcoinTestnet',
+      {
+        bech32: 'tb',
+        bip32: { private: 70615956, public: 70617039 },
+        messagePrefix: '\x18Bitcoin Signed Message:\n',
+        pubKeyHash: 111,
+        scriptHash: 196,
+        wif: 239
+      }
+    ]
+  ])('Test getCoinNetwork for %p', (param, expected) => {
+    const res = getCoinNetwork(param);
+    expect(res.bech32).toBe(expected.bech32);
+    expect(res.bip32).toEqual(expected.bip32);
+    expect(res.messagePrefix).toBe(expected.messagePrefix);
+    expect(res.pubKeyHash).toBe(expected.pubKeyHash);
+    expect(res.scriptHash).toBe(expected.scriptHash);
+    expect(res.wif).toBe(expected.wif);
+  });
+  it.each([
+    [
+      '1LvCkqBm4kFwXxqZd9b8aQHADSYyY5zx6P',
+      'bitcoin',
+      'ba91d2bd9c2b79893859cf3066e9cc8710a528a4ae6d6df9cd3733a57a9e447c'
+    ],
+    [
+      'n4XP6YwVHNCJ74ResGk7xq3CBhYqJc9Bnj',
+      'bitcoinTestnet',
+      '8ac9ba31451fc654d8c1a0266d83f4a2c2197e3cfeec7f45002b0f022cb3441e'
+    ]
+  ])('Test getScriptHash for %p', (param1, param2, expected) => {
+    const res = getScriptHash(param1, param2);
+    expect(res).toBe(expected);
   });
 });
