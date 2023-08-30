@@ -197,6 +197,7 @@ interface ResTxsInfo {
   transfers: Partial<TransferDetail>[];
   isRefreshData?: boolean;
   isCosmos?: boolean;
+  confirmations?: number;
   infoTransaction?: any;
 }
 interface ResTxs {

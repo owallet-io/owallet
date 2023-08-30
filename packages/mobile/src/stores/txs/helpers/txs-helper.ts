@@ -505,6 +505,7 @@ export class TxsHelper {
     item.height = this.formatNumberSeparateThousand(data?.block_height);
     item.status = data?.confirmations > 0 ? 'success' : 'fail';
     item.memo = null;
+    item.confirmations = data?.confirmations;
     item.countTypeEvent = 0;
     item.gasUsed = null;
     item.gasWanted = null;

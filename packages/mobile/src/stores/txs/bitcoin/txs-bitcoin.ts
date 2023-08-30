@@ -22,7 +22,6 @@ export class TxsBitcoin extends Txs {
     try {
       switch (this.chainId) {
         case ChainIdEnum.BitcoinTestnet:
-          console.log('this.chainId: ', this.chainId);
           return await this.txsBtcTest.getTxs(page, current_page, params);
         case ChainIdEnum.Bitcoin:
           return await this.txsBtc.getTxs(page, current_page, params);

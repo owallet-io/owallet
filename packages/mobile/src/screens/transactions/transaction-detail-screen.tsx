@@ -149,9 +149,7 @@ const TransactionDetailScreen = observer(() => {
                   )}
                   {itemDataTrans?.txId && (
                     <ItemReceivedToken
-                      valueDisplay={formatContractAddress(
-                        itemDataTrans?.txId
-                      )}
+                      valueDisplay={formatContractAddress(itemDataTrans?.txId)}
                       value={itemDataTrans?.txId}
                       label={'TxID'}
                     />
@@ -259,7 +257,24 @@ const TransactionDetailScreen = observer(() => {
         {data?.memo ? (
           <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
         ) : null}
-
+        {chainStore?.current?.networkType === 'bitcoin' ? (
+          <ItemDetail
+            valueProps={{
+              color:
+                data?.confirmations > 6
+                  ? colors['green-500']
+                  : data?.confirmations > 0
+                  ? colors['profile-orange']
+                  : colors['text-title-login']
+            }}
+            label="Confirmations"
+            value={`${
+              data?.confirmations > 6
+                ? data?.confirmations
+                : `${data?.confirmations}/6`
+            }`}
+          />
+        ) : null}
         {data?.gasUsed &&
         data?.gasWanted &&
         data?.gasUsed != '0' &&
