@@ -7,7 +7,8 @@ const {
   getBaseDerivationPath,
   getCoinNetwork,
   getScriptHash,
-  getKeyPair
+  getKeyPair,
+  getAddress
 } = require('../helpers');
 
 describe('helper', () => {
@@ -223,5 +224,30 @@ describe('helper', () => {
   ])('Test getKeyPair for %p', (param, expected) => {
     const res = getKeyPair(param);
     expect(res.toBase58()).toEqual(expected);
+  });
+  it.each([
+    [
+      getKeyPair({
+        selectedCrypto: 'bitcoin',
+        keyDerivationPath: '44',
+        mnemonic:
+          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+      }),
+      'bitcoin',
+      '1LvCkqBm4kFwXxqZd9b8aQHADSYyY5zx6P'
+    ],
+    [
+      getKeyPair({
+        selectedCrypto: 'bitcoinTestnet',
+        keyDerivationPath: '44',
+        mnemonic:
+          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+      }),
+      'bitcoinTestnet',
+      'n4XP6YwVHNCJ74ResGk7xq3CBhYqJc9Bnj'
+    ]
+  ])('Test getAddress for %p', (param1, param2, expected) => {
+    const res = getAddress(param1, param2, 'legacy');
+    expect(res).toEqual(expected);
   });
 });
