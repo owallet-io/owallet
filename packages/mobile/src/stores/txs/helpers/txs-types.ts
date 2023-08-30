@@ -188,7 +188,7 @@ interface ResTxsInfo {
   time: timeTxs;
   denomFee: string;
   height: string;
-  status: 'success' | 'fail';
+  status: 'success' | 'fail' | 'pending';
   memo: string;
   gasUsed: string;
   gasWanted: string;

@@ -241,15 +241,25 @@ const TransactionDetailScreen = observer(() => {
               color={
                 data?.status === 'success'
                   ? colors['green-500']
+                  : data?.status === 'pending'
+                  ? colors['purple-700']
                   : colors['orange-800']
               }
-              name={data?.status === 'success' ? 'check_stroke' : 'close_shape'}
+              name={
+                data?.status === 'success'
+                  ? 'check_stroke'
+                  : data?.status === 'pending'
+                  ? 'history-1'
+                  : 'close_shape'
+              }
             />
           }
           valueProps={{
             color:
               data?.status === 'success'
                 ? colors['green-500']
+                : data?.status === 'pending'
+                ? colors['purple-700']
                 : colors['orange-800']
           }}
         />

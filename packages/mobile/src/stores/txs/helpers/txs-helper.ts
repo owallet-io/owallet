@@ -503,7 +503,7 @@ export class TxsHelper {
     item.time = this.formatTimeBitcoin(data?.received);
     item.txHash = data?.hash;
     item.height = this.formatNumberSeparateThousand(data?.block_height);
-    item.status = data?.confirmations > 0 ? 'success' : 'fail';
+    item.status = data?.confirmations > 0 ? 'success' : 'pending';
     item.memo = null;
     item.confirmations = data?.confirmations;
     item.countTypeEvent = 0;
