@@ -4,12 +4,15 @@ import { ChainInfo } from '@owallet/types';
 import { ChainIdEnum } from '../helpers/txs-enums';
 import { Address } from '@owallet/crypto';
 import { TxsBtcTestNet } from './txs-btc-test';
+import { TxsBtc } from './txs-btc-main';
 
 export class TxsBitcoin extends Txs {
   protected readonly txsBtcTest: TxsBtcTestNet;
+  protected readonly txsBtc: TxsBtc;
   constructor(current_chain: ChainInfoInner<ChainInfo>) {
     super(current_chain);
     this.txsBtcTest = new TxsBtcTestNet(current_chain);
+    this.txsBtc = new TxsBtc(current_chain);
   }
   async getTxs(
     page: number,
@@ -21,6 +24,8 @@ export class TxsBitcoin extends Txs {
         case ChainIdEnum.BitcoinTestnet:
           console.log('this.chainId: ', this.chainId);
           return await this.txsBtcTest.getTxs(page, current_page, params);
+        case ChainIdEnum.Bitcoin:
+          return await this.txsBtc.getTxs(page, current_page, params);
         default:
           break;
       }
