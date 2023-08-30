@@ -1,4 +1,9 @@
-import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
+import {
+  InjectedOWallet,
+  InjectedEthereum,
+  InjectedTronWebOWallet,
+  InjectedBitcoin
+} from '@owallet/provider';
 import { OWalletMode, EthereumMode, BitcoinMode } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
@@ -17,7 +22,10 @@ export class RNInjectedEthereum extends InjectedEthereum {
     return message;
   }
 
-  protected override async requestMethod(method: string, args: any[]): Promise<any> {
+  protected override async requestMethod(
+    method: string,
+    args: any[]
+  ): Promise<any> {
     const result = await super.requestMethod(method, args);
     if (method === 'wallet_switchEthereumChain') {
       this.chainId = result;
@@ -33,8 +41,9 @@ export class RNInjectedEthereum extends InjectedEthereum {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: (message) => {
+        removeMessageListener: (fn: (e: any) => void) =>
+          window.removeEventListener('message', fn),
+        postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -68,8 +77,9 @@ export class RNInjectedBitcoin extends InjectedBitcoin {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: (message) => {
+        removeMessageListener: (fn: (e: any) => void) =>
+          window.removeEventListener('message', fn),
+        postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -98,9 +108,11 @@ export class RNInjectedOWallet extends InjectedOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: (message) => {
+        addMessageListener: (fn: (e: any) => void) =>
+          window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) =>
+          window.removeEventListener('message', fn),
+        postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -114,7 +126,10 @@ export class RNInjectedOWallet extends InjectedOWallet {
 export class RNInjectedTronWeb extends InjectedTronWebOWallet {
   trx: { sign: (transaction: object) => Promise<object> };
 
-  protected override async requestMethod(method: string, args: any[]): Promise<any> {
+  protected override async requestMethod(
+    method: string,
+    args: any[]
+  ): Promise<any> {
     const result = await super.requestMethod(method, args);
     if (method === 'tron_requestAccounts') {
       this.defaultAddress = result;
@@ -139,9 +154,11 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: (message) => {
+        addMessageListener: (fn: (e: any) => void) =>
+          window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) =>
+          window.removeEventListener('message', fn),
+        postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));

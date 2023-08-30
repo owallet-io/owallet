@@ -26,9 +26,13 @@ export class LocalKVStore implements KVStore {
     const k = this.prefix() + '/' + key;
 
     if (data === null) {
-      return typeof AsyncStorage === 'undefined' ? Promise.resolve(localStorage.removeItem(k)) : AsyncStorage.removeItem(k);
+      return typeof AsyncStorage === 'undefined'
+        ? Promise.resolve(localStorage.removeItem(k))
+        : AsyncStorage.removeItem(k);
     }
-    return typeof AsyncStorage === 'undefined' ? Promise.resolve(localStorage.setItem(k, JSON.stringify(data))) : AsyncStorage.setItem(k, JSON.stringify(data));
+    return typeof AsyncStorage === 'undefined'
+      ? Promise.resolve(localStorage.setItem(k, JSON.stringify(data)))
+      : AsyncStorage.setItem(k, JSON.stringify(data));
   }
 
   prefix(): string {

@@ -1,6 +1,8 @@
 import { ImageSourcePropType } from 'react-native';
 
-export const InjectedProviderUrl = process.env.INJECTED_PROVIDER_URL || 'https://static.orai.io/injected-provider-merge.bundle.js';
+export const InjectedProviderUrl =
+  process.env.INJECTED_PROVIDER_URL ||
+  'https://static.orai.io/injected-provider-merge.bundle.js';
 
 export type DAppInfo = {
   name: string;
@@ -22,12 +24,6 @@ export const DAppInfos: DAppInfo[] = [
     uri: 'https://orderbook.oraidex.io',
     logo: oraiLogo
   },
-  // {
-  //
-  //   name: 'Oraidex',
-  //   uri: '192.168.0.147',
-  //   logo: oraiLogo
-  // },
   // {
   //   name: 'Staging Oraidex',
   //   uri: 'https://staging.oraidex.io',
@@ -58,28 +54,12 @@ export const DAppInfos: DAppInfo[] = [
     uri: 'https://scan.orai.io',
     logo: oraiLogo
   },
-  // {
-  //   name: 'Balcony Subnet',
-  //   uri: 'https://bignft.web.app',
-  //   logo: balconyLogo,
-  // },
-  // {
-  //
-  //   name: 'Balcony Subnet',
-  //   uri: 'https://re.bignft.app',
-  //   logo: balconyLogo
-  // },
   {
     name: 'OraiDEX Info',
     uri: 'https://info.oraidex.io',
     logo: oraiLogo
   },
-  // {
-  //
-  //   name: 'Balcony Subnet EVM',
-  //   uri: 'https://staging-big-nft.web.app/properties',
-  //   logo: balconyLogo
-  // },
+
   {
     name: 'Orchai App',
     uri: 'https://app.orchai.io',
