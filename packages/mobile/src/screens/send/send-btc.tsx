@@ -109,17 +109,20 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
-            await delay(1000);
+            // await delay(1000);
             await queries.bitcoin.queryBitcoinBalance
               .getQueryBalance(account.legacyAddress)
               .waitFreshResponse();
-            navigate(SCREENS.STACK.Others, {
-              screen: SCREENS.TxSuccessResult,
-              params: {
-                txHash: tx,
-                chainId: chainStore.current.chainId
-              }
-            });
+            if (tx) {
+              navigate(SCREENS.STACK.Others, {
+                screen: SCREENS.TxSuccessResult,
+                params: {
+                  txHash: tx,
+                  chainId: chainStore.current.chainId
+                }
+              });
+            }
+
             return;
           },
           onBroadcasted: async (txHash) => {
@@ -154,10 +157,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     confirmedBalance
   ]);
   const validate = validateAddress(
-    "miugoiPNShxYhj5f849Y2FaynjBTGd4eKW",
-    "bitcoinTestnet",
+    'miugoiPNShxYhj5f849Y2FaynjBTGd4eKW',
+    'bitcoinTestnet'
   );
-  console.log("🚀 ~ file: send-btc.tsx:160 ~ constSendBtcScreen:FunctionComponent=observer ~ validate:", validate)
+  console.log(
+    '🚀 ~ file: send-btc.tsx:160 ~ constSendBtcScreen:FunctionComponent=observer ~ validate:',
+    validate
+  );
   console.log('🚀 ~ file: send-btc.tsx:59 ~ useEffect ~ totalFee:', totalFee);
   const styles = styling(colors);
   return (
