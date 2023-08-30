@@ -275,7 +275,8 @@ const TransactionDetailScreen = observer(() => {
                   ? colors['green-500']
                   : data?.confirmations > 0
                   ? colors['profile-orange']
-                  : colors['text-title-login']
+                  : colors['text-title-login'],
+              weight: '900'
             }}
             label="Confirmations"
             value={`${
