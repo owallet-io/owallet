@@ -13,6 +13,7 @@ import {
   SecretMsgOpts
 } from './secret';
 import {
+  HasBtcQueries,
   HasCosmosQueries,
   HasCosmwasmQueries,
   HasEvmQueries,
@@ -29,11 +30,20 @@ import {
   CosmwasmMsgOpts,
   HasCosmwasmAccount
 } from './cosmwasm';
+import { BitcoinAccount, BitcoinMsgOpts } from './bitcoin';
 
 export class AccountWithAll
   extends AccountSetBase<
-    CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts & EthereumMsgOpts,
-    HasCosmosQueries & HasSecretQueries & HasCosmwasmQueries & HasEvmQueries
+    CosmosMsgOpts &
+      SecretMsgOpts &
+      CosmwasmMsgOpts &
+      EthereumMsgOpts &
+      BitcoinMsgOpts,
+    HasCosmosQueries &
+      HasSecretQueries &
+      HasCosmwasmQueries &
+      HasEvmQueries &
+      HasBtcQueries
   >
   implements HasCosmosAccount, HasSecretAccount, HasCosmwasmAccount
 {
@@ -51,6 +61,7 @@ export class AccountWithAll
   public readonly ethereum: DeepReadonly<EthereumAccount>;
   public readonly secret: DeepReadonly<SecretAccount>;
   public readonly cosmwasm: DeepReadonly<CosmwasmAccount>;
+  public readonly bitcoin: DeepReadonly<BitcoinAccount>;
 
   constructor(
     protected readonly eventListener: {
@@ -64,7 +75,8 @@ export class AccountWithAll
         HasCosmosQueries &
         HasSecretQueries &
         HasCosmwasmQueries &
-        HasEvmQueries
+        HasEvmQueries &
+        HasBtcQueries
     >,
     protected readonly opts: AccountSetOpts<
       CosmosMsgOpts & SecretMsgOpts & CosmwasmMsgOpts
@@ -92,6 +104,12 @@ export class AccountWithAll
     );
     this.ethereum = new EthereumAccount(
       this as AccountSetBase<EthereumMsgOpts, HasEvmQueries>,
+      chainGetter,
+      chainId,
+      queriesStore
+    );
+    this.bitcoin = new BitcoinAccount(
+      this as AccountSetBase<BitcoinMsgOpts, HasBtcQueries>,
       chainGetter,
       chainId,
       queriesStore

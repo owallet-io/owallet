@@ -1,29 +1,14 @@
-import React, { FunctionComponent, ReactElement, useCallback } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Card, CardBody } from '../../components/card';
 import { View, ViewStyle, Image, StyleSheet } from 'react-native';
-// import { CText as Text } from '../../components/text';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
-import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
-import { NetworkErrorView } from './network-error-view';
-import { DownArrowIcon } from '../../components/icon';
-
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon
-} from '../../components/icon/button';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AddressQRCodeModal } from './components';
-import LinearGradient from 'react-native-linear-gradient';
-import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
-import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
+import { SCREENS } from '@src/common/constants';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -40,9 +25,7 @@ export const AccountCard: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     keyStore => keyStore?.selected
   );
-
   const smartNavigation = useSmartNavigation();
-
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
@@ -67,6 +50,22 @@ export const AccountCard: FunctionComponent<{
   const total = stakable.add(stakedSum);
 
   const totalPrice = priceStore.calculatePrice(total);
+  const totalBalance = useMemo(() => {
+    if (!!totalPrice) {
+      return totalPrice?.toString();
+    }
+    return total
+      .shrink(true)
+      .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
+      ?.toString();
+  }, [
+    totalPrice,
+    total,
+    chainStore.current.stakeCurrency.coinDecimals,
+    chainStore.current.networkType,
+    chainStore.current.chainId,
+    account?.bech32Address
+  ]);
 
   const onPressBtnMain = name => {
     if (name === 'Receive') {
@@ -79,10 +78,6 @@ export const AccountCard: FunctionComponent<{
     }
   };
 
-  const _onPressMyWallet = () => {
-    modalStore.setOptions();
-    modalStore.setChildren(MyWalletModal());
-  };
   const _onPressReceiveModal = () => {
     modalStore.setOptions();
     modalStore.setChildren(
@@ -94,11 +89,7 @@ export const AccountCard: FunctionComponent<{
   };
   return (
     <AccountBox
-      totalBalance={
-        totalPrice
-          ? totalPrice.toString()
-          : total.shrink(true).maxDecimals(6).toString()
-      }
+      totalBalance={totalBalance}
       addressComponent={
         <AddressCopyable address={account.bech32Address} maxCharacters={22} />
       }

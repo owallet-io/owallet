@@ -80,6 +80,7 @@ export const BIP44SelectModal: FunctionComponent<{
 }> = registerModal(
   observer(({ bip44Option, close }) => {
     const { chainStore, appInitStore } = useStore();
+
     const scheme = appInitStore.getInitApp.theme;
 
     const styles = styling(scheme);

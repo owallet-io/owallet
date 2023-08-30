@@ -53,6 +53,39 @@ export class RequestSignDirectMsg extends Message<{
 }
 
 // request sign tron
+export class RequestSignBitcoinMsg extends Message<{
+  readonly rawTxHex: string; // raw tx signature to broadcast
+}> {
+  public static type() {
+    return 'request-sign-bitcoin';
+  }
+
+  constructor(public readonly chainId: string, public readonly data: object) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return RequestSignBitcoinMsg.type();
+  }
+}
 export class RequestSignTronMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {

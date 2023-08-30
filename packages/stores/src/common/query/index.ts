@@ -51,7 +51,7 @@ type TokenInfo = {
   symbol: string;
   decimals: number;
   total_supply: any;
-}
+};
 
 /**
  * Base of the observable query classes.
@@ -235,7 +235,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       if (
         response.data &&
         typeof response.data === 'string' &&
-        (response.data.startsWith('stream was reset:') ||
+        (response.data?.startsWith('stream was reset:') ||
           ObservableQuery.suspectedResponseDatasWithInvalidValue.includes(
             response.data
           ))

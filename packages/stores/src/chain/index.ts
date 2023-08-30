@@ -229,7 +229,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
   get bech32Config(): Bech32Config {
     return this.raw.bech32Config;
   }
-  get beta(): boolean | undefined {
+get beta(): boolean | undefined {
     return this.raw.beta;
   }
 

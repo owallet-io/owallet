@@ -210,6 +210,45 @@ export const API = {
       return Promise.reject(error);
     }
   },
+  checkStatusTxBitcoinTestNet: async (url: string, txHash: string) => {
+    try {
+      const rs = await API.get(`/api/tx/${txHash}/status`, {
+        baseURL: url
+      });
+      console.log(
+        '🚀 ~ file: api.ts:217 ~ checkStatusBitcoinTestNet: ~ rs:',
+        rs
+      );
+      return Promise.reject(rs?.data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api/tx/${txHash}/status`,
+        'checkStatusBitcoinTestNet'
+      );
+      return Promise.reject(error);
+    }
+  },
+  getTxsBitcoin: async (url, addressAccount) => {
+    try {
+      const rs = await API.get(`/address/${addressAccount}/txs`, {
+        baseURL: url
+      });
+      const data: txsBitcoinResult = rs.data;
+
+      if (data?.length > 0) {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `${url}/api?module=account&action=txlist&address=${addressAccount}`,
+        'getTxsEthAndBsc'
+      );
+      return Promise.reject(error);
+    }
+  },
   getTxsTron: async (url, addressAccount, current_page, page) => {
     try {
       const rs = await API.get(

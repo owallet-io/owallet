@@ -2,6 +2,7 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
+  useMemo,
   useRef
 } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
@@ -29,6 +30,8 @@ import messaging from '@react-native-firebase/messaging';
 import { TRON_ID, showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+import { AccountCardBitcoin } from './account-card-bitcoin';
+import { TokensBitcoinCard } from './tokens-bitcoin-card';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -183,7 +186,14 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
-
+    if (chainStore.current.networkType === 'bitcoin') {
+      await queries.bitcoin.queryBitcoinBalance
+        .getQueryBalance(account.legacyAddress)
+        .waitFreshResponse();
+      setRefreshing(false);
+      setRefreshDate(Date.now());
+      return;
+    }
     await Promise.all([
       priceStore.waitFreshResponse(),
       ...queries.queryBalances
@@ -205,7 +215,22 @@ export const HomeScreen: FunctionComponent = observer(props => {
     setRefreshing(false);
     setRefreshDate(Date.now());
   }, [accountStore, chainStore, priceStore, queriesStore]);
-
+  const renderAccountCard = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
+    } else if (chainStore.current.networkType === 'evm') {
+      return <AccountCardEVM containerStyle={styles.containerStyle} />;
+    }
+    return <AccountCard containerStyle={styles.containerStyle} />;
+  }, [chainStore.current.networkType]);
+  const renderTokenCard = useMemo(() => {
+    if (chainStore.current.networkType === 'bitcoin') {
+      return <TokensBitcoinCard refreshDate={refreshDate} />;
+    } else if (chainStore.current.chainId === TRON_ID) {
+      return <TronTokensCard />;
+    }
+    return <TokensCard refreshDate={refreshDate} />;
+  }, [chainStore.current.networkType,chainStore.current.chainId]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
@@ -216,19 +241,9 @@ export const HomeScreen: FunctionComponent = observer(props => {
       ref={scrollViewRef}
     >
       <BIP44Selectable />
-      {chainStore.current.networkType === 'cosmos' ? (
-        <AccountCard containerStyle={styles.containerStyle} />
-      ) : (
-        <AccountCardEVM containerStyle={styles.containerStyle} />
-      )}
-
+      {renderAccountCard}
       <DashboardCard />
-      {chainStore.current.chainId === TRON_ID ? (
-        <TronTokensCard />
-      ) : (
-        <TokensCard refreshDate={refreshDate} />
-      )}
-
+      {renderTokenCard}
       {chainStore.current.networkType === 'cosmos' ? (
         <UndelegationsCard />
       ) : null}

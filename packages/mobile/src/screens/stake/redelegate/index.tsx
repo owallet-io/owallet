@@ -149,12 +149,18 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
+        
         if (e?.message === 'Request rejected') {
           return;
         }
         if (e?.message.includes('Cannot read properties of undefined')) {
           return;
         }
+        showToast({
+          type:'error',
+          text2:e?.message,
+          text1:'OWallet'
+        })
         console.log(e);
         showToast({
           type: 'error',

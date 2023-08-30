@@ -97,7 +97,7 @@ export const DelegatedCard: FunctionComponent<{
           </Text>
           <View style={style.get('flex-1')} />
           <Text style={style.flatten(['body2', 'color-text-black-very-low'])}>
-            {rewards.trim(true).shrink(true).maxDecimals(6).toString()}
+            {rewards?.trim(true).shrink(true).maxDecimals(6).toString()}
           </Text>
         </View>
         <View style={style.flatten(['flex-row', 'items-center'])}>

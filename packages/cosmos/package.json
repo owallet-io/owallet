@@ -10,6 +10,7 @@
   },
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
+    "rebuild":"rimraf build && yarn build",
     "build": "yarn build:proto && tsc --project tsconfig.build.json",
     "build:proto": "mkdirp build/stargate/proto/generated && cp ./src/stargate/proto/generated/* ./build/stargate/proto/generated",
     "dev": "yarn build:proto && tsc -w",

@@ -182,7 +182,7 @@ export const DelegateDetailScreen: FunctionComponent<DelegateDetailProps> =
                   color: colors['sub-primary-text']
                 }}
               >
-                {rewards.trim(true).shrink(true).maxDecimals(6).toString()}
+                {rewards?.trim(true).shrink(true).maxDecimals(6).toString()}
               </Text>
             </View>
             <TouchableOpacity

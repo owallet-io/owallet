@@ -6,7 +6,7 @@ import {
   AccountStore,
   SignInteractionStore,
   TokensStore,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
+  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
   AccountWithAll,
   LedgerInitStore,
   IBCCurrencyRegsitrar,
@@ -21,7 +21,7 @@ import { DeepLinkStore, BrowserStore, browserStore } from './browser';
 import { AppInit, appInit } from './app_init';
 import { Notification, notification } from './notification';
 import EventEmitter from 'eventemitter3';
-import { OWallet, Ethereum, TronWeb } from '@owallet/provider';
+import { OWallet, Ethereum, Bitcoin, TronWeb } from '@owallet/provider';
 import { KeychainStore } from './keychain';
 import { FeeType } from '@owallet/hooks';
 import {
@@ -40,7 +40,7 @@ import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
-import { UniversalSwapStore } from './universal_swap';
+import { Alert } from 'react-native';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -52,7 +52,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly signInteractionStore: SignInteractionStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
   public readonly tokensStore: TokensStore<ChainInfoWithEmbed>;
@@ -143,7 +143,7 @@ export class RootStore {
       async () => {
         return new OWallet(version, 'core', new RNMessageRequesterInternal());
       },
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
 
     this.accountStore = new AccountStore<AccountWithAll>(
@@ -178,11 +178,19 @@ export class RootStore {
               new RNMessageRequesterInternal()
             );
           },
+          getBitcoin: async () => {
+            return new Bitcoin(
+              version,
+              'core',
+              'bitcoin',
+              new RNMessageRequesterInternal()
+            );
+          },
           getTronWeb: async () => {
             return new TronWeb(
               version,
               'core',
-              '0x38',
+              '0x2b6653dc',
               new RNMessageRequesterInternal()
             );
           }

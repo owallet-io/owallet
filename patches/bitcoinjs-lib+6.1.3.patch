@@ -1,0 +1,39 @@
+diff --git a/node_modules/bitcoinjs-lib/src/address.js b/node_modules/bitcoinjs-lib/src/address.js
+index 2712168..e5e3fee 100644
+--- a/node_modules/bitcoinjs-lib/src/address.js
++++ b/node_modules/bitcoinjs-lib/src/address.js
+@@ -43,12 +43,14 @@ function _toFutureSegwitAddress(output, network) {
+ }
+ function fromBase58Check(address) {
+   const payload = Buffer.from(bs58check.decode(address));
++  console.log("🚀 ~ file: address.js:46 ~ fromBase58Check ~ payload:", payload?.length)
+   // TODO: 4.0.0, move to "toOutputScript"
+   if (payload.length < 21) throw new TypeError(address + ' is too short');
+   if (payload.length > 21) throw new TypeError(address + ' is too long');
+-  const version = payload.readUint8(0);
++  const version = payload.slice(0,1)[0];
+   const hash = payload.slice(1);
+   return { version, hash }; 
++  
+ }
+ exports.fromBase58Check = fromBase58Check;
+ function fromBech32(address) {
+@@ -117,12 +119,17 @@ function fromOutputScript(output, network) {
+ }
+ exports.fromOutputScript = fromOutputScript;
+ function toOutputScript(address, network) {
++  console.log("🚀 ~ file: address.js:121 ~ toOutputScript ~ address:", address)
+   network = network || networks.bitcoin;
+   let decodeBase58;
+   let decodeBech32;
+   try {
+     decodeBase58 = fromBase58Check(address);
+-  } catch (e) {}
++    console.log("🚀 ~ file: address.js:137 ~ toOutputScript ~ decodeBase58:", decodeBase58)
++  } catch (e) {
++    console.log("🚀 ~ file: address.js:139 ~ toOutputScript ~ e:", e)
++    
++  }
+   if (decodeBase58) {
+     if (decodeBase58.version === network.pubKeyHash)
+       return payments.p2pkh({ hash: decodeBase58.hash }).output;

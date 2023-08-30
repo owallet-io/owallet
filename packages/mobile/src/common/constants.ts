@@ -52,6 +52,7 @@ export const SCREENS = {
   Invest: 'Invest',
   Delegate: 'Delegate',
   SendTron: 'SendTron',
+  SendBtc: 'SendBtc',
   Notifications: 'Notifications',
   DelegateDetail: 'Delegate.Detail',
   Redelegate: 'Redelegate',
@@ -224,6 +225,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   },
   [SCREENS.SettingVersion]: {
     title: 'About'
+  },
+  [SCREENS.SendBtc]: {
+    title: 'Send BTC'
   },
   [SCREENS.AddressBook]: {
     title: HEADER_KEY.showNetworkHeader

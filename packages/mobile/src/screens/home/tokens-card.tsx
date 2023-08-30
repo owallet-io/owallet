@@ -3,7 +3,7 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { API } from '../../common/api';
@@ -16,7 +16,8 @@ import {
   capitalizedText,
   convertAmount,
   _keyExtract,
-  findLedgerAddressWithChainId
+  findLedgerAddressWithChainId,
+  delay
 } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
@@ -34,7 +35,6 @@ export const TokensCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
 
-  const [tokens, setTokens] = useState([]);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -43,43 +43,44 @@ export const TokensCard: FunctionComponent<{
     account,
     chainStore.current.rpc
   );
-  // const [price, setPrice] = useState<object>({});
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? keyRingStore.keyRingType === 'ledger'
-          ? findLedgerAddressWithChainId(
-              keyRingStore.keyRingLedgerAddresses,
-              chainStore.current.chainId
-            )
-          : account.evmosHexAddress
-        : account.bech32Address
-    );
 
-  useEffect(() => {
+  const queries = queriesStore.get(chainStore.current.chainId);
+
+  const queryBalances = queries.queryBalances.getQueryBech32Address(
+    chainStore.current.networkType === 'evm'
+      ? keyRingStore.keyRingType === 'ledger'
+        ? findLedgerAddressWithChainId(
+            keyRingStore.keyRingLedgerAddresses,
+            chainStore.current.chainId
+          )
+        : account.evmosHexAddress
+      : account.bech32Address
+  );
+
+  const tokens = useMemo(() => {
     const queryTokens = queryBalances.balances.concat(
       queryBalances.nonNativeBalances,
       queryBalances.positiveNativeUnstakables
     );
-
     const uniqTokens = [];
-    queryTokens.map(token =>
+    queryTokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
     );
-    setTokens(uniqTokens);
+    return uniqTokens;
   }, [
     chainStore.current.chainId,
     account.bech32Address,
     account.evmosHexAddress,
+    chainStore.current.networkType,
     refreshDate
   ]);
 
-  const onActiveType = i => {
+  const onActiveType = (i) => {
     setIndex(i);
   };
 
@@ -163,16 +164,15 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map(token => {
+              tokens.slice(0, 3).map((token, index) => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
-                console.log('token', token.balance);
-
                 return (
                   <TokenItem
-                    key={token.currency?.coinMinimalDenom}
+                    key={index?.toString()}
                     chainInfo={{
                       stakeCurrency: chainStore.current.stakeCurrency,
-                      networkType: chainStore.current.networkType
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.chainId
                     }}
                     balance={token.balance}
                     priceBalance={priceBalance}
@@ -259,7 +259,7 @@ export const SkeletonNft = () => {
     </SkeletonPlaceholder>
   );
 };
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     titleNft: {
       paddingTop: 12

@@ -10,6 +10,7 @@
   },
   "scripts": {
     "clean": "rimraf node_modules build",
+    "rebuild":"rimraf build && yarn build",
     "build": "tsc --project tsconfig.build.json",
     "dev": "tsc -w",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",

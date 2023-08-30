@@ -23,6 +23,7 @@ export interface Key {
   readonly pubKey: Uint8Array;
   readonly address: Uint8Array;
   readonly bech32Address: string;
+  readonly legacyAddress?: string;
   // Indicate whether the selected account is from the nano ledger.
   // Because current cosmos app in the nano ledger doesn't support the direct (proto) format msgs,
   // this can be used to select the amino or direct signer.
@@ -92,8 +93,6 @@ export interface OWallet {
     mode: BroadcastMode
   ): Promise<Uint8Array>;
 
-  handleUniversalSwap?(chainId: string, data: any): Promise<object>;
-
   signArbitrary(
     chainId: string,
     signer: string,
@@ -148,7 +147,7 @@ export type EthereumMode =
   | 'extension'
   | 'mobile-web'
   | 'walletconnect';
-
+export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 
 export interface RequestArguments {
@@ -194,5 +193,19 @@ export interface TronWeb {
   defaultAddress?: object;
   initChainId: string;
   sign(transaction: object): Promise<object>;
-  getDefaultAddress(): object;
+  getDefaultAddress(): Promise<object>;
+}
+export interface Bitcoin {
+  readonly version: string;
+  /**
+   * mode means that how Ethereum is connected.
+   * If the connected Ethereum is browser's extension, the mode should be "extension".
+   * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
+   */
+  readonly mode: BitcoinMode;
+  initChainId: string;
+  signAndBroadcast(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
 }

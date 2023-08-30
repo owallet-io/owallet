@@ -38,7 +38,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [loadingType, setLoadingType] = useState(false);
   const page = useRef(0);
   const [activePage, setActivePage] = useState(
-    chainStore.current?.networkType !== 'evm' ? 1 : 0
+    chainStore.current?.networkType === 'cosmos' ? 1 : 0
   );
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
@@ -206,6 +206,17 @@ const HistoryTransactionsScreen = observer(() => {
   const onEndReached = useCallback(() => {
     if (page.current !== 0) {
       setLoadMore(true);
+      if (chainStore.current.networkType === 'bitcoin') {
+        fetchData(
+          {
+            address: account.legacyAddress,
+            action: activeType?.value,
+            activePage
+          },
+          false
+        );
+        return;
+      }
       fetchData(
         {
           address:

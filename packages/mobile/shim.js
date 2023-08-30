@@ -4,6 +4,7 @@ import './polyfill/crypto';
 
 if (typeof __dirname === 'undefined') global.__dirname = '/';
 if (typeof __filename === 'undefined') global.__filename = '';
+
 if (typeof process === 'undefined') {
   global.process = require('process');
 } else {
@@ -15,7 +16,12 @@ if (typeof process === 'undefined') {
     }
   }
 }
-
+if (typeof net === 'undefined') {
+  global.net = require('./net');
+}
+if (typeof tls === 'undefined') {
+  global.tls = require('tls-owallet');
+}
 process.browser = false;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer;

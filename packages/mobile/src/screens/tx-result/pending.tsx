@@ -20,6 +20,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { SUCCESS, TRON_ID } from '../../utils/helper';
+import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
+import { API } from '@src/common/api';
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
   const [retry, setRetry] = useState(3);
@@ -47,7 +49,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const isFocused = useIsFocused();
   const { bottom } = useSafeAreaInsets();
 
-  const getTronTx = async txHash => {
+  const getTronTx = async (txHash) => {
     const transaction = await route.params.tronWeb?.trx.getTransactionInfo(
       txHash
     );
@@ -66,7 +68,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
         if (retry >= 0) {
           setTimeout(() => {
-            getTronTx(txHash).then(transaction => {
+            getTronTx(txHash).then((transaction) => {
               if (
                 transaction &&
                 Object.keys(transaction).length > 0 &&
@@ -97,11 +99,22 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
             txHash: txHash
           });
         }
+      } else if (chainId === ChainIdEnum.BitcoinTestnet) {
+        API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
+          .then((res: any) => {
+            console.log('🚀 ~ file: pending.tsx:107 ~ useEffect ~ res:', res);
+            if (res?.confirmed) {
+              smartNavigation.pushSmart('TxSuccessResult', {
+                txHash: txHash
+              });
+            }
+          })
+          .catch((err) => console.log(err, 'err data'));
       } else {
         txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
         txTracer
           .traceTx(Buffer.from(txHash, 'hex'))
-          .then(tx => {
+          .then((tx) => {
             if (tx.code == null || tx.code === 0) {
               smartNavigation.replaceSmart('TxSuccessResult', {
                 chainId,
@@ -114,7 +127,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               });
             }
           })
-          .catch(e => {
+          .catch((e) => {
             console.log(`Failed to trace the tx (${txHash})`, e);
           });
       }

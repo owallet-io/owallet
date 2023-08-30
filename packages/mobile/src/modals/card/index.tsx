@@ -14,12 +14,14 @@ export const CardModal: FunctionComponent<{
   childrenContainerStyle?: ViewStyle;
   disableGesture?: boolean;
   labelStyle?: TextStyle;
+  disabledScrollView?:boolean;
 }> = ({
   title,
   right,
   children,
   childrenContainerStyle,
-  labelStyle
+  labelStyle,
+  disabledScrollView=true
 }) => {
   const style = useStyle();
   const { colors } = useTheme();
@@ -27,9 +29,9 @@ export const CardModal: FunctionComponent<{
   const { appInitStore } = useStore();
 
   const scheme = appInitStore.getInitApp.theme;
-
+const ContainerElement = disabledScrollView?View:ScrollView;
   return (
-    <ScrollView
+    <ContainerElement
       keyboardDismissMode='interactive'
       keyboardShouldPersistTaps="handled"
       style={[
@@ -93,6 +95,6 @@ export const CardModal: FunctionComponent<{
       >
         {children}
       </View>
-    </ScrollView>
+    </ContainerElement>
   );
 };
