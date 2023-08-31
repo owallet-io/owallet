@@ -110,7 +110,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
-            // await delay(1000);
+            await delay(1000);
 
             // return () => interactionPromise.cancel();
             await queries.bitcoin.queryBitcoinBalance
