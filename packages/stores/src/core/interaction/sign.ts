@@ -240,10 +240,6 @@ export class SignInteractionStore {
     const isEnd =
       this.interactionStore.getEvents<void>('request-sign-bitcoin-end').length >
       0;
-    console.log(
-      '🚀 ~ file: sign.ts:240 ~ SignInteractionStore ~ isBitcoinEnded ~ isEnd:',
-      isEnd
-    );
     return isEnd;
   }
 
@@ -293,14 +289,12 @@ export class SignInteractionStore {
   }
   protected waitBitcoinEnd(): Promise<void> {
     if (this.isBitcoinEnded()) {
-      console.log('zoday2');
       return Promise.resolve();
     }
 
     return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isBitcoinEnded()) {
-          console.log('zoday1');
           resolve();
           this.clearEnded();
           disposer();
@@ -342,8 +336,8 @@ export class SignInteractionStore {
       yield this.interactionStore.approveWithoutRemovingData(id, newSignDoc);
     } finally {
       yield this.waitEnd();
-      this._isLoading = false;
       this.interactionStore.removeData('request-sign', id);
+      this._isLoading = false;
     }
   }
 
@@ -364,9 +358,8 @@ export class SignInteractionStore {
       console.log('yield waitingTronDatas length > 0');
     } finally {
       yield this.waitTronEnd();
-      console.log('this.111 ===', this.waitingTronData);
-      this._isLoading = false;
       this.interactionStore.removeData('request-sign-tron', idTron);
+      this._isLoading = false;
     }
   }
   @flow
@@ -383,22 +376,10 @@ export class SignInteractionStore {
           ...this.waitingBitcoinDatas[0].data
         });
       }
-      console.log('yield waitingBitcoinDatas length > 0');
     } finally {
-      const rs = yield this.waitBitcoinEnd();
-      console.log(
-        '🚀 ~ file: sign.ts:388 ~ SignInteractionStore ~ *approveBitcoinAndWaitEnd ~ rs:',
-        rs
-      );
-
-      console.log('thiswaitingBitcoinData.222 ===', this.waitingBitcoinDatas);
+      yield this.waitBitcoinEnd();
       this.interactionStore.removeData('request-sign-bitcoin', idBitcoin);
-      console.log('thiswaitingBitcoinData.222 ===', this.waitingBitcoinDatas);
-      console.log('thiswaitingBitcoinData.111 ===', this.waitingBitcoinData);
-
-      if (!this.waitingBitcoinDatas?.length) {
-        this._isLoading = false;
-      }
+      this._isLoading = false;
     }
   }
 
@@ -427,8 +408,8 @@ export class SignInteractionStore {
       }
     } finally {
       yield this.waitEthereumEnd();
-      this._isLoading = false;
       this.interactionStore.removeData('request-sign-ethereum', idEthereum);
+      this._isLoading = false;
     }
   }
 
