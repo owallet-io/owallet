@@ -22,7 +22,7 @@ const toastConfig = {
     Overwrite 'success' type,
     by modifying the existing `BaseToast` component
   */
-  success: (props) => (
+  success: props => (
     <BaseToast
       {...props}
       style={{ borderLeftColor: colorsCode['purple-700'], height: 90 }}

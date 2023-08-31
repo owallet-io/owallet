@@ -69,7 +69,7 @@ export class AccountWithAll
       removeEventListener: (type: string, fn: () => unknown) => void;
     },
     protected readonly chainGetter: ChainGetter,
-    protected readonly chainId: string,
+    readonly chainId: string,
     protected readonly queriesStore: QueriesStore<
       QueriesSetBase &
         HasCosmosQueries &

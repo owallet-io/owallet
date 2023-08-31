@@ -110,8 +110,8 @@ export const useMapStyles = ({
           backgroundColor: disabled
             ? colors['btn-disable-background']
             : 'transparent',
-            borderColor:colors['purple-700'],
-            borderWidth:0.5
+          borderColor: colors['purple-700'],
+          borderWidth: 0.5
         },
         text: {
           color: disabled
@@ -138,7 +138,22 @@ export const useMapStyles = ({
         }
       };
       break;
-
+    case 'tonner':
+      typeStyleBtn = {
+        btn: {
+          borderRadius: formatSize.btn.borderRadius,
+          height: formatSize.btn.height,
+          backgroundColor: colors['background-item-list']
+        },
+        text: {
+          color: disabled
+            ? colors['text-btn-disable-color']
+            : colors['btn-primary-background'],
+          fontSize: formatSize.text.fontSize,
+          fontWeight: formatSize.text.fontWeight
+        }
+      };
+      break;
     default:
       typeStyleBtn = {
         btn: {

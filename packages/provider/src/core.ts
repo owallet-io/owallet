@@ -43,7 +43,8 @@ import {
   RequestSignDecryptDataMsg,
   RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg,
-  GetChainInfosWithoutEndpointsMsg
+  GetChainInfosWithoutEndpointsMsg,
+  RequestUniversalSwapMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -93,6 +94,11 @@ export class OWallet implements IOWallet {
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async handleUniversalSwap(chainId: string, data: object): Promise<object> {
+    const msg = new RequestUniversalSwapMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async getKey(chainId: string): Promise<Key> {

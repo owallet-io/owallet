@@ -1,10 +1,5 @@
 import { ChainStore } from './chain';
-import {
-  AmplitudeApiKey,
-  EmbedChainInfos,
-  ExtensionKVStore,
-  FiatCurrencies
-} from '@owallet/common';
+import { AmplitudeApiKey, EmbedChainInfos, ExtensionKVStore, FiatCurrencies } from '@owallet/common';
 import {
   KeyRingStore,
   InteractionStore,
@@ -21,14 +16,10 @@ import {
   QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
   AccountWithAll,
   getOWalletFromWindow,
-  getEthereumFromWindow
+  getEthereumFromWindow,
+  getTronWebFromWindow
 } from '@owallet/stores';
-import {
-  ExtensionRouter,
-  ContentScriptEnv,
-  ContentScriptGuards,
-  InExtensionMessageRequester
-} from '@owallet/router-extension';
+import { ExtensionRouter, ContentScriptEnv, ContentScriptGuards, InExtensionMessageRequester } from '@owallet/router-extension';
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
@@ -80,23 +71,15 @@ export class RootStore {
   >;
 
   constructor() {
-    this.uiConfigStore = new UIConfigStore(
-      new ExtensionKVStore('store_ui_config')
-    );
+    this.uiConfigStore = new UIConfigStore(new ExtensionKVStore('store_ui_config'));
 
     const router = new ExtensionRouter(ContentScriptEnv.produceEnv);
     router.addGuard(ContentScriptGuards.checkMessageIsInternal);
 
     // Order is important.
-    this.interactionStore = new InteractionStore(
-      router,
-      new InExtensionMessageRequester()
-    );
+    this.interactionStore = new InteractionStore(router, new InExtensionMessageRequester());
 
-    this.chainStore = new ChainStore(
-      EmbedChainInfos,
-      new InExtensionMessageRequester()
-    );
+    this.chainStore = new ChainStore(EmbedChainInfos, new InExtensionMessageRequester());
 
     this.keyRingStore = new KeyRingStore(
       {
@@ -110,27 +93,14 @@ export class RootStore {
       this.interactionStore
     );
 
-    this.ibcChannelStore = new IBCChannelStore(
-      new ExtensionKVStore('store_ibc_channel')
-    );
+    this.ibcChannelStore = new IBCChannelStore(new ExtensionKVStore('store_ibc_channel'));
 
-    this.permissionStore = new PermissionStore(
-      this.interactionStore,
-      new InExtensionMessageRequester()
-    );
+    this.permissionStore = new PermissionStore(this.interactionStore, new InExtensionMessageRequester());
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
-    this.ledgerInitStore = new LedgerInitStore(
-      this.interactionStore,
-      new InExtensionMessageRequester()
-    );
+    this.ledgerInitStore = new LedgerInitStore(this.interactionStore, new InExtensionMessageRequester());
     this.chainSuggestStore = new ChainSuggestStore(this.interactionStore);
 
-    this.queriesStore = new QueriesStore(
-      new ExtensionKVStore('store_queries'),
-      this.chainStore,
-      getOWalletFromWindow,
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
-    );
+    this.queriesStore = new QueriesStore(new ExtensionKVStore('store_queries'), this.chainStore, getOWalletFromWindow, QueriesWithCosmosAndSecretAndCosmwasmAndEvm);
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
       // In certik, change the msg type of the MsgSend to "bank/MsgSend"
@@ -148,10 +118,7 @@ export class RootStore {
       }
 
       // In akash or sifchain, increase the default gas for sending
-      if (
-        chainInfo.chainId.startsWith('akashnet-') ||
-        chainInfo.chainId.startsWith('sifchain')
-      ) {
+      if (chainInfo.chainId.startsWith('akashnet-') || chainInfo.chainId.startsWith('sifchain')) {
         return {
           chainId: chainInfo.chainId,
           msgOpts: {
@@ -235,29 +202,24 @@ export class RootStore {
       }
     );
 
-    this.accountStore = new AccountStore(
-      window,
-      AccountWithAll,
-      this.chainStore,
-      this.queriesStore,
-      {
-        defaultOpts: {
-          // When the unlock request sent from external webpage,
-          // it will open the extension popup below the uri "/unlock".
-          // But, in this case, if the prefetching option is true, it will redirect
-          // the page to the "/unlock" with **interactionInternal=true**
-          // because prefetching will request the unlock from the internal.
-          // To prevent this problem, just check the first uri is "#/unlcok" and
-          // if it is "#/unlock", don't use the prefetching option.
-          prefetching: !window.location.href.includes('#/unlock'),
-          suggestChain: false,
-          autoInit: true,
-          getOWallet: getOWalletFromWindow,
-          getEthereum: getEthereumFromWindow
-        },
-        chainOpts
-      }
-    );
+    this.accountStore = new AccountStore(window, AccountWithAll, this.chainStore, this.queriesStore, {
+      defaultOpts: {
+        // When the unlock request sent from external webpage,
+        // it will open the extension popup below the uri "/unlock".
+        // But, in this case, if the prefetching option is true, it will redirect
+        // the page to the "/unlock" with **interactionInternal=true**
+        // because prefetching will request the unlock from the internal.
+        // To prevent this problem, just check the first uri is "#/unlcok" and
+        // if it is "#/unlock", don't use the prefetching option.
+        prefetching: !window.location.href.includes('#/unlock'),
+        getTronWeb: getTronWebFromWindow,
+        suggestChain: false,
+        autoInit: true,
+        getOWallet: getOWalletFromWindow,
+        getEthereum: getEthereumFromWindow
+      },
+      chainOpts
+    });
 
     // this.accountEvmStore = new AccountEvmStore(
     //   window,
@@ -294,21 +256,9 @@ export class RootStore {
       'usd'
     );
 
-    this.tokensStore = new TokensStore(
-      window,
-      this.chainStore,
-      new InExtensionMessageRequester(),
-      this.interactionStore
-    );
+    this.tokensStore = new TokensStore(window, this.chainStore, new InExtensionMessageRequester(), this.interactionStore);
 
-    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
-      new ExtensionKVStore('store_ibc_curreny_registrar'),
-      24 * 3600 * 1000,
-      this.chainStore,
-      this.accountStore,
-      this.queriesStore,
-      this.queriesStore
-    );
+    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(new ExtensionKVStore('store_ibc_curreny_registrar'), 24 * 3600 * 1000, this.chainStore, this.accountStore, this.queriesStore, this.queriesStore);
 
     this.analyticsStore = new AnalyticsStore(
       (() => {
@@ -332,15 +282,11 @@ export class RootStore {
             };
 
             if (eventProperties.chainId) {
-              eventProperties.chainId = ChainIdHelper.parse(
-                eventProperties.chainId
-              ).identifier;
+              eventProperties.chainId = ChainIdHelper.parse(eventProperties.chainId).identifier;
             }
 
             if (eventProperties.toChainId) {
-              eventProperties.toChainId = ChainIdHelper.parse(
-                eventProperties.toChainId
-              ).identifier;
+              eventProperties.toChainId = ChainIdHelper.parse(eventProperties.toChainId).identifier;
             }
           }
 

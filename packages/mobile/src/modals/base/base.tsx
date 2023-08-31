@@ -26,10 +26,7 @@ export interface ModalBaseProps {
   close?: () => void;
   containerStyle?: ViewStyle;
   disableSafeArea?: boolean;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }
 
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
@@ -73,7 +70,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   }, [isOpen]);
 
   const renderBackdrop = useCallback(
-    (props) => (
+    props => (
       <BottomSheetBackdrop
         {...props}
         disappearsOnIndex={-1}
@@ -129,6 +126,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             }}
             index={0}
             snapPoints={animatedSnapPoints}
+            {...bottomSheetModalConfig}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
             backdropComponent={renderBackdrop}
@@ -166,6 +164,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             }}
             index={0}
             snapPoints={animatedSnapPoints}
+            {...bottomSheetModalConfig}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
             backdropComponent={renderBackdrop}

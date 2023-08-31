@@ -9,6 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API } from '../../../common/api';
 import CodePush from 'react-native-code-push';
 import { useTheme } from '@src/themes/theme-provider';
+import { Platform } from 'react-native';
+import { metrics } from '@src/themes';
 export const SettingRemoveAccountItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
@@ -113,6 +115,13 @@ export const SettingRemoveAccountItem: FunctionComponent<{
       />
       <PasswordInputModal
         isOpen={isOpenModal}
+        bottomSheetModalConfig={
+          Platform.OS === 'android' && metrics.screenHeight > 800
+            ? {
+                snapPoints: ['60%']
+              }
+            : null
+        }
         close={() => setIsOpenModal(false)}
         title="Remove wallet"
         labelStyle={{ color: colors['orange-800'], fontWeight: '700' }}

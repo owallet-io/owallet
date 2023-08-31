@@ -266,6 +266,27 @@ export const API = {
       return Promise.reject(error);
     }
   },
+  getContractTron: async (url, contractAddress) => {
+    try {
+      const rs = await API.get(`/wallet/getcontract?value=${contractAddress}`, {
+        baseURL: url
+      });
+      const data: { data: unknown } = rs.data;
+      console.log('rs', rs);
+
+      if (data) {
+        return Promise.resolve(data);
+      }
+      return Promise.reject(data);
+    } catch (error) {
+      handleError(
+        error,
+        `/wallet/getcontract?value=${contractAddress}`,
+        'getContractTron'
+      );
+      return Promise.reject(error);
+    }
+  },
   getHistory: (
     { address, offset = 0, limit = 10, isRecipient, isAll = false },
     config: AxiosRequestConfig
@@ -355,17 +376,17 @@ export const API = {
 const retryWrapper = (axios, options) => {
   const max_time = 1;
   let counter = 0;
-  axios.interceptors.response.use(null, (error) => {
+  axios.interceptors.response.use(null, error => {
     /** @type {import("axios").AxiosRequestConfig} */
     const config = error.config;
     // you could defined status you want to retry, such as 503
     // if (counter < max_time && error.response.status === retry_status_code) {
     if (
-      (counter < max_time && error.response.status === 400) ||
-      (counter < max_time && error.response.status === 502)
+      (counter < max_time && error.response?.status === 400) ||
+      (counter < max_time && error.response?.status === 502)
     ) {
       counter++;
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve(axios(config));
       });
     }

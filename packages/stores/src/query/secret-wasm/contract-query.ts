@@ -70,7 +70,7 @@ export class ObservableSecretContractChainQuery<
       return false;
     }
 
-    return this.contractAddress.length !== 0 && this.nonce != null;
+    return this.contractAddress?.length !== 0 && this.nonce != null;
   }
 
   @flow

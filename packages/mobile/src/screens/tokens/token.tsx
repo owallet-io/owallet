@@ -38,15 +38,16 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
+    tokens.map((token) =>
       uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
+        (ut) =>
+          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
       ).length > 0
         ? null
         : uniqTokens.push(token)
     );
     return uniqTokens;
-  }, [chainStore.current.chainId]);
+  }, [chainStore.current.chainId, account.evmosHexAddress]);
 
   return (
     <PageWithView backgroundColor={colors['background']}>
