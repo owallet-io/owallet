@@ -16,10 +16,6 @@ import ThemeProvider, { useTheme } from './themes/theme-provider';
 import Toast, { BaseToast } from 'react-native-toast-message';
 import { colorsCode } from './themes/mode-colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider
-} from '@gorhom/bottom-sheet';
 
 const toastConfig = {
   /*
@@ -145,17 +141,15 @@ export const App = () => {
           <ThemeProvider>
             <AppIntlProviderWithStorage>
               <SafeAreaProvider>
-                <BottomSheetModalProvider>
-                  <ModalsProvider>
-                    <LoadingScreenProvider>
-                      <ConfirmModalProvider>
-                        <InteractionModalsProivder>
-                          <AppNavigation />
-                        </InteractionModalsProivder>
-                      </ConfirmModalProvider>
-                    </LoadingScreenProvider>
-                  </ModalsProvider>
-                </BottomSheetModalProvider>
+                <ModalsProvider>
+                  <LoadingScreenProvider>
+                    <ConfirmModalProvider>
+                      <InteractionModalsProivder>
+                        <AppNavigation />
+                      </InteractionModalsProivder>
+                    </ConfirmModalProvider>
+                  </LoadingScreenProvider>
+                </ModalsProvider>
               </SafeAreaProvider>
             </AppIntlProviderWithStorage>
             <Toast config={toastConfig} />

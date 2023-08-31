@@ -48,6 +48,10 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     ? route.params?.chainId
     : chainStore.current?.chainId;
   const txHash = route.params?.txHash;
+  console.log(
+    '🚀 ~ file: success.tsx:51 ~ constTxSuccessResultScreen:FunctionComponent=observer ~ txHash:',
+    txHash
+  );
 
   const smartNavigation = useSmartNavigation();
 
@@ -138,11 +142,12 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                   alignItems: 'center'
                 }}
                 onPress={async () => {
-                  if (chainInfo.raw.txExplorer) {
+                  if (chainInfo.raw.txExplorer && txHash) {
                     await openLink(
                       chainInfo.raw.txExplorer.txUrl.replace(
                         '{txHash}',
-                        chainInfo.chainId === TRON_ID
+                        chainInfo.chainId === TRON_ID ||
+                          chainInfo.networkType === 'bitcoin'
                           ? txHash
                           : txHash.toUpperCase()
                       )

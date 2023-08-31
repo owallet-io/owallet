@@ -13,12 +13,12 @@ import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const HomeBaseModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }> = registerModal(

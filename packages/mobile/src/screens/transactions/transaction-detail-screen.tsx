@@ -149,9 +149,7 @@ const TransactionDetailScreen = observer(() => {
                   )}
                   {itemDataTrans?.txId && (
                     <ItemReceivedToken
-                      valueDisplay={formatContractAddress(
-                        itemDataTrans?.txId
-                      )}
+                      valueDisplay={formatContractAddress(itemDataTrans?.txId)}
                       value={itemDataTrans?.txId}
                       label={'TxID'}
                     />
@@ -243,15 +241,25 @@ const TransactionDetailScreen = observer(() => {
               color={
                 data?.status === 'success'
                   ? colors['green-500']
+                  : data?.status === 'pending'
+                  ? colors['purple-700']
                   : colors['orange-800']
               }
-              name={data?.status === 'success' ? 'check_stroke' : 'close_shape'}
+              name={
+                data?.status === 'success'
+                  ? 'check_stroke'
+                  : data?.status === 'pending'
+                  ? 'history-1'
+                  : 'close_shape'
+              }
             />
           }
           valueProps={{
             color:
               data?.status === 'success'
                 ? colors['green-500']
+                : data?.status === 'pending'
+                ? colors['purple-700']
                 : colors['orange-800']
           }}
         />
@@ -259,7 +267,25 @@ const TransactionDetailScreen = observer(() => {
         {data?.memo ? (
           <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
         ) : null}
-
+        {chainStore?.current?.networkType === 'bitcoin' ? (
+          <ItemDetail
+            valueProps={{
+              color:
+                data?.confirmations > 6
+                  ? colors['green-500']
+                  : data?.confirmations > 0
+                  ? colors['profile-orange']
+                  : colors['text-title-login'],
+              weight: '900'
+            }}
+            label="Confirmations"
+            value={`${
+              data?.confirmations > 6
+                ? data?.confirmations
+                : `${data?.confirmations}/6`
+            }`}
+          />
+        ) : null}
         {data?.gasUsed &&
         data?.gasWanted &&
         data?.gasUsed != '0' &&

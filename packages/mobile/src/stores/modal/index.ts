@@ -1,10 +1,10 @@
 import { observable, action, makeObservable, computed } from 'mobx';
 import { ReactElement, ReactNode } from 'react';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 interface IOptions {
   isOpen?: boolean;
   bottomSheetModalConfig: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }

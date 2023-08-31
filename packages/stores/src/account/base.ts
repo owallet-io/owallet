@@ -648,7 +648,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     runInAction(() => {
       this._isSendingMsg = type;
     });
-
+    console.log('ok');
     let txHash: string;
 
     try {

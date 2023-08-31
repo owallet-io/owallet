@@ -46,13 +46,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
         });
       }
     };
-    const waitingBitcoinData = useMemo(() => {
-      return signInteractionStore.waitingBitcoinData;
-    }, [signInteractionStore.waitingBitcoinData]);
-    console.log(
-      '🚀 ~ file: index.tsx:83 ~ signInteractionStore.waitingBitcoinData:',
-      signInteractionStore.waitingBitcoinData
-    );
+    
     return (
       <React.Fragment>
         {ledgerInitStore.isInitNeeded ? (
@@ -86,10 +80,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
           />
         ) : null}
 
-        <SignBitcoinModal
-          isOpen={!!waitingBitcoinData}
-          close={() => signInteractionStore.rejectAll()}
-        />
+        {signInteractionStore.waitingBitcoinData ? (
+          <SignBitcoinModal
+            isOpen={true}
+            close={() => signInteractionStore.rejectAll()}
+          />
+        ) : null}
 
         {modalStore.getOptions?.isOpen ? (
           <HomeBaseModal

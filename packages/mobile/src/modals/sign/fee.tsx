@@ -16,12 +16,12 @@ import { LoadingSpinner } from '../../components/spinner';
 import { typography } from '../../themes';
 import { Toggle } from '../../components/toggle';
 import { useTheme } from '@src/themes/theme-provider';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 const FeeButtonsModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
   feeConfig: IFeeConfig;

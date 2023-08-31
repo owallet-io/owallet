@@ -24,6 +24,7 @@ import {
   RegisterNavigation
 } from './navigations';
 import { useTheme } from './themes/theme-provider';
+
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();

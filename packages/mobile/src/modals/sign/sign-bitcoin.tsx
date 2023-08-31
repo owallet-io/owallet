@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
-import { Button } from '../../components/button';
+import { Button, OWButton } from '../../components/button';
 import { colors, typography } from '../../themes';
 
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { navigationRef } from '../../router/root';
 import { SCREENS } from '@src/common/constants';
 
@@ -25,7 +25,7 @@ export const SignBitcoinModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }> = registerModal(
@@ -100,37 +100,26 @@ export const SignBitcoinModal: FunctionComponent<{
               justifyContent: 'space-evenly'
             }}
           >
-            <Button
-              text="Reject"
+            <OWButton
+              label="Reject"
               size="large"
-              containerStyle={{
-                width: '40%'
-              }}
+              type="danger"
               style={{
-                backgroundColor: colors['red-500']
+                width: '40%'
               }}
               textStyle={{
                 color: colors['white']
               }}
-              underlayColor={colors['danger-400']}
               disabled={signInteractionStore.isLoading}
               onPress={_onPressReject}
             />
-            <Button
-              text="Approve"
+            <OWButton
+              label="Approve"
               size="large"
-              disabled={signInteractionStore.isLoading}
-              containerStyle={{
+              style={{
                 width: '40%'
               }}
-              textStyle={{
-                color: colors['white']
-              }}
-              style={{
-                backgroundColor: signInteractionStore.isLoading
-                  ? colors['gray-400']
-                  : colors['purple-900']
-              }}
+              disabled={signInteractionStore.isLoading}
               loading={signInteractionStore.isLoading}
               onPress={async () => {
                 try {

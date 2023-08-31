@@ -22,16 +22,16 @@ export class TxsBtcTestNet extends Txs {
         params?.addressAccount
       );
 
-      if (data?.length > 0) {
+      if (data?.txs?.length > 0) {
         const rsConverted = this.txsHelper.cleanDataBtcResToStandFormat(
-          data,
+          data?.txs,
           this.currentChain,
           params?.addressAccount
         );
         return Promise.resolve({
           result: rsConverted,
           current_page: 0,
-          total_page: data?.length
+          total_page: data?.txs?.length
         });
       }
       return Promise.resolve({

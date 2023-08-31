@@ -156,16 +156,24 @@ const HistoryTransactionsScreen = observer(() => {
       }
     };
   }, [chainStore, isFocused, data]);
+  const checkAddressByNetworkType = (networkType, account) => {
+    if (networkType === 'evm') {
+      return account.evmosHexAddress;
+    } else if (networkType === 'bitcoin') {
+      return account.legacyAddress;
+    }
+    return account.bech32Address;
+  };
   const refreshData = useCallback(
     ({ activeType, isActiveType, activePage }) => {
       page.current = 0;
       hasMore.current = true;
       fetchData(
         {
-          address:
-            chainStore.current.networkType === 'evm'
-              ? account.evmosHexAddress
-              : account.bech32Address,
+          address: checkAddressByNetworkType(
+            chainStore.current.networkType,
+            account
+          ),
           action: activeType?.value,
           isActiveType,
           activePage
@@ -176,7 +184,8 @@ const HistoryTransactionsScreen = observer(() => {
     [
       chainStore.current.networkType,
       account?.bech32Address,
-      account.evmosHexAddress
+      account.evmosHexAddress,
+      account.legacyAddress
     ]
   );
   const styles = styling();

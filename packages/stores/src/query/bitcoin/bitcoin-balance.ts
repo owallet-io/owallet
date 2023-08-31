@@ -9,8 +9,6 @@ import { getBaseDerivationPath } from '@owallet/bitcoin';
 import {
   getScriptHash,
   getBalanceFromUtxos,
-  getKeyPair,
-  getAddress,
   getCoinNetwork
 } from '@owallet/bitcoin';
 import {
@@ -47,7 +45,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   ): Promise<QueryResponse<Result>> {
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath:'44'
+      keyDerivationPath: '44'
     }) as string;
     const scriptHash = getScriptHash(
       this.legacyAddress,

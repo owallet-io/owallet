@@ -678,9 +678,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     features: ['isBtc'],
     txExplorer: {
-      name: 'Etherscan',
-      txUrl: 'https://live.blockcypher.com/btc-testnet/tx/{txHash}',
-      accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
+      name: 'Bitcoin',
+      txUrl: 'https://live.blockcypher.com/btc/tx/{txHash}',
+      accountUrl: 'https://live.blockcypher.com/btc/address/{address}'
     }
   },
   {

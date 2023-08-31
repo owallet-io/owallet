@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { globalModalRendererState, ModalOptions } from './provider';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const registerModal: <P>(
   element: React.ElementType<P>,
   options?: ModalOptions
@@ -8,7 +8,7 @@ export const registerModal: <P>(
   P & {
     isOpen: boolean;
     close: () => void;
-    bottomSheetModalConfig?: BottomSheetModalProps;
+    bottomSheetModalConfig?: BottomSheetProps;
   }
 > = (element, options) => {
   return (props) => {

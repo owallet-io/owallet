@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export interface ModalStateContext {
   readonly key: string;
   readonly isTransitionOpening: boolean;
@@ -18,7 +18,7 @@ export interface ModalStateContext {
   // readonly backdropMaxOpacity?: number;
   // readonly blurBackdropOnIOS?: boolean;
   readonly bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
   readonly close: () => void;
