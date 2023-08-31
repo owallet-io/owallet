@@ -13,9 +13,9 @@ import BottomSheet, {
   BottomSheetModal,
   BottomSheetBackdrop,
   BottomSheetView,
-  useBottomSheetDynamicSnapPoints
+  useBottomSheetDynamicSnapPoints,
+  BottomSheetProps
 } from '@gorhom/bottom-sheet';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
 import { useTheme } from '@src/themes/theme-provider';
 
 export interface ModalBaseProps {
@@ -27,7 +27,7 @@ export interface ModalBaseProps {
   containerStyle?: ViewStyle;
   disableSafeArea?: boolean;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }
@@ -43,7 +43,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   close,
   bottomSheetModalConfig
 }) => {
-  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const bottomSheetModalRef = useRef<BottomSheet>(null);
 
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
@@ -64,13 +64,12 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
 
   useEffect(() => {
     if (isOpen) {
-      bottomSheetModalRef.current?.present();
+      bottomSheetModalRef.current?.expand();
       return;
-    } else if (!isOpen) {
-      if (bottomSheetModalRef.current?.dismiss) {
-        bottomSheetModalRef.current?.dismiss();
-      }
     }
+    console.log('🚀 ~ file: base.tsx:75 ~ isOpen:', isOpen);
+    bottomSheetModalRef.current?.forceClose();
+    handleDismiss();
   }, [isOpen]);
 
   const renderBackdrop = useCallback(
@@ -118,7 +117,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           )}
           pointerEvents="box-none"
         >
-          <BottomSheetModal
+          <BottomSheet
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
@@ -135,13 +134,13 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             backdropComponent={renderBackdrop}
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
-            onDismiss={handleDismiss}
+            onClose={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
             <View style={containerStyle} onLayout={handleContentLayout}>
               {children}
             </View>
-          </BottomSheetModal>
+          </BottomSheet>
         </SafeAreaView>
       ) : (
         <View
@@ -155,7 +154,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           )}
           pointerEvents="box-none"
         >
-          <BottomSheetModal
+          <BottomSheet
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
@@ -172,13 +171,13 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             backdropComponent={renderBackdrop}
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
-            onDismiss={handleDismiss}
+            onClose={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
             <View style={containerStyle} onLayout={handleContentLayout}>
               {children}
             </View>
-          </BottomSheetModal>
+          </BottomSheet>
         </View>
       )}
     </View>

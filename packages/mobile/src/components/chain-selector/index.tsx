@@ -1,22 +1,19 @@
-import React, { FunctionComponent } from "react";
-import { registerModal } from "../../modals/base";
-import { CardModal } from "../../modals/card";
-import { ScrollView, View } from "react-native";
+import React, { FunctionComponent } from 'react';
+import { registerModal } from '../../modals/base';
+import { CardModal } from '../../modals/card';
+import { ScrollView, View } from 'react-native';
 import { Text } from '@src/components/text';
-import { useStyle } from "../../styles";
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../stores";
-import { RectButton } from "../rect-button";
-import FastImage from "react-native-fast-image";
-import { VectorCharacter } from "../vector-character";
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { useStyle } from '../../styles';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../stores';
+import { RectButton } from '../rect-button';
+import FastImage from 'react-native-fast-image';
+import { VectorCharacter } from '../vector-character';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const ChainSelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   chainIds: string[];
   onSelectChain: (chainId: string) => void;
 }> = registerModal(
@@ -29,9 +26,9 @@ export const ChainSelectorModal: FunctionComponent<{
       <CardModal
         disabledScrollView
         title="Select Chain"
-        childrenContainerStyle={style.flatten(["padding-0"])}
+        childrenContainerStyle={style.flatten(['padding-0'])}
       >
-        <ScrollView style={style.flatten(["max-height-600"])}>
+        <ScrollView style={style.flatten(['max-height-600'])}>
           {chainIds.map((chainId) => {
             const chainName = chainStore.hasChain(chainId)
               ? chainStore.getChain(chainId).chainName
@@ -45,10 +42,10 @@ export const ChainSelectorModal: FunctionComponent<{
               <RectButton
                 key={chainId}
                 style={style.flatten([
-                  "padding-x-20",
-                  "padding-y-15",
-                  "flex-row",
-                  "items-center",
+                  'padding-x-20',
+                  'padding-y-15',
+                  'flex-row',
+                  'items-center'
                 ])}
                 onPress={() => {
                   onSelectChain(chainId);
@@ -56,24 +53,24 @@ export const ChainSelectorModal: FunctionComponent<{
               >
                 <View
                   style={style.flatten([
-                    "width-40",
-                    "height-40",
-                    "border-radius-64",
-                    "items-center",
-                    "justify-center",
-                    "background-color-primary",
-                    "margin-right-12",
+                    'width-40',
+                    'height-40',
+                    'border-radius-64',
+                    'items-center',
+                    'justify-center',
+                    'background-color-primary',
+                    'margin-right-12'
                   ])}
                 >
                   {chainImage ? (
                     <FastImage
                       style={{
                         width: 30,
-                        height: 30,
+                        height: 30
                       }}
                       resizeMode={FastImage.resizeMode.contain}
                       source={{
-                        uri: chainImage,
+                        uri: chainImage
                       }}
                     />
                   ) : (
@@ -84,7 +81,7 @@ export const ChainSelectorModal: FunctionComponent<{
                     />
                   )}
                 </View>
-                <Text style={style.flatten(["h5", "color-text-black-medium"])}>
+                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
                   {chainName}
                 </Text>
               </RectButton>
@@ -95,6 +92,6 @@ export const ChainSelectorModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
+    disableSafeArea: true
   }
 );

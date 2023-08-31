@@ -2,13 +2,13 @@ import React, { FunctionComponent, useEffect, useRef } from 'react';
 import { registerModal, useModalState } from '../../modals/base';
 import { LoadingSpinner } from '../../components/spinner';
 import { View } from 'react-native';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { metrics } from '@src/themes';
 export const LoadingScreenModal: FunctionComponent<{
   isOpen: boolean;
   close?: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
   onOpenComplete?: () => void;

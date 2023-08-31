@@ -28,7 +28,7 @@ import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 const AlertIcon: FunctionComponent<{
   size: number;
   color: string;
@@ -69,7 +69,7 @@ export const LedgerGranterModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }> = registerModal(

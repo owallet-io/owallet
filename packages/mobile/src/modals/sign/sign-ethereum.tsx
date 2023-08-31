@@ -23,14 +23,14 @@ import { FeeEthereumInSign } from './fee-ethereum';
 import { navigationRef } from '../../router/root';
 import axios from 'axios';
 import { colors } from '../../themes';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }> = registerModal(

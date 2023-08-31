@@ -12,12 +12,12 @@ import { registerModal } from '../../modals/base';
 import { RectButton } from '../rect-button';
 import { spacing, typography } from '../../themes';
 import { useTheme } from '@src/themes/theme-provider';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const SelectorModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+  BottomSheetProps,
     'snapPoints' | 'children'
   >;
   items: {

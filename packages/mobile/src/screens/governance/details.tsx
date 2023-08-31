@@ -17,7 +17,7 @@ import { dateToLocalString } from './utils';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../../components/rect-button';
 import { useSmartNavigation } from '../../navigation.provider';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const TallyVoteInfoView: FunctionComponent<{
   vote: 'yes' | 'no' | 'abstain' | 'noWithVeto';
   percentage: IntPretty;
@@ -259,7 +259,7 @@ export const GovernanceVoteModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
   proposalId: string;

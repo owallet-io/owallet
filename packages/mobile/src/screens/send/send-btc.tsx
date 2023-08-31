@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { InteractionManager, StyleSheet, Text, View } from 'react-native';
 import React, {
   FunctionComponent,
   useCallback,
@@ -91,6 +91,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     utxos,
     chainStore.current.chainId
   ]);
+
   const onSend = useCallback(async () => {
     try {
       await account.sendToken(
@@ -110,6 +111,8 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           onFulfill: async (tx) => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
             // await delay(1000);
+
+            // return () => interactionPromise.cancel();
             await queries.bitcoin.queryBitcoinBalance
               .getQueryBalance(account.legacyAddress)
               .waitFreshResponse();
@@ -156,15 +159,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     account.legacyAddress,
     confirmedBalance
   ]);
-  const validate = validateAddress(
-    'miugoiPNShxYhj5f849Y2FaynjBTGd4eKW',
-    'bitcoinTestnet'
-  );
-  console.log(
-    '🚀 ~ file: send-btc.tsx:160 ~ constSendBtcScreen:FunctionComponent=observer ~ validate:',
-    validate
-  );
-  console.log('🚀 ~ file: send-btc.tsx:59 ~ useEffect ~ totalFee:', totalFee);
+
   const styles = styling(colors);
   return (
     <PageWithScrollView backgroundColor={colors['background']}>

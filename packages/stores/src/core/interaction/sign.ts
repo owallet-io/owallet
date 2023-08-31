@@ -1,3 +1,4 @@
+import delay from 'delay';
 import { InteractionStore } from './interaction';
 import { autorun, computed, flow, makeObservable, observable } from 'mobx';
 import { StdSignDoc } from '@cosmjs/launchpad';
@@ -236,10 +237,14 @@ export class SignInteractionStore {
     );
   }
   protected isBitcoinEnded(): boolean {
-    return (
-      this.interactionStore.getEvents<void>('request-sign-bitcoin-end')
-        .length > 0
+    const isEnd =
+      this.interactionStore.getEvents<void>('request-sign-bitcoin-end').length >
+      0;
+    console.log(
+      '🚀 ~ file: sign.ts:240 ~ SignInteractionStore ~ isBitcoinEnded ~ isEnd:',
+      isEnd
     );
+    return isEnd;
   }
 
   protected isTronEnded(): boolean {
@@ -260,7 +265,7 @@ export class SignInteractionStore {
       return Promise.resolve();
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isEnded()) {
           resolve();
@@ -276,7 +281,7 @@ export class SignInteractionStore {
       return Promise.resolve();
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isEthereumEnded()) {
           resolve();
@@ -288,12 +293,14 @@ export class SignInteractionStore {
   }
   protected waitBitcoinEnd(): Promise<void> {
     if (this.isBitcoinEnded()) {
+      console.log('zoday2');
       return Promise.resolve();
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isBitcoinEnded()) {
+          console.log('zoday1');
           resolve();
           this.clearEnded();
           disposer();
@@ -307,7 +314,7 @@ export class SignInteractionStore {
       return Promise.resolve();
     }
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const disposer = autorun(() => {
         if (this.isTronEnded()) {
           resolve();
@@ -378,10 +385,20 @@ export class SignInteractionStore {
       }
       console.log('yield waitingBitcoinDatas length > 0');
     } finally {
-      yield this.waitBitcoinEnd();
-      console.log('thiswaitingBitcoinData.111 ===', this.waitingBitcoinData);
-      this._isLoading = false;
+      const rs = yield this.waitBitcoinEnd();
+      console.log(
+        '🚀 ~ file: sign.ts:388 ~ SignInteractionStore ~ *approveBitcoinAndWaitEnd ~ rs:',
+        rs
+      );
+
+      console.log('thiswaitingBitcoinData.222 ===', this.waitingBitcoinDatas);
       this.interactionStore.removeData('request-sign-bitcoin', idBitcoin);
+      console.log('thiswaitingBitcoinData.222 ===', this.waitingBitcoinDatas);
+      console.log('thiswaitingBitcoinData.111 ===', this.waitingBitcoinData);
+
+      if (!this.waitingBitcoinDatas?.length) {
+        this._isLoading = false;
+      }
     }
   }
 
@@ -460,16 +477,16 @@ export class SignInteractionStore {
     this._isLoading = true;
     try {
       // yield this.interactionStore.rejectAll('request-sign');
-      yield this.waitingDatas?.map(wd => {
+      yield this.waitingDatas?.map((wd) => {
         this.interactionStore.reject('request-sign', wd.id);
       });
-      yield this.waitingEthereumDatas?.map(wed => {
+      yield this.waitingEthereumDatas?.map((wed) => {
         this.interactionStore.reject('request-sign-ethereum', wed.id);
       });
-      yield this.waitingTronDatas?.map(wed => {
+      yield this.waitingTronDatas?.map((wed) => {
         this.interactionStore.reject('request-sign-tron', wed.id);
       });
-      yield this.waitingBitcoinDatas?.map(wed => {
+      yield this.waitingBitcoinDatas?.map((wed) => {
         this.interactionStore.reject('request-sign-bitcoin', wed.id);
       });
     } finally {

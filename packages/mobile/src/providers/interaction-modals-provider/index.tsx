@@ -86,10 +86,12 @@ export const InteractionModalsProivder: FunctionComponent = observer(
           />
         ) : null}
 
-        <SignBitcoinModal
-          isOpen={!!waitingBitcoinData}
-          close={() => signInteractionStore.rejectAll()}
-        />
+        {signInteractionStore.waitingBitcoinData ? (
+          <SignBitcoinModal
+            isOpen={true}
+            close={() => signInteractionStore.rejectAll()}
+          />
+        ) : null}
 
         {modalStore.getOptions?.isOpen ? (
           <HomeBaseModal

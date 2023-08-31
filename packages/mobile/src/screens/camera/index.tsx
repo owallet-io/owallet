@@ -19,7 +19,7 @@ import { FullScreenCameraView } from '../../components/camera';
 // import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
 import { checkValidDomain, TRON_ID } from '../../utils/helper';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 interface keyable {
   [key: string]: any;
 }
@@ -153,7 +153,7 @@ export const AddressQRCodeModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
   chainId: string;

@@ -14,7 +14,7 @@ import { Button } from '../../components/button';
 import { Bech32Address } from '@owallet/cosmos';
 import { WalletIcon } from '../setting/components';
 import LoadingScreenOverlay from '@src/providers/loading-screen/loading-screen-overlay';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 
 export const BIP44Selectable: FunctionComponent = observer(() => {
   const { chainStore, keyRingStore, queriesStore } = useStore();
@@ -130,7 +130,7 @@ export const BIP44SelectableModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
   bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
 }> = registerModal(

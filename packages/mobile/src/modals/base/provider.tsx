@@ -12,7 +12,7 @@ import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ModalBase } from './base';
 import { ModalContext, useModalState } from './hooks';
-import { BottomSheetModalProps } from '@gorhom/bottom-sheet';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export interface ModalOptions {
   readonly align?: 'top' | 'center' | 'bottom';
   readonly containerStyle?: ViewStyle;
@@ -27,7 +27,7 @@ export interface Modal {
   close: () => void;
   onCloseTransitionEnd: () => void;
   readonly bottomSheetModalConfig?: Omit<
-    BottomSheetModalProps,
+    BottomSheetProps,
     'snapPoints' | 'children'
   >;
   options: ModalOptions;
@@ -219,10 +219,12 @@ export const ModalRenderer: FunctionComponent<{
           setIsOpenTransitioning(false);
         }}
         onCloseTransitionEnd={() => {
+          console.log('onCloseTransitionEnd');
           globalModalRendererState.removeModal(modal.key);
           modal.onCloseTransitionEnd();
         }}
         close={() => {
+          console.log('close');
           modal.close();
         }}
         bottomSheetModalConfig={modal.bottomSheetModalConfig}
