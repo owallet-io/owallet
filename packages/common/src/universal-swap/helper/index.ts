@@ -327,7 +327,7 @@ export const calculateMinimum = (
     return (
       BigInt(simulateAmount) -
       (BigInt(simulateAmount) * BigInt(userSlippage * atomic)) /
-        (100n * BigInt(atomic))
+        (BigInt(100) * BigInt(atomic))
     );
   } catch (error) {
     console.log({ error });
