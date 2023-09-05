@@ -1,33 +1,34 @@
 import { TxsHelper } from '../txs-helper';
 
 describe('txsHelper', () => {
+  const currentChain = {
+    chainId: 'bitcoinTestnet',
+    chainName: 'Bitcoin Testnet',
+    coinType: 1,
+    feeCurrencies: [
+      {
+        coinDecimals: 8,
+        coinDenom: 'BTC',
+        coinGeckoId: 'bitcoin',
+        coinImageUrl:
+          'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+        coinMinimalDenom: 'btc'
+      }
+    ],
+    stakeCurrency: [
+      {
+        coinDecimals: 8,
+        coinDenom: 'BTC',
+        coinGeckoId: 'bitcoin',
+        coinImageUrl:
+          'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+        coinMinimalDenom: 'btc'
+      }
+    ],
+    networkType: 'bitcoin'
+  } as any;
+  const helper = new TxsHelper();
   it('cleanDataBtcResToStandFormat', () => {
-    const currentChain = {
-      chainId: 'bitcoinTestnet',
-      chainName: 'Bitcoin Testnet',
-      coinType: 1,
-      feeCurrencies: [
-        {
-          coinDecimals: 8,
-          coinDenom: 'BTC',
-          coinGeckoId: 'bitcoin',
-          coinImageUrl:
-            'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-          coinMinimalDenom: 'btc'
-        }
-      ],
-      stakeCurrency: [
-        {
-          coinDecimals: 8,
-          coinDenom: 'BTC',
-          coinGeckoId: 'bitcoin',
-          coinImageUrl:
-            'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-          coinMinimalDenom: 'btc'
-        }
-      ],
-      networkType: 'bitcoin'
-    } as any;
     const data = [
       {
         block_hash:
@@ -388,7 +389,7 @@ describe('txsHelper', () => {
         isRefreshData: false
       }
     ] as any;
-    const helper = new TxsHelper();
+
     const rs = helper.cleanDataBtcResToStandFormat(
       data,
       currentChain,
@@ -420,5 +421,16 @@ describe('txsHelper', () => {
         }
       }
     ]).toEqual(expectRs);
+  });
+  it('formatTimeBitcoin', () => {
+    const expectRs = {
+      date: '2023-09-05 16:42:38',
+      timeLong: 'An hour ago (2023-09-05 16:42:38)',
+      timeShort: 'An hour ago',
+      timestamp: 0
+    };
+    const rs = helper.formatTimeBitcoin('2023-09-05T09:42:38Z');
+    console.log('🚀 ~ file: txs-helper.spec.ts:427 ~ it ~ rs:', rs);
+    expect(rs).toEqual(expectRs);
   });
 });
