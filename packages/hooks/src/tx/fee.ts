@@ -3,12 +3,14 @@ import {
   FeeType,
   IAmountConfig,
   IFeeConfig,
-  IGasConfig
+  IGasConfig,
+  IMemoConfig
 } from './types';
 import { TxChainSetter } from './chain';
 import {
   ChainGetter,
   CoinPrimitive,
+  ObservableQueryBitcoinBalance,
   ObservableQueryEvmBalance
 } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
@@ -19,6 +21,7 @@ import { StdFee } from '@cosmjs/launchpad';
 import { useState } from 'react';
 import { ObservableQueryBalances } from '@owallet/stores';
 import { InsufficientFeeError, NotLoadedFeeError } from './errors';
+import { calculatorFee } from '@owallet/bitcoin';
 
 export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
@@ -26,6 +29,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
   @observable.ref
   protected queryEvmBalances?: ObservableQueryEvmBalance;
+  @observable.ref
+  protected queryBtcBalances?: ObservableQueryBitcoinBalance;
 
   @observable
   protected _sender: string;
@@ -61,7 +66,9 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     protected readonly gasConfig: IGasConfig,
     additionAmountToNeedFee: boolean = true,
     queryEvmBalances?: ObservableQueryEvmBalance,
-    senderEvm?: string
+    senderEvm?: string,
+    queryBtcBalances?: ObservableQueryBitcoinBalance,
+    protected readonly memoConfig?: IMemoConfig
   ) {
     super(chainGetter, initialChainId);
 
@@ -70,7 +77,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     this.queryBalances = queryBalances;
     this.queryEvmBalances = queryEvmBalances;
     this.additionAmountToNeedFee = additionAmountToNeedFee;
-
+    this.queryBtcBalances = queryBtcBalances;
     makeObservable(this);
   }
 
@@ -187,10 +194,47 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
         ? this.chainInfo.stakeCurrency.gasPriceStep
         : DefaultGasPriceStep;
-
+      console.log(
+        '🚀 ~ file: fee.ts:188 ~ FeeConfig ~ getFeeTypePrimitive ~ gasPriceStep:',
+        gasPriceStep
+      );
       const gasPrice = new Dec(gasPriceStep[feeType].toString());
+      console.log(
+        '🚀 ~ file: fee.ts:192 ~ FeeConfig ~ getFeeTypePrimitive ~ gasPrice:',
+        gasPrice
+      );
+      if (this.chainInfo.networkType === 'bitcoin') {
+        const data = this.queryBtcBalances.getQueryBalance(this._sender)
+          ?.response?.data;
+        const utxos = data?.utxos;
+        const amount = calculatorFee({
+          changeAddress: this._sender,
+          utxos: utxos,
+          message: this.memoConfig.memo
+        });
+        console.log(
+          '🚀 ~ file: fee.ts:205 ~ FeeConfig ~ getFeeTypePrimitive ~ data:',
+          utxos
+        );
+        const feeAmount = gasPrice.mul(new Dec(Number(amount)));
+        console.log(
+          '🚀 ~ file: fee.ts:218 ~ FeeConfig ~ getFeeTypePrimitive ~ feeAmount:',
+          feeAmount
+        );
+        return {
+          denom: this.feeCurrency.coinMinimalDenom,
+          amount: feeAmount.roundUp().toString()
+        };
+      }
       const feeAmount = gasPrice.mul(new Dec(this.gasConfig.gas));
-
+      console.log(
+        '🚀 ~ file: fee.ts:193 ~ FeeConfig ~ getFeeTypePrimitive ~ this.gasConfig.gas:',
+        this.gasConfig.gas
+      );
+      console.log(
+        '🚀 ~ file: fee.ts:209 ~ FeeConfig ~ getFeeTypePrimitive ~ feeAmount.roundUp().toString():',
+        feeAmount.roundUp().toString()
+      );
       return {
         denom: this.feeCurrency.coinMinimalDenom,
         amount: feeAmount.roundUp().toString()
@@ -262,7 +306,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         } else {
           const bal = this.queryBalances
             .getQueryBech32Address(this._sender)
-            .balances.find(bal => {
+            .balances.find((bal) => {
               return bal.currency.coinMinimalDenom === need.denom;
             });
 
@@ -313,7 +357,9 @@ export const useFeeConfig = (
   gasConfig: IGasConfig,
   additionAmountToNeedFee: boolean = true,
   queryEvmBalances?: ObservableQueryEvmBalance,
-  senderEvm?: string
+  senderEvm?: string,
+  queryBtcBalances?: ObservableQueryBitcoinBalance,
+  memoConfig?: IMemoConfig
 ) => {
   const [config] = useState(
     () =>
@@ -326,7 +372,9 @@ export const useFeeConfig = (
         gasConfig,
         additionAmountToNeedFee,
         queryEvmBalances,
-        senderEvm
+        senderEvm,
+        queryBtcBalances,
+        memoConfig
       )
   );
   config.setChain(chainId);

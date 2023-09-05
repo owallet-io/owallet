@@ -56,7 +56,7 @@ class FeeButtonState {
 }
 
 export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  props => {
+  (props) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
     const [feeButtonState] = useState(() => new FeeButtonState());
@@ -91,7 +91,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     label,
     feeConfig
   }) => {
-    const { priceStore } = useStore();
+    const { priceStore, chainStore } = useStore();
 
     const style = useStyle();
     const { colors } = useTheme();
@@ -232,7 +232,13 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               color: colors['sub-primary-text']
             }}
           >
-            {amount.maxDecimals(6).trim(true).separator(' ').toString()}
+            {amount
+              .maxDecimals(
+                chainStore?.current?.stakeCurrency?.coinDecimals || 6
+              )
+              .trim(true)
+              .separator(' ')
+              .toString()}
           </Text>
           {price ? (
             <Text
@@ -345,7 +351,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
   }
 );
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtnFee: {
       flex: 1,

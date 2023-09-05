@@ -611,7 +611,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 8,
       coinGeckoId: 'bitcoin',
       coinImageUrl:
-        'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+        'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+      gasPriceStep: {
+        low: 1,
+        average: 2,
+        high: 3
+      }
     },
     bech32Config: Bech32Address.defaultBech32Config('tb'),
     networkType: 'bitcoin',
@@ -627,11 +632,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     ],
     get feeCurrencies() {
       return this.currencies;
-    },
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
     },
     features: ['isBtc'],
     txExplorer: {
@@ -654,7 +654,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinDecimals: 8,
       coinGeckoId: 'bitcoin',
       coinImageUrl:
-        'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+        'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+      gasPriceStep: {
+        low: 1,
+        average: 2,
+        high: 3
+      }
     },
     bech32Config: Bech32Address.defaultBech32Config('bc'),
     networkType: 'bitcoin',
@@ -671,11 +676,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return this.currencies;
     },
-    gasPriceStep: {
-      low: 10000000000,
-      average: 25000000000,
-      high: 40000000000
-    },
+
     features: ['isBtc'],
     txExplorer: {
       name: 'Bitcoin',

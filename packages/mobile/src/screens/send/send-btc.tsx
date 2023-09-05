@@ -3,12 +3,14 @@ import React, {
   FunctionComponent,
   useCallback,
   useEffect,
-  useMemo
+  useMemo,
+  useState
 } from 'react';
 import {
   AddressInput,
   AmountInput,
   CurrencySelector,
+  FeeButtons,
   MemoInput,
   TextInput
 } from '@src/components/input';
@@ -33,6 +35,7 @@ import { useSmartNavigation } from '@src/navigation.provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { delay } from '@src/utils/helper';
+import { Toggle } from '@src/components/toggle';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
@@ -56,6 +59,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   )?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
+  const [customFee, setCustomFee] = useState(false);
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
@@ -206,6 +210,52 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
+          <View style={styles.containerToggle}>
+            <Toggle
+              on={customFee}
+              onChange={(value) => {
+                setCustomFee(value);
+                if (!value) {
+                  if (
+                    sendConfigs.feeConfig.feeCurrency &&
+                    !sendConfigs.feeConfig.fee
+                  ) {
+                    sendConfigs.feeConfig.setFeeType('average');
+                  }
+                }
+              }}
+            />
+            <Text style={styles.txtFee}>Custom Fee</Text>
+          </View>
+          {customFee ? (
+            <TextInput
+              label="Fee"
+              inputContainerStyle={{
+                backgroundColor: colors['background-box']
+              }}
+              placeholder="Type your Fee here"
+              keyboardType={'numeric'}
+              labelStyle={styles.sendlabelInput}
+              onChangeText={(text) => {
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
+                  DecUtils.getTenExponentNInPrecisionRange(8)
+                );
+
+                sendConfigs.feeConfig.setManualFee({
+                  amount: fee.roundUp().toString(),
+                  denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+                });
+              }}
+            />
+          ) : (
+            <FeeButtons
+              label="Transaction Fee"
+              gasLabel="gas"
+              feeConfig={sendConfigs.feeConfig}
+              gasConfig={sendConfigs.gasConfig}
+              labelStyle={styles.sendlabelInput}
+            />
+          )}
           <TextInput
             label="Fee"
             inputContainerStyle={{
@@ -231,6 +281,18 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
 const styling = (colors: TypeTheme['colors']) =>
   StyleSheet.create({
+    txtFee: {
+      fontWeight: '700',
+      fontSize: 16,
+      lineHeight: 34,
+      paddingHorizontal: 8,
+      color: colors['primary-text']
+    },
+    containerToggle: {
+      flexDirection: 'row',
+      paddingBottom: 24,
+      alignItems: 'center'
+    },
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
       paddingVertical: spacing['24'],
