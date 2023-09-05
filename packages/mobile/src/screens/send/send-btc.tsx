@@ -70,31 +70,31 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { colors } = useTheme();
 
   // console.log();
-  const totalFee = useMemo(() => {
-    const feeAmount = calculatorFee({
-      changeAddress: sendConfigs.amountConfig.sender,
-      utxos: utxos,
-      message: sendConfigs.memoConfig.memo
-    });
-    sendConfigs.feeConfig.setManualFee({
-      amount: feeAmount.toString(),
-      denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
-    });
-    const feeDisplay = formatBalance({
-      balance: Number(feeAmount),
-      cryptoUnit: 'BTC',
-      coin: chainStore.current.chainId
-    });
-    return {
-      feeAmount,
-      feeDisplay
-    };
-  }, [
-    sendConfigs.amountConfig.sender,
-    sendConfigs.memoConfig.memo,
-    utxos,
-    chainStore.current.chainId
-  ]);
+  // const totalFee = useMemo(() => {
+  //   const feeAmount = calculatorFee({
+  //     changeAddress: sendConfigs.amountConfig.sender,
+  //     utxos: utxos,
+  //     message: sendConfigs.memoConfig.memo
+  //   });
+  //   sendConfigs.feeConfig.setManualFee({
+  //     amount: feeAmount.toString(),
+  //     denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+  //   });
+  //   const feeDisplay = formatBalance({
+  //     balance: Number(feeAmount),
+  //     cryptoUnit: 'BTC',
+  //     coin: chainStore.current.chainId
+  //   });
+  //   return {
+  //     feeAmount,
+  //     feeDisplay
+  //   };
+  // }, [
+  //   sendConfigs.amountConfig.sender,
+  //   sendConfigs.memoConfig.memo,
+  //   utxos,
+  //   chainStore.current.chainId
+  // ]);
 
   const onSend = useCallback(async () => {
     try {
@@ -256,7 +256,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
               labelStyle={styles.sendlabelInput}
             />
           )}
-          <TextInput
+          {/* <TextInput
             label="Fee"
             inputContainerStyle={{
               backgroundColor: colors['background-box']
@@ -267,7 +267,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             editable={false}
             selectTextOnFocus={false}
             value={totalFee.feeDisplay || '0'}
-          />
+          /> */}
           <OWButton
             disabled={!account.isReadyToSendMsgs || !txStateIsValid}
             label="Send"
