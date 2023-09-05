@@ -72,6 +72,7 @@ export type ExtraOptionSendToken = {
   confirmedBalance?: number;
   utxos?: any[];
   blacklistedUtxos?: any[];
+  gasPriceStep?: number;
 };
 
 export interface MsgOpt {
@@ -627,7 +628,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     runInAction(() => {
       this._isSendingMsg = type;
     });
-    console.log('ok');
+
     let txHash: string;
 
     try {
@@ -638,9 +639,14 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions,
         extraOptions
       );
+      console.log(
+        '🚀 ~ file: base.ts:641 ~ AccountSetBase<MsgOpts, ~ result:',
+        result
+      );
 
-      txHash = result.txHash;
+      txHash = result?.txHash;
     } catch (e: any) {
+      console.log('🚀 ~ file: base.ts:644 ~ AccountSetBase<MsgOpts, ~ e:', e);
       runInAction(() => {
         this._isSendingMsg = false;
       });
@@ -875,7 +881,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
         memo,
         fee,
-        address: this.bech32Address,
+        address: this.legacyAddress,
         msgs,
         ...extraOptions
       });
@@ -885,6 +891,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       };
     } catch (error) {
       console.log('Error on broadcastMsgs: ', error);
+      throw error;
     }
   }
   // Return the tx hash.

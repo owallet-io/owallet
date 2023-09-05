@@ -104,7 +104,8 @@ export class BitcoinAccount {
             message: memo,
             totalFee: Number(stdFee.amount[0].amount),
             selectedCrypto: signOptions.chainId,
-            confirmedBalance: extraOptions.confirmedBalance
+            confirmedBalance: extraOptions.confirmedBalance,
+            gasPriceStep: extraOptions.gasPriceStep
           };
           console.log('🚀 ~ file: bitcoin.ts:117 ~ BitcoinAccount ~ msg:', msg);
 

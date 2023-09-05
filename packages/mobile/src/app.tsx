@@ -13,7 +13,7 @@ import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
 import ThemeProvider, { useTheme } from './themes/theme-provider';
-import Toast, { BaseToast } from 'react-native-toast-message';
+import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
 import { colorsCode } from './themes/mode-colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -37,7 +37,8 @@ const toastConfig = {
       }}
       text2NumberOfLines={4}
     />
-  )
+  ),
+  error: (props) => <ErrorToast {...props} text2NumberOfLines={4} />
 };
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {

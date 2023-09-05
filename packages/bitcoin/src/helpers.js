@@ -80,7 +80,7 @@ const validateAddress = (address = '', selectedCrypto = '') => {
     }
     return { isValid: true, coin: selectedCrypto };
   } catch (e) {
-    console.log("🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:", e)
+    console.log('🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:', e);
     return { isValid: false, coin: selectedCrypto };
   }
 };
@@ -244,11 +244,7 @@ const getExchangeRate = async ({
     return failure(e.message);
   }
 };
-const btcToFiat = ({
-  amount = 0,
-  exchangeRate = 0,
-  currencyFiat = 'usd'
-}) => {
+const btcToFiat = ({ amount = 0, exchangeRate = 0, currencyFiat = 'usd' }) => {
   amount = Number(amount);
   BitcoinUnit.setFiat(currencyFiat, exchangeRate);
   return new BitcoinUnit(amount, 'BTC').to(currencyFiat).getValue().toFixed(2);
@@ -522,6 +518,7 @@ const createTransaction = async ({
     if (message && typeof message === 'string') {
       message = convertStringToMessage(message);
     }
+    console.log('🚀 ~ file: helpers.js:521 ~ transactionFee:', transactionFee);
     console.log('🚀 ~ file: helpers.js:383 ~ message:', message);
     const network = networks[selectedCrypto];
     const totalFee =

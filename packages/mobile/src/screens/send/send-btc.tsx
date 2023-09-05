@@ -34,7 +34,7 @@ import { observer } from 'mobx-react-lite';
 import { useSmartNavigation } from '@src/navigation.provider';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
-import { delay } from '@src/utils/helper';
+import { delay, showToast } from '@src/utils/helper';
 import { Toggle } from '@src/components/toggle';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
@@ -133,27 +133,49 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             return;
           },
           onBroadcasted: async (txHash) => {
-            console.log(
-              '🚀 ~ file: send-btc.tsx:126 ~ onBroadcasted: ~ txHash:',
-              txHash
-            );
-            analyticsStore.logEvent('Send Btc tx broadcasted', {
-              chainId: chainStore.current.chainId,
-              chainName: chainStore.current.chainName,
-              feeType: sendConfigs.feeConfig.feeType
-            });
+            try {
+              console.log(
+                '🚀 ~ file: send-btc.tsx:126 ~ onBroadcasted: ~ txHash:',
+                txHash
+              );
+              analyticsStore.logEvent('Send Btc tx broadcasted', {
+                chainId: chainStore.current.chainId,
+                chainName: chainStore.current.chainName,
+                feeType: sendConfigs.feeConfig.feeType
+              });
 
-            return;
+              return;
+            } catch (error) {
+              console.log(
+                '🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:',
+                error
+              );
+            }
           }
         },
         {
           confirmedBalance: confirmedBalance,
           utxos: utxos,
           blacklistedUtxos: [],
-          amount: BtcToSats(Number(sendConfigs.amountConfig.amount))
+          amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
+          gasPriceStep:
+            chainStore.current.stakeCurrency.gasPriceStep[
+              sendConfigs.feeConfig.feeType
+            ]
         }
       );
     } catch (error) {
+      if (error?.message) {
+        showToast({
+          type: 'error',
+          text2: error?.message
+        });
+        return;
+      }
+      showToast({
+        type: 'error',
+        text2: JSON.stringify(error)
+      });
       console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
     }
   }, [
