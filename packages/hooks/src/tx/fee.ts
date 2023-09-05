@@ -303,6 +303,24 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
               .lt(need.amount)
           )
             return new InsufficientFeeError('insufficient fee');
+        } else if (this.chainInfo.networkType === 'bitcoin') {
+          const balance = this.queryBtcBalances.getQueryBalance(
+            this._sender
+          )?.balance;
+          if (!balance) return new InsufficientFeeError('insufficient fee');
+          else if (
+            balance
+              .toDec()
+              .mul(
+                DecUtils.getTenExponentNInPrecisionRange(
+                  balance.currency.coinDecimals
+                )
+              )
+              .truncate()
+              .lt(need.amount)
+          ) {
+            return new InsufficientFeeError('insufficient fee');
+          }
         } else {
           const bal = this.queryBalances
             .getQueryBech32Address(this._sender)
