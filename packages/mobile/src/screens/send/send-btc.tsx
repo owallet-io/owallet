@@ -232,7 +232,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             memoConfig={sendConfigs.memoConfig}
             labelStyle={styles.sendlabelInput}
           />
-          <View style={styles.containerToggle}>
+          {/* <View style={styles.containerToggle}>
             <Toggle
               on={customFee}
               onChange={(value) => {
@@ -249,35 +249,15 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             />
             <Text style={styles.txtFee}>Custom Fee</Text>
           </View>
-          {customFee ? (
-            <TextInput
-              label="Fee"
-              inputContainerStyle={{
-                backgroundColor: colors['background-box']
-              }}
-              placeholder="Type your Fee here"
-              keyboardType={'numeric'}
-              labelStyle={styles.sendlabelInput}
-              onChangeText={(text) => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(8)
-                );
+           */}
+          <FeeButtons
+            label="Transaction Fee"
+            gasLabel="gas"
+            feeConfig={sendConfigs.feeConfig}
+            gasConfig={sendConfigs.gasConfig}
+            labelStyle={styles.sendlabelInput}
+          />
 
-                sendConfigs.feeConfig.setManualFee({
-                  amount: fee.roundUp().toString(),
-                  denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
-                });
-              }}
-            />
-          ) : (
-            <FeeButtons
-              label="Transaction Fee"
-              gasLabel="gas"
-              feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-              labelStyle={styles.sendlabelInput}
-            />
-          )}
           {/* <TextInput
             label="Fee"
             inputContainerStyle={{
