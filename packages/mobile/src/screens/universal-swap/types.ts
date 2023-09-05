@@ -1,4 +1,3 @@
-import { OWTextProps } from '@src/components/text/ow-text';
 import { ImageProps } from 'react-native';
 import { TokenItemType } from './config/bridgeTokens';
 
