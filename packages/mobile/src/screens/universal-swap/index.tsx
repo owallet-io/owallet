@@ -161,17 +161,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
       tokenMap[toTokenDenom];
 
-  // const fromTokenFee = useTokenFee(
-  //   originalFromToken.prefix + originalFromToken.contractAddress,
-  //   fromToken.chainId,
-  //   toToken.chainId
-  // );
-  // const toTokenFee = useTokenFee(
-  //   originalToToken.prefix + originalToToken.contractAddress,
-  //   fromToken.chainId,
-  //   toToken.chainId
-  // );
-
   const getTokenFee = async (
     remoteTokenDenom: string,
     fromChainId: NetworkChainId,
@@ -681,10 +670,8 @@ const styling = (colors: TypeTheme['colors']) =>
       paddingTop: 30
     },
     boxTop: {
-      // borderRadius: 8,
       paddingTop: 10,
       paddingBottom: 20,
-      // backgroundColor: colors['background-box'],
       marginTop: 4,
       flexDirection: 'row',
       alignItems: 'center',
@@ -714,10 +701,8 @@ const styling = (colors: TypeTheme['colors']) =>
       marginRight: 8
     },
     btnTitleRight: {
-      // backgroundColor: colors['box-nft'],
       height: 30,
       width: 30
-      // borderRadius: 5
     },
     containerBtnLabelInputRight: {
       flexDirection: 'row'
