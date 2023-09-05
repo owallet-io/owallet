@@ -1,5 +1,5 @@
 import { ImageProps } from 'react-native';
-import { TokenItemType } from './config/bridgeTokens';
+import { TokenItemType } from '@owallet/common';
 
 export type voidNode = () => React.ReactNode;
 export type NodeElement = React.ReactNode | voidNode;
