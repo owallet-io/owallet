@@ -28,6 +28,19 @@ export class TxsBtcTestNet extends Txs {
           this.currentChain,
           params?.addressAccount
         );
+        console.log("🚀 ~ file: txs-btc-test.ts:31 ~ TxsBtcTestNet ~ rsConverted:", rsConverted)
+        console.log(
+          '🚀 ~ file: txs-btc-test.ts:32 ~ TxsBtcTestNet ~ params?.addressAccount:',
+          params?.addressAccount
+        );
+        console.log(
+          '🚀 ~ file: txs-btc-test.ts:28 ~ TxsBtcTestNet ~ data?.txs:',
+          data?.txs
+        );
+        console.log(
+          '🚀 ~ file: txs-btc-test.ts:30 ~ TxsBtcTestNet ~ this.currentChain:',
+          this.currentChain
+        );
         return Promise.resolve({
           result: rsConverted,
           current_page: 0,

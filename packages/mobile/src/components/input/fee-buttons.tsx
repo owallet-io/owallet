@@ -91,9 +91,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
     label,
     feeConfig
   }) => {
-    console.log("🚀 ~ file: fee-buttons.tsx:94 ~ feeConfig:", feeConfig)
     const { priceStore, chainStore } = useStore();
-
     const style = useStyle();
     const { colors } = useTheme();
     const styles = styling(colors);

@@ -46,7 +46,6 @@ export const useSendTxConfig = (
     amountConfig,
     sendMsgOpts
   );
-  console.log('🚀 ~ file: send-tx.ts:45 ~ sendMsgOpts:', sendMsgOpts);
   const feeConfig = useFeeConfig(
     chainGetter,
     chainId,

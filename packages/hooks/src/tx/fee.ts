@@ -194,15 +194,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
       const gasPriceStep = this.chainInfo.stakeCurrency.gasPriceStep
         ? this.chainInfo.stakeCurrency.gasPriceStep
         : DefaultGasPriceStep;
-      console.log(
-        '🚀 ~ file: fee.ts:188 ~ FeeConfig ~ getFeeTypePrimitive ~ gasPriceStep:',
-        gasPriceStep
-      );
       const gasPrice = new Dec(gasPriceStep[feeType].toString());
-      console.log(
-        '🚀 ~ file: fee.ts:192 ~ FeeConfig ~ getFeeTypePrimitive ~ gasPrice:',
-        gasPrice
-      );
       if (this.chainInfo.networkType === 'bitcoin') {
         const data = this.queryBtcBalances.getQueryBalance(this._sender)
           ?.response?.data;
@@ -212,29 +204,13 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           utxos: utxos,
           message: this.memoConfig.memo
         });
-        console.log(
-          '🚀 ~ file: fee.ts:205 ~ FeeConfig ~ getFeeTypePrimitive ~ data:',
-          utxos
-        );
         const feeAmount = gasPrice.mul(new Dec(Number(amount)));
-        console.log(
-          '🚀 ~ file: fee.ts:218 ~ FeeConfig ~ getFeeTypePrimitive ~ feeAmount:',
-          feeAmount
-        );
         return {
           denom: this.feeCurrency.coinMinimalDenom,
           amount: feeAmount.roundUp().toString()
         };
       }
       const feeAmount = gasPrice.mul(new Dec(this.gasConfig.gas));
-      console.log(
-        '🚀 ~ file: fee.ts:193 ~ FeeConfig ~ getFeeTypePrimitive ~ this.gasConfig.gas:',
-        this.gasConfig.gas
-      );
-      console.log(
-        '🚀 ~ file: fee.ts:209 ~ FeeConfig ~ getFeeTypePrimitive ~ feeAmount.roundUp().toString():',
-        feeAmount.roundUp().toString()
-      );
       return {
         denom: this.feeCurrency.coinMinimalDenom,
         amount: feeAmount.roundUp().toString()
