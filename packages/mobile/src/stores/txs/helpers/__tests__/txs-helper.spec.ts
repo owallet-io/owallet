@@ -433,4 +433,9 @@ describe('txsHelper', () => {
     console.log('🚀 ~ file: txs-helper.spec.ts:427 ~ it ~ rs:', rs);
     expect(rs).toEqual(expectRs);
   });
+  it('formatNumberSeparateThousand', () => {
+    const expectRs = '2,476,461';
+    const rs = helper.formatNumberSeparateThousand(2476461);
+    expect(rs).toBe(expectRs);
+  });
 });
