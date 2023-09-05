@@ -28,11 +28,11 @@ import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
   ORAI
-} from './config/constants';
+} from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
-import { NetworkChainId, oraichainNetwork } from './config/chainInfos';
-import { TokenItemType, evmTokens, tokenMap } from './config/bridgeTokens';
+import { NetworkChainId, oraichainNetwork } from '@owallet/common';
+import { TokenItemType, evmTokens, tokenMap } from '@owallet/common';
 import {
   SwapDirection,
   calculateMinimum,
@@ -46,10 +46,10 @@ import {
   isEvmNetworkNativeSwapSupported,
   isSupportedNoPoolSwapEvm,
   toAmount
-} from './helper';
-import { fetchTokenInfos, isEvmSwappable } from './api';
+} from '@owallet/common';
+import { fetchTokenInfos, isEvmSwappable } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
-import { toDisplay, toSubAmount } from './libs/utils';
+import { toDisplay, toSubAmount } from '@owallet/common';
 
 type BalanceType = {
   id: string;
