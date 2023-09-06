@@ -3,6 +3,7 @@ import React, {
   ReactElement,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -204,16 +205,25 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       />
     );
   };
-
+  const address = useMemo(() => {
+    if (chainStore.current.networkType === 'evm') {
+      return account?.evmosHexAddress;
+    } else if (chainStore.current.networkType === 'bitcoin') {
+      return account?.legacyAddress;
+    }
+    return account?.bech32Address;
+  }, [
+    account?.evmosHexAddress,
+    account?.bech32Address,
+    account?.legacyAddress,
+    chainStore.current.networkType
+  ]);
   const refreshData = useCallback(() => {
     page.current = 1;
     hasMore.current = true;
     fetchData(
       {
-        addressAccount:
-          chainStore.current.networkType == 'evm'
-            ? account?.evmosHexAddress
-            : account?.bech32Address,
+        addressAccount: address,
         token:
           balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
       },
@@ -274,7 +284,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
                   fontWeight: '800'
                 }}
               >
-                {`${amountBalance} ${balanceCoinDenom}`}
+                {`${amountBalance} `}
               </Text>
               <Text
                 style={{
