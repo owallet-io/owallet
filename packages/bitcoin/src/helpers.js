@@ -607,6 +607,7 @@ const createTransaction = async ({
             txHash: utxo.txid,
             coin: selectedCrypto
           });
+          console.log("🚀 ~ file: helpers.js:610 ~ transaction:", transaction)
           const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
           psbt.addInput({
             hash: utxo.txid,

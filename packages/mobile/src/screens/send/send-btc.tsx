@@ -95,6 +95,26 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   //   utxos,
   //   chainStore.current.chainId
   // ]);
+  const refreshBalance = async (address) => {
+    try {
+      await queries.bitcoin.queryBitcoinBalance
+        .getQueryBalance(address)
+        .waitFreshResponse();
+    } catch (error) {
+      console.log(
+        '🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:',
+        error
+      );
+    }
+  };
+  useEffect(() => {
+    if (account.legacyAddress) {
+      refreshBalance(account.legacyAddress);
+      return;
+    }
+
+    return () => {};
+  }, [account.legacyAddress]);
 
   const onSend = useCallback(async () => {
     try {
@@ -114,12 +134,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         {
           onFulfill: async (tx) => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
-            await delay(1000);
 
-            // return () => interactionPromise.cancel();
-            await queries.bitcoin.queryBitcoinBalance
-              .getQueryBalance(account.legacyAddress)
-              .waitFreshResponse();
             if (tx) {
               navigate(SCREENS.STACK.Others, {
                 screen: SCREENS.TxSuccessResult,

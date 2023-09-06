@@ -23,6 +23,8 @@ import { useStyle } from '../../styles';
 import { useSmartNavigation } from '../../navigation.provider';
 import { colors } from '../../themes';
 import { NoteIcon } from '../icon';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 
 const styles = StyleSheet.create({
   absolute: {
@@ -113,7 +115,7 @@ export const AddressInput: FunctionComponent<{
         errorLabelStyle={errorLabelStyle}
         error={errorText}
         value={recipientConfig.rawRecipient}
-        onChangeText={text => {
+        onChangeText={(text) => {
           recipientConfig.setRawRecipient(text);
         }}
         placeholder={placeholder}
@@ -154,9 +156,12 @@ export const AddressInput: FunctionComponent<{
                 <TouchableOpacity
                   style={style.flatten(['padding-4'])}
                   onPress={() => {
-                    smartNavigation.navigateSmart('AddressBook', {
-                      recipientConfig,
-                      memoConfig
+                    navigate(SCREENS.STACK.AddressBooks, {
+                      screen: SCREENS.AddressBook,
+                      params: {
+                        recipientConfig,
+                        memoConfig
+                      }
                     });
                   }}
                 >
