@@ -3,16 +3,29 @@ import { defaultRegistryTypes as defaultStargateTypes } from '@cosmjs/stargate';
 import { MsgSendToEth } from './proto/gravity/v1/msgs';
 import { MsgTransfer } from './proto/ibc/applications/transfer/v1/tx';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
-
+//@ts-ignore
 const customRegistry = new Registry(defaultStargateTypes);
 customRegistry.register('/gravity.v1.MsgSendToEth', MsgSendToEth);
-customRegistry.register('/ibc.applications.transfer.v1.MsgTransfer', MsgTransfer);
-customRegistry.register('/cosmwasm.wasm.v1.MsgExecuteContract', MsgExecuteContract);
+customRegistry.register(
+  '/ibc.applications.transfer.v1.MsgTransfer',
+  MsgTransfer
+);
+customRegistry.register(
+  '/cosmwasm.wasm.v1.MsgExecuteContract',
+  MsgExecuteContract
+);
 
 export const customAminoTypes = {
   '/gravity.v1.MsgSendToEth': {
     aminoType: 'gravity/MsgSendToEth',
-    toAmino: ({ sender, ethDest, amount, bridgeFee, chainFee, evmChainPrefix }: MsgSendToEth) => ({
+    toAmino: ({
+      sender,
+      ethDest,
+      amount,
+      bridgeFee,
+      chainFee,
+      evmChainPrefix
+    }: MsgSendToEth) => ({
       sender,
       eth_dest: ethDest,
       amount,
@@ -20,7 +33,14 @@ export const customAminoTypes = {
       chain_fee: chainFee,
       evm_chain_prefix: evmChainPrefix
     }),
-    fromAmino: ({ sender, eth_dest, amount, bridge_fee, chain_fee, evm_chain_prefix }): MsgSendToEth => ({
+    fromAmino: ({
+      sender,
+      eth_dest,
+      amount,
+      bridge_fee,
+      chain_fee,
+      evm_chain_prefix
+    }): MsgSendToEth => ({
       sender,
       ethDest: eth_dest,
       amount,

@@ -1,7 +1,7 @@
 import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
 import { toUtf8 } from '@cosmjs/encoding';
 import { EncodeObject } from '@cosmjs/proto-signing';
-import { Coin, GasPrice, isDeliverTxFailure, logs } from '@cosmjs/stargate';
+import { Coin, isDeliverTxFailure, logs } from '@cosmjs/stargate';
 import { MsgExecuteContract } from 'cosmjs-types/cosmwasm/wasm/v1/tx';
 
 /**
