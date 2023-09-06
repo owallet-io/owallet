@@ -9,7 +9,8 @@ const {
   getScriptHash,
   getKeyPair,
   getAddress,
-  convertStringToMessage
+  convertStringToMessage,
+  getByteCount
 } = require('../helpers');
 
 describe('helper', () => {
@@ -256,5 +257,11 @@ describe('helper', () => {
     expect(JSON.stringify(rs)).toEqual(
       '{"type":"Buffer","data":[72,101,108,108,111,87,111,114,100]}'
     );
+  });
+  it('getByteCount', () => {
+    const msg = convertStringToMessage('HelloWord');
+    const rs = getByteCount({ ['legacy']: 27 }, { ['legacy']: 2 }, msg);
+    console.log('🚀 ~ file: helper.spec.js:264 ~ it ~ rs:', rs);
+    expect(rs).toBe(4100);
   });
 });
