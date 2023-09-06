@@ -160,7 +160,7 @@ const HistoryTransactionsScreen = observer(() => {
     if (networkType === 'evm') {
       return account.evmosHexAddress;
     } else if (networkType === 'bitcoin') {
-      return account.legacyAddress;
+      return account.bech32Address;
     }
     return account.bech32Address;
   };
@@ -184,8 +184,7 @@ const HistoryTransactionsScreen = observer(() => {
     [
       chainStore.current.networkType,
       account?.bech32Address,
-      account.evmosHexAddress,
-      account.legacyAddress
+      account.evmosHexAddress
     ]
   );
   const styles = styling();
@@ -218,7 +217,7 @@ const HistoryTransactionsScreen = observer(() => {
       if (chainStore.current.networkType === 'bitcoin') {
         fetchData(
           {
-            address: account.legacyAddress,
+            address: account.bech32Address,
             action: activeType?.value,
             activePage
           },

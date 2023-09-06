@@ -99,7 +99,7 @@ export class BitcoinAccount {
         case 'native':
           const msg: any = {
             address: recipient,
-            changeAddress: this.base.legacyAddress,
+            changeAddress: this.base.bech32Address,
             amount: Number(extraOptions.amount),
             message: memo,
             totalFee: Number(stdFee.amount[0].amount),
@@ -121,7 +121,7 @@ export class BitcoinAccount {
                 // After succeeding to send token, refresh the balance.
                 const queryBtcBalance =
                   this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-                    this.base.legacyAddress
+                    this.base.bech32Address
                   );
                 if (queryBtcBalance) {
                   queryBtcBalance.fetch();

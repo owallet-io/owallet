@@ -47,7 +47,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     chainStore,
     chainId,
     account.msgOpts['send'],
-    account.legacyAddress,
+    account.bech32Address,
     queries.queryBalances,
     null,
     null,
@@ -55,7 +55,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     queries.bitcoin.queryBitcoinBalance
   );
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account.legacyAddress
+    account.bech32Address
   )?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
@@ -108,13 +108,13 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     }
   };
   useEffect(() => {
-    if (account.legacyAddress) {
-      refreshBalance(account.legacyAddress);
+    if (account.bech32Address) {
+      refreshBalance(account.bech32Address);
       return;
     }
 
     return () => {};
-  }, [account.legacyAddress]);
+  }, [account.bech32Address]);
 
   const onSend = useCallback(async () => {
     try {
@@ -197,7 +197,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     chainStore.current.networkType,
     chainStore.current.chainId,
     utxos,
-    account.legacyAddress,
+    account.bech32Address,
     confirmedBalance
   ]);
 

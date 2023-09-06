@@ -204,7 +204,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           utxos: utxos,
           message: this.memoConfig.memo,
           transactionFee: gasPriceStep[feeType] as number,
-          addressType: 'legacy'
+          addressType: 'bech32'
         });
         console.log(
           '🚀 ~ file: fee.ts:208 ~ FeeConfig ~ getFeeTypePrimitive ~ amount:',

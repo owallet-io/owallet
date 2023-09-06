@@ -19,7 +19,7 @@ import {
 import { Currency } from '@owallet/types';
 
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
-  protected legacyAddress: string;
+  protected bech32Address: string;
 
   protected duplicatedFetchCheck: boolean = false;
 
@@ -27,32 +27,32 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    legacyAddress: string
+    bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `bitcoin/balances/${legacyAddress}`);
+    super(kvStore, chainId, chainGetter, `bitcoin/balances/${bech32Address}`);
 
-    this.legacyAddress = legacyAddress;
+    this.bech32Address = bech32Address;
 
     makeObservable(this);
   }
 
   protected canFetch(): boolean {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
-    return this.legacyAddress.length > 0;
+    return this.bech32Address.length > 0;
   }
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath: '44'
+      keyDerivationPath: '84'
     }) as string;
     const scriptHash = getScriptHash(
-      this.legacyAddress,
+      this.bech32Address,
       getCoinNetwork(this.chainId)
     );
     const response = await getBalanceFromUtxos({
-      addresses: [{ address: this.legacyAddress, path, scriptHash }],
+      addresses: [{ address: this.bech32Address, path, scriptHash }],
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
@@ -145,7 +145,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
   getBalanceInner(
     chainId: string,
     chainGetter: ChainGetter,
-    legacyAddress: string,
+    bech32Address: string,
     minimalDenom: string
   ): ObservableQueryBalanceInner | undefined {
     const denomHelper = new DenomHelper(minimalDenom);
@@ -154,7 +154,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
       return;
     }
 
-    const key = `${chainId}/${legacyAddress}`;
+    const key = `${chainId}/${bech32Address}`;
     if (!this.nativeBalances.has(key)) {
       this.nativeBalances.set(
         key,
@@ -162,7 +162,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
           this.kvStore,
           chainId,
           chainGetter,
-          legacyAddress
+          bech32Address
         )
       );
     }

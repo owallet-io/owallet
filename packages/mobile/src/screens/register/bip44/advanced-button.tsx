@@ -72,10 +72,7 @@ const useZeroOrPositiveIntegerString = (initialValue: string) => {
 export const BIP44SelectModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {
@@ -126,7 +123,9 @@ export const BIP44SelectModal: FunctionComponent<{
               ...typography['body2'],
               color: scheme === 'dark' ? colors['label'] : colors['sub-text']
             }}
-          >{`m/44’/`}</Text>
+          >{`m/${
+            chainStore.current.networkType === 'bitcoin' ? '84' : '44'
+          }’/`}</Text>
           <TextInput
             value={coinType.value}
             containerStyle={{

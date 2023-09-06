@@ -263,7 +263,10 @@ const TransactionDetailScreen = observer(() => {
                 : colors['orange-800']
           }}
         />
-        <ItemDetail label="Block height" value={data?.height} />
+        <ItemDetail
+          label="Block height"
+          value={data?.height === '-1' ? '0' : data?.height}
+        />
         {data?.memo ? (
           <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
         ) : null}

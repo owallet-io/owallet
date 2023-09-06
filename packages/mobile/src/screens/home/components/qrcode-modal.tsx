@@ -21,7 +21,7 @@ export const AddressQRCodeModal: FunctionComponent<{
   if (chainStore?.networkType === 'cosmos') {
     addressToshow = account.bech32Address;
   } else if (chainStore?.networkType === 'bitcoin') {
-    addressToshow = account.legacyAddress;
+    addressToshow = account.bech32Address;
   } else {
     if (chainStore?.chainId === TRON_ID) {
       addressToshow = Address.getBase58Address(account.evmosHexAddress);

@@ -142,17 +142,17 @@ describe('helper', () => {
   it.each([
     [
       {
-        keyDerivationPath: '44',
+        keyDerivationPath: '84',
         selectedCrypto: 'bitcoin'
       },
-      `m/44'/0'/0'/0/0`
+      `m/84'/0'/0'/0/0`
     ],
     [
       {
-        keyDerivationPath: '44',
+        keyDerivationPath: '84',
         selectedCrypto: 'bitcoinTestnet'
       },
-      `m/44'/1'/0'/0/0`
+      `m/84'/1'/0'/0/0`
     ]
   ])('Test getBaseDerivationPath for %p', (param, expected) => {
     const res = getBaseDerivationPath(param);
@@ -209,7 +209,7 @@ describe('helper', () => {
     [
       {
         selectedCrypto: 'bitcoin',
-        keyDerivationPath: '44',
+        keyDerivationPath: '84',
         mnemonic:
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
@@ -218,7 +218,7 @@ describe('helper', () => {
     [
       {
         selectedCrypto: 'bitcoinTestnet',
-        keyDerivationPath: '44',
+        keyDerivationPath: '84',
         mnemonic:
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
@@ -232,7 +232,7 @@ describe('helper', () => {
     [
       getKeyPair({
         selectedCrypto: 'bitcoin',
-        keyDerivationPath: '44',
+        keyDerivationPath: '84',
         mnemonic:
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
@@ -242,7 +242,7 @@ describe('helper', () => {
     [
       getKeyPair({
         selectedCrypto: 'bitcoinTestnet',
-        keyDerivationPath: '44',
+        keyDerivationPath: '84',
         mnemonic:
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
@@ -250,7 +250,7 @@ describe('helper', () => {
       'n4XP6YwVHNCJ74ResGk7xq3CBhYqJc9Bnj'
     ]
   ])('Test getAddress for %p', (param1, param2, expected) => {
-    const res = getAddress(param1, param2, 'legacy');
+    const res = getAddress(param1, param2, 'bech32');
     expect(res).toEqual(expected);
   });
   it('convertStringToMessage', () => {
@@ -261,7 +261,7 @@ describe('helper', () => {
   });
   it('getByteCount', () => {
     const msg = convertStringToMessage('HelloWord');
-    const rs = getByteCount({ ['legacy']: 27 }, { ['legacy']: 2 }, msg);
+    const rs = getByteCount({ ['bech32']: 27 }, { ['bech32']: 2 }, msg);
     console.log('🚀 ~ file: helper.spec.js:264 ~ it ~ rs:', rs);
     expect(rs).toBe(4100);
   });
@@ -361,7 +361,7 @@ describe('helper', () => {
   //       'party avocado vocal stuff spider indoor promote business cloud culture chase sphere',
   //     selectedCrypto: 'bitcoinTestnet',
   //     message: '',
-  //     addressType: 'legacy'
+  //     addressType: 'bech32'
   //   });
   //   expect(spyGetTransaction).toHaveBeenCalled();
   //   console.log('🚀 ~ file: helper.spec.js:351 ~ it ~ rs:', rs);

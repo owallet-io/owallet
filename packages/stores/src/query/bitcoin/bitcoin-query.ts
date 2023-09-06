@@ -51,7 +51,7 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
   ): Promise<QueryResponse<Result>> {
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath:'44'
+      keyDerivationPath:'84'
     }) as string;
 
     const scriptHash = getScriptHash(

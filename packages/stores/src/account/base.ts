@@ -881,7 +881,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
         memo,
         fee,
-        address: this.legacyAddress,
+        address: this.bech32Address,
         msgs,
         ...extraOptions
       });

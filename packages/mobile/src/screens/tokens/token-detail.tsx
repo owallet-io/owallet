@@ -209,13 +209,12 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     if (chainStore.current.networkType === 'evm') {
       return account?.evmosHexAddress;
     } else if (chainStore.current.networkType === 'bitcoin') {
-      return account?.legacyAddress;
+      return account?.bech32Address;
     }
     return account?.bech32Address;
   }, [
     account?.evmosHexAddress,
     account?.bech32Address,
-    account?.legacyAddress,
     chainStore.current.networkType
   ]);
   const refreshData = useCallback(() => {

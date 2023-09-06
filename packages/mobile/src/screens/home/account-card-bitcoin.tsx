@@ -38,7 +38,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   const [exchangeRate, setExchangeRate] = useState<number>(0);
 
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account?.legacyAddress
+    account?.bech32Address
   )?.balance;
 
   const totalAmount = useMemo(() => {
@@ -50,7 +50,7 @@ export const AccountCardBitcoin: FunctionComponent<{
     return amount;
   }, [
     chainStore.current.chainId,
-    account?.legacyAddress,
+    account?.bech32Address,
     chainStore.current.networkType,
     balanceBtc
   ]);
@@ -94,7 +94,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   }, [
     chainStore.current.stakeCurrency.coinDecimals,
     chainStore.current.chainId,
-    account?.legacyAddress,
+    account?.bech32Address,
     exchangeRate,
     balanceBtc
   ]);
@@ -127,7 +127,7 @@ export const AccountCardBitcoin: FunctionComponent<{
     <AccountBox
       totalBalance={!!totalAmount ? totalAmount : null}
       addressComponent={
-        <AddressCopyable address={account.legacyAddress} maxCharacters={22} />
+        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
       }
       name={account?.name || '..'}
       coinType={`${
@@ -140,7 +140,7 @@ export const AccountCardBitcoin: FunctionComponent<{
         chainStore?.current?.networkType === 'bitcoin'
           ? (getBaseDerivationPath({
               selectedCrypto: chainStore?.current?.chainId as string,
-              keyDerivationPath: '44'
+              keyDerivationPath: '84'
             }) as string)
           : ''
       }
