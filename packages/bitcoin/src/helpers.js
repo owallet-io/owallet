@@ -516,18 +516,18 @@ const createTransaction = async ({
   message = '',
   addressType = 'bech32'
 } = {}) => {
-  console.log('🚀 ~ file: helpers.js:517 ~ ', {
-    address,
-    transactionFee,
-    amount,
-    confirmedBalance,
-    utxos,
-    blacklistedUtxos,
-    changeAddress,
-    selectedCrypto,
-    message,
-    addressType
-  });
+  // console.log('🚀 ~ file: helpers.js:517 ~ ', {
+  //   address,
+  //   transactionFee,
+  //   amount,
+  //   confirmedBalance,
+  //   utxos,
+  //   blacklistedUtxos,
+  //   changeAddress,
+  //   selectedCrypto,
+  //   message,
+  //   addressType
+  // });
   try {
     if (message && typeof message === 'string') {
       message = convertStringToMessage(message);
@@ -542,7 +542,7 @@ const createTransaction = async ({
         message
       ) * transactionFee;
     addressType = addressType.toLowerCase();
-    console.log('🚀 ~ file: helpers.js:538 ~ totalFee:', totalFee);
+    // console.log('🚀 ~ file: helpers.js:538 ~ totalFee:', totalFee);
     let targets = [];
     if (amount > 0) {
       targets.push({ address, value: amount });
@@ -621,7 +621,7 @@ const createTransaction = async ({
             txHash: utxo.txid,
             coin: selectedCrypto
           });
-          console.log('🚀 ~ file: helpers.js:610 ~ transaction:', transaction);
+          // console.log('🚀 ~ file: helpers.js:610 ~ transaction:', transaction);
           const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
           psbt.addInput({
             hash: utxo.txid,
