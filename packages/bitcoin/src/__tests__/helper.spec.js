@@ -8,7 +8,8 @@ const {
   getCoinNetwork,
   getScriptHash,
   getKeyPair,
-  getAddress
+  getAddress,
+  convertStringToMessage
 } = require('../helpers');
 
 describe('helper', () => {
@@ -249,5 +250,11 @@ describe('helper', () => {
   ])('Test getAddress for %p', (param1, param2, expected) => {
     const res = getAddress(param1, param2, 'legacy');
     expect(res).toEqual(expected);
+  });
+  it('convertStringToMessage', () => {
+    const rs = convertStringToMessage('HelloWord');
+    expect(JSON.stringify(rs)).toEqual(
+      '{"type":"Buffer","data":[72,101,108,108,111,87,111,114,100]}'
+    );
   });
 });
