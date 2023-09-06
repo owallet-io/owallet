@@ -347,5 +347,6 @@ export {
   fetchTokenInfo,
   fetchTokenInfos,
   parseTokenInfo,
-  generateSwapOperationMsgs
+  generateSwapOperationMsgs,
+  generateContractMessages
 };
