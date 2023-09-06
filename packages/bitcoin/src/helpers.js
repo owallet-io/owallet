@@ -514,6 +514,19 @@ const createTransaction = async ({
   message = '',
   addressType = 'bech32'
 } = {}) => {
+  console.log('🚀 ~ file: helpers.js:517 ~ ', {
+    address,
+    transactionFee,
+    amount,
+    confirmedBalance,
+    utxos,
+    blacklistedUtxos,
+    changeAddress,
+    mnemonic,
+    selectedCrypto,
+    message,
+    addressType
+  });
   try {
     if (message && typeof message === 'string') {
       message = convertStringToMessage(message);
@@ -607,7 +620,7 @@ const createTransaction = async ({
             txHash: utxo.txid,
             coin: selectedCrypto
           });
-          console.log("🚀 ~ file: helpers.js:610 ~ transaction:", transaction)
+          console.log('🚀 ~ file: helpers.js:610 ~ transaction:', transaction);
           const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
           psbt.addInput({
             hash: utxo.txid,
