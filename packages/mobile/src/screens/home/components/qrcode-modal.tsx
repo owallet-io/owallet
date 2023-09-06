@@ -14,11 +14,14 @@ export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
   chainStore?: any;
 }> = ({ account, chainStore }) => {
+  console.log('🚀 ~ file: qrcode-modal.tsx:17 ~ account:', account);
   console.log('chainStore', chainStore);
 
   let addressToshow = '';
   if (chainStore?.networkType === 'cosmos') {
     addressToshow = account.bech32Address;
+  } else if (chainStore?.networkType === 'bitcoin') {
+    addressToshow = account.legacyAddress;
   } else {
     if (chainStore?.chainId === TRON_ID) {
       addressToshow = Address.getBase58Address(account.evmosHexAddress);
@@ -36,7 +39,6 @@ export const AddressQRCodeModal: FunctionComponent<{
       <Text
         style={{
           ...typography.h6,
-          color: colors['primary-text'],
           fontWeight: '900'
         }}
       >{`Receive`}</Text>
@@ -51,7 +53,7 @@ export const AddressQRCodeModal: FunctionComponent<{
         >{`Scan QR Code or copy below address`}</Text>
         <AddressCopyable address={addressToshow} maxCharacters={22} />
         <View style={{ marginVertical: spacing['32'] }}>
-          {account.bech32Address ? (
+          {!!addressToshow ? (
             <QRCode size={200} value={addressToshow} />
           ) : (
             <View
@@ -71,7 +73,7 @@ export const AddressQRCodeModal: FunctionComponent<{
             onPress={() => {
               Share.share({
                 message: addressToshow
-              }).catch(e => {
+              }).catch((e) => {
                 console.log(e);
               });
             }}

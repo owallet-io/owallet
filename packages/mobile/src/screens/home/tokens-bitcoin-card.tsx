@@ -12,20 +12,11 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import {
-  capitalizedText,
-  convertAmount,
-  _keyExtract,
-  findLedgerAddressWithChainId,
-  delay
-} from '../../utils/helper';
-import { TokenItem } from '../tokens/components/token-item';
+import { _keyExtract } from '../../utils/helper';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
-import images from '@src/assets/images';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { log } from 'console';
 import { getBalanceValue, getExchangeRate, btcToFiat } from '@owallet/bitcoin';
 import { TokenItemBitcoin } from '../tokens/components/token-item-bitcoin';
 
@@ -159,7 +150,10 @@ export const TokensBitcoinCard: FunctionComponent<{
                   balance: Number(token?.balance?.toCoin().amount),
                   cryptoUnit: 'BTC'
                 };
-                console.log("🚀 ~ file: tokens-bitcoin-card.tsx:162 ~ tokens.slice ~ balanceValueParams:", balanceValueParams)
+                console.log(
+                  '🚀 ~ file: tokens-bitcoin-card.tsx:162 ~ tokens.slice ~ balanceValueParams:',
+                  balanceValueParams
+                );
                 const amountData = getBalanceValue(balanceValueParams);
                 const currencyFiat = priceStore.defaultVsCurrency;
                 const fiat =

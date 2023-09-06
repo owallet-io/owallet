@@ -125,7 +125,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   };
   return (
     <AccountBox
-      totalBalance={totalBalance}
+      totalBalance={!!totalAmount ? totalAmount : null}
       addressComponent={
         <AddressCopyable address={account.legacyAddress} maxCharacters={22} />
       }
@@ -144,7 +144,7 @@ export const AccountCardBitcoin: FunctionComponent<{
             }) as string)
           : ''
       }
-      totalAmount={!!totalAmount ? totalAmount : null}
+      totalAmount={totalBalance}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />
