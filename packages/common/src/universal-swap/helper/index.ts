@@ -17,7 +17,7 @@ import {
   isEvmSwappable,
   parseTokenInfo
 } from '../api';
-import { toDisplay } from '../libs/utils';
+import { atomic, toAmount, toDisplay } from '../libs/utils';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
 import {
@@ -97,9 +97,6 @@ export const getTransferTokenFee = async ({
   }
 };
 
-export const truncDecimals = 6;
-export const atomic = 10 ** truncDecimals;
-
 export const parseAssetInfo = (assetInfo: AssetInfo): string => {
   if ('native_token' in assetInfo) return assetInfo.native_token.denom;
   return assetInfo.token.contract_addr;
@@ -127,21 +124,6 @@ export const getEvmAddress = (bech32Address: string) => {
   const evmAddress =
     '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
   return evmAddress;
-};
-
-export const validateNumber = (amount: number | string): number => {
-  if (typeof amount === 'string') return validateNumber(Number(amount));
-  if (Number.isNaN(amount) || !Number.isFinite(amount)) return 0;
-  return amount;
-};
-
-// decimals always >= 6
-export const toAmount = (amount: number | string, decimals = 6): any => {
-  const validatedAmount = validateNumber(amount);
-  return (
-    BigInt(Math.trunc(validatedAmount * atomic)) *
-    BigInt(10 ** (decimals - truncDecimals))
-  );
 };
 
 export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {

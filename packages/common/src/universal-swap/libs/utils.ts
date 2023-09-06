@@ -13,6 +13,9 @@ export class Utils {
     return JSON.parse(JSON.stringify(object)) as T;
   }
 }
+export const generateError = (message: string) => {
+  return { ex: { message } };
+};
 
 export const toTokenInfo = (
   token: TokenItemType,
@@ -103,6 +106,23 @@ export const getSubAmountDetails = (
       return [denom, amounts[denom]];
     })
   );
+};
+
+export const buildMultipleMessages = (mainMsg?: any, ...preMessages: any[]) => {
+  try {
+    var messages: any[] = mainMsg ? [mainMsg] : [];
+    messages.unshift(...preMessages.flat(1));
+    messages = messages.map(msg => {
+      return {
+        contractAddress: msg.contract,
+        handleMsg: msg.msg,
+        handleOptions: { funds: msg.sent_funds }
+      };
+    });
+    return messages;
+  } catch (error) {
+    console.log('error in buildMultipleMessages', error);
+  }
 };
 
 export const toSumDisplay = (amounts: AmountDetails): number => {
