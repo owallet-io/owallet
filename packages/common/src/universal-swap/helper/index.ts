@@ -161,7 +161,7 @@ export async function fetchTaxRate(client: CosmWasmClient) {
   }
 }
 
-async function simulateSwap(
+export async function simulateSwap(
   query: {
     fromInfo: TokenInfo;
     toInfo: TokenInfo;
@@ -198,7 +198,7 @@ async function simulateSwap(
   }
 }
 
-async function simulateSwapEvm(query: {
+export async function simulateSwapEvm(query: {
   fromInfo: TokenItemType;
   toInfo: TokenItemType;
   amount: string;
