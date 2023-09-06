@@ -47,3 +47,5 @@ const getExecuteContractMsgs = (
     };
   });
 };
+
+export { getExecuteContractMsgs, parseExecuteContractMultiple };
