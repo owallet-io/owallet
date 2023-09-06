@@ -120,7 +120,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     );
   };
 
-  const _onPressBtnMain = name => {
+  const _onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -128,12 +128,19 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       _onPressReceiveModal();
     }
     if (name === 'Send') {
+      if (chainStore.current.networkType === 'bitcoin') {
+        navigate(SCREENS.STACK.Others, {
+          screen: SCREENS.SendBtc
+        });
+        return;
+      }
       smartNavigation.navigateSmart('Send', {
         currency:
           balanceCoinFull ??
           balanceCoinDenom ??
           chainStore.current.stakeCurrency.coinMinimalDenom
       });
+      return;
     }
   };
 

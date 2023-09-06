@@ -55,7 +55,7 @@ export const TokenItemBitcoin: FunctionComponent<TokenItemBitcoinProps> = ({
       onPress={() => {
         if (!!balance?.currency) {
           smartNavigation.navigateSmart('Tokens.Detail', {
-            balanceCoinDenom: balance?.currency.coinDenom,
+            balanceCoinDenom: '',
             amountBalance,
             balanceCurrency: balance?.currency,
             priceBalance,
