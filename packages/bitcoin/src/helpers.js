@@ -365,7 +365,9 @@ const calculatorFee = ({
   transactionFee = 1,
   message = ''
 }) => {
-  message = convertStringToMessage(message);
+  if (message && typeof message === 'string') {
+    message = convertStringToMessage(message);
+  }
   const totalFee =
     getByteCount(
       { [addressType]: utxos.length },
@@ -522,7 +524,6 @@ const createTransaction = async ({
     utxos,
     blacklistedUtxos,
     changeAddress,
-    mnemonic,
     selectedCrypto,
     message,
     addressType
@@ -541,7 +542,7 @@ const createTransaction = async ({
         message
       ) * transactionFee;
     addressType = addressType.toLowerCase();
-
+    console.log('🚀 ~ file: helpers.js:538 ~ totalFee:', totalFee);
     let targets = [];
     if (amount > 0) {
       targets.push({ address, value: amount });

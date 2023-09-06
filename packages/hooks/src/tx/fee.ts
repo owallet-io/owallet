@@ -202,12 +202,18 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         const amount = calculatorFee({
           changeAddress: this._sender,
           utxos: utxos,
-          message: this.memoConfig.memo
+          message: this.memoConfig.memo,
+          transactionFee: gasPriceStep[feeType] as number,
+          addressType: 'legacy'
         });
-        const feeAmount = gasPrice.mul(new Dec(Number(amount)));
+        console.log(
+          '🚀 ~ file: fee.ts:208 ~ FeeConfig ~ getFeeTypePrimitive ~ amount:',
+          amount
+        );
+        // const feeAmount = gasPrice.mul(new Dec(Number(amount)));
         return {
           denom: this.feeCurrency.coinMinimalDenom,
-          amount: feeAmount.roundUp().toString()
+          amount: amount.toString()
         };
       }
       const feeAmount = gasPrice.mul(new Dec(this.gasConfig.gas));
