@@ -239,8 +239,8 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           />
 
           <MemoInput
-            label="Memo (Optional)"
-            placeholder="Type your memo here"
+            label="Message (Optional)"
+            placeholder="Type your message here"
             inputContainerStyle={{
               backgroundColor: colors['background-box']
             }}

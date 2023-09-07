@@ -17,7 +17,9 @@ import OWFlatList from '@src/components/page/ow-flat-list';
 const COINTYPE_NETWORK = {
   118: 'Cosmos',
   60: 'Ethereum',
-  195: 'Tron'
+  195: 'Tron',
+  1: 'Bitcoin Testnet',
+  0: 'Bitcoin'
 };
 
 export const NetworkModal = ({
@@ -58,7 +60,9 @@ export const NetworkModal = ({
                   typeof keyRingStore.setKeyStoreLedgerAddress === 'function'
                 ) {
                   keyRingStore.setKeyStoreLedgerAddress(
-                    `44'/${item.bip44.coinType ?? item.coinType}'/${
+                    `${
+                      chainStore.current.networkType === 'bitcoin' ? '84' : '44'
+                    }'/${item.bip44.coinType ?? item.coinType}'/${
                       bip44Option.bip44HDPath.account
                     }'/${bip44Option.bip44HDPath.change}/${
                       bip44Option.bip44HDPath.addressIndex

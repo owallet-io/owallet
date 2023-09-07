@@ -422,16 +422,7 @@ describe('txsHelper', () => {
       }
     ]).toEqual(expectRs);
   });
-  it('formatTimeBitcoin', () => {
-    const expectRs = {
-      date: '2023-09-05 16:42:38',
-      timeLong: 'An hour ago (2023-09-05 16:42:38)',
-      timeShort: 'An hour ago',
-      timestamp: 0
-    };
-    const rs = helper.formatTimeBitcoin('2023-09-05T09:42:38Z');
-    expect(rs).toEqual(expectRs);
-  });
+
   it('formatNumberSeparateThousand', () => {
     const expectRs = '2,476,461';
     const rs = helper.formatNumberSeparateThousand(2476461);

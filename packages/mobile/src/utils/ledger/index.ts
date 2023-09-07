@@ -23,6 +23,8 @@ export function formatNeworkTypeToLedgerAppName(
   switch (network) {
     case 'cosmos':
       return 'cosmos';
+    case 'bitcoin':
+      return 'btc';
     case 'evm':
       if (chainId && chainId === TRON_ID) {
         return 'trx';
