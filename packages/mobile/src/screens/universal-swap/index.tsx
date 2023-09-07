@@ -74,12 +74,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, chainStore, universalSwapStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
-
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
+  const [amountLoading, setAmountLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState(
@@ -329,6 +329,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [ratio, setRatio] = useState(0);
 
   const getSimulateSwap = async (initAmount?) => {
+    setAmountLoading(true);
     const client = await CWStargate.init(
       accountOrai,
       ORAICHAIN_ID,
@@ -348,7 +349,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       },
       client
     );
-
+    setAmountLoading(false);
     return data;
   };
 
@@ -561,6 +562,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             return (
               <OWButton
                 key={item?.id}
+                disabled={amountLoading}
                 size="small"
                 style={
                   balanceActive?.id === item?.id
@@ -575,12 +577,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 label={`${item?.value}%`}
                 fullWidth={false}
                 onPress={() => {
+                  handleBalanceActive(item);
                   onMaxFromAmount(
                     (fromTokenBalance * BigInt(Number(item.value))) /
                       BigInt(Number(100)),
                     item.value
                   );
-                  handleBalanceActive(item);
                 }}
               />
             );
