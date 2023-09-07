@@ -3,11 +3,10 @@ import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import bech32 from 'bech32';
-import tokenABI from '@owallet/common';
+import tokenABI from '@src/hooks/abi/erc20.json';
 import flatten from 'lodash/flatten';
 import { ContractCallResults } from 'ethereum-multicall';
 import { Multicall } from '@owallet/common';
-
 import { chainInfos, CustomChainInfo, evmChains } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import { network } from '@owallet/common';
