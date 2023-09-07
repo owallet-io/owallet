@@ -8,10 +8,10 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
-import { TokenItemType, tokenMap } from '../config/bridgeTokens';
+import { TokenItemType, tokenMap } from '@owallet/common';
 import { useStore } from '@src/stores';
-import { getTotalUsd, toDisplay } from '../libs/utils';
-import { AmountDetails } from '../types/token';
+import { getTotalUsd, toDisplay } from '@owallet/common';
+import { AmountDetails } from '@owallet/common';
 import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
 
 export const SelectTokenModal: FunctionComponent<{

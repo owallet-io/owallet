@@ -1,4 +1,4 @@
-import { cosmosTokens } from '@src/screens/universal-swap/config/bridgeTokens';
+import { cosmosTokens } from '@owallet/common';
 import { useEffect, useState } from 'react';
 
 /**
