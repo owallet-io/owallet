@@ -3,25 +3,21 @@ import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import bech32 from 'bech32';
-import tokenABI from '@src/screens/universal-swap/config/abi/erc20.json';
+import tokenABI from '@owallet/common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults } from 'ethereum-multicall';
-import { Multicall } from '@src/screens/universal-swap/libs/multicall';
+import { Multicall } from '@owallet/common';
 
-import {
-  chainInfos,
-  CustomChainInfo,
-  evmChains
-} from '@src/screens/universal-swap/config/chainInfos';
+import { chainInfos, CustomChainInfo, evmChains } from '@owallet/common';
 import { Address } from '@owallet/crypto';
-import { network } from '@src/screens/universal-swap/config/networks';
+import { network } from '@owallet/common';
 import {
   cosmosTokens,
   evmTokens,
   oraichainTokens,
   tokenMap
-} from '@src/screens/universal-swap/config/bridgeTokens';
-import { getEvmAddress } from '@src/screens/universal-swap/helper';
+} from '@owallet/common';
+import { getEvmAddress } from '@owallet/common';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
 import { CWStargate } from '@src/common/cw-stargate';
 import { AccountWithAll } from '@owallet/stores';
@@ -60,7 +56,7 @@ async function loadNativeBalance(
     });
 
   Object.assign(
-    amountDetails,
+    amountDetails, //@ts-ignore
     Object.fromEntries(
       amountAll
         .filter(coin => tokenMap[coin.denom])
@@ -146,7 +142,7 @@ async function loadCw20Balance(
         data
       }))
     });
-
+    //@ts-ignore
     const amountDetails = Object.fromEntries(
       cw20Tokens.map((t, ind) => {
         if (!res.return_data[ind].success) {
@@ -210,6 +206,7 @@ async function loadEvmAmounts(
   evmAddress: string,
   chains: CustomChainInfo[]
 ) {
+  //@ts-ignore
   const amountDetails = Object.fromEntries(
     flatten(
       await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain)))
@@ -230,6 +227,7 @@ export async function loadKawaiiSubnetAmount(
 
     const kwtSubnetAddress = getEvmAddress(kwtAddress);
     const kawaiiEvmInfo = chainInfos.find(c => c.chainId === '0x1ae6');
+    //@ts-ignore
     let amountDetails = Object.fromEntries(
       await loadEvmEntries(kwtSubnetAddress, kawaiiEvmInfo)
     );
