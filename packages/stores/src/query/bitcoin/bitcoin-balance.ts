@@ -29,7 +29,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     chainGetter: ChainGetter,
     bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `bitcoin/balances/${bech32Address}`);
+    super(kvStore, chainId, chainGetter, `/addrs/${bech32Address}/full`);
 
     this.bech32Address = bech32Address;
 
@@ -43,6 +43,11 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
+    const resApi = await super.fetchResponse(cancelToken);
+    console.log(
+      '🚀 ~ file: bitcoin-query.ts:48 ~ ObservableQueryBitcoinBalanceInner ~ resApi:',
+      JSON.stringify(resApi)
+    );
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
       keyDerivationPath: '84'
@@ -56,6 +61,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
+    console.log("🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:", JSON.stringify(response))
     const btcResult = response.data;
     if (!btcResult) {
       throw new Error('Failed to get the response from bitcoin');

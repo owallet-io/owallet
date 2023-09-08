@@ -19,12 +19,7 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
     chainGetter: ChainGetter,
     protected readonly address: string
   ) {
-    super(kvStore, chainId, chainGetter, '', {
-      jsonrpc: '2.0',
-      method: 'btc_getBalance',
-      params: [address, 'latest'],
-      id: 'btc-balance'
-    });
+    super(kvStore, chainId, chainGetter, `/addrs/${address}/full`);
   }
 
   @computed
@@ -49,9 +44,11 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
   protected async fetchResponse(
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
+    const resApi = await super.fetchResponse(cancelToken);
+    console.log("🚀 ~ file: bitcoin-query.ts:48 ~ ObservableQueryBitcoinBalanceInner ~ resApi1:", JSON.stringify(resApi))
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath:'84'
+      keyDerivationPath: '84'
     }) as string;
 
     const scriptHash = getScriptHash(
@@ -63,7 +60,7 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-
+console.log("🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:", JSON.stringify(response))
     const btcResult = response.data;
 
     if (!btcResult) {

@@ -1367,8 +1367,17 @@ const formatBalance = ({ coin = '', cryptoUnit = 'satoshi', balance = 0 }) => {
     return '0';
   }
 };
-
+function toBufferLE(num, width) {
+  const hex = num.toString(16);
+  const buffer = Buffer.from(
+    hex.padStart(width * 2, '0').slice(0, width * 2),
+    'hex'
+  );
+  buffer.reverse();
+  return buffer;
+}
 module.exports = {
+  toBufferLE,
   validatePrivateKey,
   validateAddress,
   parsePaymentRequest,
