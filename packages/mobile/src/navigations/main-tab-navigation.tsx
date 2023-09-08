@@ -32,12 +32,11 @@ export const MainTabNavigation: FC = observer(() => {
   const isNorthSafe = insets.bottom > 0;
   const checkTabbarVisible = useMemo(() => {
     return visibleTabBar
-      ? SCREENS_OPTIONS[visibleTabBar].showTabBar || false
+      ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false
       : false;
   }, [visibleTabBar]);
   return (
     <Tab.Navigator
-      
       screenOptions={({ route }) => {
         return {
           tabBarIcon: ({ color, focused }) => {
@@ -108,7 +107,7 @@ export const MainTabNavigation: FC = observer(() => {
           )
         };
       }}
-      tabBar={(props) =>
+      tabBar={props =>
         checkTabbarVisible ? <BottomTabBar {...props} /> : null
       }
     >
