@@ -2,7 +2,13 @@ import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 import { useTheme } from '@src/themes/theme-provider';
 import { Alert, BackHandler, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
@@ -10,7 +16,11 @@ import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { version } from '../../../../../package.json';
 import { PageWithView } from '../../../../components/page';
-import { RNInjectedEthereum, RNInjectedOWallet, RNInjectedTronWeb } from '../../../../injected/injected-provider';
+import {
+  RNInjectedEthereum,
+  RNInjectedOWallet,
+  RNInjectedTronWeb
+} from '../../../../injected/injected-provider';
 import { RNMessageRequesterExternal } from '../../../../router';
 import { useStore } from '../../../../stores';
 import { InjectedProviderUrl } from '../../config';
@@ -24,13 +34,13 @@ export const useInjectedSourceCode = () => {
 
   useEffect(() => {
     fetch(InjectedProviderUrl)
-      .then((res) => {
+      .then(res => {
         return res.text();
       })
-      .then((res) => {
+      .then(res => {
         setCode(res);
       })
-      .catch((err) => console.log(err));
+      .catch(err => console.log(err));
   }, []);
 
   return code;
@@ -40,7 +50,7 @@ export const WebpageScreen: FunctionComponent<
   React.ComponentProps<typeof WebView> & {
     name: string;
   }
-> = observer((props) => {
+> = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const { colors } = useTheme();
   const bottomHeight = 80;
@@ -160,7 +170,9 @@ export const WebpageScreen: FunctionComponent<
     postMessage: (message: any) => {
       webviewRef.current?.injectJavaScript(
         `
-            window.postMessage(${JSON.stringify(message)}, window.location.origin);
+            window.postMessage(${JSON.stringify(
+              message
+            )}, window.location.origin);
             true; // note: this is required, or you'll sometimes get silent failures
           `
       );
@@ -173,15 +185,27 @@ export const WebpageScreen: FunctionComponent<
 
   // Start proxy for webview
   useEffect(() => {
-    RNInjectedOWallet.startProxy(owallet, eventListener, RNInjectedOWallet.parseWebviewMessage);
+    RNInjectedOWallet.startProxy(
+      owallet,
+      eventListener,
+      RNInjectedOWallet.parseWebviewMessage
+    );
   }, [eventEmitter, owallet]);
 
   useEffect(() => {
-    RNInjectedEthereum.startProxy(ethereum, eventListener, RNInjectedEthereum.parseWebviewMessage);
+    RNInjectedEthereum.startProxy(
+      ethereum,
+      eventListener,
+      RNInjectedEthereum.parseWebviewMessage
+    );
   }, [eventEmitter, ethereum]);
 
   useEffect(() => {
-    RNInjectedTronWeb.startProxy(tronWeb, eventListener, RNInjectedTronWeb.parseWebviewMessage);
+    RNInjectedTronWeb.startProxy(
+      tronWeb,
+      eventListener,
+      RNInjectedTronWeb.parseWebviewMessage
+    );
   }, [eventEmitter, tronWeb]);
 
   useEffect(() => {
@@ -267,7 +291,11 @@ export const WebpageScreen: FunctionComponent<
               }
             }}
           >
-            <BrowserFooterSection isSwitchTab={isSwitchTab} setIsSwitchTab={setIsSwitchTab} typeOf={'webview'} />
+            <BrowserFooterSection
+              isSwitchTab={isSwitchTab}
+              setIsSwitchTab={setIsSwitchTab}
+              typeOf={'webview'}
+            />
           </WebViewStateContext.Provider>
         </>
       ) : (
@@ -289,6 +317,7 @@ export const WebpageScreen: FunctionComponent<
           {sourceCode ? (
             <>
               <WebView
+                originWhitelist={['*']} // to allowing WebView to load blob
                 ref={webviewRef}
                 allowFileAccess={true}
                 allowFileAccessFromFileURLs={true}
@@ -300,7 +329,7 @@ export const WebpageScreen: FunctionComponent<
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
-                onNavigationStateChange={(e) => {
+                onNavigationStateChange={e => {
                   // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
                   // Use two handlers to measure simultaneously in ios and android.
                   setCanGoBack(e.canGoBack);
@@ -308,7 +337,7 @@ export const WebpageScreen: FunctionComponent<
 
                   setCurrentURL(e.url);
                 }}
-                onLoadProgress={(e) => {
+                onLoadProgress={e => {
                   // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
                   // Use two handlers to measure simultaneously in ios and android.
                   setCanGoBack(e.nativeEvent.canGoBack);
@@ -341,7 +370,11 @@ export const WebpageScreen: FunctionComponent<
                   }}
                 > */}
                 <View>
-                  <BrowserFooterSection isSwitchTab={isSwitchTab} setIsSwitchTab={setIsSwitchTab} typeOf={'webview'} />
+                  <BrowserFooterSection
+                    isSwitchTab={isSwitchTab}
+                    setIsSwitchTab={setIsSwitchTab}
+                    typeOf={'webview'}
+                  />
                 </View>
                 {/* </Animated.View> */}
               </WebViewStateContext.Provider>

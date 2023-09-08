@@ -426,7 +426,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         );
         if (!sameChainIdTokens)
           throw Error(
-            'Impossible case!. An EVM chain should at least have one token'
+            'Impossible case! An EVM chain should at least have one token'
           );
         setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
         return;
@@ -592,6 +592,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           label="Swap"
           style={styles.btnSwap}
           loading={false}
+          disabled={amountLoading}
           textStyle={styles.textBtnSwap}
           onPress={() => {
             account.handleUniversalSwap(chainId, { key: 'value' });
