@@ -45,7 +45,6 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
     const resApi = await super.fetchResponse(cancelToken);
-    console.log("🚀 ~ file: bitcoin-query.ts:48 ~ ObservableQueryBitcoinBalanceInner ~ resApi1:", JSON.stringify(resApi))
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
       keyDerivationPath: '84'
@@ -60,7 +59,6 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-console.log("🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:", JSON.stringify(response))
     const btcResult = response.data;
 
     if (!btcResult) {

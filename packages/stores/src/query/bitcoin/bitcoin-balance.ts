@@ -44,10 +44,6 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     cancelToken: CancelToken
   ): Promise<QueryResponse<Result>> {
     const resApi = await super.fetchResponse(cancelToken);
-    console.log(
-      '🚀 ~ file: bitcoin-query.ts:48 ~ ObservableQueryBitcoinBalanceInner ~ resApi:',
-      JSON.stringify(resApi)
-    );
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
       keyDerivationPath: '84'
@@ -61,7 +57,10 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-    console.log("🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:", JSON.stringify(response))
+    console.log(
+      '🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:',
+      JSON.stringify(response)
+    );
     const btcResult = response.data;
     if (!btcResult) {
       throw new Error('Failed to get the response from bitcoin');
@@ -123,11 +122,6 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
     if (!this.nativeBalances.response) {
       return new CoinPretty(currency, new Int(0)).ready(false);
     }
-
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:280 ~ ObservableQueryBitcoinBalanceNative ~ getbalance ~ this.nativeBalances.response:',
-      this.nativeBalances.response
-    );
 
     if (
       !this.nativeBalances.response?.data ||
