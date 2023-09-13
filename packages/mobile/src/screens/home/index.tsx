@@ -77,24 +77,36 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [chainStore, chainStoreIsInitializing, currentChain, currentChainId]);
 
   useEffect(() => {
+    handleCheckLedger();
+
+    return () => {};
+  }, []);
+  const handleCheckLedger = useCallback(async () => {
     if (keyRingStore.keyRingType === 'ledger') {
       const keyStore = keyRingStore.multiKeyStoreInfo.find(
         (keyStore) => keyStore.selected
       );
       if (!keyStore) return;
-      keyRingStore.setKeyStoreLedgerAddress(
-        `${chainStore.current.networkType === 'bitcoin' ? '84' : '44'}'/${
-          chainStore.current.bip44.coinType ?? keyStore.bip44HDPath.coinType
-        }'/${keyStore.bip44HDPath.account}'/${keyStore.bip44HDPath.change}/${
-          keyStore.bip44HDPath.addressIndex
-        }`,
-        chainStore.current.chainId
-      );
+      try {
+        const res = await keyRingStore.setKeyStoreLedgerAddress(
+          `${chainStore.current.networkType === 'bitcoin' ? '84' : '44'}'/${
+            chainStore.current.bip44.coinType ?? keyStore.bip44HDPath.coinType
+          }'/${keyStore.bip44HDPath.account}'/${keyStore.bip44HDPath.change}/${
+            keyStore.bip44HDPath.addressIndex
+          }`,
+          chainStore.current.chainId
+        );
+        console.log('🚀 ~ file: index.tsx:93 ~ useEffect ~ res:', res);
+      } catch (error) {
+        console.log(
+          '🚀 ~ file: index.tsx:100 ~ handleCheckLedger ~ error:',
+          error
+        );
+      }
+
       console.log('🚀 ~ file: index.tsx:84 ~ useEffect ~ keyStore:', keyStore);
       return;
     }
-
-    return () => {};
   }, []);
 
   useEffect(() => {

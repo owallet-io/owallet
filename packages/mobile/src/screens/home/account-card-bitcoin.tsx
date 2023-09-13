@@ -127,7 +127,7 @@ export const AccountCardBitcoin: FunctionComponent<{
     <AccountBox
       totalBalance={!!totalAmount ? totalAmount : null}
       addressComponent={
-        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+        <AddressCopyable address={account?.bech32Address} maxCharacters={22} />
       }
       name={account?.name || '..'}
       coinType={`${
