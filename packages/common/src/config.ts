@@ -275,7 +275,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinType: 118
     },
     coinType: 118,
-    bech32Config: Bech32Address.defaultBech32Config('orai'),
+    bech32Config: Bech32Address.defaultBech32Config('inj'),
     get currencies() {
       return [
         this.stakeCurrency,
