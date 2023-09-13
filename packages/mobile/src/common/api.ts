@@ -234,7 +234,6 @@ export const API = {
       const rs = await API.get(`/addrs/${addressAccount}/full`, {
         baseURL: url
       });
-      console.log('🚀 ~ file: api.ts:236 ~ getTxsBitcoin: ~ rs:', rs);
       const data: txBitcoinResult = rs.data;
       return Promise.resolve(data);
     } catch (error) {

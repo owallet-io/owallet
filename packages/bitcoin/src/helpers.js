@@ -516,18 +516,6 @@ const createTransaction = async ({
   message = '',
   addressType = 'bech32'
 } = {}) => {
-  // console.log('🚀 ~ file: helpers.js:517 ~ ', {
-  //   address,
-  //   transactionFee,
-  //   amount,
-  //   confirmedBalance,
-  //   utxos,
-  //   blacklistedUtxos,
-  //   changeAddress,
-  //   selectedCrypto,
-  //   message,
-  //   addressType
-  // });
   try {
     if (message && typeof message === 'string') {
       message = convertStringToMessage(message);

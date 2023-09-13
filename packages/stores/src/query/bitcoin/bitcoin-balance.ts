@@ -58,6 +58,10 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
       selectedCrypto: this.chainId
     });
     console.log(
+      '🚀 ~ file: bitcoin-query.ts:55 ~ ObservableQueryBitcoinBalanceInner ~ this.address:',
+      this.bech32Address
+    );
+    console.log(
       '🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:',
       JSON.stringify(response)
     );

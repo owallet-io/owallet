@@ -48,7 +48,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     accountStore,
     queriesStore,
     priceStore,
-    notificationStore
+    notificationStore,
+    keyRingStore
   } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
@@ -74,6 +75,27 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       })();
     }
   }, [chainStore, chainStoreIsInitializing, currentChain, currentChainId]);
+
+  useEffect(() => {
+    if (keyRingStore.keyRingType === 'ledger') {
+      const keyStore = keyRingStore.multiKeyStoreInfo.find(
+        (keyStore) => keyStore.selected
+      );
+      if (!keyStore) return;
+      keyRingStore.setKeyStoreLedgerAddress(
+        `${chainStore.current.networkType === 'bitcoin' ? '84' : '44'}'/${
+          chainStore.current.bip44.coinType ?? keyStore.bip44HDPath.coinType
+        }'/${keyStore.bip44HDPath.account}'/${keyStore.bip44HDPath.change}/${
+          keyStore.bip44HDPath.addressIndex
+        }`,
+        chainStore.current.chainId
+      );
+      console.log('🚀 ~ file: index.tsx:84 ~ useEffect ~ keyStore:', keyStore);
+      return;
+    }
+
+    return () => {};
+  }, []);
 
   useEffect(() => {
     const appStateHandler = (state: AppStateStatus) => {
@@ -233,7 +255,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       return <TronTokensCard />;
     }
     return <TokensCard refreshDate={refreshDate} />;
-  }, [chainStore.current.networkType,chainStore.current.chainId]);
+  }, [chainStore.current.networkType, chainStore.current.chainId]);
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={
