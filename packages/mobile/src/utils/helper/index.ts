@@ -533,6 +533,15 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
+export const getAddressFromLedgerWhenChangeNetwork = (
+  address,
+  ledgerAddress
+) => {
+  if (address === ledgerAddress) {
+    return ledgerAddress;
+  }
+  return null;
+};
 export const getCurrencyByMinimalDenom = (
   tokens,
   minimalDenom
@@ -575,14 +584,6 @@ export function numberWithCommas(x) {
 }
 
 export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
-  console.log(
-    '🚀 ~ file: index.ts:578 ~ findLedgerAddressWithChainId ~ chainId:',
-    chainId
-  );
-  console.log(
-    '🚀 ~ file: index.ts:584 ~ findLedgerAddressWithChainId ~ ChainIdEnum.BitcoinTestnet:',
-    ChainIdEnum.BitcoinTestnet
-  );
   let address;
 
   if (chainId === TRON_ID) {

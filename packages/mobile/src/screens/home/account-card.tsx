@@ -9,6 +9,10 @@ import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
 import { AccountBox } from './account-box';
 import { SCREENS } from '@src/common/constants';
+import {
+  findLedgerAddressWithChainId,
+  getAddressFromLedgerWhenChangeNetwork
+} from '@src/utils/helper';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -89,6 +93,27 @@ export const AccountCard: FunctionComponent<{
         chainStore: chainStore.current
       })
     );
+  };
+  const handleAddress = () => {
+    if (keyRingStore.keyRingType === 'ledger') {
+      console.log(
+        '🚀 ~ file: account-card.tsx:101 ~ handleAddress ~ account.bech32Address:',
+        account.bech32Address
+      );
+      const addressLedger = findLedgerAddressWithChainId(
+        keyRingStore.keyRingLedgerAddresses,
+        chainStore.current.chainId
+      );
+      console.log(
+        '🚀 ~ file: account-card.tsx:104 ~ handleAddress ~ addressLedger:',
+        addressLedger
+      );
+      return getAddressFromLedgerWhenChangeNetwork(
+        account.bech32Address,
+        addressLedger
+      );
+    }
+    return account.bech32Address;
   };
   return (
     <AccountBox
