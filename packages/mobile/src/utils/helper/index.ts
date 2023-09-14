@@ -10,6 +10,7 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { ToastShowParams } from 'react-native-toast-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Alert, Linking } from 'react-native';
+import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const TRON_ID = '0x2b6653dc';
@@ -574,14 +575,26 @@ export function numberWithCommas(x) {
 }
 
 export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
+  console.log(
+    '🚀 ~ file: index.ts:578 ~ findLedgerAddressWithChainId ~ chainId:',
+    chainId
+  );
+  console.log(
+    '🚀 ~ file: index.ts:584 ~ findLedgerAddressWithChainId ~ ChainIdEnum.BitcoinTestnet:',
+    ChainIdEnum.BitcoinTestnet
+  );
   let address;
 
   if (chainId === TRON_ID) {
     address = ledgerAddresses.trx;
+  } else if (chainId === ChainIdEnum.BitcoinTestnet) {
+    address = ledgerAddresses.tbtc;
   } else {
     const networkType = getNetworkTypeByChainId(chainId);
     if (networkType === 'evm') {
       address = ledgerAddresses.eth;
+    } else if (networkType === 'bitcoin') {
+      address = ledgerAddresses.btc;
     } else {
       address = ledgerAddresses.cosmos;
     }

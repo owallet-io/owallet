@@ -26,10 +26,7 @@ export interface ModalBaseProps {
   close?: () => void;
   containerStyle?: ViewStyle;
   disableSafeArea?: boolean;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }
 
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
@@ -118,6 +115,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           pointerEvents="box-none"
         >
           <BottomSheet
+            backdropComponent={renderBackdrop}
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
@@ -131,7 +129,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             snapPoints={animatedSnapPoints}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
-            backdropComponent={renderBackdrop}
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
             onClose={handleDismiss}
@@ -155,6 +152,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
           pointerEvents="box-none"
         >
           <BottomSheet
+            backdropComponent={renderBackdrop}
             {...bottomSheetModalConfig}
             ref={bottomSheetModalRef}
             backgroundStyle={{
@@ -168,7 +166,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             snapPoints={animatedSnapPoints}
             handleHeight={animatedHandleHeight}
             contentHeight={animatedContentHeight}
-            backdropComponent={renderBackdrop}
             onChange={handleSheetChanges}
             keyboardBlurBehavior={'restore'}
             onClose={handleDismiss}

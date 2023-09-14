@@ -17,6 +17,7 @@ import { AccountBox } from './account-box';
 import { btcToFiat } from '@owallet/bitcoin';
 import { CoinPretty } from '@owallet/unit';
 import { SCREENS } from '@src/common/constants';
+import { findLedgerAddressWithChainId } from '@src/utils/helper';
 export const AccountCardBitcoin: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -32,6 +33,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     (keyStore) => keyStore?.selected
   );
+  console.log("🚀 ~ file: account-card-bitcoin.tsx:36 ~ selected:", selected)
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
@@ -123,12 +125,30 @@ export const AccountCardBitcoin: FunctionComponent<{
       })
     );
   };
+  const renderAddress = () => {
+    if (
+      keyRingStore.keyRingLedgerAddresses &&
+      keyRingStore.keyRingType === 'ledger'
+    ) {
+      console.log("🚀 ~ file: account-card-bitcoin.tsx:133 ~ renderAddress ~ keyRingStore.keyRingLedgerAddresses:", keyRingStore.keyRingLedgerAddresses)
+      return (
+        <AddressCopyable
+          address={findLedgerAddressWithChainId(
+            keyRingStore.keyRingLedgerAddresses,
+            chainStore.current.chainId
+          )}
+          maxCharacters={22}
+        />
+      );
+    }
+    return (
+      <AddressCopyable address={account?.bech32Address} maxCharacters={22} />
+    );
+  };
   return (
     <AccountBox
       totalBalance={!!totalAmount ? totalAmount : null}
-      addressComponent={
-        <AddressCopyable address={account?.bech32Address} maxCharacters={22} />
-      }
+      addressComponent={renderAddress()}
       name={account?.name || '..'}
       coinType={`${
         keyRingStore.keyRingType === 'ledger'
