@@ -252,56 +252,56 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
     // beta: true // use v1beta1
   },
-  {
-    rpc: 'https://injective-rpc.polkachu.com',
-    rest: 'https://injective-lcd.quickapi.com',
-    chainId: 'injective-1',
-    chainName: 'Injective',
-    networkType: 'cosmos',
-    stakeCurrency: {
-      coinDenom: 'INJ',
-      coinMinimalDenom: 'inj',
-      coinDecimals: 18,
-      coinGeckoId: 'injective-protocol',
-      coinImageUrl:
-        'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
-      gasPriceStep: {
-        low: 0.003,
-        average: 0.005,
-        high: 0.007
-      }
-    },
-    bip44: {
-      coinType: 118
-    },
-    coinType: 118,
-    bech32Config: Bech32Address.defaultBech32Config('inj'),
-    get currencies() {
-      return [
-        this.stakeCurrency,
-        {
-          coinDenom: 'ORAI',
-          coinMinimalDenom:
-            'ibc/C20C0A822BD22B2CEF0D067400FCCFB6FAEEE9E91D360B4E0725BD522302D565',
-          coinDecimals: 6,
-          coinGeckoId: 'oraichain-token',
-          bridgeTo: ['Oraichain'],
-          coinImageUrl:
-            'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-        }
-      ];
-    },
-    get feeCurrencies() {
-      return [this.stakeCurrency];
-    },
-    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
-    chainSymbolImageUrl:
-      'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
-    txExplorer: {
-      name: 'Injective',
-      txUrl: 'https://explorer.injective.network/transaction/{txHash}'
-    }
-  },
+  // {
+  //   rpc: 'https://injective-rpc.polkachu.com',
+  //   rest: 'https://injective-lcd.quickapi.com',
+  //   chainId: 'injective-1',
+  //   chainName: 'Injective',
+  //   networkType: 'cosmos',
+  //   stakeCurrency: {
+  //     coinDenom: 'INJ',
+  //     coinMinimalDenom: 'inj',
+  //     coinDecimals: 18,
+  //     coinGeckoId: 'injective-protocol',
+  //     coinImageUrl:
+  //       'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
+  //     gasPriceStep: {
+  //       low: 0.003,
+  //       average: 0.005,
+  //       high: 0.007
+  //     }
+  //   },
+  //   bip44: {
+  //     coinType: 118
+  //   },
+  //   coinType: 118,
+  //   bech32Config: Bech32Address.defaultBech32Config('inj'),
+  //   get currencies() {
+  //     return [
+  //       this.stakeCurrency,
+  //       {
+  //         coinDenom: 'ORAI',
+  //         coinMinimalDenom:
+  //           'ibc/C20C0A822BD22B2CEF0D067400FCCFB6FAEEE9E91D360B4E0725BD522302D565',
+  //         coinDecimals: 6,
+  //         coinGeckoId: 'oraichain-token',
+  //         bridgeTo: ['Oraichain'],
+  //         coinImageUrl:
+  //           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+  //       }
+  //     ];
+  //   },
+  //   get feeCurrencies() {
+  //     return [this.stakeCurrency];
+  //   },
+  //   features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
+  //   chainSymbolImageUrl:
+  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
+  //   txExplorer: {
+  //     name: 'Injective',
+  //     txUrl: 'https://explorer.injective.network/transaction/{txHash}'
+  //   }
+  // },
   {
     chainId: 'oraibridge-subnet-2',
     chainName: 'OraiBridge',
