@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -29,7 +29,7 @@ export const AccountCardEVM: FunctionComponent<{
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  
+
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     (keyStore) => keyStore?.selected
   );
@@ -84,7 +84,44 @@ export const AccountCardEVM: FunctionComponent<{
       })
     );
   };
-
+  const renderAddress = () => {
+    if (
+      keyRingStore.keyRingLedgerAddresses &&
+      keyRingStore.keyRingType === 'ledger'
+    ) {
+      return (
+        <AddressCopyable
+          address={findLedgerAddressWithChainId(
+            keyRingStore.keyRingLedgerAddresses,
+            chainStore.current.chainId
+          )}
+          maxCharacters={22}
+        />
+      );
+    } else if (chainStore.current.chainId === TRON_ID) {
+      return (
+        <View>
+          <View>
+            <Text>Base58: </Text>
+            <AddressCopyable
+              address={Address.getBase58Address(account.evmosHexAddress)}
+              maxCharacters={22}
+            />
+          </View>
+          <View>
+            <Text>Evmos: </Text>
+            <AddressCopyable
+              address={account.evmosHexAddress}
+              maxCharacters={22}
+            />
+          </View>
+        </View>
+      );
+    }
+    return (
+      <AddressCopyable address={account.evmosHexAddress} maxCharacters={22} />
+    );
+  };
   return (
     <AccountBox
       totalBalance={
@@ -146,23 +183,7 @@ export const AccountCardEVM: FunctionComponent<{
             ).toFixed(6)
           : 0
       }`}
-      addressComponent={
-        <AddressCopyable
-          address={
-            keyRingStore.keyRingLedgerAddresses &&
-            keyRingStore.keyRingType === 'ledger'
-              ? findLedgerAddressWithChainId(
-                  keyRingStore.keyRingLedgerAddresses,
-                  chainStore.current.chainId
-                )
-              : chainStore.current.chainId === TRON_ID &&
-                account.evmosHexAddress
-              ? Address.getBase58Address(account.evmosHexAddress)
-              : account.evmosHexAddress
-          }
-          maxCharacters={22}
-        />
-      }
+      addressComponent={renderAddress()}
     />
   );
 });
