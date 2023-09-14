@@ -9,6 +9,7 @@ export class Address {
   }
 
   static getBase58Address(address: string): string {
+    if(!address) return null;
     const evmAddress = Buffer.from('41' + address.slice(2), 'hex');
     const hash = Hash.sha256(Hash.sha256(evmAddress));
     const checkSum = Buffer.from(hash.slice(0, 4));
