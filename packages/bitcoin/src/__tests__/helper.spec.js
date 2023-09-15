@@ -213,7 +213,7 @@ describe('helper', () => {
         mnemonic:
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
-      'xprvA2xb1gzb6ibQFvnGexAMHFFbyuh4Jw2ugatoi2aWYuLtfwmH4B7zg1ZonqoMJP3hQq4CnL6MKB8gcXcaYjiX2wAy8Txsc8ZaTsh1KZdYukQ'
+      'xprvA2q8XgFXw2swTGJXa2TJBqmSZmPyUBhzCXndumbPH5ScyipLMMKJp32R7jGSHLJwApTFj8nRp4GkZcdeFqEhfdXU3LYkaz3LwWHZxfSaZqx'
     ],
     [
       {
@@ -222,7 +222,7 @@ describe('helper', () => {
         mnemonic:
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
-      'tprv8kJffQMaAirLokZKSXKr9Av1nPHu3gDjrZhgM1qjaV67XehMoz1M1cequrN7jodKQathN8ty8Kuiqya9NuZcjVHqk6rtFhJTErfpyrjQBQm'
+      'tprv8kUr2PQcA1spigZD2FVbFZDtQcHUtZniwP75j4xGZmgjYfLydmGmcUYwEEBxCMPNgrxut21GkZDDgucQVxja1W9qfzidYTrsBGsGHrdQ1od'
     ]
   ])('Test getKeyPair for %p', (param, expected) => {
     const res = getKeyPair(param);
@@ -237,7 +237,7 @@ describe('helper', () => {
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
       'bitcoin',
-      '1LvCkqBm4kFwXxqZd9b8aQHADSYyY5zx6P'
+      'bc1q0vh389f8xtr87jcnt0xhc5sh9c0ahrqwv9kz7j'
     ],
     [
       getKeyPair({
@@ -247,7 +247,7 @@ describe('helper', () => {
           'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
       'bitcoinTestnet',
-      'n4XP6YwVHNCJ74ResGk7xq3CBhYqJc9Bnj'
+      'tb1q55ddlnqp7spzeskdd82p5sseyqexy67s7esc3g'
     ]
   ])('Test getAddress for %p', (param1, param2, expected) => {
     const res = getAddress(param1, param2, 'bech32');
@@ -263,7 +263,7 @@ describe('helper', () => {
     const msg = convertStringToMessage('HelloWord');
     const rs = getByteCount({ ['bech32']: 27 }, { ['bech32']: 2 }, msg);
     console.log('🚀 ~ file: helper.spec.js:264 ~ it ~ rs:', rs);
-    expect(rs).toBe(4100);
+    expect(rs).toBe(1934);
   });
   // it('createTransaction', async () => {
   //   const fakeGetTransaction = {
