@@ -885,11 +885,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         msgs,
         ...extraOptions
       });
-      if (signResponse && signResponse.rawTxHex) {
-        return {
-          txHash: null
-        };
-      }
+
       return {
         txHash: signResponse?.rawTxHex
       };
