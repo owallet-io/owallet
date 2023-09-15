@@ -65,36 +65,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     sendConfigs.amountConfig.getError() ??
     sendConfigs.memoConfig.getError() ??
     sendConfigs.gasConfig.getError();
-  // ?? sendConfigs.feeConfig.getError();
+
   const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
-
-  // console.log();
-  // const totalFee = useMemo(() => {
-  //   const feeAmount = calculatorFee({
-  //     changeAddress: sendConfigs.amountConfig.sender,
-  //     utxos: utxos,
-  //     message: sendConfigs.memoConfig.memo
-  //   });
-  //   sendConfigs.feeConfig.setManualFee({
-  //     amount: feeAmount.toString(),
-  //     denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
-  //   });
-  //   const feeDisplay = formatBalance({
-  //     balance: Number(feeAmount),
-  //     cryptoUnit: 'BTC',
-  //     coin: chainStore.current.chainId
-  //   });
-  //   return {
-  //     feeAmount,
-  //     feeDisplay
-  //   };
-  // }, [
-  //   sendConfigs.amountConfig.sender,
-  //   sendConfigs.memoConfig.memo,
-  //   utxos,
-  //   chainStore.current.chainId
-  // ]);
   const refreshBalance = async (address) => {
     try {
       await queries.bitcoin.queryBitcoinBalance

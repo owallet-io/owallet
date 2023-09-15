@@ -885,9 +885,13 @@ export class AccountSetBase<MsgOpts, Queries> {
         msgs,
         ...extraOptions
       });
-
+      if (signResponse && signResponse.rawTxHex) {
+        return {
+          txHash: null
+        };
+      }
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse?.rawTxHex
       };
     } catch (error) {
       console.log('Error on broadcastMsgs: ', error);

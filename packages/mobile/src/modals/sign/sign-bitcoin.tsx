@@ -18,16 +18,14 @@ import { useUnmount } from '../../hooks';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { navigationRef } from '../../router/root';
 import { SCREENS } from '@src/common/constants';
+import { formatBalance } from '@owallet/bitcoin';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
 export const SignBitcoinModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(() => {
     const { chainStore, signInteractionStore } = useStore();
@@ -37,6 +35,10 @@ export const SignBitcoinModal: FunctionComponent<{
     });
 
     const [dataSign, setDataSign] = useState(null);
+    console.log(
+      '🚀 ~ file: sign-bitcoin.tsx:40 ~ observer ~ dataSign:',
+      dataSign
+    );
 
     useEffect(() => {
       if (signInteractionStore.waitingBitcoinData) {
@@ -93,7 +95,58 @@ export const SignBitcoinModal: FunctionComponent<{
               </ScrollView>
             </View>
           </View>
-
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: 8,
+              alignItems: 'center'
+            }}
+          >
+            <Text
+              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
+            >
+              Amount
+            </Text>
+            <Text
+              style={{
+                ...style.flatten(['subtitle2']),
+                color: colors['purple-700']
+              }}
+            >
+              {formatBalance({
+                balance: Number(dataSign?.data?.data?.msgs?.amount),
+                cryptoUnit: 'BTC',
+                coin: chainStore.current.chainId
+              }) || '0 BTC'}
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingBottom: 16,
+              alignItems: 'center'
+            }}
+          >
+            <Text
+              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
+            >
+              Fee
+            </Text>
+            <Text
+              style={{
+                ...style.flatten(['subtitle2']),
+                color: colors['purple-700']
+              }}
+            >
+              {formatBalance({
+                balance: Number(dataSign?.data?.data?.msgs?.totalFee),
+                cryptoUnit: 'BTC',
+                coin: chainStore.current.chainId
+              }) || '0 BTC'}
+            </Text>
+          </View>
           <View
             style={{
               flexDirection: 'row',
