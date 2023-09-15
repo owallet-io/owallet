@@ -253,8 +253,10 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://rpc-injective.keplr.app',
-    rest: 'https://lcd-injective.keplr.app',
+    // rpc: 'https://rpc-injective.keplr.app',
+    // rest: 'https://lcd-injective.keplr.app',
+    rpc: 'https://injective-rpc.polkachu.com',
+    rest: 'https://injective-lcd.quickapi.com',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'evmos',
