@@ -33,14 +33,19 @@ export const AccountCardBitcoin: FunctionComponent<{
   const selected = keyRingStore?.multiKeyStoreInfo.find(
     (keyStore) => keyStore?.selected
   );
-  console.log("🚀 ~ file: account-card-bitcoin.tsx:36 ~ selected:", selected)
+  console.log('🚀 ~ file: account-card-bitcoin.tsx:36 ~ selected:', selected);
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
 
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account?.bech32Address
+    keyRingStore.keyRingType === 'ledger'
+      ? findLedgerAddressWithChainId(
+          keyRingStore.keyRingLedgerAddresses,
+          chainStore.current.chainId
+        )
+      : account?.bech32Address
   )?.balance;
 
   const totalAmount = useMemo(() => {
@@ -131,7 +136,10 @@ export const AccountCardBitcoin: FunctionComponent<{
       keyRingStore.keyRingLedgerAddresses &&
       keyRingStore.keyRingType === 'ledger'
     ) {
-      console.log("🚀 ~ file: account-card-bitcoin.tsx:133 ~ renderAddress ~ keyRingStore.keyRingLedgerAddresses:", keyRingStore.keyRingLedgerAddresses)
+      console.log(
+        '🚀 ~ file: account-card-bitcoin.tsx:133 ~ renderAddress ~ keyRingStore.keyRingLedgerAddresses:',
+        keyRingStore.keyRingLedgerAddresses
+      );
       return (
         <AddressCopyable
           address={findLedgerAddressWithChainId(
