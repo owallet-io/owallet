@@ -257,7 +257,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: 'https://lcd-injective.keplr.app',
     chainId: 'injective-1',
     chainName: 'Injective',
-    networkType: 'cosmos',
+    networkType: 'evmos',
     stakeCurrency: {
       coinDenom: 'INJ',
       coinMinimalDenom: 'inj',
