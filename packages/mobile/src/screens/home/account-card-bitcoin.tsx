@@ -121,7 +121,8 @@ export const AccountCardBitcoin: FunctionComponent<{
     modalStore.setChildren(
       AddressQRCodeModal({
         account,
-        chainStore: chainStore.current
+        chainStore: chainStore.current,
+        keyRingStore: keyRingStore
       })
     );
   };

@@ -5,23 +5,33 @@ import { CardModal } from '../../../modals/card';
 import { AddressCopyable } from '../../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
-import { AccountWithAll } from '@owallet/stores';
+import { AccountWithAll, KeyRingStore } from '@owallet/stores';
 import { Text } from '@src/components/text';
 import { Address } from '@owallet/crypto';
 import { TRON_ID } from '@owallet/common';
 
+import { findLedgerAddressWithChainId } from '@src/utils/helper';
+
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
   chainStore?: any;
-}> = ({ account, chainStore }) => {
+  keyRingStore?: KeyRingStore;
+}> = ({ account, chainStore, keyRingStore }) => {
   console.log('🚀 ~ file: qrcode-modal.tsx:17 ~ account:', account);
-  console.log('chainStore', chainStore);
 
   let addressToshow = '';
-  if (chainStore?.networkType === 'cosmos') {
-    addressToshow = account.bech32Address;
-  } else if (chainStore?.networkType === 'bitcoin') {
-    addressToshow = account.bech32Address;
+  if (
+    chainStore?.networkType === 'cosmos' ||
+    chainStore?.networkType === 'bitcoin'
+  ) {
+    if (keyRingStore.keyRingType === 'ledger') {
+      addressToshow = findLedgerAddressWithChainId(
+        keyRingStore.keyRingLedgerAddresses,
+        chainStore.chainId
+      );
+    } else {
+      addressToshow = account.bech32Address;
+    }
   } else {
     if (chainStore?.chainId === TRON_ID) {
       addressToshow = Address.getBase58Address(account.evmosHexAddress);

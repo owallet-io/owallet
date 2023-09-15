@@ -34,8 +34,14 @@ import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const { chainStore, modalStore, txsStore, accountStore, queriesStore } =
-    useStore();
+  const {
+    chainStore,
+    modalStore,
+    txsStore,
+    accountStore,
+    keyRingStore,
+    queriesStore
+  } = useStore();
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -116,7 +122,8 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     modalStore.setChildren(
       AddressQRCodeModal({
         account,
-        chainStore: chainStore.current
+        chainStore: chainStore.current,
+        keyRingStore: keyRingStore
       })
     );
   };

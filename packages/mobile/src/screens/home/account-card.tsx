@@ -90,28 +90,21 @@ export const AccountCard: FunctionComponent<{
     modalStore.setChildren(
       AddressQRCodeModal({
         account,
-        chainStore: chainStore.current
+        chainStore: chainStore.current,
+        keyRingStore: keyRingStore
       })
     );
   };
-  const handleAddress = () => {
+  const renderAddress = () => {
     if (keyRingStore.keyRingType === 'ledger') {
-      console.log(
-        '🚀 ~ file: account-card.tsx:101 ~ handleAddress ~ account.bech32Address:',
-        account.bech32Address
-      );
       const addressLedger = findLedgerAddressWithChainId(
         keyRingStore.keyRingLedgerAddresses,
         chainStore.current.chainId
       );
-      console.log(
-        '🚀 ~ file: account-card.tsx:104 ~ handleAddress ~ addressLedger:',
-        addressLedger
-      );
-      return getAddressFromLedgerWhenChangeNetwork(
-        account.bech32Address,
-        addressLedger
-      );
+      if (!addressLedger) {
+        return '';
+      }
+      return account.bech32Address;
     }
     return account.bech32Address;
   };
@@ -119,7 +112,7 @@ export const AccountCard: FunctionComponent<{
     <AccountBox
       totalBalance={totalBalance}
       addressComponent={
-        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
+        <AddressCopyable address={renderAddress()} maxCharacters={22} />
       }
       name={account?.name || '..'}
       coinType={`${
