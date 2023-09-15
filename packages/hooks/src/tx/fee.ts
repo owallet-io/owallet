@@ -206,10 +206,6 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
           transactionFee: gasPriceStep[feeType] as number,
           addressType: 'bech32'
         });
-        console.log(
-          '🚀 ~ file: fee.ts:208 ~ FeeConfig ~ getFeeTypePrimitive ~ amount:',
-          amount
-        );
         // const feeAmount = gasPrice.mul(new Dec(Number(amount)));
         return {
           denom: this.feeCurrency.coinMinimalDenom,
