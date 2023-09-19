@@ -15,11 +15,13 @@ import {
   ENSIsFetchingError,
   ENSNotSupportedError,
   InvalidBech32Error,
-  InvalidEvmAddressError
+  InvalidEvmAddressError,
+  InvalidTronAddressError
 } from './errors';
 import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
 import { ObservableEnsFetcher } from '@owallet/ens';
+import { TRON_ID } from '@owallet/common';
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
@@ -138,12 +140,22 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
     }
 
     try {
-      if (this.chainInfo.networkType === "evm") {
-        if (!Web3.utils.isAddress(this.recipient)) return new InvalidEvmAddressError(
-          `Invalid evm address`
-        );
-      }
-      else Bech32Address.validate(this.recipient, this.bech32Prefix);
+      if (this.chainInfo.networkType === 'evm') {
+        if (this.chainInfo.chainId === TRON_ID) {
+          const checkAddress = /T[A-Za-z1-9]{33}/g.exec(this.recipient);
+          if (!checkAddress) {
+            return new InvalidTronAddressError(`Invalid tron address`);
+          }
+        } else {
+          if (
+            !Web3.utils.isAddress(
+              this.recipient,
+              Number(this.chainInfo.chainId)
+            )
+          )
+            return new InvalidEvmAddressError(`Invalid evm address`);
+        }
+      } else Bech32Address.validate(this.recipient, this.bech32Prefix);
     } catch (e) {
       return new InvalidBech32Error(
         `Invalid bech32: ${e.message || e.toString()}`

@@ -20,7 +20,13 @@ import { SelectChain } from "../../layouts/header";
 import { SendEvmPage } from "../send-evm";
 
 export const TokenPage: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, uiConfigStore } = useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    uiConfigStore,
+    keyRingStore
+  } = useStore();
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
@@ -35,6 +41,7 @@ export const TokenPage: FunctionComponent = observer(() => {
     );
 
   const tokens = queryBalances.balances;
+  const [tokensTron, setTokensTron] = React.useState(tokens);
   // const queryBalances = queriesStore
   //   .get(chainStore.current.chainId)
   //   .queryBalances.getQueryBech32Address(
@@ -58,7 +65,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
       {uiConfigStore.showAdvancedIBCTransfer &&
-      chainStore.current.features?.includes("ibc-transfer") ? (
+        chainStore.current.features?.includes("ibc-transfer") ? (
         <>
           <Card className={classnames(style.card, "shadow")}>
             <CardBody>
@@ -83,13 +90,21 @@ export const TokenPage: FunctionComponent = observer(() => {
       {hasTokens ? (
         <Card className={classnames(style.card, "shadow")}>
           <CardBody>
-            {
+            {chainStore.current.chainId === TRON_ID ? (
+              <TokensTronView
+                //@ts-ignore
+                tokens={tokensTron}
+                coinMinimalDenom={coinMinimalDenom}
+                handleClickToken={handleClickToken}
+              />
+            ) : (
               <TokensView
+                setHasSend={setHasSend}
                 tokens={tokens}
                 coinMinimalDenom={coinMinimalDenom}
                 handleClickToken={handleClickToken}
               />
-            }
+            )}
           </CardBody>
           {hasSend ? (
             <>

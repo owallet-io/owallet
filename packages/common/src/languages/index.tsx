@@ -1,34 +1,22 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { KVStore } from '../kv-store/interface';
 
-import MessagesEn from './en.json';
-import MessagesKo from './ko.json';
+import MessagesEn from './en';
+// import MessagesKo from './ko.js';
 
 export type IntlMessage = Record<string, string>;
 export type IntlMessages = { [lang: string]: Record<string, string> };
 
 const messages: IntlMessages = {
-  en: MessagesEn,
-  ko: MessagesKo
+  en: MessagesEn
+  // ko: MessagesKo
 };
 
-function getMessages(
-  additionalMessages: IntlMessages,
-  language: string
-): IntlMessage {
-  return Object.assign(
-    {},
-    MessagesEn,
-    messages[language],
-    additionalMessages[language]
-  );
+function getMessages(additionalMessages: IntlMessages, language: string): IntlMessage {
+  return Object.assign({}, MessagesEn, messages[language], additionalMessages[language]);
 }
 
-async function initLanguage(
-  additionalMessages: IntlMessages,
-  storage: KVStore,
-  defaultLocale?: string
-): Promise<string> {
+async function initLanguage(additionalMessages: IntlMessages, storage: KVStore, defaultLocale?: string): Promise<string> {
   try {
     const language = (await storage.get<string>('language')) ?? defaultLocale;
     if (messages[language] || additionalMessages[language]) {
@@ -77,18 +65,10 @@ export const AppIntlProvider: FunctionComponent<{
   languageToFiatCurrency: TypeLanguageToFiatCurrency;
   defaultLocale?: string;
   storage: KVStore;
-}> = ({
-  additionalMessages,
-  languageToFiatCurrency,
-  children,
-  defaultLocale,
-  storage
-}) => {
+}> = ({ additionalMessages, languageToFiatCurrency, children, defaultLocale, storage }) => {
   const [language, _setLanguage] = useState('en');
   const [automatic, setAutomatic] = useState(false);
-  const [messages, setMessages] = useState(
-    getMessages(additionalMessages, language)
-  );
+  const [messages, setMessages] = useState(getMessages(additionalMessages, language));
   const [fiatCurrency, _setFiatCurrency] = useState<string | null>();
 
   useEffect(() => {
@@ -113,10 +93,7 @@ export const AppIntlProvider: FunctionComponent<{
   };
 
   const setFiatCurrency = (fiatCurrency: string | null) => {
-    fiatCurrency =
-      fiatCurrency ||
-      languageToFiatCurrency[language] ||
-      languageToFiatCurrency['default'];
+    fiatCurrency = fiatCurrency || languageToFiatCurrency[language] || languageToFiatCurrency['default'];
     storage.set('fiat-currency', fiatCurrency);
     _setFiatCurrency(fiatCurrency);
   };

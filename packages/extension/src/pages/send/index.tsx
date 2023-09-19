@@ -186,7 +186,6 @@ export const SendPage: FunctionComponent<{
         className={style.formContainer}
         onSubmit={async (e: any) => {
           e.preventDefault();
-
           if (accountInfo.isReadyToSendMsgs && txStateIsValid) {
             try {
               const stdFee = sendConfigs.feeConfig.toStdFee();
@@ -201,7 +200,8 @@ export const SendPage: FunctionComponent<{
                 {
                   preferNoSetFee: true,
                   preferNoSetMemo: true,
-                  networkType: chainStore.current.networkType
+                  networkType: chainStore.current.networkType,
+                  chainId: chainStore.current.chainId
                 },
                 {
                   onBroadcasted: () => {
