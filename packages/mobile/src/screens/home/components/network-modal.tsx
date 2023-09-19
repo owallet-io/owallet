@@ -11,16 +11,9 @@ import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID } from '@owallet/common';
+import { TRON_ID,COINTYPE_NETWORK } from '@owallet/common';
 import OWFlatList from '@src/components/page/ow-flat-list';
 
-const COINTYPE_NETWORK = {
-  118: 'Cosmos',
-  60: 'Ethereum',
-  195: 'Tron',
-  1: 'Bitcoin Testnet',
-  0: 'Bitcoin'
-};
 
 export const NetworkModal = ({
   profileColor,

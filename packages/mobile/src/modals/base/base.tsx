@@ -60,6 +60,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   closeRef.current = close;
 
   useEffect(() => {
+    if (Keyboard.dismiss) {
+      Keyboard.dismiss();
+    }
     if (isOpen) {
       bottomSheetModalRef.current?.expand();
       return;

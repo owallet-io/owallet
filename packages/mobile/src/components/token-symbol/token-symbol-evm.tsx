@@ -75,7 +75,7 @@ export const TokenSymbolEVM: FunctionComponent<{
         />
       ) : (
         <VectorCharacter
-          char={currency.coinDenom[0]}
+          char={currency?.coinDenom[0] ?? ''}
           height={Math.floor(size * 0.35)}
           color="black"
         />
