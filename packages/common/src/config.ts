@@ -259,7 +259,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     rest: 'https://injective-lcd.quickapi.com',
     chainId: 'injective-1',
     chainName: 'Injective',
-    networkType: 'evmos',
+    networkType: 'cosmos',
     stakeCurrency: {
       coinDenom: 'INJ',
       coinMinimalDenom: 'inj',
@@ -275,6 +275,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
     },
     bip44: {
       coinType: 60
+    },
+    gasPriceStep: {
+      low: 5000000000,
+      average: 25000000000,
+      high: 50000000000
     },
     coinType: 60,
     bech32Config: Bech32Address.defaultBech32Config('inj'),
