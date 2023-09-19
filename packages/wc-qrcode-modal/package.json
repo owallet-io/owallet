@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "rimraf node_modules build",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "etsc",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/react": "^16.14.4",
-    "@types/react-dom": "^16.9.11"
+    "@types/react-dom": "^16.9.11",
+    "html-webpack-plugin": "^5.5.1"
   }
 }

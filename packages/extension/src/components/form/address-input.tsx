@@ -29,7 +29,8 @@ import {
   ENSFailedToFetchError,
   ENSIsFetchingError,
   IIBCChannelConfig,
-  InvalidEvmAddressError
+  InvalidEvmAddressError,
+  InvalidTronAddressError
 } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { useIntl } from 'react-intl';
@@ -93,6 +94,10 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
             return intl.formatMessage({
               id: 'input.recipient.error.invalid-evm-address'
             });
+          case InvalidTronAddressError:
+            return intl.formatMessage({
+              id: 'input.recipient.error.invalid-tron-address'
+            });
           case ENSNotSupportedError:
             return intl.formatMessage({
               id: 'input.recipient.error.ens-not-supported'
@@ -145,9 +150,7 @@ export const AddressInput: FunctionComponent<AddressInputProps> = observer(
               {label}
             </Label>
           ) : null}
-          <InputGroup
-            className={styleAddressInput.inputGroup}
-          >
+          <InputGroup className={styleAddressInput.inputGroup}>
             <Input
               id={inputId}
               className={classnames(

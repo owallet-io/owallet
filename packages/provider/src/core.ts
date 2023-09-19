@@ -9,7 +9,6 @@ import {
   Key,
   EthereumMode,
   RequestArguments,
-  TronWebMode,
   ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
@@ -53,10 +52,11 @@ import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
 import {
+  GetChainInfosWithoutEndpointsMsg,
+  GetDefaultAddressTronMsg,
   RequestSignDirectMsg,
   RequestSignEthereumMsg,
-  RequestSignTronMsg,
-  GetDefaultAddressTronMsg
+  RequestSignTronMsg
 } from './msgs';
 import { TRON_ID } from '@owallet/common';
 
@@ -341,6 +341,12 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
+  async signAndBroadcastTron(chainId: string, data: object): Promise<object> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
     console.log(
@@ -401,7 +407,7 @@ export class Ethereum implements IEthereum {
 export class TronWeb implements ITronWeb {
   constructor(
     public readonly version: string,
-    public readonly mode: TronWebMode,
+    public readonly mode: EthereumMode,
     public initChainId: string,
     protected readonly requester: MessageRequester
   ) {
