@@ -98,7 +98,7 @@ export const API = {
           ['pagination.count_total']: true,
           ['pagination.limit']: perPage,
           ['pagination.offset']: currentPage,
-          order_by: 'ORDER_BY_DESC'
+          order_by: '2'
         }
       });
       return Promise.resolve(rs);

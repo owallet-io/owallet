@@ -14,7 +14,5 @@ export type SupplyTotalStargate = {
 };
 
 export type MintingInflation = {
-  height: string;
-  // Dec
-  result: string;
+  inflation: string;
 };

@@ -253,9 +253,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    // rpc: 'https://rpc-injective.keplr.app',
-    // rest: 'https://lcd-injective.keplr.app',
-    rpc: 'https://injective-rpc.polkachu.com',
+    rpc: 'https://sentry.tm.injective.network:443',
     rest: 'https://sentry.lcd.injective.network:443',
     chainId: 'injective-1',
     chainName: 'Injective',

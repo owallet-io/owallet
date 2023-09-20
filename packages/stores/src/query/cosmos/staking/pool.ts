@@ -5,6 +5,6 @@ import { ChainGetter } from '../../../common';
 
 export class ObservableQueryStakingPool extends ObservableChainQuery<StakingPool> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {
-    super(kvStore, chainId, chainGetter, '/staking/pool');
+    super(kvStore, chainId, chainGetter, '/cosmos/staking/v1beta1/pool');
   }
 }

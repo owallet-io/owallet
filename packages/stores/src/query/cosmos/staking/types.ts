@@ -1,11 +1,8 @@
 import { CoinPrimitive } from '../../../common';
 
 export type Rewards = {
-  height: string;
-  result: {
-    rewards: DelegatorReward[] | null;
-    total: CoinPrimitive[];
-  };
+  rewards: DelegatorReward[] | null;
+  total: CoinPrimitive[];
 };
 
 export type DelegatorReward = {
@@ -71,15 +68,26 @@ export type UnbondingDelegation = {
 
 export type Validator = {
   operator_address: string;
-  consensus_pubkey: string;
+  consensus_pubkey: {
+    "@type": string;
+    // Base64
+    key: string;
+  };
   jailed: boolean;
-  status: number;
+  status:
+    | "BOND_STATUS_UNSPECIFIED"
+    | "BOND_STATUS_UNBONDED"
+    | "BOND_STATUS_UNBONDING"
+    | "BOND_STATUS_BONDED";
+  // Int
   tokens: string;
+  // Dec
   delegator_shares: string;
   description: {
     moniker?: string;
     identity?: string;
     website?: string;
+    security_contact?: string;
     details?: string;
   };
   unbonding_height: string;
@@ -100,14 +108,14 @@ export type Validator = {
 };
 
 export type Validators = {
-  height: string;
-  result: Validator[];
+  validators: Validator[];
 };
 
 export enum BondStatus {
-  Unbonded = 'Unbonded',
-  Unbonding = 'Unbonding',
-  Bonded = 'Bonded'
+  Unbonded = "Unbonded",
+  Unbonding = "Unbonding",
+  Bonded = "Bonded",
+  Unspecified = "Unspecified",
 }
 
 export type StakingParams = {
@@ -121,10 +129,9 @@ export type StakingParams = {
 };
 
 export type StakingPool = {
-  height: string;
-  result: {
+  pool: {
     // Int
-    notBondedTokens: string;
+    not_bonded_tokens: string;
     // Int
     bonded_tokens: string;
   };
