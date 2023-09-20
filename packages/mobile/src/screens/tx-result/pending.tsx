@@ -102,6 +102,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         txTracer
           .traceTx(Buffer.from(txHash, 'hex'))
           .then(tx => {
+            console.log("🚀 ~ file: pending.tsx:105 ~ useEffect ~ tx:", tx)
             if (tx.code == null || tx.code === 0) {
               smartNavigation.replaceSmart('TxSuccessResult', {
                 chainId,
