@@ -114,11 +114,11 @@ export enum BondStatus {
 }
 
 export type StakingParams = {
-  height: string;
-  result: {
+  params: {
     unbonding_time: string;
     max_validators: number;
     max_entries: number;
+    historical_entries: number;
     bond_denom: string;
   };
 };
