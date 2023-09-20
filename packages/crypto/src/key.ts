@@ -1,6 +1,6 @@
 import { ec } from 'elliptic';
 import CryptoJS from 'crypto-js';
-
+import { keccak256 } from "@ethersproject/keccak256";
 import { Buffer } from 'buffer';
 
 export class PrivKeySecp256k1 {
@@ -37,6 +37,21 @@ export class PrivKeySecp256k1 {
     ).toString();
 
     const signature = key.sign(Buffer.from(hash, 'hex'), {
+      canonical: true
+    });
+
+    return new Uint8Array(
+      signature.r.toArray('be', 32).concat(signature.s.toArray('be', 32))
+    );
+  }
+  signDigest32(msg: Uint8Array): Uint8Array {
+    const secp256k1 = new ec('secp256k1');
+    const key = secp256k1.keyFromPrivate(this.privKey);
+
+    const hash = Buffer.from(keccak256(msg).replace("0x", ""), "hex")
+    console.log("🚀 ~ file: key.ts:52 ~ PrivKeySecp256k1 ~ signDigest32 ~ hash:", hash)
+
+    const signature = key.sign(hash, {
       canonical: true
     });
 
