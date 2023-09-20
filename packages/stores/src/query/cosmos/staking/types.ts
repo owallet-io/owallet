@@ -14,8 +14,7 @@ export type DelegatorReward = {
 };
 
 export type Delegations = {
-  height: string;
-  result: Delegation[];
+  delegation_responses: Delegation[];
 };
 
 export type Delegation = {
@@ -35,8 +34,7 @@ export type Delegation = {
 };
 
 export type DelegationsStargate = {
-  height: string;
-  result: DelegationStargate[];
+  delegation_responses: DelegationStargate[];
 };
 
 export type DelegationStargate = {
@@ -55,8 +53,7 @@ export type DelegationStargate = {
 };
 
 export type UnbondingDelegations = {
-  height: string;
-  result: UnbondingDelegation[];
+  unbonding_responses: UnbondingDelegation[];
 };
 
 export type UnbondingDelegation = {
