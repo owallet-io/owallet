@@ -256,7 +256,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // rpc: 'https://rpc-injective.keplr.app',
     // rest: 'https://lcd-injective.keplr.app',
     rpc: 'https://injective-rpc.polkachu.com',
-    rest: 'https://injective-lcd.quickapi.com',
+    rest: 'https://sentry.lcd.injective.network:443',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'cosmos',
