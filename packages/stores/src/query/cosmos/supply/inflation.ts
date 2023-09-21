@@ -126,13 +126,12 @@ export class ObservableQueryInflation {
           }
 
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const response =
-            this._querySupplyTotal.getQueryStakeDenom().response!.data.result;
-
-          if (typeof response === 'string') {
-            return response;
+          const supplyTotalRes =
+            this._querySupplyTotal.getQueryStakeDenom().response;
+          if (!supplyTotalRes) {
+            return '0';
           } else {
-            return response.amount;
+            return supplyTotalRes.data.amount.amount;
           }
         })();
         const total = new Dec(totalStr);

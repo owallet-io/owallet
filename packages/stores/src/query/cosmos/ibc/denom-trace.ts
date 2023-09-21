@@ -18,11 +18,14 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
       kvStore,
       chainId,
       chainGetter,
-      `/ibc/applications/transfer/v1beta1/denom_traces/${hash}`
+      `/ibc/apps/transfer/v1/denom_traces/${hash}`
     );
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
+      if (chainInfo.features && chainInfo.features.includes('v1beta')) {
+        this.setUrl(`/ibc/applications/transfer/v1beta1/denom_traces/${hash}`);
+      }
       if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
         this.setUrl(`/ibc/apps/transfer/v1/denom_traces/${hash}`);
       }
