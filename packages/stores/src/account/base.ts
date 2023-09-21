@@ -370,7 +370,13 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill = onTxEvents.onFulfill;
       }
     }
-
+    const isInj = this.chainId.startsWith('injective');
+    console.log("🚀 ~ file: base.ts:374 ~ AccountSetBase<MsgOpts, ~ isInj:", isInj)
+    if (isInj) {
+      runInAction(() => {
+        this._isSendingMsg = false;
+      });
+    }
     if (this.opts.preTxEvents?.onBroadcasted) {
       this.opts.preTxEvents.onBroadcasted(txHash);
     }
