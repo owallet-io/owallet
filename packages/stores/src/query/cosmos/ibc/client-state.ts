@@ -19,7 +19,7 @@ export class ObservableChainQueryClientState extends ObservableChainQuery<Client
       kvStore,
       chainId,
       chainGetter,
-      `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}/client_state`
+      `/ibc/core/channel/v1beta1/channels/${channelId}/ports/${portId}/client_state`
     );
 
     autorun(() => {
