@@ -253,8 +253,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://sentry.tm.injective.network:443',
-    rest: 'https://sentry.lcd.injective.network:443',
+    rpc: 'https://sentry.tm.injective.network',
+    rest: 'https://sentry.lcd.injective.network',
     chainId: 'injective-1',
     chainName: 'Injective',
     networkType: 'cosmos',
@@ -287,13 +287,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ['no-legacy-stdTx', 'ibc-transfer', 'ibc-go', 'v1beta'],
+    features: ['no-legacy-stdTx', 'ibc-transfer', 'ibc-go'],
     chainSymbolImageUrl:
       'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
     txExplorer: {
       name: 'Injective',
       txUrl: 'https://explorer.injective.network/transaction/{txHash}'
-    }
+    },
+    beta: true
   },
 
   {
