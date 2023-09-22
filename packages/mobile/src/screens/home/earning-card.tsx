@@ -112,7 +112,7 @@ export const EarningCard: FunctionComponent<{
         >
           {stakingReward
             .shrink(true)
-            .maxDecimals(decimalChain ?? 6)
+            .maxDecimals(decimalChain > 10 ? 9 : 6)
             .trim(true)
             .upperCase(true)
             .toString()}
