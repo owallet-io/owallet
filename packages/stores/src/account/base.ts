@@ -24,7 +24,9 @@ import {
   DenomHelper,
   toGenerator,
   fetchAdapter,
-  EVMOS_NETWORKS
+  EVMOS_NETWORKS,
+  TxRestCosmosClient,
+  OwalletEvent
 } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20.json';
@@ -46,6 +48,7 @@ import {
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer';
 import Long from 'long';
+
 import ICoin = cosmos.base.v1beta1.ICoin;
 import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
@@ -370,20 +373,31 @@ export class AccountSetBase<MsgOpts, Queries> {
         onFulfill = onTxEvents.onFulfill;
       }
     }
-    const isInj = this.chainId.startsWith('injective');
-    console.log("🚀 ~ file: base.ts:374 ~ AccountSetBase<MsgOpts, ~ isInj:", isInj)
-    if (isInj) {
-      runInAction(() => {
-        this._isSendingMsg = false;
-      });
-    }
+
     if (this.opts.preTxEvents?.onBroadcasted) {
       this.opts.preTxEvents.onBroadcasted(txHash);
     }
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
-
+    const isInj = this.chainId.startsWith('injective');
+    if (isInj) {
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+      const restApi = chainInfo?.rest;
+      const restConfig = chainInfo?.restConfig;
+      const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+      const txHashRoot = Buffer.from(txHash).toString('hex');
+      try {
+        const res = await txRestCosmos.fetchTxPoll(txHashRoot);
+        OwalletEvent.txHashEmit(txHashRoot, res);
+      } catch (error) {
+        OwalletEvent.txHashEmit(txHashRoot, null);
+      } finally {
+        runInAction(() => {
+          this._isSendingMsg = false;
+        });
+      }
+    }
     const txTracer = new TendermintTxTracer(
       this.chainGetter.getChain(this.chainId).rpc,
       '/websocket',
