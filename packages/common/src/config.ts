@@ -460,8 +460,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm']
   },
   {
-    rpc: 'https://rpc-cosmoshub.keplr.app',
-    rest: 'https://lcd-cosmoshub.keplr.app',
+    rpc: 'https://rpc-cosmos.oraidex.io',
+    rest: 'https://lcd-cosmos.oraidex.io',
     chainId: 'cosmoshub-4',
     chainName: 'Cosmos Hub',
     networkType: 'cosmos',
@@ -470,12 +470,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uatom',
       coinDecimals: 6,
       coinGeckoId: 'cosmos',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
     },
     bip44: {
       coinType: 118
     },
-    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('cosmos'),
     currencies: [
       {
@@ -489,6 +493,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
+    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
     txExplorer: {
@@ -498,8 +503,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc-osmosis.keplr.app',
-    rest: 'https://lcd-osmosis.keplr.app',
+    rpc: 'https://osmosis-rpc-global.orai.io',
+    rest: 'https://osmosis-lcd-global.orai.io',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
@@ -508,12 +513,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
       coinGeckoId: 'osmosis',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
     },
     bip44: {
       coinType: 118
     },
-    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [
       {
@@ -535,6 +544,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
+    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
     txExplorer: {
