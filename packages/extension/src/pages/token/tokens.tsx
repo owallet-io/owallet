@@ -92,7 +92,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       {hasTokens ? (
         <Card className={classnames(style.card, "shadow")}>
           <CardBody>
-            {chainStore.current.chainId === TRON_ID ? (
+            {/* {chainStore.current.chainId === TRON_ID ? (
               <TokensTronView
                 //@ts-ignore
                 tokens={tokensTron}
@@ -106,7 +106,7 @@ export const TokenPage: FunctionComponent = observer(() => {
                 coinMinimalDenom={coinMinimalDenom}
                 handleClickToken={handleClickToken}
               />
-            )}
+            )} */}
           </CardBody>
           {hasSend ? (
             <>

@@ -119,7 +119,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
           keyRingStore.keyRingType === 'ledger'
-            ? getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
+            ? getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
             : accountInfo.evmosHexAddress
         )?.balance;
         setBalance(evmBalance);
@@ -139,7 +139,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
       amountConfig.sendCurrency.coinMinimalDenom
     );
 
-    useEffect(() => {}, [parseFloat(feeConfig)]);
+    useEffect(() => { }, [parseFloat(feeConfig)]);
     return (
       <React.Fragment>
         <FormGroup className={className}>
@@ -166,7 +166,7 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
               {tokenTrc20
                 ? tokenTrc20.contractAddress
                 : denomHelper.contractAddress &&
-                  ` (${denomHelper.contractAddress})`}
+                ` (${denomHelper.contractAddress})`}
             </DropdownToggle>
             <DropdownMenu>
               {selectableCurrencies.map((currency) => {
@@ -219,33 +219,32 @@ export const CoinInputTronEvm: FunctionComponent<CoinInputTronProps> = observer(
                         tokenTrc20
                           ? toDisplay(tokenTrc20.amount, 6).toString()
                           : toDisplay(
-                              //@ts-ignore
-                              balance?.amount?.int?.value,
-                              24
-                            ).toString()
+                            //@ts-ignore
+                            balance?.amount?.int?.value,
+                            24
+                          ).toString()
                       )
                         .toFixed(6)
                         .toString()
                     );
                   }}
                 >
-                  <span>{`Total: ${
-                    tokenTrc20
+                  <span>{`Total: ${tokenTrc20
                       ? reduceStringAssets(
-                          toDisplay(tokenTrc20.amount, 6).toString() +
-                            ` ${tokenTrc20.coinDenom}`
-                        )
+                        toDisplay(tokenTrc20.amount, 6).toString() +
+                        ` ${tokenTrc20.coinDenom}`
+                      )
                       : (balance &&
-                          reduceStringAssets(
-                            toDisplay(
-                              //@ts-ignore
-                              balance?.amount?.int?.value,
-                              24
-                            ).toString() +
-                              ` ${chainStore.current?.stakeCurrency.coinDenom}`
-                          )) ||
-                        0
-                  }`}</span>
+                        reduceStringAssets(
+                          toDisplay(
+                            //@ts-ignore
+                            balance?.amount?.int?.value,
+                            24
+                          ).toString() +
+                          ` ${chainStore.current?.stakeCurrency.coinDenom}`
+                        )) ||
+                      0
+                    }`}</span>
                 </div>
               ) : null}
             </Label>

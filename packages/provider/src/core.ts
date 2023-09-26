@@ -253,11 +253,6 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAndBroadcastTron(chainId: string, data: object): Promise<any> {
-    const msg = new RequestSignTronMsg(chainId, data);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
     console.log('🚀 ~ file: core.ts ~ line 313 ~ Ethereum ~ experimentalSuggestChain ~ chainInfo', chainInfo);
@@ -273,6 +268,11 @@ export class Ethereum implements IEthereum {
     } catch (error) {
       console.log(error, 'error on send message!!!!!!!!!!!!!!!');
     }
+  }
+
+  async signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string } | any> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async getPublicKey(chainId: string): Promise<object> {

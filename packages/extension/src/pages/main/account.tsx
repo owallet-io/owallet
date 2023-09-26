@@ -22,14 +22,14 @@ export const AccountView: FunctionComponent = observer(() => {
   const ledgerAddress =
     keyRingStore.keyRingType == 'ledger'
       ? checkTronNetwork
-        ? keyRingStore?.keyRingLedgerAddress?.trx
-        : keyRingStore?.keyRingLedgerAddress?.eth
+        ? keyRingStore?.keyRingLedgerAddresses?.trx
+        : keyRingStore?.keyRingLedgerAddresses?.eth
       : '';
 
   const evmAddress =
     (accountInfo.hasEvmosHexAddress ||
       chainStore.current.networkType === 'evm') &&
-    checkTronNetwork
+      checkTronNetwork
       ? getBase58Address(accountInfo.evmosHexAddress ?? '')
       : accountInfo.evmosHexAddress;
   const notification = useNotification();
@@ -62,9 +62,9 @@ export const AccountView: FunctionComponent = observer(() => {
         <div className={styleAccount.name}>
           {accountInfo.walletStatus === WalletStatus.Loaded
             ? accountInfo.name ||
-              intl.formatMessage({
-                id: 'setting.keyring.unnamed-account'
-              })
+            intl.formatMessage({
+              id: 'setting.keyring.unnamed-account'
+            })
             : 'Loading...'}
         </div>
         <div style={{ flex: 1, textAlign: 'right' }}>
@@ -95,7 +95,7 @@ export const AccountView: FunctionComponent = observer(() => {
             <span className={styleAccount.addressText}>
               <Address maxCharacters={22} lineBreakBeforePrefix={false}>
                 {accountInfo.walletStatus === WalletStatus.Loaded &&
-                accountInfo.bech32Address
+                  accountInfo.bech32Address
                   ? accountInfo.bech32Address
                   : '...'}
               </Address>
@@ -113,55 +113,55 @@ export const AccountView: FunctionComponent = observer(() => {
       )}
       {(accountInfo.hasEvmosHexAddress ||
         chainStore.current.networkType === 'evm') && (
-        <div
-          className={styleAccount.containerAccount}
-          style={{
-            marginTop: '2px',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}
-        >
-          <div style={{ flex: 1 }} />
           <div
-            className={styleAccount.address}
-            style={{ marginBottom: '6px' }}
-            onClick={() =>
-              copyAddress(
-                keyRingStore.keyRingType !== 'ledger'
-                  ? evmAddress
-                  : ledgerAddress
-              )
-            }
+            className={styleAccount.containerAccount}
+            style={{
+              marginTop: '2px',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
           >
-            <span className={styleAccount.addressText}>
-              {keyRingStore.keyRingType !== 'ledger' ? (
-                <Address isRaw={true} tooltipAddress={evmAddress}>
-                  {accountInfo.walletStatus === WalletStatus.Loaded &&
-                  accountInfo.evmosHexAddress
-                    ? accountInfo.evmosHexAddress.length === 42
-                      ? `${evmAddress.slice(0, 10)}...${evmAddress.slice(-8)}`
-                      : accountInfo.evmosHexAddress
-                    : '...'}
-                </Address>
-              ) : (
-                <Address isRaw={true} tooltipAddress={ledgerAddress}>
-                  {ledgerAddress
-                    ? `${ledgerAddress?.slice(0, 10)}...${ledgerAddress?.slice(
+            <div style={{ flex: 1 }} />
+            <div
+              className={styleAccount.address}
+              style={{ marginBottom: '6px' }}
+              onClick={() =>
+                copyAddress(
+                  keyRingStore.keyRingType !== 'ledger'
+                    ? evmAddress
+                    : ledgerAddress
+                )
+              }
+            >
+              <span className={styleAccount.addressText}>
+                {keyRingStore.keyRingType !== 'ledger' ? (
+                  <Address isRaw={true} tooltipAddress={evmAddress}>
+                    {accountInfo.walletStatus === WalletStatus.Loaded &&
+                      accountInfo.evmosHexAddress
+                      ? accountInfo.evmosHexAddress.length === 42
+                        ? `${evmAddress.slice(0, 10)}...${evmAddress.slice(-8)}`
+                        : accountInfo.evmosHexAddress
+                      : '...'}
+                  </Address>
+                ) : (
+                  <Address isRaw={true} tooltipAddress={ledgerAddress}>
+                    {ledgerAddress
+                      ? `${ledgerAddress?.slice(0, 10)}...${ledgerAddress?.slice(
                         -8
                       )}`
-                    : '...'}
-                </Address>
-              )}
-            </span>
-            <div style={{ width: 6 }} />
-            <img
-              src={require('../../public/assets/img/filled.svg')}
-              alt="filled"
-              width={16}
-              height={16}
-            />
-          </div>
-          {/* <div
+                      : '...'}
+                  </Address>
+                )}
+              </span>
+              <div style={{ width: 6 }} />
+              <img
+                src={require('../../public/assets/img/filled.svg')}
+                alt="filled"
+                width={16}
+                height={16}
+              />
+            </div>
+            {/* <div
             className={styleAccount.address}
             onClick={() => copyAddress(accountInfo.evmosHexAddress)}
           >
@@ -177,23 +177,22 @@ export const AccountView: FunctionComponent = observer(() => {
               </Address>
             </span>
           </div> */}
-          <div style={{ flex: 1 }} />
-        </div>
-      )}
+            <div style={{ flex: 1 }} />
+          </div>
+        )}
       <div className={styleAccount.coinType}>
         {' '}
-        {`Coin type: m/44'/${
-          (keyRingStore.keyRingType == 'ledger'
+        {`Coin type: m/44'/${(keyRingStore.keyRingType == 'ledger'
             ? chainStore?.current?.bip44?.coinType
             : selected?.bip44HDPath?.coinType ??
-              chainStore?.current?.bip44?.coinType) +
+            chainStore?.current?.bip44?.coinType) +
           "'/" +
           (selected?.bip44HDPath?.account ?? '0') +
           "'/" +
           (selected?.bip44HDPath?.change ?? '0') +
           '/' +
           (selected?.bip44HDPath?.addressIndex ?? '0')
-        }`}
+          }`}
       </div>
     </div>
   );
