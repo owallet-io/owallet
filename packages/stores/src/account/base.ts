@@ -7,14 +7,7 @@ import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import {
-  DenomHelper,
-  toGenerator,
-  fetchAdapter,
-  EVMOS_NETWORKS,
-  TxRestCosmosClient,
-  OwalletEvent
-} from '@owallet/common';
+import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS, TxRestCosmosClient, OwalletEvent } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
 import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
@@ -331,6 +324,16 @@ export class AccountSetBase<MsgOpts, Queries> {
       const txHashRoot = Buffer.from(txHash).toString('hex');
       try {
         const res = await txRestCosmos.fetchTxPoll(txHashRoot);
+        // After sending tx, the balances is probably changed due to the fee.
+        for (const feeAmount of fee.amount) {
+          const bal = this.queries.queryBalances
+            .getQueryBech32Address(this.bech32Address)
+            .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
+
+          if (bal) {
+            bal.fetch();
+          }
+        }
         OwalletEvent.txHashEmit(txHashRoot, res);
       } catch (error) {
         OwalletEvent.txHashEmit(txHashRoot, null);
@@ -340,13 +343,9 @@ export class AccountSetBase<MsgOpts, Queries> {
         });
       }
     }
-    const txTracer = new TendermintTxTracer(
-      this.chainGetter.getChain(this.chainId).rpc,
-      '/websocket',
-      {
-        wsObject: this.opts.wsObject
-      }
-    );
+    const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
+      wsObject: this.opts.wsObject
+    });
     txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
@@ -358,9 +357,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       for (const feeAmount of fee.amount) {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
-          .balances.find(
-            (bal) => bal.currency.coinMinimalDenom === feeAmount.denom
-          );
+          .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
 
         if (bal) {
           bal.fetch();
@@ -668,24 +665,9 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
 
-      const signDocAmino = makeSignDoc(
-        aminoMsgs,
-        fee,
-        this.chainId,
-        memo,
-        account.getAccountNumber().toString(),
-        account.getSequence().toString()
-      );
-      const signResponse = await owallet.signAmino(
-        this.chainId,
-        this.bech32Address,
-        signDocAmino,
-        signOptions
-      );
-      console.log(
-        '🚀 ~ file: base.ts:761 ~ AccountSetBase<MsgOpts, ~ signResponse:',
-        signResponse
-      );
+      const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
+      const signResponse = await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
+      console.log('🚀 ~ file: base.ts:761 ~ AccountSetBase<MsgOpts, ~ signResponse:', signResponse);
       const chainIsInjective = this.chainId.startsWith('injective');
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
