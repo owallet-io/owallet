@@ -62,7 +62,7 @@
     "qrcode": "^1.4.4",
     "qrcode.react": "^1.0.1",
     "query-string": "^6.8.3",
-    "react": "^16.14.0",
+    "react": "^18.2.0",
     "react-chartjs-2": "^2.10.0",
     "react-dom": "^16.14.0",
     "react-hook-form": "^3.29.3",
