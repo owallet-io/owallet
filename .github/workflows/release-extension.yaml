@@ -49,7 +49,7 @@ jobs:
       - name: Git Sumbodule Update
         working-directory: packages/background
         run: |
-          git pull origin extension-backup
+          git pull origin stable
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
