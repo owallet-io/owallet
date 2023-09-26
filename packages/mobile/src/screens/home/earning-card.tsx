@@ -22,9 +22,10 @@ export const EarningCard: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
     useStore();
   const { colors } = useTheme();
+  const chainId = chainStore.current.chainId;
   const styles = styling(colors);
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainId);
+  const account = accountStore.getAccount(chainId);
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
     account.bech32Address
   );
@@ -47,9 +48,9 @@ export const EarningCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: txHash => {
+          onBroadcasted: (txHash) => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
-              chainId: chainStore.current.chainId,
+              chainId: chainId,
               chainName: chainStore.current.chainName
             });
             smartNavigation.pushSmart('TxPendingResult', {
@@ -75,7 +76,7 @@ export const EarningCard: FunctionComponent<{
       }
     }
   };
-
+  const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
   return (
     <OWBox
       style={{
@@ -111,7 +112,7 @@ export const EarningCard: FunctionComponent<{
         >
           {stakingReward
             .shrink(true)
-            .maxDecimals(6)
+            .maxDecimals(decimalChain > 10 ? 9 : 6)
             .trim(true)
             .upperCase(true)
             .toString()}
@@ -236,7 +237,7 @@ export const EarningCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     btnClaimStyle: {
       marginTop: 10

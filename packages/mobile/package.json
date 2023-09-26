@@ -24,8 +24,8 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "jest --detectOpenHandles",
     "postinstall": "patch-package && cd ../../ && rimraf node_modules/crypto && rimraf node_modules/@types/metro-config && yarn patch-package",
-    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 0.0.31 --output-dir build",
-    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.10 --output-dir build",
+    "code-push-ios": "appcenter codepush release-react -a Oraichain/Owallet -t 1.1.0 --output-dir build",
+    "code-push-android": "appcenter codepush release-react -a Oraichain/Owallet-1 -t 0.0.15 --output-dir build",
     "images": "node ./src/scripts/generate-images.js",
     "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/mobile/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'"
   },
@@ -127,12 +127,13 @@
     "web3": "1.7.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "7.22.6",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-decorators": "^7.13.5",
+    "@babel/plugin-proposal-export-default-from": "7.22.17",
     "@babel/plugin-transform-flow-strip-types": "^7.13.0",
-    "@babel/preset-env": "^7.20.0",
-    "@babel/runtime": "^7.20.0",
+    "@babel/preset-env": "7.22.6",
+    "@babel/runtime": "7.22.6",
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.72.7",
     "@testing-library/react-hooks": "^8.0.1",

@@ -26,6 +26,19 @@ export const getAddressFromBech32 = (bech32address) => {
   return ETH.encoder(address);
 };
 
+export const DEFAULT_BLOCK_TIMEOUT_HEIGHT = 90;
+export const DEFAULT_BLOCK_TIME_IN_SECONDS = 2;
+export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS = DEFAULT_BLOCK_TIMEOUT_HEIGHT * DEFAULT_BLOCK_TIME_IN_SECONDS * 1000;
+
+export const getCoinTypeByChainId = (chainId) => {
+  const network = EmbedChainInfos.find((nw) => nw.chainId == chainId);
+  return network?.bip44?.coinType ?? network?.coinType ?? 60;
+};
+
+export const getUrlV1Beta = (isBeta: boolean) => {
+  if (isBeta) return 'v1beta';
+  return 'v1';
+};
 export const bufferToHex = (buffer) => {
   return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
 };
@@ -46,12 +59,7 @@ export function formatNeworkTypeToLedgerAppName(network: string, chainId?: strin
 
 export const getNetworkTypeByChainId = (chainId) => {
   const network = EmbedChainInfos.find((nw) => nw.chainId === chainId);
-  return network?.networkType;
-};
-
-export const getCoinTypeByChainId = (chainId) => {
-  const network = EmbedChainInfos.find((nw) => nw.chainId === chainId);
-  return network?.coinType ?? network?.bip44?.coinType;
+  return network?.networkType ?? 'cosmos';
 };
 
 export function splitPath(path: string): {

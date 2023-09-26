@@ -16,8 +16,9 @@ export const MyRewardCard: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, analyticsStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
-  const account = accountStore.getAccount(chainStore.current.chainId);
-  const queries = queriesStore.get(chainStore.current.chainId);
+  const chainId = chainStore.current.chainId;
+  const account = accountStore.getAccount(chainId);
+  const queries = queriesStore.get(chainId);
 
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
     account.bech32Address
@@ -36,7 +37,7 @@ export const MyRewardCard: FunctionComponent<{
     !account.isReadyToSendMsgs ||
     pendingStakableReward.toDec().equals(new Dec(0)) ||
     queryReward.pendingRewardValidatorAddresses.length === 0;
-
+  const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
   return (
     <OWBox
       style={{
@@ -74,7 +75,7 @@ export const MyRewardCard: FunctionComponent<{
           >
             {pendingStakableReward
               .shrink(true)
-              .maxDecimals(6)
+              .maxDecimals(decimalChain > 10 ? 9 : 6)
               .trim(true)
               .upperCase(true)
               .toString()}
@@ -116,13 +117,13 @@ export const MyRewardCard: FunctionComponent<{
                     {},
                     {},
                     {
-                      onFulfill: tx => {
+                      onFulfill: (tx) => {
                         console.log(
                           tx,
                           'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
                         );
                       },
-                      onBroadcasted: txHash => {
+                      onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Claim reward tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName
@@ -163,7 +164,7 @@ export const MyRewardCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     textInfo: {
       ...typography.h6,

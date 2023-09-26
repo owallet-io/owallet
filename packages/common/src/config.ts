@@ -235,56 +235,51 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
     // beta: true // use v1beta1
   },
-  // {
-  //   rpc: 'https://injective-rpc.polkachu.com',
-  //   rest: 'https://injective-lcd.quickapi.com',
-  //   chainId: 'injective-1',
-  //   chainName: 'Injective',
-  //   networkType: 'cosmos',
-  //   stakeCurrency: {
-  //     coinDenom: 'INJ',
-  //     coinMinimalDenom: 'inj',
-  //     coinDecimals: 18,
-  //     coinGeckoId: 'injective-protocol',
-  //     coinImageUrl:
-  //       'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
-  //     gasPriceStep: {
-  //       low: 0.003,
-  //       average: 0.005,
-  //       high: 0.007
-  //     }
-  //   },
-  //   bip44: {
-  //     coinType: 118
-  //   },
-  //   coinType: 118,
-  //   bech32Config: Bech32Address.defaultBech32Config('inj'),
-  //   get currencies() {
-  //     return [
-  //       this.stakeCurrency,
-  //       {
-  //         coinDenom: 'ORAI',
-  //         coinMinimalDenom:
-  //           'ibc/C20C0A822BD22B2CEF0D067400FCCFB6FAEEE9E91D360B4E0725BD522302D565',
-  //         coinDecimals: 6,
-  //         coinGeckoId: 'oraichain-token',
-  //         bridgeTo: ['Oraichain'],
-  //         coinImageUrl:
-  //           'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-  //       }
-  //     ];
-  //   },
-  //   get feeCurrencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
-  //   chainSymbolImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
-  //   txExplorer: {
-  //     name: 'Injective',
-  //     txUrl: 'https://explorer.injective.network/transaction/{txHash}'
-  //   }
-  // },
+  {
+    rpc: 'https://sentry.tm.injective.network',
+    rest: 'https://sentry.lcd.injective.network',
+    chainId: 'injective-1',
+    chainName: 'Injective',
+    networkType: 'cosmos',
+    stakeCurrency: {
+      coinDenom: 'INJ',
+      coinMinimalDenom: 'inj',
+      coinDecimals: 18,
+      coinGeckoId: 'injective-protocol',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png',
+      gasPriceStep: {
+        low: 5000000000,
+        average: 25000000000,
+        high: 50000000000
+      }
+    },
+    bip44: {
+      coinType: 60
+    },
+    gasPriceStep: {
+      low: 5000000000,
+      average: 25000000000,
+      high: 50000000000
+    },
+    coinType: 60,
+    bech32Config: Bech32Address.defaultBech32Config('inj'),
+    get currencies() {
+      return [this.stakeCurrency];
+    },
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    features: ['no-legacy-stdTx', 'ibc-transfer', 'ibc-go'],
+    chainSymbolImageUrl:
+      'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
+    txExplorer: {
+      name: 'Injective',
+      txUrl: 'https://explorer.injective.network/transaction/{txHash}'
+    },
+    beta: true
+  },
+
   {
     chainId: 'oraibridge-subnet-2',
     chainName: 'OraiBridge',
@@ -448,8 +443,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm']
   },
   {
-    rpc: 'https://rpc-cosmoshub.keplr.app',
-    rest: 'https://lcd-cosmoshub.keplr.app',
+    rpc: 'https://rpc-cosmos.oraidex.io',
+    rest: 'https://lcd-cosmos.oraidex.io',
     chainId: 'cosmoshub-4',
     chainName: 'Cosmos Hub',
     networkType: 'cosmos',
@@ -458,12 +453,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uatom',
       coinDecimals: 6,
       coinGeckoId: 'cosmos',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
     },
     bip44: {
       coinType: 118
     },
-    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('cosmos'),
     currencies: [
       {
@@ -477,6 +476,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
+    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
     txExplorer: {
@@ -486,8 +486,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://rpc-osmosis.keplr.app',
-    rest: 'https://lcd-osmosis.keplr.app',
+    rpc: 'https://osmosis-rpc-global.orai.io',
+    rest: 'https://osmosis-lcd-global.orai.io',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
@@ -496,12 +496,16 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinMinimalDenom: 'uosmo',
       coinDecimals: 6,
       coinGeckoId: 'osmosis',
-      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png'
+      coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
+      gasPriceStep: {
+        low: 0,
+        average: 0.025,
+        high: 0.04
+      }
     },
     bip44: {
       coinType: 118
     },
-    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('osmo'),
     currencies: [
       {
@@ -522,6 +526,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
+    coinType: 118,
     features: ['stargate', 'ibc-transfer', 'no-legacy-stdTx', 'ibc-go'],
     chainSymbolImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
     txExplorer: {

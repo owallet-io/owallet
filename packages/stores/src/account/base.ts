@@ -7,7 +7,7 @@ import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS } from '@owallet/common';
+import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS, TxRestCosmosClient, OwalletEvent } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
 import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
@@ -15,6 +15,7 @@ import { BaseAccount, cosmos, google, TendermintTxTracer } from '@owallet/cosmos
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer';
 import Long from 'long';
+
 import ICoin = cosmos.base.v1beta1.ICoin;
 import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
@@ -314,7 +315,34 @@ export class AccountSetBase<MsgOpts, Queries> {
     if (onBroadcasted) {
       onBroadcasted(txHash);
     }
+    const isInj = this.chainId.startsWith('injective');
+    if (isInj) {
+      const chainInfo = this.chainGetter.getChain(this.chainId);
+      const restApi = chainInfo?.rest;
+      const restConfig = chainInfo?.restConfig;
+      const txRestCosmos = new TxRestCosmosClient(restApi, restConfig);
+      const txHashRoot = Buffer.from(txHash).toString('hex');
+      try {
+        const res = await txRestCosmos.fetchTxPoll(txHashRoot);
+        // After sending tx, the balances is probably changed due to the fee.
+        for (const feeAmount of fee.amount) {
+          const bal = this.queries.queryBalances
+            .getQueryBech32Address(this.bech32Address)
+            .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
 
+          if (bal) {
+            bal.fetch();
+          }
+        }
+        OwalletEvent.txHashEmit(txHashRoot, res);
+      } catch (error) {
+        OwalletEvent.txHashEmit(txHashRoot, null);
+      } finally {
+        runInAction(() => {
+          this._isSendingMsg = false;
+        });
+      }
+    }
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
@@ -639,7 +667,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
       const signResponse = await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
-
+      console.log('🚀 ~ file: base.ts:761 ~ AccountSetBase<MsgOpts, ~ signResponse:', signResponse);
+      const chainIsInjective = this.chainId.startsWith('injective');
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
           messages: protoMsgs,
@@ -649,7 +678,15 @@ export class AccountSetBase<MsgOpts, Queries> {
           signerInfos: [
             {
               publicKey: {
-                type_url: coinType === 60 ? '/ethermint.crypto.v1.ethsecp256k1.PubKey' : '/cosmos.crypto.secp256k1.PubKey',
+                type_url: (() => {
+                  if (!chainIsInjective && coinType === 60) {
+                    return '/ethermint.crypto.v1.ethsecp256k1.PubKey';
+                  }
+                  if (chainIsInjective) {
+                    return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
+                  }
+                  return '/cosmos.crypto.secp256k1.PubKey';
+                })(),
                 value: cosmos.crypto.secp256k1.PubKey.encode({
                   key: Buffer.from(signResponse.signature.pub_key.value, 'base64')
                 }).finish()

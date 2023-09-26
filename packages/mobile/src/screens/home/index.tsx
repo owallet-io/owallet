@@ -83,55 +83,55 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       subscription.remove();
     };
   }, [checkAndUpdateChainInfo]);
-  const onNavigateToTransaction = () => {
-    navigation.navigate('Others', {
-      screen: 'Transactions'
-    });
-    Toast.hide();
-    return;
-  };
-  useEffect(() => {
-    messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage
-      );
-      onNavigateToTransaction();
-    });
-    messaging()
-      .getInitialNotification()
-      .then(async (remoteMessage) => {
-        // showToast({
-        //   title:remoteMessage?.notification?.title,
-        //   text:remoteMessage?.notification?.body,
-        // })
-        console.log('remoteMessage2: ', remoteMessage);
-        // const data = JSON.parse(remoteMessage?.data?.data);
-        // console.log('message', data.message);
-      });
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      showToast({
-        text1: remoteMessage?.notification?.title,
-        text2: remoteMessage?.notification?.body,
-        onPress: onNavigateToTransaction
-      });
-      // const formatData = JSON.parse(remoteMessage?.data?.data);
-      // console.log('raw', remoteMessage?.data);
-      // console.log('formattedData', formatData);
-    });
+  // const onNavigateToTransaction = () => {
+  //   navigation.navigate('Others', {
+  //     screen: 'Transactions'
+  //   });
+  //   Toast.hide();
+  //   return;
+  // };
+  // useEffect(() => {
+  //   messaging().onNotificationOpenedApp((remoteMessage) => {
+  //     console.log(
+  //       'Notification caused app to open from background state:',
+  //       remoteMessage
+  //     );
+  //     onNavigateToTransaction();
+  //   });
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(async (remoteMessage) => {
+  //       // showToast({
+  //       //   title:remoteMessage?.notification?.title,
+  //       //   text:remoteMessage?.notification?.body,
+  //       // })
+  //       console.log('remoteMessage2: ', remoteMessage);
+  //       // const data = JSON.parse(remoteMessage?.data?.data);
+  //       // console.log('message', data.message);
+  //     });
+  //   const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+  //     showToast({
+  //       text1: remoteMessage?.notification?.title,
+  //       text2: remoteMessage?.notification?.body,
+  //       onPress: onNavigateToTransaction
+  //     });
+  //     // const formatData = JSON.parse(remoteMessage?.data?.data);
+  //     // console.log('raw', remoteMessage?.data);
+  //     // console.log('formattedData', formatData);
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
-  useEffect(() => {
-    if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
-      // Do something with the notification data here
-      navigation.navigate('Others', {
-        screen: 'Notifications'
-      });
-      notificationStore.removeNotidata();
-    }
-  }, [notificationStore]);
+  // useEffect(() => {
+  //   if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
+  //     // Do something with the notification data here
+  //     navigation.navigate('Others', {
+  //       screen: 'Notifications'
+  //     });
+  //     notificationStore.removeNotidata();
+  //   }
+  // }, [notificationStore]);
 
   useFocusEffect(
     useCallback(() => {
@@ -157,28 +157,32 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   }, [chainStore.current.chainId]);
 
+  // useEffect(() => {
+  //   onSubscribeToTopic();
+  // }, []);
+
+  // const onSubscribeToTopic = React.useCallback(async () => {
+  //   const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+  //   console.log('fcmToken ===', fcmToken);
+
+  //   if (fcmToken) {
+  //     const subcriber = await API.subcribeToTopic(
+  //       {
+  //         subcriber: fcmToken,
+  //         topic:
+  //           chainStore.current.networkType === 'cosmos'
+  //             ? account.bech32Address.toString()
+  //             : account.evmosHexAddress.toString()
+  //       },
+  //       {
+  //         baseURL: 'https://tracking-tx.orai.io'
+  //       }
+  //     );
+  //   }
+  // }, []);
   useEffect(() => {
-    onSubscribeToTopic();
-  }, []);
-
-  const onSubscribeToTopic = React.useCallback(async () => {
-    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
-    console.log('fcmToken ===', fcmToken);
-
-    if (fcmToken) {
-      const subcriber = await API.subcribeToTopic(
-        {
-          subcriber: fcmToken,
-          topic:
-            chainStore.current.networkType === 'cosmos'
-              ? account.bech32Address.toString()
-              : account.evmosHexAddress.toString()
-        },
-        {
-          baseURL: 'https://tracking-tx.orai.io'
-        }
-      );
-    }
+    onRefresh();
+    return () => {};
   }, []);
 
   const onRefresh = React.useCallback(async () => {
@@ -207,7 +211,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
     setRefreshing(false);
     setRefreshDate(Date.now());
-  }, [accountStore, chainStore, priceStore, queriesStore]);
+  }, [account.bech32Address, chainStore.current.chainId]);
 
   return (
     <PageWithScrollViewInBottomTabView

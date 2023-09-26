@@ -291,11 +291,11 @@ export class TxsHelper {
     if (!decimals) {
       decimals = 6;
     }
-    return (
+    const amountRs =
       new Big(parseInt(amount))
         .div(this.totalFromDecimal(decimals))
-        .toFixed(decimals) || '0'
-    );
+        .toFixed(decimals) || '0';
+    return amountRs;
   }
   handleTransferDetailEthAndBsc(
     data: InfoTxEthAndBsc,
@@ -753,17 +753,16 @@ export class TxsHelper {
         : isString(itDataTransfer?.amountData)
         ? itDataTransfer?.amountData?.replace(/^\d+/g, '')
         : '';
+      const amountFormated = this.formatAmount(
+        matchesAmount && matchesAmount[0],
+        matchesDenom
+          ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
+              matchesDenom?.trim()?.toUpperCase()
+            ).coinDecimals
+          : currentChain.stakeCurrency.coinDecimals
+      );
       itDataTransfer.amount = this.removeZeroNumberLast(
-        this.formatNumberSeparateThousand(
-          this.formatAmount(
-            matchesAmount && matchesAmount[0],
-            matchesDenom
-              ? this.TxsCurrencies.getCurrencyInfoByMinimalDenom(
-                  matchesDenom?.trim()?.toUpperCase()
-                ).coinDecimals
-              : currentChain.stakeCurrency.coinDecimals
-          )
-        )
+        this.formatNumberSeparateThousand(amountFormated)
       );
       itDataTransfer.token =
         matchesDenom &&

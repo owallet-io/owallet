@@ -1,20 +1,17 @@
 export type SupplyTotal = {
-  height: string;
-  // Int
-  result: string;
+  amount: {
+    denom: string;
+    amount: string;
+  };
 };
 
 export type SupplyTotalStargate = {
-  height: string;
-  result: {
+  amount: {
     denom: string;
-    // Int
     amount: string;
   };
 };
 
 export type MintingInflation = {
-  height: string;
-  // Dec
-  result: string;
+  inflation: string;
 };
