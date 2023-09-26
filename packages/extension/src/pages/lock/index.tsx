@@ -88,7 +88,7 @@ export const LockPage: FunctionComponent = observer(() => {
         })}
       >
         <Banner
-          icon={require('../../public/assets/orai_wallet_logo.png')} 
+          icon={require('../../public/assets/orai_wallet_logo.png')}
           logo={require('../../public/assets/logo.svg')}
           subtitle="Cosmos x EVM in one Wallet"
         />
@@ -112,13 +112,7 @@ export const LockPage: FunctionComponent = observer(() => {
           }}
           placeholder="Enter your account password"
         />
-        <Button
-          type="submit"
-          color="primary"
-          block
-          data-loading={loading}
-          className={style.unlockBtn}
-        >
+        <Button type="submit" color="primary" block data-loading={loading} className={style.unlockBtn}>
           <FormattedMessage id="lock.button.unlock" />
         </Button>
       </Form>

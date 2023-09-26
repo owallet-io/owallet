@@ -1,21 +1,8 @@
 import { StdFeeEthereum } from './../common/types';
 
 import 'reflect-metadata';
-import {
-  action,
-  computed,
-  flow,
-  makeObservable,
-  observable,
-  runInAction
-} from 'mobx';
-import {
-  AppCurrency,
-  OWallet,
-  OWalletSignOptions,
-  Ethereum,
-  TronWeb
-} from '@owallet/types';
+import { action, computed, flow, makeObservable, observable, runInAction } from 'mobx';
+import { AppCurrency, OWallet, OWalletSignOptions, Ethereum, TronWeb } from '@owallet/types';
 import { DeepReadonly } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
@@ -29,22 +16,9 @@ import {
   OwalletEvent
 } from '@owallet/common';
 import Web3 from 'web3';
-import ERC20_ABI from '../query/evm/erc20.json';
-import {
-  BroadcastMode,
-  makeSignDoc,
-  makeStdTx,
-  Msg,
-  MsgSend,
-  StdFee,
-  StdTx
-} from '@cosmjs/launchpad';
-import {
-  BaseAccount,
-  cosmos,
-  google,
-  TendermintTxTracer
-} from '@owallet/cosmos';
+import ERC20_ABI from '../query/evm/erc20';
+import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
+import { BaseAccount, cosmos, google, TendermintTxTracer } from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer';
 import Long from 'long';
@@ -83,10 +57,7 @@ export type AminoMsgsOrWithProtoMsgs =
 export interface AccountSetOpts<MsgOpts> {
   readonly prefetching: boolean;
   readonly suggestChain: boolean;
-  readonly suggestChainFn?: (
-    owallet: OWallet,
-    chainInfo: ReturnType<ChainGetter['getChain']>
-  ) => Promise<void>;
+  readonly suggestChainFn?: (owallet: OWallet, chainInfo: ReturnType<ChainGetter['getChain']>) => Promise<void>;
   readonly autoInit: boolean;
   readonly preTxEvents?: {
     onBroadcastFailed?: (e?: Error) => void;
@@ -97,10 +68,7 @@ export interface AccountSetOpts<MsgOpts> {
   readonly getEthereum: () => Promise<Ethereum | undefined>;
   readonly getTronWeb: () => Promise<TronWeb | undefined>;
   readonly msgOpts: MsgOpts;
-  readonly wsObject?: new (
-    url: string,
-    protocols?: string | string[]
-  ) => WebSocket;
+  readonly wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
 }
 
 export class AccountSetBase<MsgOpts, Queries> {
@@ -212,17 +180,11 @@ export class AccountSetBase<MsgOpts, Queries> {
     await owallet.enable(chainId);
   }
 
-  protected async suggestChain(
-    owallet: OWallet,
-    chainInfo: ReturnType<ChainGetter['getChain']>
-  ): Promise<void> {
+  protected async suggestChain(owallet: OWallet, chainInfo: ReturnType<ChainGetter['getChain']>): Promise<void> {
     await owallet.experimentalSuggestChain(chainInfo.raw);
   }
 
-  protected async evmSuggestChain(
-    ethereum: Ethereum,
-    chainInfo: ReturnType<ChainGetter['getChain']>
-  ): Promise<void> {
+  protected async evmSuggestChain(ethereum: Ethereum, chainInfo: ReturnType<ChainGetter['getChain']>): Promise<void> {
     await ethereum.experimentalSuggestChain(chainInfo.raw);
   }
 
@@ -239,10 +201,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     // If the store has never been initialized, add the event listener.
     if (!this.hasInited) {
       // If key store in the owallet extension is changed, this event will be dispatched.
-      this.eventListener.addEventListener(
-        'keplr_keystorechange',
-        this.handleInit
-      );
+      this.eventListener.addEventListener('keplr_keystorechange', this.handleInit);
     }
     this.hasInited = true;
 
@@ -278,10 +237,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   public disconnect(): void {
     this._walletStatus = WalletStatus.NotInit;
     this.hasInited = false;
-    this.eventListener.removeEventListener(
-      'keplr_keystorechange',
-      this.handleInit
-    );
+    this.eventListener.removeEventListener('keplr_keystorechange', this.handleInit);
     this._bech32Address = '';
     this._name = '';
     this.pubKey = new Uint8Array(0);
@@ -293,16 +249,12 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   @computed
   get isReadyToSendMsgs(): boolean {
-    return (
-      this.walletStatus === WalletStatus.Loaded && this.bech32Address !== ''
-    );
+    return this.walletStatus === WalletStatus.Loaded && this.bech32Address !== '';
   }
 
   async sendMsgs(
     type: string | 'unknown',
-    msgs:
-      | AminoMsgsOrWithProtoMsgs
-      | (() => Promise<AminoMsgsOrWithProtoMsgs> | AminoMsgsOrWithProtoMsgs),
+    msgs: AminoMsgsOrWithProtoMsgs | (() => Promise<AminoMsgsOrWithProtoMsgs> | AminoMsgsOrWithProtoMsgs),
     memo: string = '',
     fee: StdFee,
     signOptions?: OWalletSignOptions,
@@ -333,13 +285,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         msgs = await msgs();
       }
 
-      const result = await this.broadcastMsgs(
-        msgs,
-        fee,
-        memo,
-        signOptions,
-        this.broadcastMode
-      );
+      const result = await this.broadcastMsgs(msgs, fee, memo, signOptions, this.broadcastMode);
 
       txHash = result.txHash;
     } catch (e: any) {
@@ -351,11 +297,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         this.opts.preTxEvents.onBroadcastFailed(e);
       }
 
-      if (
-        onTxEvents &&
-        'onBroadcastFailed' in onTxEvents &&
-        onTxEvents.onBroadcastFailed
-      ) {
+      if (onTxEvents && 'onBroadcastFailed' in onTxEvents && onTxEvents.onBroadcastFailed) {
         onTxEvents.onBroadcastFailed(e);
       }
 
@@ -451,8 +393,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     },
     tokenTrc20?: object
   ) {
-    console.log('tokenTrc20 ===', tokenTrc20);
-
     try {
       const ethereum = (await this.getEthereum())!;
       const signResponse = await ethereum.signAndBroadcastTron(this.chainId, {
@@ -506,9 +446,7 @@ export class AccountSetBase<MsgOpts, Queries> {
           value.contract_addr,
           { from: value.from }
         );
-        let data = contract.methods
-          .transfer(value.recipient, value.amount)
-          .encodeABI();
+        let data = contract.methods.transfer(value.recipient, value.amount).encodeABI();
 
         let txObj = {
           gas: web3.utils.toHex(value.gas),
@@ -534,11 +472,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         this.opts.preTxEvents.onBroadcastFailed(e);
       }
 
-      if (
-        onTxEvents &&
-        'onBroadcastFailed' in onTxEvents &&
-        onTxEvents.onBroadcastFailed
-      ) {
+      if (onTxEvents && 'onBroadcastFailed' in onTxEvents && onTxEvents.onBroadcastFailed) {
         onTxEvents.onBroadcastFailed(e);
       }
 
@@ -567,12 +501,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
-    const waitForPendingTransaction = async (
-      rpc,
-      txHash,
-      onFulfill,
-      count = 0
-    ) => {
+    const waitForPendingTransaction = async (rpc, txHash, onFulfill, count = 0) => {
       if (count > 10) return;
 
       try {
@@ -581,13 +510,8 @@ export class AccountSetBase<MsgOpts, Queries> {
         let retryCount = 0;
         while (!transactionReceipt) {
           // Waiting expectedBlockTime until the transaction is mined
-          transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [
-            txHash
-          ]);
-          console.log(
-            '🚀 ~ file: base.ts ~ line ~ transactionReceipt',
-            transactionReceipt
-          );
+          transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [txHash]);
+          console.log('🚀 ~ file: base.ts ~ line ~ transactionReceipt', transactionReceipt);
           retryCount += 1;
           if (retryCount === 10) break;
           await sleep(expectedBlockTime);
@@ -680,18 +604,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     for (let i = 0; i < this.sendTokenFns.length; i++) {
       const fn = this.sendTokenFns[i];
 
-      if (
-        await fn(
-          amount,
-          currency,
-          recipient,
-          memo,
-          stdFee,
-          signOptions,
-          onTxEvents,
-          extraOptions
-        )
-      ) {
+      if (await fn(amount, currency, recipient, memo, stdFee, signOptions, onTxEvents, extraOptions)) {
         return;
       }
     }
@@ -744,13 +657,8 @@ export class AccountSetBase<MsgOpts, Queries> {
         throw new Error('There is no msg to send');
       }
 
-      if (
-        this.hasNoLegacyStdFeature() &&
-        (!protoMsgs || protoMsgs.length === 0)
-      ) {
-        throw new Error(
-          "Chain can't send legecy stdTx. But, proto any type msgs are not provided"
-        );
+      if (this.hasNoLegacyStdFeature() && (!protoMsgs || protoMsgs.length === 0)) {
+        throw new Error("Chain can't send legecy stdTx. But, proto any type msgs are not provided");
       }
 
       const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
@@ -758,11 +666,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
-      const account = await BaseAccount.fetchFromRest(
-        this.instance,
-        this.bech32Address,
-        true
-      );
+      const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
 
       const signDocAmino = makeSignDoc(
         aminoMsgs,
@@ -802,10 +706,7 @@ export class AccountSetBase<MsgOpts, Queries> {
                   return '/cosmos.crypto.secp256k1.PubKey';
                 })(),
                 value: cosmos.crypto.secp256k1.PubKey.encode({
-                  key: Buffer.from(
-                    signResponse.signature.pub_key.value,
-                    'base64'
-                  )
+                  key: Buffer.from(signResponse.signature.pub_key.value, 'base64')
                 }).finish()
               },
               modeInfo: {
@@ -830,17 +731,10 @@ export class AccountSetBase<MsgOpts, Queries> {
         authInfoBytes: signDoc.authInfoBytes,
         signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
       }).finish();
-      console.log(
-        'signedTx ===',
-        Buffer.from(JSON.stringify(signedTx), 'base64')
-      );
+      console.log('signedTx ===', Buffer.from(JSON.stringify(signedTx), 'base64'));
 
       return {
-        txHash: await owallet.sendTx(
-          this.chainId,
-          signedTx,
-          mode as BroadcastMode
-        )
+        txHash: await owallet.sendTx(this.chainId, signedTx, mode as BroadcastMode)
       };
     } catch (error) {
       console.log('Error on broadcastMsgs: ', error);
@@ -871,8 +765,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       let toAddress = msgs.value.to_address;
       if (EVMOS_NETWORKS.includes(signOptions.chainId)) {
         const decoded = bech32.decode(toAddress);
-        toAddress =
-          '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
+        toAddress = '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
       }
       const message = {
         // TODO: need to check kawaii cosmos
@@ -882,15 +775,9 @@ export class AccountSetBase<MsgOpts, Queries> {
         gasPrice: fee.gasPrice
       };
 
-      console.log(
-        '🚀 ~ file: base.ts ~ line 749 ~ AccountSetBase<MsgOpts, ~ message',
-        message
-      );
+      console.log('🚀 ~ file: base.ts ~ line 749 ~ AccountSetBase<MsgOpts, ~ message', message);
 
-      const signResponse = await ethereum.signAndBroadcastEthereum(
-        this.chainId,
-        message
-      );
+      const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, message);
 
       return {
         txHash: signResponse.rawTxHex
@@ -918,16 +805,13 @@ export class AccountSetBase<MsgOpts, Queries> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ethereum = (await this.getEthereum())!;
 
-      const signResponse = await ethereum.signAndBroadcastEthereum(
-        this.chainId,
-        { ...msgs, type: 'erc20', gas: fee.gas, gasPrice: fee.gasPrice }
-      );
+      const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, { ...msgs, type: 'erc20', gas: fee.gas, gasPrice: fee.gasPrice });
 
       return {
-        txHash: signResponse.rawTxHex
+        txHash: signResponse?.rawTxHex
       };
     } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+      console.log('Error on broadcastErc20Msgs: ', error);
     }
   }
 
@@ -965,9 +849,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   get evmosHexAddress(): string {
     // here
     if (!this.bech32Address) return;
-    const address = Buffer.from(
-      fromWords(bech32.decode(this.bech32Address).words)
-    );
+    const address = Buffer.from(fromWords(bech32.decode(this.bech32Address).words));
     return ETH.encoder(address);
   }
 
@@ -977,9 +859,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   protected hasNoLegacyStdFeature(): boolean {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    return (
-      chainInfo.features != null &&
-      chainInfo.features.includes('no-legacy-stdTx')
-    );
+    return chainInfo.features != null && chainInfo.features.includes('no-legacy-stdTx');
   }
 }

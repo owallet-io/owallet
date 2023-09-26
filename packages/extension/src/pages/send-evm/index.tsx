@@ -69,25 +69,32 @@ export const SendEvmPage: FunctionComponent<{
 
   const notification = useNotification();
 
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } =
-    useStore();
+  const {
+    chainStore,
+    accountStore,
+    queriesStore,
+    analyticsStore,
+    keyRingStore
+  } = useStore();
   const current = chainStore.current;
   const decimals = chainStore.current.feeCurrencies[0].coinDecimals;
 
   const accountInfo = accountStore.getAccount(current.chainId);
-  const accountEthInfo = accountStore.getAccount(current.chainId);
   const [gasPrice, setGasPrice] = useState('0');
-
+  const address =
+    keyRingStore.keyRingType === 'ledger'
+      ? keyRingStore?.keyRingLedgerAddresses?.eth
+      : accountInfo.evmosHexAddress;
   const sendConfigs = useSendTxConfig(
     chainStore,
     current.chainId,
     accountInfo.msgOpts.send,
-    accountInfo.evmosHexAddress,
+    address,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
     chainStore.current.networkType === 'evm' &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
-    chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
+    queriesStore.get(current.chainId).evm.queryEvmBalance,
+    address
   );
 
   const gasConfig = useGasEthereumConfig(
@@ -132,8 +139,8 @@ export const SendEvmPage: FunctionComponent<{
         const web3 = new Web3(chainStore.current.rest);
         let estimate = 21000;
         if (coinMinimalDenom) {
-          // @ts-ignore
           const tokenInfo = new web3.eth.Contract(
+            // @ts-ignore
             ERC20_ABI,
             query?.defaultDenom?.split(':')?.[1]
           );
@@ -141,11 +148,11 @@ export const SendEvmPage: FunctionComponent<{
             .transfer(
               accountInfo?.evmosHexAddress,
               '0x' +
-                parseFloat(
-                  new Big(sendConfigs.amountConfig.amount)
-                    .mul(new Big(10).pow(decimals))
-                    .toString()
-                ).toString(16)
+              parseFloat(
+                new Big(sendConfigs.amountConfig.amount)
+                  .mul(new Big(10).pow(decimals))
+                  .toString()
+              ).toString(16)
             )
             .estimateGas({
               from: query?.defaultDenom?.split(':')?.[1]
@@ -162,9 +169,9 @@ export const SendEvmPage: FunctionComponent<{
         );
       } catch (error) {
         console.log(error, 'zzz');
-        gasConfig.setGas(21000);
+        gasConfig.setGas(50000);
         feeConfig.setFee(
-          new Big(21000).mul(new Big(gasPrice)).toFixed(decimals)
+          new Big(50000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       }
     })();
@@ -343,15 +350,15 @@ export const SendEvmPage: FunctionComponent<{
                   'erc20'
                 )
                   ? {
-                      type: 'erc20',
-                      from: accountInfo.evmosHexAddress,
-                      contract_addr:
-                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                          ':'
-                        )[1],
-                      recipient: sendConfigs.recipientConfig.recipient,
-                      amount: sendConfigs.amountConfig.amount
-                    }
+                    type: 'erc20',
+                    from: address,
+                    contract_addr:
+                      sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
+                        ':'
+                      )[1],
+                    recipient: sendConfigs.recipientConfig.recipient,
+                    amount: sendConfigs.amountConfig.amount
+                  }
                   : null
               );
               if (!isDetachedPage) {
@@ -418,9 +425,9 @@ export const SendEvmPage: FunctionComponent<{
             <GasEthereumInput
               label={intl.formatMessage({ id: 'sign.info.gas' })}
               gasConfig={gasConfig}
-              // defaultValue={
-              //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit) || 0
-              // }
+            // defaultValue={
+            //   parseInt(dataSign?.data?.data?.data?.estimatedGasLimit) || 0
+            // }
             />
             <FeeInput
               label={intl.formatMessage({ id: 'sign.info.fee' })}

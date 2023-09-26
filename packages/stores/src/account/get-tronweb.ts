@@ -1,8 +1,6 @@
 import { TronWeb } from '@owallet/types';
 
-export const getTronWebFromWindow: () => Promise<
-  TronWeb | undefined
-> = async () => {
+export const getTronWebFromWindow: () => Promise<TronWeb | undefined> = async () => {
   if (window.tronWeb) {
     return window.tronWeb;
   }
@@ -11,12 +9,9 @@ export const getTronWebFromWindow: () => Promise<
     return window.tronWeb;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const documentStateChange = (event: Event) => {
-      if (
-        event.target &&
-        (event.target as Document).readyState === 'complete'
-      ) {
+      if (event.target && (event.target as Document).readyState === 'complete') {
         resolve(window.tronWeb);
         document.removeEventListener('readystatechange', documentStateChange);
       }

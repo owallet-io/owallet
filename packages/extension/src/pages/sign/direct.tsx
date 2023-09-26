@@ -5,6 +5,7 @@ import {
   renderMsgBeginRedelegate,
   renderMsgDelegate,
   renderMsgExecuteContract,
+  renderMsgInstantiateContract,
   renderMsgSend,
   renderMsgTransfer,
   renderMsgUndelegate,
@@ -38,6 +39,22 @@ export function renderDirectMessage(
         intl,
         msg.amount as CoinPrimitive,
         msg.validatorAddress
+      );
+    }
+
+    if (msg instanceof cosmwasm.wasm.v1.MsgInstantiateContract) {
+      let codeId: string | any = msg.codeId;
+      if (typeof msg.codeId == 'object') {
+        codeId = msg.codeId?.low?.toString() || msg.codeId?.high?.toString();
+      }
+      return renderMsgInstantiateContract(
+        currencies,
+        intl,
+        msg.funds as CoinPrimitive[],
+        msg.admin,
+        codeId as string,
+        msg.label,
+        msg.msg
       );
     }
 

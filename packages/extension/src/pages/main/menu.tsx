@@ -22,7 +22,7 @@ export const Menu: FunctionComponent = observer(() => {
 
   return (
     <HeaderLayout showChainName canChangeChainInfo>
-      <div className={styleMenu.container} >
+      <div className={styleMenu.container}>
         <div
           className={styleMenu.item}
           onClick={() => {
@@ -32,14 +32,12 @@ export const Menu: FunctionComponent = observer(() => {
         >
           <FormattedMessage id="main.menu.address-book" />
           <div
-            // style={{
-            //   marginRight: isNumberTabs ? -10 : 0
-            // }}
+          // style={{
+          //   marginRight: isNumberTabs ? -10 : 0
+          // }}
           >
             <img
-              src={require(isNumberTabs === 1
-                ? '../../public/assets/img/arrow-up.svg'
-                : '../../public/assets/img/arrow-down.svg')}
+              src={require(isNumberTabs === 1 ? '../../public/assets/img/arrow-up.svg' : '../../public/assets/img/arrow-down.svg')}
               alt="total-balance"
               width={14}
             />
@@ -48,12 +46,7 @@ export const Menu: FunctionComponent = observer(() => {
         {isNumberTabs === 1 && (
           <Card className={classnames(styleMenu.card, 'shadow')}>
             <CardBody>
-              <AddressBookPage
-                onBackButton={() => setIsNumberTabs(0)}
-                hideChainDropdown={false}
-                isCloseIcon={true}
-                isInTransaction={true}
-              />
+              <AddressBookPage onBackButton={() => setIsNumberTabs(0)} hideChainDropdown={false} isCloseIcon={true} isInTransaction={true} />
             </CardBody>
           </Card>
         )}
@@ -67,9 +60,7 @@ export const Menu: FunctionComponent = observer(() => {
           <FormattedMessage id="main.menu.settings" />
           <div>
             <img
-              src={require(isNumberTabs === 2
-                ? '../../public/assets/img/arrow-up.svg'
-                : '../../public/assets/img/arrow-down.svg')}
+              src={require(isNumberTabs === 2 ? '../../public/assets/img/arrow-up.svg' : '../../public/assets/img/arrow-down.svg')}
               alt="total-balance"
               width={14}
             />
@@ -81,12 +72,7 @@ export const Menu: FunctionComponent = observer(() => {
           </div>
         )}
 
-        {(chainStore.current.features ?? []).find(
-          (feature) =>
-            feature === 'cosmwasm' ||
-            feature === 'secretwasm' ||
-            feature === 'isEvm'
-        ) ? (
+        {(chainStore.current.features ?? []).find((feature) => feature === 'cosmwasm' || feature === 'secretwasm' || feature === 'isEvm') ? (
           <div
             className={styleMenu.item}
             onClick={() => {
@@ -96,29 +82,18 @@ export const Menu: FunctionComponent = observer(() => {
           >
             <FormattedMessage id="setting.token.add" />
             <div>
-              <img
-                src={require('../../public/assets/img/arrow-down.svg')}
-                alt="total-balance"
-                width={14}
-              />
+              <img src={require('../../public/assets/img/arrow-down.svg')} alt="total-balance" width={14} />
             </div>
           </div>
         ) : null}
         {isNumberTabs === 3 && (
           <Card className={classnames(styleMenu.cardAddToken, 'shadow')}>
             <CardBody>
-              {chainStore.current.features.includes('cosmwasm') ||
-              chainStore.current.features.includes('secretwasm') ? (
-                <AddTokenPage />
-              ) : (
-                <AddEvmTokenPage />
-              )}
+              {chainStore.current.features.includes('cosmwasm') || chainStore.current.features.includes('secretwasm') ? <AddTokenPage /> : <AddEvmTokenPage />}
             </CardBody>
           </Card>
         )}
-        {(chainStore.current.features ?? []).find(
-          (feature) => feature === 'cosmwasm' || feature === 'secretwasm'
-        ) ? (
+        {(chainStore.current.features ?? []).find((feature) => feature === 'cosmwasm' || feature === 'secretwasm') ? (
           <div
             className={styleMenu.item}
             onClick={() => {
@@ -128,11 +103,7 @@ export const Menu: FunctionComponent = observer(() => {
           >
             <FormattedMessage id="main.menu.token-list" />
             <div>
-              <img
-                src={require('../../public/assets/img/arrow-down.svg')}
-                alt="total-balance"
-                width={14}
-              />
+              <img src={require('../../public/assets/img/arrow-down.svg')} alt="total-balance" width={14} />
             </div>
           </div>
         ) : null}
@@ -147,20 +118,15 @@ export const Menu: FunctionComponent = observer(() => {
         <div style={{ flex: 1 }} />
         <div
           className={`${styleMenu.itemSignOut} ${styleMenu.signOut}`}
-          onClick={() => {
-            keyRingStore.lock();
+          onClick={async () => {
+            await keyRingStore.lock();
             history.push('/');
           }}
         >
           <FormattedMessage id="main.menu.sign-out" />
         </div>
         <div className={styleMenu.footer}>
-          <a
-            className={styleMenu.inner}
-            href="https://github.com/oraichain/oraichain-wallet-v2.git"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a className={styleMenu.inner} href="https://github.com/oraichain/oraichain-wallet-v2.git" target="_blank" rel="noopener noreferrer">
             <i className="fab fa-github" />
             {/* <div style={{ padding: 6, backgroundColor: 'rgba(119, 126, 144, 0.12)' }}> */}
             <FormattedMessage id="main.menu.footer.github" />

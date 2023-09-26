@@ -45,8 +45,8 @@ export const ImportLedgerPage: FunctionComponent<{
   registerConfig: RegisterConfig;
 }> = observer(({ registerConfig }) => {
   const intl = useIntl();
-
-  const bip44Option = useBIP44Option(118);
+  const { chainStore, analyticsStore } = useStore();
+  const bip44Option = useBIP44Option(chainStore?.current?.coinType ?? 118);
 
   const { register, handleSubmit, getValues, errors } = useForm<FormData>({
     defaultValues: {
@@ -55,8 +55,6 @@ export const ImportLedgerPage: FunctionComponent<{
       confirmPassword: ''
     }
   });
-
-  const { analyticsStore } = useStore();
 
   return (
     <div>
@@ -68,20 +66,19 @@ export const ImportLedgerPage: FunctionComponent<{
       <Form
         className={style.formContainer}
         onSubmit={handleSubmit(async (data: FormData) => {
-          console.log("REACH SUBMIT!!!!!!!!")
           try {
             const result = await registerConfig.createLedger(
               data.name,
               data.password,
               bip44Option.bip44HDPath
             );
-            console.log(result,'result create ledger ====')
+            console.log(result, 'result create ledger ====');
             analyticsStore.setUserProperties({
               registerType: 'ledger',
               accountType: 'ledger'
             });
           } catch (e) {
-            console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e)
+            console.log('ERROR ON HANDLE SUBMIT CREATE LEDGER', e);
             alert(e.message ? e.message : e.toString());
             registerConfig.clear();
           }
@@ -134,7 +131,7 @@ export const ImportLedgerPage: FunctionComponent<{
               styleInputGroup={{
                 border: '1px solid rgba(8, 4, 28, 0.12)'
               }}
-              style={{ position: 'relative'}}
+              style={{ position: 'relative' }}
               name="confirmPassword"
               ref={register({
                 required: intl.formatMessage({

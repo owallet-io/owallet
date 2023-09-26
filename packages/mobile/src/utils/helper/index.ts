@@ -25,8 +25,7 @@ export const TRC20_LIST = [
     tokenName: 'USDC',
     coinDenom: 'USDC',
     coinGeckoId: 'usd-coin',
-    coinImageUrl:
-      'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
     coinDecimals: 6,
     type: 'trc20'
   },
@@ -42,10 +41,8 @@ export const TRC20_LIST = [
   {
     type: 'cw20',
     coinDenom: 'wTRX',
-    coinMinimalDenom:
-      'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
-    contractAddress:
-      'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+    coinMinimalDenom: 'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
+    contractAddress: 'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
     coinDecimals: 6,
     coinGeckoId: 'tron',
     coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
@@ -280,8 +277,7 @@ export function removeEmptyElements(array) {
 
 function convertVarToWord(str) {
   const words = str && str.split('_');
-  const capitalizedWords =
-    words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
+  const capitalizedWords = words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
 }
 export function removeSpecialChars(str) {
@@ -298,19 +294,13 @@ export const getTransactionValue = ({ data, address, logs }) => {
   let eventType = null;
   let unbond = null;
   let isRecipient = false;
-  if (
-    checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) ||
-    checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)
-  ) {
+  if (checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) || checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)) {
     eventType = 'withdraw_rewards';
   }
   if (checkType(transactionType, TRANSACTION_TYPE.DELEGATE)) {
     eventType = 'delegate';
   }
-  if (
-    checkType(transactionType, TRANSACTION_TYPE.SEND) ||
-    checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE)
-  ) {
+  if (checkType(transactionType, TRANSACTION_TYPE.SEND) || checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE)) {
     eventType = 'transfer';
   }
   if (events && eventType) {
@@ -475,21 +465,11 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
   return 'Msg';
 };
 
-export const parseIbcMsgTransfer = (
-  rawLog,
-  type = 'send_packet',
-  key = 'packet_data'
-) => {
-  const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
-  const ibcDemonPackData =
-    arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
+export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_data') => {
+  const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
+  const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
-    typeof ibcDemonPackData?.value === 'string' ||
-    ibcDemonPackData?.value instanceof String
-      ? JSON.parse(ibcDemonPackData?.value ?? '{}')
-      : { denom: '' };
+    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String ? JSON.parse(ibcDemonPackData?.value ?? '{}') : { denom: '' };
   return ibcDemonObj;
 };
 
@@ -532,27 +512,15 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-export const getCurrencyByMinimalDenom = (
-  tokens,
-  minimalDenom
-): AppCurrency => {
+export const getCurrencyByMinimalDenom = (tokens, minimalDenom): AppCurrency => {
   if (tokens && tokens?.length > 0 && minimalDenom) {
     const info = tokens?.filter((item, index) => {
       if (item?.contractAddress) {
-        return (
-          item?.contractAddress?.toUpperCase() ==
-          minimalDenom?.trim()?.toUpperCase()
-        );
+        return item?.contractAddress?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
       } else if (item?.originCurrency) {
-        return (
-          item?.originCurrency?.coinMinimalDenom?.toUpperCase() ==
-          minimalDenom?.trim()?.toUpperCase()
-        );
+        return item?.originCurrency?.coinMinimalDenom?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
       }
-      return (
-        item?.coinMinimalDenom?.toUpperCase() ==
-        minimalDenom?.trim()?.toUpperCase()
-      );
+      return item?.coinMinimalDenom?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
     });
     if (info?.length > 0) {
       return info[0];
@@ -573,24 +541,23 @@ export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }
 
-export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
+export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
   let address;
 
   if (chainId === TRON_ID) {
-    address = ledgerAddresses.trx;
+    address = AddressesLedger.trx;
   } else {
     const networkType = getNetworkTypeByChainId(chainId);
     if (networkType === 'evm') {
-      address = ledgerAddresses.eth;
+      address = AddressesLedger.eth;
     } else {
-      address = ledgerAddresses.cosmos;
+      address = AddressesLedger.cosmos;
     }
   }
   return address;
 }
 
-export const isBase58 = (value: string): boolean =>
-  /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
+export const isBase58 = (value: string): boolean => /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
 export function createTxsHelper() {
   return new TxsHelper();
 }

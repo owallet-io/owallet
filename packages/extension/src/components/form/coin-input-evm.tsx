@@ -4,7 +4,6 @@ import classnames from 'classnames';
 import styleCoinInput from './coin-input.module.scss';
 
 import {
-  Button,
   ButtonDropdown,
   DropdownItem,
   DropdownMenu,
@@ -22,8 +21,7 @@ import {
   ZeroAmountError,
   NegativeAmountError,
   InsufficientAmountError,
-  IAmountConfig,
-  IFeeEthereumConfig
+  IAmountConfig
 } from '@owallet/hooks';
 import { CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -93,7 +91,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
     }, [intl, error]);
 
     const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
-    const { queriesStore, chainStore, accountStore } = useStore();
+    const { queriesStore, chainStore, accountStore, keyRingStore } = useStore();
     const accountInfo = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
     const queryBalances = queriesStore
@@ -108,11 +106,16 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
       .currency.coinDenom;
 
     useEffect(() => {
-      if (chainStore?.current?.networkType === 'evm' && tokenDenom === chainStore?.current?.stakeCurrency?.coinDenom ) {
+      if (
+        chainStore?.current?.networkType === 'evm' &&
+        tokenDenom === chainStore?.current?.stakeCurrency?.coinDenom
+      ) {
         if (!accountInfo.evmosHexAddress) return null;
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-          accountInfo.evmosHexAddress
+          keyRingStore.keyRingType === 'ledger'
+            ? keyRingStore?.keyRingLedgerAddresses?.eth
+            : accountInfo.evmosHexAddress
         ).balance;
         setBalance(evmBalance);
       } else {
@@ -143,8 +146,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
     );
 
     const ba = balance?.trim(true)?.maxDecimals(6)?.toString()?.split(' ');
-    useEffect(() => {
-    }, [parseFloat(feeConfig)])
+    useEffect(() => { }, [parseFloat(feeConfig)]);
 
     return (
       <React.Fragment>
@@ -224,18 +226,15 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
                     // amountConfig.toggleIsMax();
                   }}
                 >
-                  <span>{`Total: ${
-                    reduceStringAssets(
-                      balance?.trim(true)?.maxDecimals(6)?.toString()
-                    ) || 0
-                  }`}</span>
+                  <span>{`Total: ${reduceStringAssets(
+                    balance?.trim(true)?.maxDecimals(6)?.toString()
+                  ) || 0
+                    }`}</span>
                 </div>
               ) : null}
             </Label>
           ) : null}
-          <InputGroup
-            className={styleCoinInput.inputGroup}
-          >
+          <InputGroup className={styleCoinInput.inputGroup}>
             <Input
               className={classnames(
                 'form-control-alternative',
