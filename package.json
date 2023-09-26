@@ -78,7 +78,7 @@
   "resolutions": {
     "@ledgerhq/hw-transport": "6.27.2",
     "@ledgerhq/devices": "^7.0.0",
-    "webpack": "^5.80.0",
+    "webpack": "5.88.1",
     "@types/react": "^16.14.4",
     "@cosmjs/crypto": "^0.24.0-alpha.25",
     "@iov/crypto": "2.1.0",
@@ -107,7 +107,9 @@
     "@ethersproject/base64": "=5.6.0",
     "@ethersproject/basex": "=5.6.0",
     "@ethersproject/pbkdf2": "=5.6.0",
-    "@ethersproject/constants": "=5.6.0"
+    "@ethersproject/constants": "=5.6.0",
+    "@babel/traverse": "7.22.6"
+
   },
   "browser": {
     "assert": false

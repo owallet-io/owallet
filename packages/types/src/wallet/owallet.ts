@@ -125,10 +125,9 @@ export interface Ethereum {
   experimentalSuggestChain(chainInfo: ChainInfo): Promise<void>;
   signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void>;
   signReEncryptData(chainId: string, data: object): Promise<object>;
-  signAndBroadcastTron(chainId: string, data: object): Promise<object>;
   signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
-  signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  signAndBroadcastTron(chainId: string, data: object): Promise<any>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }

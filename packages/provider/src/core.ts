@@ -32,8 +32,7 @@ import {
   SignEthereumTypedDataObject,
   RequestSignDecryptDataMsg,
   RequestSignReEncryptDataMsg,
-  RequestPublicKeyMsg,
-  GetChainInfosWithoutEndpointsMsg
+  RequestPublicKeyMsg
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -44,7 +43,7 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import { GetDefaultAddressTronMsg, RequestSignDirectMsg, RequestSignEthereumMsg, RequestSignTronMsg } from './msgs';
+import { GetChainInfosWithoutEndpointsMsg, GetDefaultAddressTronMsg, RequestSignDirectMsg, RequestSignEthereumMsg, RequestSignTronMsg } from './msgs';
 import { TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
@@ -122,6 +121,12 @@ export class OWallet implements IOWallet {
       },
       signature: response.signature
     };
+  }
+
+  async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
+    const msg = new RequestSignTronMsg(chainId, data);
+    console.log('data signAndBroadcastTron:', data, msg);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature> {

@@ -18,6 +18,8 @@ import { IBCTransferPage } from "../../pages/ibc-transfer";
 import { SendPage } from "../send";
 import { SelectChain } from "../../layouts/header";
 import { SendEvmPage } from "../send-evm";
+import { TRON_ID } from "@owallet/common";
+import { TokensTronView } from "../main/tokenTron";
 
 export const TokenPage: FunctionComponent = observer(() => {
   const {
