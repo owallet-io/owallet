@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "rimraf node_modules build",
-    "build": "etsc",
+    "build": "tsc",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
