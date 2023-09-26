@@ -114,7 +114,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
 
         const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
           keyRingStore.keyRingType === 'ledger'
-            ? keyRingStore?.keyRingLedgerAddress?.eth
+            ? keyRingStore?.keyRingLedgerAddresses?.eth
             : accountInfo.evmosHexAddress
         ).balance;
         setBalance(evmBalance);
@@ -146,7 +146,7 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
     );
 
     const ba = balance?.trim(true)?.maxDecimals(6)?.toString()?.split(' ');
-    useEffect(() => {}, [parseFloat(feeConfig)]);
+    useEffect(() => { }, [parseFloat(feeConfig)]);
 
     return (
       <React.Fragment>
@@ -226,11 +226,10 @@ export const CoinInputEvm: FunctionComponent<CoinInputEvmProps> = observer(
                     // amountConfig.toggleIsMax();
                   }}
                 >
-                  <span>{`Total: ${
-                    reduceStringAssets(
-                      balance?.trim(true)?.maxDecimals(6)?.toString()
-                    ) || 0
-                  }`}</span>
+                  <span>{`Total: ${reduceStringAssets(
+                    balance?.trim(true)?.maxDecimals(6)?.toString()
+                  ) || 0
+                    }`}</span>
                 </div>
               ) : null}
             </Label>

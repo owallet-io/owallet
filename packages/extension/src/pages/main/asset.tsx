@@ -261,11 +261,11 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     keyRingStore.keyRingType === 'ledger' &&
     chainStore.current.networkType === 'evm'
   ) {
-    evmosAddress = keyRingStore?.keyRingLedgerAddress?.eth;
+    evmosAddress = keyRingStore?.keyRingLedgerAddresses?.eth;
     if (isTronNetwork) {
       evmosAddress =
-        keyRingStore?.keyRingLedgerAddress?.trx &&
-        getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx);
+        keyRingStore?.keyRingLedgerAddresses?.trx &&
+        getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
     }
   }
   const balance =
@@ -278,9 +278,9 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
       totalPrice =
         isTronNetwork && total
           ? toDisplay(total.amount.int.value, 24) *
-            priceStore?.getPrice(
-              chainStore?.current?.stakeCurrency?.coinGeckoId
-            )
+          priceStore?.getPrice(
+            chainStore?.current?.stakeCurrency?.coinGeckoId
+          )
           : priceStore?.calculatePrice(total, fiatCurrency);
     }
   }
@@ -330,7 +330,7 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
 
             {isTronNetwork && total
               ? toDisplay(total.amount.int.value, 24) +
-                ` ${chainStore.current?.stakeCurrency.coinDenom}`
+              ` ${chainStore.current?.stakeCurrency.coinDenom}`
               : null}
           </div>
         </div>

@@ -83,7 +83,7 @@ export const SendEvmPage: FunctionComponent<{
   const [gasPrice, setGasPrice] = useState('0');
   const address =
     keyRingStore.keyRingType === 'ledger'
-      ? keyRingStore?.keyRingLedgerAddress?.eth
+      ? keyRingStore?.keyRingLedgerAddresses?.eth
       : accountInfo.evmosHexAddress;
   const sendConfigs = useSendTxConfig(
     chainStore,

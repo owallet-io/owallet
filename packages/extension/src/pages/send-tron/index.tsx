@@ -66,7 +66,7 @@ export const SendTronEvmPage: FunctionComponent<{
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
     chainStore.current.networkType === 'evm' &&
-      queriesStore.get(current.chainId).evm.queryEvmBalance,
+    queriesStore.get(current.chainId).evm.queryEvmBalance,
     chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
   );
 
@@ -107,7 +107,7 @@ export const SendTronEvmPage: FunctionComponent<{
   const addressTron =
     keyRingStore?.keyRingType !== 'ledger'
       ? getBase58Address(accountInfo.evmosHexAddress)
-      : keyRingStore?.keyRingLedgerAddress?.trx;
+      : keyRingStore?.keyRingLedgerAddresses?.trx;
   const tokenTrc20 =
     (tokensTrc20Tron &&
       query &&
@@ -133,12 +133,10 @@ export const SendTronEvmPage: FunctionComponent<{
                     type: tx?.result ? 'success' : 'danger',
                     duration: 5,
                     content: tx?.result
-                      ? `Transaction successful with tx: ${
-                          tx?.txid ?? tx?.transaction?.txID
-                        }`
-                      : `Transaction failed with tx: ${
-                          tx?.txid ?? tx?.transaction?.txID
-                        }`,
+                      ? `Transaction successful with tx: ${tx?.txid ?? tx?.transaction?.txID
+                      }`
+                      : `Transaction failed with tx: ${tx?.txid ?? tx?.transaction?.txID
+                      }`,
                     canDelete: true,
                     transition: {
                       duration: 0.25

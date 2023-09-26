@@ -12,14 +12,7 @@ import {
   ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
-import {
-  BroadcastMode,
-  AminoSignResponse,
-  StdSignDoc,
-  StdTx,
-  OfflineSigner,
-  StdSignature
-} from '@cosmjs/launchpad';
+import { BroadcastMode, AminoSignResponse, StdSignDoc, StdTx, OfflineSigner, StdSignature } from '@cosmjs/launchpad';
 
 import {
   EnableAccessMsg,
@@ -51,13 +44,7 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import {
-  GetChainInfosWithoutEndpointsMsg,
-  GetDefaultAddressTronMsg,
-  RequestSignDirectMsg,
-  RequestSignEthereumMsg,
-  RequestSignTronMsg
-} from './msgs';
+import { GetDefaultAddressTronMsg, RequestSignDirectMsg, RequestSignEthereumMsg, RequestSignTronMsg } from './msgs';
 import { TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
@@ -65,11 +52,7 @@ export class OWallet implements IOWallet {
 
   public defaultOptions: OWalletIntereactionOptions = {};
 
-  constructor(
-    public readonly version: string,
-    public readonly mode: OWalletMode,
-    protected readonly requester: MessageRequester
-  ) {}
+  constructor(public readonly version: string, public readonly mode: OWalletMode, protected readonly requester: MessageRequester) {}
 
   async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
     const msg = new GetChainInfosWithoutEndpointsMsg();
@@ -81,10 +64,7 @@ export class OWallet implements IOWallet {
       chainIds = [chainIds];
     }
 
-    await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new EnableAccessMsg(chainIds)
-    );
+    await this.requester.sendMessage(BACKGROUND_PORT, new EnableAccessMsg(chainIds));
   }
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
@@ -97,27 +77,13 @@ export class OWallet implements IOWallet {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async sendTx(
-    chainId: string,
-    tx: StdTx | Uint8Array,
-    mode: BroadcastMode
-  ): Promise<Uint8Array> {
+  async sendTx(chainId: string, tx: StdTx | Uint8Array, mode: BroadcastMode): Promise<Uint8Array> {
     const msg = new SendTxMsg(chainId, tx, mode);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAmino(
-    chainId: string,
-    signer: string,
-    signDoc: StdSignDoc,
-    signOptions: OWalletSignOptions = {}
-  ): Promise<AminoSignResponse> {
-    const msg = new RequestSignAminoMsg(
-      chainId,
-      signer,
-      signDoc,
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
-    );
+  async signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions: OWalletSignOptions = {}): Promise<AminoSignResponse> {
+    const msg = new RequestSignAminoMsg(chainId, signer, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions));
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -140,9 +106,7 @@ export class OWallet implements IOWallet {
         bodyBytes: signDoc.bodyBytes,
         authInfoBytes: signDoc.authInfoBytes,
         chainId: signDoc.chainId,
-        accountNumber: signDoc.accountNumber
-          ? signDoc.accountNumber.toString()
-          : null
+        accountNumber: signDoc.accountNumber ? signDoc.accountNumber.toString() : null
       },
       deepmerge(this.defaultOptions.sign ?? {}, signOptions)
     );
@@ -160,20 +124,7 @@ export class OWallet implements IOWallet {
     };
   }
 
-  async signAndBroadcastTron(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }> {
-    const msg = new RequestSignTronMsg(chainId, data);
-    console.log('data signAndBroadcastTron:', data, msg);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async signArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array
-  ): Promise<StdSignature> {
+  async signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature> {
     let isADR36WithString = false;
     if (typeof data === 'string') {
       data = Buffer.from(data).toString('base64');
@@ -208,20 +159,12 @@ export class OWallet implements IOWallet {
     return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).signature;
   }
 
-  async verifyArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    signature: StdSignature
-  ): Promise<boolean> {
+  async verifyArbitrary(chainId: string, signer: string, data: string | Uint8Array, signature: StdSignature): Promise<boolean> {
     if (typeof data === 'string') {
       data = Buffer.from(data);
     }
 
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new RequestVerifyADR36AminoSignDoc(chainId, signer, data, signature)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new RequestVerifyADR36AminoSignDoc(chainId, signer, data, signature));
   }
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner {
@@ -232,9 +175,7 @@ export class OWallet implements IOWallet {
     return new CosmJSOfflineSignerOnlyAmino(chainId, this);
   }
 
-  async getOfflineSignerAuto(
-    chainId: string
-  ): Promise<OfflineSigner | OfflineDirectSigner> {
+  async getOfflineSignerAuto(chainId: string): Promise<OfflineSigner | OfflineDirectSigner> {
     const key = await this.getKey(chainId);
     if (key.isNanoLedger) {
       return new CosmJSOfflineSignerOnlyAmino(chainId, this);
@@ -242,38 +183,22 @@ export class OWallet implements IOWallet {
     return new CosmJSOfflineSigner(chainId, this);
   }
 
-  async suggestToken(
-    chainId: string,
-    contractAddress: string,
-    viewingKey?: string
-  ): Promise<void> {
+  async suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void> {
     const msg = new SuggestTokenMsg(chainId, contractAddress, viewingKey);
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async getSecret20ViewingKey(
-    chainId: string,
-    contractAddress: string
-  ): Promise<string> {
+  async getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string> {
     const msg = new GetSecret20ViewingKey(chainId, contractAddress);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async getEnigmaPubKey(chainId: string): Promise<Uint8Array> {
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new GetPubkeyMsg(chainId)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new GetPubkeyMsg(chainId));
   }
 
-  async getEnigmaTxEncryptionKey(
-    chainId: string,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new GetTxEncryptionKeyMsg(chainId, nonce)
-    );
+  async getEnigmaTxEncryptionKey(chainId: string, nonce: Uint8Array): Promise<Uint8Array> {
+    return await this.requester.sendMessage(BACKGROUND_PORT, new GetTxEncryptionKeyMsg(chainId, nonce));
   }
 
   async enigmaEncrypt(
@@ -282,25 +207,15 @@ export class OWallet implements IOWallet {
     // eslint-disable-next-line @typescript-eslint/ban-types
     msg: object
   ): Promise<Uint8Array> {
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new ReqeustEncryptMsg(chainId, contractCodeHash, msg)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new ReqeustEncryptMsg(chainId, contractCodeHash, msg));
   }
 
-  async enigmaDecrypt(
-    chainId: string,
-    ciphertext: Uint8Array,
-    nonce: Uint8Array
-  ): Promise<Uint8Array> {
+  async enigmaDecrypt(chainId: string, ciphertext: Uint8Array, nonce: Uint8Array): Promise<Uint8Array> {
     if (!ciphertext || ciphertext.length === 0) {
       return new Uint8Array();
     }
 
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new RequestDecryptMsg(chainId, ciphertext, nonce)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new RequestDecryptMsg(chainId, ciphertext, nonce));
   }
 
   getEnigmaUtils(chainId: string): SecretUtils {
@@ -316,12 +231,7 @@ export class OWallet implements IOWallet {
 }
 
 export class Ethereum implements IEthereum {
-  constructor(
-    public readonly version: string,
-    public readonly mode: EthereumMode,
-    public initChainId: string,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(public readonly version: string, public readonly mode: EthereumMode, public initChainId: string, protected readonly requester: MessageRequester) {
     this.initChainId = initChainId;
   }
 
@@ -333,33 +243,18 @@ export class Ethereum implements IEthereum {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAndBroadcastEthereum(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }> {
+  async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }> {
     const msg = new RequestSignEthereumMsg(chainId, data);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
-  }
-
-  async signAndBroadcastTron(chainId: string, data: object): Promise<object> {
-    const msg = new RequestSignTronMsg(chainId, data);
-    console.log('data signAndBroadcastTron:', data, msg);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
-    console.log(
-      '🚀 ~ file: core.ts ~ line 313 ~ Ethereum ~ experimentalSuggestChain ~ chainInfo',
-      chainInfo
-    );
+    console.log('🚀 ~ file: core.ts ~ line 313 ~ Ethereum ~ experimentalSuggestChain ~ chainInfo', chainInfo);
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signEthereumTypeData(
-    chainId: string,
-    data: SignEthereumTypedDataObject
-  ): Promise<any> {
+  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<any> {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
@@ -370,10 +265,7 @@ export class Ethereum implements IEthereum {
     }
   }
 
-  async signAndBroadcastTron(
-    chainId: string,
-    data: object
-  ): Promise<{ rawTxHex: string }> {
+  async signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string } | any> {
     const msg = new RequestSignTronMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
@@ -405,12 +297,7 @@ export class Ethereum implements IEthereum {
 }
 
 export class TronWeb implements ITronWeb {
-  constructor(
-    public readonly version: string,
-    public readonly mode: EthereumMode,
-    public initChainId: string,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(public readonly version: string, public readonly mode: EthereumMode, public initChainId: string, protected readonly requester: MessageRequester) {
     this.initChainId = initChainId;
   }
 

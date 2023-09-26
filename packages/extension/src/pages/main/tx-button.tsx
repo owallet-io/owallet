@@ -156,9 +156,9 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
     evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
       keyRingStore?.keyRingType === 'ledger'
         ? chainStore.current.chainId === TRON_ID
-          ? keyRingStore?.keyRingLedgerAddress?.trx &&
-            getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
-          : keyRingStore?.keyRingLedgerAddress?.eth
+          ? keyRingStore?.keyRingLedgerAddresses?.trx &&
+          getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
+          : keyRingStore?.keyRingLedgerAddresses?.eth
         : accountInfo.evmosHexAddress
     )?.balance;
 
@@ -166,8 +166,8 @@ export const TxButtonEvmView: FunctionComponent<TxButtonViewProps> = observer(
     const hasAssets = isTronNetwork
       ? evmBalance && toDisplay(evmBalance.amount.int.value, 24)
       : parseFloat(
-          evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()
-        ) > 0;
+        evmBalance?.trim(true).shrink(true).maxDecimals(6).toString()
+      ) > 0;
 
     return (
       <div className={styleTxButton.containerTxButton}>
