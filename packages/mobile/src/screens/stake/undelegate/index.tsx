@@ -10,14 +10,9 @@ import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { OWButton } from '../../../components/button';
-import { CardBody, CardDivider } from '../../../components/card';
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput
-} from '../../../components/input';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { CardBody, CardDivider, OWBox } from '../../../components/card';
+import { AmountInput, FeeButtons, MemoInput, TextInput } from '../../../components/input';
+import { PageWithScrollView } from '../../../components/page';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { Toggle } from '../../../components/toggle';
 import { useSmartNavigation } from '../../../navigation.provider';
@@ -49,32 +44,18 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const queries = queriesStore.get(chainStore.current.chainId);
 
   const validator =
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Bonded)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonding)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonded)
-      .getValidator(validatorAddress);
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).getValidator(validatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding).getValidator(validatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded).getValidator(validatorAddress);
 
   const validatorThumbnail = validator
-    ? queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress) ||
+    ? queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding).getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded).getValidatorThumbnail(validatorAddress) ||
       ValidatorThumbnails[validatorAddress]
     : undefined;
 
-  const staked = queries.cosmos.queryDelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(validatorAddress);
+  const staked = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).getDelegationTo(validatorAddress);
 
   const sendConfigs = useUndelegateTxConfig(
     chainStore,
@@ -101,8 +82,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
   const isDisable = !account.isReadyToSendMsgs || !txStateIsValid;
 
   return (
-    <PageWithScrollViewInBottomTabView
-      style={style.flatten(['padding-x-page'])}
+    <PageWithScrollView
+      // style={}
       contentContainerStyle={style.get('flex-grow-1')}
       backgroundColor={colors['background']}
     >
@@ -111,7 +92,8 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         style={{
           marginBottom: spacing['12'],
           borderRadius: spacing['8'],
-          backgroundColor: colors['primary']
+          backgroundColor: colors['primary'],
+          marginHorizontal: spacing['page']
         }}
       >
         <CardBody>
@@ -124,38 +106,15 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
               size={36}
               url={validatorThumbnail}
             />
-            <Text
-              style={[
-                style.flatten(['h6', 'color-text-black-high']),
-                { color: colors['primary-text'] }
-              ]}
-            >
+            <Text style={[style.flatten(['h6', 'color-text-black-high']), { color: colors['primary-text'] }]}>
               {validator ? validator?.description.moniker : '...'}
             </Text>
           </View>
-          <CardDivider
-            style={style.flatten([
-              'margin-x-0',
-              'margin-top-8',
-              'margin-bottom-15'
-            ])}
-          />
+          <CardDivider style={style.flatten(['margin-x-0', 'margin-top-8', 'margin-bottom-15'])} />
           <View style={style.flatten(['flex-row', 'items-center'])}>
-            <Text
-              style={[
-                style.flatten(['subtitle2', 'color-text-black-medium']),
-                { color: colors['sub-primary-text'] }
-              ]}
-            >
-              Staked
-            </Text>
+            <Text style={[style.flatten(['subtitle2', 'color-text-black-medium']), { color: colors['sub-primary-text'] }]}>Staked</Text>
             <View style={style.get('flex-1')} />
-            <Text
-              style={[
-                style.flatten(['body2', 'color-text-black-medium']),
-                { color: colors['sub-primary-text'] }
-              ]}
-            >
+            <Text style={[style.flatten(['body2', 'color-text-black-medium']), { color: colors['sub-primary-text'] }]}>
               {staked.trim(true).shrink(true).maxDecimals(6).toString()}
             </Text>
           </View>
@@ -176,126 +135,115 @@ export const UndelegateScreen: FunctionComponent = observer(() => {
         amountConfig={sendConfigs.amountConfig}
       />
       */}
-      <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-      <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
-      <View
-        style={{
-          flexDirection: 'row',
-          paddingBottom: 24,
-          alignItems: 'center'
-        }}
-      >
-        <Toggle
-          on={customFee}
-          onChange={value => {
-            setCustomFee(value);
-            if (!value) {
-              if (
-                sendConfigs.feeConfig.feeCurrency &&
-                !sendConfigs.feeConfig.fee
-              ) {
-                sendConfigs.feeConfig.setFeeType('average');
-              }
-            }
-          }}
-        />
-        <Text
+      <OWBox>
+        <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
+        <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
+        <View
           style={{
-            fontWeight: '700',
-            fontSize: 16,
-            lineHeight: 34,
-            paddingHorizontal: 8,
-            color: colors['primary-text']
+            flexDirection: 'row',
+            paddingBottom: 24,
+            alignItems: 'center'
           }}
         >
-          Custom Fee
-        </Text>
-      </View>
-      {customFee && chainStore.current.networkType !== 'evm' ? (
-        <TextInput
-          label="Fee"
-          placeholder="Type your Fee here"
-          keyboardType={'numeric'}
-          labelStyle={{
-            fontSize: 16,
-            fontWeight: '700',
-            lineHeight: 22,
-            color: colors['gray-900'],
-            marginBottom: spacing['8']
-          }}
-          onChangeText={text => {
-            const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-              DecUtils.getTenExponentNInPrecisionRange(6)
-            );
-
-            sendConfigs.feeConfig.setManualFee({
-              amount: fee.roundUp().toString(),
-              denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
-            });
-          }}
-        />
-      ) : chainStore.current.networkType !== 'evm' ? (
-        <FeeButtons
-          label="Fee"
-          gasLabel="gas"
-          feeConfig={sendConfigs.feeConfig}
-          gasConfig={sendConfigs.gasConfig}
-        />
-      ) : null}
-
-      <OWButton
-        label="Unstake"
-        disabled={isDisable}
-        loading={account.isSendingMsg === 'undelegate'}
-        onPress={async () => {
-          if (account.isReadyToSendMsgs && txStateIsValid) {
-            try {
-              await account.cosmos.sendUndelegateMsg(
-                sendConfigs.amountConfig.amount,
-                sendConfigs.recipientConfig.recipient,
-                sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
-                {
-                  preferNoSetMemo: true,
-                  preferNoSetFee: true
-                },
-                {
-                  onFulfill: tx => {
-                    console.log(
-                      tx,
-                      'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                    );
-                  },
-                  onBroadcasted: txHash => {
-                    analyticsStore.logEvent('Undelegate tx broadcasted', {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      validatorName: validator?.description.moniker,
-                      feeType: sendConfigs.feeConfig.feeType
-                    });
-                    smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: Buffer.from(txHash).toString('hex')
-                    });
-                  }
+          <Toggle
+            on={customFee}
+            onChange={(value) => {
+              setCustomFee(value);
+              if (!value) {
+                if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
+                  sendConfigs.feeConfig.setFeeType('average');
                 }
-              );
-            } catch (e) {
-              if (e?.message === 'Request rejected') {
-                return;
               }
-              if (e?.message.includes('Cannot read properties of undefined')) {
-                return;
-              }
-              if (smartNavigation.canGoBack) {
-                smartNavigation.goBack();
-              } else {
-                smartNavigation.navigateSmart('Home', {});
+            }}
+          />
+          <Text
+            style={{
+              fontWeight: '700',
+              fontSize: 16,
+              lineHeight: 34,
+              paddingHorizontal: 8,
+              color: colors['primary-text']
+            }}
+          >
+            Custom Fee
+          </Text>
+        </View>
+        {customFee && chainStore.current.networkType !== 'evm' ? (
+          <TextInput
+            label="Fee"
+            placeholder="Type your Fee here"
+            keyboardType={'numeric'}
+            labelStyle={{
+              fontSize: 16,
+              fontWeight: '700',
+              lineHeight: 22,
+              color: colors['gray-900'],
+              marginBottom: spacing['8']
+            }}
+            onChangeText={(text) => {
+              const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
+
+              sendConfigs.feeConfig.setManualFee({
+                amount: fee.roundUp().toString(),
+                denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
+              });
+            }}
+          />
+        ) : chainStore.current.networkType !== 'evm' ? (
+          <FeeButtons label="Fee" gasLabel="gas" feeConfig={sendConfigs.feeConfig} gasConfig={sendConfigs.gasConfig} />
+        ) : null}
+
+        <OWButton
+          label="Unstake"
+          disabled={isDisable}
+          loading={account.isSendingMsg === 'undelegate'}
+          onPress={async () => {
+            if (account.isReadyToSendMsgs && txStateIsValid) {
+              try {
+                await account.cosmos.sendUndelegateMsg(
+                  sendConfigs.amountConfig.amount,
+                  sendConfigs.recipientConfig.recipient,
+                  sendConfigs.memoConfig.memo,
+                  sendConfigs.feeConfig.toStdFee(),
+                  {
+                    preferNoSetMemo: true,
+                    preferNoSetFee: true
+                  },
+                  {
+                    onFulfill: (tx) => {
+                      console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+                    },
+                    onBroadcasted: (txHash) => {
+                      analyticsStore.logEvent('Undelegate tx broadcasted', {
+                        chainId: chainStore.current.chainId,
+                        chainName: chainStore.current.chainName,
+                        validatorName: validator?.description.moniker,
+                        feeType: sendConfigs.feeConfig.feeType
+                      });
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: Buffer.from(txHash).toString('hex')
+                      });
+                    }
+                  }
+                );
+              } catch (e) {
+                if (e?.message === 'Request rejected') {
+                  return;
+                }
+                if (e?.message.includes('Cannot read properties of undefined')) {
+                  return;
+                }
+                if (smartNavigation.canGoBack) {
+                  smartNavigation.goBack();
+                } else {
+                  smartNavigation.navigateSmart('Home', {});
+                }
               }
             }
-          }
-        }}
-      />
+          }}
+        />
+      </OWBox>
       <View style={style.flatten(['height-page-pad'])} />
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 });
