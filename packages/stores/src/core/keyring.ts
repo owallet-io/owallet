@@ -231,7 +231,7 @@ export class KeyRingStore {
   }
 
   @flow
-  *unlock(password: string, saving?: boolean) {
+  *unlock(password: string, saving: boolean) {
     const msg = new UnlockKeyRingMsg(password, saving);
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
