@@ -19,20 +19,15 @@ export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
   const { colors } = useTheme();
   const chainId = chainStore.current.chainId;
   const styles = styling(colors);
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
   const delegated = queryDelegated.total;
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
 
   const totalPrice = priceStore.calculatePrice(delegated);
 
@@ -67,11 +62,7 @@ export const EarningCard: FunctionComponent<{
       if (e?.message === 'Request rejected') {
         return;
       }
-      if (
-        e?.message.includes(
-          'Cannot read properties of undefined' || 'undefined is not an object'
-        )
-      ) {
+      if (e?.message.includes('Cannot read properties of undefined' || 'undefined is not an object')) {
         return;
       }
     }
@@ -84,14 +75,7 @@ export const EarningCard: FunctionComponent<{
       }}
     >
       <View style={styles.cardBody}>
-        <Text
-          style={[
-            { ...styles['text-earn'] },
-            { color: colors['primary-text'] }
-          ]}
-        >
-          Earnings
-        </Text>
+        <Text style={[{ ...styles['text-earn'] }, { color: colors['primary-text'] }]}>Earnings</Text>
         <Image
           style={{
             width: 120,
@@ -110,29 +94,18 @@ export const EarningCard: FunctionComponent<{
             { color: colors['primary-text'] }
           ]}
         >
-          {stakingReward
-            .shrink(true)
-            .maxDecimals(decimalChain > 10 ? 9 : 6)
-            .trim(true)
-            .upperCase(true)
-            .toString()}
+          {stakingReward.toDec().gt(new Dec(0.001))
+            ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+            : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
         </Text>
-        <Text style={[styles['amount']]}>
-          {totalStakingReward
-            ? totalStakingReward.toString()
-            : stakingReward.shrink(true).maxDecimals(6).toString()}
-        </Text>
+        <Text style={[styles['amount']]}>{totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}</Text>
 
         <OWButton
           label="Claim Rewards"
           size="medium"
           onPress={_onPressClaim}
           textStyle={styles.btnTextClaimStyle}
-          disabled={
-            !account.isReadyToSendMsgs ||
-            stakingReward.toDec().equals(new Dec(0)) ||
-            queryReward.pendingRewardValidatorAddresses.length === 0
-          }
+          disabled={!account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0}
           loading={account.isSendingMsg === 'withdrawRewards'}
           style={styles.btnClaimStyle}
           icon={
@@ -140,9 +113,7 @@ export const EarningCard: FunctionComponent<{
               name="rewards"
               size={20}
               color={
-                !account.isReadyToSendMsgs ||
-                stakingReward.toDec().equals(new Dec(0)) ||
-                queryReward.pendingRewardValidatorAddresses.length === 0
+                !account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0
                   ? colors['text-btn-disable-color']
                   : colors['white']
               }
@@ -150,9 +121,7 @@ export const EarningCard: FunctionComponent<{
           }
         />
         <OWBox type="shadow" style={styles['view-box-staking']}>
-          <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>
-            Total staked
-          </Text>
+          <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>Total staked</Text>
           <View
             style={{
               marginBottom: 20,
@@ -187,12 +156,7 @@ export const EarningCard: FunctionComponent<{
                     fontWeight: '700'
                   }}
                 >
-                  {delegated
-                    .shrink(true)
-                    .maxDecimals(6)
-                    .trim(true)
-                    .upperCase(true)
-                    .toString()}
+                  {delegated.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
                 </Text>
                 <Text
                   style={{
@@ -202,9 +166,7 @@ export const EarningCard: FunctionComponent<{
                     color: colors['gray-300']
                   }}
                 >
-                  {totalPrice
-                    ? totalPrice.toString()
-                    : delegated.shrink(true).maxDecimals(6).toString()}
+                  {totalPrice ? totalPrice.toString() : delegated.shrink(true).maxDecimals(6).toString()}
                 </Text>
               </View>
             </View>

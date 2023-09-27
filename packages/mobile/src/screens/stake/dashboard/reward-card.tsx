@@ -68,12 +68,9 @@ export const MyRewardCard: FunctionComponent<{
               color: colors['sub-primary-text']
             }}
           >
-            {pendingStakableReward
-              .shrink(true)
-              .maxDecimals(decimalChain > 10 ? 9 : 6)
-              .trim(true)
-              .upperCase(true)
-              .toString()}
+            {pendingStakableReward.toDec().gt(new Dec(0.001))
+              ? pendingStakableReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+              : `< 0.001 ${pendingStakableReward.toCoin().denom.toUpperCase()}`}
           </Text>
           <View
             style={{
