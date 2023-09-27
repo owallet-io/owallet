@@ -6,8 +6,7 @@ import { getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
-import { ToastShowParams } from 'react-native-toast-message';
+import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Alert, Linking } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
@@ -97,12 +96,13 @@ export const handleError = (error, url, method) => {
     console.log(`[1;34m: ---------------------------------------`);
   }
 };
-export const showToast = ({ ...params }: ToastShowParams) => {
-  Toast.show({
+export const showToast = ({ ...params }: MessageOptions) => {
+  showMessage({
     type: params?.type ?? 'success',
-    visibilityTime: 4000,
+    duration: 5000,
     ...params
   });
+  return;
 };
 export const handleDeepLink = async ({ url }) => {
   if (url) {

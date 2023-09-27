@@ -48,62 +48,42 @@ export const AddTokenCosmosScreen = observer(() => {
   useEffect(() => {
     if (tokensStore.waitingSuggestedToken) {
       chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
-      if (
-        contractAddress !==
-        tokensStore.waitingSuggestedToken.data.contractAddress
-      ) {
-        setValue(
-          'contractAddress',
-          tokensStore.waitingSuggestedToken.data.contractAddress
-        );
+      if (contractAddress !== tokensStore.waitingSuggestedToken.data.contractAddress) {
+        setValue('contractAddress', tokensStore.waitingSuggestedToken.data.contractAddress);
       }
     }
   }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
 
-  const isSecret20 =
-    (chainStore.current.features ?? []).find(
-      feature => feature === 'secretwasm'
-    ) != null;
+  const isSecret20 = (chainStore.current.features ?? []).find((feature) => feature === 'secretwasm') != null;
 
   const queries = queriesStore.get(chainStore.current.chainId);
-  const query = isSecret20
-    ? queries.secret.querySecret20ContractInfo
-    : queries.cosmwasm.querycw20ContractInfo;
+  const query = isSecret20 ? queries.secret.querySecret20ContractInfo : queries.cosmwasm.querycw20ContractInfo;
   const queryContractInfo = query.getQueryContract(contractAddress);
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
-  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
-    useState(false);
+  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] = useState(false);
 
   const addTokenSuccess = () => {
     setLoading(false);
     smartNavigation.navigateSmart('Home', {});
     showToast({
-      text1: 'Success',
-      text2: 'Token added',
-      onPress: () => {}
+      message: 'Token added'
     });
   };
 
   const createViewingKey = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       accountInfo.secret
-        .createSecret20ViewingKey(
-          contractAddress,
-          '',
-          {},
-          {},
-          (_, viewingKey) => {
-            resolve(viewingKey);
-          }
-        )
+        .createSecret20ViewingKey(contractAddress, '', {}, {}, (_, viewingKey) => {
+          resolve(viewingKey);
+        })
         .then(() => {})
         .catch(reject);
     });
   };
 
-  const submit = handleSubmit(async data => {
+  const submit = handleSubmit(async (data) => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
@@ -136,10 +116,8 @@ export const AddTokenCosmosScreen = observer(() => {
             setLoading(false);
             smartNavigation.navigateSmart('Home', {});
             showToast({
-              text1: 'Error',
-              text2: 'Failed to create the viewing key',
-              type: 'error',
-              onPress: () => {}
+              message: 'Failed to create the viewing key',
+              type: 'danger'
             });
           } else {
             const currency: Secret20Currency = {
@@ -160,10 +138,8 @@ export const AddTokenCosmosScreen = observer(() => {
       setLoading(false);
       smartNavigation.navigateSmart('Home', {});
       showToast({
-        text1: 'Error',
-        text2: JSON.stringify(err.message),
-        type: 'error',
-        onPress: () => {}
+        message: JSON.stringify(err.message),
+        type: 'danger'
       });
     }
   });
@@ -294,7 +270,7 @@ export const AddTokenCosmosScreen = observer(() => {
             checkBoxColor={colors['primary-text']}
             checkedCheckBoxColor={colors['primary-text']}
             onClick={() => {
-              setIsOpenSecret20ViewingKey(value => !value);
+              setIsOpenSecret20ViewingKey((value) => !value);
             }}
             isChecked={isOpenSecret20ViewingKey}
           />
