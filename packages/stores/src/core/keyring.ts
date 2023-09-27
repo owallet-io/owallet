@@ -208,7 +208,6 @@ export class KeyRingStore {
   *addLedgerKey(meta: Record<string, string>, bip44HDPath: BIP44HDPath, kdf: 'scrypt' | 'sha256' | 'pbkdf2' = this.defaultKdf) {
     const msg = new AddLedgerKeyMsg(kdf, meta, bip44HDPath);
     const result = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg))).multiKeyStoreInfo;
-    console.log('🚀 ~ file: keyring.ts ~ line 251 ~ KeyRingStore ~ result', result);
     this.multiKeyStoreInfo = result;
   }
 
@@ -333,8 +332,6 @@ export class KeyRingStore {
   // And, save it, refresh the key store.
   @flow
   *setKeyStoreLedgerAddress(bip44HDPath: string, chainId: string | number) {
-    console.log('SetKeyStoreLedgerAddressMsg', SetKeyStoreLedgerAddressMsg);
-
     const status = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new SetKeyStoreLedgerAddressMsg(bip44HDPath, chainId)));
 
     this.multiKeyStoreInfo = (yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, new GetMultiKeyStoreInfoMsg()))).multiKeyStoreInfo;
