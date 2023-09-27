@@ -1,4 +1,4 @@
-import { KVStore } from './interface';
+import { KVStore, KVStoreType } from './interface';
 
 export class LocalKVStore implements KVStore {
   constructor(private readonly _prefix: string) {}
@@ -26,7 +26,7 @@ export class LocalKVStore implements KVStore {
   prefix(): string {
     return this._prefix;
   }
-  type(): string {
-    return 'extension';
+  type(): KVStoreType {
+    return KVStoreType.extension;
   }
 }
