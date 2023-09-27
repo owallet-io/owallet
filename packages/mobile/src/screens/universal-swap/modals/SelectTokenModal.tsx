@@ -1,5 +1,5 @@
 import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { registerModal } from '@src/modals/base';
 import images from '@src/assets/images';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -26,6 +26,26 @@ export const SelectTokenModal: FunctionComponent<{
 }> = registerModal(({ close, onNetworkModal, data, setToken, prices }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { universalSwapStore } = useStore();
+  const [filteredTokens, setTokens] = useState([]);
+  const [keyword, setKeyword] = useState('');
+
+  useEffect(() => {
+    if (keyword === '') {
+      setTokens(data);
+    } else {
+      const tmpData = data.filter(
+        d =>
+          d.chainId.toString().includes(keyword) ||
+          d.denom.toString().includes(keyword) ||
+          d.name.toString().includes(keyword) ||
+          d.org.toString().includes(keyword) ||
+          d.coinGeckoId.toString().includes(keyword)
+      );
+      console.log('tmpData', tmpData);
+
+      setTokens(tmpData);
+    }
+  }, [data, keyword]);
 
   const { colors } = useTheme();
   const styles = styling(colors);
@@ -38,6 +58,8 @@ export const SelectTokenModal: FunctionComponent<{
           style={styles.textInput}
           placeholderTextColor={colors['text-place-holder']}
           placeholder="Search Token"
+          onChangeText={t => setKeyword(t)}
+          value={keyword}
         />
         <View style={styles.iconSearch}>
           <OWIcon color={colors['blue-400']} text name="search" size={16} />
@@ -68,7 +90,7 @@ export const SelectTokenModal: FunctionComponent<{
       <OWFlatList
         isBottomSheet
         keyboardShouldPersistTaps="handled"
-        data={data}
+        data={filteredTokens}
         renderItem={({ item }) => {
           const subAmounts = Object.fromEntries(
             Object.entries(universalSwapStore?.getAmount).filter(
