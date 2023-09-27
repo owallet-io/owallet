@@ -12,7 +12,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { OWButton } from '../../../components/button';
 import { AmountInput, FeeButtons, MemoInput, TextInput } from '../../../components/input';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { PageWithScrollView } from '../../../components/page';
 import { Toggle } from '../../../components/toggle';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
@@ -78,7 +78,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   // };
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <OWSubTitleHeader title="Staking" />
       <OWBox
         style={{
@@ -231,7 +231,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           }}
         />
       </OWBox>
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 });
 

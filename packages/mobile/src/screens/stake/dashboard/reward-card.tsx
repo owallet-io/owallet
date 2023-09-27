@@ -4,12 +4,13 @@ import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Button } from '../../../components/button';
+import { Button, OWButton } from '../../../components/button';
 import { OWBox } from '../../../components/card';
 import { DownArrowIcon } from '../../../components/icon';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
 import { spacing, typography } from '../../../themes';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -81,23 +82,12 @@ export const MyRewardCard: FunctionComponent<{
               marginTop: spacing['8']
             }}
           >
-            <Button
+            <OWButton
+              label="Claim"
               size="small"
-              text="Claim"
-              mode="outline"
-              rightIcon={<DownArrowIcon color={isDisable ? colors['gray-300'] : colors['purple-700']} height={18} />}
-              containerStyle={{
-                ...styles.containerBtn
-              }}
-              style={{
-                ...styles.btn
-              }}
-              textStyle={{
-                ...styles.textInfo,
-                fontWeight: '400',
-                color: isDisable ? colors['gray-300'] : colors['purple-700'],
-                marginRight: 10
-              }}
+              disabled={isDisable}
+              colorLoading={colors['purple-700']}
+              loading={account.isSendingMsg === 'withdrawRewards'}
               onPress={async () => {
                 try {
                   await account.cosmos.sendWithdrawDelegationRewardMsgs(
@@ -138,8 +128,13 @@ export const MyRewardCard: FunctionComponent<{
                   // }
                 }
               }}
-              disabled={isDisable}
-              loading={account.isSendingMsg === 'withdrawRewards'}
+              type="secondary"
+              icon={<OWIcon name="rewards" size={20} color={isDisable ? colors['white'] : colors['purple-700']} />}
+              fullWidth={false}
+              style={{
+                width: 100,
+                borderWidth: isDisable ? 0 : 0.5
+              }}
             />
           </View>
         </View>
