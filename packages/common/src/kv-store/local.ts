@@ -26,6 +26,7 @@ export class LocalKVStore implements KVStore {
   prefix(): string {
     return this._prefix;
   }
+
   type(): KVStoreType {
     return KVStoreType.extension;
   }
