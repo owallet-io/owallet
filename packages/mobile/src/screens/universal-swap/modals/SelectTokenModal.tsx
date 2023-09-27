@@ -30,7 +30,12 @@ export const SelectTokenModal: FunctionComponent<{
   const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
-    if (keyword === '') {
+    if (
+      keyword === '' ||
+      keyword === null ||
+      keyword === undefined ||
+      !keyword
+    ) {
       setTokens(data);
     } else {
       const tmpData = data.filter(
@@ -41,7 +46,6 @@ export const SelectTokenModal: FunctionComponent<{
           d.org.toString().includes(keyword) ||
           d.coinGeckoId.toString().includes(keyword)
       );
-      console.log('tmpData', tmpData);
 
       setTokens(tmpData);
     }
