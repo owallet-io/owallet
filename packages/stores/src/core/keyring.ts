@@ -142,7 +142,7 @@ export class KeyRingStore {
 
   @computed
   get keyRingType(): string {
-    const keyStore = this.multiKeyStoreInfo.find((keyStore) => keyStore.selected);
+    const keyStore = this.multiKeyStoreInfo.find(keyStore => keyStore.selected);
 
     if (!keyStore) {
       return 'none';
@@ -153,7 +153,7 @@ export class KeyRingStore {
 
   @computed
   get keyRingLedgerAddresses(): AddressesLedger {
-    const keyStore = this.multiKeyStoreInfo.find((keyStore) => keyStore.selected);
+    const keyStore = this.multiKeyStoreInfo.find(keyStore => keyStore.selected);
 
     if (!keyStore) {
       return {} as AddressesLedger;
@@ -219,7 +219,7 @@ export class KeyRingStore {
 
     // Emit the key store changed event manually.
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   @flow
@@ -231,8 +231,8 @@ export class KeyRingStore {
   }
 
   @flow
-  *unlock(password: string) {
-    const msg = new UnlockKeyRingMsg(password);
+  *unlock(password: string, saving?: boolean) {
+    const msg = new UnlockKeyRingMsg(password, saving);
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
 
@@ -242,7 +242,7 @@ export class KeyRingStore {
     }
 
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   @flow
@@ -274,7 +274,7 @@ export class KeyRingStore {
 
   @flow
   *deleteKeyRing(index: number, password: string) {
-    const selectedIndex = this.multiKeyStoreInfo.findIndex((keyStore) => keyStore.selected);
+    const selectedIndex = this.multiKeyStoreInfo.findIndex(keyStore => keyStore.selected);
     const msg = new DeleteKeyRingMsg(index, password);
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.status = result.status;
@@ -283,7 +283,7 @@ export class KeyRingStore {
     // Selected keystore may be changed if the selected one is deleted.
     if (selectedIndex === index) {
       this.dispatchKeyStoreChangeEvent();
-      this.selectablesMap.forEach((selectables) => selectables.refresh());
+      this.selectablesMap.forEach(selectables => selectables.refresh());
     }
   }
 
@@ -292,7 +292,7 @@ export class KeyRingStore {
     const msg = new UpdateNameKeyRingMsg(index, name, email);
     const result = yield* toGenerator(this.requester.sendMessage(BACKGROUND_PORT, msg));
     this.multiKeyStoreInfo = result.multiKeyStoreInfo;
-    const selectedIndex = this.multiKeyStoreInfo.findIndex((keyStore) => keyStore.selected);
+    const selectedIndex = this.multiKeyStoreInfo.findIndex(keyStore => keyStore.selected);
     // If selectedIndex and index are same, name could be changed, so dispatch keystore event
     if (selectedIndex === index) {
       this.dispatchKeyStoreChangeEvent();
@@ -326,7 +326,7 @@ export class KeyRingStore {
 
     // Emit the key store changed event manually.
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   // Set the ledger addresses to current key store.
@@ -343,7 +343,7 @@ export class KeyRingStore {
 
     // Emit the key store changed event manually.
     this.dispatchKeyStoreChangeEvent();
-    this.selectablesMap.forEach((selectables) => selectables.refresh());
+    this.selectablesMap.forEach(selectables => selectables.refresh());
   }
 
   async exportKeyRingDatas(password: string): Promise<ExportKeyRingData[]> {

@@ -54,10 +54,10 @@ export const LockPage: FunctionComponent = observer(() => {
     <EmptyLayout style={{ height: '100%' }}>
       <Form
         className={style.formContainer}
-        onSubmit={handleSubmit(async (data) => {
+        onSubmit={handleSubmit(async data => {
           setLoading(true);
           try {
-            await keyRingStore.unlock(data.password);
+            await keyRingStore.unlock(data.password, true);
             if (interactionInfo.interaction) {
               if (!interactionInfo.interactionInternal) {
                 // XXX: If the connection doesn't have the permission,
@@ -101,7 +101,7 @@ export const LockPage: FunctionComponent = observer(() => {
           }}
           name="password"
           error={errors.password && errors.password.message}
-          ref={(ref) => {
+          ref={ref => {
             passwordRef.current = ref;
 
             register({

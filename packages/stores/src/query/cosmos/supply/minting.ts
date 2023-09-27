@@ -1,6 +1,6 @@
 import { ObservableChainQuery } from '../../chain-query';
 import { MintingInflation } from './types';
-import { KVStore, getUrlV1Beta } from '@owallet/common';
+import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../../common';
 import { autorun } from 'mobx';
 

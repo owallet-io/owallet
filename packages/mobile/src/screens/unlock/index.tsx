@@ -1,20 +1,5 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
-import {
-  Alert,
-  AppState,
-  AppStateStatus,
-  Image,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, AppState, AppStateStatus, Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { TextInput } from '../../components/input';
 import delay from 'delay';
@@ -40,10 +25,7 @@ import images from '@src/assets/images';
 import { showToast } from '@src/utils/helper';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
-async function waitAccountLoad(
-  accountStore: AccountStore<any, any, any, any>,
-  chainId: string
-): Promise<void> {
+async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
     return;
   }
@@ -101,14 +83,7 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
 };
 
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const {
-    keyRingStore,
-    keychainStore,
-    accountStore,
-    chainStore,
-    appInitStore,
-    notificationStore
-  } = useStore();
+  const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
   const [downloading, setDownloading] = useState(false);
@@ -201,7 +176,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     try {
       setIsLoading(true);
       await delay(10);
-      await keyRingStore.unlock(password);
+      await keyRingStore.unlock(password, false);
     } catch (e) {
       console.log(e);
       setIsLoading(false);
@@ -211,10 +186,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const routeToRegisterOnce = useRef(false);
   useEffect(() => {
-    if (
-      !routeToRegisterOnce.current &&
-      keyRingStore.status === KeyRingStatus.EMPTY
-    ) {
+    if (!routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY) {
       (() => {
         routeToRegisterOnce.current = true;
         navigation.dispatch(
@@ -252,19 +224,13 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage
-      );
+      console.log('Notification caused app to open from background state:', remoteMessage);
       // const data = JSON.parse(remoteMessage?.data?.data);
       const data = { data: JSON.stringify(remoteMessage) };
 
       notificationStore?.updateNotidata(data);
 
-      console.log(
-        'Notification caused app to open from background state with data:',
-        data
-      );
+      console.log('Notification caused app to open from background state with data:', data);
     });
     messaging()
       .getInitialNotification()
@@ -368,8 +334,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
-  return !routeToRegisterOnce.current &&
-    keyRingStore.status === KeyRingStatus.EMPTY ? (
+  return !routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
   ) : downloading || installing ? (
     <View
@@ -488,12 +453,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             />
           }
         />
-        <OWButton
-          label="Sign In"
-          disabled={isLoading || !password}
-          onPress={tryUnlock}
-          loading={isLoading || isBiometricLoading}
-        />
+        <OWButton label="Sign In" disabled={isLoading || !password} onPress={tryUnlock} loading={isLoading || isBiometricLoading} />
         {keychainStore.isBiometryOn && (
           <>
             <OrText />
