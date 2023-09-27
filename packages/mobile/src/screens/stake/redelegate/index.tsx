@@ -135,17 +135,17 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           // // console.log(JSON.parse(e?.response?.data?.message),"ok nhe");
           const inputString = e?.response?.data?.message;
           // Replace single quotes with double quotes
-          const reasonMatch = inputString && inputString.match(/\[reason:"([^"]*)"/);
-
+          const regex = /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
+          const match = inputString.match(regex);
           // Check if a match was found and extract the reason
-          if (reasonMatch && reasonMatch?.length > 1) {
-            const reason = reasonMatch[1];
+          if (match && match?.length > 0) {
+            const reason = match[0];
             showToast({
-              message:reason && capitalizedText(reason) || 'Transaction Failed',
+              message: (reason && capitalizedText(reason)) || 'Transaction Failed',
               type: 'warning'
             });
             return;
-          } 
+          }
           showToast({
             message: 'Transaction Failed',
             type: 'warning'
@@ -155,7 +155,6 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           // Parse the JSON string into a TypeScript object
           // const parsedObject = JSON.parse(`{${validJsonString}}`);
           // console.log('🚀 ~ file: index.tsx:146 ~ const_onPressSwitchValidator= ~ parsedObject:', parsedObject);
-          
         }
         console.log(e);
         if (smartNavigation.canGoBack) {
