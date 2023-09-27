@@ -4,12 +4,13 @@ import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Button } from '../../../components/button';
+import { Button, OWButton } from '../../../components/button';
 import { OWBox } from '../../../components/card';
 import { DownArrowIcon } from '../../../components/icon';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
 import { spacing, typography } from '../../../themes';
+import OWIcon from '@src/components/ow-icon/ow-icon';
 export const MyRewardCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -20,23 +21,16 @@ export const MyRewardCard: FunctionComponent<{
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
 
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
 
-  const pendingStakableReward =
-    queries.cosmos.queryRewards.getQueryBech32Address(
-      account.bech32Address
-    ).stakableReward;
+  const pendingStakableReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).stakableReward;
   const stakingReward = queryReward.stakableReward;
   const apy = queries.cosmos.queryInflation.inflation;
+  console.log('🚀 ~ file: reward-card.tsx:33 ~ apy:', apy);
 
   const smartNavigation = useSmartNavigation();
 
-  const isDisable =
-    !account.isReadyToSendMsgs ||
-    pendingStakableReward.toDec().equals(new Dec(0)) ||
-    queryReward.pendingRewardValidatorAddresses.length === 0;
+  const isDisable = !account.isReadyToSendMsgs || pendingStakableReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0;
   const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
   return (
     <OWBox
@@ -54,13 +48,14 @@ export const MyRewardCard: FunctionComponent<{
           }}
         >
           My Pending Rewards
-          {/* <Text style={{
-            ...typography['h7'],
-            color: colors['purple-700']
-          }}>
-            {`${apy.maxDecimals(2).trim(true).toString()}% per year`}
+          <Text
+            style={{
+              ...typography['h7'],
+              color: colors['purple-700']
+            }}
+          >
+            {`(${apy.maxDecimals(2).trim(true).toString()}% per year)`}
           </Text>
-          ) */}
         </Text>
 
         <View>
@@ -73,12 +68,9 @@ export const MyRewardCard: FunctionComponent<{
               color: colors['sub-primary-text']
             }}
           >
-            {pendingStakableReward
-              .shrink(true)
-              .maxDecimals(decimalChain > 10 ? 9 : 6)
-              .trim(true)
-              .upperCase(true)
-              .toString()}
+            {pendingStakableReward.toDec().gt(new Dec(0.001))
+              ? pendingStakableReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+              : `< 0.001 ${pendingStakableReward.toCoin().denom.toUpperCase()}`}
           </Text>
           <View
             style={{
@@ -87,28 +79,12 @@ export const MyRewardCard: FunctionComponent<{
               marginTop: spacing['8']
             }}
           >
-            <Button
+            <OWButton
+              label="Claim"
               size="small"
-              text="Claim"
-              mode="outline"
-              rightIcon={
-                <DownArrowIcon
-                  color={isDisable ? colors['gray-300'] : colors['purple-700']}
-                  height={18}
-                />
-              }
-              containerStyle={{
-                ...styles.containerBtn
-              }}
-              style={{
-                ...styles.btn
-              }}
-              textStyle={{
-                ...styles.textInfo,
-                fontWeight: '400',
-                color: isDisable ? colors['gray-300'] : colors['purple-700'],
-                marginRight: 10
-              }}
+              disabled={isDisable}
+              colorLoading={colors['purple-700']}
+              loading={account.isSendingMsg === 'withdrawRewards'}
               onPress={async () => {
                 try {
                   await account.cosmos.sendWithdrawDelegationRewardMsgs(
@@ -118,10 +94,7 @@ export const MyRewardCard: FunctionComponent<{
                     {},
                     {
                       onFulfill: (tx) => {
-                        console.log(
-                          tx,
-                          'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                        );
+                        console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
                       },
                       onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Claim reward tx broadcasted', {
@@ -141,9 +114,7 @@ export const MyRewardCard: FunctionComponent<{
                   if (e?.message === 'Request rejected') {
                     return;
                   }
-                  if (
-                    e?.message.includes('Cannot read properties of undefined')
-                  ) {
+                  if (e?.message.includes('Cannot read properties of undefined')) {
                     return;
                   }
 
@@ -154,8 +125,13 @@ export const MyRewardCard: FunctionComponent<{
                   // }
                 }
               }}
-              disabled={isDisable}
-              loading={account.isSendingMsg === 'withdrawRewards'}
+              type="secondary"
+              icon={<OWIcon name="rewards" size={20} color={isDisable ? colors['white'] : colors['purple-700']} />}
+              fullWidth={false}
+              style={{
+                width: 100,
+                borderWidth: isDisable ? 0 : 0.5
+              }}
             />
           </View>
         </View>

@@ -6,16 +6,11 @@ import { useStyle } from '../../../styles';
 import { BondStatus } from '@owallet/stores';
 import { useRedelegateTxConfig } from '@owallet/hooks';
 import { Dec, DecUtils } from '@owallet/unit';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { PageWithScrollView } from '../../../components/page';
 import { Image, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { ValidatorThumbnail } from '../../../components/thumbnail';
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput
-} from '../../../components/input';
+import { AmountInput, FeeButtons, MemoInput, TextInput } from '../../../components/input';
 import { OWButton } from '../../../components/button';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing } from '../../../themes';
@@ -44,40 +39,25 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
   const smartNavigation = useSmartNavigation();
   const [customFee, setCustomFee] = useState(false);
   const { colors } = useTheme();
-  const { chainStore, accountStore, queriesStore, analyticsStore, modalStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, modalStore } = useStore();
 
   const style = useStyle();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
   const srcValidator =
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Bonded)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonding)
-      .getValidator(validatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonded)
-      .getValidator(validatorAddress);
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).getValidator(validatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding).getValidator(validatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded).getValidator(validatorAddress);
 
   const srcValidatorThumbnail = srcValidator
-    ? queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Bonded)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Unbonding)
-        .getValidatorThumbnail(validatorAddress) ||
-      queries.cosmos.queryValidators
-        .getQueryStatus(BondStatus.Unbonded)
-        .getValidatorThumbnail(validatorAddress) ||
+    ? queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding).getValidatorThumbnail(validatorAddress) ||
+      queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded).getValidatorThumbnail(validatorAddress) ||
       ValidatorThumbnails[validatorAddress]
     : undefined;
 
-  const staked = queries.cosmos.queryDelegations
-    .getQueryBech32Address(account.bech32Address)
-    .getDelegationTo(validatorAddress);
+  const staked = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).getDelegationTo(validatorAddress);
 
   const sendConfigs = useRedelegateTxConfig(
     chainStore,
@@ -95,19 +75,14 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     moniker: ''
   });
   const dstValidator =
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Bonded)
-      .getValidator(dstValidatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonding)
-      .getValidator(dstValidatorAddress) ||
-    queries.cosmos.queryValidators
-      .getQueryStatus(BondStatus.Unbonded)
-      .getValidator(dstValidatorAddress);
-
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).getValidator(dstValidatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding).getValidator(dstValidatorAddress) ||
+    queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded).getValidator(dstValidatorAddress);
+  
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(dstValidatorAddress);
   }, [dstValidatorAddress, sendConfigs.recipientConfig]);
+  const stakedDst = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).getDelegationTo(dstValidatorAddress);
 
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
@@ -133,7 +108,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             preferNoSetFee: true
           },
           {
-            onBroadcasted: txHash => {
+            onBroadcasted: (txHash) => {
               analyticsStore.logEvent('Redelgate tx broadcasted', {
                 chainId: chainStore.current.chainId,
                 chainName: chainStore.current.chainName,
@@ -173,7 +148,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     modalStore.close();
   };
   return (
-    <PageWithScrollViewInBottomTabView
+    <PageWithScrollView
       contentContainerStyle={{
         flexGrow: 1
       }}
@@ -229,8 +204,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                   lineHeight: 16
                 }}
               >
-                Staked{' '}
-                {staked.trim(true).shrink(true).maxDecimals(6).toString()}
+                Staked {staked.trim(true).shrink(true).maxDecimals(6).toString()}
               </Text>
             </View>
           </View>
@@ -270,12 +244,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }}
           onPress={() => {
             modalStore.setOpen();
-            modalStore.setChildren(
-              <ValidatorsList
-                onPressSelectValidator={onPressSelectValidator}
-                dstValidatorAddress={dstValidatorAddress}
-              />
-            );
+            modalStore.setChildren(<ValidatorsList onPressSelectValidator={onPressSelectValidator} dstValidatorAddress={dstValidatorAddress} />);
           }}
         >
           <View
@@ -349,7 +318,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       lineHeight: 16
                     }}
                   >
-                    Staked 0 ORAI
+                     Staked {stakedDst.trim(true).shrink(true).maxDecimals(6).toString()}
                   </Text>
                 </View>
               ) : (
@@ -406,10 +375,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }}
         >
           <AmountInput label="Amount" amountConfig={sendConfigs.amountConfig} />
-          <MemoInput
-            label="Memo (Optional)"
-            memoConfig={sendConfigs.memoConfig}
-          />
+          <MemoInput label="Memo (Optional)" memoConfig={sendConfigs.memoConfig} />
           <View
             style={{
               flexDirection: 'row',
@@ -419,13 +385,10 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           >
             <Toggle
               on={customFee}
-              onChange={value => {
+              onChange={(value) => {
                 setCustomFee(value);
                 if (!value) {
-                  if (
-                    sendConfigs.feeConfig.feeCurrency &&
-                    !sendConfigs.feeConfig.fee
-                  ) {
+                  if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
                     sendConfigs.feeConfig.setFeeType('average');
                   }
                 }
@@ -455,10 +418,8 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                 color: colors['gray-900'],
                 marginBottom: spacing['8']
               }}
-              onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
+              onChangeText={(text) => {
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
                   denom: sendConfigs.feeConfig.feeCurrency.coinMinimalDenom
@@ -466,23 +427,13 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
               }}
             />
           ) : chainStore.current.networkType !== 'evm' ? (
-            <FeeButtons
-              label="Fee"
-              gasLabel="gas"
-              feeConfig={sendConfigs.feeConfig}
-              gasConfig={sendConfigs.gasConfig}
-            />
+            <FeeButtons label="Fee" gasLabel="gas" feeConfig={sendConfigs.feeConfig} gasConfig={sendConfigs.gasConfig} />
           ) : null}
 
-          <OWButton
-            label="Switch"
-            disabled={isDisable}
-            loading={account.isSendingMsg === 'redelegate'}
-            onPress={_onPressSwitchValidator}
-          />
+          <OWButton label="Switch" disabled={isDisable} loading={account.isSendingMsg === 'redelegate'} onPress={_onPressSwitchValidator} />
         </View>
       ) : null}
       <View style={style.flatten(['height-page-pad'])} />
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 });
