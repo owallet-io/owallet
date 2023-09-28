@@ -347,7 +347,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         for (const feeAmount of fee.amount) {
           const bal = this.queries.queryBalances
             .getQueryBech32Address(this.bech32Address)
-            .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
+            .balances.find(bal => bal.currency.coinMinimalDenom === feeAmount.denom);
 
           if (bal) {
             bal.fetch();
@@ -365,7 +365,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
-    txTracer.traceTx(txHash).then((tx) => {
+    txTracer.traceTx(txHash).then(tx => {
       txTracer.close();
 
       runInAction(() => {
@@ -376,7 +376,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       for (const feeAmount of fee.amount) {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
-          .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
+          .balances.find(bal => bal.currency.coinMinimalDenom === feeAmount.denom);
 
         if (bal) {
           bal.fetch();
@@ -513,8 +513,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = (milliseconds) => {
-      return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    const sleep = milliseconds => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (rpc, txHash, onFulfill, count = 0) => {
@@ -802,7 +802,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ethereum = (await this.getEthereum())!;
-      console.log('Amino Msgs: ', msgs);
 
       let toAddress = msgs.value.to_address;
       if (EVMOS_NETWORKS.includes(signOptions.chainId)) {
@@ -816,8 +815,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         gas: fee.gas,
         gasPrice: fee.gasPrice
       };
-
-      console.log('🚀 ~ file: base.ts ~ line 749 ~ AccountSetBase<MsgOpts, ~ message', message);
 
       const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, message);
 
