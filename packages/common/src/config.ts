@@ -169,7 +169,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
           type: 'cw20',
           coinDenom: 'INJ',
           coinMinimalDenom: 'cw20:orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49:INJ',
-          contractAddress: 'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+          contractAddress: 'orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49',
           coinDecimals: 6,
           coinGeckoId: 'injective-protocol',
           coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png'
