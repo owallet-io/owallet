@@ -280,7 +280,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       const result = await this.broadcastMsgs(msgs, fee, memo, signOptions, this.broadcastMode);
 
-      txHash = result.txHash;
+      txHash = result?.txHash;
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;

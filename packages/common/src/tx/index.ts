@@ -53,7 +53,7 @@ export class TxRestCosmosClient {
         gasWanted: parseInt(txResponse.gas_wanted, 10),
         gasUsed: parseInt(txResponse.gas_used, 10),
         height: parseInt(txResponse.height, 10),
-        txHash: txResponse.txhash
+        txHash: txResponse?.txhash
       };
     } catch (e: unknown) {
       // The response itself failed
