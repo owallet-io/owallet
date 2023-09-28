@@ -1,4 +1,4 @@
-import { KVStore } from '@owallet/common';
+import { KVStore, KVStoreType } from '@owallet/common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // polyfill for common
@@ -29,5 +29,8 @@ export class AsyncKVStore implements KVStore {
 
   prefix(): string {
     return this._prefix;
+  }
+  type(): KVStoreType {
+    return KVStoreType.mobile;
   }
 }

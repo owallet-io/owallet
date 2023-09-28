@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { PageWithScrollView } from '../../../components/page';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet } from 'react-native';
@@ -24,7 +24,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
   const apr = route.params.apr;
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <ValidatorDetailsCard
         containerStyle={{
           ...styles.containerCard
@@ -32,7 +32,7 @@ export const ValidatorDetailsScreen: FunctionComponent = observer(() => {
         validatorAddress={validatorAddress}
         apr={apr}
       />
-    </PageWithScrollViewInBottomTabView>
+    </PageWithScrollView>
   );
 });
 

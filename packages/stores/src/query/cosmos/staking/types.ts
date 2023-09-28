@@ -1,11 +1,8 @@
 import { CoinPrimitive } from '../../../common';
 
 export type Rewards = {
-  height: string;
-  result: {
-    rewards: DelegatorReward[] | null;
-    total: CoinPrimitive[];
-  };
+  rewards: DelegatorReward[] | null;
+  total: CoinPrimitive[];
 };
 
 export type DelegatorReward = {
@@ -14,8 +11,7 @@ export type DelegatorReward = {
 };
 
 export type Delegations = {
-  height: string;
-  result: Delegation[];
+  delegation_responses: Delegation[];
 };
 
 export type Delegation = {
@@ -35,8 +31,7 @@ export type Delegation = {
 };
 
 export type DelegationsStargate = {
-  height: string;
-  result: DelegationStargate[];
+  delegation_responses: DelegationStargate[];
 };
 
 export type DelegationStargate = {
@@ -55,8 +50,7 @@ export type DelegationStargate = {
 };
 
 export type UnbondingDelegations = {
-  height: string;
-  result: UnbondingDelegation[];
+  unbonding_responses: UnbondingDelegation[];
 };
 
 export type UnbondingDelegation = {
@@ -74,15 +68,26 @@ export type UnbondingDelegation = {
 
 export type Validator = {
   operator_address: string;
-  consensus_pubkey: string;
+  consensus_pubkey: {
+    "@type": string;
+    // Base64
+    key: string;
+  };
   jailed: boolean;
-  status: number;
+  status:
+    | "BOND_STATUS_UNSPECIFIED"
+    | "BOND_STATUS_UNBONDED"
+    | "BOND_STATUS_UNBONDING"
+    | "BOND_STATUS_BONDED";
+  // Int
   tokens: string;
+  // Dec
   delegator_shares: string;
   description: {
     moniker?: string;
     identity?: string;
     website?: string;
+    security_contact?: string;
     details?: string;
   };
   unbonding_height: string;
@@ -103,31 +108,30 @@ export type Validator = {
 };
 
 export type Validators = {
-  height: string;
-  result: Validator[];
+  validators: Validator[];
 };
 
 export enum BondStatus {
-  Unbonded = 'Unbonded',
-  Unbonding = 'Unbonding',
-  Bonded = 'Bonded'
+  Unbonded = "Unbonded",
+  Unbonding = "Unbonding",
+  Bonded = "Bonded",
+  Unspecified = "Unspecified",
 }
 
 export type StakingParams = {
-  height: string;
-  result: {
+  params: {
     unbonding_time: string;
     max_validators: number;
     max_entries: number;
+    historical_entries: number;
     bond_denom: string;
   };
 };
 
 export type StakingPool = {
-  height: string;
-  result: {
+  pool: {
     // Int
-    notBondedTokens: string;
+    not_bonded_tokens: string;
     // Int
     bonded_tokens: string;
   };

@@ -1,6 +1,6 @@
 import { StdSignature } from '@cosmjs/launchpad';
 import { Message } from '@owallet/router';
-import { OWalletSignOptions } from '@owallet/types';
+import { OWalletSignOptions, ChainInfoWithoutEndpoints } from '@owallet/types';
 
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -86,9 +86,46 @@ export class RequestSignBitcoinMsg extends Message<{
     return RequestSignBitcoinMsg.type();
   }
 }
-export class RequestSignTronMsg extends Message<{
+
+export class RequestSignEthereumMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {
+  public static type() {
+    return 'request-sign-ethereum';
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly data: object // public readonly signOptions: OWalletSignOptions = {}
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return RequestSignEthereumMsg.type();
+  }
+}
+
+// request sign tron
+export class RequestSignTronMsg extends Message<object> {
   public static type() {
     return 'request-sign-tron';
   }
@@ -144,40 +181,22 @@ export class GetDefaultAddressTronMsg extends Message<{}> {
   }
 }
 
-// request sign ethereum goes here
-export class RequestSignEthereumMsg extends Message<{
-  readonly rawTxHex: string; // raw tx signature to broadcast
+export class GetChainInfosWithoutEndpointsMsg extends Message<{
+  chainInfos: ChainInfoWithoutEndpoints[];
 }> {
   public static type() {
-    return 'request-sign-ethereum';
-  }
-
-  constructor(
-    public readonly chainId: string,
-    public readonly data: object // public readonly signOptions: OWalletSignOptions = {}
-  ) {
-    super();
+    return 'get-chain-infos-without-endpoints';
   }
 
   validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error('chain id not set');
-    }
-
-    if (!this.data) {
-      throw new Error('data not set');
-    }
-  }
-
-  approveExternal(): boolean {
-    return true;
+    // noop
   }
 
   route(): string {
-    return 'keyring';
+    return 'chains';
   }
 
   type(): string {
-    return RequestSignEthereumMsg.type();
+    return GetChainInfosWithoutEndpointsMsg.type();
   }
 }

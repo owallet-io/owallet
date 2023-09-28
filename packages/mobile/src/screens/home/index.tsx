@@ -1,19 +1,7 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { AccountCard } from './account-card';
-import {
-  AppState,
-  AppStateStatus,
-  RefreshControl,
-  ScrollView,
-  StyleSheet
-} from 'react-native';
+import { AppState, AppStateStatus, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { useStore } from '../../stores';
 import { EarningCard } from './earning-card';
 import { observer } from 'mobx-react-lite';
@@ -43,14 +31,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const navigation = useNavigation();
 
   const styles = styling(colors);
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    notificationStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, notificationStore, keyRingStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -59,10 +40,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
-  const previousChainStoreIsInitializing = usePrevious(
-    chainStoreIsInitializing,
-    true
-  );
+  const previousChainStoreIsInitializing = usePrevious(chainStoreIsInitializing, true);
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
@@ -87,72 +65,62 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       subscription.remove();
     };
   }, [checkAndUpdateChainInfo]);
-  const onNavigateToTransaction = () => {
-    navigation.navigate('Others', {
-      screen: 'Transactions'
-    });
-    Toast.hide();
-    return;
-  };
-  useEffect(() => {
-    messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage
-      );
-      onNavigateToTransaction();
-    });
-    messaging()
-      .getInitialNotification()
-      .then(async (remoteMessage) => {
-        // showToast({
-        //   title:remoteMessage?.notification?.title,
-        //   text:remoteMessage?.notification?.body,
-        // })
-        console.log('remoteMessage2: ', remoteMessage);
-        // const data = JSON.parse(remoteMessage?.data?.data);
-        // console.log('message', data.message);
-      });
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-      showToast({
-        text1: remoteMessage?.notification?.title,
-        text2: remoteMessage?.notification?.body,
-        onPress: onNavigateToTransaction
-      });
-      // const formatData = JSON.parse(remoteMessage?.data?.data);
-      // console.log('raw', remoteMessage?.data);
-      // console.log('formattedData', formatData);
-    });
+  // const onNavigateToTransaction = () => {
+  //   navigation.navigate('Others', {
+  //     screen: 'Transactions'
+  //   });
+  //   Toast.hide();
+  //   return;
+  // };
+  // useEffect(() => {
+  //   messaging().onNotificationOpenedApp((remoteMessage) => {
+  //     console.log(
+  //       'Notification caused app to open from background state:',
+  //       remoteMessage
+  //     );
+  //     onNavigateToTransaction();
+  //   });
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(async (remoteMessage) => {
+  //       // showToast({
+  //       //   title:remoteMessage?.notification?.title,
+  //       //   text:remoteMessage?.notification?.body,
+  //       // })
+  //       console.log('remoteMessage2: ', remoteMessage);
+  //       // const data = JSON.parse(remoteMessage?.data?.data);
+  //       // console.log('message', data.message);
+  //     });
+  //   const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+  //     showToast({
+  //       text1: remoteMessage?.notification?.title,
+  //       text2: remoteMessage?.notification?.body,
+  //       onPress: onNavigateToTransaction
+  //     });
+  //     // const formatData = JSON.parse(remoteMessage?.data?.data);
+  //     // console.log('raw', remoteMessage?.data);
+  //     // console.log('formattedData', formatData);
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
-  useEffect(() => {
-    if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
-      // Do something with the notification data here
-      navigation.navigate('Others', {
-        screen: 'Notifications'
-      });
-      notificationStore.removeNotidata();
-    }
-  }, [notificationStore]);
+  // useEffect(() => {
+  //   if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
+  //     // Do something with the notification data here
+  //     navigation.navigate('Others', {
+  //       screen: 'Notifications'
+  //     });
+  //     notificationStore.removeNotidata();
+  //   }
+  // }, [notificationStore]);
 
   useFocusEffect(
     useCallback(() => {
-      if (
-        (chainStoreIsInitializing !== previousChainStoreIsInitializing &&
-          !chainStoreIsInitializing) ||
-        currentChainId !== previousChainId
-      ) {
+      if ((chainStoreIsInitializing !== previousChainStoreIsInitializing && !chainStoreIsInitializing) || currentChainId !== previousChainId) {
         checkAndUpdateChainInfo();
       }
-    }, [
-      chainStoreIsInitializing,
-      previousChainStoreIsInitializing,
-      currentChainId,
-      previousChainId,
-      checkAndUpdateChainInfo
-    ])
+    }, [chainStoreIsInitializing, previousChainStoreIsInitializing, currentChainId, previousChainId, checkAndUpdateChainInfo])
   );
 
   useEffect(() => {
@@ -161,28 +129,32 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     }
   }, [chainStore.current.chainId]);
 
+  // useEffect(() => {
+  //   onSubscribeToTopic();
+  // }, []);
+
+  // const onSubscribeToTopic = React.useCallback(async () => {
+  //   const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+  //   console.log('fcmToken ===', fcmToken);
+
+  //   if (fcmToken) {
+  //     const subcriber = await API.subcribeToTopic(
+  //       {
+  //         subcriber: fcmToken,
+  //         topic:
+  //           chainStore.current.networkType === 'cosmos'
+  //             ? account.bech32Address.toString()
+  //             : account.evmosHexAddress.toString()
+  //       },
+  //       {
+  //         baseURL: 'https://tracking-tx.orai.io'
+  //       }
+  //     );
+  //   }
+  // }, []);
   useEffect(() => {
-    onSubscribeToTopic();
-  }, []);
-
-  const onSubscribeToTopic = React.useCallback(async () => {
-    const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
-    console.log('fcmToken ===', fcmToken);
-
-    if (fcmToken) {
-      const subcriber = await API.subcribeToTopic(
-        {
-          subcriber: fcmToken,
-          topic:
-            chainStore.current.networkType === 'cosmos'
-              ? account.bech32Address.toString()
-              : account.evmosHexAddress.toString()
-        },
-        {
-          baseURL: 'https://tracking-tx.orai.io'
-        }
-      );
-    }
+    onRefresh();
+    return () => {};
   }, []);
 
   const onRefresh = React.useCallback(async () => {
@@ -191,34 +163,24 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === 'bitcoin') {
-      await queries.bitcoin.queryBitcoinBalance
-        .getQueryBalance(account.bech32Address)
-        .waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address).waitFreshResponse();
       setRefreshing(false);
       setRefreshDate(Date.now());
       return;
     }
     await Promise.all([
       priceStore.waitFreshResponse(),
-      ...queries.queryBalances
-        .getQueryBech32Address(account.bech32Address)
-        .balances.map((bal) => {
-          return bal.waitFreshResponse();
-        }),
-      queries.cosmos.queryRewards
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
-      queries.cosmos.queryDelegations
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
-      queries.cosmos.queryUnbondingDelegations
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse()
+      ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map((bal) => {
+        return bal.waitFreshResponse();
+      }),
+      queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
+      queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
+      queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse()
     ]);
 
     setRefreshing(false);
     setRefreshDate(Date.now());
-  }, [accountStore, chainStore, priceStore, queriesStore]);
+  }, [account.bech32Address, chainStore.current.chainId]);
   const renderAccountCard = useMemo(() => {
     if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
@@ -237,9 +199,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   }, [chainStore.current.networkType, chainStore.current.chainId]);
   return (
     <PageWithScrollViewInBottomTabView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       showsVerticalScrollIndicator={false}
       // backgroundColor={colors['background']}
       ref={scrollViewRef}
@@ -248,12 +208,8 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       {renderAccountCard}
       <DashboardCard />
       {renderTokenCard}
-      {chainStore.current.networkType === 'cosmos' ? (
-        <UndelegationsCard />
-      ) : null}
-      {chainStore.current.networkType === 'cosmos' ? (
-        <EarningCard containerStyle={styles.containerEarnStyle} />
-      ) : null}
+      {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null}
+      {chainStore.current.networkType === 'cosmos' ? <EarningCard containerStyle={styles.containerEarnStyle} /> : null}
     </PageWithScrollViewInBottomTabView>
   );
 });

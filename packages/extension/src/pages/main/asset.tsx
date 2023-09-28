@@ -7,7 +7,12 @@ import { useStore } from '../../stores';
 import styleAsset from './asset.module.scss';
 import { ToolTip } from '../../components/tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLanguage } from '@owallet/common';
+import {
+  useLanguage,
+  toDisplay,
+  TRON_ID,
+  getEvmAddress
+} from '@owallet/common';
 import { useHistory } from 'react-router';
 
 const LazyDoughnut = React.lazy(async () => {
@@ -122,9 +127,9 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   const balanceStakableQuery = queries.queryBalances.getQueryBech32Address(
     accountInfo.bech32Address
-  ).stakable;
+  )?.stakable;
 
-  const stakable = balanceStakableQuery.balance;
+  const stakable = balanceStakableQuery?.balance;
 
   const delegated = queries.cosmos.queryDelegations
     .getQueryBech32Address(accountInfo.bech32Address)
@@ -236,7 +241,8 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 });
 
 export const AssetChartViewEvm: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } =
+    useStore();
 
   const language = useLanguage();
 
@@ -249,20 +255,35 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   const accountInfo = accountStore.getAccount(current.chainId);
   // wait for account to be
   if (!accountInfo.evmosHexAddress) return null;
-
-  const balance = queries.evm.queryEvmBalance.getQueryBalance(
-    accountInfo.evmosHexAddress
-  ).balance;
-
+  let evmosAddress = accountInfo.evmosHexAddress;
+  const isTronNetwork = chainStore.current.chainId === TRON_ID;
+  if (
+    keyRingStore.keyRingType === 'ledger' &&
+    chainStore.current.networkType === 'evm'
+  ) {
+    evmosAddress = keyRingStore?.keyRingLedgerAddresses?.eth;
+    if (isTronNetwork) {
+      evmosAddress =
+        keyRingStore?.keyRingLedgerAddresses?.trx &&
+        getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
+    }
+  }
+  const balance =
+    queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
   let totalPrice;
   let total;
-  if (accountInfo.evmosHexAddress) {
-    total = queries.evm.queryEvmBalance.getQueryBalance(
-      accountInfo.evmosHexAddress
-    )?.balance;
-    if (total) totalPrice = priceStore?.calculatePrice(total, fiatCurrency);
+  if (evmosAddress) {
+    total = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
+    if (total) {
+      totalPrice =
+        isTronNetwork && total
+          ? toDisplay(total.amount.int.value, 24) *
+          priceStore?.getPrice(
+            chainStore?.current?.stakeCurrency?.coinGeckoId
+          )
+          : priceStore?.calculatePrice(total, fiatCurrency);
+    }
   }
-
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -271,31 +292,16 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {totalPrice
-              ? totalPrice.toString()
-              : total?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {!isTronNetwork
+              ? totalPrice
+                ? totalPrice.toString()
+                : total?.shrink(true).maxDecimals(6).toString()
+              : null}
+
+            {isTronNetwork &&
+              totalPrice &&
+              parseFloat(totalPrice).toFixed(2) + ' $'}
           </div>
-          {/* <div className={styleAsset.indicatorIcon}>
-            <React.Fragment>
-              {balanceStakableQuery.isFetching ? (
-              <i className="fas fa-spinner fa-spin" />
-            ) : balanceStakableQuery.error ? (
-              <ToolTip
-                tooltip={
-                  balanceStakableQuery.error?.message ||
-                  balanceStakableQuery.error?.statusText
-                }
-                theme="dark"
-                trigger="hover"
-                options={{
-                  placement: 'top'
-                }}
-              >
-                <i className="fas fa-exclamation-triangle text-danger" />
-              </ToolTip>
-            ) : null}
-            </React.Fragment>
-          </div> */}
         </div>
         <React.Suspense fallback={<div style={{ height: '150px' }} />}>
           <img
@@ -319,7 +325,13 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
               color: '#353945E5'
             }}
           >
-            {balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+            {!isTronNetwork &&
+              balance?.trim(true).shrink(true).maxDecimals(6).toString()}
+
+            {isTronNetwork && total
+              ? toDisplay(total.amount.int.value, 24) +
+              ` ${chainStore.current?.stakeCurrency.coinDenom}`
+              : null}
           </div>
         </div>
       </div>

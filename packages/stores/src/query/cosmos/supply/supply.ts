@@ -16,12 +16,18 @@ export class ObservableChainQuerySupplyTotal extends ObservableChainQuery<
     chainGetter: ChainGetter,
     denom: string
   ) {
-    super(kvStore, chainId, chainGetter, `/supply/total/${denom}`);
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      `/cosmos/bank/v1beta1/supply/${denom}`
+    );
 
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.features && chainInfo.features.includes('stargate')) {
-        const url = `/bank/total/${denom}`;
+      if (chainInfo.chainId.startsWith('injective')) {
+        // cosmos-sdk v0.46.0+ has changed the API to use query string.
+        const url = `/cosmos/bank/v1beta1/supply/by_denom?denom=${denom}`;
 
         this.setUrl(url);
       }

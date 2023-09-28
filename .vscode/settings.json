@@ -3,8 +3,7 @@
     "prettier.singleQuote": true,
     "prettier.jsxSingleQuote": false,
     "prettier.trailingComma": "none",
+    "prettier.printWidth": 160,
     "prettier.semi": true,
-    "js/ts.implicitProjectConfig.experimentalDecorators":true
-
-
+    "js/ts.implicitProjectConfig.experimentalDecorators": true
 }

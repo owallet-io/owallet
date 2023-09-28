@@ -7,12 +7,7 @@ import { Dec, DecUtils, Int } from '@owallet/unit';
 import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
 
-import {
-  HasCosmosQueries,
-  HasEvmQueries,
-  QueriesSetBase,
-  QueriesStore
-} from '../query';
+import { HasCosmosQueries, HasEvmQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter, StdFeeEthereum } from '../common';
 
@@ -26,10 +21,7 @@ export interface EthereumMsgOpts {
   };
 }
 
-export class AccountWithEthereum
-  extends AccountSetBase<EthereumMsgOpts, HasEvmQueries>
-  implements HasEthereumAccount
-{
+export class AccountWithEthereum extends AccountSetBase<EthereumMsgOpts, HasEvmQueries> implements HasEthereumAccount {
   public readonly ethereum: DeepReadonly<EthereumAccount>;
 
   static readonly defaultMsgOpts: EthereumMsgOpts = {
@@ -48,19 +40,12 @@ export class AccountWithEthereum
     },
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<
-      QueriesSetBase & HasEvmQueries
-    >,
+    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasEvmQueries>,
     protected readonly opts: AccountSetOpts<EthereumMsgOpts>
   ) {
     super(eventListener, chainGetter, chainId, queriesStore, opts);
 
-    this.ethereum = new EthereumAccount(
-      this,
-      chainGetter,
-      chainId,
-      queriesStore
-    );
+    this.ethereum = new EthereumAccount(this, chainGetter, chainId, queriesStore);
   }
 }
 
@@ -69,9 +54,7 @@ export class EthereumAccount {
     protected readonly base: AccountSetBase<EthereumMsgOpts, HasEvmQueries>,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<
-      QueriesSetBase & HasEvmQueries
-    >
+    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasEvmQueries>
   ) {
     this.base.registerSendTokenFn(this.processSendToken.bind(this));
   }
@@ -102,9 +85,7 @@ export class EthereumAccount {
         case 'erc20':
           const realAmount = (() => {
             let dec = new Dec(amount);
-            dec = dec.mul(
-              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-            );
+            dec = dec.mul(DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals));
             return dec.truncate().toString();
           })();
 
@@ -124,10 +105,7 @@ export class EthereumAccount {
               console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance =
-                  this.queries.evm.queryEvmBalance.getQueryBalance(
-                    this.base.evmosHexAddress
-                  );
+                const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress);
 
                 if (queryEvmBalance) {
                   queryEvmBalance.fetch();
@@ -139,9 +117,7 @@ export class EthereumAccount {
         case 'native':
           const actualAmount = (() => {
             let dec = new Dec(amount);
-            dec = dec.mul(
-              DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals)
-            );
+            dec = dec.mul(DecUtils.getTenExponentNInPrecisionRange(currency.coinDecimals));
             return dec.truncate().toString();
           })();
 
@@ -172,10 +148,7 @@ export class EthereumAccount {
               console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryEvmBalance =
-                  this.queries.evm.queryEvmBalance.getQueryBalance(
-                    this.base.evmosHexAddress
-                  );
+                const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress);
 
                 if (queryEvmBalance) {
                   queryEvmBalance.fetch();
@@ -208,10 +181,8 @@ export class EthereumAccount {
       return;
     }
 
-    const onBroadcasted =
-      typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
-    const onFulfill =
-      typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
+    const onBroadcasted = typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
+    const onFulfill = typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
 
     return {
       onBroadcasted,
@@ -236,9 +207,6 @@ export class EthereumAccount {
 
   protected hasNoLegacyStdFeature(): boolean {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    return (
-      chainInfo.features != null &&
-      chainInfo.features.includes('no-legacy-stdTx')
-    );
+    return chainInfo.features != null && chainInfo.features.includes('no-legacy-stdTx');
   }
 }

@@ -105,14 +105,14 @@ export const AccountCardEVM: FunctionComponent<{
           <View>
             <Text>Base58: </Text>
             <AddressCopyable
-              address={Address.getBase58Address(account.evmosHexAddress)}
+              address={Address.getBase58Address(account?.evmosHexAddress)}
               maxCharacters={22}
             />
           </View>
           <View>
             <Text>Evmos: </Text>
             <AddressCopyable
-              address={account.evmosHexAddress}
+              address={account?.evmosHexAddress}
               maxCharacters={22}
             />
           </View>
@@ -120,7 +120,7 @@ export const AccountCardEVM: FunctionComponent<{
       );
     }
     return (
-      <AddressCopyable address={account.evmosHexAddress} maxCharacters={22} />
+      <AddressCopyable address={account?.evmosHexAddress} maxCharacters={22} />
     );
   };
   return (

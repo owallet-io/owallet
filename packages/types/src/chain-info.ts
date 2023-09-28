@@ -3,7 +3,7 @@ import { BIP44 } from './bip44';
 import { AxiosRequestConfig } from 'axios';
 import { Bech32Config } from './bech32';
 
-export type NetworkType = 'cosmos' | 'evm' | 'bitcoin';
+export type NetworkType = 'cosmos' | 'evm' | 'bitcoin' | 'evmos';
 export interface ChainInfo {
   readonly rpc?: string;
   readonly evmRpc?: string;
@@ -66,7 +66,4 @@ export interface AppChainInfo extends ChainInfo {
     readonly accountUrl?: string;
   };
 }
-export type ChainInfoWithoutEndpoints = Omit<
-  ChainInfo,
-  'rest' | 'rpc' | 'nodeProvider'
->;
+export type ChainInfoWithoutEndpoints = Omit<ChainInfo, 'rest' | 'rpc' | 'nodeProvider'>;

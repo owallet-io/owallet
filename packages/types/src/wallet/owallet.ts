@@ -83,7 +83,6 @@ export interface OWallet {
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner;
   getOfflineSignerOnlyAmino(chainId: string): OfflineSigner;
   getOfflineSignerAuto(chainId: string): Promise<OfflineSigner | OfflineDirectSigner>;
-
   suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void>;
   getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string>;
   getEnigmaUtils(chainId: string): SecretUtils;
@@ -128,7 +127,7 @@ export interface Ethereum {
   signReEncryptData(chainId: string, data: object): Promise<object>;
   signDecryptData(chainId: string, data: object): Promise<object>;
   getPublicKey(chainId: string): Promise<object>;
-  signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string }>;
+  signAndBroadcastTron(chainId: string, data: object): Promise<any>;
   // asyncRequest(): Promise<void>;
   // getKey(chainId: string): Promise<Key>;
 }

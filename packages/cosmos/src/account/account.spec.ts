@@ -3,7 +3,7 @@ import { BaseAccount } from "./index";
 describe("Test account parse", () => {
   test("Test fromAminoJSON", () => {
     // Base account
-    let account = BaseAccount.fromAminoJSON({
+    let account = BaseAccount.fromProtoJSON({
       height: "8409557",
       result: {
         type: "cosmos-sdk/BaseAccount",
@@ -27,7 +27,7 @@ describe("Test account parse", () => {
     expect(account.getType()).toBe("cosmos-sdk/BaseAccount");
 
     // Vesting account
-    account = BaseAccount.fromAminoJSON({
+    account = BaseAccount.fromProtoJSON({
       height: "8409738",
       result: {
         type: "cosmos-sdk/DelayedVestingAccount",
@@ -59,7 +59,7 @@ describe("Test account parse", () => {
     expect(account.getType()).toBe("cosmos-sdk/DelayedVestingAccount");
 
     // Custom account that embeds the base account (ethermint)
-    account = BaseAccount.fromAminoJSON({
+    account = BaseAccount.fromProtoJSON({
       height: "449",
       result: {
         base_account: {

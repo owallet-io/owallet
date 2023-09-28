@@ -1,4 +1,4 @@
-import { KVStore } from '@owallet/common';
+import { KVStore, getUrlV1Beta } from '@owallet/common';
 import {
   ObservableChainQuery,
   ObservableChainQueryMap
@@ -24,7 +24,11 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
       if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
-        this.setUrl(`/ibc/apps/transfer/v1/denom_traces/${hash}`);
+        this.setUrl(
+          `/ibc/apps/transfer/${getUrlV1Beta(
+            chainInfo.beta
+          )}/denom_traces/${hash}`
+        );
       }
     });
   }

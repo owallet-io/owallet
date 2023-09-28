@@ -15,7 +15,7 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
     chainGetter: ChainGetter,
     protected readonly bech32Address: string
   ) {
-    super(kvStore, chainId, chainGetter, `/auth/accounts/${bech32Address}`);
+    super(kvStore, chainId, chainGetter, `/cosmos/auth/v1beta1/accounts/${bech32Address}`);
 
     makeObservable(this);
   }
@@ -27,7 +27,7 @@ export class ObservableQueryAccountInner extends ObservableChainQuery<AuthAccoun
     }
 
     try {
-      const account = BaseAccount.fromAminoJSON(
+      const account = BaseAccount.fromProtoJSON(
         this.response.data,
         this.bech32Address
       );

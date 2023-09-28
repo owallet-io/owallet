@@ -21,4 +21,5 @@ coverage
 .yarn/
 .yarnrc
 
-
+.env
+.env.*

@@ -34,7 +34,7 @@ export const UndelegationsCard: FunctionComponent<{
   const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
     BondStatus.Unbonded
   );
-  const stakingParams = queries.cosmos.queryStakingParams.response;
+  const stakingParams = queries.cosmos.queryStakingParams;
 
   const style = useStyle();
 
@@ -62,7 +62,7 @@ export const UndelegationsCard: FunctionComponent<{
           const validator = bondedValidators.validators
             .concat(unbondingValidators.validators)
             .concat(unbondedValidators.validators)
-            .find(val => val.operator_address === unbonding.validatorAddress);
+            .find((val) => val.operator_address === unbonding.validatorAddress);
           const thumbnail =
             bondedValidators.getValidatorThumbnail(
               unbonding.validatorAddress
@@ -145,8 +145,7 @@ export const UndelegationsCard: FunctionComponent<{
                       (endTime - currentTime) / 1000
                     );
                     const unbondingTime = stakingParams
-                      ? parseFloat(stakingParams.data.result.unbonding_time) /
-                        10 ** 9
+                      ? stakingParams.unbondingTimeSec
                       : 3600 * 24 * 21;
 
                     return 100 - (remainingTime / unbondingTime) * 100;

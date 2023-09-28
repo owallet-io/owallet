@@ -17,11 +17,36 @@ import { ExportPage } from '../export';
 import { ChangeNamePage } from '../keyring/change';
 import { ClearPage } from '../clear';
 
+import { useEffect, useRef } from 'react';
+
+export const useOutsideClick = (callback: () => void) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [callback]);
+
+  return ref;
+};
+
 export const SetKeyRingPage: FunctionComponent = observer(() => {
   const intl = useIntl();
-
+  const [isActive, setIsActive] = useState(undefined);
   const { keyRingStore, analyticsStore } = useStore();
   const history = useHistory();
+  const ref = useOutsideClick(() => {
+    setIsActive(undefined)
+  });
 
   const loadingIndicator = useLoadingIndicator();
 
@@ -30,9 +55,9 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
       showChainName={false}
       canChangeChainInfo={false}
       alternativeTitle={intl.formatMessage({ id: 'setting.keyring' })}
-      // onBackButton={() => {
-      //   history.goBack();
-      // }}
+    // onBackButton={() => {
+    //   history.goBack();
+    // }}
     >
       <div className={style.container}>
         <div className={style.innerTopContainer}>
@@ -65,43 +90,42 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
           const bip44HDPath = keyStore.bip44HDPath
             ? keyStore.bip44HDPath
             : {
-                account: 0,
-                change: 0,
-                addressIndex: 0
-              };
+              account: 0,
+              change: 0,
+              addressIndex: 0
+            };
 
           return (
-            <PageButtonAccount
-              ind={i}
-              key={i.toString()}
-              title={`${
-                keyStore.meta?.name
+            <div ref={ref}>
+              <PageButtonAccount
+                ind={i}
+                key={i.toString()}
+                title={`${keyStore.meta?.name
                   ? keyStore.meta.name
                   : intl.formatMessage({
-                      id: 'setting.keyring.unnamed-account'
-                    })
-              } ${
-                keyStore.selected
-                  ? intl.formatMessage({
+                    id: 'setting.keyring.unnamed-account'
+                  })
+                  } ${keyStore.selected
+                    ? intl.formatMessage({
                       id: 'setting.keyring.selected-account'
                     })
-                  : ''
-              }`}
-              paragraph={
-                keyStore.type === 'ledger'
-                  ? `Ledger - m/44'/118'/${bip44HDPath.account}'${
-                      bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
-                        ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
-                        : ''
+                    : ''
+                  }`}
+                paragraph={
+                  keyStore.type === 'ledger'
+                    ? `Ledger - m/44'/${bip44HDPath?.coinType ?? 118}'/${bip44HDPath.account
+                    }'${bip44HDPath.change !== 0 || bip44HDPath.addressIndex !== 0
+                      ? `/${bip44HDPath.change}/${bip44HDPath.addressIndex}`
+                      : ''
                     }`
-                  : keyStore.meta?.email
-                  ? keyStore.meta.email
-                  : undefined
-              }
-              onClick={
-                keyStore.selected
-                  ? undefined
-                  : async (e) => {
+                    : keyStore.meta?.email
+                      ? keyStore.meta.email
+                      : undefined
+                }
+                onClick={
+                  keyStore.selected
+                    ? undefined
+                    : async (e) => {
                       e.preventDefault();
                       loadingIndicator.setIsLoading('keyring', true);
                       try {
@@ -114,16 +138,17 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
                         loadingIndicator.setIsLoading('keyring', false);
                       }
                     }
-              }
-              style={keyStore.selected ? { cursor: 'default' } : undefined}
-              icons={[
-                <KeyRingToolsIcon key="tools" index={i} keyStore={keyStore} />
-              ]}
-              styleTitle={{
-                fontWeight: 400,
-                fontSize: 14
-              }}
-            />
+                }
+                style={keyStore.selected ? { cursor: 'default' } : undefined}
+                icons={[
+                  <KeyRingToolsIcon key="tools" index={i} keyStore={keyStore} setIsActive={setIsActive} isActive={isActive} />
+                ]}
+                styleTitle={{
+                  fontWeight: 400,
+                  fontSize: 14
+                }}
+              />
+            </div>
           );
         })}
       </div>
@@ -134,9 +159,10 @@ export const SetKeyRingPage: FunctionComponent = observer(() => {
 const KeyRingToolsIcon: FunctionComponent<{
   index: number;
   keyStore: MultiKeyStoreInfoWithSelectedElem;
-}> = ({ index, keyStore }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const toggleOpen = () => setIsOpen((isOpen) => !isOpen);
+  setIsActive?: any;
+  isActive?: number
+}> = ({ index, keyStore, isActive, setIsActive }) => {
+  const toggleOpen = () => setIsActive(isActive === index ? undefined : index);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState<boolean>(false);
   const [typeSettingAccount, setTypeSettingAccount] = useState<string>('view');
   const history = useHistory();
@@ -151,7 +177,7 @@ const KeyRingToolsIcon: FunctionComponent<{
     <React.Fragment>
       <Popover
         target={tooltipId}
-        isOpen={isOpen}
+        isOpen={isActive === index}
         toggle={toggleOpen}
         placement="bottom"
         className={style.popoverContainer}
@@ -172,7 +198,7 @@ const KeyRingToolsIcon: FunctionComponent<{
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setIsOpen(false);
+                setIsActive(undefined);
                 setIsAccountModalOpen(true);
                 setTypeSettingAccount('view');
                 // history.push(`/setting/export/${index}?type=${keyStore.type}`);
@@ -192,7 +218,7 @@ const KeyRingToolsIcon: FunctionComponent<{
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setIsOpen(false);
+              setIsActive(undefined);
               setIsAccountModalOpen(true);
               setTypeSettingAccount('change');
               // history.push(`/setting/keyring/change/name/${index}`);
@@ -205,7 +231,7 @@ const KeyRingToolsIcon: FunctionComponent<{
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setIsOpen(false);
+              setIsActive(undefined);
               setIsAccountModalOpen(true);
               setTypeSettingAccount('delete');
               // history.push(`/setting/clear/${index}`);
@@ -213,6 +239,20 @@ const KeyRingToolsIcon: FunctionComponent<{
           >
             <FormattedMessage id="setting.clear" />
           </div>
+          {/* {keyStore.type !== 'mnemonic' && !keyStore?.meta?.email && (
+            <div
+              className={style.popoverItem}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                browser.tabs.create({
+                  url: `/popup.html#/connect-social/${index}/${keyStore?.meta?.name}`
+                });
+              }}
+            >
+              <FormattedMessage id="setting.connect.google" />
+            </div>
+          )} */}
         </PopoverBody>
       </Popover>
       <AccountSettingModal
@@ -236,7 +276,7 @@ const KeyRingToolsIcon: FunctionComponent<{
           e.preventDefault();
           e.stopPropagation();
 
-          setIsOpen(true);
+          // setIsOpen(true);
         }}
       >
         <i id={tooltipId} className="fas fa-ellipsis-h" />
