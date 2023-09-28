@@ -21,6 +21,7 @@ import { DownArrowIcon } from '../../../components/icon';
 import { Toggle } from '../../../components/toggle';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWSubTitleHeader } from '@src/components/header';
+import { capitalizedText, showToast } from '@src/utils/helper';
 export const RedelegateScreen: FunctionComponent = observer(() => {
   const route = useRoute<
     RouteProp<
@@ -78,7 +79,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
     queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded).getValidator(dstValidatorAddress) ||
     queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding).getValidator(dstValidatorAddress) ||
     queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded).getValidator(dstValidatorAddress);
-  
+
   useEffect(() => {
     sendConfigs.recipientConfig.setRawRecipient(dstValidatorAddress);
   }, [dstValidatorAddress, sendConfigs.recipientConfig]);
@@ -123,11 +124,37 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
+        console.log('🚀 ~ file: index.tsx:126 ~ const_onPressSwitchValidator= ~ e:', e);
         if (e?.message === 'Request rejected') {
           return;
         }
         if (e?.message.includes('Cannot read properties of undefined')) {
           return;
+        }
+        if (e?.response && e?.response?.data?.message) {
+          // // console.log(JSON.parse(e?.response?.data?.message),"ok nhe");
+          const inputString = e?.response?.data?.message;
+          // Replace single quotes with double quotes
+          const regex = /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
+          const match = inputString.match(regex);
+          // Check if a match was found and extract the reason
+          if (match && match?.length > 0) {
+            const reason = match[0];
+            showToast({
+              message: (reason && capitalizedText(reason)) || 'Transaction Failed',
+              type: 'warning'
+            });
+            return;
+          }
+          showToast({
+            message: 'Transaction Failed',
+            type: 'warning'
+          });
+          return;
+
+          // Parse the JSON string into a TypeScript object
+          // const parsedObject = JSON.parse(`{${validJsonString}}`);
+          // console.log('🚀 ~ file: index.tsx:146 ~ const_onPressSwitchValidator= ~ parsedObject:', parsedObject);
         }
         console.log(e);
         if (smartNavigation.canGoBack) {
@@ -318,7 +345,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
                       lineHeight: 16
                     }}
                   >
-                     Staked {stakedDst.trim(true).shrink(true).maxDecimals(6).toString()}
+                    Staked {stakedDst.trim(true).shrink(true).maxDecimals(6).toString()}
                   </Text>
                 </View>
               ) : (

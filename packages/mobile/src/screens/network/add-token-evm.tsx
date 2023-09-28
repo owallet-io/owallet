@@ -46,14 +46,8 @@ export const AddTokenEVMScreen = observer(() => {
   useEffect(() => {
     if (tokensStore.waitingSuggestedToken) {
       chainStore.selectChain(tokensStore.waitingSuggestedToken.data.chainId);
-      if (
-        contractAddress !==
-        tokensStore.waitingSuggestedToken.data.contractAddress
-      ) {
-        form.setValue(
-          'contractAddress',
-          tokensStore.waitingSuggestedToken.data.contractAddress
-        );
+      if (contractAddress !== tokensStore.waitingSuggestedToken.data.contractAddress) {
+        form.setValue('contractAddress', tokensStore.waitingSuggestedToken.data.contractAddress);
       }
     }
   }, [chainStore, contractAddress, form, tokensStore.waitingSuggestedToken]);
@@ -66,21 +60,14 @@ export const AddTokenEVMScreen = observer(() => {
 
   const tokenInfo = queryContractInfo.tokenInfo;
 
-  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] =
-    useState(false);
+  const [isOpenSecret20ViewingKey, setIsOpenSecret20ViewingKey] = useState(false);
 
   const createViewingKey = async (): Promise<string> => {
     return new Promise((resolve, reject) => {
       accountInfo.secret
-        .createSecret20ViewingKey(
-          contractAddress,
-          '',
-          {},
-          {},
-          (_, viewingKey) => {
-            resolve(viewingKey);
-          }
-        )
+        .createSecret20ViewingKey(contractAddress, '', {}, {}, (_, viewingKey) => {
+          resolve(viewingKey);
+        })
         .then(() => {})
         .catch(reject);
     });
@@ -90,13 +77,11 @@ export const AddTokenEVMScreen = observer(() => {
     setLoading(false);
     smartNavigation.navigateSmart('Home', {});
     showToast({
-      text1: 'Success',
-      text2: 'Token added',
-      onPress: () => {}
+      message: 'Token added'
     });
   };
 
-  const submit = handleSubmit(async data => {
+  const submit = handleSubmit(async (data) => {
     try {
       if (tokenInfo?.decimals != null && tokenInfo.name && tokenInfo.symbol) {
         setLoading(true);
@@ -129,10 +114,8 @@ export const AddTokenEVMScreen = observer(() => {
             setLoading(false);
             smartNavigation.navigateSmart('Home', {});
             showToast({
-              text1: 'Error',
-              text2: 'Failed to create the viewing key',
-              type: 'error',
-              onPress: () => {}
+              message: 'Failed to create the viewing key',
+              type: 'danger'
             });
           } else {
             const currency: Secret20Currency = {
@@ -153,9 +136,9 @@ export const AddTokenEVMScreen = observer(() => {
       setLoading(false);
       smartNavigation.navigateSmart('Home', {});
       showToast({
-        text1: 'Error',
-        text2: JSON.stringify(err.message),
-        type: 'error',
+        
+        message: JSON.stringify(err.message),
+        type: 'danger',
         onPress: () => {}
       });
     }
@@ -287,7 +270,7 @@ export const AddTokenEVMScreen = observer(() => {
             checkBoxColor={colors['primary-text']}
             checkedCheckBoxColor={colors['primary-text']}
             onClick={() => {
-              setIsOpenSecret20ViewingKey(value => !value);
+              setIsOpenSecret20ViewingKey((value) => !value);
             }}
             isChecked={isOpenSecret20ViewingKey}
           />

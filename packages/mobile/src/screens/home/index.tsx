@@ -29,9 +29,8 @@ import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import { API } from '../../common/api';
-import { TRON_ID, showToast } from '../../utils/helper';
+import { TRON_ID } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
