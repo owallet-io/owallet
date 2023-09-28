@@ -42,8 +42,8 @@ export const TokenPage: FunctionComponent = observer(() => {
   const ledgerAddress =
     keyRingStore.keyRingType === 'ledger'
       ? checkTronNetwork
-        ? keyRingStore?.keyRingLedgerAddress?.trx
-        : keyRingStore?.keyRingLedgerAddress?.eth
+        ? keyRingStore?.keyRingLedgerAddresses?.trx
+        : keyRingStore?.keyRingLedgerAddresses?.eth
       : '';
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
@@ -79,7 +79,7 @@ export const TokenPage: FunctionComponent = observer(() => {
         `${chainStore.current.rpc}/v1/accounts/${getBase58Address(
           keyRingStore.keyRingType !== 'ledger'
             ? accountInfo.evmosHexAddress
-            : getEvmAddress(keyRingStore?.keyRingLedgerAddress?.trx)
+            : getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx)
         )}`
       ).then(async (res) => {
         const data = await res.json();
