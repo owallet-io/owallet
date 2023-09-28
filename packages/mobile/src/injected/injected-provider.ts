@@ -1,9 +1,5 @@
-import {
-  InjectedOWallet,
-  InjectedEthereum,
-  InjectedTronWebOWallet
-} from '@owallet/provider';
-import { OWalletMode, EthereumMode } from '@owallet/types';
+import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
+import { OWalletMode, EthereumMode, TronWeb } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
   static parseWebviewMessage(message: any): any {
@@ -29,8 +25,7 @@ export class RNInjectedEthereum extends InjectedEthereum {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -60,10 +55,8 @@ export class RNInjectedOWallet extends InjectedOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -76,6 +69,16 @@ export class RNInjectedOWallet extends InjectedOWallet {
 }
 
 export class RNInjectedTronWeb extends InjectedTronWebOWallet {
+  static trx: { sign: (transaction: object) => Promise<object> };
+
+  protected override async requestMethod(method: keyof TronWeb | string, args: any[]): Promise<any> {
+    const result = await super.requestMethod(method, args);
+    if (method === 'tron_requestAccounts') {
+      this.defaultAddress = result;
+    }
+    return result;
+  }
+
   static parseWebviewMessage(message: any): any {
     if (message && typeof message === 'string') {
       try {
@@ -93,10 +96,8 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -105,5 +106,11 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       },
       RNInjectedTronWeb.parseWebviewMessage
     );
+
+    this.trx = {
+      sign: async (transaction: object): Promise<object> => {
+        return await this.requestMethod('sign', [transaction]);
+      }
+    };
   }
 }

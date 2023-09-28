@@ -258,7 +258,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       messaging()
         .getToken()
         .then(async FCMToken => {
-          console.log('FCMToken ===', FCMToken);
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
