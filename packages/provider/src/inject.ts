@@ -30,7 +30,7 @@ import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 export const localStore = new Map<string, any>();
 
 export interface ProxyRequest {
-  type: 'proxy-request';
+  type: 'proxy-request' | 'owallet-proxy-request';
   id: string;
   namespace: string;
   method: keyof OWallet | Ethereum | string;
@@ -67,7 +67,7 @@ export class InjectedOWallet implements IOWallet {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== 'proxy-request' || message.namespace !== NAMESPACE) {
+      if (!message || message.type !== `${NAMESPACE}-proxy-request` || message.namespace !== NAMESPACE) {
         return;
       }
 
@@ -180,7 +180,7 @@ export class InjectedOWallet implements IOWallet {
       .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: 'proxy-request',
+      type: `${NAMESPACE}-proxy-request`,
       namespace: NAMESPACE,
       id,
       method,
