@@ -23,7 +23,7 @@ import { Text } from '@src/components/text';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
 import { showToast } from '@src/utils/helper';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
+
 
 async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
@@ -222,29 +222,29 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
-  useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification caused app to open from background state:', remoteMessage);
-      // const data = JSON.parse(remoteMessage?.data?.data);
-      const data = { data: JSON.stringify(remoteMessage) };
+  // useEffect(() => {
+  //   messaging().onNotificationOpenedApp(remoteMessage => {
+  //     console.log('Notification caused app to open from background state:', remoteMessage);
+  //     // const data = JSON.parse(remoteMessage?.data?.data);
+  //     const data = { data: JSON.stringify(remoteMessage) };
 
-      notificationStore?.updateNotidata(data);
+  //     notificationStore?.updateNotidata(data);
 
-      console.log('Notification caused app to open from background state with data:', data);
-    });
-    messaging()
-      .getInitialNotification()
-      .then(async remoteMessage => {});
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      showToast({
-        text1: remoteMessage?.notification?.title,
-        text2: remoteMessage?.notification?.body,
-        onPress: () => Toast.hide()
-      });
-    });
+  //     console.log('Notification caused app to open from background state with data:', data);
+  //   });
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(async remoteMessage => {});
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     showToast({
+  //       text1: remoteMessage?.notification?.title,
+  //       text2: remoteMessage?.notification?.body,
+  //       onPress: () => Toast.hide()
+  //     });
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
   // Notification setup section
   const regisFcmToken = useCallback(async FCMToken => {
@@ -258,7 +258,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       messaging()
         .getToken()
         .then(async FCMToken => {
-          console.log('FCMToken ===', FCMToken);
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {

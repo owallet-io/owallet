@@ -167,6 +167,15 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           type: 'cw20',
+          coinDenom: 'INJ',
+          coinMinimalDenom: 'cw20:orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49:INJ',
+          contractAddress: 'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
+          coinDecimals: 18,
+          coinGeckoId: 'injective-protocol',
+          coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png'
+        },
+        {
+          type: 'cw20',
           coinDenom: 'KWT',
           coinMinimalDenom: 'cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:Kawaii Islands',
           contractAddress: 'orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5',
@@ -236,7 +245,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://sentry.tm.injective.network',
+    rpc: 'https://injective-rpc-global.orai.io',
     rest: 'https://sentry.lcd.injective.network',
     chainId: 'injective-1',
     chainName: 'Injective',

@@ -60,7 +60,7 @@ export class InjectedOWallet implements IOWallet {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -176,7 +176,7 @@ export class InjectedOWallet implements IOWallet {
   protected requestMethod(method: keyof IOWallet, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -236,7 +236,7 @@ export class InjectedOWallet implements IOWallet {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -392,7 +392,7 @@ export class InjectedEthereum implements Ethereum {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -426,8 +426,6 @@ export class InjectedEthereum implements Ethereum {
         var result: any;
         const chainId = message.args[1] ?? localStore.get('ethereum.chainId') ?? ethereum.initChainId;
 
-        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
-        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
         switch (message.method) {
           case 'eth_signTypedData_v4':
             result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
@@ -522,7 +520,7 @@ export class InjectedEthereum implements Ethereum {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -581,7 +579,7 @@ export class InjectedEthereum implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -889,7 +887,7 @@ export class InjectedEthereumOWallet implements Ethereum {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -1016,7 +1014,7 @@ export class InjectedEthereumOWallet implements Ethereum {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -1075,7 +1073,7 @@ export class InjectedEthereumOWallet implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -1157,7 +1155,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -1229,7 +1227,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
   protected requestMethod(method: keyof ITronWeb | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -1288,7 +1286,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}

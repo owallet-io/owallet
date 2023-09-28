@@ -13,33 +13,11 @@ import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
 import ThemeProvider, { useTheme } from './themes/theme-provider';
-import Toast, { BaseToast, ErrorToast } from 'react-native-toast-message';
+
+import FlashMessage from 'react-native-flash-message';
+
 import { colorsCode } from './themes/mode-colors';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-const toastConfig = {
-  /*
-    Overwrite 'success' type,
-    by modifying the existing `BaseToast` component
-  */
-  success: (props) => (
-    <BaseToast
-      {...props}
-      style={{ borderLeftColor: colorsCode['purple-700'], height: 90 }}
-      contentContainerStyle={{ paddingHorizontal: 15 }}
-      text1Style={{
-        fontSize: 16,
-        fontWeight: '600'
-      }}
-      text2Style={{
-        fontSize: 15,
-        fontWeight: '400'
-      }}
-      text2NumberOfLines={4}
-    />
-  ),
-  error: (props) => <ErrorToast {...props} text2NumberOfLines={4} />
-};
 
 if (Platform.OS === 'android' || typeof HermesInternal !== 'undefined') {
   // https://github.com/web-ridge/react-native-paper-dates/releases/tag/v0.2.15
@@ -91,11 +69,7 @@ const AppIntlProviderWithStorage = ({ children }) => {
   const store = useStore();
 
   return (
-    <AppIntlProvider
-      additionalMessages={AdditonalIntlMessages}
-      languageToFiatCurrency={LanguageToFiatCurrency}
-      storage={store.uiConfigStore.Storage}
-    >
+    <AppIntlProvider additionalMessages={AdditonalIntlMessages} languageToFiatCurrency={LanguageToFiatCurrency} storage={store.uiConfigStore.Storage}>
       {({ language, messages, automatic }) => (
         <IntlProvider
           locale={language}
@@ -153,7 +127,8 @@ export const App = () => {
                 </ModalsProvider>
               </SafeAreaProvider>
             </AppIntlProviderWithStorage>
-            <Toast config={toastConfig} />
+
+            <FlashMessage position="top" />
           </ThemeProvider>
         </StoreProvider>
       </StyleProvider>

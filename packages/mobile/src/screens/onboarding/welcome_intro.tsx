@@ -26,10 +26,10 @@ const WelcomeIntroScreen: FunctionComponent = () => {
     <View style={styles.container}>
       <View style={styles.boardingTitleContainer}>
         <View>
-          <OWText variant="h1" typo = 'bold' color={colors['purple-h1']}>
+          <OWText variant="h1" typo="bold" color={colors['purple-h1']}>
             Welcome to
           </OWText>
-          <OWText variant="h2" typo = 'bold' color={colors['black']}>
+          <OWText variant="h2" typo="bold" color={colors['black']}>
             OWallet
           </OWText>
         </View>
@@ -38,16 +38,10 @@ const WelcomeIntroScreen: FunctionComponent = () => {
         </View>
       </View>
       <OWText variant="body2" typo="regular" color={colors['gray-150']}>
-        OWallet is a secure wallet, routing you cross the world of blockchains:
-        Oraichain, Cosmos, Ethereum, BNB smart chain, and Bitcoin.
+        OWallet is a secure wallet, routing you cross the world of blockchains: Oraichain, Cosmos, Ethereum, BNB smart chain,...
       </OWText>
       <View style={styles.viewImg}>
-        <Image
-          source={require('../../assets/image/onboarding-welcome.png')}
-          fadeDuration={0}
-          resizeMode="contain"
-          style={styles.img}
-        />
+        <Image source={require('../../assets/image/onboarding-welcome.png')} fadeDuration={0} resizeMode="contain" style={styles.img} />
       </View>
     </View>
   );
