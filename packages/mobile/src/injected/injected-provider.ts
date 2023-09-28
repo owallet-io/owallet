@@ -149,12 +149,10 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       },
       RNInjectedTronWeb.parseWebviewMessage
     );
-RNInjectedTronWeb.trx={
+    RNInjectedTronWeb.trx = {
       sign: async (transaction: object): Promise<object> => {
         return await this.requestMethod('sign', [transaction]);
       }
     };
-
-    
   }
 }
