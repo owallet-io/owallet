@@ -1,4 +1,4 @@
-import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
+import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet } from '@owallet/provider';
 import { OWalletMode, EthereumMode, TronWeb } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
