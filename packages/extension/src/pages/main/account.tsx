@@ -13,18 +13,19 @@ import { TRON_ID } from '@owallet/common';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const chainId = chainStore.current.chainId;
+  const networkType = chainStore.current.networkType;
+  const accountInfo = accountStore.getAccount(chainId);
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
-  const checkTronNetwork = chainStore.current.chainId === TRON_ID;
+  const checkTronNetwork = chainId === TRON_ID;
+
   const ledgerAddress =
     keyRingStore.keyRingType == 'ledger' ? (checkTronNetwork ? keyRingStore?.keyRingLedgerAddresses?.trx : keyRingStore?.keyRingLedgerAddresses?.eth) : '';
 
-  const evmAddress = (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && accountInfo.evmosHexAddress;
+  const evmAddress = (accountInfo.hasEvmosHexAddress || networkType === 'evm') && accountInfo.evmosHexAddress;
   const tronAddress =
-    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && checkTronNetwork
-      ? Add.getBase58Address(accountInfo.evmosHexAddress ?? '')
-      : null;
+    (accountInfo.hasEvmosHexAddress || networkType === 'evm') && checkTronNetwork ? Add.getBase58Address(accountInfo.evmosHexAddress ?? '') : null;
   const notification = useNotification();
 
   const copyAddress = useCallback(
@@ -47,7 +48,7 @@ export const AccountView: FunctionComponent = observer(() => {
     },
     [accountInfo.walletStatus, accountInfo.bech32Address, notification, intl]
   );
-
+  console.log('🚀 ~ file: account.tsx:109 ~ constAccountView:FunctionComponent=observer ~ accountInfo.evmosHexAddress:', accountInfo.evmosHexAddress);
   return (
     <div>
       <div className={styleAccount.containerName}>
@@ -60,25 +61,9 @@ export const AccountView: FunctionComponent = observer(() => {
               })
             : 'Loading...'}
         </div>
-        <div style={{ flex: 1, textAlign: 'right' }}>
-          {/* {chainStore.current.raw.txExplorer?.accountUrl && (
-            <a
-              target="_blank"
-              href={chainStore.current.raw.txExplorer.accountUrl.replace(
-                '{address}',
-                // accountInfo.bech32Address
-                chainStore.current.networkType === 'evm'
-                  ? accountInfo.evmosHexAddress
-                  : accountInfo.bech32Address
-              )}
-              title={intl.formatMessage({ id: 'setting.explorer' })}
-            >
-              <i className="fas fa-external-link-alt"></i>
-            </a>
-          )} */}
-        </div>
+        <div style={{ flex: 1, textAlign: 'right' }}></div>
       </div>
-      {chainStore.current.networkType === 'cosmos' && (
+      {(networkType === 'cosmos' || networkType === 'bitcoin') && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div className={styleAccount.address} onClick={() => copyAddress(accountInfo.bech32Address)}>
@@ -93,7 +78,7 @@ export const AccountView: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
         </div>
       )}
-      {(accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && (
+      {(accountInfo.hasEvmosHexAddress || networkType === 'evm') && (
         <div
           className={styleAccount.containerAccount}
           style={{
