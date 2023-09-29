@@ -141,9 +141,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   getOWallet(): Promise<OWallet | undefined> {
     return this.opts.getOWallet();
   }
-  getTronWeb(): Promise<TronWeb | undefined> {
-    return this.opts.getTronWeb();
-  }
+
   getEthereum(): Promise<Ethereum | undefined> {
     return this.opts.getEthereum();
   }
