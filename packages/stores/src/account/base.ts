@@ -141,7 +141,9 @@ export class AccountSetBase<MsgOpts, Queries> {
   getOWallet(): Promise<OWallet | undefined> {
     return this.opts.getOWallet();
   }
-
+  getTronWeb(): Promise<TronWeb | undefined> {
+    return this.opts.getTronWeb();
+  }
   getEthereum(): Promise<Ethereum | undefined> {
     return this.opts.getEthereum();
   }
@@ -299,7 +301,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       const result = await this.broadcastMsgs(msgs, fee, memo, signOptions, this.broadcastMode);
 
-      txHash = result.txHash;
+      txHash = result?.txHash;
     } catch (e: any) {
       runInAction(() => {
         this._isSendingMsg = false;
@@ -347,7 +349,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         for (const feeAmount of fee.amount) {
           const bal = this.queries.queryBalances
             .getQueryBech32Address(this.bech32Address)
-            .balances.find(bal => bal.currency.coinMinimalDenom === feeAmount.denom);
+            .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
 
           if (bal) {
             bal.fetch();
@@ -365,7 +367,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
-    txTracer.traceTx(txHash).then(tx => {
+    txTracer.traceTx(txHash).then((tx) => {
       txTracer.close();
 
       runInAction(() => {
@@ -376,7 +378,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       for (const feeAmount of fee.amount) {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.bech32Address)
-          .balances.find(bal => bal.currency.coinMinimalDenom === feeAmount.denom);
+          .balances.find((bal) => bal.currency.coinMinimalDenom === feeAmount.denom);
 
         if (bal) {
           bal.fetch();
@@ -513,8 +515,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       this._isSendingMsg = false;
     });
 
-    const sleep = milliseconds => {
-      return new Promise(resolve => setTimeout(resolve, milliseconds));
+    const sleep = (milliseconds) => {
+      return new Promise((resolve) => setTimeout(resolve, milliseconds));
     };
 
     const waitForPendingTransaction = async (rpc, txHash, onFulfill, count = 0) => {

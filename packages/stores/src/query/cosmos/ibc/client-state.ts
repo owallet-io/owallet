@@ -27,9 +27,7 @@ export class ObservableChainQueryClientState extends ObservableChainQuery<Client
 
       if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
         this.setUrl(
-          `/ibc/core/channel/${getUrlV1Beta(
-            chainInfo.beta
-          )}/channels/${channelId}/ports/${portId}/client_state`
+          `/ibc/core/channel/v1/channels/${channelId}/ports/${portId}/client_state`
         );
       }
     });

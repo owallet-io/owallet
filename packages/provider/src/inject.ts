@@ -32,7 +32,7 @@ import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 export const localStore = new Map<string, any>();
 
 export interface ProxyRequest {
-  type: 'proxy-request' | 'owallet-proxy-request';
+  type: 'proxy-request';
   id: string;
   namespace: string;
   method: keyof OWallet | Ethereum | string;
@@ -69,7 +69,7 @@ export class InjectedOWallet implements IOWallet {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== `${NAMESPACE}-proxy-request` || message.namespace !== NAMESPACE) {
+      if (!message || message.type !== 'proxy-request' || message.namespace !== NAMESPACE) {
         return;
       }
 
@@ -182,7 +182,7 @@ export class InjectedOWallet implements IOWallet {
       .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: `${NAMESPACE}-proxy-request`,
+      type: 'proxy-request',
       namespace: NAMESPACE,
       id,
       method,
@@ -426,6 +426,8 @@ export class InjectedEthereum implements Ethereum {
         var result: any;
         const chainId = message.args[1] ?? localStore.get('ethereum.chainId') ?? ethereum.initChainId;
 
+        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
+        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
         switch (message.method) {
           case 'eth_signTypedData_v4':
             result = await ethereum.signEthereumTypeData(chainId, message.args[0]);

@@ -25,9 +25,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
       const chainInfo = this.chainGetter.getChain(this.chainId);
       if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
         this.setUrl(
-          `/ibc/apps/transfer/${getUrlV1Beta(
-            chainInfo.beta
-          )}/denom_traces/${hash}`
+          `/ibc/apps/transfer/v1/denom_traces/${hash}`
         );
       }
     });
