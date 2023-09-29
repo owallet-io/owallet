@@ -424,8 +424,6 @@ export class InjectedEthereum implements Ethereum {
         var result: any;
         const chainId = message.args[1] ?? localStore.get('ethereum.chainId') ?? ethereum.initChainId;
 
-        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
-        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
         switch (message.method) {
           case 'eth_signTypedData_v4':
             result = await ethereum.signEthereumTypeData(chainId, message.args[0]);
