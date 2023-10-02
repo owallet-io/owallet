@@ -21,6 +21,12 @@ export const currenciesData: Currencies = {
     coinMinimalDenom: 'inj',
     prefix: 'cw20'
   },
+  ['ibc/C20C0A822BD22B2CEF0D067400FCCFB6FAEEE9E91D360B4E0725BD522302D565'.toUpperCase()]: {
+    coinDecimals: 6,
+    coinDenom: 'ORAI',
+    coinMinimalDenom: 'ibc/C20C0A822BD22B2CEF0D067400FCCFB6FAEEE9E91D360B4E0725BD522302D565',
+    prefix: 'ibc'
+  },
   ['ibc/49D820DFDE9F885D7081725A58202ABA2F465CAEE4AFBC683DFB79A8E013E83E'.toUpperCase()]: {
     coinDecimals: 18,
     coinDenom: 'INJ',

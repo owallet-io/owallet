@@ -16,6 +16,13 @@ export class RNInjectedEthereum extends InjectedEthereum {
 
     return message;
   }
+  protected override async requestMethod(method: string, args: any[]): Promise<any> {
+    const result = await super.requestMethod(method, args);
+    if (method === 'wallet_switchEthereumChain') {
+      this.chainId = result;
+    }
+    return result;
+  }
 
   constructor(version: string, mode: EthereumMode) {
     super(
