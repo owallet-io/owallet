@@ -1,48 +1,61 @@
-'use strict'
+'use strict';
 // const net = require('net');
 // const tls = require('tls');
+import { isWeb } from '@owallet/common';
 const TlsSocketWrapper = require('./TlsSocketWrapper.js');
-const TIMEOUT = 5000
+const TIMEOUT = 5000;
 
 const getSocket = (protocol, options) => {
-    switch(protocol){
+  switch (protocol) {
     case 'tcp':
+        console.log('🚀 ~ file: init_socket.js:12 ~ getSocket ~ isWeb:', isWeb);
+      if (isWeb) {
+        console.log('🚀 ~ file: init_socket.js:12 ~ trong ~ isWeb:', isWeb);
+        // const net = require('net');
         return new net.Socket();
+      }
+      
+      return new net.Socket();
     case 'tls':
     case 'ssl':
-        if (!tls) throw new Error('tls package could not be loaded');
-        return new TlsSocketWrapper(tls);
-    }
-    throw new Error('unknown protocol')
-}
+    //   if (isWeb) {
+    //     // const tls = require('tls');
+    //     if (!tls) throw new Error('tls package could not be loaded');
+    //     return new TlsSocketWrapper(tls);
+    //   }
+      console.log('🚀 ~ file: init_socket.js:12 ~ ssl ~ isWeb:', isWeb);
+      if (!tls) throw new Error('tls package could not be loaded');
+      return new TlsSocketWrapper(tls);
+  }
+  throw new Error('unknown protocol');
+};
 
 const initSocket = (self, protocol, options) => {
-    const conn = getSocket(protocol, options);
-    conn.setTimeout(TIMEOUT)
-    conn.setEncoding('utf8')
-    conn.setKeepAlive(true, 0)
-    conn.setNoDelay(true)
-    conn.on('connect', () => {
-        conn.setTimeout(0)
-        self.onConnect()
-    })
-    conn.on('close', (e) => {
-        self.onClose(e)
-    })
-    conn.on('timeout', () => {
-    })
-    conn.on('data', (chunk) => {
-        conn.setTimeout(0)
-        self.onRecv(chunk)
-    })
-    conn.on('end', (e) => {
-        conn.setTimeout(0)
-        self.onEnd(e)
-    })
-    conn.on('error', (e) => {
-        self.onError(e)
-    })
-    return conn
-}
+  const conn = getSocket(protocol, options);
+  conn.setTimeout(TIMEOUT);
+  conn.setEncoding('utf8');
+  conn.setKeepAlive(true, 0);
+  conn.setNoDelay(true);
+  conn.on('connect', () => {
+    conn.setTimeout(0);
+    self.onConnect();
+  });
+  conn.on('close', (e) => {
+    self.onClose(e);
+  });
+  conn.on('timeout', () => {});
+  conn.on('data', (chunk) => {
+    conn.setTimeout(0);
+    self.onRecv(chunk);
+  });
+  conn.on('end', (e) => {
+    conn.setTimeout(0);
+    self.onEnd(e);
+  });
+  conn.on('error', (e) => {
+    self.onError(e);
+  });
+  return conn;
+};
 
-module.exports = initSocket
+module.exports = initSocket;

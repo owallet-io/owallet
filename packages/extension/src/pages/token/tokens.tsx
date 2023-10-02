@@ -42,13 +42,8 @@ export const TokenPage: FunctionComponent = observer(() => {
   const ledgerAddress =
     keyRingStore.keyRingType === 'ledger'
       ? checkTronNetwork
-<<<<<<< HEAD
-        ? keyRingStore?.keyRingLedgerAddress?.trx
-        : keyRingStore?.keyRingLedgerAddress?.eth
-=======
         ? keyRingStore?.keyRingLedgerAddresses?.trx
         : keyRingStore?.keyRingLedgerAddresses?.eth
->>>>>>> c4af293cd62502b3d86e415aa6ba46d8193c8071
       : '';
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)

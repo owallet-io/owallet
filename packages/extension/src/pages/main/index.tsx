@@ -1,11 +1,11 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useRef } from 'react';
 
 import { HeaderLayout, LayoutHidePage } from '../../layouts';
 
 import { Card, CardBody } from 'reactstrap';
 
 import { AccountView } from './account';
-import { AssetView, AssetViewEvm } from './asset';
+import { AssetView, AssetViewBtc, AssetViewEvm } from './asset';
 import { LinkStakeView, StakeView } from './stake';
 import style from './style.module.scss';
 import { TxButtonEvmView, TxButtonView } from './tx-button';
@@ -32,6 +32,7 @@ export const MainPage: FunctionComponent = observer(() => {
 
   const currentChainId = chainStore.current.chainId;
   const prevChainId = useRef<string | undefined>();
+  const { networkType } = chainStore.current;
   useEffect(() => {
     if (!chainStore.isInitializing && prevChainId.current !== currentChainId) {
       (async () => {
@@ -74,6 +75,27 @@ export const MainPage: FunctionComponent = observer(() => {
   // const tokens = queryBalances.unstakables;
 
   // const hasTokens = tokens.length > 0;
+
+  const renderAssetView = useMemo(() => {
+    if (networkType === 'evm') {
+      return (
+        <>
+          <AssetViewEvm />
+        </>
+      );
+    } else if (networkType === 'bitcoin') {
+      return (
+        <>
+          <AssetViewBtc />
+        </>
+      );
+    }
+    return (
+      <>
+        <AssetView />
+      </>
+    );
+  }, [networkType]);
   return (
     <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />
@@ -84,15 +106,7 @@ export const MainPage: FunctionComponent = observer(() => {
           <div className={style.containerAccountInner}>
             <div className={style.imageWrap}>
               <AccountView />
-              {chainStore.current.networkType === 'evm' ? (
-                <>
-                  <AssetViewEvm />
-                </>
-              ) : (
-                <>
-                  <AssetView />
-                </>
-              )}
+              {renderAssetView}
             </div>
             {chainStore.current.networkType === 'evm' ? (
               <div style={{ marginTop: 24 }}>

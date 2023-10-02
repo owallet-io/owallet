@@ -2,7 +2,7 @@ import { Base58 } from '@ethersproject/basex';
 import { sha256 } from '@ethersproject/sha2';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
-import {  NetworkType } from '@owallet/types';
+import { NetworkType } from '@owallet/types';
 import { TRON_ID } from './constants';
 import { EmbedChainInfos } from '../config';
 
@@ -13,6 +13,13 @@ export const COINTYPE_NETWORK = {
   195: 'Tron'
 };
 
+export const isWeb = typeof document !== 'undefined';
+export const isReactNative = (): boolean => {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return true;
+  }
+  return false;
+};
 export const getEvmAddress = (base58Address) => '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
 
 export const getBase58Address = (address) => {

@@ -633,10 +633,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.orai.owallet;
 				PRODUCT_NAME = mobile;
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore io.orai.owallet";
-<<<<<<< HEAD
-=======
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "OWallet-Prod";
->>>>>>> c4af293cd62502b3d86e415aa6ba46d8193c8071
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
