@@ -504,9 +504,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'osmosis',
       coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/osmo.png',
       gasPriceStep: {
-        low: 0,
-        average: 0.025,
-        high: 0.04
+        low: 0.001,
+        average: 0.0025,
+        high: 0.004
       }
     },
     bip44: {
