@@ -76,6 +76,8 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   @observable
   protected _bech32Address: string = '';
+  @observable
+  protected _isNanoLedger: boolean = false;
 
   @observable
   protected _isSendingMsg: string | boolean = false;
@@ -221,6 +223,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
     this._bech32Address = key.bech32Address;
+    this._isNanoLedger = key.isNanoLedger;
     this._name = key.name;
     this.pubKey = key.pubKey;
 
@@ -668,8 +671,11 @@ export class AccountSetBase<MsgOpts, Queries> {
       const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
 
       const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
+      const useEthereumSign = this.chainGetter.getChain(this.chainId).features?.includes('eth-key-sign') === true;
+
+      const eip712Signing = useEthereumSign && this.isNanoLedger;;
       const signResponse = await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
-      console.log('🚀 ~ file: base.ts:761 ~ AccountSetBase<MsgOpts, ~ signResponse:', signResponse);
+
       const chainIsInjective = this.chainId.startsWith('injective');
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
@@ -817,6 +823,9 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   get bech32Address(): string {
     return this._bech32Address;
+  }
+  get isNanoLedger(): boolean {
+    return this._isNanoLedger;
   }
 
   get isSendingMsg(): string | boolean {

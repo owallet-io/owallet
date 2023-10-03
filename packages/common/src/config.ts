@@ -278,7 +278,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
-    features: ['no-legacy-stdTx', 'ibc-transfer', 'ibc-go'],
+    features: ['no-legacy-stdTx', 'ibc-transfer', 'ibc-go', 'eth-key-sign'],
     chainSymbolImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png',
     txExplorer: {
       name: 'Injective',
