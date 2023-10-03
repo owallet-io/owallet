@@ -1,3 +1,4 @@
+import { ChainInfo } from '@owallet/types';
 import { Base58 } from '@ethersproject/basex';
 import { sha256 } from '@ethersproject/sha2';
 import bech32, { fromWords } from 'bech32';
@@ -34,7 +35,20 @@ export const getCoinTypeByChainId = (chainId) => {
   const network = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   return network?.bip44?.coinType ?? network?.coinType ?? 60;
 };
-
+export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
+  const chainInfo = EmbedChainInfos.find((nw) => nw.chainId == chainId);
+  if (!chainInfo) {
+    throw new Error(`There is no chain info for ${chainId}`);
+  }
+  return chainInfo;
+};
+export const  isEthermintLike(chainInfo: ChainInfo): boolean => {
+  return (
+    // chainInfo.bip44.coinType === 60 ||
+    !!chainInfo.features?.includes("eth-address-gen") ||
+    !!chainInfo.features?.includes("eth-key-sign")
+  );
+}
 export const getUrlV1Beta = (isBeta: boolean) => {
   if (isBeta) return 'v1beta';
   return 'v1';
