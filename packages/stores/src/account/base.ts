@@ -7,10 +7,11 @@ import { DeepReadonly, Mutable } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS, TxRestCosmosClient, OwalletEvent } from '@owallet/common';
+import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS, TxRestCosmosClient, OwalletEvent, sortObjectByKey, escapeHTML } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
-import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdSignDoc, StdTx } from '@cosmjs/launchpad';
+import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
+import { StdSignDoc } from '@owallet/types';
 import { BaseAccount, cosmos, google, TendermintTxTracer } from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer';
@@ -671,9 +672,9 @@ export class AccountSetBase<MsgOpts, Queries> {
 
       const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
 
-      const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
+      // const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
       const useEthereumSign = this.chainGetter.getChain(this.chainId).features?.includes('eth-key-sign') === true;
-      
+
       const eip712Signing = useEthereumSign && this.isNanoLedger;
       if (eip712Signing && isDirectSign) {
         throw new Error('EIP712 signing is not supported for proto signing');
@@ -684,29 +685,27 @@ export class AccountSetBase<MsgOpts, Queries> {
         sequence: account.getSequence().toString(),
         fee: fee,
         msgs: aminoMsgs,
-        memo: memo,
+        memo: escapeHTML(memo)
       };
 
-      // if (eip712Signing) {
-      //   if (chainIsInjective) {
-      //     // Due to injective's problem, it should exist if injective with ledger.
-      //     // There is currently no effective way to handle this in keplr. Just set a very large number.
-      //     (signDocAmino as Mutable<StdSignDoc>).timeout_height =
-      //       Number.MAX_SAFE_INTEGER.toString();
-      //   } else {
-      //     // If not injective (evmos), they require fee payer.
-      //     // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
-      //     //      That means this part is not standard.
-      //     (signDocRaw as Mutable<StdSignDoc>).fee = {
-      //       ...signDocRaw.fee,
-      //       feePayer: this.base.bech32Address,
-      //     };
-      //   }
-      // }
-
+      if (eip712Signing) {
+        if (chainIsInjective) {
+          // Due to injective's problem, it should exist if injective with ledger.
+          // There is currently no effective way to handle this in keplr. Just set a very large number.
+          (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
+        } else {
+          // If not injective (evmos), they require fee payer.
+          // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
+          //      That means this part is not standard.
+          // (signDocRaw as Mutable<StdSignDoc>).fee = {
+          //   ...signDocRaw.fee,
+          //   feePayer: this.base.bech32Address,
+          // };
+        }
+      }
+      const signDocAmino = sortObjectByKey(signDocRaw);
       const signResponse = await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
 
-     
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
           messages: protoMsgs,
