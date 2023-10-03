@@ -10,7 +10,7 @@ import { QueriesSetBase, QueriesStore } from '../query';
 import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS, TxRestCosmosClient, OwalletEvent, sortObjectByKey, escapeHTML } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
-import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
+import { AminoSignResponse, BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
 import { StdSignDoc } from '@owallet/types';
 import { BaseAccount, cosmos, google, TendermintTxTracer } from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
@@ -22,7 +22,8 @@ import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
 import { ETH } from '@hanchon/ethermint-address-converter';
 // can use this request from mobile ?
-import { request } from '@owallet/background/build/tx';
+import { request } from '@owallet/background';
+import { getEip712TypedDataBasedOnChainId } from './utils';
 
 export enum WalletStatus {
   NotInit = 'NotInit',
@@ -704,7 +705,19 @@ export class AccountSetBase<MsgOpts, Queries> {
         }
       }
       const signDocAmino = sortObjectByKey(signDocRaw);
-      const signResponse = await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
+      const signResponse:AminoSignResponse = await (async () => {
+        if (!eip712Signing) {
+          return await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
+        }
+
+        return await owallet.experimentalSignEIP712CosmosTx_v0(
+          this.chainId,
+          this.bech32Address,
+          getEip712TypedDataBasedOnChainId(this.chainId, msgs),
+          signDoc,
+          signOptions
+        );
+      })();
 
       const signDoc = {
         bodyBytes: cosmos.tx.v1beta1.TxBody.encode({

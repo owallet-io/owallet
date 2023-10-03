@@ -86,6 +86,7 @@ export interface OWallet {
   suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void>;
   getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string>;
   getEnigmaUtils(chainId: string): SecretUtils;
+  
 
   // Related to Enigma.
   // But, recommended to use `getEnigmaUtils` rather than using below.
