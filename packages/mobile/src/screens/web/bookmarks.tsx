@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
@@ -25,14 +20,7 @@ export const BrowserSection: FunctionComponent<{}> = ({}) => {
     <React.Fragment>
       <View
         style={StyleSheet.flatten([
-          style.flatten([
-            'width-full',
-            'height-66',
-            'flex-row',
-            'justify-between',
-            'items-center',
-            'padding-20'
-          ]),
+          style.flatten(['width-full', 'height-66', 'flex-row', 'justify-between', 'items-center', 'padding-20']),
           {
             backgroundColor: colors['background']
           }
@@ -89,12 +77,15 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
     let currentUri = uri;
     if (currentUri !== '') {
       if (checkValidDomain(currentUri?.toLowerCase())) {
+        const isIPv4 = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/.test(currentUri);
         const tab = {
           id: Date.now(),
           name: currentUri,
           uri:
             currentUri?.toLowerCase().indexOf('http') >= 0
               ? currentUri?.toLowerCase()
+              : isIPv4
+              ? 'http://' + currentUri?.toLowerCase()
               : 'https://' + currentUri?.toLowerCase()
         };
 
@@ -112,13 +103,7 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
     return (
       <TouchableOpacity
         style={StyleSheet.flatten([
-          style.flatten([
-            'height-44',
-            'margin-bottom-20',
-            'flex-row',
-            'items-center',
-            'justify-between'
-          ]),
+          style.flatten(['height-44', 'margin-bottom-20', 'flex-row', 'items-center', 'justify-between']),
           {
             backgroundColor: colors['background']
           }
@@ -150,17 +135,12 @@ export const BookMarks: FunctionComponent<any> = observer(() => {
             >
               {item.name}
             </Text>
-            <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-              {formatContractAddress(item.uri, 16)}
-            </Text>
+            <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{formatContractAddress(item.uri, 16)}</Text>
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <SwapIcon color={isActive ? '#945EF8' : '#C7C7CC'} />
-          <TouchableOpacity
-            style={{ paddingLeft: 12 }}
-            onPress={() => removeBookmark(item)}
-          >
+          <TouchableOpacity style={{ paddingLeft: 12 }} onPress={() => removeBookmark(item)}>
             <RemoveIcon />
           </TouchableOpacity>
         </View>
