@@ -68,7 +68,7 @@ export const InteractionModalsProivder: FunctionComponent = observer(
             isOpen={true}
             close={() => {
               signInteractionStore.rejectAll();
-              navigationRef.current.goBack();
+              // navigationRef.current.goBack();
             }}
           />
         ) : null}
