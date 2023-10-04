@@ -689,23 +689,13 @@ export class AccountSetBase<MsgOpts, Queries> {
         memo: escapeHTML(memo)
       };
 
-      if (eip712Signing) {
-        if (chainIsInjective) {
-          // Due to injective's problem, it should exist if injective with ledger.
-          // There is currently no effective way to handle this in keplr. Just set a very large number.
-          (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
-        } else {
-          // If not injective (evmos), they require fee payer.
-          // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
-          //      That means this part is not standard.
-          // (signDocRaw as Mutable<StdSignDoc>).fee = {
-          //   ...signDocRaw.fee,
-          //   feePayer: this.base.bech32Address,
-          // };
-        }
+      if (eip712Signing && chainIsInjective) {
+        // Due to injective's problem, it should exist if injective with ledger.
+        // There is currently no effective way to handle this in keplr. Just set a very large number.
+        (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
       }
       const signDocAmino = sortObjectByKey(signDocRaw);
-      const signResponse:AminoSignResponse = await (async () => {
+      const signResponse: AminoSignResponse = await (async () => {
         if (!eip712Signing) {
           return await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
         }
