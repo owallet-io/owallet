@@ -42,13 +42,15 @@ export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
   }
   return chainInfo;
 };
-export const  isEthermintLike(chainInfo: ChainInfo): boolean => {
+export const isEthermintLike = (chainInfo: ChainInfo): boolean => {
   return (
-    // chainInfo.bip44.coinType === 60 ||
-    !!chainInfo.features?.includes("eth-address-gen") ||
-    !!chainInfo.features?.includes("eth-key-sign")
+    chainInfo?.networkType === 'evm' ||
+    chainInfo.bip44.coinType === 60 ||
+    !!chainInfo.features?.includes('eth-address-gen') ||
+    !!chainInfo.features?.includes('eth-key-sign') ||
+    !!chainInfo.features?.includes('isEvm')
   );
-}
+};
 export const getUrlV1Beta = (isBeta: boolean) => {
   if (isBeta) return 'v1beta';
   return 'v1';
@@ -60,6 +62,9 @@ export const bufferToHex = (buffer) => {
 export function formatNeworkTypeToLedgerAppName(network: string, chainId?: string | number): LedgerAppType {
   switch (network) {
     case 'cosmos':
+      if ((chainId as string).startsWith('injective')) {
+        return 'eth';
+      }
       return 'cosmos';
     case 'evm':
       if (chainId && chainId === TRON_ID) {
