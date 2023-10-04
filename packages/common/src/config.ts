@@ -179,6 +179,18 @@ export const EmbedChainInfos: AppChainInfo[] = [
         },
         {
           type: 'cw20',
+          coinDenom: 'INJ',
+          coinMinimalDenom:
+            'cw20:orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49:INJ',
+          contractAddress:
+            'orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49',
+          coinDecimals: 6,
+          coinGeckoId: 'injective-protocol',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png'
+        },
+        {
+          type: 'cw20',
           coinDenom: 'KWT',
           coinMinimalDenom:
             'cw20:orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5:Kawaii Islands',
@@ -344,6 +356,14 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'kawaii-islands',
           coinImageUrl:
             'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+        },
+        {
+          coinDenom: 'BEP20 MILKY',
+          coinMinimalDenom: 'oraib0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717',
+          coinDecimals: 18,
+          coinGeckoId: 'milky-token',
+          coinImageUrl:
+            'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
         },
         {
           coinDenom: 'BEP20 MILKY',
@@ -601,77 +621,77 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
 
-  // {
-  //   rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-  //   evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-  //   chainId: '0x61',
-  //   chainName: 'BNB Chain Testnet',
-  //   bip44: {
-  //     coinType: 60
-  //   },
-  //   coinType: 60,
-  //   stakeCurrency: {
-  //     coinDenom: 'BNB',
-  //     coinMinimalDenom: 'bnb',
-  //     coinDecimals: 18,
-  //     coinGeckoId: 'binancecoin',
-  //     coinImageUrl:
-  //       'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
-  //     gasPriceStep: {
-  //       low: 10000000000,
-  //       average: 25000000000,
-  //       high: 40000000000
-  //     }
-  //   },
-  //   bech32Config: Bech32Address.defaultBech32Config('evmos'),
-  //   networkType: 'evm',
-  //   currencies: [
-  //     {
-  //       coinDenom: 'BNB',
-  //       coinMinimalDenom: 'bnb',
-  //       coinDecimals: 18,
-  //       coinGeckoId: 'binancecoin',
-  //       coinImageUrl:
-  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
-  //     },
-  //     {
-  //       coinDenom: 'ORAI',
-  //       coinMinimalDenom:
-  //         'erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token',
-  //       coinDecimals: 18,
-  //       coinGeckoId: 'oraichain-token',
-  //       coinImageUrl:
-  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
-  //     },
-  //     {
-  //       coinDenom: 'AIRI',
-  //       coinMinimalDenom:
-  //         'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
-  //       coinDecimals: 18,
-  //       coinGeckoId: 'airight',
-  //       coinImageUrl:
-  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
-  //     },
-  //     {
-  //       coinDenom: 'KWT',
-  //       coinMinimalDenom:
-  //         'erc20:0x9da6e8a2065d5f09b9994ebc330a962721069a68:Kawaii Islands',
-  //       coinDecimals: 18,
-  //       coinGeckoId: 'kawaii-islands',
-  //       coinImageUrl:
-  //         'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
-  //     }
-  //   ],
-  //   get feeCurrencies() {
-  //     return [this.stakeCurrency];
-  //   },
-  //   features: ['isEvm'],
-  //   txExplorer: {
-  //     name: 'Bsc Scan Testnet',
-  //     txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
-  //     accountUrl: 'https://testnet.bscscan.com/address/{address}'
-  //   }
-  // },
+  {
+    rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    evmRpc: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+    chainId: '0x61',
+    chainName: 'BNB Chain Testnet',
+    bip44: {
+      coinType: 60
+    },
+    coinType: 60,
+    stakeCurrency: {
+      coinDenom: 'BNB',
+      coinMinimalDenom: 'bnb',
+      coinDecimals: 18,
+      coinGeckoId: 'binancecoin',
+      coinImageUrl:
+        'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png',
+      gasPriceStep: {
+        low: 10000000000,
+        average: 25000000000,
+        high: 40000000000
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
+    networkType: 'evm',
+    currencies: [
+      {
+        coinDenom: 'BNB',
+        coinMinimalDenom: 'bnb',
+        coinDecimals: 18,
+        coinGeckoId: 'binancecoin',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png'
+      },
+      {
+        coinDenom: 'ORAI',
+        coinMinimalDenom:
+          'erc20:0x41E76b3b0Da96c14c4575d9aE96d73Acb6a0B903:Oraichain Token',
+        coinDecimals: 18,
+        coinGeckoId: 'oraichain-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'
+      },
+      {
+        coinDenom: 'AIRI',
+        coinMinimalDenom:
+          'erc20:0x7e2a35c746f2f7c240b664f1da4dd100141ae71f:aiRight Token',
+        coinDecimals: 18,
+        coinGeckoId: 'airight',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/11563.png'
+      },
+      {
+        coinDenom: 'KWT',
+        coinMinimalDenom:
+          'erc20:0x9da6e8a2065d5f09b9994ebc330a962721069a68:Kawaii Islands',
+        coinDecimals: 18,
+        coinGeckoId: 'kawaii-islands',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+      }
+    ],
+    get feeCurrencies() {
+      return [this.stakeCurrency];
+    },
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Bsc Scan Testnet',
+      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
+      accountUrl: 'https://testnet.bscscan.com/address/{address}'
+    }
+  },
   {
     rest: 'https://rpc.ankr.com/eth',
     chainId: '0x01',
@@ -783,16 +803,35 @@ export const EmbedChainInfos: AppChainInfo[] = [
         coinGeckoId: 'kawaii-islands',
         coinImageUrl:
           'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png'
+      },
+      {
+        coinDenom: 'USDT',
+        coinMinimalDenom:
+          'erc20:0x55d398326f99059fF775485246999027B3197955:Tether',
+        coinDecimals: 18,
+        coinGeckoId: 'tether',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
+      },
+      {
+        coinDenom: 'MILKY',
+        coinMinimalDenom:
+          'erc20:0x6fE3d0F096FC932A905accd1EB1783F6e4cEc717:Milky Token',
+        coinDecimals: 18,
+        coinGeckoId: 'milky-token',
+        coinImageUrl:
+          'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png'
       }
     ],
     get feeCurrencies() {
       return [this.stakeCurrency];
     },
+
     features: ['ibc-go', 'stargate', 'isEvm'],
     txExplorer: {
-      name: 'Bsc Scan',
-      txUrl: 'https://bscscan.com/tx/${txHash}',
-      accountUrl: 'https://bscscan.com/address/{address}'
+      name: 'Tronscan',
+      txUrl: 'https://tronscan.org/#/transaction/{txHash}',
+      accountUrl: 'https://tronscan.org/#/address/{address}'
     }
   },
   {
