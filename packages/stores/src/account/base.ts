@@ -714,7 +714,7 @@ export class AccountSetBase<MsgOpts, Queries> {
           this.chainId,
           this.bech32Address,
           getEip712TypedDataBasedOnChainId(this.chainId, msgs),
-          signDoc,
+          signDocAmino,
           signOptions
         );
       })();
