@@ -303,7 +303,25 @@ export class InjectedOWallet implements IOWallet {
       signature: result.signature
     };
   }
-
+  async experimentalSignEIP712CosmosTx_v0(
+    chainId: string,
+    signer: string,
+    eip712: {
+      types: Record<string, { name: string; type: string }[] | undefined>;
+      domain: Record<string, any>;
+      primaryType: string;
+    },
+    signDoc: StdSignDoc,
+    signOptions: OWalletSignOptions = {}
+  ): Promise<AminoSignResponse> {
+    return await this.requestMethod("experimentalSignEIP712CosmosTx_v0", [
+      chainId,
+      signer,
+      eip712,
+      signDoc,
+      deepmerge(this.defaultOptions.sign ?? {}, signOptions),
+    ]);
+  }
   async signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature> {
     return await this.requestMethod('signArbitrary', [chainId, signer, data]);
   }

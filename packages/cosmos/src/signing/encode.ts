@@ -1,5 +1,5 @@
-import { PubKey, StdSignature, StdSignDoc } from "@keplr-wallet/types";
-import { Buffer } from "buffer/";
+import { PubKey, StdSignature, StdSignDoc } from "@owallet/types";
+import { Buffer } from "buffer";
 import { escapeHTML, sortedJsonByKeyStringify } from "@owallet/common";
 
 export function encodeSecp256k1Pubkey(pubkey: Uint8Array): PubKey {
