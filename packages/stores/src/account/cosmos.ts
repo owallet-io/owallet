@@ -3,14 +3,32 @@ import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
 import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
-import { ChainIdHelper, cosmos, ibc, BaseAccount } from '@owallet/cosmos';
+import { ChainIdHelper,   BaseAccount } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
 import { HasCosmosQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter } from '../common';
 import Axios, { AxiosInstance } from 'axios';
+import { MsgTransfer } from "@owallet/proto-types/ibc/applications/transfer/v1/tx";
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from "@owallet/proto-types/cosmos/staking/v1beta1/tx";
+import { MsgWithdrawDelegatorReward } from "@owallet/proto-types/cosmos/distribution/v1beta1/tx";
+import { MsgVote } from "@owallet/proto-types/cosmos/gov/v1beta1/tx";
+import { VoteOption } from "@owallet/proto-types/cosmos/gov/v1beta1/gov";
+import { SignMode } from "@owallet/proto-types/cosmos/tx/signing/v1beta1/signing";
 import Long from 'long';
-import SignMode = cosmos.tx.signing.v1beta1.SignMode;
+import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
+import {
+  AuthInfo,
+  Fee,
+  SignerInfo,
+  TxBody,
+  TxRaw,
+} from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+// import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
 export interface HasCosmosAccount {
   cosmos: DeepReadonly<CosmosAccount>;
@@ -128,12 +146,12 @@ export class CosmosAccount {
   }> {
     const account = await BaseAccount.fetchFromRest(this.instance, this.base.bech32Address, true);
 
-    const unsignTx = cosmos.tx.v1beta1.TxRaw.encode({
-      bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+    const unsignTx = TxRaw.encode({
+      bodyBytes: TxBody.encode({
         messages: msgs,
         memo: memo
       }).finish(),
-      authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+      authInfoBytes: AuthInfo.encode({
         signerInfos: [
           {
             modeInfo: {
@@ -218,7 +236,7 @@ export class CosmosAccount {
                 ? [
                     {
                       typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-                      value: cosmos.bank.v1beta1.MsgSend.encode({
+                      value: MsgSend.encode({
                         fromAddress: msg.value.from_address,
                         toAddress: msg.value.to_address,
                         amount: msg.value.amount
@@ -317,8 +335,8 @@ export class CosmosAccount {
     const simulateTx = await this.simulateTx(
       [
         {
-          type_url: '/ibc.applications.transfer.v1.MsgTransfer',
-          value: ibc.applications.transfer.v1.MsgTransfer.encode({
+          typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
+          value: MsgTransfer.encode({
             sourcePort: msg.value.source_port,
             sourceChannel: msg.value.source_channel,
             token: msg.value.token,
@@ -375,7 +393,7 @@ export class CosmosAccount {
           protoMsgs: [
             {
               typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
-              value: ibc.applications.transfer.v1.MsgTransfer.encode({
+              value: MsgTransfer.encode({
                 sourcePort: msg.value.source_port,
                 sourceChannel: msg.value.source_channel,
                 token: msg.value.token,
@@ -452,8 +470,8 @@ export class CosmosAccount {
     const simulateTx = await this.simulateTx(
       [
         {
-          type_url: '/cosmos.staking.v1beta1.MsgDelegate',
-          value: cosmos.staking.v1beta1.MsgDelegate.encode({
+          typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+          value: MsgDelegate.encode({
             delegatorAddress: msg.value.delegator_address,
             validatorAddress: msg.value.validator_address,
             amount: msg.value.amount
@@ -474,7 +492,7 @@ export class CosmosAccount {
           ? [
               {
                 typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
-                value: cosmos.staking.v1beta1.MsgDelegate.encode({
+                value: MsgDelegate.encode({
                   delegatorAddress: msg.value.delegator_address,
                   validatorAddress: msg.value.validator_address,
                   amount: msg.value.amount
@@ -541,8 +559,8 @@ export class CosmosAccount {
     const simulateTx = await this.simulateTx(
       [
         {
-          type_url: '/cosmos.staking.v1beta1.MsgUndelegate',
-          value: cosmos.staking.v1beta1.MsgUndelegate.encode({
+          typeUrl: '/cosmos.staking.v1beta1.MsgUndelegate',
+          value: MsgUndelegate.encode({
             delegatorAddress: msg.value.delegator_address,
             validatorAddress: msg.value.validator_address,
             amount: msg.value.amount
@@ -562,7 +580,7 @@ export class CosmosAccount {
         protoMsgs: [
           {
             typeUrl: '/cosmos.staking.v1beta1.MsgUndelegate',
-            value: cosmos.staking.v1beta1.MsgUndelegate.encode({
+            value: MsgUndelegate.encode({
               delegatorAddress: msg.value.delegator_address,
               validatorAddress: msg.value.validator_address,
               amount: msg.value.amount
@@ -632,8 +650,8 @@ export class CosmosAccount {
     const simulateTx = await this.simulateTx(
       [
         {
-          type_url: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
-          value: cosmos.staking.v1beta1.MsgBeginRedelegate.encode({
+          typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+          value: MsgBeginRedelegate.encode({
             delegatorAddress: msg.value.delegator_address,
             validatorSrcAddress: msg.value.validator_src_address,
             validatorDstAddress: msg.value.validator_dst_address,
@@ -655,7 +673,7 @@ export class CosmosAccount {
           ? [
               {
                 typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
-                value: cosmos.staking.v1beta1.MsgBeginRedelegate.encode({
+                value: MsgBeginRedelegate.encode({
                   delegatorAddress: msg.value.delegator_address,
                   validatorSrcAddress: msg.value.validator_src_address,
                   validatorDstAddress: msg.value.validator_dst_address,
@@ -708,8 +726,8 @@ export class CosmosAccount {
     const simulateTx = await this.simulateTx(
       msgs.map((msg) => {
         return {
-          type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-          value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode({
+          typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+          value: MsgWithdrawDelegatorReward.encode({
             delegatorAddress: msg.value.delegator_address,
             validatorAddress: msg.value.validator_address
           }).finish()
@@ -729,7 +747,7 @@ export class CosmosAccount {
           ? msgs.map((msg) => {
               return {
                 typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-                value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode({
+                value: MsgWithdrawDelegatorReward.encode({
                   delegatorAddress: msg.value.delegator_address,
                   validatorAddress: msg.value.validator_address
                 }).finish()
@@ -809,7 +827,7 @@ export class CosmosAccount {
     // const simulateTx = await this.simulateTx(
     //   [
     //     {
-    //       type_url: '/cosmos.gov.v1beta1.MsgVote',
+    //       typeUrl: '/cosmos.gov.v1beta1.MsgVote',
     //       value: cosmos.gov.v1beta1.MsgVote.encode({
     //         proposalId: Long.fromString(msg.value.proposal_id),
     //         voter: msg.value.voter,
@@ -848,25 +866,25 @@ export class CosmosAccount {
           ? [
               {
                 typeUrl: '/cosmos.gov.v1beta1.MsgVote',
-                value: cosmos.gov.v1beta1.MsgVote.encode({
+                value: MsgVote.encode({
                   proposalId: Long.fromString(msg.value.proposal_id),
                   voter: msg.value.voter,
                   option: (() => {
                     switch (msg.value.option) {
                       case 'Yes':
                       case 1:
-                        return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_YES;
+                        return VoteOption.VOTE_OPTION_YES;
                       case 'Abstain':
                       case 2:
-                        return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_ABSTAIN;
+                        return VoteOption.VOTE_OPTION_ABSTAIN;
                       case 'No':
                       case 3:
-                        return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO;
+                        return VoteOption.VOTE_OPTION_NO;
                       case 'NoWithVeto':
                       case 4:
-                        return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_NO_WITH_VETO;
+                        return VoteOption.VOTE_OPTION_NO_WITH_VETO;
                       default:
-                        return cosmos.gov.v1beta1.VoteOption.VOTE_OPTION_UNSPECIFIED;
+                        return VoteOption.VOTE_OPTION_UNSPECIFIED;
                     }
                   })()
                 }).finish()

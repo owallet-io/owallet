@@ -4,8 +4,6 @@ import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
 import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
-import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
-import { BondStatus } from '../query/cosmos/staking/types';
 
 import { HasCosmosQueries, HasEvmQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';

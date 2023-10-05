@@ -12,7 +12,7 @@ import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
 import { BroadcastMode, makeSignDoc, makeStdTx, Msg, StdFee, StdTx } from '@cosmjs/launchpad';
 import { StdSignDoc } from '@owallet/types';
-import { BaseAccount, cosmos, EthermintChainIdHelper, google, TendermintTxTracer } from '@owallet/cosmos';
+import { BaseAccount, EthermintChainIdHelper, TendermintTxTracer } from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer';
 import Long from 'long';
@@ -21,12 +21,7 @@ import { AuthInfo, Fee, SignerInfo, TxBody, TxRaw } from '@owallet/proto-types/c
 import { ExtensionOptionsWeb3Tx } from '@owallet/proto-types/ethermint/types/v1/web3';
 import { SignMode } from '@owallet/proto-types/cosmos/tx/signing/v1beta1/signing';
 import { PubKey } from '@owallet/proto-types/cosmos/crypto/secp256k1/keys';
-import { MsgSend } from '@owallet/proto-types/cosmos/bank/v1beta1/tx';
-import { MsgTransfer } from '@owallet/proto-types/ibc/applications/transfer/v1/tx';
-import { MsgBeginRedelegate, MsgDelegate, MsgUndelegate } from '@owallet/proto-types/cosmos/staking/v1beta1/tx';
-import { MsgWithdrawDelegatorReward } from '@owallet/proto-types/cosmos/distribution/v1beta1/tx';
-import ICoin = cosmos.base.v1beta1.ICoin;
-// import SignMode = cosmos.tx.signing.v1beta1.SignMode;
+import { Coin } from '@owallet/proto-types/cosmos/base/v1beta1/Coin';
 
 import { ETH } from '@hanchon/ethermint-address-converter';
 // can use this request from mobile ?
@@ -801,7 +796,7 @@ export class AccountSetBase<MsgOpts, Queries> {
             }
           ],
           fee: Fee.fromPartial({
-            amount: signResponse.signed.fee.amount as ICoin[],
+            amount: signResponse.signed.fee.amount as Coin[],
             gasLimit: signResponse.signed.fee.gas,
             payer:
               eip712Signing && !chainIsInjective

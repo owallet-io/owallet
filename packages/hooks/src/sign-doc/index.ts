@@ -1,19 +1,16 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import { useState } from 'react';
 import { IFeeConfig, IMemoConfig } from '../tx';
-import { cosmos, SignDocWrapper } from '@owallet/cosmos';
+import { SignDocWrapper } from '@owallet/cosmos';
 import Long from 'long';
-
+import { AuthInfo, Fee, SignerInfo, TxBody, TxRaw } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
 export * from './amount';
-
+import { SignDoc } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
 export class SignDocHelper {
   @observable.ref
   protected _signDocWrapper?: SignDocWrapper = undefined;
 
-  constructor(
-    protected readonly feeConfig: IFeeConfig,
-    protected readonly memoConfig: IMemoConfig
-  ) {
+  constructor(protected readonly feeConfig: IFeeConfig, protected readonly memoConfig: IMemoConfig) {
     makeObservable(this);
   }
 
@@ -43,7 +40,7 @@ export class SignDocHelper {
     }
 
     const protoSignDoc = this._signDocWrapper.protoSignDoc;
-    const fee = new cosmos.tx.v1beta1.Fee({
+    const fee = new Fee({
       gasLimit: Long.fromString(stdFee.gas),
       amount: stdFee.amount.map((fee) => {
         return {
@@ -51,24 +48,20 @@ export class SignDocHelper {
           denom: fee.denom
         };
       }),
-      granter: protoSignDoc.authInfo.fee?.granter
-        ? protoSignDoc.authInfo.fee?.granter
-        : null,
-      payer: protoSignDoc.authInfo.fee?.payer
-        ? protoSignDoc.authInfo.fee?.granter
-        : null
+      granter: protoSignDoc.authInfo.fee?.granter ? protoSignDoc.authInfo.fee?.granter : null,
+      payer: protoSignDoc.authInfo.fee?.payer ? protoSignDoc.authInfo.fee?.granter : null
     });
 
-    const newSignDoc = cosmos.tx.v1beta1.SignDoc.create({
+    const newSignDoc = SignDoc.create({
       ...protoSignDoc.signDoc,
       ...{
-        bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
+        bodyBytes: TxBody.encode({
           ...protoSignDoc.txBody,
           ...{
             memo: this.memoConfig.memo
           }
         }).finish(),
-        authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
+        authInfoBytes: AuthInfo.encode({
           ...protoSignDoc.authInfo,
           ...{
             fee
@@ -99,10 +92,7 @@ export class SignDocHelper {
   }
 }
 
-export const useSignDocHelper = (
-  feeConfig: IFeeConfig,
-  memoConfig: IMemoConfig
-) => {
+export const useSignDocHelper = (feeConfig: IFeeConfig, memoConfig: IMemoConfig) => {
   const [helper] = useState(() => new SignDocHelper(feeConfig, memoConfig));
 
   return helper;
