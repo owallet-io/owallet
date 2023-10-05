@@ -42,12 +42,20 @@ export interface MsgOpt {
   If the chain has "no-legacy-stdTx" feature, we should send the tx based on protobuf.
   Expectedly, the sign doc should be formed as animo-json regardless of the tx type (animo or proto).
 */
-export type AminoMsgsOrWithProtoMsgs =
-  | Msg[]
-  | {
-      aminoMsgs: Msg[];
-      protoMsgs?: google.protobuf.IAny[];
-    };
+export type AminoMsgsOrWithProtoMsgs = {
+  aminoMsgs?: Msg[];
+  protoMsgs?: google.protobuf.IAny[] | undefined;
+
+  // Add rlp types data if you need to support ethermint with ledger.
+  // Must include `MsgValue`.
+  rlpTypes?: Record<
+    string,
+    Array<{
+      name: string;
+      type: string;
+    }>
+  >;
+};
 
 export interface AccountSetOpts<MsgOpts> {
   readonly prefetching: boolean;
@@ -647,21 +655,30 @@ export class AccountSetBase<MsgOpts, Queries> {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
 
-      let aminoMsgs: Msg[];
-      let protoMsgs: google.protobuf.IAny[] | undefined;
-      if ('aminoMsgs' in msgs) {
-        aminoMsgs = msgs.aminoMsgs;
-        protoMsgs = msgs.protoMsgs;
-      } else {
-        aminoMsgs = msgs;
+      // let aminoMsgs: Msg[];
+      // let protoMsgs: google.protobuf.IAny[] | undefined;
+      // if ('aminoMsgs' in msgs) {
+      //   aminoMsgs = msgs.aminoMsgs;
+      //   protoMsgs = msgs.protoMsgs;
+      // } else {
+      //   aminoMsgs = msgs;
+      // }
+      const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
+      const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
+      const protoMsgs: google.protobuf.IAny[] = msgs.protoMsgs;
+      // console.log({ aminoMsgs });
+      if (protoMsgs.length === 0) {
+        throw new Error("There is no msg to send");
       }
-      const isDirectSign = !aminoMsgs || aminoMsgs.length === 0;
-      console.log({ aminoMsgs });
       const chainIsInjective = this.chainId.startsWith('injective');
       if (aminoMsgs.length === 0) {
         throw new Error('There is no msg to send');
       }
-
+      if (!isDirectSign) {
+        if (aminoMsgs.length !== protoMsgs.length) {
+          throw new Error("The length of aminoMsgs and protoMsgs are different");
+        }
+      }
       if (this.hasNoLegacyStdFeature() && (!protoMsgs || protoMsgs.length === 0)) {
         throw new Error("Chain can't send legecy stdTx. But, proto any type msgs are not provided");
       }
@@ -680,6 +697,13 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (eip712Signing && isDirectSign) {
         throw new Error('EIP712 signing is not supported for proto signing');
       }
+      if (eip712Signing && !msgs.rlpTypes) {
+        throw new Error(
+          "RLP types information is needed for signing tx for ethermint chain with ledger"
+        );
+      }
+  
+      
       const signDocRaw: StdSignDoc = {
         chain_id: this.chainId,
         account_number: account.getAccountNumber().toString(),
@@ -689,18 +713,36 @@ export class AccountSetBase<MsgOpts, Queries> {
         memo: escapeHTML(memo)
       };
 
-      if (eip712Signing && chainIsInjective) {
-        // Due to injective's problem, it should exist if injective with ledger.
-        // There is currently no effective way to handle this in keplr. Just set a very large number.
-        (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
+      
+      if (eip712Signing) {
+        if (chainIsInjective) {
+          // Due to injective's problem, it should exist if injective with ledger.
+          // There is currently no effective way to handle this in keplr. Just set a very large number.
+          (signDocRaw as Mutable<StdSignDoc>).timeout_height =
+            Number.MAX_SAFE_INTEGER.toString();
+        } else {
+          // If not injective (evmos), they require fee payer.
+          // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
+          //      That means this part is not standard.
+          (signDocRaw as Mutable<StdSignDoc>).fee = {
+            ...signDocRaw.fee,
+            feePayer: this.bech32Address,
+          };
+        }
       }
+
+      // Should use bind to avoid "this" problem
+      let signAmino = owallet.signAmino.bind(owallet);
+
+      // Should use bind to avoid "this" problem
+      let experimentalSignEIP712CosmosTx_v0 = owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
+
       const signDocAmino = sortObjectByKey(signDocRaw);
       const signResponse: AminoSignResponse = await (async () => {
         if (!eip712Signing) {
-          return await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
+          return await signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
         }
-
-        return await owallet.experimentalSignEIP712CosmosTx_v0(
+        return await experimentalSignEIP712CosmosTx_v0(
           this.chainId,
           this.bech32Address,
           getEip712TypedDataBasedOnChainId(this.chainId, msgs),

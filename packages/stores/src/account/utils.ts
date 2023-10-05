@@ -42,7 +42,8 @@ export const getEip712TypedDataBasedOnChainId = (
       Msg: [
         { name: 'type', type: 'string' },
         { name: 'value', type: 'MsgValue' }
-      ]
+      ],
+      ...msgs.rlpTypes,
     },
     domain: {
       name: 'Cosmos Web3',

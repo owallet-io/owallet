@@ -232,36 +232,36 @@ export class SecretAccount {
   ): Promise<Uint8Array> {
     let encryptedMsg: Uint8Array;
 
-    await this.base.sendMsgs(
-      type,
-      async () => {
-        encryptedMsg = await this.encryptSecretContractMsg(
-          contractAddress,
-          obj
-        );
+    // await this.base.sendMsgs(
+    //   type,
+    //   async () => {
+    //     encryptedMsg = await this.encryptSecretContractMsg(
+    //       contractAddress,
+    //       obj
+    //     );
 
-        const msg = {
-          type: this.base.msgOpts.executeSecretWasm.type,
-          value: {
-            sender: this.base.bech32Address,
-            contract: contractAddress,
-            // callback_code_hash: "",
-            msg: Buffer.from(encryptedMsg).toString('base64'),
-            sent_funds: sentFunds
-            // callback_sig: null,
-          }
-        };
+    //     const msg = {
+    //       type: this.base.msgOpts.executeSecretWasm.type,
+    //       value: {
+    //         sender: this.base.bech32Address,
+    //         contract: contractAddress,
+    //         // callback_code_hash: "",
+    //         msg: Buffer.from(encryptedMsg).toString('base64'),
+    //         sent_funds: sentFunds
+    //         // callback_sig: null,
+    //       }
+    //     };
 
-        return [msg];
-      },
-      memo,
-      {
-        amount: stdFee.amount ?? [],
-        gas: stdFee.gas
-      },
-      signOptions,
-      this.txEventsWithPreOnFulfill(onTxEvents)
-    );
+    //     return [msg];
+    //   },
+    //   memo,
+    //   {
+    //     amount: stdFee.amount ?? [],
+    //     gas: stdFee.gas
+    //   },
+    //   signOptions,
+    //   this.txEventsWithPreOnFulfill(onTxEvents)
+    // );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return encryptedMsg!;

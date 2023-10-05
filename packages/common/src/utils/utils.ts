@@ -52,7 +52,7 @@ export const isEthermintLike = (chainInfo: ChainInfo): boolean => {
   );
 };
 export const getUrlV1Beta = (isBeta: boolean) => {
-  if (isBeta) return 'v1beta';
+  if (isBeta) return 'v1beta1';
   return 'v1';
 };
 export const bufferToHex = (buffer) => {
