@@ -243,7 +243,7 @@ export class CosmwasmAccount {
     const protoMsgs = this.hasNoLegacyStdFeature()
       ? [
           {
-            type_url: '/cosmwasm.wasm.v1.MsgExecuteContract',
+            typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
             value: cosmwasm.wasm.v1.MsgExecuteContract.encode({
               sender: msg.value.sender,
               contract: msg.value.contract,

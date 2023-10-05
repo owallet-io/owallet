@@ -217,7 +217,7 @@ export class CosmosAccount {
               protoMsgs: this.hasNoLegacyStdFeature()
                 ? [
                     {
-                      type_url: '/cosmos.bank.v1beta1.MsgSend',
+                      typeUrl: '/cosmos.bank.v1beta1.MsgSend',
                       value: cosmos.bank.v1beta1.MsgSend.encode({
                         fromAddress: msg.value.from_address,
                         toAddress: msg.value.to_address,
@@ -374,7 +374,7 @@ export class CosmosAccount {
           aminoMsgs: [msg],
           protoMsgs: [
             {
-              type_url: '/ibc.applications.transfer.v1.MsgTransfer',
+              typeUrl: '/ibc.applications.transfer.v1.MsgTransfer',
               value: ibc.applications.transfer.v1.MsgTransfer.encode({
                 sourcePort: msg.value.source_port,
                 sourceChannel: msg.value.source_channel,
@@ -473,7 +473,7 @@ export class CosmosAccount {
         protoMsgs: this.hasNoLegacyStdFeature()
           ? [
               {
-                type_url: '/cosmos.staking.v1beta1.MsgDelegate',
+                typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
                 value: cosmos.staking.v1beta1.MsgDelegate.encode({
                   delegatorAddress: msg.value.delegator_address,
                   validatorAddress: msg.value.validator_address,
@@ -561,7 +561,7 @@ export class CosmosAccount {
         aminoMsgs: [msg],
         protoMsgs: [
           {
-            type_url: '/cosmos.staking.v1beta1.MsgUndelegate',
+            typeUrl: '/cosmos.staking.v1beta1.MsgUndelegate',
             value: cosmos.staking.v1beta1.MsgUndelegate.encode({
               delegatorAddress: msg.value.delegator_address,
               validatorAddress: msg.value.validator_address,
@@ -654,7 +654,7 @@ export class CosmosAccount {
         protoMsgs: this.hasNoLegacyStdFeature()
           ? [
               {
-                type_url: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+                typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
                 value: cosmos.staking.v1beta1.MsgBeginRedelegate.encode({
                   delegatorAddress: msg.value.delegator_address,
                   validatorSrcAddress: msg.value.validator_src_address,
@@ -728,7 +728,7 @@ export class CosmosAccount {
         protoMsgs: this.hasNoLegacyStdFeature()
           ? msgs.map((msg) => {
               return {
-                type_url: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+                typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
                 value: cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward.encode({
                   delegatorAddress: msg.value.delegator_address,
                   validatorAddress: msg.value.validator_address
@@ -847,7 +847,7 @@ export class CosmosAccount {
         protoMsgs: this.hasNoLegacyStdFeature()
           ? [
               {
-                type_url: '/cosmos.gov.v1beta1.MsgVote',
+                typeUrl: '/cosmos.gov.v1beta1.MsgVote',
                 value: cosmos.gov.v1beta1.MsgVote.encode({
                   proposalId: Long.fromString(msg.value.proposal_id),
                   voter: msg.value.voter,
