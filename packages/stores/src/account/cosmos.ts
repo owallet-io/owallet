@@ -3,31 +3,21 @@ import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
 import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
 import { Dec, DecUtils, Int } from '@owallet/unit';
-import { ChainIdHelper,   BaseAccount } from '@owallet/cosmos';
+import { ChainIdHelper, BaseAccount } from '@owallet/cosmos';
 import { BondStatus } from '../query/cosmos/staking/types';
 import { HasCosmosQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';
 import { ChainGetter } from '../common';
 import Axios, { AxiosInstance } from 'axios';
-import { MsgTransfer } from "@owallet/proto-types/ibc/applications/transfer/v1/tx";
-import {
-  MsgBeginRedelegate,
-  MsgDelegate,
-  MsgUndelegate,
-} from "@owallet/proto-types/cosmos/staking/v1beta1/tx";
-import { MsgWithdrawDelegatorReward } from "@owallet/proto-types/cosmos/distribution/v1beta1/tx";
-import { MsgVote } from "@owallet/proto-types/cosmos/gov/v1beta1/tx";
-import { VoteOption } from "@owallet/proto-types/cosmos/gov/v1beta1/gov";
-import { SignMode } from "@owallet/proto-types/cosmos/tx/signing/v1beta1/signing";
+import { MsgTransfer } from '@owallet/proto-types/ibc/applications/transfer/v1/tx';
+import { MsgBeginRedelegate, MsgDelegate, MsgUndelegate } from '@owallet/proto-types/cosmos/staking/v1beta1/tx';
+import { MsgWithdrawDelegatorReward } from '@owallet/proto-types/cosmos/distribution/v1beta1/tx';
+import { MsgVote } from '@owallet/proto-types/cosmos/gov/v1beta1/tx';
+import { VoteOption } from '@owallet/proto-types/cosmos/gov/v1beta1/gov';
+import { SignMode } from '@owallet/proto-types/cosmos/tx/signing/v1beta1/signing';
 import Long from 'long';
-import { MsgSend } from "@owallet/proto-types/cosmos/bank/v1beta1/tx";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "@owallet/proto-types/cosmos/tx/v1beta1/tx";
+import { MsgSend } from '@owallet/proto-types/cosmos/bank/v1beta1/tx';
+import { AuthInfo, Fee, SignerInfo, TxBody, TxRaw } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
 // import SignMode = cosmos.tx.signing.v1beta1.SignMode;
 
 export interface HasCosmosAccount {
@@ -145,38 +135,46 @@ export class CosmosAccount {
     gasUsed: number;
   }> {
     const account = await BaseAccount.fetchFromRest(this.instance, this.base.bech32Address, true);
-
+    console.log('🚀 ~ file: cosmos.ts:149 ~ CosmosAccount ~ account:', account);
+    console.log('🚀 ~ file: cosmos.ts:145 ~ CosmosAccount ~ fee:', fee);
     const unsignTx = TxRaw.encode({
-      bodyBytes: TxBody.encode({
-        messages: msgs,
-        memo: memo
-      }).finish(),
+      bodyBytes: TxBody.encode(
+        TxBody.fromPartial({
+          messages: msgs,
+          memo: memo
+        })
+      ).finish(),
       authInfoBytes: AuthInfo.encode({
         signerInfos: [
-          {
+          SignerInfo.fromPartial({
+            // Pub key is ignored.
+            // It is fine to ignore the pub key when simulating tx.
+            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
             modeInfo: {
               single: {
                 mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
               },
               multi: undefined
             },
-            sequence: Long.fromString(account.getSequence().toString())
-          }
+            sequence: account.getSequence().toString()
+          })
         ],
 
-        fee: {
+        fee: Fee.fromPartial({
           amount: fee.amount.map((amount) => {
             return { amount: amount.amount, denom: amount.denom };
           }),
           gasLimit: Long.fromString('500000')
-        }
+        })
       }).finish(),
       signatures: [new Uint8Array(64)]
     }).finish();
+    console.log('🚀 ~ file: cosmos.ts:167 ~ CosmosAccount ~ unsignTx:', unsignTx);
 
     const result = await this.instance.post('/cosmos/tx/v1beta1/simulate', {
       tx_bytes: Buffer.from(unsignTx).toString('base64')
     });
+    console.log('🚀 ~ file: cosmos.ts:172 ~ CosmosAccount ~ result:', result);
 
     const gasUsed = parseInt(result.data.gas_info.gas_used);
     if (Number.isNaN(gasUsed)) {
@@ -722,6 +720,7 @@ export class CosmosAccount {
         }
       };
     });
+    console.log('🚀 ~ file: cosmos.ts:725 ~ CosmosAccount ~ msgs ~ msgs:', msgs);
 
     const simulateTx = await this.simulateTx(
       msgs.map((msg) => {
@@ -738,6 +737,7 @@ export class CosmosAccount {
       },
       memo
     );
+    console.log('🚀 ~ file: cosmos.ts:741 ~ CosmosAccount ~ simulateTx:', simulateTx);
 
     await this.base.sendMsgs(
       'withdrawRewards',
