@@ -89,6 +89,10 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   @observable
   protected _bech32Address: string = '';
+
+  @observable
+  protected _address: Uint8Array = null;
+  
   @observable
   protected _isNanoLedger: boolean = false;
 
@@ -236,12 +240,13 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
     this._bech32Address = key.bech32Address;
+    this._address = key.address;
     this._isNanoLedger = key.isNanoLedger;
     this._name = key.name;
     this.pubKey = key.pubKey;
 
     // Set the wallet status as loaded after getting all necessary infos.
-    this._walletStatus = WalletStatus.Loaded;
+    this._walletStatus = WalletStatus.Rejected;
   }
 
   @action
@@ -251,11 +256,15 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.eventListener.removeEventListener('keplr_keystorechange', this.handleInit);
     this._bech32Address = '';
     this._name = '';
+    this._address = null;
     this.pubKey = new Uint8Array(0);
   }
 
   get walletVersion(): string | undefined {
     return this._walletVersion;
+  }
+  get address(): Uint8Array | null {
+    return this._address;
   }
 
   @computed

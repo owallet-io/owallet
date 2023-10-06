@@ -11,11 +11,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { NetworkErrorView } from './network-error-view';
 import { DownArrowIcon } from '../../components/icon';
 
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon
-} from '../../components/icon/button';
+import { BuyIcon, DepositIcon, SendDashboardIcon } from '../../components/icon/button';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,38 +24,25 @@ import { AccountBox } from './account-box';
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    modalStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
-  );
+  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
 
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
+  const bech32Address = (() => {
+    if (account.address) return account.bech32Address;
+    return '';
+  })();
+  const queryStakable = queries.queryBalances.getQueryBech32Address(bech32Address).stakable;
 
   const stakable = queryStakable.balance;
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(bech32Address);
   const delegated = queryDelegated.total;
 
-  const queryUnbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
+  const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(bech32Address);
   const unbonding = queryUnbonding.total;
 
   const stakedSum = delegated.add(unbonding);
@@ -69,7 +52,7 @@ export const AccountCard: FunctionComponent<{
   const totalPrice = priceStore.calculatePrice(total);
 
   const safeAreaInsets = useSafeAreaInsets();
-  const onPressBtnMain = name => {
+  const onPressBtnMain = (name) => {
     if (name === 'Buy') {
       navigate('MainTab', { screen: 'Browser', path: 'https://oraidex.io' });
     }
@@ -98,20 +81,11 @@ export const AccountCard: FunctionComponent<{
   };
   return (
     <AccountBox
-      totalBalance={
-        totalPrice
-          ? totalPrice.toString()
-          : total.shrink(true).maxDecimals(6).toString()
-      }
-      addressComponent={
-        <AddressCopyable address={account.bech32Address} maxCharacters={22} />
-      }
+      totalBalance={totalPrice ? totalPrice.toString() : total.shrink(true).maxDecimals(6).toString()}
+      addressComponent={<AddressCopyable address={bech32Address} maxCharacters={22} />}
       name={account?.name || '..'}
       coinType={`${
-        keyRingStore.keyRingType === 'ledger'
-          ? chainStore?.current?.bip44?.coinType
-          : selected?.bip44HDPath?.coinType ??
-            chainStore?.current?.bip44?.coinType
+        keyRingStore.keyRingType === 'ledger' ? chainStore?.current?.bip44?.coinType : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
