@@ -40,7 +40,7 @@ export class SignDocHelper {
     }
 
     const protoSignDoc = this._signDocWrapper.protoSignDoc;
-    const fee = new Fee({
+    const fee = Fee.fromPartial({
       gasLimit: Long.fromString(stdFee.gas),
       amount: stdFee.amount.map((fee) => {
         return {

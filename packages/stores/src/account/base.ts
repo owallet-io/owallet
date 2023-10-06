@@ -797,7 +797,7 @@ export class AccountSetBase<MsgOpts, Queries> {
           ],
           fee: Fee.fromPartial({
             amount: signResponse.signed.fee.amount as Coin[],
-            gasLimit: signResponse.signed.fee.gas,
+            gasLimit: Long.fromString(signResponse.signed.fee.gas),
             payer:
               eip712Signing && !chainIsInjective
                 ? // Fee delegation feature not yet supported. But, for eip712 ethermint signing, we must set fee payer.
