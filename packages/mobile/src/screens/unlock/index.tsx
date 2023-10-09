@@ -95,7 +95,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     const chainId = chainStore.current.chainId;
     const isLedger = accountStore.getAccount(chainId).isNanoLedger;
     if (!navigateToHomeOnce.current) {
-      if (chainId?.startsWith('inj') && isLedger) {
+      if (!!accountStore.getAccount(chainId).bech32Address === false && chainId?.startsWith('inj') && isLedger) {
         navigation.dispatch(StackActions.replace('MainTab'));
       } else {
         await waitAccountLoad(accountStore, chainId);
