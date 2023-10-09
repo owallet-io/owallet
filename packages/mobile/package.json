@@ -41,6 +41,8 @@
     "@oraichain/oraidex-common": "^1.0.6",
     "@oraichain/cw-simulate": "^2.8.68",
     "@oraichain/oraidex-universal-swap": "^1.0.7",
+    "@oraichain/oraidex-contracts-build": "^1.0.20",
+    "@oraichain/common-contracts-build": "^1.0.32",
     "ethereum-multicall": "^2.19.0",
     "ethers": "^5.0.15",
     "@formatjs/intl-datetimeformat": "^4.1.6",
