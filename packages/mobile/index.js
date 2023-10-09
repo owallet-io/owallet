@@ -22,9 +22,14 @@ const config = {
 
 firebase.initializeApp(config);
 
-messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('remoteMessage background', remoteMessage);
 });
+
+import { initialize } from 'react-native-clarity';
+
+// Initialize Clarity.
+initialize(process.env.CLARITY_PROJECT_ID);
 
 const { App } = require('./src/app');
 

@@ -59,6 +59,7 @@
     "appcenter": "4.4.5",
     "appcenter-analytics": "4.4.5",
     "appcenter-crashes": "4.4.5",
+    "react-native-clarity": "^1.0.1",
     "big.js": "^6.2.1",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",

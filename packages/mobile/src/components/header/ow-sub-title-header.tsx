@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     alignItems: 'center',
-    width:metrics.screenWidth,
+    width: metrics.screenWidth,
     marginTop: spacing['top-pad']
   }
 });

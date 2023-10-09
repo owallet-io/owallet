@@ -21877,6 +21877,11 @@ react-native-check-box@2.1.7:
   dependencies:
     prop-types "^15.5.7"
 
+react-native-clarity@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-clarity/-/react-native-clarity-1.0.1.tgz#d100926f508517ebbb6a3b9c267acdb6155674e0"
+  integrity sha512-ah7MQDHyde8P0YQ4P1pce/1Z1iyKqm7VfudBMXi35MZ4R9nMOCeaP+grEC4eDrpC9rwuoGa7yxpflV3dHJI/OA==
+
 react-native-code-push@^8.0.2:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/react-native-code-push/-/react-native-code-push-8.1.0.tgz#5bf42d749447705ca2d2e6df371b4353ea7afd78"
