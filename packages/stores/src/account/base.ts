@@ -247,7 +247,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     this.pubKey = key.pubKey;
 
     // Set the wallet status as loaded after getting all necessary infos.
-    this._walletStatus = WalletStatus.Rejected;
+    this._walletStatus = WalletStatus.Loaded;
   }
 
   @action
