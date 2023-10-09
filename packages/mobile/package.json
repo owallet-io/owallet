@@ -17,6 +17,7 @@
     "fastlane-android:distribution": "cd android && ./gradlew clean && fastlane distribution",
     "android:connect": "adb reverse tcp:8081 tcp:8081",
     "typecheck": "tsc",
+    "jest-universal": "cd src/screens/universal-swap/_tests && jest index.spec.ts",
     "watch:provider": "cross-env NODE_ENV=development webpack",
     "build:provider": "node ./src/scripts/create-sentry-properties.js && cross-env NODE_ENV=production webpack",
     "start": "react-native start",
