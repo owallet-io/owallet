@@ -8,6 +8,7 @@ export class CosmJSOfflineSignerOnlyAmino implements OfflineSigner {
 
   async getAccounts(): Promise<AccountData[]> {
     const key = await this.owallet.getKey(this.chainId);
+    console.log("🚀 ~ file: cosmjs.ts:11 ~ CosmJSOfflineSignerOnlyAmino ~ getAccounts ~ key:", key)
 
     return [
       {
@@ -25,6 +26,7 @@ export class CosmJSOfflineSignerOnlyAmino implements OfflineSigner {
     }
 
     const key = await this.owallet.getKey(signDoc.chain_id);
+    console.log("🚀 ~ file: cosmjs.ts:29 ~ CosmJSOfflineSignerOnlyAmino ~ signAmino ~ key:", key)
 
     if (key.bech32Address !== signerAddress) {
       throw new Error('Unknown signer address');
@@ -50,6 +52,7 @@ export class CosmJSOfflineSigner extends CosmJSOfflineSignerOnlyAmino implements
     }
 
     const key = await this.owallet.getKey(signDoc.chainId);
+    console.log("🚀 ~ file: cosmjs.ts:55 ~ CosmJSOfflineSigner ~ signDirect ~ key:", key)
 
     if (key.bech32Address !== signerAddress) {
       throw new Error('Unknown signer address');

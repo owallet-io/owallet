@@ -239,6 +239,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
+    console.log("🚀 ~ file: base.ts:242 ~ AccountSetBase<MsgOpts, ~ *init ~ key:", key)
     this._bech32Address = key.bech32Address;
     this._address = key.address;
     this._isNanoLedger = key.isNanoLedger;

@@ -24,13 +24,12 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
 import { showToast } from '@src/utils/helper';
 
-
 async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
     return;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -93,9 +92,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const [statusPass, setStatusPass] = useState(true);
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
+    const chainId = chainStore.current.chainId;
+    const isLedger = accountStore.getAccount(chainId).isNanoLedger;
     if (!navigateToHomeOnce.current) {
-      await waitAccountLoad(accountStore, chainStore.current.chainId);
-      navigation.dispatch(StackActions.replace('MainTab'));
+      if (chainId?.startsWith('inj') && isLedger) {
+        navigation.dispatch(StackActions.replace('MainTab'));
+      } else {
+        await waitAccountLoad(accountStore, chainId);
+        navigation.dispatch(StackActions.replace('MainTab'));
+      }
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
@@ -116,7 +121,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // },
         installMode: CodePush.InstallMode.IMMEDIATE
       },
-      status => {
+      (status) => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             console.log('UP_TO_DATE');
@@ -247,7 +252,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   // }, []);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async FCMToken => {
+  const regisFcmToken = useCallback(async (FCMToken) => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
@@ -257,14 +262,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async FCMToken => {
+        .then(async (FCMToken) => {
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
             // Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // let err = `FCM token get error: ${error}`;
           // Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
@@ -278,7 +283,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (Platform.OS === 'ios') {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then(register => {
+        .then((register) => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -293,7 +298,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('[FCMService] Requested persmission rejected ', error);
       });
   }, [registerAppWithFCM]);
@@ -301,7 +306,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then(enabled => {
+      .then((enabled) => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -310,7 +315,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch(error => {
+      .catch((error) => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -327,7 +332,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [requestPermission]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async remoteMessage => {});
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
     return unsubscribe;
   }, []);
 
