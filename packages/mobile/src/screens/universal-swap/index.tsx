@@ -43,13 +43,22 @@ import {
   getTokenOnSpecificChainId,
   getTransferTokenFee,
   handleSimulateSwap,
-  isEvmNetworkNativeSwapSupported,
-  isSupportedNoPoolSwapEvm,
   toAmount
 } from '@owallet/common';
-import { fetchTokenInfos, isEvmSwappable } from '@owallet/common';
+import { fetchTokenInfos } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
 import { toDisplay, toSubAmount } from '@owallet/common';
+
+import {
+  combineReceiver,
+  isEvmNetworkNativeSwapSupported,
+  isEvmSwappable,
+  isSupportedNoPoolSwapEvm,
+  UniversalSwapData,
+  UniversalSwapHandler
+} from '@oraichain/oraidex-universal-swap';
+import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { StubCosmosWallet, StubEvmWallet } from './mockup';
 
 type BalanceType = {
   id: string;
@@ -450,6 +459,83 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setIsSelectToTokenModal(true);
   }, []);
 
+  const handleSubmit = () => {
+    // account.handleUniversalSwap(chainId, { key: 'value' });
+    if (fromAmountToken <= 0) {
+      return;
+    }
+    // return displayToast(TToastType.TX_FAILED, {
+    //   message: 'From amount should be higher than 0!'
+    // });
+
+    setSwapLoading(true);
+    // displayToast(TToastType.TX_BROADCASTING);
+    try {
+      const cosmosWallet = new StubCosmosWallet();
+      const evmWallet = new StubEvmWallet('http://localhost:8545');
+      const simulateAmount = '100';
+      const universalSwapData: UniversalSwapData = {
+        cosmosSender: accountOrai.bech32Address,
+        originalFromToken: originalFromToken,
+        originalToToken: originalToToken,
+        simulateAmount,
+        simulateAverage: '0',
+        userSlippage: userSlippage,
+        fromAmount: toDisplay(fromAmountToken.toString())
+      };
+      // const oraiAddress = await handleCheckAddress();
+      // const univeralSwapHandler = new UniversalSwapHandler(
+      //   oraiAddress,
+      //   originalFromToken,
+      //   originalToToken,
+      //   fromAmountToken,
+      //   simulateData.amount,
+      //   userSlippage,
+      //   averageRatio.amount
+      // );
+      // const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(
+      //   originalToToken.chainId,
+      //   {
+      //     metamaskAddress,
+      //     tronAddress
+      //   }
+      // );
+      // const { combinedReceiver, universalSwapType } = combineReceiver(
+      //   oraiAddress,
+      //   originalFromToken,
+      //   originalToToken,
+      //   toAddress
+      // );
+      // checkEvmAddress(originalFromToken.chainId, metamaskAddress, tronAddress);
+      // checkEvmAddress(originalToToken.chainId, metamaskAddress, tronAddress);
+      // const checksumMetamaskAddress =
+      //   window.Metamask.toCheckSumEthAddress(metamaskAddress);
+      // const transactionHash = await univeralSwapHandler.processUniversalSwap(
+      //   combinedReceiver,
+      //   universalSwapType,
+      //   {
+      //     metamaskAddress: checksumMetamaskAddress,
+      //     tronAddress
+      //   }
+      // );
+      // if (transactionHash) {
+      // displayToast(TToastType.TX_SUCCESSFUL, {
+      //   customLink: getTransactionUrl(
+      //     originalFromToken.chainId,
+      //     transactionHash
+      //   )
+      // });
+      // loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress });
+      setSwapLoading(false);
+      // }
+    } catch (error) {
+      console.log({ error });
+      // handleErrorTransaction(error);
+    } finally {
+      setSwapLoading(false);
+    }
+  };
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
@@ -594,9 +680,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           loading={false}
           disabled={amountLoading}
           textStyle={styles.textBtnSwap}
-          onPress={() => {
-            account.handleUniversalSwap(chainId, { key: 'value' });
-          }}
+          onPress={handleSubmit}
         />
         <View style={styles.containerInfoToken}>
           <View style={styles.itemBottom}>
