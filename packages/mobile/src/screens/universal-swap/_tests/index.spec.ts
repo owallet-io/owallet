@@ -228,7 +228,10 @@ describe('test universal swap handler functions', () => {
     constructor(rpc: string) {
       super();
       this.provider = new JsonRpcProvider(rpc);
-      this.tronWeb = new TronWeb('foo', 'foo');
+      this.tronWeb = new TronWeb(
+        'https://nile.trongrid.io',
+        'https://nile.trongrid.io'
+      );
     }
 
     switchNetwork(chainId: string | number): Promise<void> {
@@ -249,7 +252,7 @@ describe('test universal swap handler functions', () => {
   }
 
   const cosmosWallet = new StubCosmosWallet();
-  const evmWallet = new StubEvmWallet('http://localhost:8545');
+  const evmWallet = new StubEvmWallet('https://bsc-dataseed1.ninicoin.io');
   const fromAmount = '100000';
   const simulateAmount = '100';
   const userSlippage = 1;

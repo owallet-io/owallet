@@ -1,5 +1,10 @@
 import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState
+} from 'react';
 import { registerModal } from '@src/modals/base';
 import images from '@src/assets/images';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -53,6 +58,64 @@ export const SelectTokenModal: FunctionComponent<{
 
   const { colors } = useTheme();
   const styles = styling(colors);
+
+  const renderTokenItem = useCallback(
+    item => {
+      const subAmounts = Object.fromEntries(
+        Object.entries(universalSwapStore?.getAmount).filter(
+          ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
+        )
+      ) as AmountDetails;
+
+      const totalUsd = getTotalUsd(subAmounts, prices, item);
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            close();
+            setToken(item.denom);
+          }}
+          style={styles.btnItem}
+        >
+          <View style={styles.leftBoxItem}>
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 12,
+                alignItems: 'center',
+                justifyContent: 'center',
+                overflow: 'hidden',
+                backgroundColor: colors['gray-10']
+              }}
+            >
+              <OWIcon type="images" source={{ uri: item?.Icon }} size={35} />
+            </View>
+            <View style={styles.pl10}>
+              <Text size={16} color={colors['text-title']} weight="500">
+                {item?.name}
+              </Text>
+              <Text weight="500" color={colors['blue-400']}>
+                {item?.org}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.rightBoxItem}>
+            <Text color={colors['text-title']}>
+              {toDisplay(
+                universalSwapStore?.getAmount[item.denom],
+                item?.decimals
+              )}
+            </Text>
+            <Text weight="500" color={colors['blue-400']}>
+              ${totalUsd.toFixed(2) ?? 0}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    },
+    [universalSwapStore?.getAmount]
+  );
+
   return (
     <View
       style={[styles.containerModal, { paddingBottom: safeAreaInsets.bottom }]}
@@ -96,60 +159,7 @@ export const SelectTokenModal: FunctionComponent<{
         keyboardShouldPersistTaps="handled"
         data={filteredTokens}
         renderItem={({ item }) => {
-          const subAmounts = Object.fromEntries(
-            Object.entries(universalSwapStore?.getAmount).filter(
-              ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
-            )
-          ) as AmountDetails;
-          const totalUsd = getTotalUsd(subAmounts, prices, item);
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                close();
-                setToken(item.denom);
-              }}
-              style={styles.btnItem}
-            >
-              <View style={styles.leftBoxItem}>
-                <View
-                  style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 12,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden',
-                    backgroundColor: colors['gray-10']
-                  }}
-                >
-                  <OWIcon
-                    type="images"
-                    source={{ uri: item?.Icon }}
-                    size={35}
-                  />
-                </View>
-                <View style={styles.pl10}>
-                  <Text size={16} color={colors['text-title']} weight="500">
-                    {item?.name}
-                  </Text>
-                  <Text weight="500" color={colors['blue-400']}>
-                    {item?.org}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.rightBoxItem}>
-                <Text color={colors['text-title']}>
-                  {toDisplay(
-                    universalSwapStore?.getAmount[item.denom],
-                    item?.decimals
-                  )}
-                </Text>
-                <Text weight="500" color={colors['blue-400']}>
-                  ${totalUsd.toFixed(2) ?? 0}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          );
+          return renderTokenItem(item);
         }}
       />
     </View>
