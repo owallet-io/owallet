@@ -20,9 +20,17 @@ export const SlippageModal = registerModal(
 
     const handleChangeSlippage = direction => {
       if (direction === 'minus') {
-        setSlippage(slippage - 1);
+        if (slippage > 1) {
+          setSlippage(slippage - 1);
+        } else {
+          setSlippage(1);
+        }
       } else {
-        setSlippage(slippage + 1);
+        if (slippage < 100) {
+          setSlippage(slippage + 1);
+        } else {
+          setSlippage(100);
+        }
       }
     };
 
@@ -63,7 +71,11 @@ export const SlippageModal = registerModal(
                     value={slippage.toString()}
                     textAlign="right"
                     placeholderTextColor={colors['text-place-holder']}
-                    onSubmitEditing={txt => setSlippage(Number(txt))}
+                    onSubmitEditing={txt => {
+                      if (Number(txt) > 0 && Number(txt) < 100) {
+                        setSlippage(Number(txt));
+                      }
+                    }}
                   />
                   <Text size={18} color={colors['text-value-input-modal']}>
                     %
