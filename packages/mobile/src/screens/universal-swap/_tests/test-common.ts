@@ -1,4 +1,3 @@
-import { SimulateCosmWasmClient } from '@oraichain/cw-simulate';
 import { OraiswapTokenClient } from '@oraichain/oraidex-contracts-sdk';
 import { CwIcs20LatestClient } from '@oraichain/common-contracts-sdk';
 import * as oraidexArtifacts from '@oraichain/oraidex-contracts-build';
@@ -7,13 +6,8 @@ import { Cw20Coin } from '@oraichain/common-contracts-sdk';
 
 export const testSenderAddress = 'orai1g4h64yjt0fvzv5v2j8tyfnpe5kmnetejvfgs7g';
 
-export const client = new SimulateCosmWasmClient({
-  chainId: 'Oraichain',
-  bech32Prefix: 'orai'
-});
-
 export const deployToken = async (
-  client: SimulateCosmWasmClient,
+  client: any,
   {
     symbol,
     name,
@@ -49,7 +43,7 @@ export const deployToken = async (
 };
 
 export const deployIcs20Token = async (
-  client: SimulateCosmWasmClient,
+  client: any,
   {
     swap_router_contract,
     gov_contract = testSenderAddress

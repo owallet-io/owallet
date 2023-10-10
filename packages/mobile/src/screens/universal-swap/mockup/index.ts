@@ -1,5 +1,4 @@
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
-import { SimulateCosmWasmClient } from '@oraichain/cw-simulate';
 import {
   CosmosWallet,
   EvmWallet,
@@ -13,8 +12,7 @@ import {
 } from '@cosmjs/proto-signing';
 import {
   SigningCosmWasmClient,
-  SigningCosmWasmClientOptions,
-  toBinary
+  SigningCosmWasmClientOptions
 } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
 
@@ -27,17 +25,18 @@ export class StubCosmosWallet extends CosmosWallet {
   }
 
   getCosmWasmClient(
-    config: { signer?: OfflineSigner; rpc?: string; chainId: CosmosChainId },
+    config: {
+      signer?: OfflineSigner;
+      rpc?: string;
+      chainId: CosmosChainId;
+    },
+    client: any,
     options?: SigningCosmWasmClientOptions
   ): Promise<{
     wallet: OfflineSigner;
     client: SigningCosmWasmClient;
     defaultAddress: AccountData;
   }> {
-    const client = new SimulateCosmWasmClient({
-      chainId: 'Oraichain',
-      bech32Prefix: 'orai'
-    });
     return new Promise(resolve =>
       resolve({
         client,
