@@ -559,6 +559,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         close={() => {
           setIsSlippageModal(false);
         }}
+        setUserSlippage={setUserSlippage}
         isOpen={isSlippageModal}
       />
       <SelectTokenModal
