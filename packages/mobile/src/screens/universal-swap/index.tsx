@@ -59,6 +59,8 @@ import {
 } from '@oraichain/oraidex-universal-swap';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { StubCosmosWallet, StubEvmWallet } from './mockup';
+import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
+import { IBC_WASM_CONTRACT } from '@oraichain/oraidex-common';
 
 type BalanceType = {
   id: string;
@@ -459,7 +461,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setIsSelectToTokenModal(true);
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
       return;
@@ -471,6 +473,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapLoading(true);
     // displayToast(TToastType.TX_BROADCASTING);
     try {
+      const client = await CWStargate.init(
+        accountOrai,
+        ORAICHAIN_ID,
+        oraichainNetwork.rpc
+      );
+      const ics20Contract = new CwIcs20LatestQueryClient(
+        client,
+        IBC_WASM_CONTRACT
+      );
+
       const cosmosWallet = new StubCosmosWallet();
       const evmWallet = new StubEvmWallet('http://localhost:8545');
       const simulateAmount = '100';
