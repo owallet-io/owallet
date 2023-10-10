@@ -94,27 +94,27 @@ export const SlippageModal = registerModal(
           </View>
 
           <View style={styles.containerSlippagePercent}>
-            {[1, 3, 5].map((item, index) => {
+            {[1, 3, 5, 7].map((item, index) => {
               return (
                 <OWButton
                   key={item}
                   size="medium"
-                  style={styles.btnSlippgaePercentInActive}
-                  textStyle={styles.txtSlippgaePercentInActive}
+                  style={
+                    slippage === Number(item)
+                      ? styles.btnSlippgaePercentActive
+                      : styles.btnSlippgaePercentInActive
+                  }
+                  textStyle={
+                    slippage === Number(item)
+                      ? styles.txtSlippgaePercentActive
+                      : styles.txtSlippgaePercentInActive
+                  }
                   label={`${item}%`}
                   fullWidth={false}
                   onPress={() => setSlippage(item)}
                 />
               );
             })}
-            <OWButton
-              // key={item}
-              size="medium"
-              style={styles.btnSlippgaePercentActive}
-              textStyle={styles.txtSlippgaePercentActive}
-              label={'7%'}
-              fullWidth={false}
-            />
           </View>
           <OWButton
             style={styles.confirmBtn}
