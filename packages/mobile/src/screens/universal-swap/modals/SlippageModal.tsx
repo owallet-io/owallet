@@ -26,9 +26,8 @@ export const SlippageModal = registerModal(
       }
     };
 
-
     const handleSubmitSlippage = () => {
-      setUserSlippage(slippage)
+      setUserSlippage(slippage);
     };
 
     return (
@@ -64,7 +63,7 @@ export const SlippageModal = registerModal(
                     value={slippage.toString()}
                     textAlign="right"
                     placeholderTextColor={colors['text-place-holder']}
-                    onSubmitEditing={txt => setSlippage(Number(txt)}
+                    onSubmitEditing={txt => setSlippage(Number(txt))}
                   />
                   <Text size={18} color={colors['text-value-input-modal']}>
                     %
@@ -112,7 +111,7 @@ export const SlippageModal = registerModal(
             label="Confirm"
             size="medium"
             onPress={() => {
-              handleSubmitSlippage()
+              handleSubmitSlippage();
               setTimeout(() => {
                 close();
               }, 100);
