@@ -721,6 +721,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
           ) : null}
+          <View style={styles.itemBottom}>
+            <BalanceText>Slippage</BalanceText>
+            <BalanceText>{userSlippage}%</BalanceText>
+          </View>
         </View>
       </View>
     </PageWithScrollViewInBottomTabView>

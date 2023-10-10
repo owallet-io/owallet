@@ -12,7 +12,7 @@ import { DEFAULT_SLIPPAGE } from '@owallet/common';
 
 export const SlippageModal = registerModal(
   //@ts-ignore
-  ({ close, setUserSlippage, currentSlippage }) => {
+  ({ close, setUserSlippage, currentSlippage = 0 }) => {
     const safeAreaInsets = useSafeAreaInsets();
     const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE);
     const { colors } = useTheme();
@@ -59,7 +59,7 @@ export const SlippageModal = registerModal(
                     style={styles.input}
                     placeholder="0"
                     keyboardType="decimal-pad"
-                    defaultValue={currentSlippage.toString()}
+                    defaultValue={currentSlippage?.toString() ?? '0'}
                     value={slippage.toString()}
                     textAlign="right"
                     placeholderTextColor={colors['text-place-holder']}
@@ -91,6 +91,7 @@ export const SlippageModal = registerModal(
                   textStyle={styles.txtSlippgaePercentInActive}
                   label={`${item}%`}
                   fullWidth={false}
+                  onPress={() => setSlippage(item)}
                 />
               );
             })}
