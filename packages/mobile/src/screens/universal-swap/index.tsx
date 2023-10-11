@@ -61,6 +61,11 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { StubCosmosWallet, StubEvmWallet } from './mockup';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { IBC_WASM_CONTRACT } from '@oraichain/oraidex-common';
+import DeviceInfo from 'react-native-device-info';
+import { Ethereum, TronWeb } from '@owallet/provider';
+import { RNMessageRequesterExternal } from '@src/router';
+
+const oraidexURL = 'https://oraidex.io';
 
 type BalanceType = {
   id: string;
@@ -461,6 +466,49 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setIsSelectToTokenModal(true);
   }, []);
 
+  const accountEvm = accountStore.getAccount(ETH_ID);
+  const accountTron = accountStore.getAccount(TRON_ID);
+
+  console.log('accountEvm', accountEvm, accountEvm.evmosHexAddress);
+
+  if (accountTron.evmosHexAddress) {
+    console.log(
+      'accountTron',
+      accountTron,
+      Address.getBase58Address(accountTron.evmosHexAddress)
+    );
+  }
+
+  const [ethereum] = useState(
+    () =>
+      new Ethereum(
+        DeviceInfo.getVersion(),
+        'core',
+        ETH_ID,
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
+
+  const [tronWeb] = useState(
+    () =>
+      new TronWeb(
+        '0.0.1',
+        'core',
+        TRON_ID,
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
+
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
@@ -485,6 +533,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       const cosmosWallet = new StubCosmosWallet();
       const evmWallet = new StubEvmWallet('http://localhost:8545');
+
       const simulateAmount = '100';
       const universalSwapData: UniversalSwapData = {
         cosmosSender: accountOrai.bech32Address,
@@ -495,6 +544,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         userSlippage: userSlippage,
         fromAmount: toDisplay(fromAmountToken.toString())
       };
+
+      // const univeralSwapHandler = new UniversalSwapHandler({
+      //   ...universalSwapData,
+      // {}
+      // });
+
+      // const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(originalToToken.chainId, {
+      //   metamaskAddress,
+      //   tronAddress
+      // });
+      // const { combinedReceiver, universalSwapType } = combineReceiver(
+      //   oraiAddress,
+      //   originalFromToken,
+      //   originalToToken,
+      //   toAddress
+      // );
+
       // const oraiAddress = await handleCheckAddress();
       // const univeralSwapHandler = new UniversalSwapHandler(
       //   oraiAddress,
@@ -559,8 +625,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         close={() => {
           setIsSlippageModal(false);
         }}
-        setUserSlippage={setUserSlippage}
+        //@ts-ignore
+        currentSlippage={userSlippage}
         isOpen={isSlippageModal}
+        setUserSlippage={setUserSlippage}
       />
       <SelectTokenModal
         bottomSheetModalConfig={{
