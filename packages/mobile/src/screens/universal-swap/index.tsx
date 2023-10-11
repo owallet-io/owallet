@@ -61,8 +61,6 @@ import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { IBC_WASM_CONTRACT, toAmount } from '@oraichain/oraidex-common';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 
-const oraidexURL = 'https://oraidex.io';
-
 type BalanceType = {
   id: string;
   value: string;
@@ -544,51 +542,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       console.log('result', result);
 
-      // const oraiAddress = await handleCheckAddress();
-      // const univeralSwapHandler = new UniversalSwapHandler(
-      //   oraiAddress,
-      //   originalFromToken,
-      //   originalToToken,
-      //   fromAmountToken,
-      //   simulateData.amount,
-      //   userSlippage,
-      //   averageRatio.amount
-      // );
-      // const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(
-      //   originalToToken.chainId,
-      //   {
-      //     metamaskAddress,
-      //     tronAddress
-      //   }
-      // );
-      // const { combinedReceiver, universalSwapType } = combineReceiver(
-      //   oraiAddress,
-      //   originalFromToken,
-      //   originalToToken,
-      //   toAddress
-      // );
-      // checkEvmAddress(originalFromToken.chainId, metamaskAddress, tronAddress);
-      // checkEvmAddress(originalToToken.chainId, metamaskAddress, tronAddress);
-      // const checksumMetamaskAddress =
-      //   window.Metamask.toCheckSumEthAddress(metamaskAddress);
-      // const transactionHash = await univeralSwapHandler.processUniversalSwap(
-      //   combinedReceiver,
-      //   universalSwapType,
-      //   {
-      //     metamaskAddress: checksumMetamaskAddress,
-      //     tronAddress
-      //   }
-      // );
-      // if (transactionHash) {
-      // displayToast(TToastType.TX_SUCCESSFUL, {
-      //   customLink: getTransactionUrl(
-      //     originalFromToken.chainId,
-      //     transactionHash
-      //   )
-      // });
-      // loadTokenAmounts({ oraiAddress, metamaskAddress, tronAddress });
-      setSwapLoading(false);
-      // }
+      if (result) {
+        handleFetchAmounts();
+        setSwapLoading(false);
+      }
     } catch (error) {
       console.log({ error });
       // handleErrorTransaction(error);
