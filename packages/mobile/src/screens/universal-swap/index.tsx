@@ -543,6 +543,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('combinedReceiver', combinedReceiver);
       console.log('universalSwapType', universalSwapType);
 
+      const result = await univeralSwapHandler.processUniversalSwap(
+        combinedReceiver,
+        universalSwapType,
+        {
+          metamaskAddress: accountEvm.evmosHexAddress,
+          tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
+        }
+      );
+
+      console.log('result', result);
+
       // const oraiAddress = await handleCheckAddress();
       // const univeralSwapHandler = new UniversalSwapHandler(
       //   oraiAddress,
