@@ -60,7 +60,9 @@ export class SwapEvmWallet extends EvmWallet {
   constructor(rpc: string) {
     super();
     this.provider = new JsonRpcProvider(rpc);
-    this.tronWeb = new TronWeb('foo', 'foo');
+    this.tronWeb = new TronWeb({
+      fullHost: 'https://nile.trongrid.io'
+    });
   }
 
   switchNetwork(chainId: string | number): Promise<void> {

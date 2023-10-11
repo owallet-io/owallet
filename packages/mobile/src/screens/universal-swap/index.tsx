@@ -463,16 +463,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setIsSelectToTokenModal(true);
   }, []);
 
-  console.log('accountEvm', accountEvm, accountEvm.evmosHexAddress);
-
-  if (accountTron.evmosHexAddress) {
-    console.log(
-      'accountTron',
-      accountTron,
-      Address.getBase58Address(accountTron.evmosHexAddress)
-    );
-  }
-
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
