@@ -62,7 +62,7 @@ import { StubCosmosWallet, StubEvmWallet } from './mockup';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { IBC_WASM_CONTRACT } from '@oraichain/oraidex-common';
 import DeviceInfo from 'react-native-device-info';
-import { Ethereum, TronWeb } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
 
 const oraidexURL = 'https://oraidex.io';
@@ -479,6 +479,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   }
 
+  const [owallet] = useState(
+    () =>
+      new OWallet(
+        DeviceInfo.getVersion(),
+        'core',
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
+
   const [ethereum] = useState(
     () =>
       new Ethereum(
@@ -497,7 +511,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [tronWeb] = useState(
     () =>
       new TronWeb(
-        '0.0.1',
+        DeviceInfo.getVersion(),
         'core',
         TRON_ID,
         new RNMessageRequesterExternal(() => {
