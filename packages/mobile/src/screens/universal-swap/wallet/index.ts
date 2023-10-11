@@ -17,8 +17,8 @@ import {
 import TronWeb from 'tronweb';
 
 export class SwapCosmosWallet extends CosmosWallet {
-  private client: any;
-  constructor(client: any) {
+  private client: SigningCosmWasmClient;
+  constructor(client: SigningCosmWasmClient) {
     super();
     this.client = client;
   }
@@ -41,10 +41,9 @@ export class SwapCosmosWallet extends CosmosWallet {
     client: SigningCosmWasmClient;
     defaultAddress: AccountData;
   }> {
-    const client = this.client;
     return new Promise(resolve =>
       resolve({
-        client,
+        client: this.client,
         wallet: config.signer!,
         defaultAddress: {
           address: '',
