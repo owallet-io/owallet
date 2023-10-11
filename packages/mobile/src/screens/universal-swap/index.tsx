@@ -42,8 +42,7 @@ import {
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
   getTransferTokenFee,
-  handleSimulateSwap,
-  toAmount
+  handleSimulateSwap
 } from '@owallet/common';
 import { fetchTokenInfos } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
@@ -60,7 +59,12 @@ import {
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { StubCosmosWallet, StubEvmWallet } from './mockup';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
-import { IBC_WASM_CONTRACT } from '@oraichain/oraidex-common';
+import {
+  IBC_WASM_CONTRACT,
+  toAmount,
+  CosmosWallet,
+  EvmWallet
+} from '@oraichain/oraidex-common';
 import DeviceInfo from 'react-native-device-info';
 import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
@@ -479,49 +483,49 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   }
 
-  const [owallet] = useState(
-    () =>
-      new OWallet(
-        DeviceInfo.getVersion(),
-        'core',
-        new RNMessageRequesterExternal(() => {
-          return {
-            url: oraidexURL,
-            origin: new URL(oraidexURL).origin
-          };
-        })
-      )
-  );
+  // const [owallet] = useState(
+  //   () =>
+  //     new OWallet(
+  //       DeviceInfo.getVersion(),
+  //       'core',
+  //       new RNMessageRequesterExternal(() => {
+  //         return {
+  //           url: oraidexURL,
+  //           origin: new URL(oraidexURL).origin
+  //         };
+  //       })
+  //     )
+  // );
 
-  const [ethereum] = useState(
-    () =>
-      new Ethereum(
-        DeviceInfo.getVersion(),
-        'core',
-        ETH_ID,
-        new RNMessageRequesterExternal(() => {
-          return {
-            url: oraidexURL,
-            origin: new URL(oraidexURL).origin
-          };
-        })
-      )
-  );
+  // const [ethereum] = useState(
+  //   () =>
+  //     new Ethereum(
+  //       DeviceInfo.getVersion(),
+  //       'core',
+  //       ETH_ID,
+  //       new RNMessageRequesterExternal(() => {
+  //         return {
+  //           url: oraidexURL,
+  //           origin: new URL(oraidexURL).origin
+  //         };
+  //       })
+  //     )
+  // );
 
-  const [tronWeb] = useState(
-    () =>
-      new TronWeb(
-        DeviceInfo.getVersion(),
-        'core',
-        TRON_ID,
-        new RNMessageRequesterExternal(() => {
-          return {
-            url: oraidexURL,
-            origin: new URL(oraidexURL).origin
-          };
-        })
-      )
-  );
+  // const [tronWeb] = useState(
+  //   () =>
+  //     new TronWeb(
+  //       DeviceInfo.getVersion(),
+  //       'core',
+  //       TRON_ID,
+  //       new RNMessageRequesterExternal(() => {
+  //         return {
+  //           url: oraidexURL,
+  //           origin: new URL(oraidexURL).origin
+  //         };
+  //       })
+  //     )
+  // );
 
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
@@ -531,6 +535,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // return displayToast(TToastType.TX_FAILED, {
     //   message: 'From amount should be higher than 0!'
     // });
+    console.log('submit');
 
     setSwapLoading(true);
     // displayToast(TToastType.TX_BROADCASTING);
@@ -546,24 +551,36 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       const cosmosWallet = new StubCosmosWallet();
-      const evmWallet = new StubEvmWallet('http://localhost:8545');
+      const evmWallet = new StubEvmWallet(originalFromToken.rpc);
 
-      const simulateAmount = '100';
       const universalSwapData: UniversalSwapData = {
         cosmosSender: accountOrai.bech32Address,
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
-        simulateAmount,
+        simulateAmount: Number(
+          toAmount(toAmountToken.toString(), originalToToken.decimals)
+        ).toString(),
         simulateAverage: '0',
         userSlippage: userSlippage,
-        fromAmount: toDisplay(fromAmountToken.toString())
+        fromAmount: Number(
+          toAmount(fromAmountToken.toString(), originalFromToken.decimals)
+        )
       };
 
-      // const univeralSwapHandler = new UniversalSwapHandler({
-      //   ...universalSwapData,
-      // {}
-      // });
+      console.log('universalSwapData', universalSwapData);
 
+      const univeralSwapHandler = new UniversalSwapHandler(
+        {
+          ...universalSwapData
+        },
+        {
+          cosmosWallet,
+          evmWallet,
+          cwIcs20LatestClient: ics20Contract
+        }
+      );
+
+      console.log('univeralSwapHandler', univeralSwapHandler);
       // const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(originalToToken.chainId, {
       //   metamaskAddress,
       //   tronAddress
