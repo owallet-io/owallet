@@ -35,7 +35,7 @@
     "build": "lerna run build",
     "build:libs": "yarn build:proto && lerna run build --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/proto-types --include-filtered-dependencies",
     "postinstall": "patch-package",
-    "build:proto":"lerna run build --scope @owallet/proto-types",
+    "build:proto":"lerna run build --scope @owallet/proto-types --scope @owallet/common",
     "test": "lerna run test --parallel",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && lerna run build",
     "lint-test": "lerna run lint-test",
