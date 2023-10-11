@@ -8,7 +8,7 @@ import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, RefreshControl, StyleSheet, View } from 'react-native';
 import { useStore } from '../../stores';
 import { metrics, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
@@ -118,7 +118,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleFetchAmounts();
     setTimeout(() => {
       handleFetchAmounts();
-    }, 2000);
+    }, 3000);
   }, []);
 
   const onChangeFromAmount = (amount: string | undefined) => {
@@ -544,7 +544,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('result', result);
 
       if (result) {
-        handleFetchAmounts();
+        await handleFetchAmounts();
         setSwapLoading(false);
         showToast({
           text1: 'Success',
@@ -563,12 +563,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
+  const onRefresh = async () => {
+    setLoadingRefresh(true);
+    await handleFetchAmounts();
+    setLoadingRefresh(false);
+  };
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={[styles.container, isAndroid ? styles.pt30 : {}]}
       disableSafeArea={false}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
+      }
     >
       <SlippageModal
         close={() => {
