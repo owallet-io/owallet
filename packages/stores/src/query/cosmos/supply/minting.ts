@@ -10,7 +10,7 @@ export class ObservableQueryMintingInfation extends ObservableChainQuery<Minting
     autorun(() => {
       const chainInfo = this.chainGetter.getChain(this.chainId);
 
-      if (chainInfo.features && chainInfo.features.includes('ibc-go')) {
+      if (!chainId?.startsWith('osmosis') && chainInfo.features && chainInfo.features.includes('ibc-go')) {
         this.setUrl(`/cosmos/mint/v1beta1/inflation`);
       }
     });
