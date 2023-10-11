@@ -33,7 +33,7 @@
     "clean:all": "rimraf yarn.lock && yarn clean",
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
-    "build:libs": "yarn build:proto && lerna run build --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/proto-types --include-filtered-dependencies",
+    "build:libs": "yarn build:proto && lerna run build --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/proto-types",
     "postinstall": "patch-package",
     "build:proto":"lerna run build --scope @owallet/proto-types --scope @owallet/common",
     "test": "lerna run test --parallel",
