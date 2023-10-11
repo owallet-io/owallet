@@ -21,13 +21,15 @@ import { AuthInfo, Fee, SignerInfo, TxBody, TxRaw } from '@owallet/proto-types/c
 import { ExtensionOptionsWeb3Tx } from '@owallet/proto-types/ethermint/types/v1/web3';
 import { SignMode } from '@owallet/proto-types/cosmos/tx/signing/v1beta1/signing';
 import { PubKey } from '@owallet/proto-types/cosmos/crypto/secp256k1/keys';
-import { Coin } from '@owallet/proto-types/cosmos/base/v1beta1/Coin';
 
 import { ETH } from '@hanchon/ethermint-address-converter';
 // can use this request from mobile ?
 import { request } from '@owallet/background';
 import { getEip712TypedDataBasedOnChainId } from './utils';
-
+export interface Coin {
+  readonly denom: string;
+  readonly amount: string;
+}
 export enum WalletStatus {
   NotInit = 'NotInit',
   Loading = 'Loading',
