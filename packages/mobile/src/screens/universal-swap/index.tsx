@@ -21,7 +21,8 @@ import {
   KAWAII_ID,
   ORAICHAIN_ID,
   TRON_ID,
-  isAndroid
+  isAndroid,
+  showToast
 } from '@src/utils/helper';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import {
@@ -244,7 +245,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
   const [isNetworkModal, setIsNetworkModal] = useState(false);
   const styles = styling(colors);
-  const chainId = chainStore?.current?.chainId;
 
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
@@ -464,14 +464,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
+      showToast({
+        text1: 'Error',
+        text2: 'From amount should be higher than 0!',
+        type: 'error'
+      });
       return;
     }
-    // return displayToast(TToastType.TX_FAILED, {
-    //   message: 'From amount should be higher than 0!'
-    // });
 
     setSwapLoading(true);
-    // displayToast(TToastType.TX_BROADCASTING);
     try {
       const client = await CWStargate.init(
         accountOrai,
@@ -545,10 +546,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (result) {
         handleFetchAmounts();
         setSwapLoading(false);
+        showToast({
+          text1: 'Success',
+          type: 'success'
+        });
       }
     } catch (error) {
       console.log({ error });
-      // handleErrorTransaction(error);
+      showToast({
+        text1: 'Error',
+        text2: JSON.stringify(error),
+        type: 'error'
+      });
     } finally {
       setSwapLoading(false);
     }
@@ -670,6 +679,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <OWButton
                 key={item?.id}
                 disabled={amountLoading}
+                loading={swapLoading}
                 size="small"
                 style={
                   balanceActive?.id === item?.id
