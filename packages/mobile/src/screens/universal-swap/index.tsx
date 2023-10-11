@@ -57,9 +57,9 @@ import {
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { StubCosmosWallet, StubEvmWallet } from './mockup';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { IBC_WASM_CONTRACT, toAmount } from '@oraichain/oraidex-common';
+import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 
 const oraidexURL = 'https://oraidex.io';
 
@@ -497,8 +497,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         IBC_WASM_CONTRACT
       );
 
-      const cosmosWallet = new StubCosmosWallet();
-      const evmWallet = new StubEvmWallet(originalFromToken.rpc);
+      const cosmosWallet = new SwapCosmosWallet(client);
+      const evmWallet = new SwapEvmWallet(originalFromToken.rpc);
 
       const universalSwapData: UniversalSwapData = {
         cosmosSender: accountOrai.bech32Address,

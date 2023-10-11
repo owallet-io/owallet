@@ -17,6 +17,11 @@ import {
 import TronWeb from 'tronweb';
 
 export class SwapCosmosWallet extends CosmosWallet {
+  private client: any;
+  constructor(client: any) {
+    super();
+    this.client = client;
+  }
   getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
     return new Promise(resolve => resolve('orai1234'));
   }
@@ -30,13 +35,13 @@ export class SwapCosmosWallet extends CosmosWallet {
       rpc?: string;
       chainId: CosmosChainId;
     },
-    client: any,
     options?: SigningCosmWasmClientOptions
   ): Promise<{
     wallet: OfflineSigner;
     client: SigningCosmWasmClient;
     defaultAddress: AccountData;
   }> {
+    const client = this.client;
     return new Promise(resolve =>
       resolve({
         client,
