@@ -84,7 +84,8 @@ const balances: BalanceType[] = [
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, chainStore, universalSwapStore } = useStore();
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const accountEvm = accountStore.getAccount(ETH_ID);
+  const accountTron = accountStore.getAccount(TRON_ID);
   const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
   const { colors } = useTheme();
   const [isSlippageModal, setIsSlippageModal] = useState(false);
@@ -462,9 +463,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setIsSelectToTokenModal(true);
   }, []);
 
-  const accountEvm = accountStore.getAccount(ETH_ID);
-  const accountTron = accountStore.getAccount(TRON_ID);
-
   console.log('accountEvm', accountEvm, accountEvm.evmosHexAddress);
 
   if (accountTron.evmosHexAddress) {
@@ -528,16 +526,22 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       console.log('univeralSwapHandler', univeralSwapHandler);
-      // const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(originalToToken.chainId, {
-      //   metamaskAddress,
-      //   tronAddress
-      // });
-      // const { combinedReceiver, universalSwapType } = combineReceiver(
-      //   oraiAddress,
-      //   originalFromToken,
-      //   originalToToken,
-      //   toAddress
-      // );
+      const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(
+        originalToToken.chainId,
+        {
+          metamaskAddress: accountEvm.evmosHexAddress,
+          tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
+        }
+      );
+      const { combinedReceiver, universalSwapType } = combineReceiver(
+        accountOrai.bech32Address,
+        originalFromToken,
+        originalToToken,
+        toAddress
+      );
+
+      console.log('combinedReceiver', combinedReceiver);
+      console.log('universalSwapType', universalSwapType);
 
       // const oraiAddress = await handleCheckAddress();
       // const univeralSwapHandler = new UniversalSwapHandler(
