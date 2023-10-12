@@ -11,7 +11,7 @@ import {
   SigningCosmWasmClientOptions
 } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
-import { Ethereum, OWallet } from '@owallet/types';
+import { OWallet } from '@owallet/types';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -21,6 +21,7 @@ export class SwapCosmosWallet extends CosmosWallet {
     this.client = client;
     this.owallet = owallet;
   }
+
   async getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
     try {
       const key = await this.owallet.getKey(chainId);
@@ -29,6 +30,7 @@ export class SwapCosmosWallet extends CosmosWallet {
       console.log(ex, chainId);
     }
   }
+
   async createCosmosSigner(chainId: string): Promise<OfflineSigner> {
     if (!this.owallet) {
       throw new Error(
@@ -66,9 +68,11 @@ export class SwapCosmosWallet extends CosmosWallet {
 
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
-  constructor(rpc: string) {
+  private ethAddress: string;
+  constructor(rpc: string, ethAddress: string) {
     super();
     this.provider = new JsonRpcProvider(rpc);
+    this.ethAddress = ethAddress;
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
@@ -78,15 +82,19 @@ export class SwapEvmWallet extends EvmWallet {
     // return undefined by default on mobile
     return new Promise(resolve => resolve(undefined));
   }
+
   getEthAddress(): Promise<string> {
-    return new Promise(resolve => resolve('0x1234'));
+    return new Promise(resolve => resolve(this.ethAddress));
   }
+
   checkEthereum(): boolean {
     return true;
   }
+
   checkTron(): boolean {
     return true;
   }
+
   getSigner(): JsonRpcSigner {
     return this.provider.getSigner();
   }

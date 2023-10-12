@@ -85,7 +85,7 @@ const balances: BalanceType[] = [
   { id: '4', value: MAX }
 ];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, chainStore, universalSwapStore } = useStore();
+  const { accountStore, universalSwapStore } = useStore();
   const accountEvm = accountStore.getAccount(ETH_ID);
   const accountTron = accountStore.getAccount(TRON_ID);
   const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
@@ -502,7 +502,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
-      const evmWallet = new SwapEvmWallet(originalFromToken.rpc);
+      const evmWallet = new SwapEvmWallet(
+        originalFromToken.rpc,
+        accountEvm.evmosHexAddress
+      );
 
       const universalSwapData: UniversalSwapData = {
         cosmosSender: accountOrai.bech32Address,
@@ -561,14 +564,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('result', result);
 
       if (result) {
-        await handleFetchAmounts();
         setSwapLoading(false);
         showToast({
           text1: 'Success',
           type: 'success'
         });
+        await handleFetchAmounts();
       }
     } catch (error) {
+      setSwapLoading(false);
       console.log({ error });
       showToast({
         text1: 'Error',
