@@ -5,11 +5,7 @@ import {
   NetworkChainId,
   CosmosChainId
 } from '@oraichain/oraidex-common';
-import {
-  AccountData,
-  DirectSecp256k1HdWallet,
-  OfflineSigner
-} from '@cosmjs/proto-signing';
+import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
 import {
   SigningCosmWasmClient,
   SigningCosmWasmClientOptions
@@ -36,14 +32,13 @@ export class SwapCosmosWallet extends CosmosWallet {
   async createCosmosSigner(chainId: string): Promise<OfflineSigner> {
     if (!this.owallet) {
       throw new Error(
-        'You have to install Keplr first if you do not use a mnemonic to sign transactions'
+        'You have to have OWallet first if you do not use a mnemonic to sign transactions'
       );
     }
-    // use keplr instead
     return await this.owallet.getOfflineSignerAuto(chainId);
   }
 
-  getCosmWasmClient(
+  async getCosmWasmClient(
     config: {
       signer?: OfflineSigner;
       rpc?: string;
@@ -55,15 +50,15 @@ export class SwapCosmosWallet extends CosmosWallet {
     client: SigningCosmWasmClient;
     defaultAddress: AccountData;
   }> {
+    const { chainId, signer } = config;
+    const wallet = signer ?? (await this.createCosmosSigner(chainId));
+    const defaultAddress = (await wallet.getAccounts())[0];
+
     return new Promise(resolve =>
       resolve({
         client: this.client,
-        wallet: config.signer!,
-        defaultAddress: {
-          address: '',
-          algo: 'secp256k1',
-          pubkey: Uint8Array.from([])
-        }
+        wallet: wallet ?? config.signer!,
+        defaultAddress
       })
     );
   }
