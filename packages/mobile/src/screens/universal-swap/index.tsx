@@ -511,7 +511,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         simulateAmount: Number(
           toAmount(toAmountToken.toString(), originalToToken.decimals)
         ).toString(),
-        simulateAverage: '0',
+        simulateAverage: ratio.toString(),
         userSlippage: userSlippage,
         fromAmount: Number(
           toAmount(fromAmountToken.toString(), originalFromToken.decimals)
