@@ -66,17 +66,16 @@ export class SwapCosmosWallet extends CosmosWallet {
 
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
-  private ethereum: Ethereum;
-  constructor(rpc: string, ethereum: Ethereum) {
+  constructor(rpc: string) {
     super();
     this.provider = new JsonRpcProvider(rpc);
-    this.ethereum = ethereum;
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
   }
 
   switchNetwork(chainId: string | number): Promise<void> {
+    // return undefined by default on mobile
     return new Promise(resolve => resolve(undefined));
   }
   getEthAddress(): Promise<string> {
