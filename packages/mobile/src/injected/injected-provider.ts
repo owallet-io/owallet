@@ -33,7 +33,7 @@ export class RNInjectedEthereum extends InjectedEthereum {
           window.addEventListener('message', fn);
         },
         removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: message => {
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -64,7 +64,7 @@ export class RNInjectedOWallet extends InjectedOWallet {
       {
         addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
         removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: message => {
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -105,7 +105,7 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       {
         addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
         removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-        postMessage: message => {
+        postMessage: (message) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           window.ReactNativeWebView.postMessage(JSON.stringify(message));
@@ -113,12 +113,10 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       },
       RNInjectedTronWeb.parseWebviewMessage
     );
-RNInjectedTronWeb.trx={
+    RNInjectedTronWeb.trx = {
       sign: async (transaction: object): Promise<object> => {
         return await this.requestMethod('sign', [transaction]);
       }
     };
-
-    
   }
 }
