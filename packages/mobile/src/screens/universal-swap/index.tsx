@@ -533,7 +533,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
-      const evmWallet = new SwapEvmWallet(originalFromToken.rpc);
+      const evmWallet = new SwapEvmWallet(originalFromToken.rpc, ethereum);
 
       const universalSwapData: UniversalSwapData = {
         cosmosSender: accountOrai.bech32Address,

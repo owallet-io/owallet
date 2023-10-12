@@ -15,7 +15,7 @@ import {
   SigningCosmWasmClientOptions
 } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
-import { OWallet } from '@owallet/types';
+import { Ethereum, OWallet } from '@owallet/types';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -71,9 +71,11 @@ export class SwapCosmosWallet extends CosmosWallet {
 
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
-  constructor(rpc: string) {
+  private ethereum: Ethereum;
+  constructor(rpc: string, ethereum: Ethereum) {
     super();
     this.provider = new JsonRpcProvider(rpc);
+    this.ethereum = ethereum;
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
