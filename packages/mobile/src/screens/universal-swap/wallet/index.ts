@@ -15,15 +15,23 @@ import {
   SigningCosmWasmClientOptions
 } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
+import { OWallet } from '@owallet/types';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
-  constructor(client: SigningCosmWasmClient) {
+  private owallet: OWallet;
+  constructor(client: SigningCosmWasmClient, owallet: OWallet) {
     super();
     this.client = client;
+    this.owallet = owallet;
   }
-  getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
-    return new Promise(resolve => resolve('orai1234'));
+  async getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
+    try {
+      const key = await this.owallet.getKey(chainId);
+      return key?.bech32Address;
+    } catch (ex) {
+      console.log(ex, chainId);
+    }
   }
   createCosmosSigner(chainId: string): Promise<OfflineSigner> {
     return DirectSecp256k1HdWallet.generate();

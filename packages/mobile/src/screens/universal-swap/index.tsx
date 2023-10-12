@@ -532,7 +532,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         IBC_WASM_CONTRACT
       );
 
-      const cosmosWallet = new SwapCosmosWallet(client);
+      const cosmosWallet = new SwapCosmosWallet(client, owallet);
       const evmWallet = new SwapEvmWallet(originalFromToken.rpc);
 
       const universalSwapData: UniversalSwapData = {
