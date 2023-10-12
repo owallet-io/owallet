@@ -61,6 +61,9 @@ import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { IBC_WASM_CONTRACT, toAmount } from '@oraichain/oraidex-common';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
+import DeviceInfo from 'react-native-device-info';
+import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
+import { RNMessageRequesterExternal } from '@src/router';
 
 type BalanceType = {
   id: string;
@@ -71,6 +74,7 @@ const ONE_QUARTER = '25';
 const HALF = '50';
 const THREE_QUARTERS = '75';
 const MAX = '100';
+const oraidexURL = 'https://oraidex.io';
 
 const balances: BalanceType[] = [
   {
@@ -460,6 +464,50 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const handleOpenTokensToModal = useCallback(() => {
     setIsSelectToTokenModal(true);
   }, []);
+
+  const [owallet] = useState(
+    () =>
+      new OWallet(
+        DeviceInfo.getVersion(),
+        'core',
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
+
+  const [ethereum] = useState(
+    () =>
+      new Ethereum(
+        DeviceInfo.getVersion(),
+        'core',
+        ETH_ID,
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
+
+  const [tronWeb] = useState(
+    () =>
+      new TronWeb(
+        DeviceInfo.getVersion(),
+        'core',
+        TRON_ID,
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
 
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
