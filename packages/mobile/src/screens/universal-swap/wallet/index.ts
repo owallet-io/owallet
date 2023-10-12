@@ -33,8 +33,14 @@ export class SwapCosmosWallet extends CosmosWallet {
       console.log(ex, chainId);
     }
   }
-  createCosmosSigner(chainId: string): Promise<OfflineSigner> {
-    return DirectSecp256k1HdWallet.generate();
+  async createCosmosSigner(chainId: string): Promise<OfflineSigner> {
+    if (!this.owallet) {
+      throw new Error(
+        'You have to install Keplr first if you do not use a mnemonic to sign transactions'
+      );
+    }
+    // use keplr instead
+    return await this.owallet.getOfflineSignerAuto(chainId);
   }
 
   getCosmWasmClient(
