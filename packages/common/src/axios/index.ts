@@ -10,9 +10,7 @@ import { isUndefined } from 'axios/lib/utils';
  * - Get response body
  * - Check if timeout
  */
-export const fetchAdapter = async (
-  config: AxiosRequestConfig
-): Promise<AxiosResponse> => {
+export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosResponse> => {
   const request = createRequest(config);
   const promiseChain = [getResponse(request, config)];
 
@@ -20,9 +18,7 @@ export const fetchAdapter = async (
     promiseChain.push(
       new Promise((res) => {
         setTimeout(() => {
-          const message = config.timeoutErrorMessage
-            ? config.timeoutErrorMessage
-            : 'timeout of ' + config.timeout + 'ms exceeded';
+          const message = config.timeoutErrorMessage ? config.timeoutErrorMessage : 'timeout of ' + config.timeout + 'ms exceeded';
           res(createError(message, config, 'ECONNABORTED', request));
         }, config.timeout);
       })
@@ -43,10 +39,7 @@ export const fetchAdapter = async (
  * Fetch API stage two is to get response body. This funtion tries to retrieve
  * response body based on response's type
  */
-async function getResponse(
-  request: Request,
-  config: AxiosRequestConfig
-): Promise<AxiosResponse> {
+async function getResponse(request: Request, config: AxiosRequestConfig): Promise<AxiosResponse> {
   let stageOne: Response;
   try {
     stageOne = await fetch(request);
@@ -92,9 +85,7 @@ function createRequest(config: AxiosRequestConfig): Request {
   // HTTP basic authentication
   if (config.auth) {
     const username = config.auth.username || '';
-    const password = config.auth.password
-      ? decodeURI(encodeURIComponent(config.auth.password))
-      : '';
+    const password = config.auth.password ? decodeURI(encodeURIComponent(config.auth.password)) : '';
     headers.set('Authorization', `Basic ${btoa(username + ':' + password)}`);
   }
 
@@ -136,18 +127,6 @@ function createRequest(config: AxiosRequestConfig): Request {
  * @param {Object} [response] The response.
  * @returns {Error} The created error.
  */
-function createError(
-  message: string,
-  config: AxiosRequestConfig,
-  code: string,
-  request: Request,
-  response?: any
-): AxiosResponse<AxiosError> {
-  return AxiosErrorFn(
-    message ?? 'Unknown error',
-    config,
-    code,
-    request,
-    response
-  );
+function createError(message: string, config: AxiosRequestConfig, code: string, request: Request, response?: any): AxiosResponse<AxiosError> {
+  return AxiosErrorFn(new Error(message ?? 'Unknown error'), config, code, request, response);
 }
