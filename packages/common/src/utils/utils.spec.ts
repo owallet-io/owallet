@@ -47,4 +47,9 @@ describe('utils', () => {
     const rs = utils.getChainInfoOrThrow('injective-1');
     expect(rs).toEqual(expected);
   });
+  it('isEthermintLike',()=>{
+    const chainInfo = utils.getChainInfoOrThrow('injective-1');
+    const rs = utils.isEthermintLike(chainInfo);
+    expect(rs).toBe(true);
+  })
 });
