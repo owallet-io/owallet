@@ -457,9 +457,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     },
     [balanceActive]
   );
+
   const handleOpenTokensFromModal = useCallback(() => {
     setIsSelectFromTokenModal(true);
   }, []);
+
   const handleOpenTokensToModal = useCallback(() => {
     setIsSelectToTokenModal(true);
   }, []);
@@ -535,6 +537,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       console.log('univeralSwapHandler', univeralSwapHandler);
+
       const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(
         originalToToken.chainId,
         {
@@ -542,6 +545,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
         }
       );
+
       const { combinedReceiver, universalSwapType } = combineReceiver(
         accountOrai.bech32Address,
         originalFromToken,
