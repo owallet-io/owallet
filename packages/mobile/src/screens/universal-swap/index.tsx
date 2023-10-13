@@ -525,7 +525,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       console.log('universalSwapData', universalSwapData);
 
-      const univeralSwapHandler = new UniversalSwapHandler(
+      const universalSwapHandler = new UniversalSwapHandler(
         {
           ...universalSwapData
         },
@@ -536,9 +536,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }
       );
 
-      console.log('univeralSwapHandler', univeralSwapHandler);
+      console.log('universalSwapHandler', universalSwapHandler);
 
-      const toAddress = await univeralSwapHandler.getUniversalSwapToAddress(
+      const toAddress = await universalSwapHandler.getUniversalSwapToAddress(
         originalToToken.chainId,
         {
           metamaskAddress: accountEvm.evmosHexAddress,
@@ -556,7 +556,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('combinedReceiver', combinedReceiver);
       console.log('universalSwapType', universalSwapType);
 
-      const result = await univeralSwapHandler.processUniversalSwap(
+      const result = await universalSwapHandler.processUniversalSwap(
         combinedReceiver,
         universalSwapType,
         {
