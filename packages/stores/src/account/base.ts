@@ -94,7 +94,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
   @observable
   protected _address: Uint8Array = null;
-  
+
   @observable
   protected _isNanoLedger: boolean = false;
 
@@ -241,7 +241,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
-    console.log("🚀 ~ file: base.ts:242 ~ AccountSetBase<MsgOpts, ~ *init ~ key:", key)
     this._bech32Address = key.bech32Address;
     this._address = key.address;
     this._isNanoLedger = key.isNanoLedger;
@@ -653,7 +652,175 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return parseInt(chainId);
   }
+  protected async processSignedTxCosmos(msgs: AminoMsgsOrWithProtoMsgs, fee: StdFee, memo: string = '', owallet: any, signOptions?: OWalletSignOptions) {
+    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ signOptions:', signOptions);
+    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ memo:', memo);
+    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ fee:', fee);
+    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ msgs:', msgs);
+    const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
+    const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
+    const protoMsgs: Any[] = msgs.protoMsgs;
+    // console.log({ aminoMsgs });
+    if (protoMsgs.length === 0) {
+      throw new Error('There is no msg to send');
+    }
+    const chainIsInjective = this.chainId.startsWith('injective');
+    if (aminoMsgs.length === 0) {
+      throw new Error('There is no msg to send');
+    }
+    if (!isDirectSign) {
+      if (aminoMsgs.length !== protoMsgs.length) {
+        throw new Error('The length of aminoMsgs and protoMsgs are different');
+      }
+    }
+    if (this.hasNoLegacyStdFeature() && (!protoMsgs || protoMsgs.length === 0)) {
+      throw new Error("Chain can't send legecy stdTx. But, proto any type msgs are not provided");
+    }
 
+    const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
+
+    const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
+
+    // const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
+    const useEthereumSign = this.chainGetter.getChain(this.chainId).features?.includes('eth-key-sign') === true;
+
+    const eip712Signing = useEthereumSign && this.isNanoLedger;
+    if (eip712Signing && isDirectSign) {
+      throw new Error('EIP712 signing is not supported for proto signing');
+    }
+    if (eip712Signing && !msgs.rlpTypes) {
+      throw new Error('RLP types information is needed for signing tx for ethermint chain with ledger');
+    }
+    console.log(
+      '🚀 ~ file: base.ts:698 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ account.getAccountNumber().toString():',
+      account.getAccountNumber().toString()
+    );
+    console.log(
+      '🚀 ~ file: base.ts:700 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ account.getSequence().toString():',
+      account.getSequence().toString()
+    );
+    const signDocRaw: StdSignDoc = {
+      chain_id: this.chainId,
+      account_number: account.getAccountNumber().toString(),
+      sequence: account.getSequence().toString(),
+      fee: fee,
+      msgs: aminoMsgs,
+      memo: escapeHTML(memo)
+    };
+
+    if (eip712Signing) {
+      if (chainIsInjective) {
+        // Due to injective's problem, it should exist if injective with ledger.
+        // There is currently no effective way to handle this in keplr. Just set a very large number.
+        (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
+      } else {
+        // If not injective (evmos), they require fee payer.
+        // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
+        //      That means this part is not standard.
+        (signDocRaw as Mutable<StdSignDoc>).fee = {
+          ...signDocRaw.fee,
+          feePayer: this.bech32Address
+        };
+      }
+    }
+
+    // Should use bind to avoid "this" problem
+    let signAmino = owallet.signAmino.bind(owallet);
+    console.log("🚀 ~ file: base.ts:729 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ signAmino:", signAmino)
+
+    // Should use bind to avoid "this" problem
+    let experimentalSignEIP712CosmosTx_v0 = owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
+
+    const signDocAmino = sortObjectByKey(signDocRaw);
+    const signResponse: AminoSignResponse = await (async () => {
+      if (!eip712Signing) {
+        return await signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
+      }
+      return await experimentalSignEIP712CosmosTx_v0(
+        this.chainId,
+        this.bech32Address,
+        getEip712TypedDataBasedOnChainId(this.chainId, msgs),
+        signDocAmino,
+        signOptions
+      );
+    })();
+    console.log('🚀 ~ file: base.ts:735 ~ AccountSetBase<MsgOpts, ~ constsignResponse:AminoSignResponse=await ~ signResponse:', signResponse);
+
+    const signDoc = {
+      bodyBytes: TxBody.encode(
+        TxBody.fromPartial({
+          messages: protoMsgs,
+          memo: signResponse.signed.memo,
+          timeoutHeight: signResponse.signed.timeout_height,
+          extensionOptions: eip712Signing
+            ? [
+                {
+                  typeUrl: (() => {
+                    if (chainIsInjective) {
+                      return '/injective.types.v1beta1.ExtensionOptionsWeb3Tx';
+                    }
+
+                    return '/ethermint.types.v1.ExtensionOptionsWeb3Tx';
+                  })(),
+                  value: ExtensionOptionsWeb3Tx.encode(
+                    ExtensionOptionsWeb3Tx.fromPartial({
+                      typedDataChainId: EthermintChainIdHelper.parse(this.chainId).ethChainId.toString(),
+                      feePayer: !chainIsInjective ? signResponse.signed.fee.feePayer : undefined,
+                      feePayerSig: !chainIsInjective ? Buffer.from(signResponse.signature.signature, 'base64') : undefined
+                    })
+                  ).finish()
+                }
+              ]
+            : undefined
+        })
+      ).finish(),
+      authInfoBytes: AuthInfo.encode({
+        signerInfos: [
+          {
+            publicKey: {
+              typeUrl: (() => {
+                if (!chainIsInjective && coinType === 60) {
+                  return '/ethermint.crypto.v1.ethsecp256k1.PubKey';
+                }
+                if (chainIsInjective) {
+                  return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
+                }
+                return '/cosmos.crypto.secp256k1.PubKey';
+              })(),
+              value: PubKey.encode({
+                key: Buffer.from(signResponse.signature.pub_key.value, 'base64')
+              }).finish()
+            },
+            modeInfo: {
+              single: {
+                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
+              },
+              multi: undefined
+            },
+            sequence: signResponse.signed.sequence
+          }
+        ],
+        fee: Fee.fromPartial({
+          amount: signResponse.signed.fee.amount as Coin[],
+          gasLimit: Long.fromString(signResponse.signed.fee.gas),
+          payer:
+            eip712Signing && !chainIsInjective
+              ? // Fee delegation feature not yet supported. But, for eip712 ethermint signing, we must set fee payer.
+                signResponse.signed.fee.feePayer
+              : undefined
+        })
+      }).finish(),
+      accountNumber: Long.fromString(signResponse.signed.account_number),
+      chainId: this.chainId
+    };
+
+    const signedTx = TxRaw.encode({
+      bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
+      authInfoBytes: signDoc.authInfoBytes,
+      signatures: !eip712Signing || chainIsInjective ? [Buffer.from(signResponse.signature.signature, 'base64')] : [new Uint8Array(0)]
+    }).finish();
+    return signedTx;
+  }
   // TODO; do we have to add a new broadcast msg for Ethereum? -- Update: Added done
   // Return the tx hash.
   protected async broadcastMsgs(
@@ -669,165 +836,14 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (this.walletStatus !== WalletStatus.Loaded) {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
-
-      const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
-      const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
-      const protoMsgs: Any[] = msgs.protoMsgs;
-      // console.log({ aminoMsgs });
-      if (protoMsgs.length === 0) {
-        throw new Error('There is no msg to send');
-      }
-      const chainIsInjective = this.chainId.startsWith('injective');
-      if (aminoMsgs.length === 0) {
-        throw new Error('There is no msg to send');
-      }
-      if (!isDirectSign) {
-        if (aminoMsgs.length !== protoMsgs.length) {
-          throw new Error('The length of aminoMsgs and protoMsgs are different');
-        }
-      }
-      if (this.hasNoLegacyStdFeature() && (!protoMsgs || protoMsgs.length === 0)) {
-        throw new Error("Chain can't send legecy stdTx. But, proto any type msgs are not provided");
-      }
-
-      const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
-
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
-      const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
-
-      // const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
-      const useEthereumSign = this.chainGetter.getChain(this.chainId).features?.includes('eth-key-sign') === true;
-
-      const eip712Signing = useEthereumSign && this.isNanoLedger;
-      if (eip712Signing && isDirectSign) {
-        throw new Error('EIP712 signing is not supported for proto signing');
-      }
-      if (eip712Signing && !msgs.rlpTypes) {
-        throw new Error('RLP types information is needed for signing tx for ethermint chain with ledger');
-      }
-
-      const signDocRaw: StdSignDoc = {
-        chain_id: this.chainId,
-        account_number: account.getAccountNumber().toString(),
-        sequence: account.getSequence().toString(),
-        fee: fee,
-        msgs: aminoMsgs,
-        memo: escapeHTML(memo)
-      };
-
-      if (eip712Signing) {
-        if (chainIsInjective) {
-          // Due to injective's problem, it should exist if injective with ledger.
-          // There is currently no effective way to handle this in keplr. Just set a very large number.
-          (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
-        } else {
-          // If not injective (evmos), they require fee payer.
-          // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
-          //      That means this part is not standard.
-          (signDocRaw as Mutable<StdSignDoc>).fee = {
-            ...signDocRaw.fee,
-            feePayer: this.bech32Address
-          };
-        }
-      }
-
-      // Should use bind to avoid "this" problem
-      let signAmino = owallet.signAmino.bind(owallet);
-
-      // Should use bind to avoid "this" problem
-      let experimentalSignEIP712CosmosTx_v0 = owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
-
-      const signDocAmino = sortObjectByKey(signDocRaw);
-      const signResponse: AminoSignResponse = await (async () => {
-        if (!eip712Signing) {
-          return await signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
-        }
-        return await experimentalSignEIP712CosmosTx_v0(
-          this.chainId,
-          this.bech32Address,
-          getEip712TypedDataBasedOnChainId(this.chainId, msgs),
-          signDocAmino,
-          signOptions
-        );
-      })();
-
-      const signDoc = {
-        bodyBytes: TxBody.encode(
-          TxBody.fromPartial({
-            messages: protoMsgs,
-            memo: signResponse.signed.memo,
-            timeoutHeight: signResponse.signed.timeout_height,
-            extensionOptions: eip712Signing
-              ? [
-                  {
-                    typeUrl: (() => {
-                      if (chainIsInjective) {
-                        return '/injective.types.v1beta1.ExtensionOptionsWeb3Tx';
-                      }
-
-                      return '/ethermint.types.v1.ExtensionOptionsWeb3Tx';
-                    })(),
-                    value: ExtensionOptionsWeb3Tx.encode(
-                      ExtensionOptionsWeb3Tx.fromPartial({
-                        typedDataChainId: EthermintChainIdHelper.parse(this.chainId).ethChainId.toString(),
-                        feePayer: !chainIsInjective ? signResponse.signed.fee.feePayer : undefined,
-                        feePayerSig: !chainIsInjective ? Buffer.from(signResponse.signature.signature, 'base64') : undefined
-                      })
-                    ).finish()
-                  }
-                ]
-              : undefined
-          })
-        ).finish(),
-        authInfoBytes: AuthInfo.encode({
-          signerInfos: [
-            {
-              publicKey: {
-                typeUrl: (() => {
-                  if (!chainIsInjective && coinType === 60) {
-                    return '/ethermint.crypto.v1.ethsecp256k1.PubKey';
-                  }
-                  if (chainIsInjective) {
-                    return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
-                  }
-                  return '/cosmos.crypto.secp256k1.PubKey';
-                })(),
-                value: PubKey.encode({
-                  key: Buffer.from(signResponse.signature.pub_key.value, 'base64')
-                }).finish()
-              },
-              modeInfo: {
-                single: {
-                  mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
-                },
-                multi: undefined
-              },
-              sequence: signResponse.signed.sequence
-            }
-          ],
-          fee: Fee.fromPartial({
-            amount: signResponse.signed.fee.amount as Coin[],
-            gasLimit: Long.fromString(signResponse.signed.fee.gas),
-            payer:
-              eip712Signing && !chainIsInjective
-                ? // Fee delegation feature not yet supported. But, for eip712 ethermint signing, we must set fee payer.
-                  signResponse.signed.fee.feePayer
-                : undefined
-          })
-        }).finish(),
-        accountNumber: Long.fromString(signResponse.signed.account_number),
-        chainId: this.chainId
-      };
-
-      const signedTx = TxRaw.encode({
-        bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
-        authInfoBytes: signDoc.authInfoBytes,
-        signatures: !eip712Signing || chainIsInjective ? [Buffer.from(signResponse.signature.signature, 'base64')] : [new Uint8Array(0)]
-      }).finish();
-      console.log('signedTx ===', Buffer.from(JSON.stringify(signedTx), 'base64'));
+      // console.log('signedTx ===', Buffer.from(JSON.stringify(signedTx), 'base64'));
       let sendTx = owallet.sendTx.bind(owallet);
+      const signedTx = await this.processSignedTxCosmos(msgs, fee, memo, owallet, signOptions);
+      // console.log('🚀 ~ file: base.ts:841 ~ AccountSetBase<MsgOpts, ~ signedTx:', signedTx);
+      console.log('signedTx ===', Buffer.from(signedTx,'base64').toString('base64'));
       return {
         txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode)
       };
