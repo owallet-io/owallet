@@ -647,6 +647,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }}
         setToken={denom => {
           setSwapTokens([fromTokenDenom, denom]);
+          setSwapAmount([0, 0]);
         }}
         setSearchTokenName={setSearchTokenName}
         isOpen={isSelectToTokenModal}
@@ -713,6 +714,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <OWButton
                 key={item?.id}
                 size="small"
+                disabled={amountLoading || swapLoading}
                 style={
                   balanceActive?.id === item?.id
                     ? styles.btnBalanceActive
