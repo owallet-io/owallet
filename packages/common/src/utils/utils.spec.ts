@@ -47,9 +47,17 @@ describe('utils', () => {
     const rs = utils.getChainInfoOrThrow('injective-1');
     expect(rs).toEqual(expected);
   });
-  it('isEthermintLike',()=>{
+  it('isEthermintLike', () => {
     const chainInfo = utils.getChainInfoOrThrow('injective-1');
     const rs = utils.isEthermintLike(chainInfo);
     expect(rs).toBe(true);
-  })
+  });
+  it.each([
+    { cointype: 60, expected: 'eth' },
+    { cointype: 195, expected: 'trx' },
+    { cointype: 118, expected: 'cosmos' }
+  ])('formatCoinTypeToLedgerAppName $cointype', ({ cointype, expected }) => {
+    const rs = utils.formatCoinTypeToLedgerAppName(cointype);
+    expect(rs).toBe(expected);
+  });
 });

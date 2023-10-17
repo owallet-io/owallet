@@ -25,7 +25,7 @@ function sortObjectByKey(obj: Record<string, any>): any {
   return result;
 }
 
-function sortedJsonByKeyStringify(obj: Record<string, any>): string {
+export function sortedJsonByKeyStringify(obj: Record<string, any>): string {
   return JSON.stringify(sortObjectByKey(obj));
 }
 
