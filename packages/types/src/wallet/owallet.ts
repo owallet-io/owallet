@@ -141,6 +141,10 @@ export interface OWallet {
     ciphertext: Uint8Array,
     nonce: Uint8Array
   ): Promise<Uint8Array>;
+  signAndBroadcast(
+    chainId: string,
+    data: object
+  ): Promise<{ rawTxHex: string }>;
 }
 
 export type EthereumMode =

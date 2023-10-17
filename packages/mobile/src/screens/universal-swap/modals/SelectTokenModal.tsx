@@ -63,7 +63,7 @@ export const SelectTokenModal: FunctionComponent<{
     item => {
       //@ts-ignore
       const subAmounts = Object.fromEntries(
-        Object.entries(universalSwapStore?.getAmount).filter(
+        Object?.entries(universalSwapStore?.getAmount).filter(
           ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
         )
       ) as AmountDetails;

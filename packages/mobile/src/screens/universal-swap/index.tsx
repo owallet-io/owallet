@@ -552,7 +552,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log({ error });
       showToast({
         text1: 'Error',
-        text2: JSON.stringify(error),
+        text2: JSON.stringify(error.message ?? 'Failed'),
         type: 'error'
       });
     } finally {
