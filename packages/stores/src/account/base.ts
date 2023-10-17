@@ -537,7 +537,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         while (!transactionReceipt) {
           // Waiting expectedBlockTime until the transaction is mined
           transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [txHash]);
-          console.log('🚀 ~ file: base.ts ~ line ~ transactionReceipt', transactionReceipt);
+
           retryCount += 1;
           if (retryCount === 10) break;
           await sleep(expectedBlockTime);
@@ -653,14 +653,10 @@ export class AccountSetBase<MsgOpts, Queries> {
     return parseInt(chainId);
   }
   protected async processSignedTxCosmos(msgs: AminoMsgsOrWithProtoMsgs, fee: StdFee, memo: string = '', owallet: any, signOptions?: OWalletSignOptions) {
-    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ signOptions:', signOptions);
-    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ memo:', memo);
-    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ fee:', fee);
-    console.log('🚀 ~ file: base.ts:656 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ msgs:', msgs);
     const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
     const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
     const protoMsgs: Any[] = msgs.protoMsgs;
-    // console.log({ aminoMsgs });
+
     if (protoMsgs.length === 0) {
       throw new Error('There is no msg to send');
     }
@@ -691,14 +687,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     if (eip712Signing && !msgs.rlpTypes) {
       throw new Error('RLP types information is needed for signing tx for ethermint chain with ledger');
     }
-    console.log(
-      '🚀 ~ file: base.ts:698 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ account.getAccountNumber().toString():',
-      account.getAccountNumber().toString()
-    );
-    console.log(
-      '🚀 ~ file: base.ts:700 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ account.getSequence().toString():',
-      account.getSequence().toString()
-    );
+
     const signDocRaw: StdSignDoc = {
       chain_id: this.chainId,
       account_number: account.getAccountNumber().toString(),
@@ -726,7 +715,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     // Should use bind to avoid "this" problem
     let signAmino = owallet.signAmino.bind(owallet);
-    console.log("🚀 ~ file: base.ts:729 ~ AccountSetBase<MsgOpts, ~ processSignedTxCosmos ~ signAmino:", signAmino)
 
     // Should use bind to avoid "this" problem
     let experimentalSignEIP712CosmosTx_v0 = owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
@@ -744,7 +732,6 @@ export class AccountSetBase<MsgOpts, Queries> {
         signOptions
       );
     })();
-    console.log('🚀 ~ file: base.ts:735 ~ AccountSetBase<MsgOpts, ~ constsignResponse:AminoSignResponse=await ~ signResponse:', signResponse);
 
     const signDoc = {
       bodyBytes: TxBody.encode(
@@ -839,11 +826,8 @@ export class AccountSetBase<MsgOpts, Queries> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
-      // console.log('signedTx ===', Buffer.from(JSON.stringify(signedTx), 'base64'));
       let sendTx = owallet.sendTx.bind(owallet);
       const signedTx = await this.processSignedTxCosmos(msgs, fee, memo, owallet, signOptions);
-      // console.log('🚀 ~ file: base.ts:841 ~ AccountSetBase<MsgOpts, ~ signedTx:', signedTx);
-      console.log('signedTx ===', Buffer.from(signedTx,'base64').toString('base64'));
       return {
         txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode)
       };
