@@ -121,7 +121,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleFetchAmounts();
     setTimeout(() => {
       handleFetchAmounts();
-    }, 3000);
+    }, 2000);
   }, []);
 
   const onChangeFromAmount = (amount: string | undefined) => {
@@ -498,10 +498,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         ORAICHAIN_ID,
         oraichainNetwork.rpc
       );
-      const ics20Contract = new CwIcs20LatestQueryClient(
-        client,
-        IBC_WASM_CONTRACT
-      );
 
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
       const evmWallet = new SwapEvmWallet(
@@ -510,13 +506,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       const universalSwapData: UniversalSwapData = {
-        cosmosSender: accountOrai.bech32Address,
+        // cosmosSender: accountOrai.bech32Address,
+        sender: {
+          cosmos: accountOrai.bech32Address,
+          evm: accountEvm.evmosHexAddress,
+          tron: Address.getBase58Address(accountTron.evmosHexAddress)
+        },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
         simulateAmount: Number(
           toAmount(toAmountToken.toString(), originalToToken.decimals)
         ).toString(),
-        simulateAverage: Number(
+        simulatePrice: Number(
           toAmount(ratio.toString(), originalFromToken.decimals)
         ).toString(),
         userSlippage: userSlippage,
@@ -531,8 +532,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         },
         {
           cosmosWallet,
-          evmWallet,
-          cwIcs20LatestClient: ics20Contract
+          evmWallet
         }
       );
 
@@ -556,14 +556,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('combinedReceiver', combinedReceiver);
       console.log('universalSwapType', universalSwapType);
 
-      const result = await universalSwapHandler.processUniversalSwap(
-        combinedReceiver,
-        universalSwapType,
-        {
-          metamaskAddress: accountEvm.evmosHexAddress,
-          tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
-        }
-      );
+      const result = await universalSwapHandler.processUniversalSwap();
 
       console.log('result', result);
 
@@ -648,6 +641,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         setToken={denom => {
           setSwapTokens([fromTokenDenom, denom]);
           setSwapAmount([0, 0]);
+          setBalanceActive(null);
         }}
         setSearchTokenName={setSearchTokenName}
         isOpen={isSelectToTokenModal}
