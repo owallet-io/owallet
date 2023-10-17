@@ -40,9 +40,9 @@ export class SwapCosmosWallet extends CosmosWallet {
     return await this.owallet.getOfflineSignerAuto(chainId);
   }
 
-  signAndBroadcast(): Promise<string> {
-    return new Promise(resolve => resolve(undefined));
-  }
+  // signAndBroadcast(): Promise<string> {
+  //   return new Promise(resolve => resolve(undefined));
+  // }
 
   async getCosmWasmClient(
     config: {

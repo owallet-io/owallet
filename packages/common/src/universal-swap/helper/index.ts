@@ -263,7 +263,6 @@ export async function handleSimulateSwap(
       ).toString()
     });
   }
-  console.log('get heeee');
 
   return simulateSwap(query, client);
 }

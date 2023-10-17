@@ -113,6 +113,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
 
+  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState<number[]>([
+    0, 0
+  ]);
+
+  const [ratio, setRatio] = useState(0);
   const { data: prices } = useCoinGeckoPrices();
 
   useEffect(() => {
@@ -336,10 +341,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken]);
 
-  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
-
-  const [ratio, setRatio] = useState(0);
-
   const getSimulateSwap = async (initAmount?) => {
     setAmountLoading(true);
     const client = await CWStargate.init(
@@ -376,14 +377,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
   };
 
-  const estimateSwapAmount = async () => {
+  const estimateSwapAmount = async fromAmountBalance => {
     const data = await getSimulateSwap();
     const minimumReceive = data?.amount
       ? calculateMinimum(data?.amount, userSlippage)
       : '0';
     setMininumReceive(toDisplay(minimumReceive));
     setSwapAmount([
-      fromAmountToken,
+      fromAmountBalance,
       toDisplay(
         data?.amount,
         fromTokenInfoData?.decimals,
@@ -409,7 +410,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   useEffect(() => {
-    estimateSwapAmount();
+    estimateSwapAmount(fromAmountToken);
   }, [
     originalFromToken,
     toTokenInfoData,
