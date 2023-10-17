@@ -520,9 +520,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           toAmount(ratio.toString(), originalToToken.decimals)
         ).toString(),
         userSlippage: userSlippage,
-        fromAmount: Number(
-          toAmount(fromAmountToken.toString(), originalFromToken.decimals)
-        )
+        fromAmount: fromAmountToken
       };
 
       console.log('universalSwapData', universalSwapData);
@@ -714,8 +712,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             return (
               <OWButton
                 key={item?.id}
-                disabled={amountLoading}
-                loading={swapLoading}
                 size="small"
                 style={
                   balanceActive?.id === item?.id
@@ -731,11 +727,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 fullWidth={false}
                 onPress={() => {
                   handleBalanceActive(item);
-                  onMaxFromAmount(
+                  const fromAmount =
                     (fromTokenBalance * BigInt(Number(item.value))) /
-                      BigInt(Number(100)),
-                    item.value
-                  );
+                    BigInt(Number(100));
+                  const maxToAmount =
+                    (toTokenBalance * BigInt(Number(MAX))) /
+                    BigInt(Number(100));
+                  if (fromAmount > maxToAmount) {
+                    onMaxFromAmount(maxToAmount, MAX);
+                  } else {
+                    onMaxFromAmount(fromAmount, item.value);
+                  }
                 }}
               />
             );
@@ -744,8 +746,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Swap"
           style={styles.btnSwap}
-          loading={false}
           disabled={amountLoading}
+          loading={swapLoading}
           textStyle={styles.textBtnSwap}
           onPress={handleSubmit}
         />
