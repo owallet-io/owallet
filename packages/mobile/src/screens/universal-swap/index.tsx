@@ -517,7 +517,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           toAmount(toAmountToken.toString(), originalToToken.decimals)
         ).toString(),
         simulateAverage: Number(
-          toAmount(ratio.toString(), originalToToken.decimals)
+          toAmount(ratio.toString(), originalFromToken.decimals)
         ).toString(),
         userSlippage: userSlippage,
         fromAmount: fromAmountToken
@@ -735,9 +735,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                     toTokenBalance,
                     originalToToken?.decimals
                   );
+
                   if (fromAmount > maxToAmount) {
                     onMaxFromAmount(
-                      (toTokenBalance * BigInt(Number(MAX))) /
+                      (toAmount(maxToAmount, originalFromToken?.decimals) *
+                        BigInt(Number(MAX))) /
                         BigInt(Number(100)),
                       item.value
                     );
