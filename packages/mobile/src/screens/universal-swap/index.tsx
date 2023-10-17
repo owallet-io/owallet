@@ -342,7 +342,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken]);
 
   const getSimulateSwap = async (initAmount?) => {
-    setAmountLoading(true);
     const client = await CWStargate.init(
       accountOrai,
       ORAICHAIN_ID,
@@ -378,6 +377,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const estimateSwapAmount = async fromAmountBalance => {
+    setAmountLoading(true);
     const data = await getSimulateSwap();
     const minimumReceive = data?.amount
       ? calculateMinimum(data?.amount, userSlippage)
@@ -601,6 +601,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }}
         setToken={denom => {
           setSwapTokens([denom, toTokenDenom]);
+          setSwapAmount([0, 0]);
+          setBalanceActive(null);
         }}
         setSearchTokenName={setSearchTokenName}
         isOpen={isSelectFromTokenModal}
@@ -734,7 +736,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <OWButton
           label="Swap"
           style={styles.btnSwap}
-          disabled={amountLoading}
+          disabled={amountLoading || swapLoading}
           loading={swapLoading}
           textStyle={styles.textBtnSwap}
           onPress={handleSubmit}
