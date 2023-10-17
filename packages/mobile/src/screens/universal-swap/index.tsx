@@ -50,15 +50,13 @@ import { CWStargate } from '@src/common/cw-stargate';
 import { toDisplay, toSubAmount } from '@owallet/common';
 
 import {
-  combineReceiver,
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
   UniversalSwapData,
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
-import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
-import { IBC_WASM_CONTRACT, toAmount } from '@oraichain/oraidex-common';
+import { toAmount } from '@oraichain/oraidex-common';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import DeviceInfo from 'react-native-device-info';
 import { OWallet } from '@owallet/provider';
@@ -506,7 +504,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       const universalSwapData: UniversalSwapData = {
-        // cosmosSender: accountOrai.bech32Address,
         sender: {
           cosmos: accountOrai.bech32Address,
           evm: accountEvm.evmosHexAddress,
@@ -537,24 +534,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       );
 
       console.log('universalSwapHandler', universalSwapHandler);
-
-      const toAddress = await universalSwapHandler.getUniversalSwapToAddress(
-        originalToToken.chainId,
-        {
-          metamaskAddress: accountEvm.evmosHexAddress,
-          tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
-        }
-      );
-
-      const { combinedReceiver, universalSwapType } = combineReceiver(
-        accountOrai.bech32Address,
-        originalFromToken,
-        originalToToken,
-        toAddress
-      );
-
-      console.log('combinedReceiver', combinedReceiver);
-      console.log('universalSwapType', universalSwapType);
 
       const result = await universalSwapHandler.processUniversalSwap();
 
