@@ -113,9 +113,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
 
-  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState<number[]>([
-    0, 0
-  ]);
+  const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
 
   const [ratio, setRatio] = useState(null);
   const { data: prices } = useCoinGeckoPrices();
@@ -377,14 +375,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       ? calculateMinimum(data?.amount, userSlippage)
       : '0';
     setMininumReceive(toDisplay(minimumReceive));
-    setSwapAmount([
-      fromAmountBalance,
-      toDisplay(
-        data?.amount,
-        fromTokenInfoData?.decimals,
-        toTokenInfoData?.decimals
-      )
-    ]);
+    setSwapAmount([fromAmountBalance, Number(data.amount)]);
   };
 
   const [taxRate, setTaxRate] = useState('');
@@ -506,9 +497,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
-        simulateAmount: Number(
-          toAmount(toAmountToken.toString(), originalToToken.decimals)
-        ).toString(),
+        simulateAmount: toAmountToken.toString(),
         simulatePrice: ratio.amount,
         userSlippage: userSlippage,
         fromAmount: fromAmountToken
@@ -657,7 +646,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             tokenFee={fromTokenFee}
           />
           <SwapBox
-            amount={toAmountToken?.toString() ?? '0'}
+            amount={
+              toDisplay(
+                toAmountToken.toString(),
+                originalFromToken?.decimals
+              ).toString() ?? '0'
+            }
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
             onOpenTokenModal={handleOpenTokensToModal}
