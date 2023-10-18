@@ -21,15 +21,12 @@ import { FeeInSign } from './fee';
 import { renderAminoMessage } from './amino';
 import { renderDirectMessage } from './direct';
 import crashlytics from '@react-native-firebase/crashlytics';
-import { colors } from '../../themes';
+import { colors, metrics } from '../../themes';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const SignModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(({}) => {
     const {
@@ -160,28 +157,13 @@ export const SignModal: FunctionComponent<{
 
           return (
             <View key={i.toString()}>
-              {/* <Msg title={title}> */}
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
-                  <Text
-                    style={style.flatten(['body3'])}
-                  >
-                    {content}
-                  </Text>
+                  <Text style={style.flatten(['body3'])}>{content}</Text>
                 </ScrollView>
               ) : (
                 <View>{content}</View>
               )}
-              {/* </Msg> */}
-              {/* {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null} */}
             </View>
           );
         });
@@ -193,24 +175,7 @@ export const SignModal: FunctionComponent<{
             chainInfo.currencies
           );
 
-          return (
-            <View key={i.toString()}>
-              {content}
-              {/* <Msg title={title}> */}
-              {/* <Text style={style.flatten(['body3', 'color-text-black-low'])}> */}
-              {/* </Text> */}
-              {/* </Msg> */}
-              {/* {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null} */}
-            </View>
-          );
+          return <View key={i.toString()}>{content}</View>;
         });
       } else {
         return null;
@@ -219,31 +184,20 @@ export const SignModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Transaction">
-        <View style={style.flatten(['margin-bottom-16'])}>
-          {/* <Text style={style.flatten(['margin-bottom-3'])}>
-            <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-              {`${msgs.length.toString()} `}
-            </Text>
-            <Text
-              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-            >
-              Messages
-            </Text>
-          </Text> */}
-          <View
-            style={style.flatten([
-              'border-radius-8',
-              'border-color-border-white'
-              // 'overflow-hidden'
-            ])}
+        <View
+          style={{
+            marginBottom: 16,
+            maxHeight: metrics.screenHeight / 1.5
+          }}
+        >
+          <ScrollView
+            style={{
+              borderRadius: 8,
+              maxHeight: '80%'
+            }}
           >
-            <View
-            // style={style.flatten(['max-height-214'])}
-            // persistentScrollbar={true}
-            >
-              {renderedMsgs}
-            </View>
-          </View>
+            <View>{renderedMsgs}</View>
+          </ScrollView>
         </View>
         {/* <MemoInput label="To" memoConfig={memoConfig} /> */}
         <FeeInSign
@@ -299,7 +253,6 @@ export const SignModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-   
+    disableSafeArea: true
   }
 );

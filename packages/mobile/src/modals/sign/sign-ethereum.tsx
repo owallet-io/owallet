@@ -22,17 +22,14 @@ import { useFeeEthereumConfig, useGasEthereumConfig } from '@owallet/hooks';
 import { FeeEthereumInSign } from './fee-ethereum';
 import { navigationRef } from '../../router/root';
 import axios from 'axios';
-import { colors } from '../../themes';
+import { colors, metrics } from '../../themes';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
 export const SignEthereumModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(({}) => {
     const {
@@ -177,7 +174,12 @@ export const SignEthereumModal: FunctionComponent<{
           behavior="position"
           keyboardVerticalOffset={keyboardVerticalOffset}
         >
-          <View style={style.flatten(['margin-bottom-16'])}>
+          <View
+            style={{
+              marginBottom: 16,
+              maxHeight: metrics.screenHeight / 1.5
+            }}
+          >
             <Text style={style.flatten(['margin-bottom-3'])}>
               <Text style={style.flatten(['subtitle3', 'color-primary'])}>
                 {`1 `}
@@ -212,7 +214,7 @@ export const SignEthereumModal: FunctionComponent<{
           </View>
           <TextInput
             label="Memo"
-            onChangeText={(txt) => {
+            onChangeText={txt => {
               setMemo(txt);
             }}
             defaultValue={''}

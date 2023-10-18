@@ -217,7 +217,6 @@ const styling = (colors: TypeTheme['colors']) =>
     },
     containerModal: {
       paddingHorizontal: 24,
-
       height: metrics.screenHeight
     }
   });
