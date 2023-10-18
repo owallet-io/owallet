@@ -117,7 +117,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     0, 0
   ]);
 
-  const [ratio, setRatio] = useState(0);
+  const [ratio, setRatio] = useState(null);
   const { data: prices } = useCoinGeckoPrices();
 
   useEffect(() => {
@@ -367,13 +367,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
-    setRatio(
-      toDisplay(
-        data?.amount,
-        fromTokenInfoData?.decimals,
-        toTokenInfoData?.decimals
-      )
-    );
+    setRatio(data);
   };
 
   const estimateSwapAmount = async fromAmountBalance => {
@@ -515,9 +509,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         simulateAmount: Number(
           toAmount(toAmountToken.toString(), originalToToken.decimals)
         ).toString(),
-        simulatePrice: Number(
-          toAmount(ratio.toString(), originalFromToken.decimals)
-        ).toString(),
+        simulatePrice: ratio.amount,
         userSlippage: userSlippage,
         fromAmount: fromAmountToken
       };
@@ -745,7 +737,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <View style={styles.itemBottom}>
             <BalanceText>Quote</BalanceText>
             <BalanceText>
-              {`1 ${originalFromToken?.name} ≈ ${ratio} ${originalToToken?.name}`}
+              {`1 ${originalFromToken?.name} ≈ ${toDisplay(
+                ratio?.amount,
+                fromTokenInfoData?.decimals,
+                toTokenInfoData?.decimals
+              )} ${originalToToken?.name}`}
             </BalanceText>
           </View>
           <View style={styles.itemBottom}>
