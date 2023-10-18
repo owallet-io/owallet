@@ -503,8 +503,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         fromAmount: fromAmountToken
       };
 
-      console.log('universalSwapData', universalSwapData);
-
       const universalSwapHandler = new UniversalSwapHandler(
         {
           ...universalSwapData
@@ -515,11 +513,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }
       );
 
-      console.log('universalSwapHandler', universalSwapHandler);
-
       const result = await universalSwapHandler.processUniversalSwap();
-
-      console.log('result', result);
 
       if (result) {
         setSwapLoading(false);
