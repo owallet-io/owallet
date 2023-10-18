@@ -692,16 +692,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 size="small"
                 disabled={amountLoading || swapLoading}
                 style={
-                  balanceActive?.id === item?.id
+                  balanceActive?.id === item.id
                     ? styles.btnBalanceActive
                     : styles.btnBalanceInactive
                 }
                 textStyle={
-                  balanceActive?.id === item?.id
+                  balanceActive?.id === item.id
                     ? styles.textBtnBalanceAtive
                     : styles.textBtnBalanceInActive
                 }
-                label={`${item?.value}%`}
+                label={`${item.value}%`}
                 fullWidth={false}
                 onPress={() => {
                   handleBalanceActive(item);

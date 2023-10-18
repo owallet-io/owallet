@@ -61,58 +61,60 @@ export const SelectTokenModal: FunctionComponent<{
 
   const renderTokenItem = useCallback(
     item => {
-      //@ts-ignore
-      const subAmounts = Object.fromEntries(
-        Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
-          ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
-        )
-      ) as AmountDetails;
+      if (item) {
+        //@ts-ignore
+        const subAmounts = Object.fromEntries(
+          Object?.entries(universalSwapStore?.getAmount ?? {}).filter(
+            ([denom]) => tokenMap?.[denom]?.chainId === item.chainId
+          )
+        ) as AmountDetails;
 
-      const totalUsd = getTotalUsd(subAmounts, prices, item);
-      return (
-        <TouchableOpacity
-          onPress={() => {
-            close();
-            setToken(item.denom);
-          }}
-          style={styles.btnItem}
-        >
-          <View style={styles.leftBoxItem}>
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                backgroundColor: colors['gray-10']
-              }}
-            >
-              <OWIcon type="images" source={{ uri: item?.Icon }} size={35} />
+        const totalUsd = getTotalUsd(subAmounts, prices, item);
+        return (
+          <TouchableOpacity
+            onPress={() => {
+              close();
+              setToken(item.denom);
+            }}
+            style={styles.btnItem}
+          >
+            <View style={styles.leftBoxItem}>
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  backgroundColor: colors['gray-10']
+                }}
+              >
+                <OWIcon type="images" source={{ uri: item.Icon }} size={35} />
+              </View>
+              <View style={styles.pl10}>
+                <Text size={16} color={colors['text-title']} weight="500">
+                  {item.name}
+                </Text>
+                <Text weight="500" color={colors['blue-400']}>
+                  {item.org}
+                </Text>
+              </View>
             </View>
-            <View style={styles.pl10}>
-              <Text size={16} color={colors['text-title']} weight="500">
-                {item?.name}
+            <View style={styles.rightBoxItem}>
+              <Text color={colors['text-title']}>
+                {toDisplay(
+                  universalSwapStore?.getAmount?.[item.denom],
+                  item.decimals
+                )}
               </Text>
               <Text weight="500" color={colors['blue-400']}>
-                {item?.org}
+                ${totalUsd.toFixed(2) ?? 0}
               </Text>
             </View>
-          </View>
-          <View style={styles.rightBoxItem}>
-            <Text color={colors['text-title']}>
-              {toDisplay(
-                universalSwapStore?.getAmount?.[item?.denom],
-                item?.decimals
-              )}
-            </Text>
-            <Text weight="500" color={colors['blue-400']}>
-              ${totalUsd.toFixed(2) ?? 0}
-            </Text>
-          </View>
-        </TouchableOpacity>
-      );
+          </TouchableOpacity>
+        );
+      }
     },
     [universalSwapStore?.getAmount]
   );
