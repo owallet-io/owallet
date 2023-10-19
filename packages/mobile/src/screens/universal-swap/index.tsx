@@ -686,18 +686,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 fullWidth={false}
                 onPress={() => {
                   handleBalanceActive(item);
-                  const fromAmount =
-                    (toDisplay(fromTokenBalance, originalFromToken?.decimals) *
-                      Number(item.value)) /
-                    100;
-                  const maxToAmount = toDisplay(
+                  const toAmountBalance = toDisplay(
+                    toAmountToken.toString(),
+                    originalFromToken?.decimals
+                  );
+                  const maxToAmountBalance = toDisplay(
                     toTokenBalance,
                     originalToToken?.decimals
                   );
 
-                  if (fromAmount > maxToAmount) {
+                  if (toAmountBalance > maxToAmountBalance) {
                     onMaxFromAmount(
-                      (toAmount(maxToAmount, originalFromToken?.decimals) *
+                      (toAmount(
+                        maxToAmountBalance,
+                        originalFromToken?.decimals
+                      ) *
                         BigInt(Number(MAX))) /
                         BigInt(Number(100)),
                       item.value
