@@ -26,3 +26,24 @@ export interface IInputSelectToken {
   onChangeAmount?: (txt: any) => void;
   onOpenTokenModal: (ev: any) => void;
 }
+
+export type BalanceType = {
+  id: string;
+  value: string;
+};
+
+const ONE_QUARTER = '25';
+const HALF = '50';
+const THREE_QUARTERS = '75';
+export const MAX = '100';
+export const oraidexURL = 'https://oraidex.io';
+
+export const balances: BalanceType[] = [
+  {
+    id: '1',
+    value: ONE_QUARTER
+  },
+  { id: '2', value: HALF },
+  { id: '3', value: THREE_QUARTERS },
+  { id: '4', value: MAX }
+];

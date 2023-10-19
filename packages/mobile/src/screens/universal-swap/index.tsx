@@ -6,11 +6,10 @@ import React, {
 } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import { Platform, RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl, View } from 'react-native';
 import { useStore } from '../../stores';
-import { metrics, typography } from '../../themes';
 import { SwapBox } from './components/SwapBox';
 import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
@@ -48,7 +47,6 @@ import {
 import { fetchTokenInfos } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
 import { toDisplay, toSubAmount } from '@owallet/common';
-
 import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
@@ -62,27 +60,8 @@ import DeviceInfo from 'react-native-device-info';
 import { OWallet } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
 import { styling } from './styles';
+import { BalanceType, MAX, balances, oraidexURL } from './types';
 
-type BalanceType = {
-  id: string;
-  value: string;
-};
-
-const ONE_QUARTER = '25';
-const HALF = '50';
-const THREE_QUARTERS = '75';
-const MAX = '100';
-const oraidexURL = 'https://oraidex.io';
-
-const balances: BalanceType[] = [
-  {
-    id: '1',
-    value: ONE_QUARTER
-  },
-  { id: '2', value: HALF },
-  { id: '3', value: THREE_QUARTERS },
-  { id: '4', value: MAX }
-];
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore } = useStore();
   const accountEvm = accountStore.getAccount(ETH_ID);

@@ -1,6 +1,6 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import React, { FunctionComponent } from 'react';
-import { TypeTheme, useTheme } from '@src/themes/theme-provider';
+import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '@src/components/card';
 import { ISwapBox } from '../types';
