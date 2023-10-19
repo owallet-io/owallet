@@ -134,5 +134,55 @@ export const styling = (colors: TypeTheme['colors']) =>
       color: colors['icon'],
       textAlign: 'center',
       fontWeight: '700'
+    },
+    pt2: {
+      paddingTop: 2
+    },
+    containerItemBottom: {
+      flexDirection: 'row',
+      justifyContent: 'space-between'
+    },
+    flR: {
+      flexDirection: 'row'
+    },
+    h35: {
+      height: 25
+    },
+    h30: {
+      height: 30
+    },
+    containerInfo: {
+      borderRadius: 8,
+      padding: 16,
+      backgroundColor: colors['bg-swap-box'],
+      marginTop: 4
+    },
+    flr: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    },
+    ic: {
+      backgroundColor: colors['content-background'],
+      width: 24,
+      height: 24,
+      borderRadius: 4,
+      marginLeft: 4
+    },
+    label: {
+      color: colors['label-text'],
+      fontSize: 12,
+      fontWeight: '600'
+    },
+    pt16: {
+      paddingTop: 16
+    },
+    jsc: {
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '80%'
+    },
+    jc: {
+      alignItems: 'center'
     }
   });

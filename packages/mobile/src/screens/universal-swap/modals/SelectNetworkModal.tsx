@@ -1,8 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import React from 'react';
 import { registerModal } from '@src/modals/base';
-
-import { CardModal } from '@src/modals/card';
 import { Text } from '@src/components/text';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import images from '@src/assets/images';
@@ -117,7 +115,7 @@ const styling = (colors: TypeTheme['colors']) =>
       textAlign: 'center',
       paddingBottom: 20,
       paddingTop: 10,
-      color:colors['text-title']
+      color: colors['text-title']
     },
     container: {
       height: metrics.screenHeight / 2

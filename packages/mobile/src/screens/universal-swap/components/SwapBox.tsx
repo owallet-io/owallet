@@ -6,6 +6,7 @@ import { OWBox } from '@src/components/card';
 import { ISwapBox } from '../types';
 import InputSelectToken from './InputSelectToken';
 import { BalanceText } from './BalanceText';
+import { styling } from '../styles';
 
 export const SwapBox: FunctionComponent<ISwapBox> = observer(
   ({
@@ -52,57 +53,3 @@ export const SwapBox: FunctionComponent<ISwapBox> = observer(
     );
   }
 );
-
-const styling = (colors: TypeTheme['colors']) =>
-  StyleSheet.create({
-    pt2: {
-      paddingTop: 2
-    },
-    containerItemBottom: {
-      flexDirection: 'row',
-      justifyContent: 'space-between'
-    },
-    flR: {
-      flexDirection: 'row'
-    },
-    h35: {
-      height: 25
-    },
-    h30: {
-      height: 30
-    },
-    containerInfo: {
-      borderRadius: 8,
-      padding: 16,
-      backgroundColor: colors['bg-swap-box'],
-      marginTop: 4
-    },
-    flr: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    ic: {
-      backgroundColor: colors['content-background'],
-      width: 24,
-      height: 24,
-      borderRadius: 4,
-      marginLeft: 4
-    },
-    label: {
-      color: colors['label-text'],
-      fontSize: 12,
-      fontWeight: '600'
-    },
-    pt16: {
-      paddingTop: 16
-    },
-    jsc: {
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      width: '80%'
-    },
-    jc: {
-      alignItems: 'center'
-    }
-  });

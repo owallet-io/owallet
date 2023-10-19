@@ -2,7 +2,6 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { IInputSelectToken } from '../types';
 import OWIcon from '@src/components/ow-icon/ow-icon';
-
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
