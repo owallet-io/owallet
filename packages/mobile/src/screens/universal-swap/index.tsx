@@ -117,6 +117,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
 
   const [ratio, setRatio] = useState(null);
+  const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
+
   const { data: prices } = useCoinGeckoPrices();
 
   useEffect(() => {
@@ -317,7 +319,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       subAmountTo
     : BigInt(0);
 
-  // process filter from & to tokens
   useEffect(() => {
     const filteredToTokens = filterTokens(
       fromToken.chainId,
@@ -434,22 +435,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   }, [fromToken]);
 
-  const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
-
   const handleBalanceActive = useCallback(
     (item: BalanceType) => {
       setBalanceActive(item);
     },
     [balanceActive]
   );
-
-  const handleOpenTokensFromModal = useCallback(() => {
-    setIsSelectFromTokenModal(true);
-  }, []);
-
-  const handleOpenTokensToModal = useCallback(() => {
-    setIsSelectToTokenModal(true);
-  }, []);
 
   const [owallet] = useState(
     () =>
@@ -672,7 +663,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             )}
             onChangeAmount={onChangeFromAmount}
             tokenActive={originalFromToken}
-            onOpenTokenModal={handleOpenTokensFromModal}
+            onOpenTokenModal={() => setIsSelectFromTokenModal(true)}
             tokenFee={fromTokenFee}
           />
           <SwapBox
@@ -684,7 +675,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
-            onOpenTokenModal={handleOpenTokensToModal}
+            onOpenTokenModal={() => setIsSelectToTokenModal(true)}
             editable={false}
             tokenFee={toTokenFee}
           />
