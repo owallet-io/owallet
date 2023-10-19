@@ -543,6 +543,41 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setLoadingRefresh(false);
   };
 
+  const handleActiveAmount = useCallback(
+    item => {
+      handleBalanceActive(item);
+      const toAmountBalance = toDisplay(
+        toAmountToken.toString(),
+        originalFromToken?.decimals
+      );
+      const maxToAmountBalance = toDisplay(
+        toTokenBalance,
+        originalToToken?.decimals
+      );
+
+      if (toAmountBalance > maxToAmountBalance) {
+        onMaxFromAmount(
+          (toAmount(maxToAmountBalance, originalFromToken?.decimals) *
+            BigInt(Number(MAX))) /
+            BigInt(Number(100)),
+          item.value
+        );
+      } else {
+        onMaxFromAmount(
+          (fromTokenBalance * BigInt(Number(item.value))) / BigInt(Number(100)),
+          item.value
+        );
+      }
+    },
+    [
+      toAmountToken,
+      toTokenBalance,
+      originalFromToken,
+      originalToToken,
+      fromTokenBalance
+    ]
+  );
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
@@ -684,35 +719,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 }
                 label={`${item.value}%`}
                 fullWidth={false}
-                onPress={() => {
-                  handleBalanceActive(item);
-                  const toAmountBalance = toDisplay(
-                    toAmountToken.toString(),
-                    originalFromToken?.decimals
-                  );
-                  const maxToAmountBalance = toDisplay(
-                    toTokenBalance,
-                    originalToToken?.decimals
-                  );
-
-                  if (toAmountBalance > maxToAmountBalance) {
-                    onMaxFromAmount(
-                      (toAmount(
-                        maxToAmountBalance,
-                        originalFromToken?.decimals
-                      ) *
-                        BigInt(Number(MAX))) /
-                        BigInt(Number(100)),
-                      item.value
-                    );
-                  } else {
-                    onMaxFromAmount(
-                      (fromTokenBalance * BigInt(Number(item.value))) /
-                        BigInt(Number(100)),
-                      item.value
-                    );
-                  }
-                }}
+                onPress={handleActiveAmount}
               />
             );
           })}
