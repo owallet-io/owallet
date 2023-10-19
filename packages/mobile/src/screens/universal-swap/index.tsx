@@ -117,6 +117,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromAmountToken, toAmountToken], setSwapAmount] = useState([0, 0]);
 
   const [ratio, setRatio] = useState(null);
+
+  const [client, setClient] = useState(null);
+
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
   const { data: prices } = useCoinGeckoPrices();
@@ -126,6 +129,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setTimeout(() => {
       handleFetchAmounts();
     }, 2000);
+  }, []);
+
+  const getClient = async () => {
+    const cwClient = await CWStargate.init(
+      accountOrai,
+      ORAICHAIN_ID,
+      oraichainNetwork.rpc
+    );
+    setClient(cwClient);
+  };
+
+  useEffect(() => {
+    getClient();
   }, []);
 
   const onChangeFromAmount = (amount: string | undefined) => {
@@ -186,12 +202,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     toChainId: NetworkChainId,
     type: 'from' | 'to'
   ) => {
-    const client = await CWStargate.init(
-      accountOrai,
-      ORAICHAIN_ID,
-      oraichainNetwork.rpc
-    );
-
     // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)
     if (
       isEvmNetworkNativeSwapSupported(fromChainId) &&
@@ -233,12 +243,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [originalToToken, fromToken, toToken, originalToToken]);
 
   const getTokenInfos = async () => {
-    const client = await CWStargate.init(
-      accountOrai,
-      ORAICHAIN_ID,
-      oraichainNetwork.rpc
-    );
-
     const data = await fetchTokenInfos([fromToken!, toToken!], client);
     setTokenInfoData(data);
     return;
@@ -342,12 +346,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken]);
 
   const getSimulateSwap = async (initAmount?) => {
-    const client = await CWStargate.init(
-      accountOrai,
-      ORAICHAIN_ID,
-      oraichainNetwork.rpc
-    );
-
     const data = await handleSimulateSwap(
       {
         fromInfo: fromTokenInfoData!,
@@ -383,11 +381,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [taxRate, setTaxRate] = useState('');
 
   const queryTaxRate = async () => {
-    const client = await CWStargate.init(
-      accountOrai,
-      ORAICHAIN_ID,
-      oraichainNetwork.rpc
-    );
     const data = await fetchTaxRate(client);
     setTaxRate(data?.rate);
   };
@@ -469,12 +462,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     setSwapLoading(true);
     try {
-      const client = await CWStargate.init(
-        accountOrai,
-        ORAICHAIN_ID,
-        oraichainNetwork.rpc
-      );
-
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
       const evmWallet = new SwapEvmWallet(
         originalFromToken.rpc,
