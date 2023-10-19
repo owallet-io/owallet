@@ -61,6 +61,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import DeviceInfo from 'react-native-device-info';
 import { OWallet } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
+import { styling } from './styles';
 
 type BalanceType = {
   id: string;
@@ -668,7 +669,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           {balances.map((item, index) => {
             return (
               <OWButton
-                key={item?.id}
+                key={item.id ?? index}
                 size="small"
                 disabled={amountLoading || swapLoading}
                 style={
@@ -760,131 +761,3 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     </PageWithScrollViewInBottomTabView>
   );
 });
-
-const styling = (colors: TypeTheme['colors']) =>
-  StyleSheet.create({
-    textBtnBalanceAtive: {
-      color: colors['purple-700']
-    },
-    textBtnBalanceInActive: {
-      color: '#7C8397'
-    },
-    containerInfoToken: {
-      backgroundColor: colors['bg-swap-box'],
-      paddingHorizontal: 16,
-      borderRadius: 8,
-      paddingVertical: 11
-    },
-    btnBalanceActive: {
-      width: metrics.screenWidth / 4 - 16,
-      backgroundColor: colors['bg-swap-box'],
-      height: 40,
-      borderWidth: 1,
-      borderColor: colors['purple-700']
-    },
-    btnBalanceInactive: {
-      width: metrics.screenWidth / 4 - 16,
-      backgroundColor: colors['bg-swap-box'],
-      height: 40
-    },
-    containerBtnBalance: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingTop: 16
-    },
-    btnSwapBox: {
-      backgroundColor: colors['bg-swap-box'],
-      borderRadius: 20,
-      width: 40,
-      height: 40,
-      borderWidth: 4,
-      borderColor: colors['plain-background']
-    },
-    pt30: {
-      paddingTop: 30
-    },
-    boxTop: {
-      paddingTop: 10,
-      paddingBottom: 20,
-      marginTop: 4,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    },
-    textBtnSwap: {
-      fontWeight: '700',
-      fontSize: 16
-    },
-    itemBottom: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingVertical: 5
-    },
-    theFirstLabel: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingBottom: 10
-    },
-    ts10: {
-      fontSize: 10
-    },
-    fDr: {
-      flexDirection: 'row'
-    },
-    mr8: {
-      marginRight: 8
-    },
-    btnTitleRight: {
-      height: 30,
-      width: 30
-    },
-    containerBtnLabelInputRight: {
-      flexDirection: 'row'
-    },
-    btnLabelInputRight: {
-      backgroundColor: colors['bg-tonner'],
-      borderRadius: 2,
-      height: 22,
-      borderWidth: 0
-    },
-    btnSwap: {
-      marginVertical: 16,
-      borderRadius: 8
-    },
-    container: {
-      marginHorizontal: 16
-    },
-    containerBtnCenter: {
-      position: 'absolute',
-      top: '50%',
-      alignSelf: 'center',
-      marginTop: -16
-    },
-    shadowBox: {
-      shadowColor: colors['splash-background'],
-      shadowOffset: {
-        width: 0,
-        height: 3
-      },
-      shadowRadius: 5,
-      shadowOpacity: 1.0
-    },
-    containerScreen: {
-      padding: 24,
-      paddingTop: 76,
-      borderTopLeftRadius: Platform.OS === 'ios' ? 32 : 0,
-      borderTopRightRadius: Platform.OS === 'ios' ? 32 : 0
-    },
-    contentBlock: {
-      padding: 12,
-      backgroundColor: colors['content-background'],
-      borderRadius: 4
-    },
-
-    title: {
-      ...typography.h1,
-      color: colors['icon'],
-      textAlign: 'center',
-      fontWeight: '700'
-    }
-  });
