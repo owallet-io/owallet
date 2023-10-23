@@ -11,17 +11,13 @@ import { BIP44Selectable } from './bip44-selectable';
 import { useTheme } from '@src/themes/theme-provider';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChainUpdaterService } from '@owallet/background';
-import { colors, spacing } from '../../themes';
 import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import messaging from '@react-native-firebase/messaging';
-import { API } from '../../common/api';
-import { TRON_ID } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
+import { TRON_ID } from '@owallet/common';
 
 export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);

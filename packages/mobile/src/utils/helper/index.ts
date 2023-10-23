@@ -2,17 +2,19 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
-import { getNetworkTypeByChainId } from '@owallet/common';
+import { TRON_ID, getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { Alert, Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
-export const TRON_ID = '0x2b6653dc';
+export const ORAICHAIN_ID = 'Oraichain';
+export const KAWAII_ID = 'kawaii_6886-1';
+export const ETH_ID = '0x01';
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = 'FAILED';
@@ -295,7 +297,10 @@ export const getTransactionValue = ({ data, address, logs }) => {
   let eventType = null;
   let unbond = null;
   let isRecipient = false;
-  if (checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) || checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)) {
+  if (
+    checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) ||
+    checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)
+  ) {
     eventType = 'withdraw_rewards';
   }
   if (checkType(transactionType, TRANSACTION_TYPE.DELEGATE)) {
@@ -470,7 +475,9 @@ export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_
   const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
   const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
-    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String ? JSON.parse(ibcDemonPackData?.value ?? '{}') : { denom: '' };
+    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String
+      ? JSON.parse(ibcDemonPackData?.value ?? '{}')
+      : { denom: '' };
   return ibcDemonObj;
 };
 
