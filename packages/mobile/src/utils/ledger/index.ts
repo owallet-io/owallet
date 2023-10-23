@@ -1,4 +1,3 @@
-import { LedgerAppType } from '@owallet/background';
 import { TRON_ID } from '@owallet/common';
 import { AsyncKVStore } from '../../common';
 

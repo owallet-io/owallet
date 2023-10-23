@@ -1,12 +1,11 @@
 import { BIP44HDPath } from '@owallet/background';
 import { ChainInfo } from '@owallet/types';
-import { Base58 } from '@ethersproject/basex';
-import { sha256 } from '@ethersproject/sha2';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { TRON_ID } from './constants';
 import { EmbedChainInfos } from '../config';
-
+import { Hash } from '@owallet/crypto';
+import bs58 from 'bs58';
 export type LedgerAppType = 'cosmos' | 'eth' | 'trx';
 export const COINTYPE_NETWORK = {
   118: 'Cosmos',
@@ -14,14 +13,16 @@ export const COINTYPE_NETWORK = {
   195: 'Tron'
 };
 
-export const getEvmAddress = (base58Address) =>
-  '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
+export const getEvmAddress = (base58Address) => {
+  return base58Address ? '0x' + Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex') : '-';
+};
 
 export const getBase58Address = (address) => {
-  const evmAddress = '0x41' + (address ? address.substring(2) : '');
-  const hash = sha256(sha256(evmAddress));
-  const checkSum = hash.substring(2, 10);
-  return Base58.encode(evmAddress + checkSum);
+  if (!address) return null;
+  const evmAddress = Buffer.from('41' + address.slice(2), 'hex');
+  const hash = Hash.sha256(Hash.sha256(evmAddress));
+  const checkSum = Buffer.from(hash.slice(0, 4));
+  return bs58.encode(Buffer.concat([evmAddress, checkSum]));
 };
 
 export const getAddressFromBech32 = (bech32address) => {
@@ -62,6 +63,7 @@ export const getUrlV1Beta = (isBeta: boolean) => {
 export const bufferToHex = (buffer) => {
   return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
 };
+
 export function formatNeworkTypeToLedgerAppName(network: string, chainId?: string | number): LedgerAppType {
   switch (network) {
     case 'cosmos':

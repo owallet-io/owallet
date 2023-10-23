@@ -8,7 +8,7 @@ import { colors, spacing, typography } from '../../../themes';
 import { AccountWithAll } from '@owallet/stores';
 import { Text } from '@src/components/text';
 import { Address } from '@owallet/crypto';
-import { TRON_ID } from '@owallet/common';
+import { TRON_ID, getBase58Address } from '@owallet/common';
 
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
@@ -21,7 +21,7 @@ export const AddressQRCodeModal: FunctionComponent<{
     addressToshow = account.bech32Address;
   } else {
     if (chainStore?.chainId === TRON_ID) {
-      addressToshow = Address.getBase58Address(account.evmosHexAddress);
+      addressToshow = getBase58Address(account.evmosHexAddress);
     } else {
       addressToshow = account.evmosHexAddress;
     }
@@ -71,7 +71,7 @@ export const AddressQRCodeModal: FunctionComponent<{
             onPress={() => {
               Share.share({
                 message: addressToshow
-              }).catch(e => {
+              }).catch((e) => {
                 console.log(e);
               });
             }}

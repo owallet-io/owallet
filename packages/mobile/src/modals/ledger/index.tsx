@@ -9,14 +9,14 @@ import { observer } from 'mobx-react-lite';
 import { State } from 'react-native-ble-plx';
 import TransportBLE, { bleManagerInstance } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
-import { Ledger, LedgerAppType, LedgerInitErrorOn } from '@owallet/background';
+import { Ledger,  LedgerInitErrorOn } from '@owallet/background';
 import { getLastUsedLedgerDeviceId } from '../../utils/ledger';
 import { RectButton } from '../../components/rect-button';
 import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
-import { formatNeworkTypeToLedgerAppName } from '@owallet/common';
+import { formatNeworkTypeToLedgerAppName, LedgerAppType } from '@owallet/common';
 const AlertIcon: FunctionComponent<{
   size: number;
   color: string;
