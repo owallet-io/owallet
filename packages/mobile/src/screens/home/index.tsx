@@ -1,19 +1,7 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { AccountCard } from './account-card';
-import {
-  AppState,
-  AppStateStatus,
-  RefreshControl,
-  ScrollView,
-  StyleSheet
-} from 'react-native';
+import { AppState, AppStateStatus, RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { useStore } from '../../stores';
 import { EarningCard } from './earning-card';
 import { observer } from 'mobx-react-lite';
@@ -27,11 +15,12 @@ import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import messaging from '@react-native-firebase/messaging';
-import { TRON_ID, showToast } from '../../utils/helper';
+import { showToast } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
+import { TRON_ID } from '@owallet/common';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -40,13 +29,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const navigation = useNavigation();
 
   const styles = styling(colors);
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    notificationStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, notificationStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -55,10 +38,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const account = accountStore.getAccount(chainStore.current.chainId);
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
-  const previousChainStoreIsInitializing = usePrevious(
-    chainStoreIsInitializing,
-    true
-  );
+  const previousChainStoreIsInitializing = usePrevious(chainStoreIsInitializing, true);
 
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
@@ -93,10 +73,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   };
   useEffect(() => {
     messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage
-      );
+      console.log('Notification caused app to open from background state:', remoteMessage);
       onNavigateToTransaction();
     });
     messaging()
@@ -137,8 +114,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   useFocusEffect(
     useCallback(() => {
       if (
-        (chainStoreIsInitializing !== previousChainStoreIsInitializing &&
-          !chainStoreIsInitializing) ||
+        (chainStoreIsInitializing !== previousChainStoreIsInitializing && !chainStoreIsInitializing) ||
         currentChainId !== previousChainId
       ) {
         checkAndUpdateChainInfo();
@@ -187,29 +163,19 @@ export const HomeScreen: FunctionComponent = observer(props => {
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === 'bitcoin') {
-      await queries.bitcoin.queryBitcoinBalance
-        .getQueryBalance(account.legacyAddress)
-        .waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.legacyAddress).waitFreshResponse();
       setRefreshing(false);
       setRefreshDate(Date.now());
       return;
     }
     await Promise.all([
       priceStore.waitFreshResponse(),
-      ...queries.queryBalances
-        .getQueryBech32Address(account.bech32Address)
-        .balances.map(bal => {
-          return bal.waitFreshResponse();
-        }),
-      queries.cosmos.queryRewards
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
-      queries.cosmos.queryDelegations
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse(),
-      queries.cosmos.queryUnbondingDelegations
-        .getQueryBech32Address(account.bech32Address)
-        .waitFreshResponse()
+      ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map(bal => {
+        return bal.waitFreshResponse();
+      }),
+      queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
+      queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
+      queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse()
     ]);
 
     setRefreshing(false);
@@ -230,12 +196,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
       return <TronTokensCard />;
     }
     return <TokensCard refreshDate={refreshDate} />;
-  }, [chainStore.current.networkType,chainStore.current.chainId]);
+  }, [chainStore.current.networkType, chainStore.current.chainId]);
   return (
     <PageWithScrollViewInBottomTabView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       showsVerticalScrollIndicator={false}
       // backgroundColor={colors['background']}
       ref={scrollViewRef}
@@ -244,12 +208,8 @@ export const HomeScreen: FunctionComponent = observer(props => {
       {renderAccountCard}
       <DashboardCard />
       {renderTokenCard}
-      {chainStore.current.networkType === 'cosmos' ? (
-        <UndelegationsCard />
-      ) : null}
-      {chainStore.current.networkType === 'cosmos' ? (
-        <EarningCard containerStyle={styles.containerEarnStyle} />
-      ) : null}
+      {chainStore.current.networkType === 'cosmos' ? <UndelegationsCard /> : null}
+      {chainStore.current.networkType === 'cosmos' ? <EarningCard containerStyle={styles.containerEarnStyle} /> : null}
     </PageWithScrollViewInBottomTabView>
   );
 });

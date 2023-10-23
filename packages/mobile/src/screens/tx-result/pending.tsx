@@ -2,11 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import {
-  PageWithScrollView,
-  PageWithScrollViewInBottomTabView,
-  PageWithView
-} from '../../components/page';
+import { PageWithScrollView, PageWithScrollViewInBottomTabView, PageWithView } from '../../components/page';
 import { View, StyleSheet, Image } from 'react-native';
 import { Text } from '@src/components/text';
 import { Button } from '../../components/button';
@@ -19,9 +15,10 @@ import { Card, CardBody, OWBox } from '../../components/card';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-import { SUCCESS, TRON_ID } from '../../utils/helper';
+import { SUCCESS } from '../../utils/helper';
 import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 import { API } from '@src/common/api';
+import { TRON_ID } from '@owallet/common';
 export const TxPendingResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
   const [retry, setRetry] = useState(3);
@@ -40,19 +37,15 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       string
     >
   >();
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
 
   const smartNavigation = useSmartNavigation();
 
   const isFocused = useIsFocused();
   const { bottom } = useSafeAreaInsets();
 
-  const getTronTx = async (txHash) => {
-    const transaction = await route.params.tronWeb?.trx.getTransactionInfo(
-      txHash
-    );
+  const getTronTx = async txHash => {
+    const transaction = await route.params.tronWeb?.trx.getTransactionInfo(txHash);
     setRetry(retry - 1);
 
     return transaction;
@@ -68,12 +61,8 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         // It may take a while to confirm transaction in TRON, show we make retry few times until it is done
         if (retry >= 0) {
           setTimeout(() => {
-            getTronTx(txHash).then((transaction) => {
-              if (
-                transaction &&
-                Object.keys(transaction).length > 0 &&
-                retry > 0
-              ) {
+            getTronTx(txHash).then(transaction => {
+              if (transaction && Object.keys(transaction).length > 0 && retry > 0) {
                 if (transaction.receipt.result === SUCCESS) {
                   smartNavigation.pushSmart('TxSuccessResult', {
                     txHash: transaction.id
@@ -109,12 +98,12 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               });
             }
           })
-          .catch((err) => console.log(err, 'err data'));
+          .catch(err => console.log(err, 'err data'));
       } else {
         txTracer = new TendermintTxTracer(chainInfo.rpc, '/websocket');
         txTracer
           .traceTx(Buffer.from(txHash, 'hex'))
-          .then((tx) => {
+          .then(tx => {
             if (tx.code == null || tx.code === 0) {
               smartNavigation.replaceSmart('TxSuccessResult', {
                 chainId,
@@ -127,7 +116,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
               });
             }
           })
-          .catch((e) => {
+          .catch(e => {
             console.log(`Failed to trace the tx (${txHash})`, e);
           });
       }
@@ -138,14 +127,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
         txTracer.close();
       }
     };
-  }, [
-    chainId,
-    chainStore,
-    isFocused,
-    route.params.txHash,
-    smartNavigation,
-    retry
-  ]);
+  }, [chainId, chainStore, isFocused, route.params.txHash, smartNavigation, retry]);
 
   return (
     <PageWithView>

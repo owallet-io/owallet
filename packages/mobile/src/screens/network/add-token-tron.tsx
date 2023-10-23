@@ -9,7 +9,7 @@ import { TextInput } from '../../components/input';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { observer } from 'mobx-react-lite';
-import { TRON_ID, isBase58, showToast } from '@src/utils/helper';
+import { showToast } from '@src/utils/helper';
 import { API } from '@src/common/api';
 import { Address } from '@owallet/crypto';
 import { useStore } from '@src/stores';
@@ -65,15 +65,8 @@ export const AddTokenTronScreen = observer(() => {
 
   const submit = handleSubmit(async (data: any) => {
     try {
-      const { decimals, name, coinGeckoId, denom, contractAddress } =
-        getValues();
-      if (
-        decimals != null &&
-        name &&
-        coinGeckoId &&
-        denom &&
-        contractAddress !== ''
-      ) {
+      const { decimals, name, coinGeckoId, denom, contractAddress } = getValues();
+      if (decimals != null && name && coinGeckoId && denom && contractAddress !== '') {
         setLoading(true);
         const currentTrc20List = [
           ...trc20List,
@@ -82,8 +75,7 @@ export const AddTokenTronScreen = observer(() => {
             tokenName: name,
             coinDenom: denom,
             coinGeckoId: coinGeckoId,
-            coinImageUrl:
-              'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
+            coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
             coinDecimals: decimals,
             type: 'trc20'
           }

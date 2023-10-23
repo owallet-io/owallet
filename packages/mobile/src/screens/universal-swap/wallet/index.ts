@@ -1,15 +1,7 @@
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
-import {
-  CosmosWallet,
-  EvmWallet,
-  NetworkChainId,
-  CosmosChainId
-} from '@oraichain/oraidex-common';
+import { CosmosWallet, EvmWallet, NetworkChainId, CosmosChainId } from '@oraichain/oraidex-common';
 import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
-import {
-  SigningCosmWasmClient,
-  SigningCosmWasmClientOptions
-} from '@cosmjs/cosmwasm-stargate';
+import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
 import { OWallet } from '@owallet/types';
 
@@ -33,16 +25,10 @@ export class SwapCosmosWallet extends CosmosWallet {
 
   async createCosmosSigner(chainId: string): Promise<OfflineSigner> {
     if (!this.owallet) {
-      throw new Error(
-        'You have to have OWallet first if you do not use a mnemonic to sign transactions'
-      );
+      throw new Error('You have to have OWallet first if you do not use a mnemonic to sign transactions');
     }
     return await this.owallet.getOfflineSignerAuto(chainId);
   }
-
-  // signAndBroadcast(): Promise<string> {
-  //   return new Promise(resolve => resolve(undefined));
-  // }
 
   async getCosmWasmClient(
     config: {

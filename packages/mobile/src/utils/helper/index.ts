@@ -2,17 +2,16 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
-import { getNetworkTypeByChainId } from '@owallet/common';
+import { TRON_ID, getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import { ToastShowParams } from 'react-native-toast-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { Alert, Linking, Platform } from 'react-native';
+import { Linking, Platform } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
-export const TRON_ID = '0x2b6653dc';
 export const ORAICHAIN_ID = 'Oraichain';
 export const KAWAII_ID = 'kawaii_6886-1';
 export const ETH_ID = '0x01';
@@ -23,78 +22,7 @@ export const SUCCESS = 'SUCCESS';
 export const TRON_BIP39_PATH_INDEX_0 = TRON_BIP39_PATH_PREFIX + "/0'/0/0";
 export const isAndroid = Platform.OS === 'android';
 export const isIos = Platform.OS === 'ios';
-export const TRC20_LIST = [
-  {
-    contractAddress: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
-    tokenName: 'USDC',
-    coinDenom: 'USDC',
-    coinGeckoId: 'usd-coin',
-    coinImageUrl:
-      'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png',
-    coinDecimals: 6,
-    type: 'trc20'
-  },
-  {
-    contractAddress: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-    tokenName: 'USDT',
-    coinDenom: 'USDT',
-    coinDecimals: 6,
-    coinGeckoId: 'tether',
-    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png',
-    type: 'trc20'
-  },
-  {
-    type: 'cw20',
-    coinDenom: 'wTRX',
-    coinMinimalDenom:
-      'cw20:orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0:wTRX',
-    contractAddress:
-      'orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0',
-    coinDecimals: 6,
-    coinGeckoId: 'tron',
-    coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png'
-  }
-  // {
-  //   contractAddress: 'TGjgvdTWWrybVLaVeFqSyVqJQWjxqRYbaK',
-  //   tokenName: 'USDD',
-  //   coinDenom: 'USDD',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'usdd',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/19891.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TLBaRhANQoJFTqre9Nf1mjuwNWjCJeYqUL',
-  //   tokenName: 'USDJ',
-  //   coinDenom: 'USDJ',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'usdj',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5446.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TF17BgPaZYbz8oxbjhriubPDsA7ArKoLX3',
-  //   tokenName: 'JST',
-  //   coinDenom: 'JST',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'just',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/5488.png',
-  //   type: 'trc20'
-  // },
-  // {
-  //   contractAddress: 'TWrZRHY9aKQZcyjpovdH6qeCEyYZrRQDZt',
-  //   tokenName: 'SUNOLD',
-  //   coinDenom: 'SUNOLD',
-  //   coinDecimals: 6,
-  //   coinGeckoId: 'sun',
-  //   coinImageUrl:
-  //     'https://s2.coinmarketcap.com/static/img/coins/64x64/6990.png',
-  //   type: 'trc20'
-  // }
-];
+
 export const handleError = (error, url, method) => {
   if (__DEV__) {
     console.log(`[1;34m: ---------------------------------------`);
@@ -284,8 +212,7 @@ export function removeEmptyElements(array) {
 
 function convertVarToWord(str) {
   const words = str && str.split('_');
-  const capitalizedWords =
-    words && words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+  const capitalizedWords = words && words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
 }
 export function removeSpecialChars(str) {
@@ -311,10 +238,7 @@ export const getTransactionValue = ({ data, address, logs }) => {
   if (checkType(transactionType, TRANSACTION_TYPE.DELEGATE)) {
     eventType = 'delegate';
   }
-  if (
-    checkType(transactionType, TRANSACTION_TYPE.SEND) ||
-    checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE)
-  ) {
+  if (checkType(transactionType, TRANSACTION_TYPE.SEND) || checkType(transactionType, TRANSACTION_TYPE.UNDELEGATE)) {
     eventType = 'transfer';
   }
   if (events && eventType) {
@@ -479,19 +403,11 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
   return 'Msg';
 };
 
-export const parseIbcMsgTransfer = (
-  rawLog,
-  type = 'send_packet',
-  key = 'packet_data'
-) => {
-  const arrayIbcDemonPacket =
-    rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
-  const ibcDemonPackData =
-    arrayIbcDemonPacket &&
-    arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
+export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_data') => {
+  const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
+  const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
   const ibcDemonObj =
-    typeof ibcDemonPackData?.value === 'string' ||
-    ibcDemonPackData?.value instanceof String
+    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String
       ? JSON.parse(ibcDemonPackData?.value ?? '{}')
       : { denom: '' };
   return ibcDemonObj;
@@ -536,27 +452,15 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
-export const getCurrencyByMinimalDenom = (
-  tokens,
-  minimalDenom
-): AppCurrency => {
+export const getCurrencyByMinimalDenom = (tokens, minimalDenom): AppCurrency => {
   if (tokens && tokens?.length > 0 && minimalDenom) {
     const info = tokens?.filter((item, index) => {
       if (item?.contractAddress) {
-        return (
-          item?.contractAddress?.toUpperCase() ==
-          minimalDenom?.trim()?.toUpperCase()
-        );
+        return item?.contractAddress?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
       } else if (item?.originCurrency) {
-        return (
-          item?.originCurrency?.coinMinimalDenom?.toUpperCase() ==
-          minimalDenom?.trim()?.toUpperCase()
-        );
+        return item?.originCurrency?.coinMinimalDenom?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
       }
-      return (
-        item?.coinMinimalDenom?.toUpperCase() ==
-        minimalDenom?.trim()?.toUpperCase()
-      );
+      return item?.coinMinimalDenom?.toUpperCase() == minimalDenom?.trim()?.toUpperCase();
     });
     if (info?.length > 0) {
       return info[0];
@@ -593,8 +497,7 @@ export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
   return address;
 }
 
-export const isBase58 = (value: string): boolean =>
-  /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
+export const isBase58 = (value: string): boolean => /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
 export function createTxsHelper() {
   return new TxsHelper();
 }
