@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useCallback } from 'react';
 
 import { Address } from '../../components/address';
+import { Address as Add } from '@owallet/crypto';
 import styleAccount from './account.module.scss';
 
 import { observer } from 'mobx-react-lite';
@@ -64,23 +65,7 @@ export const AccountView: FunctionComponent = observer(() => {
               })
             : 'Loading...'}
         </div>
-        <div style={{ flex: 1, textAlign: 'right' }}>
-          {/* {chainStore.current.raw.txExplorer?.accountUrl && (
-            <a
-              target="_blank"
-              href={chainStore.current.raw.txExplorer.accountUrl.replace(
-                '{address}',
-                // accountInfo.bech32Address
-                chainStore.current.networkType === 'evm'
-                  ? accountInfo.evmosHexAddress
-                  : accountInfo.bech32Address
-              )}
-              title={intl.formatMessage({ id: 'setting.explorer' })}
-            >
-              <i className="fas fa-external-link-alt"></i>
-            </a>
-          )} */}
-        </div>
+        <div style={{ flex: 1, textAlign: 'right' }}></div>
       </div>
       {chainStore.current.networkType === 'cosmos' && (
         <div className={styleAccount.containerAccount}>
@@ -161,22 +146,7 @@ export const AccountView: FunctionComponent = observer(() => {
               <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
             </div>
           )}
-          {/* <div
-            className={styleAccount.address}
-            onClick={() => copyAddress(accountInfo.evmosHexAddress)}
-          >
-            <span className={styleAccount.addressText}>
-              <Address isRaw={true} tooltipAddress={accountInfo.bech32Address}>
-                {accountInfo.walletStatus === WalletStatus.Loaded &&
-                accountInfo.bech32Address
-                  ? `${accountInfo.bech32Address.slice(
-                      0,
-                      15
-                    )}...${accountInfo.bech32Address.slice(-10)}`
-                  : accountInfo.bech32Address}
-              </Address>
-            </span>
-          </div> */}
+
           <div style={{ flex: 1 }} />
         </div>
       )}
