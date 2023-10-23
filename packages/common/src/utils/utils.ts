@@ -1,5 +1,4 @@
-import { BIP44HDPath } from '@owallet/background';
-import { ChainInfo } from '@owallet/types';
+import { ChainInfo, BIP44HDPath } from '@owallet/types';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { TRON_ID } from './constants';
