@@ -58,7 +58,7 @@ describe('utils', () => {
     { cointype: 195, expected: 'trx' },
     { cointype: 118, expected: 'cosmos' }
   ])('getNetworkTypeByBip44HDPath $cointype', ({ cointype, expected }) => {
-    const rs = utils.getNetworkTypeByBip44HDPath({ cointype } as BIP44HDPath);
+    const rs = utils.getNetworkTypeByBip44HDPath({ coinType: cointype } as BIP44HDPath);
     expect(rs).toBe(expected);
   });
 });
