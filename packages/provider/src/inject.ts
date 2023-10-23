@@ -1005,11 +1005,11 @@ export class InjectedTronWebOWallet implements ITronWeb {
           case 'tron_requestAccounts':
             try {
               result = await tronweb.getDefaultAddress();
+              localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
               result = {
                 code: 200,
                 message: 'The site is already in the whitelist'
               };
-              localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
             } catch (error) {
               result = {
                 code: error?.code,
