@@ -289,11 +289,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const estimateSwapAmount = async fromAmountBalance => {
     setAmountLoading(true);
-    const data = await getSimulateSwap();
-    const minimumReceive = data?.amount ? calculateMinimum(data?.amount, userSlippage) : '0';
-    setMininumReceive(toDisplay(minimumReceive));
-    setSwapAmount([fromAmountBalance, Number(data.amount)]);
-    setAmountLoading(false);
+    try {
+      const data = await getSimulateSwap();
+      const minimumReceive = data?.amount ? calculateMinimum(data?.amount, userSlippage) : '0';
+      setMininumReceive(toDisplay(minimumReceive));
+      setSwapAmount([fromAmountBalance, Number(data.amount)]);
+      setAmountLoading(false);
+    } catch (error) {
+      console.log('error', error);
+      setAmountLoading(false);
+    }
   };
 
   const [taxRate, setTaxRate] = useState('');
@@ -419,21 +424,25 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setLoadingRefresh(false);
   };
 
+  const handleReverseDirection = () => {
+    if (isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) && !isEvmNetworkNativeSwapSupported(toToken.chainId)) return;
+    setSwapTokens([toTokenDenom, fromTokenDenom]);
+    setSwapAmount([toAmountToken, fromAmountToken]);
+  };
+
   const handleActiveAmount = useCallback(
     item => {
-      if (item) {
-        handleBalanceActive(item);
-        const toAmountBalance = toDisplay(toAmountToken.toString(), originalFromToken?.decimals);
-        const maxToAmountBalance = toDisplay(toTokenBalance, originalToToken?.decimals);
+      handleBalanceActive(item);
+      const toAmountBalance = toDisplay(toAmountToken.toString(), originalFromToken?.decimals);
+      const maxToAmountBalance = toDisplay(toTokenBalance, originalToToken?.decimals);
 
-        if (toAmountBalance > maxToAmountBalance) {
-          onMaxFromAmount(
-            (toAmount(maxToAmountBalance, originalFromToken?.decimals) * BigInt(MAX)) / BigInt(MAX),
-            item.value
-          );
-        } else {
-          onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
-        }
+      if (toAmountBalance > maxToAmountBalance) {
+        onMaxFromAmount(
+          (toAmount(maxToAmountBalance, originalFromToken?.decimals) * BigInt(MAX)) / BigInt(MAX),
+          item.value
+        );
+      } else {
+        onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
       }
     },
     [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
@@ -548,6 +557,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               style={styles.btnSwapBox}
               colorIcon={'#7C8397'}
               sizeIcon={24}
+              onPress={handleReverseDirection}
             />
           </View>
         </View>
