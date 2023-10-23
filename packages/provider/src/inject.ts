@@ -88,7 +88,10 @@ export class InjectedOWallet implements IOWallet {
           throw new Error('DefaultOptions is not function');
         }
 
-        if (!owallet[message.method as keyof OWallet] || typeof owallet[message.method as keyof OWallet] !== 'function') {
+        if (
+          !owallet[message.method as keyof OWallet] ||
+          typeof owallet[message.method as keyof OWallet] !== 'function'
+        ) {
           throw new Error(`Invalid method: ${message.method}`);
         }
 
@@ -255,8 +258,18 @@ export class InjectedOWallet implements IOWallet {
     return await this.requestMethod('sendTx', [chainId, tx, mode]);
   }
 
-  async signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions: OWalletSignOptions = {}): Promise<AminoSignResponse> {
-    return await this.requestMethod('signAmino', [chainId, signer, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions)]);
+  async signAmino(
+    chainId: string,
+    signer: string,
+    signDoc: StdSignDoc,
+    signOptions: OWalletSignOptions = {}
+  ): Promise<AminoSignResponse> {
+    return await this.requestMethod('signAmino', [
+      chainId,
+      signer,
+      signDoc,
+      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
+    ]);
   }
 
   async signDirect(
@@ -326,7 +339,12 @@ export class InjectedOWallet implements IOWallet {
     return await this.requestMethod('signArbitrary', [chainId, signer, data]);
   }
 
-  async verifyArbitrary(chainId: string, signer: string, data: string | Uint8Array, signature: StdSignature): Promise<boolean> {
+  async verifyArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    signature: StdSignature
+  ): Promise<boolean> {
     return await this.requestMethod('verifyArbitrary', [chainId, signer, data, signature]);
   }
 
@@ -417,7 +435,11 @@ export class InjectedEthereum implements Ethereum {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== NAMESPACE_ETHEREUM + 'proxy-request' || message.namespace !== NAMESPACE_ETHEREUM) {
+      if (
+        !message ||
+        message.type !== NAMESPACE_ETHEREUM + 'proxy-request' ||
+        message.namespace !== NAMESPACE_ETHEREUM
+      ) {
         return;
       }
 
@@ -689,7 +711,11 @@ export class InjectedEthereumOWallet implements Ethereum {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== NAMESPACE_ETHEREUM_OWALLET + 'proxy-request' || message.namespace !== NAMESPACE_ETHEREUM_OWALLET) {
+      if (
+        !message ||
+        message.type !== NAMESPACE_ETHEREUM_OWALLET + 'proxy-request' ||
+        message.namespace !== NAMESPACE_ETHEREUM_OWALLET
+      ) {
         return;
       }
 
@@ -979,6 +1005,10 @@ export class InjectedTronWebOWallet implements ITronWeb {
           case 'tron_requestAccounts':
             try {
               result = await tronweb.getDefaultAddress();
+              result = {
+                code: 200,
+                message: 'The site is already in the whitelist'
+              };
               localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
             } catch (error) {
               result = {
