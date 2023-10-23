@@ -293,6 +293,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     const minimumReceive = data?.amount ? calculateMinimum(data?.amount, userSlippage) : '0';
     setMininumReceive(toDisplay(minimumReceive));
     setSwapAmount([fromAmountBalance, Number(data.amount)]);
+    setAmountLoading(false);
   };
 
   const [taxRate, setTaxRate] = useState('');
@@ -420,17 +421,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleActiveAmount = useCallback(
     item => {
-      handleBalanceActive(item);
-      const toAmountBalance = toDisplay(toAmountToken.toString(), originalFromToken?.decimals);
-      const maxToAmountBalance = toDisplay(toTokenBalance, originalToToken?.decimals);
+      if (item) {
+        handleBalanceActive(item);
+        const toAmountBalance = toDisplay(toAmountToken.toString(), originalFromToken?.decimals);
+        const maxToAmountBalance = toDisplay(toTokenBalance, originalToToken?.decimals);
 
-      if (toAmountBalance > maxToAmountBalance) {
-        onMaxFromAmount(
-          (toAmount(maxToAmountBalance, originalFromToken?.decimals) * BigInt(MAX)) / BigInt(MAX),
-          item.value
-        );
-      } else {
-        onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
+        if (toAmountBalance > maxToAmountBalance) {
+          onMaxFromAmount(
+            (toAmount(maxToAmountBalance, originalFromToken?.decimals) * BigInt(MAX)) / BigInt(MAX),
+            item.value
+          );
+        } else {
+          onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
+        }
       }
     },
     [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
@@ -559,7 +562,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 textStyle={balanceActive?.id === item.id ? styles.textBtnBalanceAtive : styles.textBtnBalanceInActive}
                 label={`${item.value}%`}
                 fullWidth={false}
-                onPress={handleActiveAmount}
+                onPress={() => handleActiveAmount(item)}
               />
             );
           })}
