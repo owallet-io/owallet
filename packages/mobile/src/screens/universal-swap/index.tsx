@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -15,20 +10,9 @@ import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import {
-  ETH_ID,
-  KAWAII_ID,
-  ORAICHAIN_ID,
-  TRON_ID,
-  isAndroid,
-  showToast
-} from '@src/utils/helper';
+import { ETH_ID, KAWAII_ID, ORAICHAIN_ID, TRON_ID, isAndroid, showToast } from '@src/utils/helper';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
-import {
-  DEFAULT_SLIPPAGE,
-  GAS_ESTIMATION_SWAP_DEFAULT,
-  ORAI
-} from '@owallet/common';
+import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { NetworkChainId, oraichainNetwork } from '@owallet/common';
@@ -75,20 +59,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [amountLoading, setAmountLoading] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState('');
-  const [filteredToTokens, setFilteredToTokens] = useState(
-    [] as TokenItemType[]
-  );
-  const [filteredFromTokens, setFilteredFromTokens] = useState(
-    [] as TokenItemType[]
-  );
+  const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
+  const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
 
-  const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<
-    [string, string]
-  >(['orai', 'usdt']);
+  const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
-  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<
-    TokenItemType[]
-  >([]);
+  const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
@@ -111,11 +87,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, []);
 
   const getClient = async () => {
-    const cwClient = await CWStargate.init(
-      accountOrai,
-      ORAICHAIN_ID,
-      oraichainNetwork.rpc
-    );
+    const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
     setClient(cwClient);
   };
 
@@ -134,22 +106,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     // hardcode fee when swap token orai
     if (fromTokenDenom === ORAI) {
-      const estimatedFee = feeEstimate(
-        originalFromToken,
-        GAS_ESTIMATION_SWAP_DEFAULT
-      );
-      const fromTokenBalanceDisplay = toDisplay(
-        fromTokenBalance,
-        originalFromToken?.decimals
-      );
+      const estimatedFee = feeEstimate(originalFromToken, GAS_ESTIMATION_SWAP_DEFAULT);
+      const fromTokenBalanceDisplay = toDisplay(fromTokenBalance, originalFromToken?.decimals);
       if (type === MAX) {
-        finalAmount =
-          estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
+        finalAmount = estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
       } else {
-        finalAmount =
-          estimatedFee > fromTokenBalanceDisplay - displayAmount
-            ? 0
-            : displayAmount;
+        finalAmount = estimatedFee > fromTokenBalanceDisplay - displayAmount ? 0 : displayAmount;
       }
     }
     setSwapAmount([finalAmount, toAmountToken]);
@@ -168,12 +130,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
   const fromToken = isEvmSwap
     ? tokenMap[fromTokenDenom]
-    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ??
-      tokenMap[fromTokenDenom];
+    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ?? tokenMap[fromTokenDenom];
   const toToken = isEvmSwap
     ? tokenMap[toTokenDenom]
-    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ??
-      tokenMap[toTokenDenom];
+    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ?? tokenMap[toTokenDenom];
 
   const getTokenFee = async (
     remoteTokenDenom: string,
@@ -182,11 +142,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     type: 'from' | 'to'
   ) => {
     // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)
-    if (
-      isEvmNetworkNativeSwapSupported(fromChainId) &&
-      fromChainId === toChainId
-    )
-      return;
+    if (isEvmNetworkNativeSwapSupported(fromChainId) && fromChainId === toChainId) return;
     if (remoteTokenDenom) {
       let tokenFee = 0;
       const ratio = await getTransferTokenFee({ remoteTokenDenom, client });
@@ -204,12 +160,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    getTokenFee(
-      originalToToken.prefix + originalToToken.contractAddress,
-      fromToken.chainId,
-      toToken.chainId,
-      'to'
-    );
+    getTokenFee(originalToToken.prefix + originalToToken.contractAddress, fromToken.chainId, toToken.chainId, 'to');
   }, [originalToToken, fromToken, toToken, originalToToken]);
 
   useEffect(() => {
@@ -284,22 +235,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   };
 
-  const subAmountFrom = toSubAmount(
-    universalSwapStore.getAmount,
-    originalFromToken
-  );
-  const subAmountTo = toSubAmount(
-    universalSwapStore.getAmount,
-    originalToToken
-  );
+  const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
+  const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
   const fromTokenBalance = originalFromToken
-    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? '0') +
-      subAmountFrom
+    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? '0') + subAmountFrom
     : BigInt(0);
 
   const toTokenBalance = originalToToken
-    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') +
-      subAmountTo
+    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') + subAmountTo
     : BigInt(0);
 
   useEffect(() => {
@@ -331,10 +274,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         toInfo: toTokenInfoData!,
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
-        amount: toAmount(
-          initAmount ?? fromAmountToken,
-          fromTokenInfoData!.decimals
-        ).toString()
+        amount: toAmount(initAmount ?? fromAmountToken, fromTokenInfoData!.decimals).toString()
       },
       client
     );
@@ -350,9 +290,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const estimateSwapAmount = async fromAmountBalance => {
     setAmountLoading(true);
     const data = await getSimulateSwap();
-    const minimumReceive = data?.amount
-      ? calculateMinimum(data?.amount, userSlippage)
-      : '0';
+    const minimumReceive = data?.amount ? calculateMinimum(data?.amount, userSlippage) : '0';
     setMininumReceive(toDisplay(minimumReceive));
     setSwapAmount([fromAmountBalance, Number(data.amount)]);
   };
@@ -370,13 +308,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     estimateSwapAmount(fromAmountToken);
-  }, [
-    originalFromToken,
-    toTokenInfoData,
-    fromTokenInfoData,
-    originalToToken,
-    fromAmountToken
-  ]);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken]);
 
   useEffect(() => {
     estimateAverageRatio();
@@ -384,22 +316,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
-    if (
-      isSupportedNoPoolSwapEvm(toToken.coinGeckoId) &&
-      !isSupportedNoPoolSwapEvm(fromToken.coinGeckoId)
-    ) {
-      const fromTokenSameToChainId = getTokenOnSpecificChainId(
-        fromToken.coinGeckoId,
-        toToken.chainId
-      );
+    if (isSupportedNoPoolSwapEvm(toToken.coinGeckoId) && !isSupportedNoPoolSwapEvm(fromToken.coinGeckoId)) {
+      const fromTokenSameToChainId = getTokenOnSpecificChainId(fromToken.coinGeckoId, toToken.chainId);
       if (!fromTokenSameToChainId) {
-        const sameChainIdTokens = evmTokens.find(
-          t => t.chainId === toToken.chainId
-        );
-        if (!sameChainIdTokens)
-          throw Error(
-            'Impossible case! An EVM chain should at least have one token'
-          );
+        const sameChainIdTokens = evmTokens.find(t => t.chainId === toToken.chainId);
+        if (!sameChainIdTokens) throw Error('Impossible case! An EVM chain should at least have one token');
         setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
         return;
       }
@@ -442,10 +363,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapLoading(true);
     try {
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
-      const evmWallet = new SwapEvmWallet(
-        originalFromToken.rpc,
-        accountEvm.evmosHexAddress
-      );
+      const evmWallet = new SwapEvmWallet(originalFromToken.rpc, accountEvm.evmosHexAddress);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -503,36 +421,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const handleActiveAmount = useCallback(
     item => {
       handleBalanceActive(item);
-      const toAmountBalance = toDisplay(
-        toAmountToken.toString(),
-        originalFromToken?.decimals
-      );
-      const maxToAmountBalance = toDisplay(
-        toTokenBalance,
-        originalToToken?.decimals
-      );
+      const toAmountBalance = toDisplay(toAmountToken.toString(), originalFromToken?.decimals);
+      const maxToAmountBalance = toDisplay(toTokenBalance, originalToToken?.decimals);
 
       if (toAmountBalance > maxToAmountBalance) {
         onMaxFromAmount(
-          (toAmount(maxToAmountBalance, originalFromToken?.decimals) *
-            BigInt(Number(MAX))) /
-            BigInt(Number(100)),
+          (toAmount(maxToAmountBalance, originalFromToken?.decimals) * BigInt(MAX)) / BigInt(MAX),
           item.value
         );
       } else {
-        onMaxFromAmount(
-          (fromTokenBalance * BigInt(Number(item.value))) / BigInt(Number(100)),
-          item.value
-        );
+        onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
       }
     },
-    [
-      toAmountToken,
-      toTokenBalance,
-      originalFromToken,
-      originalToToken,
-      fromTokenBalance
-    ]
+    [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
   );
 
   return (
@@ -541,9 +442,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       style={[styles.container, isAndroid ? styles.pt30 : {}]}
       disableSafeArea={false}
       showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />
-      }
+      refreshControl={<RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />}
     >
       <SlippageModal
         close={() => {
@@ -623,22 +522,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         <View>
           <SwapBox
             amount={fromAmountToken?.toString() ?? '0'}
-            balanceValue={toDisplay(
-              fromTokenBalance,
-              originalFromToken?.decimals
-            )}
+            balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
             onChangeAmount={onChangeFromAmount}
             tokenActive={originalFromToken}
             onOpenTokenModal={() => setIsSelectFromTokenModal(true)}
             tokenFee={fromTokenFee}
           />
           <SwapBox
-            amount={
-              toDisplay(
-                toAmountToken.toString(),
-                originalFromToken?.decimals
-              ).toString() ?? '0'
-            }
+            amount={toDisplay(toAmountToken.toString(), originalFromToken?.decimals).toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
             onOpenTokenModal={() => setIsSelectToTokenModal(true)}
@@ -664,16 +555,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
                 key={item.id ?? index}
                 size="small"
                 disabled={amountLoading || swapLoading}
-                style={
-                  balanceActive?.id === item.id
-                    ? styles.btnBalanceActive
-                    : styles.btnBalanceInactive
-                }
-                textStyle={
-                  balanceActive?.id === item.id
-                    ? styles.textBtnBalanceAtive
-                    : styles.textBtnBalanceInActive
-                }
+                style={balanceActive?.id === item.id ? styles.btnBalanceActive : styles.btnBalanceInactive}
+                textStyle={balanceActive?.id === item.id ? styles.textBtnBalanceAtive : styles.textBtnBalanceInActive}
                 label={`${item.value}%`}
                 fullWidth={false}
                 onPress={handleActiveAmount}
@@ -702,18 +585,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           </View>
           <View style={styles.itemBottom}>
             <BalanceText>Minimum Amount</BalanceText>
-            <BalanceText>
-              {(fromToken.minAmountSwap || '0') + ' ' + fromToken.name}
-            </BalanceText>
+            <BalanceText>{(fromToken.minAmountSwap || '0') + ' ' + fromToken.name}</BalanceText>
           </View>
           <View style={styles.itemBottom}>
             <BalanceText>Minimum Receive</BalanceText>
-            <BalanceText>
-              {(minimumReceive || '0') + ' ' + toToken.name}
-            </BalanceText>
+            <BalanceText>{(minimumReceive || '0') + ' ' + toToken.name}</BalanceText>
           </View>
-          {(!fromTokenFee && !toTokenFee) ||
-          (fromTokenFee === 0 && toTokenFee === 0) ? (
+          {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? (
             <View style={styles.itemBottom}>
               <BalanceText>Tax rate</BalanceText>
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
