@@ -1,5 +1,6 @@
 import { Bech32Address } from '@owallet/cosmos';
 import * as utils from './utils';
+import { BIP44HDPath } from '@owallet/background';
 describe('utils', () => {
   it('getChainInfoOrThrow', () => {
     const expected = {
@@ -56,8 +57,8 @@ describe('utils', () => {
     { cointype: 60, expected: 'eth' },
     { cointype: 195, expected: 'trx' },
     { cointype: 118, expected: 'cosmos' }
-  ])('formatCoinTypeToLedgerAppName $cointype', ({ cointype, expected }) => {
-    const rs = utils.formatCoinTypeToLedgerAppName(cointype);
+  ])('getNetworkTypeByBip44HDPath $cointype', ({ cointype, expected }) => {
+    const rs = utils.getNetworkTypeByBip44HDPath({ cointype } as BIP44HDPath);
     expect(rs).toBe(expected);
   });
 });
