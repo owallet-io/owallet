@@ -62,18 +62,6 @@ export const getUrlV1Beta = (isBeta: boolean) => {
 export const bufferToHex = (buffer) => {
   return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
 };
-export const formatCoinTypeToLedgerAppName = (coinType: number, bip: number = 44) => {
-  if (bip === 44) {
-    if (coinType === 60) {
-      return 'eth';
-    } else if (coinType === 195) {
-      return 'trx';
-    } else {
-      return 'cosmos';
-    }
-  }
-  return 'cosmos';
-};
 export function formatNeworkTypeToLedgerAppName(network: string, chainId?: string | number): LedgerAppType {
   switch (network) {
     case 'cosmos':
