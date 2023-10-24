@@ -108,7 +108,7 @@ export const AccountView: FunctionComponent = observer(() => {
             style={{ marginBottom: '6px' }}
             onClick={() => copyAddress(keyRingStore.keyRingType !== 'ledger' ? evmAddress : ledgerAddress)}
           >
-            {checkTronNetwork && (
+            {checkTronNetwork && !accountInfo.isNanoLedger && (
               <span
                 style={{
                   fontWeight: 'bold'
@@ -131,7 +131,7 @@ export const AccountView: FunctionComponent = observer(() => {
             <div style={{ width: 6 }} />
             <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
           </div>
-          {checkTronNetwork && tronAddress && (
+          {checkTronNetwork && !accountInfo.isNanoLedger && tronAddress && (
             <div className={styleAccount.address} style={{ marginBottom: '6px' }} onClick={() => copyAddress(tronAddress)}>
               <span
                 style={{

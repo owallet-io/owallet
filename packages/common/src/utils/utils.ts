@@ -1,3 +1,4 @@
+import { ChainInfo } from '@owallet/types';
 import { Base58 } from '@ethersproject/basex';
 import { sha256 } from '@ethersproject/sha2';
 import bech32, { fromWords } from 'bech32';
@@ -35,17 +36,47 @@ export const getCoinTypeByChainId = (chainId) => {
   return network?.bip44?.coinType ?? network?.coinType ?? 60;
 };
 
+export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
+  const chainInfo = EmbedChainInfos.find((nw) => nw.chainId == chainId);
+  if (!chainInfo) {
+    throw new Error(`There is no chain info for ${chainId}`);
+  }
+  return chainInfo;
+};
+export const isEthermintLike = (chainInfo: ChainInfo): boolean => {
+  return (
+    chainInfo?.networkType === 'evm' ||
+    chainInfo.bip44.coinType === 60 ||
+    !!chainInfo.features?.includes('eth-address-gen') ||
+    !!chainInfo.features?.includes('eth-key-sign') ||
+    !!chainInfo.features?.includes('isEvm')
+  );
+};
 export const getUrlV1Beta = (isBeta: boolean) => {
-  if (isBeta) return 'v1beta';
+  if (isBeta) return 'v1beta1';
   return 'v1';
 };
 export const bufferToHex = (buffer) => {
   return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
 };
-
+export const formatCoinTypeToLedgerAppName = (coinType: number, bip: number = 44) => {
+  if (bip === 44) {
+    if (coinType === 60) {
+      return 'eth';
+    } else if (coinType === 195) {
+      return 'trx';
+    } else {
+      return 'cosmos';
+    }
+  }
+  return 'cosmos';
+};
 export function formatNeworkTypeToLedgerAppName(network: string, chainId?: string | number): LedgerAppType {
   switch (network) {
     case 'cosmos':
+      if ((chainId as string).startsWith('injective')) {
+        return 'eth';
+      }
       return 'cosmos';
     case 'evm':
       if (chainId && chainId === TRON_ID) {

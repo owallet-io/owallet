@@ -182,7 +182,10 @@ export const SignModal: FunctionComponent<{
           );
         });
       } else if (mode === 'direct') {
+        console.log("🚀 ~ file: index.tsx:186 ~ return ~ msgs:", msgs)
         return (msgs as any[]).map((msg, i) => {
+          
+          console.log("🚀 ~ file: index.tsx:186 ~ return ~ msg:", msg)
           const chainInfo = chainStore.getChain(chainId);
           const { title, content } = renderDirectMessage(
             msg,
