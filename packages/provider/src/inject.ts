@@ -1008,10 +1008,12 @@ export class InjectedTronWebOWallet implements ITronWeb {
             try {
               result = await tronweb.getDefaultAddress();
               localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
-              result = {
-                code: 200,
-                message: 'The site is already in the whitelist'
-              };
+              if (!isReactNative()) {
+                result = {
+                  code: 200,
+                  message: 'The site is already in the whitelist'
+                };
+              }
             } catch (error) {
               result = {
                 code: error?.code,
