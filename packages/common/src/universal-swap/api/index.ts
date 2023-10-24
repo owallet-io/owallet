@@ -1,19 +1,16 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
-import { network } from '../config/networks';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
-import { TokenItemType } from '@oraichain/oraidex-common';
+import { TokenItemType, TokenInfo, toTokenInfo, network } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
   OraiswapTokenQueryClient,
   OraiswapTokenTypes,
   SwapOperation
 } from '@oraichain/oraidex-contracts-sdk';
-import { TokenInfo } from '../types/token';
-import { toTokenInfo } from '../libs/utils';
 import { ORAI_INFO, swapEvmRoutes } from '../config/constants';
 import { Pairs } from '../config/pools';
 import isEqual from 'lodash/isEqual';
-import { coin, Coin } from '@cosmjs/stargate';
+import { Coin } from '@cosmjs/stargate';
 
 async function fetchTokenInfo(token: TokenItemType, client): Promise<TokenInfo> {
   let data: OraiswapTokenTypes.TokenInfoResponse;

@@ -1,20 +1,9 @@
-import {
-  CosmWasmClient,
-  fromBinary,
-  toBinary
-} from '@cosmjs/cosmwasm-stargate';
+import { CosmWasmClient, fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { flatten, uniq } from 'lodash';
-import { TokenItemType, assetInfoMap } from './bridgeTokens';
-import { MILKY, ORAI, STABLE_DENOM } from './constants';
-import {
-  AssetInfo,
-  MulticallQueryClient,
-  MulticallReadOnlyInterface
-} from '@oraichain/common-contracts-sdk';
+import { ORAI } from './constants';
+import { AssetInfo, MulticallQueryClient, MulticallReadOnlyInterface } from '@oraichain/common-contracts-sdk';
 import { PairInfo } from '@oraichain/oraidex-contracts-sdk';
-import { network } from './networks';
-import { PairInfoExtend } from '../types/token';
-import { parseAssetInfo } from '../helper';
+import { TokenItemType, assetInfoMap, network, PairInfoExtend, parseAssetInfo } from '@oraichain/oraidex-common';
 
 export type PairMapping = {
   asset_infos: [AssetInfo, AssetInfo];
@@ -89,10 +78,7 @@ export class Pairs {
       ]
     },
     {
-      asset_infos: [
-        { native_token: { denom: ORAI } },
-        { token: { contract_addr: process.env.REACT_APP_TRX_CONTRACT } }
-      ]
+      asset_infos: [{ native_token: { denom: ORAI } }, { token: { contract_addr: process.env.REACT_APP_TRX_CONTRACT } }]
     },
     {
       asset_infos: [
@@ -109,11 +95,7 @@ export class Pairs {
   ];
 
   public static getPoolTokens(): TokenItemType[] {
-    return uniq(
-      flatten(this.pairs.map(pair => pair.asset_infos)).map(
-        info => assetInfoMap[parseAssetInfo(info)]
-      )
-    );
+    return uniq(flatten(this.pairs.map(pair => pair.asset_infos)).map(info => assetInfoMap[parseAssetInfo(info)]));
   }
 
   static getAllPairs = async (
@@ -147,24 +129,15 @@ export class Pairs {
       let firstInfoIndex = 0;
       let secondInfoIndex = 1;
       // we reverse the pair because the main asset info is not USDT, but the other token
-      if (
-        parseAssetInfo(pair.asset_infos[0]) ===
-        process.env.REACT_APP_USDT_CONTRACT
-      ) {
+      if (parseAssetInfo(pair.asset_infos[0]) === process.env.REACT_APP_USDT_CONTRACT) {
         firstInfoIndex = 1;
         secondInfoIndex = 0;
       }
       const { asset_infos } = pair;
       return {
         ...pair,
-        asset_infos: [
-          asset_infos[firstInfoIndex],
-          asset_infos[secondInfoIndex]
-        ],
-        asset_infos_raw: [
-          parseAssetInfo(asset_infos[firstInfoIndex]),
-          parseAssetInfo(asset_infos[secondInfoIndex])
-        ]
+        asset_infos: [asset_infos[firstInfoIndex], asset_infos[secondInfoIndex]],
+        asset_infos_raw: [parseAssetInfo(asset_infos[firstInfoIndex]), parseAssetInfo(asset_infos[secondInfoIndex])]
       };
     });
   };
@@ -173,42 +146,23 @@ export class Pairs {
     client: CosmWasmClient,
     multicallClient?: MulticallReadOnlyInterface
   ): Promise<PairInfoExtend[]> => {
-    const firstVersionWhiteListPairs = this.pairs.filter(
-      pair => pair.factoryV1
-    );
-    const secondVersionWhiteListPairs = this.pairs.filter(
-      pair => !firstVersionWhiteListPairs.includes(pair)
-    );
+    const firstVersionWhiteListPairs = this.pairs.filter(pair => pair.factoryV1);
+    const secondVersionWhiteListPairs = this.pairs.filter(pair => !firstVersionWhiteListPairs.includes(pair));
     console.dir(secondVersionWhiteListPairs, { depth: null });
 
-    const multicall = multicallClient
-      ? multicallClient
-      : new MulticallQueryClient(client, network.multicall);
+    const multicall = multicallClient ? multicallClient : new MulticallQueryClient(client, network.multicall);
     const [firstVersionAllPairs, secondVersionAllPairs] = await Promise.all([
       this.getAllPairs(firstVersionWhiteListPairs, network.factory, multicall),
-      this.getAllPairs(
-        secondVersionWhiteListPairs,
-        network.factory_v2,
-        multicall
-      )
+      this.getAllPairs(secondVersionWhiteListPairs, network.factory_v2, multicall)
     ]);
-    return this.processFetchedAllPairInfos([
-      ...firstVersionAllPairs,
-      ...secondVersionAllPairs
-    ]);
+    return this.processFetchedAllPairInfos([...firstVersionAllPairs, ...secondVersionAllPairs]);
   };
 
   static getStakingAssetInfo = (assetInfos: AssetInfo[]): AssetInfo => {
-    return parseAssetInfo(assetInfos[0]) === ORAI
-      ? assetInfos[1]
-      : assetInfos[0];
+    return parseAssetInfo(assetInfos[0]) === ORAI ? assetInfos[1] : assetInfos[0];
   };
 
-  static getStakingInfoTokenItemTypeFromPairs = (
-    pairs: PairInfo[]
-  ): TokenItemType[] => {
-    return pairs.map(
-      p => assetInfoMap[parseAssetInfo(this.getStakingAssetInfo(p.asset_infos))]
-    );
+  static getStakingInfoTokenItemTypeFromPairs = (pairs: PairInfo[]): TokenItemType[] => {
+    return pairs.map(p => assetInfoMap[parseAssetInfo(this.getStakingAssetInfo(p.asset_infos))]);
   };
 }

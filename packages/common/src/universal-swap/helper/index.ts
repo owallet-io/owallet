@@ -1,25 +1,26 @@
 import Long from 'long';
 import bech32 from 'bech32';
-import { network } from '../config/networks';
+import { TokenItemType, network } from '@oraichain/oraidex-common';
 import { Address } from '@owallet/crypto';
 import {
-  TokenItemType,
   cosmosTokens,
   flattenTokens,
-  gravityContracts,
   oraichainTokens,
   CoinGeckoId,
-  NetworkChainId
+  NetworkChainId,
+  toAmount,
+  toDisplay,
+  atomic,
+  parseTokenInfo
 } from '@oraichain/oraidex-common';
 import { TokenInfo } from '../types/token';
 import { SimulateSwapOperationsResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapRouter.types';
-import { generateSwapOperationMsgs, getEvmSwapRoute, isEvmSwappable, parseTokenInfo } from '../api';
-import { atomic, generateError, toAmount, toDisplay } from '../libs/utils';
+import { generateSwapOperationMsgs, getEvmSwapRoute, isEvmSwappable } from '../api';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
 import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '../config/constants';
 import { CosmWasmClient, OraiswapOracleQueryClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { AssetInfo, CwIcs20LatestQueryClient, Ratio } from '@oraichain/common-contracts-sdk';
+import { CwIcs20LatestQueryClient, Ratio } from '@oraichain/common-contracts-sdk';
 import { swapToTokens } from '../config';
 
 export enum SwapDirection {
@@ -74,11 +75,6 @@ export const getTransferTokenFee = async ({ remoteTokenDenom, client }): Promise
   } catch (error) {
     console.log({ error });
   }
-};
-
-export const parseAssetInfo = (assetInfo: AssetInfo): string => {
-  if ('native_token' in assetInfo) return assetInfo.native_token.denom;
-  return assetInfo.token.contract_addr;
 };
 
 export function getTokenOnSpecificChainId(
