@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { PageWithScrollView } from '../../../components/page';
 import { Platform, StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
@@ -14,7 +9,7 @@ import { NewMnemonicConfig } from './hook';
 import { RegisterConfig } from '@owallet/hooks';
 import { observer } from 'mobx-react-lite';
 import { RectButton } from '../../../components/rect-button';
-import { BIP44HDPath } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 import { useStore } from '../../../stores';
 import { navigate, checkRouter } from '../../../router/root';
 import { spacing, typography } from '../../../themes';
@@ -22,7 +17,7 @@ import { OWalletLogo } from '../owallet-logo';
 import OWButton from '@src/components/button/OWButton';
 import { SCREENS } from '@src/common/constants';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
+export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -59,7 +54,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map(word => {
+      randomSortedWords.map((word) => {
         return {
           word,
           usedIndex: -1
@@ -73,7 +68,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
+  const firstEmptyWordSetIndex = wordSet.findIndex((word) => word === undefined);
 
   const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
@@ -218,9 +213,7 @@ const WordButton: FunctionComponent<{
   return (
     <RectButton
       style={{
-        backgroundColor: used
-          ? colors['background-btn-mnemonic-active']
-          : colors['background-container'],
+        backgroundColor: used ? colors['background-btn-mnemonic-active'] : colors['background-container'],
         paddingTop: 4,
         paddingBottom: 4,
         paddingLeft: 12,
@@ -229,9 +222,7 @@ const WordButton: FunctionComponent<{
         marginBottom: 12,
         borderRadius: 8,
         borderWidth: used ? 0 : 1,
-        borderColor: used
-          ? colors['background-container']
-          : colors['btn-mnemonic']
+        borderColor: used ? colors['background-container'] : colors['btn-mnemonic']
       }}
       onPress={onPress}
     >
@@ -277,13 +268,7 @@ const WordsCard: FunctionComponent<{
     >
       {wordSet.map((word, i) => {
         return (
-          <WordChip
-            key={i.toString()}
-            index={i + 1}
-            word={word.word}
-            empty={word.empty}
-            dashedBorder={word.dashed}
-          />
+          <WordChip key={i.toString()} index={i + 1} word={word.word} empty={word.empty} dashedBorder={word.dashed} />
         );
       })}
     </View>

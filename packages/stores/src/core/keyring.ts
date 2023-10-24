@@ -3,7 +3,7 @@ import {
   AddLedgerKeyMsg,
   AddMnemonicKeyMsg,
   AddPrivateKeyMsg,
-  BIP44HDPath,
+  
   ChangeKeyRingMsg,
   CreateLedgerKeyMsg,
   CreateMnemonicKeyMsg,
@@ -27,7 +27,7 @@ import {
   ChangeChainMsg,
   AddressesLedger
 } from '@owallet/background';
-
+import { BIP44HDPath } from '@owallet/types';
 import { computed, flow, makeObservable, observable, runInAction } from 'mobx';
 
 import { InteractionStore } from './interaction';

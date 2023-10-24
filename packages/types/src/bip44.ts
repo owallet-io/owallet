@@ -3,7 +3,7 @@ export interface BIP44 {
 }
 export type BIP44HDPath = {
   coinType?: number;
-  account?: number;
-  change?: number;
-  addressIndex?: number;
+  account: number;
+  change: number;
+  addressIndex: number;
 };

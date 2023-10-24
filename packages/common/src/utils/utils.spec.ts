@@ -1,6 +1,6 @@
 import { Bech32Address } from '@owallet/cosmos';
 import * as utils from './utils';
-import { BIP44HDPath } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 describe('utils', () => {
   it('getChainInfoOrThrow', () => {
     const expected = {
