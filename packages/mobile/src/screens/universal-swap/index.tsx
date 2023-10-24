@@ -35,9 +35,9 @@ import {
   getTransferTokenFee,
   handleSimulateSwap
 } from '@owallet/common';
-import { fetchTokenInfos, toSubAmount } from '@owallet/common';
+import { fetchTokenInfos, toSubAmount, toDisplay } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
-import { calculateMinReceive, getTokenOnOraichain, network, toDisplay, truncDecimals } from '@oraichain/oraidex-common';
+import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
@@ -548,7 +548,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             tokenFee={fromTokenFee}
           />
           <SwapBox
-            amount={toDisplay(toAmountToken.toString(), originalFromToken?.decimals).toString() ?? '0'}
+            amount={toDisplay(toAmountToken.toString(), originalToToken?.decimals).toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
             onOpenTokenModal={() => setIsSelectToTokenModal(true)}

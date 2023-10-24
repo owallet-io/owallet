@@ -28,10 +28,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
 
   return (
     <View style={[styles.containerInputSelectToken]}>
-      <TouchableOpacity
-        onPress={onOpenTokenModal}
-        style={styles.btnChainContainer}
-      >
+      <TouchableOpacity onPress={onOpenTokenModal} style={styles.btnChainContainer}>
         <OWIcon type="images" source={{ uri: tokenActive?.Icon }} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
