@@ -1,5 +1,5 @@
 import { TokenInfoResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapToken.types';
-import { TokenItemType, tokenMap } from '../config/bridgeTokens';
+import { TokenItemType, tokenMap } from '@oraichain/oraidex-common';
 import { AmountDetails } from '../types/token';
 import { CoinGeckoPrices, TokenInfo } from '../types';
 export const truncDecimals = 6;
@@ -17,10 +17,7 @@ export const generateError = (message: string) => {
   return { ex: { message } };
 };
 
-export const toTokenInfo = (
-  token: TokenItemType,
-  info?: TokenInfoResponse
-): TokenInfo => {
+export const toTokenInfo = (token: TokenItemType, info?: TokenInfoResponse): TokenInfo => {
   const data = (info as any)?.token_info_response ?? info;
   return {
     ...token,
@@ -39,10 +36,7 @@ export const validateNumber = (amount: number | string): number => {
 // decimals always >= 6
 export const toAmount = (amount: number | string, decimals = 6): bigint => {
   const validatedAmount = validateNumber(amount);
-  return (
-    BigInt(Math.trunc(validatedAmount * atomic)) *
-    BigInt(10 ** (decimals - truncDecimals))
-  );
+  return BigInt(Math.trunc(validatedAmount * atomic)) * BigInt(10 ** (decimals - truncDecimals));
 };
 
 /**
@@ -65,30 +59,17 @@ export const toDecimal = (numerator: bigint, denominator: bigint): number => {
  * @param {number} desDecimals - The number of decimal places in the `amount` after conversion.
  * @return {number} The value of `amount` after conversion.
  */
-export const toDisplay = (
-  amount: string | bigint,
-  sourceDecimals = 6,
-  desDecimals = 6
-): number => {
+export const toDisplay = (amount: string | bigint, sourceDecimals = 6, desDecimals = 6): number => {
   if (!amount) return 0;
   // guarding conditions to prevent crashing
-  const validatedAmount =
-    typeof amount === 'string' ? BigInt(amount || '0') : amount;
+  const validatedAmount = typeof amount === 'string' ? BigInt(amount || '0') : amount;
   const displayDecimals = Math.min(truncDecimals, desDecimals);
-  const returnAmount =
-    validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));
+  const returnAmount = validatedAmount / BigInt(10 ** (sourceDecimals - displayDecimals));
   // save calculation by using cached atomic
-  return (
-    Number(returnAmount) /
-    (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals)
-  );
+  return Number(returnAmount) / (displayDecimals === truncDecimals ? atomic : 10 ** displayDecimals);
 };
 
-export const getTotalUsd = (
-  amounts: AmountDetails,
-  prices: CoinGeckoPrices<string>,
-  token: TokenItemType
-): number => {
+export const getTotalUsd = (amounts: AmountDetails, prices: CoinGeckoPrices<string>, token: TokenItemType): number => {
   let usd = 0;
   if (!token) return 0;
   const amount = toDisplay(amounts[token.denom], token.decimals);
@@ -96,10 +77,7 @@ export const getTotalUsd = (
   return usd;
 };
 
-export const getSubAmountDetails = (
-  amounts: AmountDetails,
-  tokenInfo: TokenItemType
-): AmountDetails => {
+export const getSubAmountDetails = (amounts: AmountDetails, tokenInfo: TokenItemType): AmountDetails => {
   if (!tokenInfo.evmDenoms) return {};
   return Object.fromEntries(
     tokenInfo.evmDenoms.map(denom => {
@@ -138,28 +116,16 @@ export const toSumDisplay = (amounts: AmountDetails): number => {
   return amount;
 };
 
-export const toSubDisplay = (
-  amounts: AmountDetails,
-  tokenInfo: TokenItemType
-): number => {
+export const toSubDisplay = (amounts: AmountDetails, tokenInfo: TokenItemType): number => {
   const subAmounts = getSubAmountDetails(amounts, tokenInfo);
   return toSumDisplay(subAmounts);
 };
 
-export const toTotalDisplay = (
-  amounts: AmountDetails,
-  tokenInfo: TokenItemType
-): number => {
-  return (
-    toDisplay(amounts[tokenInfo.denom], tokenInfo.decimals) +
-    toSubDisplay(amounts, tokenInfo)
-  );
+export const toTotalDisplay = (amounts: AmountDetails, tokenInfo: TokenItemType): number => {
+  return toDisplay(amounts[tokenInfo.denom], tokenInfo.decimals) + toSubDisplay(amounts, tokenInfo);
 };
 
-export const toSubAmount = (
-  amounts: AmountDetails,
-  tokenInfo: TokenItemType
-): bigint => {
+export const toSubAmount = (amounts: AmountDetails, tokenInfo: TokenItemType): bigint => {
   const displayAmount = toSubDisplay(amounts, tokenInfo);
   return toAmount(displayAmount, tokenInfo.decimals);
 };

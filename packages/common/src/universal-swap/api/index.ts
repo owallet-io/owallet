@@ -1,7 +1,7 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { network } from '../config/networks';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
-import { TokenItemType } from '../config/bridgeTokens';
+import { TokenItemType } from '@oraichain/oraidex-common';
 import {
   AssetInfo,
   OraiswapTokenQueryClient,
@@ -15,26 +15,17 @@ import { Pairs } from '../config/pools';
 import isEqual from 'lodash/isEqual';
 import { coin, Coin } from '@cosmjs/stargate';
 
-async function fetchTokenInfo(
-  token: TokenItemType,
-  client
-): Promise<TokenInfo> {
+async function fetchTokenInfo(token: TokenItemType, client): Promise<TokenInfo> {
   let data: OraiswapTokenTypes.TokenInfoResponse;
   if (token.contractAddress) {
-    const tokenContract = new OraiswapTokenQueryClient(
-      client,
-      token.contractAddress
-    );
+    const tokenContract = new OraiswapTokenQueryClient(client, token.contractAddress);
     data = await tokenContract.tokenInfo();
   }
   return toTokenInfo(token, data);
 }
 
 /// using multicall when query multiple
-async function fetchTokenInfos(
-  tokens: TokenItemType[],
-  client
-): Promise<TokenInfo[]> {
+async function fetchTokenInfos(tokens: TokenItemType[], client): Promise<TokenInfo[]> {
   const filterTokenSwaps = tokens.filter(t => t.contractAddress);
   const queries = filterTokenSwaps.map(t => ({
     address: t.contractAddress,
@@ -50,22 +41,14 @@ async function fetchTokenInfos(
     });
     let ind = 0;
     tokenInfos = tokens.map(t =>
-      toTokenInfo(
-        t,
-        t.contractAddress && res.return_data[ind].success
-          ? fromBinary(res.return_data[ind++].data)
-          : t
-      )
+      toTokenInfo(t, t.contractAddress && res.return_data[ind].success ? fromBinary(res.return_data[ind++].data) : t)
     );
   } catch (error) {
     console.log('error fetching token infos: ', error);
   }
   return tokenInfos;
 }
-export function buildSwapRouterKey(
-  fromContractAddr: string,
-  toContractAddr: string
-) {
+export function buildSwapRouterKey(fromContractAddr: string, toContractAddr: string) {
   return `${fromContractAddr}-${toContractAddr}`;
 }
 
@@ -75,8 +58,7 @@ export function getEvmSwapRoute(
   toContractAddr: string
 ): string[] | undefined {
   const chainRoutes = swapEvmRoutes[chainId];
-  let route: string[] | undefined =
-    chainRoutes[buildSwapRouterKey(fromContractAddr, toContractAddr)];
+  let route: string[] | undefined = chainRoutes[buildSwapRouterKey(fromContractAddr, toContractAddr)];
   if (route) return route;
   // because the route can go both ways. Eg: WBNB->AIRI, if we want to swap AIRI->WBNB, then first we find route WBNB->AIRI, then we reverse the route
   route = chainRoutes[buildSwapRouterKey(toContractAddr, fromContractAddr)];
@@ -100,8 +82,7 @@ export function isEvmSwappable(data: {
   // if the tokens do not have contract addresses then we skip
   if (!fromContractAddr || !toContractAddr) return false;
   // only swappable if there's a route to swap from -> to
-  if (!getEvmSwapRoute(fromChainId, fromContractAddr, toContractAddr))
-    return false;
+  if (!getEvmSwapRoute(fromChainId, fromContractAddr, toContractAddr)) return false;
   return true;
 }
 
@@ -117,10 +98,7 @@ function parseTokenInfo(tokenInfo: TokenItemType, amount?: string | number) {
   return { info: { token: { contract_addr: tokenInfo?.contractAddress } } };
 }
 
-const generateSwapOperationMsgs = (
-  offerInfo: AssetInfo,
-  askInfo: AssetInfo
-): SwapOperation[] => {
+const generateSwapOperationMsgs = (offerInfo: AssetInfo, askInfo: AssetInfo): SwapOperation[] => {
   const pairExist = Pairs.pairs.some(pair => {
     let assetInfos = pair.asset_infos;
     return (
@@ -165,12 +143,7 @@ const handleSentFunds = (...funds: (Coin | undefined)[]): Coin[] | null => {
 };
 
 function generateContractMessages(
-  query:
-    | SwapQuery
-    | ProvideQuery
-    | WithdrawQuery
-    | IncreaseAllowanceQuery
-    | TransferQuery
+  query: SwapQuery | ProvideQuery | WithdrawQuery | IncreaseAllowanceQuery | TransferQuery
 ) {
   const { type, sender, ...params } = query;
   let sent_funds;
@@ -180,13 +153,8 @@ function generateContractMessages(
   switch (type) {
     case Type.SWAP:
       const swapQuery = params as SwapQuery;
-      const { fund: offerSentFund, info: offerInfo } = parseTokenInfo(
-        swapQuery.fromInfo,
-        swapQuery.amount.toString()
-      );
-      const { fund: askSentFund, info: askInfo } = parseTokenInfo(
-        swapQuery.toInfo
-      );
+      const { fund: offerSentFund, info: offerInfo } = parseTokenInfo(swapQuery.fromInfo, swapQuery.amount.toString());
+      const { fund: askSentFund, info: askInfo } = parseTokenInfo(swapQuery.toInfo);
       sent_funds = handleSentFunds(offerSentFund, askSentFund);
       let inputTemp = {
         execute_swap_operations: {
@@ -210,14 +178,8 @@ function generateContractMessages(
       break;
     case Type.PROVIDE:
       const provideQuery = params as ProvideQuery;
-      const { fund: fromSentFund, info: fromInfoData } = parseTokenInfo(
-        provideQuery.fromInfo,
-        provideQuery.fromAmount
-      );
-      const { fund: toSentFund, info: toInfoData } = parseTokenInfo(
-        provideQuery.toInfo,
-        provideQuery.toAmount
-      );
+      const { fund: fromSentFund, info: fromInfoData } = parseTokenInfo(provideQuery.fromInfo, provideQuery.fromAmount);
+      const { fund: toSentFund, info: toInfoData } = parseTokenInfo(provideQuery.toInfo, provideQuery.toAmount);
       sent_funds = handleSentFunds(fromSentFund, toSentFund);
       input = {
         provide_liquidity: {
@@ -343,10 +305,4 @@ export type IncreaseAllowanceQuery = {
   token: string; //token contract addr
 };
 
-export {
-  fetchTokenInfo,
-  fetchTokenInfos,
-  parseTokenInfo,
-  generateSwapOperationMsgs,
-  generateContractMessages
-};
+export { fetchTokenInfo, fetchTokenInfos, parseTokenInfo, generateSwapOperationMsgs, generateContractMessages };

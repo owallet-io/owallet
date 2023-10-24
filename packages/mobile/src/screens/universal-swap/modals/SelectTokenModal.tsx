@@ -1,10 +1,5 @@
 import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { registerModal } from '@src/modals/base';
 import images from '@src/assets/images';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -35,12 +30,7 @@ export const SelectTokenModal: FunctionComponent<{
   const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
-    if (
-      keyword === '' ||
-      keyword === null ||
-      keyword === undefined ||
-      !keyword
-    ) {
+    if (keyword === '' || keyword === null || keyword === undefined || !keyword) {
       setTokens(data);
     } else {
       const tmpData = data.filter(
@@ -103,10 +93,7 @@ export const SelectTokenModal: FunctionComponent<{
             </View>
             <View style={styles.rightBoxItem}>
               <Text color={colors['text-title']}>
-                {toDisplay(
-                  universalSwapStore?.getAmount?.[item.denom],
-                  item.decimals
-                )}
+                {toDisplay(universalSwapStore?.getAmount?.[item.denom], item.decimals)}
               </Text>
               <Text weight="500" color={colors['blue-400']}>
                 ${totalUsd.toFixed(2) ?? 0}
@@ -120,9 +107,7 @@ export const SelectTokenModal: FunctionComponent<{
   );
 
   return (
-    <View
-      style={[styles.containerModal, { paddingBottom: safeAreaInsets.bottom }]}
-    >
+    <View style={[styles.containerModal, { paddingBottom: safeAreaInsets.bottom }]}>
       <View>
         <TextInput
           style={styles.textInput}
@@ -140,7 +125,7 @@ export const SelectTokenModal: FunctionComponent<{
         <Text color={colors['blue-400']} weight="500">
           List Token
         </Text>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => {
             onNetworkModal();
           }}
@@ -155,7 +140,7 @@ export const SelectTokenModal: FunctionComponent<{
             Network
           </Text>
           <OWIcon size={16} color={colors['blue-400']} name="down" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <OWFlatList
         isBottomSheet

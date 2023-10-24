@@ -1,5 +1,5 @@
 import { PairInfo } from '@oraichain/oraidex-contracts-sdk';
-import { TokenItemType } from '../config/bridgeTokens';
+import { TokenItemType } from '@oraichain/oraidex-common';
 
 export type TokenInfo = TokenItemType & {
   symbol?: string;

@@ -11,7 +11,7 @@ import { ToastShowParams } from 'react-native-toast-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
-const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';=
+const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const FAILED = 'FAILED';
 export const SUCCESS = 'SUCCESS';
 export const isAndroid = Platform.OS === 'android';

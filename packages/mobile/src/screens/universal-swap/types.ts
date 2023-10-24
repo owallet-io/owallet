@@ -1,5 +1,5 @@
 import { ImageProps } from 'react-native';
-import { TokenItemType } from '@owallet/common';
+import { TokenItemType } from '@oraichain/oraidex-common';
 
 export type voidNode = () => React.ReactNode;
 export type NodeElement = React.ReactNode | voidNode;

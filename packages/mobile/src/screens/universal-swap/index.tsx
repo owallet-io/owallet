@@ -23,22 +23,21 @@ import {
 } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
-import { NetworkChainId, oraichainNetwork } from '@owallet/common';
-import { TokenItemType, evmTokens, tokenMap } from '@owallet/common';
+import { evmTokens } from '@owallet/common';
+import { TokenItemType, NetworkChainId, oraichainNetwork, tokenMap, toAmount } from '@oraichain/oraidex-common';
 import {
   SwapDirection,
   calculateMinimum,
   feeEstimate,
   fetchTaxRate,
   filterTokens,
-  getTokenOnOraichain,
   getTokenOnSpecificChainId,
   getTransferTokenFee,
   handleSimulateSwap
 } from '@owallet/common';
-import { fetchTokenInfos } from '@owallet/common';
+import { fetchTokenInfos, toSubAmount } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
-import { toDisplay, toSubAmount } from '@owallet/common';
+import { calculateMinReceive, getTokenOnOraichain, network, toDisplay, truncDecimals } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
@@ -46,7 +45,6 @@ import {
   UniversalSwapData,
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
-import { toAmount } from '@oraichain/oraidex-common';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import DeviceInfo from 'react-native-device-info';
 import { OWallet } from '@owallet/provider';
@@ -56,10 +54,13 @@ import { BalanceType, MAX, balances, oraidexURL } from './types';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore } = useStore();
+  const { colors } = useTheme();
+  const { data: prices } = useCoinGeckoPrices();
+
   const accountEvm = accountStore.getAccount(ETH_ID);
   const accountTron = accountStore.getAccount(TRON_ID);
   const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
-  const { colors } = useTheme();
+
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
@@ -84,15 +85,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [client, setClient] = useState(null);
 
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
-
-  const { data: prices } = useCoinGeckoPrices();
-
-  useEffect(() => {
-    handleFetchAmounts();
-    setTimeout(() => {
-      handleFetchAmounts();
-    }, 2000);
-  }, []);
 
   const getClient = async () => {
     const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
@@ -242,6 +234,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error loadTokenAmounts', error);
     }
   };
+
+  useEffect(() => {
+    handleFetchAmounts();
+    setTimeout(() => {
+      handleFetchAmounts();
+    }, 2000);
+  }, []);
 
   const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
   const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
@@ -515,12 +514,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         setSearchTokenName={setSearchTokenName}
         isOpen={isSelectToTokenModal}
       />
-      <SelectNetworkModal
+      {/* <SelectNetworkModal
         close={() => {
           setIsNetworkModal(false);
         }}
         isOpen={isNetworkModal}
-      />
+      /> */}
       <View>
         <View style={styles.boxTop}>
           <Text color={colors['text-title-login']} variant="h3" weight="700">
