@@ -98,7 +98,13 @@ export function splitPath(path: string): BIP44HDPath {
 
   return result;
 }
-
+export const isWeb = typeof document !== 'undefined';
+export const isReactNative = (): boolean => {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return true;
+  }
+  return false;
+};
 export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   switch (path.coinType) {
     case 118:

@@ -1,3 +1,4 @@
+import { isReactNative } from '@owallet/common';
 import {
   ChainInfo,
   OWallet,
@@ -30,7 +31,7 @@ import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 export const localStore = new Map<string, any>();
 
 export interface ProxyRequest {
-  type: 'proxy-request';
+  type: 'proxy-request' | 'owallet-proxy-request';
   id: string;
   namespace: string;
   method: keyof OWallet | Ethereum | string;
@@ -50,6 +51,7 @@ export interface ProxyRequestResponse {
  * So, to request some methods of the extension, this will proxy the request to the content script that is injected to webpage on the extension level.
  * This will use `window.postMessage` to interact with the content script.
  */
+const checkType: any = isReactNative() ? 'proxy-request' : `${NAMESPACE}-proxy-request`;
 export class InjectedOWallet implements IOWallet {
   static startProxy(
     owallet: IOWallet,
@@ -67,7 +69,7 @@ export class InjectedOWallet implements IOWallet {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== 'proxy-request' || message.namespace !== NAMESPACE) {
+      if (!message || message.type !== checkType || message.namespace !== NAMESPACE) {
         return;
       }
 
@@ -183,7 +185,7 @@ export class InjectedOWallet implements IOWallet {
       .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: 'proxy-request',
+      type: checkType,
       namespace: NAMESPACE,
       id,
       method,
