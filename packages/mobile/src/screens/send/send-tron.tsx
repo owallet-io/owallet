@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useSendTxConfig } from '@owallet/hooks';
 import { useStore } from '../../stores';
-import { EthereumEndpoint } from '@owallet/common';
+import { EthereumEndpoint, getBase58Address } from '@owallet/common';
 import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
@@ -18,7 +18,7 @@ import { Address } from '@owallet/crypto';
 import { findLedgerAddressWithChainId } from '../../utils/helper';
 import { useTheme } from '@src/themes/theme-provider';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -38,7 +38,7 @@ const styling = colors =>
     }
   });
 
-export const SendTronScreen: FunctionComponent = observer(props => {
+export const SendTronScreen: FunctionComponent = observer((props) => {
   const {
     chainStore,
     accountStore,
@@ -77,9 +77,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -95,7 +93,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
         if (cur.coinDenom === route.params.currency) {
           return cur.coinDenom === route.params.currency;
         }
@@ -141,9 +139,7 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             label="Send to"
             labelStyle={styles.sendlabelInput}
             value={receiveAddress}
-            onChange={({ nativeEvent: { eventCount, target, text } }) =>
-              setReceiveAddress(text)
-            }
+            onChange={({ nativeEvent: { eventCount, target, text } }) => setReceiveAddress(text)}
             autoCorrect={false}
             autoCapitalize="none"
             autoCompleteType="off"
@@ -166,13 +162,10 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
-                    if (
-                      sendConfigs.feeConfig.feeCurrency &&
-                      !sendConfigs.feeConfig.fee
-                    ) {
+                    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
                       sendConfigs.feeConfig.setFeeType('average');
                     }
                   }
@@ -197,10 +190,8 @@ export const SendTronScreen: FunctionComponent = observer(props => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
+              onChangeText={(text) => {
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
@@ -229,15 +220,11 @@ export const SendTronScreen: FunctionComponent = observer(props => {
             onPress={async () => {
               let amount;
               if (route?.params?.item?.type === 'trc20') {
-                amount = Number(
-                  (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
-                );
+                amount = Number((sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.'));
               } else {
-                amount = new Dec(
-                  Number(
-                    (sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.')
-                  )
-                ).mul(DecUtils.getTenExponentNInPrecisionRange(6));
+                amount = new Dec(Number((sendConfigs.amountConfig.amount ?? '0').replace(/,/g, '.'))).mul(
+                  DecUtils.getTenExponentNInPrecisionRange(6)
+                );
               }
               try {
                 await account.sendTronToken(
@@ -245,13 +232,10 @@ export const SendTronScreen: FunctionComponent = observer(props => {
                   sendConfigs.amountConfig.sendCurrency!,
                   receiveAddress,
                   keyRingStore.keyRingType === 'ledger'
-                    ? findLedgerAddressWithChainId(
-                        keyRingStore.keyRingLedgerAddresses,
-                        chainStore.current.chainId
-                      )
-                    : Address.getBase58Address(account.evmosHexAddress),
+                    ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
+                    : getBase58Address(account.evmosHexAddress),
                   {
-                    onBroadcasted: txHash => {
+                    onBroadcasted: (txHash) => {
                       smartNavigation.pushSmart('TxPendingResult', {
                         txHash: Buffer.from(txHash).toString('hex')
                       });

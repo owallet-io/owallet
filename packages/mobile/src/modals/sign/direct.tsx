@@ -57,7 +57,7 @@ export function renderDirectMessage(msg: any, currencies: AppCurrency[]) {
         msgExecuteContract.funds as CoinPrimitive[],
         undefined,
         msgExecuteContract.contract,
-        JSON.parse(fromUtf8(msgExecuteContract.msgExecuteContract))
+        JSON.parse(Buffer.from(msgExecuteContract.msg).toString())
       );
     }
 
