@@ -2,42 +2,25 @@ import Long from 'long';
 import bech32 from 'bech32';
 import { network } from '../config/networks';
 import { Address } from '@owallet/crypto';
-import { CoinGeckoId, NetworkChainId } from '../config/chainInfos';
 import {
   TokenItemType,
   cosmosTokens,
   flattenTokens,
   gravityContracts,
   oraichainTokens,
-  swapToTokens
-} from '../config/bridgeTokens';
+  CoinGeckoId,
+  NetworkChainId
+} from '@oraichain/oraidex-common';
 import { TokenInfo } from '../types/token';
 import { SimulateSwapOperationsResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapRouter.types';
-import {
-  generateSwapOperationMsgs,
-  getEvmSwapRoute,
-  isEvmSwappable,
-  parseTokenInfo
-} from '../api';
+import { generateSwapOperationMsgs, getEvmSwapRoute, isEvmSwappable, parseTokenInfo } from '../api';
 import { atomic, generateError, toAmount, toDisplay } from '../libs/utils';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
-import {
-  HIGH_GAS_PRICE,
-  MULTIPLIER,
-  proxyContractInfo,
-  swapEvmRoutes
-} from '../config/constants';
-import {
-  CosmWasmClient,
-  OraiswapOracleQueryClient,
-  OraiswapRouterQueryClient
-} from '@oraichain/oraidex-contracts-sdk';
-import {
-  AssetInfo,
-  CwIcs20LatestQueryClient,
-  Ratio
-} from '@oraichain/common-contracts-sdk';
+import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '../config/constants';
+import { CosmWasmClient, OraiswapOracleQueryClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { AssetInfo, CwIcs20LatestQueryClient, Ratio } from '@oraichain/common-contracts-sdk';
+import { swapToTokens } from '../config';
 
 export enum SwapDirection {
   From,
@@ -80,16 +63,10 @@ export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
   return (gasDefault * MULTIPLIER * HIGH_GAS_PRICE) / 10 ** tokenInfo?.decimals;
 };
 
-export const getTransferTokenFee = async ({
-  remoteTokenDenom,
-  client
-}): Promise<Ratio | undefined> => {
+export const getTransferTokenFee = async ({ remoteTokenDenom, client }): Promise<Ratio | undefined> => {
   try {
     const ibcWasmContractAddress = process.env.REACT_APP_IBC_WASM_CONTRACT;
-    const ibcWasmContract = new CwIcs20LatestQueryClient(
-      client,
-      ibcWasmContractAddress
-    );
+    const ibcWasmContract = new CwIcs20LatestQueryClient(client, ibcWasmContractAddress);
     const ratio = await ibcWasmContract.getTransferTokenFee({
       remoteTokenDenom
     });
@@ -108,13 +85,10 @@ export function getTokenOnSpecificChainId(
   coingeckoId: CoinGeckoId,
   chainId: NetworkChainId
 ): TokenItemType | undefined {
-  return flattenTokens.find(
-    t => t.coinGeckoId === coingeckoId && t.chainId === chainId
-  );
+  return flattenTokens.find(t => t.coinGeckoId === coingeckoId && t.chainId === chainId);
 }
 
-export const tronToEthAddress = (base58: string) =>
-  Address.getEvmAddress(base58);
+export const tronToEthAddress = (base58: string) => Address.getEvmAddress(base58);
 
 export const ethToTronAddress = (address: string) => {
   return Address.getBase58Address(address);
@@ -123,8 +97,7 @@ export const ethToTronAddress = (address: string) => {
 export const getEvmAddress = (bech32Address: string) => {
   if (!bech32Address) return;
   const decoded = bech32.decode(bech32Address);
-  const evmAddress =
-    '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
+  const evmAddress = '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
   return evmAddress;
 };
 
@@ -176,17 +149,11 @@ export async function simulateSwap(
     return data;
   } catch (error) {
     console.log(`Error when trying to simulate swap using router v2: ${error}`);
-    throw new Error(
-      `Error when trying to simulate swap using router v2: ${error}`
-    );
+    throw new Error(`Error when trying to simulate swap using router v2: ${error}`);
   }
 }
 
-export async function simulateSwapEvm(query: {
-  fromInfo: TokenItemType;
-  toInfo: TokenItemType;
-  amount: string;
-}) {
+export async function simulateSwapEvm(query: { fromInfo: TokenItemType; toInfo: TokenItemType; amount: string }) {
   const { amount, fromInfo, toInfo } = query;
 
   // check for universal-swap 2 tokens that have same coingeckoId, should return simulate data with average ratio 1-1.
@@ -198,19 +165,9 @@ export async function simulateSwapEvm(query: {
   try {
     // get proxy contract object so that we can query the corresponding router address
     const provider = new ethers.providers.JsonRpcProvider(fromInfo.rpc);
-    const toTokenInfoOnSameChainId = getTokenOnSpecificChainId(
-      toInfo.coinGeckoId,
-      fromInfo.chainId
-    );
-    const swapRouterV2 = IUniswapV2Router02__factory.connect(
-      proxyContractInfo[fromInfo.chainId].routerAddr,
-      provider
-    );
-    const route = getEvmSwapRoute(
-      fromInfo.chainId,
-      fromInfo.contractAddress,
-      toTokenInfoOnSameChainId.contractAddress
-    );
+    const toTokenInfoOnSameChainId = getTokenOnSpecificChainId(toInfo.coinGeckoId, fromInfo.chainId);
+    const swapRouterV2 = IUniswapV2Router02__factory.connect(proxyContractInfo[fromInfo.chainId].routerAddr, provider);
+    const route = getEvmSwapRoute(fromInfo.chainId, fromInfo.contractAddress, toTokenInfoOnSameChainId.contractAddress);
     const outs = await swapRouterV2.getAmountsOut(amount, route);
     console.log('outs simulateSwapEvm ===', outs, outs.slice(-1)[0].toString());
     return {
@@ -257,10 +214,7 @@ export async function handleSimulateSwap(
     return simulateSwapEvm({
       fromInfo: query.originalFromInfo,
       toInfo: query.originalToInfo,
-      amount: toAmount(
-        originalAmount,
-        query.originalFromInfo.decimals
-      ).toString()
+      amount: toAmount(originalAmount, query.originalFromInfo.decimals).toString()
     });
   }
 
@@ -275,42 +229,25 @@ export function filterTokens(
   direction: SwapDirection
 ) {
   // basic filter. Dont include itself & only collect tokens with searched letters
-  let filteredToTokens = swapToTokens.filter(
-    token => token.denom !== denom && token.name.includes(searchTokenName)
-  );
+  let filteredToTokens = swapToTokens.filter(token => token.denom !== denom && token.name.includes(searchTokenName));
   // special case for tokens not having a pool on Oraichain
   if (isSupportedNoPoolSwapEvm(coingeckoId)) {
-    const swappableTokens = Object.keys(swapEvmRoutes[chainId]).map(
-      key => key.split('-')[1]
-    );
-    const filteredTokens = filteredToTokens.filter(token =>
-      swappableTokens.includes(token.contractAddress)
-    );
+    const swappableTokens = Object.keys(swapEvmRoutes[chainId]).map(key => key.split('-')[1]);
+    const filteredTokens = filteredToTokens.filter(token => swappableTokens.includes(token.contractAddress));
 
     // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
     if (direction === SwapDirection.To)
-      return [
-        ...new Set(
-          filteredTokens.concat(
-            filteredTokens.map(token => getTokenOnOraichain(token.coinGeckoId))
-          )
-        )
-      ];
+      return [...new Set(filteredTokens.concat(filteredTokens.map(token => getTokenOnOraichain(token.coinGeckoId))))];
     filteredToTokens = filteredTokens;
   }
   return filteredToTokens;
 }
 
-export const calculateMinimum = (
-  simulateAmount: number | string,
-  userSlippage: number
-): bigint | string => {
+export const calculateMinimum = (simulateAmount: number | string, userSlippage: number): bigint | string => {
   if (!simulateAmount) return '0';
   try {
     return (
-      BigInt(simulateAmount) -
-      (BigInt(simulateAmount) * BigInt(userSlippage * atomic)) /
-        (BigInt(100) * BigInt(atomic))
+      BigInt(simulateAmount) - (BigInt(simulateAmount) * BigInt(userSlippage * atomic)) / (BigInt(100) * BigInt(atomic))
     );
   } catch (error) {
     console.log({ error });
@@ -318,14 +255,9 @@ export const calculateMinimum = (
   }
 };
 
-export const findToTokenOnOraiBridge = (
-  fromToken: TokenItemType,
-  toNetwork: NetworkChainId
-) => {
+export const findToTokenOnOraiBridge = (fromToken: TokenItemType, toNetwork: NetworkChainId) => {
   const toToken = cosmosTokens.find(t =>
-    t.chainId === 'oraibridge-subnet-2' &&
-    t.coinGeckoId === fromToken.coinGeckoId &&
-    t?.bridgeNetworkIdentifier
+    t.chainId === 'oraibridge-subnet-2' && t.coinGeckoId === fromToken.coinGeckoId && t?.bridgeNetworkIdentifier
       ? t.bridgeNetworkIdentifier === toNetwork
       : t.chainId === toNetwork
   );

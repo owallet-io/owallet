@@ -1,17 +1,15 @@
 import { StyleSheet, TextInput, View, TouchableOpacity } from 'react-native';
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { registerModal } from '@src/modals/base';
-import images from '@src/assets/images';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
-import { TokenItemType, tokenMap } from '@owallet/common';
+import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
-import { getTotalUsd, toDisplay } from '@owallet/common';
-import { AmountDetails } from '@owallet/common';
+import { getTotalUsd } from '@owallet/common';
 import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
 
 export const SelectTokenModal: FunctionComponent<{
