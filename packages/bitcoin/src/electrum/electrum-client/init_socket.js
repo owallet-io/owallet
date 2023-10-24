@@ -1,29 +1,13 @@
 'use strict';
-// const net = require('net');
-// const tls = require('tls');
-import { isWeb } from '@owallet/common';
 const TlsSocketWrapper = require('./TlsSocketWrapper.js');
 const TIMEOUT = 5000;
 
 const getSocket = (protocol, options) => {
   switch (protocol) {
     case 'tcp':
-        console.log('🚀 ~ file: init_socket.js:12 ~ getSocket ~ isWeb:', isWeb);
-      if (isWeb) {
-        console.log('🚀 ~ file: init_socket.js:12 ~ trong ~ isWeb:', isWeb);
-        // const net = require('net');
-        return new net.Socket();
-      }
-      
       return new net.Socket();
     case 'tls':
     case 'ssl':
-    //   if (isWeb) {
-    //     // const tls = require('tls');
-    //     if (!tls) throw new Error('tls package could not be loaded');
-    //     return new TlsSocketWrapper(tls);
-    //   }
-      console.log('🚀 ~ file: init_socket.js:12 ~ ssl ~ isWeb:', isWeb);
       if (!tls) throw new Error('tls package could not be loaded');
       return new TlsSocketWrapper(tls);
   }

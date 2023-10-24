@@ -1,4 +1,5 @@
-import { BIP44HDPath, ExportKeyRingData } from '@owallet/background';
+import {  ExportKeyRingData } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 import { NewMnemonicConfig } from './screens/register/mnemonic';
 import {
   AddressBookConfig,

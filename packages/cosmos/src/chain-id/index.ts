@@ -1,3 +1,4 @@
+export * from "./ethermint";
 export class ChainIdHelper {
   // VersionFormatRegExp checks if a chainID is in the format required for parsing versions
   // The chainID should be in the form: `{identifier}-{version}`

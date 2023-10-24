@@ -9,7 +9,7 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
-import { TRON_ID } from '@owallet/common';
+import { TRON_ID, getBase58Address } from '@owallet/common';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
@@ -21,11 +21,18 @@ export const AccountView: FunctionComponent = observer(() => {
   const checkTronNetwork = chainId === TRON_ID;
 
   const ledgerAddress =
-    keyRingStore.keyRingType == 'ledger' ? (checkTronNetwork ? keyRingStore?.keyRingLedgerAddresses?.trx : keyRingStore?.keyRingLedgerAddresses?.eth) : '';
+    keyRingStore.keyRingType == 'ledger'
+      ? checkTronNetwork
+        ? keyRingStore?.keyRingLedgerAddresses?.trx
+        : keyRingStore?.keyRingLedgerAddresses?.eth
+      : '';
 
-  const evmAddress = (accountInfo.hasEvmosHexAddress || networkType === 'evm') && accountInfo.evmosHexAddress;
+  const evmAddress =
+    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && accountInfo.evmosHexAddress;
   const tronAddress =
-    (accountInfo.hasEvmosHexAddress || networkType === 'evm') && checkTronNetwork ? Add.getBase58Address(accountInfo.evmosHexAddress ?? '') : null;
+    (accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && checkTronNetwork
+      ? getBase58Address(accountInfo.evmosHexAddress ?? '')
+      : null;
   const notification = useNotification();
 
   const copyAddress = useCallback(
@@ -69,7 +76,9 @@ export const AccountView: FunctionComponent = observer(() => {
           <div className={styleAccount.address} onClick={() => copyAddress(accountInfo.bech32Address)}>
             <span className={styleAccount.addressText}>
               <Address maxCharacters={22} lineBreakBeforePrefix={false}>
-                {accountInfo.walletStatus === WalletStatus.Loaded && accountInfo.bech32Address ? accountInfo.bech32Address : '...'}
+                {accountInfo.walletStatus === WalletStatus.Loaded && accountInfo.bech32Address
+                  ? accountInfo.bech32Address
+                  : '...'}
               </Address>
             </span>
             <div style={{ width: 6 }} />
@@ -93,7 +102,7 @@ export const AccountView: FunctionComponent = observer(() => {
             style={{ marginBottom: '6px' }}
             onClick={() => copyAddress(keyRingStore.keyRingType !== 'ledger' ? evmAddress : ledgerAddress)}
           >
-            {checkTronNetwork && (
+            {checkTronNetwork && !accountInfo.isNanoLedger && (
               <span
                 style={{
                   fontWeight: 'bold'
@@ -105,7 +114,9 @@ export const AccountView: FunctionComponent = observer(() => {
             <span className={styleAccount.addressText}>
               {keyRingStore.keyRingType !== 'ledger' ? (
                 <Address isRaw={true} tooltipAddress={evmAddress}>
-                  {accountInfo.walletStatus === WalletStatus.Loaded && accountInfo.evmosHexAddress && Add.shortAddress(evmAddress)}
+                  {accountInfo.walletStatus === WalletStatus.Loaded &&
+                    accountInfo.evmosHexAddress &&
+                    Add.shortAddress(evmAddress)}
                 </Address>
               ) : (
                 <Address isRaw={true} tooltipAddress={ledgerAddress}>
@@ -116,8 +127,12 @@ export const AccountView: FunctionComponent = observer(() => {
             <div style={{ width: 6 }} />
             <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
           </div>
-          {checkTronNetwork && tronAddress && (
-            <div className={styleAccount.address} style={{ marginBottom: '6px' }} onClick={() => copyAddress(tronAddress)}>
+          {checkTronNetwork && !accountInfo.isNanoLedger && tronAddress && (
+            <div
+              className={styleAccount.address}
+              style={{ marginBottom: '6px' }}
+              onClick={() => copyAddress(tronAddress)}
+            >
               <span
                 style={{
                   fontWeight: 'bold'
@@ -134,22 +149,7 @@ export const AccountView: FunctionComponent = observer(() => {
               <img src={require('../../public/assets/img/filled.svg')} alt="filled" width={16} height={16} />
             </div>
           )}
-          {/* <div
-            className={styleAccount.address}
-            onClick={() => copyAddress(accountInfo.evmosHexAddress)}
-          >
-            <span className={styleAccount.addressText}>
-              <Address isRaw={true} tooltipAddress={accountInfo.bech32Address}>
-                {accountInfo.walletStatus === WalletStatus.Loaded &&
-                accountInfo.bech32Address
-                  ? `${accountInfo.bech32Address.slice(
-                      0,
-                      15
-                    )}...${accountInfo.bech32Address.slice(-10)}`
-                  : accountInfo.bech32Address}
-              </Address>
-            </span>
-          </div> */}
+
           <div style={{ flex: 1 }} />
         </div>
       )}

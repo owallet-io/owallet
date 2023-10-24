@@ -6,7 +6,11 @@ import { DenomHelper } from '@owallet/common';
 import { Dec, DecUtils } from '@owallet/unit';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { DeepReadonly, Optional } from 'utility-types';
-import { cosmwasm } from '@owallet/cosmos';
+// import { cosmwasm } from '@owallet/cosmos';
+import {
+  MsgExecuteContract,
+  MsgInstantiateContract,
+} from "@owallet/proto-types/cosmwasm/wasm/v1/tx";
 import { Buffer } from 'buffer';
 
 export interface HasCosmwasmAccount {
@@ -243,8 +247,8 @@ export class CosmwasmAccount {
     const protoMsgs = this.hasNoLegacyStdFeature()
       ? [
           {
-            type_url: '/cosmwasm.wasm.v1.MsgExecuteContract',
-            value: cosmwasm.wasm.v1.MsgExecuteContract.encode({
+            typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+            value: MsgExecuteContract.encode({
               sender: msg.value.sender,
               contract: msg.value.contract,
               msg: Buffer.from(JSON.stringify(msg.value.msg)),

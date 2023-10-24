@@ -2,29 +2,53 @@ import { StdFeeEthereum } from './../common/types';
 
 import 'reflect-metadata';
 import { action, computed, flow, makeObservable, observable, runInAction } from 'mobx';
-import { AppCurrency, OWallet, OWalletSignOptions, Ethereum, TronWeb, Bitcoin } from '@owallet/types';
-
-import { DeepReadonly } from 'utility-types';
+import {
+  AppCurrency,
+  OWallet,
+  OWalletSignOptions,
+  Ethereum,
+  TronWeb,
+  Bitcoin,
+  AminoSignResponse
+} from '@owallet/types';
+import { DeepReadonly, Mutable } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
 import { ChainGetter } from '../common';
 import { QueriesSetBase, QueriesStore } from '../query';
-import { DenomHelper, toGenerator, fetchAdapter, EVMOS_NETWORKS, TxRestCosmosClient, OwalletEvent } from '@owallet/common';
+import {
+  DenomHelper,
+  toGenerator,
+  fetchAdapter,
+  EVMOS_NETWORKS,
+  TxRestCosmosClient,
+  OwalletEvent,
+  sortObjectByKey,
+  escapeHTML
+} from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
-import { BroadcastMode, makeSignDoc, makeStdTx, Msg, MsgSend, StdFee, StdTx } from '@cosmjs/launchpad';
-import { BaseAccount, cosmos, google, TendermintTxTracer } from '@owallet/cosmos';
+import { BroadcastMode, makeSignDoc, makeStdTx, Msg, StdFee, StdTx } from '@cosmjs/launchpad';
+import { StdSignDoc } from '@owallet/types';
+import { BaseAccount, EthermintChainIdHelper, TendermintTxTracer } from '@owallet/cosmos';
 import Axios, { AxiosInstance } from 'axios';
 import { Buffer } from 'buffer';
 import Long from 'long';
-
-import ICoin = cosmos.base.v1beta1.ICoin;
-import SignMode = cosmos.tx.signing.v1beta1.SignMode;
+import { Any } from '@owallet/proto-types/google/protobuf/any';
+import { AuthInfo, Fee, SignerInfo, TxBody, TxRaw } from '@owallet/proto-types/cosmos/tx/v1beta1/tx';
+import { ExtensionOptionsWeb3Tx } from '@owallet/proto-types/ethermint/types/v1/web3';
+import { SignMode } from '@owallet/proto-types/cosmos/tx/signing/v1beta1/signing';
+import { PubKey } from '@owallet/proto-types/cosmos/crypto/secp256k1/keys';
 
 import { ETH } from '@hanchon/ethermint-address-converter';
 // can use this request from mobile ?
 import { request } from '@owallet/background';
 import { wallet } from '@owallet/bitcoin';
 
+import { getEip712TypedDataBasedOnChainId } from './utils';
+export interface Coin {
+  readonly denom: string;
+  readonly amount: string;
+}
 export enum WalletStatus {
   NotInit = 'NotInit',
   Loading = 'Loading',
@@ -54,12 +78,20 @@ export interface MsgOpt {
   If the chain has "no-legacy-stdTx" feature, we should send the tx based on protobuf.
   Expectedly, the sign doc should be formed as animo-json regardless of the tx type (animo or proto).
 */
-export type AminoMsgsOrWithProtoMsgs =
-  | Msg[]
-  | {
-      aminoMsgs: Msg[];
-      protoMsgs?: google.protobuf.IAny[];
-    };
+export type AminoMsgsOrWithProtoMsgs = {
+  aminoMsgs?: Msg[];
+  protoMsgs?: Any[] | undefined;
+
+  // Add rlp types data if you need to support ethermint with ledger.
+  // Must include `MsgValue`.
+  rlpTypes?: Record<
+    string,
+    Array<{
+      name: string;
+      type: string;
+    }>
+  >;
+};
 
 export interface AccountSetOpts<MsgOpts> {
   readonly prefetching: boolean;
@@ -93,6 +125,12 @@ export class AccountSetBase<MsgOpts, Queries> {
   protected _bech32Address: string = '';
   @observable
   protected _legacyAddress: string = '';
+  @observable
+  protected _address: Uint8Array = null;
+
+  @observable
+  protected _isNanoLedger: boolean = false;
+
   @observable
   protected _isSendingMsg: string | boolean = false;
 
@@ -237,6 +275,8 @@ export class AccountSetBase<MsgOpts, Queries> {
     const key = yield* toGenerator(owallet.getKey(this.chainId));
     console.log('🚀 ~ file: base.ts:276 ~ AccountSetBase<MsgOpts, ~ *init ~ key:', key);
     this._bech32Address = key.bech32Address;
+    this._address = key.address;
+    this._isNanoLedger = key.isNanoLedger;
     this._name = key.name;
     this.pubKey = key.pubKey;
     this._legacyAddress = key.legacyAddress;
@@ -252,11 +292,15 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._bech32Address = '';
     this._name = '';
     this._legacyAddress = '';
+    this._address = null;
     this.pubKey = new Uint8Array(0);
   }
 
   get walletVersion(): string | undefined {
     return this._walletVersion;
+  }
+  get address(): Uint8Array | null {
+    return this._address;
   }
 
   @computed
@@ -527,7 +571,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         while (!transactionReceipt) {
           // Waiting expectedBlockTime until the transaction is mined
           transactionReceipt = await request(rpc, 'eth_getTransactionReceipt', [txHash]);
-          console.log('🚀 ~ file: base.ts ~ line ~ transactionReceipt', transactionReceipt);
+
           retryCount += 1;
           if (retryCount === 10) break;
           await sleep(expectedBlockTime);
@@ -651,7 +695,173 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
     return parseInt(chainId);
   }
+  protected async processSignedTxCosmos(
+    msgs: AminoMsgsOrWithProtoMsgs,
+    fee: StdFee,
+    memo: string = '',
+    owallet: any,
+    signOptions?: OWalletSignOptions
+  ) {
+    const isDirectSign = !msgs.aminoMsgs || msgs.aminoMsgs.length === 0;
+    const aminoMsgs: Msg[] = msgs.aminoMsgs || [];
+    const protoMsgs: Any[] = msgs.protoMsgs;
 
+    if (protoMsgs.length === 0) {
+      throw new Error('There is no msg to send');
+    }
+    const chainIsInjective = this.chainId.startsWith('injective');
+    if (aminoMsgs.length === 0) {
+      throw new Error('There is no msg to send');
+    }
+    if (!isDirectSign) {
+      if (aminoMsgs.length !== protoMsgs.length) {
+        throw new Error('The length of aminoMsgs and protoMsgs are different');
+      }
+    }
+    if (this.hasNoLegacyStdFeature() && (!protoMsgs || protoMsgs.length === 0)) {
+      throw new Error("Chain can't send legecy stdTx. But, proto any type msgs are not provided");
+    }
+
+    const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
+
+    const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
+
+    // const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
+    const useEthereumSign = this.chainGetter.getChain(this.chainId).features?.includes('eth-key-sign') === true;
+
+    const eip712Signing = useEthereumSign && this.isNanoLedger;
+    if (eip712Signing && isDirectSign) {
+      throw new Error('EIP712 signing is not supported for proto signing');
+    }
+    if (eip712Signing && !msgs.rlpTypes) {
+      throw new Error('RLP types information is needed for signing tx for ethermint chain with ledger');
+    }
+
+    const signDocRaw: StdSignDoc = {
+      chain_id: this.chainId,
+      account_number: account.getAccountNumber().toString(),
+      sequence: account.getSequence().toString(),
+      fee: fee,
+      msgs: aminoMsgs,
+      memo: escapeHTML(memo)
+    };
+
+    if (eip712Signing) {
+      if (chainIsInjective) {
+        // Due to injective's problem, it should exist if injective with ledger.
+        // There is currently no effective way to handle this in keplr. Just set a very large number.
+        (signDocRaw as Mutable<StdSignDoc>).timeout_height = Number.MAX_SAFE_INTEGER.toString();
+      } else {
+        // If not injective (evmos), they require fee payer.
+        // XXX: "feePayer" should be "payer". But, it maybe from ethermint team's mistake.
+        //      That means this part is not standard.
+        (signDocRaw as Mutable<StdSignDoc>).fee = {
+          ...signDocRaw.fee,
+          feePayer: this.bech32Address
+        };
+      }
+    }
+
+    // Should use bind to avoid "this" problem
+    let signAmino = owallet.signAmino.bind(owallet);
+
+    // Should use bind to avoid "this" problem
+    let experimentalSignEIP712CosmosTx_v0 = owallet.experimentalSignEIP712CosmosTx_v0.bind(owallet);
+
+    const signDocAmino = sortObjectByKey(signDocRaw);
+    const signResponse: AminoSignResponse = await (async () => {
+      if (!eip712Signing) {
+        return await signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
+      }
+      return await experimentalSignEIP712CosmosTx_v0(
+        this.chainId,
+        this.bech32Address,
+        getEip712TypedDataBasedOnChainId(this.chainId, msgs),
+        signDocAmino,
+        signOptions
+      );
+    })();
+
+    const signDoc = {
+      bodyBytes: TxBody.encode(
+        TxBody.fromPartial({
+          messages: protoMsgs,
+          memo: signResponse.signed.memo,
+          timeoutHeight: signResponse.signed.timeout_height,
+          extensionOptions: eip712Signing
+            ? [
+                {
+                  typeUrl: (() => {
+                    if (chainIsInjective) {
+                      return '/injective.types.v1beta1.ExtensionOptionsWeb3Tx';
+                    }
+
+                    return '/ethermint.types.v1.ExtensionOptionsWeb3Tx';
+                  })(),
+                  value: ExtensionOptionsWeb3Tx.encode(
+                    ExtensionOptionsWeb3Tx.fromPartial({
+                      typedDataChainId: EthermintChainIdHelper.parse(this.chainId).ethChainId.toString(),
+                      feePayer: !chainIsInjective ? signResponse.signed.fee.feePayer : undefined,
+                      feePayerSig: !chainIsInjective
+                        ? Buffer.from(signResponse.signature.signature, 'base64')
+                        : undefined
+                    })
+                  ).finish()
+                }
+              ]
+            : undefined
+        })
+      ).finish(),
+      authInfoBytes: AuthInfo.encode({
+        signerInfos: [
+          {
+            publicKey: {
+              typeUrl: (() => {
+                if (!chainIsInjective && coinType === 60) {
+                  return '/ethermint.crypto.v1.ethsecp256k1.PubKey';
+                }
+                if (chainIsInjective) {
+                  return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
+                }
+                return '/cosmos.crypto.secp256k1.PubKey';
+              })(),
+              value: PubKey.encode({
+                key: Buffer.from(signResponse.signature.pub_key.value, 'base64')
+              }).finish()
+            },
+            modeInfo: {
+              single: {
+                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
+              },
+              multi: undefined
+            },
+            sequence: signResponse.signed.sequence
+          }
+        ],
+        fee: Fee.fromPartial({
+          amount: signResponse.signed.fee.amount as Coin[],
+          gasLimit: Long.fromString(signResponse.signed.fee.gas),
+          payer:
+            eip712Signing && !chainIsInjective
+              ? // Fee delegation feature not yet supported. But, for eip712 ethermint signing, we must set fee payer.
+                signResponse.signed.fee.feePayer
+              : undefined
+        })
+      }).finish(),
+      accountNumber: Long.fromString(signResponse.signed.account_number),
+      chainId: this.chainId
+    };
+
+    const signedTx = TxRaw.encode({
+      bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
+      authInfoBytes: signDoc.authInfoBytes,
+      signatures:
+        !eip712Signing || chainIsInjective
+          ? [Buffer.from(signResponse.signature.signature, 'base64')]
+          : [new Uint8Array(0)]
+    }).finish();
+    return signedTx;
+  }
   // TODO; do we have to add a new broadcast msg for Ethereum? -- Update: Added done
   // Return the tx hash.
   protected async broadcastMsgs(
@@ -667,84 +877,13 @@ export class AccountSetBase<MsgOpts, Queries> {
       if (this.walletStatus !== WalletStatus.Loaded) {
         throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
       }
-
-      let aminoMsgs: Msg[];
-      let protoMsgs: google.protobuf.IAny[] | undefined;
-      if ('aminoMsgs' in msgs) {
-        aminoMsgs = msgs.aminoMsgs;
-        protoMsgs = msgs.protoMsgs;
-      } else {
-        aminoMsgs = msgs;
-      }
-      console.log({ aminoMsgs });
-
-      if (aminoMsgs.length === 0) {
-        throw new Error('There is no msg to send');
-      }
-
-      if (this.hasNoLegacyStdFeature() && (!protoMsgs || protoMsgs.length === 0)) {
-        throw new Error("Chain can't send legecy stdTx. But, proto any type msgs are not provided");
-      }
-
-      const coinType = this.chainGetter.getChain(this.chainId).bip44.coinType;
-
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const owallet = (await this.getOWallet())!;
 
-      const account = await BaseAccount.fetchFromRest(this.instance, this.bech32Address, true);
-
-      const signDocAmino = makeSignDoc(aminoMsgs, fee, this.chainId, memo, account.getAccountNumber().toString(), account.getSequence().toString());
-      const signResponse = await owallet.signAmino(this.chainId, this.bech32Address, signDocAmino, signOptions);
-      console.log('🚀 ~ file: base.ts:761 ~ AccountSetBase<MsgOpts, ~ signResponse:', signResponse);
-      const chainIsInjective = this.chainId.startsWith('injective');
-      const signDoc = {
-        bodyBytes: cosmos.tx.v1beta1.TxBody.encode({
-          messages: protoMsgs,
-          memo: signResponse.signed.memo
-        }).finish(),
-        authInfoBytes: cosmos.tx.v1beta1.AuthInfo.encode({
-          signerInfos: [
-            {
-              publicKey: {
-                type_url: (() => {
-                  if (!chainIsInjective && coinType === 60) {
-                    return '/ethermint.crypto.v1.ethsecp256k1.PubKey';
-                  }
-                  if (chainIsInjective) {
-                    return '/injective.crypto.v1beta1.ethsecp256k1.PubKey';
-                  }
-                  return '/cosmos.crypto.secp256k1.PubKey';
-                })(),
-                value: cosmos.crypto.secp256k1.PubKey.encode({
-                  key: Buffer.from(signResponse.signature.pub_key.value, 'base64')
-                }).finish()
-              },
-              modeInfo: {
-                single: {
-                  mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON
-                }
-              },
-              sequence: Long.fromString(signResponse.signed.sequence)
-            }
-          ],
-          fee: {
-            amount: signResponse.signed.fee.amount as ICoin[],
-            gasLimit: Long.fromString(signResponse.signed.fee.gas)
-          }
-        }).finish(),
-        accountNumber: Long.fromString(signResponse.signed.account_number),
-        chainId: this.chainId
-      };
-
-      const signedTx = cosmos.tx.v1beta1.TxRaw.encode({
-        bodyBytes: signDoc.bodyBytes, // has to collect body bytes & auth info bytes since OWallet overrides data when signing
-        authInfoBytes: signDoc.authInfoBytes,
-        signatures: [Buffer.from(signResponse.signature.signature, 'base64')]
-      }).finish();
-      console.log('signedTx ===', Buffer.from(JSON.stringify(signedTx), 'base64'));
-
+      let sendTx = owallet.sendTx.bind(owallet);
+      const signedTx = await this.processSignedTxCosmos(msgs, fee, memo, owallet, signOptions);
       return {
-        txHash: await owallet.sendTx(this.chainId, signedTx, mode as BroadcastMode)
+        txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode)
       };
     } catch (error) {
       console.log('Error on broadcastMsgs: ', error);
@@ -844,7 +983,12 @@ export class AccountSetBase<MsgOpts, Queries> {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const ethereum = (await this.getEthereum())!;
 
-      const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, { ...msgs, type: 'erc20', gas: fee.gas, gasPrice: fee.gasPrice });
+      const signResponse = await ethereum.signAndBroadcastEthereum(this.chainId, {
+        ...msgs,
+        type: 'erc20',
+        gas: fee.gas,
+        gasPrice: fee.gasPrice
+      });
 
       return {
         txHash: signResponse?.rawTxHex
@@ -878,6 +1022,9 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
   get legacyAddress(): string {
     return this._legacyAddress;
+  }
+  get isNanoLedger(): boolean {
+    return this._isNanoLedger;
   }
 
   get isSendingMsg(): string | boolean {

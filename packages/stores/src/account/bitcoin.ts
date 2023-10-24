@@ -2,20 +2,11 @@ import { ExtraOptionSendToken, MsgOpt } from './base';
 import { AccountSetBase, AccountSetOpts } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
-import { DenomHelper, EVMOS_NETWORKS } from '@owallet/common';
-import { Dec, DecUtils, Int } from '@owallet/unit';
-import { ChainIdHelper, cosmos, ibc } from '@owallet/cosmos';
-import { BondStatus } from '../query/cosmos/staking/types';
+import { DenomHelper } from '@owallet/common';
 
-import {
-  HasCosmosQueries,
-  HasBtcQueries,
-  QueriesSetBase,
-  QueriesStore
-} from '../query';
+import { HasBtcQueries, QueriesSetBase, QueriesStore } from '../query';
 import { DeepReadonly } from 'utility-types';
-import { ChainGetter, StdFeeEthereum } from '../common';
-import { createMsg } from '@owallet/bitcoin';
+import { ChainGetter } from '../common';
 
 export interface HasBitcoinAccount {
   bitcoin: DeepReadonly<BitcoinAccount>;
@@ -27,10 +18,7 @@ export interface BitcoinMsgOpts {
   };
 }
 
-export class AccountWithBitcoin
-  extends AccountSetBase<BitcoinMsgOpts, HasBtcQueries>
-  implements HasBitcoinAccount
-{
+export class AccountWithBitcoin extends AccountSetBase<BitcoinMsgOpts, HasBtcQueries> implements HasBitcoinAccount {
   public readonly bitcoin: DeepReadonly<BitcoinAccount>;
 
   static readonly defaultMsgOpts: BitcoinMsgOpts = {
@@ -49,9 +37,7 @@ export class AccountWithBitcoin
     },
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<
-      QueriesSetBase & HasBtcQueries
-    >,
+    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasBtcQueries>,
     protected readonly opts: AccountSetOpts<BitcoinMsgOpts>
   ) {
     super(eventListener, chainGetter, chainId, queriesStore, opts);
@@ -65,9 +51,7 @@ export class BitcoinAccount {
     protected readonly base: AccountSetBase<BitcoinMsgOpts, HasBtcQueries>,
     protected readonly chainGetter: ChainGetter,
     protected readonly chainId: string,
-    protected readonly queriesStore: QueriesStore<
-      QueriesSetBase & HasBtcQueries
-    >
+    protected readonly queriesStore: QueriesStore<QueriesSetBase & HasBtcQueries>
   ) {
     this.base.registerSendTokenFn(this.processSendToken.bind(this));
   }
@@ -91,10 +75,7 @@ export class BitcoinAccount {
     if (signOptions.networkType === 'bitcoin') {
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
       console.log(stdFee, 'STD FEE BITCOIN!!!!!!!!!!!!!!!!!!!!!');
-      console.log(
-        '🚀 ~ file: bitcoin.ts:103 ~ BitcoinAccount ~ denomHelper.type:',
-        denomHelper.type
-      );
+      console.log('🚀 ~ file: bitcoin.ts:103 ~ BitcoinAccount ~ denomHelper.type:', denomHelper.type);
       switch (denomHelper.type) {
         case 'native':
           const msg: any = {
@@ -119,10 +100,9 @@ export class BitcoinAccount {
               console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryBtcBalance =
-                  this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-                    this.base.bech32Address
-                  );
+                const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
+                  this.base.bech32Address
+                );
                 if (queryBtcBalance) {
                   queryBtcBalance.fetch();
                 }
@@ -155,10 +135,8 @@ export class BitcoinAccount {
       return;
     }
 
-    const onBroadcasted =
-      typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
-    const onFulfill =
-      typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
+    const onBroadcasted = typeof onTxEvents === 'function' ? undefined : onTxEvents.onBroadcasted;
+    const onFulfill = typeof onTxEvents === 'function' ? onTxEvents : onTxEvents.onFulfill;
 
     return {
       onBroadcasted,
@@ -183,9 +161,6 @@ export class BitcoinAccount {
 
   protected hasNoLegacyStdFeature(): boolean {
     const chainInfo = this.chainGetter.getChain(this.chainId);
-    return (
-      chainInfo.features != null &&
-      chainInfo.features.includes('no-legacy-stdTx')
-    );
+    return chainInfo.features != null && chainInfo.features.includes('no-legacy-stdTx');
   }
 }

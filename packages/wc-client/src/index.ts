@@ -331,7 +331,19 @@ export class OWalletConnectV1 implements OWallet {
   getSecret20ViewingKey(_chainId: string, _contractAddress: string): Promise<string> {
     throw new Error('Not yet implemented');
   }
-
+  experimentalSignEIP712CosmosTx_v0(
+    _chainId: string,
+    _signer: string,
+    _eip712: {
+      types: Record<string, { name: string; type: string }[] | undefined>;
+      domain: Record<string, any>;
+      primaryType: string;
+    },
+    _signDoc: StdSignDoc,
+    _signOptions: OWalletSignOptions = {}
+  ): Promise<AminoSignResponse> {
+    throw new Error("Not yet implemented");
+  }
   /**
    * In the extension environment, this API let the extension to send the tx on behalf of the client.
    * But, in the wallet connect environment, in order to send the tx on behalf of the client, wallet should receive the tx data from remote.

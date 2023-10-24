@@ -8,7 +8,7 @@ import { colors, spacing, typography } from '../../../themes';
 import { AccountWithAll, KeyRingStore } from '@owallet/stores';
 import { Text } from '@src/components/text';
 import { Address } from '@owallet/crypto';
-import { TRON_ID } from '@owallet/common';
+import { TRON_ID, getBase58Address } from '@owallet/common';
 
 import { findLedgerAddressWithChainId } from '@src/utils/helper';
 
@@ -34,7 +34,7 @@ export const AddressQRCodeModal: FunctionComponent<{
     }
   } else {
     if (chainStore?.chainId === TRON_ID) {
-      addressToshow = Address.getBase58Address(account.evmosHexAddress);
+      addressToshow = getBase58Address(account.evmosHexAddress);
     } else {
       addressToshow = account.evmosHexAddress;
     }

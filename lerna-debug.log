@@ -1,0 +1,24 @@
+0 warn deprecated --include-filtered-dependencies has been renamed --include-dependencies
+1 silly argv {
+1 silly argv   _: [ 'run' ],
+1 silly argv   ignore: [ '@owallet/extension', '@owallet/mobile', '@owallet/proto-types' ],
+1 silly argv   lernaVersion: '7.3.1',
+1 silly argv   '$0': '/Users/toandang/Documents/Projects/owallet/node_modules/.bin/lerna',
+1 silly argv   script: 'build',
+1 silly argv   includeDependencies: true,
+1 silly argv   'include-dependencies': true
+1 silly argv }
+2 notice cli v7.3.1
+3 verbose packageConfigs Explicit "packages" configuration found in lerna.json. Resolving packages using the configured glob(s): ["packages/*"]
+4 verbose rootPath /Users/toandang/Documents/Projects/owallet
+5 error Error: Failed to process project dependencies with "nx-js-graph-plugin".
+5 error Source project does not exist: npm:@types/metro-config
+5 error     at validateCommonDependencyRules (/Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/project-graph-builder.js:318:15)
+5 error     at validateDependency (/Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/project-graph-builder.js:313:5)
+5 error     at ProjectGraphBuilder.addDependency (/Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/project-graph-builder.js:190:9)
+5 error     at /Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/build-project-graph.js:184:25
+5 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+5 error     at async Promise.all (index 0)
+5 error     at async updateProjectGraphWithPlugins (/Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/build-project-graph.js:178:5)
+5 error     at async buildProjectGraphUsingContext (/Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/build-project-graph.js:98:15)
+5 error     at async buildProjectGraphUsingProjectFileMap (/Users/toandang/Documents/Projects/owallet/node_modules/nx/src/project-graph/build-project-graph.js:62:24)

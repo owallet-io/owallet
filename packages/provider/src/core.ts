@@ -35,7 +35,8 @@ import {
   SignEthereumTypedDataObject,
   RequestSignDecryptDataMsg,
   RequestSignReEncryptDataMsg,
-  RequestPublicKeyMsg
+  RequestPublicKeyMsg,
+  RequestSignEIP712CosmosTxMsg_v0
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -93,6 +94,20 @@ export class OWallet implements IOWallet {
 
   async signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions: OWalletSignOptions = {}): Promise<AminoSignResponse> {
     const msg = new RequestSignAminoMsg(chainId, signer, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions));
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+  async experimentalSignEIP712CosmosTx_v0(
+    chainId: string,
+    signer: string,
+    eip712: {
+      types: Record<string, { name: string; type: string }[] | undefined>;
+      domain: Record<string, any>;
+      primaryType: string;
+    },
+    signDoc: StdSignDoc,
+    signOptions?: OWalletSignOptions
+  ): Promise<AminoSignResponse> {
+    const msg = new RequestSignEIP712CosmosTxMsg_v0(chainId, signer, eip712, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions));
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

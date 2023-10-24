@@ -1,34 +1,23 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import {
-  AppState,
-  AppStateStatus,
-  Linking,
-  PermissionsAndroid,
-  Platform,
-  View
-} from 'react-native';
+import { AppState, AppStateStatus, Linking, PermissionsAndroid, Platform, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 import { State } from 'react-native-ble-plx';
-import TransportBLE, {
-  bleManagerInstance
-} from '@ledgerhq/react-native-hw-transport-ble';
+import TransportBLE, { bleManagerInstance } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
-import { Ledger, LedgerAppType, LedgerInitErrorOn } from '@owallet/background';
-import {
-  getLastUsedLedgerDeviceId,
-  formatNeworkTypeToLedgerAppName
-} from '../../utils/ledger';
+import { Ledger,  LedgerInitErrorOn } from '@owallet/background';
+import { getLastUsedLedgerDeviceId } from '../../utils/ledger';
 import { RectButton } from '../../components/rect-button';
 import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { formatNeworkTypeToLedgerAppName, LedgerAppType } from '@owallet/common';
 const AlertIcon: FunctionComponent<{
   size: number;
   color: string;
@@ -48,10 +37,7 @@ const AlertIcon: FunctionComponent<{
         strokeWidth="4.167"
         d="M48.62 30.329l1.12 23.828 1.12-23.818a1.12 1.12 0 00-1.131-1.172v0a1.12 1.12 0 00-1.11 1.162v0z"
       />
-      <Path
-        fill={color}
-        d="M49.74 69.754a3.906 3.906 0 110-7.812 3.906 3.906 0 010 7.812z"
-      />
+      <Path fill={color} d="M49.74 69.754a3.906 3.906 0 110-7.812 3.906 3.906 0 010 7.812z" />
     </Svg>
   );
 };
@@ -133,24 +119,20 @@ export const LedgerGranterModal: FunctionComponent<{
     >([]);
     const [errorOnListen, setErrorOnListen] = useState<string | undefined>();
 
-    const [permissionStatus, setPermissionStatus] =
-      useState<BLEPermissionGrantStatus>(() => {
-        if (Platform.OS === 'android') {
-          // If android, there is need to request the permission.
-          // You should ask for the permission on next effect.
-          return BLEPermissionGrantStatus.NotInit;
-        } else {
-          // If not android, there is no need to request the permission
-          return BLEPermissionGrantStatus.Granted;
-        }
-      });
+    const [permissionStatus, setPermissionStatus] = useState<BLEPermissionGrantStatus>(() => {
+      if (Platform.OS === 'android') {
+        // If android, there is need to request the permission.
+        // You should ask for the permission on next effect.
+        return BLEPermissionGrantStatus.NotInit;
+      } else {
+        // If not android, there is no need to request the permission
+        return BLEPermissionGrantStatus.Granted;
+      }
+    });
 
     useEffect(() => {
       const listener = (state: AppStateStatus) => {
-        if (
-          state === 'active' &&
-          permissionStatus === BLEPermissionGrantStatus.Failed
-        ) {
+        if (state === 'active' && permissionStatus === BLEPermissionGrantStatus.Failed) {
           // When the app becomes active, the user may have granted permission on the setting page, so request the grant again.
           setPermissionStatus(BLEPermissionGrantStatus.FailedAndRetry);
         }
@@ -169,9 +151,7 @@ export const LedgerGranterModal: FunctionComponent<{
         permissionStatus === BLEPermissionGrantStatus.FailedAndRetry
       ) {
         if (Platform.OS === 'android') {
-          PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-          ).then((granted) => {
+          PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((granted) => {
             if (granted == PermissionsAndroid.RESULTS.GRANTED) {
               setPermissionStatus(BLEPermissionGrantStatus.Granted);
             } else {
@@ -185,10 +165,7 @@ export const LedgerGranterModal: FunctionComponent<{
     useEffect(() => {
       let unsubscriber: (() => void) | undefined;
 
-      if (
-        isBLEAvailable &&
-        permissionStatus === BLEPermissionGrantStatus.Granted
-      ) {
+      if (isBLEAvailable && permissionStatus === BLEPermissionGrantStatus.Granted) {
         setIsFinding(true);
 
         (async () => {
@@ -206,9 +183,7 @@ export const LedgerGranterModal: FunctionComponent<{
                 const device = e.descriptor;
 
                 if (!_devices.find((d) => d.id === device.id)) {
-                  console.log(
-                    `Ledger device found (id: ${device.id}, name: ${device.name})`
-                  );
+                  console.log(`Ledger device found (id: ${device.id}, name: ${device.name})`);
                   _devices = [
                     ..._devices,
                     {
@@ -256,22 +231,14 @@ export const LedgerGranterModal: FunctionComponent<{
           isFinding ? (
             <View style={style.flatten(['margin-left-8'])}>
               {/* Styling trick for positioning in the middle without occupying space */}
-              <View
-                style={style.flatten([
-                  'absolute',
-                  'height-1',
-                  'flex-row',
-                  'items-center'
-                ])}
-              >
+              <View style={style.flatten(['absolute', 'height-1', 'flex-row', 'items-center'])}>
                 <LoadingSpinner size={20} />
               </View>
             </View>
           ) : undefined
         }
       >
-        {isBLEAvailable &&
-        permissionStatus === BLEPermissionGrantStatus.Granted ? (
+        {isBLEAvailable && permissionStatus === BLEPermissionGrantStatus.Granted ? (
           <React.Fragment>
             {errorOnListen ? (
               <LedgerErrorView text={errorOnListen} />
@@ -317,8 +284,7 @@ export const LedgerGranterModal: FunctionComponent<{
               );
             })}
           </React.Fragment>
-        ) : permissionStatus === BLEPermissionGrantStatus.Failed ||
-          BLEPermissionGrantStatus.FailedAndRetry ? (
+        ) : permissionStatus === BLEPermissionGrantStatus.Failed || BLEPermissionGrantStatus.FailedAndRetry ? (
           <LedgerErrorView text="OWallet doesn't have permission to use bluetooth">
             <Button
               containerStyle={style.flatten(['margin-top-16'])}
@@ -359,11 +325,7 @@ const LedgerErrorView: FunctionComponent<{
       <Text style={style.flatten(['h4', 'color-danger'])}>Error</Text>
       <Text
         style={[
-          style.flatten([
-            'subtitle3',
-            'color-text-black-medium',
-            'margin-top-16'
-          ]),
+          style.flatten(['subtitle3', 'color-text-black-medium', 'margin-top-16']),
           { color: colors['text-content-onBoarding'] }
         ]}
       >
@@ -383,9 +345,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
   const style = useStyle();
 
   const [isConnecting, setIsConnecting] = useState(false);
-  const [initErrorOn, setInitErrorOn] = useState<LedgerInitErrorOn | undefined>(
-    undefined
-  );
+  const [initErrorOn, setInitErrorOn] = useState<LedgerInitErrorOn | undefined>(undefined);
 
   const testLedgerConnection = async (): Promise<boolean> => {
     let initErrorOn: LedgerInitErrorOn | undefined;
@@ -423,18 +383,10 @@ const LedgerNanoBLESelector: FunctionComponent<{
       }}
     >
       <View style={style.flatten(['min-height-44'])}>
-        <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
-          {name}
-        </Text>
-        {isConnecting ? (
-          <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>
-            Connecting...
-          </Text>
-        ) : null}
+        <Text style={style.flatten(['h5', 'color-text-black-medium'])}>{name}</Text>
+        {isConnecting ? <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>Connecting...</Text> : null}
         {!isConnecting && initErrorOn === LedgerInitErrorOn.Transport ? (
-          <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>
-            Please unlock ledger nano X
-          </Text>
+          <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>Please unlock ledger nano X</Text>
         ) : null}
         {!isConnecting && initErrorOn === LedgerInitErrorOn.App ? (
           <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>
@@ -442,9 +394,7 @@ const LedgerNanoBLESelector: FunctionComponent<{
           </Text>
         ) : null}
         {!isConnecting && initErrorOn === LedgerInitErrorOn.Unknown ? (
-          <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>
-            Unknown error
-          </Text>
+          <Text style={style.flatten(['subtitle3', 'color-text-black-low'])}>Unknown error</Text>
         ) : null}
       </View>
     </RectButton>

@@ -477,7 +477,7 @@ PODS:
   - react-native-tcp-socket (6.0.6):
     - CocoaAsyncSocket
     - React-Core
-  - react-native-webview (13.6.0):
+  - react-native-webview (13.6.2):
     - React-Core
   - React-NativeModulesApple (0.72.1):
     - hermes-engine
@@ -653,9 +653,9 @@ PODS:
     - React-Core
   - RNScrypt (1.2.1):
     - React
-  - RNSentry (5.10.0):
+  - RNSentry (5.11.1):
     - React-Core
-    - Sentry/HybridSDK (= 8.11.0)
+    - Sentry/HybridSDK (= 8.13.0)
   - RNSVG (12.5.1):
     - React-Core
   - RNVectorIcons (9.2.0):
@@ -666,9 +666,9 @@ PODS:
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - Sentry/HybridSDK (8.11.0):
-    - SentryPrivate (= 8.11.0)
-  - SentryPrivate (8.11.0)
+  - Sentry/HybridSDK (8.13.0):
+    - SentryPrivate (= 8.13.0)
+  - SentryPrivate (8.13.0)
   - SocketRocket (0.6.1)
   - SSZipArchive (2.2.3)
   - Yoga (1.14.0)
@@ -992,7 +992,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
   react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-tcp-socket: e724380c910c2e704816ec817ed28f1342246ff7
-  react-native-webview: 669ae162965f629a8d6a4bdd3b99a304d36ef1f2
+  react-native-webview: 8fc09f66a1a5b16bbe37c3878fda27d5982bb776
   React-NativeModulesApple: 4f31a812364443cee6ef768d256c594ad3b20f53
   React-perflogger: 3d501f34c8d4b10cb75f348e43591765788525ad
   React-RCTActionSheet: f5335572c979198c0c3daff67b07bd1ad8370c1d
@@ -1024,13 +1024,13 @@ SPEC CHECKSUMS:
   RNReanimated: 9f7068e43b9358a46a688d94a5a3adb258139457
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNScrypt: 95fdef077b482e9fdf8a761120cb69d129ef4016
-  RNSentry: 11917f7bf3e28806aca4c2791c6ba7522d8f09fe
+  RNSentry: e668d4e68fe09d475dc084bab81f02c3be2db173
   RNSVG: d7d7bc8229af3842c9cfc3a723c815a52cdd1105
   RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
-  Sentry: 39d57e691e311bdb73bc1ab5bbebbd6bc890050d
-  SentryPrivate: 48712023cdfd523735c2edb6b06bedf26c4730a3
+  Sentry: a067ca1db308066097314d8478e9682f3b575dee
+  SentryPrivate: 917c91aeb0f199cd079404fab2b50c83e4bad25c
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Yoga: 65286bb6a07edce5e4fe8c90774da977ae8fc009

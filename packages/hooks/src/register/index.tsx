@@ -2,7 +2,7 @@ import React, { FunctionComponent, useState } from 'react';
 import { KeyRingStore } from '@owallet/stores';
 import { action, computed, flow, makeObservable, observable } from 'mobx';
 import { Mnemonic, RNG } from '@owallet/crypto';
-import { BIP44HDPath } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 
 export type RegisterMode = 'create' | 'add';
 

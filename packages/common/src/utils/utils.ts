@@ -1,16 +1,17 @@
-import { Base58 } from '@ethersproject/basex';
-import { sha256 } from '@ethersproject/sha2';
+import { ChainInfo, BIP44HDPath } from '@owallet/types';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { NetworkType } from '@owallet/types';
 import { TRON_ID } from './constants';
 import { EmbedChainInfos } from '../config';
-
-export type LedgerAppType = 'cosmos' | 'eth' | 'trx';
+import { Hash } from '@owallet/crypto';
+import bs58 from 'bs58';
+export type LedgerAppType = 'cosmos' | 'eth' | 'trx' | 'btc';
 export const COINTYPE_NETWORK = {
   118: 'Cosmos',
   60: 'Ethereum',
-  195: 'Tron'
+  195: 'Tron',
+  0: 'Bitcoin'
 };
 
 export const isWeb = typeof document !== 'undefined';
@@ -20,13 +21,16 @@ export const isReactNative = (): boolean => {
   }
   return false;
 };
-export const getEvmAddress = (base58Address) => '0x' + Buffer.from(Base58.decode(base58Address)).slice(1, -4).toString('hex');
+export const getEvmAddress = (base58Address) => {
+  return base58Address ? '0x' + Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex') : '-';
+};
 
 export const getBase58Address = (address) => {
-  const evmAddress = '0x41' + (address ? address.substring(2) : '');
-  const hash = sha256(sha256(evmAddress));
-  const checkSum = hash.substring(2, 10);
-  return Base58.encode(evmAddress + checkSum);
+  if (!address) return null;
+  const evmAddress = Buffer.from('41' + address.slice(2), 'hex');
+  const hash = Hash.sha256(Hash.sha256(evmAddress));
+  const checkSum = Buffer.from(hash.slice(0, 4));
+  return bs58.encode(Buffer.concat([evmAddress, checkSum]));
 };
 
 export const getAddressFromBech32 = (bech32address) => {
@@ -36,15 +40,32 @@ export const getAddressFromBech32 = (bech32address) => {
 
 export const DEFAULT_BLOCK_TIMEOUT_HEIGHT = 90;
 export const DEFAULT_BLOCK_TIME_IN_SECONDS = 2;
-export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS = DEFAULT_BLOCK_TIMEOUT_HEIGHT * DEFAULT_BLOCK_TIME_IN_SECONDS * 1000;
+export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS =
+  DEFAULT_BLOCK_TIMEOUT_HEIGHT * DEFAULT_BLOCK_TIME_IN_SECONDS * 1000;
 
 export const getCoinTypeByChainId = (chainId) => {
   const network = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   return network?.bip44?.coinType ?? network?.coinType ?? 60;
 };
 
+export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
+  const chainInfo = EmbedChainInfos.find((nw) => nw.chainId == chainId);
+  if (!chainInfo) {
+    throw new Error(`There is no chain info for ${chainId}`);
+  }
+  return chainInfo;
+};
+export const isEthermintLike = (chainInfo: ChainInfo): boolean => {
+  return (
+    chainInfo?.networkType === 'evm' ||
+    chainInfo.bip44.coinType === 60 ||
+    !!chainInfo.features?.includes('eth-address-gen') ||
+    !!chainInfo.features?.includes('eth-key-sign') ||
+    !!chainInfo.features?.includes('isEvm')
+  );
+};
 export const getUrlV1Beta = (isBeta: boolean) => {
-  if (isBeta) return 'v1beta';
+  if (isBeta) return 'v1beta1';
   return 'v1';
 };
 export const bufferToHex = (buffer) => {
@@ -54,12 +75,17 @@ export const bufferToHex = (buffer) => {
 export function formatNeworkTypeToLedgerAppName(network: string, chainId?: string | number): LedgerAppType {
   switch (network) {
     case 'cosmos':
+      if ((chainId as string).startsWith('injective')) {
+        return 'eth';
+      }
       return 'cosmos';
     case 'evm':
       if (chainId && chainId === TRON_ID) {
         return 'trx';
       }
       return 'eth';
+    case 'bitcoin':
+      return 'btc';
     default:
       return 'cosmos';
   }
@@ -70,19 +96,9 @@ export const getNetworkTypeByChainId = (chainId) => {
   return network?.networkType ?? 'cosmos';
 };
 
-export function splitPath(path: string): {
-  coinType?: number;
-  account: number;
-  change: number;
-  addressIndex: number;
-} {
+export function splitPath(path: string): BIP44HDPath {
   const bip44HDPathOrder = ['coinType', 'account', 'change', 'addressIndex'];
-  const result = {} as {
-    coinType?: number;
-    account: number;
-    change: number;
-    addressIndex: number;
-  };
+  const result = {} as BIP44HDPath;
   const components = path.split('/');
   if (path.startsWith('44')) {
     components.shift();
@@ -94,7 +110,7 @@ export function splitPath(path: string): {
   return result;
 }
 
-export function getNetworkTypeByBip44HDPath(path: { coinType?: number; account: number; change: number; addressIndex: number }): LedgerAppType {
+export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   switch (path.coinType) {
     case 118:
       return 'cosmos';

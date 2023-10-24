@@ -116,10 +116,19 @@ export const HomeScreen: FunctionComponent = observer((props) => {
 
   useFocusEffect(
     useCallback(() => {
-      if ((chainStoreIsInitializing !== previousChainStoreIsInitializing && !chainStoreIsInitializing) || currentChainId !== previousChainId) {
+      if (
+        (chainStoreIsInitializing !== previousChainStoreIsInitializing && !chainStoreIsInitializing) ||
+        currentChainId !== previousChainId
+      ) {
         checkAndUpdateChainInfo();
       }
-    }, [chainStoreIsInitializing, previousChainStoreIsInitializing, currentChainId, previousChainId, checkAndUpdateChainInfo])
+    }, [
+      chainStoreIsInitializing,
+      previousChainStoreIsInitializing,
+      currentChainId,
+      previousChainId,
+      checkAndUpdateChainInfo
+    ])
   );
 
   useEffect(() => {
@@ -180,14 +189,14 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     setRefreshing(false);
     setRefreshDate(Date.now());
   }, [account.bech32Address, chainStore.current.chainId]);
-  const renderAccountCard = useMemo(() => {
+  const renderAccountCard = (() => {
     if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
     } else if (chainStore.current.networkType === 'evm') {
       return <AccountCardEVM containerStyle={styles.containerStyle} />;
     }
     return <AccountCard containerStyle={styles.containerStyle} />;
-  }, [chainStore.current.networkType]);
+  })();
   const renderTokenCard = useMemo(() => {
     if (chainStore.current.networkType === 'bitcoin') {
       return <TokensBitcoinCard refreshDate={refreshDate} />;
