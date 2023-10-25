@@ -19,7 +19,8 @@ import {
   TRON_ID,
   ETH_ID,
   KAWAII_ID,
-  ORAICHAIN_ID
+  ORAICHAIN_ID,
+  toDisplay
 } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
@@ -35,7 +36,7 @@ import {
   getTransferTokenFee,
   handleSimulateSwap
 } from '@owallet/common';
-import { fetchTokenInfos, toSubAmount, toDisplay } from '@owallet/common';
+import { fetchTokenInfos, toSubAmount } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
@@ -434,23 +435,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const handleReverseDirection = () => {
     if (isSupportedNoPoolSwapEvm(fromToken.coinGeckoId) && !isEvmNetworkNativeSwapSupported(toToken.chainId)) return;
     setSwapTokens([toTokenDenom, fromTokenDenom]);
-    setSwapAmount([toAmountToken, fromAmountToken]);
+    setSwapAmount([0, 0]);
+    setBalanceActive(null);
+    // setSwapAmount([toAmountToken, fromAmountToken]);
   };
 
   const handleActiveAmount = useCallback(
     item => {
       handleBalanceActive(item);
-      const toAmountBalance = toDisplay(toAmountToken.toString(), originalFromToken?.decimals);
-      const maxToAmountBalance = toDisplay(toTokenBalance, originalToToken?.decimals);
-
-      if (toAmountBalance > maxToAmountBalance) {
-        onMaxFromAmount(
-          (toAmount(maxToAmountBalance, originalFromToken?.decimals) * BigInt(MAX)) / BigInt(MAX),
-          item.value
-        );
-      } else {
-        onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
-      }
+      onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
     },
     [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
   );
@@ -548,7 +541,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             tokenFee={fromTokenFee}
           />
           <SwapBox
-            amount={toDisplay(toAmountToken.toString(), originalToToken?.decimals).toString() ?? '0'}
+            amount={toDisplay(toAmountToken.toString(), originalFromToken?.decimals).toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
             onOpenTokenModal={() => setIsSelectToTokenModal(true)}

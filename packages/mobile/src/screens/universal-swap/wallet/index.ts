@@ -86,6 +86,8 @@ export class SwapEvmWallet extends EvmWallet {
   }
 
   getSigner(): JsonRpcSigner {
+    console.log('this.provider.getSigner()', this.provider.getSigner());
+
     return this.provider.getSigner();
   }
 }
