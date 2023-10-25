@@ -12,10 +12,7 @@ import { OWSubTitleHeader } from '@src/components/header';
 import { useTheme } from '@src/themes/theme-provider';
 import { API } from '../../../common/api';
 import { CardDivider } from '../../../components/card';
-import {
-  ArrowOpsiteUpDownIcon,
-  ValidatorOutlineIcon
-} from '../../../components/icon';
+import { AlertIcon, ArrowOpsiteUpDownIcon, ValidatorOutlineIcon } from '../../../components/icon';
 import { SelectorModal, TextInput } from '../../../components/input';
 import { RectButton } from '../../../components/rect-button';
 import { useSmartNavigation } from '../../../navigation.provider';
@@ -46,9 +43,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const [sort, setSort] = useState<Sort>('Voting Power');
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
 
   useEffect(() => {
     (async function get() {
@@ -67,17 +62,13 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const data = useMemo(() => {
     let data = bondedValidators.validators;
     if (search) {
-      data = data.filter(val =>
-        val?.description?.moniker?.toLowerCase().includes(search.toLowerCase())
-      );
+      data = data.filter(val => val?.description?.moniker?.toLowerCase().includes(search.toLowerCase()));
     }
 
     switch (sort) {
       case 'APR':
         data.sort((val1, val2) => {
-          return new Dec(val1.commission.commission_rates.rate).gt(
-            new Dec(val2.commission.commission_rates.rate)
-          )
+          return new Dec(val1.commission.commission_rates.rate).gt(new Dec(val2.commission.commission_rates.rate))
             ? 1
             : -1;
         });
@@ -158,10 +149,8 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   };
 
   const renderItem = ({ item, index }: { item: Validator; index: number }) => {
-    const foundValidator = validators.find(
-      (v) => v.operator_address === item.operator_address
-    );
-
+    const foundValidator = validators.find(v => v.operator_address === item.operator_address);
+    const uptime = 0.8;
     return (
       <View
         style={{
@@ -172,6 +161,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
       >
         <ValidatorItem
           validatorAddress={item.operator_address}
+          uptime={foundValidator?.uptime}
           apr={foundValidator?.apr ?? 0}
           index={index}
           sort={sort}
@@ -180,9 +170,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
       </View>
     );
   };
-  const separateComponentItem = () => (
-    <CardDivider backgroundColor={colors['border-input-login']} />
-  );
+  const separateComponentItem = () => <CardDivider backgroundColor={colors['border-input-login']} />;
   return (
     <PageWithView>
       <SelectorModal
@@ -205,18 +193,14 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
             }}
             containerStyle={styles.containerSearch}
             value={search}
-            onChangeText={(text) => {
+            onChangeText={text => {
               setSearch(text);
             }}
             paragraph={paragraph}
           />
         </View>
       </View>
-      <OWFlatList
-        data={data}
-        renderItem={renderItem}
-        ItemSeparatorComponent={separateComponentItem}
-      />
+      <OWFlatList data={data} renderItem={renderItem} ItemSeparatorComponent={separateComponentItem} />
     </PageWithView>
   );
 });
@@ -226,16 +210,14 @@ const ValidatorItem: FunctionComponent<{
   apr: number;
   index: number;
   sort: Sort;
-
+  uptime: number;
   onSelectValidator?: (validatorAddress: string) => void;
-}> = observer(({ validatorAddress, index, sort, apr, onSelectValidator }) => {
+}> = observer(({ validatorAddress, apr, onSelectValidator, uptime }) => {
   const { chainStore, queriesStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
   const validator = bondedValidators.getValidator(validatorAddress);
   const smartNavigation = useSmartNavigation();
 
@@ -245,7 +227,9 @@ const ValidatorItem: FunctionComponent<{
         ...styles.container,
         flexDirection: 'row',
         backgroundColor: colors['background-box'],
-        alignItems: 'center'
+        alignItems: 'center',
+        borderWidth: 0.5,
+        borderColor: uptime < 0.9 ? colors['danger'] : colors['background']
       }}
       onPress={() => {
         if (onSelectValidator) {
@@ -278,12 +262,12 @@ const ValidatorItem: FunctionComponent<{
         <Text
           style={{
             ...styles.textInfo,
-            color: colors['primary-text']
+            color: uptime < 0.9 ? colors['danger'] : colors['primary-text']
           }}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {validator?.description.moniker}
+          {validator?.description.moniker} {uptime < 0.9 ? <AlertIcon color={colors.danger} size={16} /> : null}
         </Text>
 
         <Text
@@ -292,13 +276,18 @@ const ValidatorItem: FunctionComponent<{
             color: colors['sub-primary-text']
           }}
         >
-          {new CoinPretty(
-            chainStore.current.stakeCurrency,
-            new Dec(validator.tokens)
-          )
+          {new CoinPretty(chainStore.current.stakeCurrency, new Dec(validator.tokens))
             .maxDecimals(0)
             .hideDenom(true)
             .toString() + ' staked'}
+        </Text>
+        <Text
+          style={{
+            ...styles.textInfo,
+            color: uptime < 0.9 ? colors['danger'] : colors['primary-text']
+          }}
+        >
+          {`Uptime: ${(uptime * 100).toFixed(2)}%`}
         </Text>
       </View>
       <View
@@ -312,7 +301,7 @@ const ValidatorItem: FunctionComponent<{
           color: colors['primary-text']
         }}
       >
-        {apr && apr > 0 ? apr.toFixed(2).toString() + '%' : ''}
+        APR: {apr && apr > 0 ? apr.toFixed(2).toString() + '%' : ''}
       </Text>
     </RectButton>
   ) : null;
