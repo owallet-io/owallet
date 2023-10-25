@@ -19,7 +19,7 @@ import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing, typography } from '../../../themes';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { ValidatorThumbnail } from '@src/components/thumbnail';
-type Sort = 'APR' | 'Voting Power' | 'Name';
+type Sort = 'APR' | 'Amount Staked' | 'Name';
 
 export const ValidatorListScreen: FunctionComponent = observer(() => {
   const route = useRoute<
@@ -40,7 +40,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const styles = styling(colors);
   const [search, setSearch] = useState('');
   const [validators, setValidators] = useState([]);
-  const [sort, setSort] = useState<Sort>('Voting Power');
+  const [sort, setSort] = useState<Sort>('Amount Staked');
   const [isSortModalOpen, setIsSortModalOpen] = useState(false);
 
   const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
@@ -84,7 +84,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
           return val1?.description.moniker > val2?.description.moniker ? -1 : 1;
         });
         break;
-      case 'Voting Power':
+      case 'Amount Staked':
         data.sort((val1, val2) => {
           return new Dec(val1.tokens).gt(new Dec(val2.tokens)) ? -1 : 1;
         });
@@ -97,7 +97,7 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
   const items = useMemo(() => {
     return [
       { label: 'APR', key: 'APR' },
-      { label: 'Amount Staked', key: 'Voting Power' },
+      { label: 'Amount Staked', key: 'Amount Staked' },
       { label: 'Name', key: 'Name' }
     ];
   }, []);
@@ -150,7 +150,6 @@ export const ValidatorListScreen: FunctionComponent = observer(() => {
 
   const renderItem = ({ item, index }: { item: Validator; index: number }) => {
     const foundValidator = validators.find(v => v.operator_address === item.operator_address);
-    const uptime = 0.8;
     return (
       <View
         style={{
