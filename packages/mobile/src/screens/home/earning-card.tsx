@@ -14,24 +14,20 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { navigate } from '../../router/root';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
+import { WarningView } from './warning-view';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
   const smartNavigation = useSmartNavigation();
-  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
   const delegated = queryDelegated.total;
-  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
 
   const totalPrice = priceStore.calculatePrice(delegated);
 
@@ -66,11 +62,7 @@ export const EarningCard: FunctionComponent<{
       if (e?.message === 'Request rejected') {
         return;
       }
-      if (
-        e?.message.includes(
-          'Cannot read properties of undefined' || 'undefined is not an object'
-        )
-      ) {
+      if (e?.message.includes('Cannot read properties of undefined' || 'undefined is not an object')) {
         return;
       }
     }
@@ -83,14 +75,7 @@ export const EarningCard: FunctionComponent<{
       }}
     >
       <View style={styles.cardBody}>
-        <Text
-          style={[
-            { ...styles['text-earn'] },
-            { color: colors['primary-text'] }
-          ]}
-        >
-          Earnings
-        </Text>
+        <Text style={[{ ...styles['text-earn'] }, { color: colors['primary-text'] }]}>Earnings</Text>
         <Image
           style={{
             width: 120,
@@ -109,17 +94,10 @@ export const EarningCard: FunctionComponent<{
             { color: colors['primary-text'] }
           ]}
         >
-          {stakingReward
-            .shrink(true)
-            .maxDecimals(6)
-            .trim(true)
-            .upperCase(true)
-            .toString()}
+          {stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
         </Text>
         <Text style={[styles['amount']]}>
-          {totalStakingReward
-            ? totalStakingReward.toString()
-            : stakingReward.shrink(true).maxDecimals(6).toString()}
+          {totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}
         </Text>
 
         <OWButton
@@ -148,10 +126,9 @@ export const EarningCard: FunctionComponent<{
             />
           }
         />
+        <WarningView />
         <OWBox type="shadow" style={styles['view-box-staking']}>
-          <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>
-            Total staked
-          </Text>
+          <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>Total staked</Text>
           <View
             style={{
               marginBottom: 20,
@@ -186,12 +163,7 @@ export const EarningCard: FunctionComponent<{
                     fontWeight: '700'
                   }}
                 >
-                  {delegated
-                    .shrink(true)
-                    .maxDecimals(6)
-                    .trim(true)
-                    .upperCase(true)
-                    .toString()}
+                  {delegated.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
                 </Text>
                 <Text
                   style={{
@@ -201,9 +173,7 @@ export const EarningCard: FunctionComponent<{
                     color: colors['gray-300']
                   }}
                 >
-                  {totalPrice
-                    ? totalPrice.toString()
-                    : delegated.shrink(true).maxDecimals(6).toString()}
+                  {totalPrice ? totalPrice.toString() : delegated.shrink(true).maxDecimals(6).toString()}
                 </Text>
               </View>
             </View>
