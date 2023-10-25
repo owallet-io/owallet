@@ -7,22 +7,13 @@ const bip32 = require('bip32');
 const moment = require('moment');
 const bip21 = require('bip21');
 const Url = require('url-parse');
-const {
-  networks,
-  availableCoins,
-  defaultWalletShape,
-  getCoinData
-} = require('./networks');
+const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
 const { getTransaction } = require('./electrum');
 
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
-const getBalanceFromUtxos = async ({
-  addresses = [],
-  changeAddresses = [],
-  selectedCrypto
-} = {}) => {
+const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selectedCrypto } = {}) => {
   try {
     const result = await walletHelpers.utxos.default({
       addresses,
@@ -94,11 +85,7 @@ const parsePaymentRequest = (data = '') => {
     if (data) {
       let validateAddressResult = validateAddress(data);
       //If is a string and Bitcoin Address
-      if (
-        validateAddressResult.isValid &&
-        typeof data === 'string' &&
-        !data.includes(':' || '?' || '&' || '//')
-      ) {
+      if (validateAddressResult.isValid && typeof data === 'string' && !data.includes(':' || '?' || '&' || '//')) {
         return {
           error: false,
           data: {
@@ -162,11 +149,7 @@ const parsePaymentRequest = (data = '') => {
   }
 };
 
-const getDifferenceBetweenDates = ({
-  start = '',
-  end = '',
-  time = 'minutes'
-} = {}) => {
+const getDifferenceBetweenDates = ({ start = '', end = '', time = 'minutes' } = {}) => {
   try {
     if (!moment.isMoment(start)) start = moment(start);
     if (!moment.isMoment(end)) end = moment(end);
@@ -190,10 +173,7 @@ const convert_zpub_to_xpub = (z) => {
 };
 */
 
-const getTransactionData = async ({
-  txId = '',
-  selectedCrypto = 'bitcoin'
-} = {}) => {
+const getTransactionData = async ({ txId = '', selectedCrypto = 'bitcoin' } = {}) => {
   const failure = (data = '') => {
     return { error: true, data };
   };
@@ -328,10 +308,7 @@ const isOnline = async () => {
 //Remove any duplicates based off of matches from the provided value
 const removeDupsFromArrOfObj = (arr = [], value = '') => {
   try {
-    return arr.reduce(
-      (x, y) => (x.findIndex((e) => e[value] === y[value]) < 0 ? [...x, y] : x),
-      []
-    );
+    return arr.reduce((x, y) => (x.findIndex((e) => e[value] === y[value]) < 0 ? [...x, y] : x), []);
   } catch (e) {
     console.log(e);
     return arr;
@@ -369,22 +346,10 @@ const calculatorFee = ({
     message = convertStringToMessage(message);
   }
   const totalFee =
-    getByteCount(
-      { [addressType]: utxos.length },
-      { [addressType]: changeAddress ? 2 : 1 },
-      message
-    ) * transactionFee;
+    getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message) * transactionFee;
   return totalFee;
 };
-const createMsg = ({
-  address,
-  amount,
-  totalFee,
-  changeAddress,
-  confirmedBalance,
-  message = '',
-  selectedCrypto
-}) => {
+const createMsg = ({ address, amount, totalFee, changeAddress, confirmedBalance, message = '', selectedCrypto }) => {
   const network = networks[selectedCrypto];
   let targets = [];
   if (amount > 0) {
@@ -413,13 +378,7 @@ const createMsg = ({
   }
   return targets;
 };
-const signAndCreateTransaction = async ({
-  selectedCrypto,
-  mnemonic,
-  utxos,
-  blacklistedUtxos,
-  targets
-}) => {
+const signAndCreateTransaction = async ({ selectedCrypto, mnemonic, utxos, blacklistedUtxos, targets }) => {
   try {
     const network = networks[selectedCrypto];
     const seed = bip39.mnemonicToSeedSync(mnemonic);
@@ -520,27 +479,24 @@ const createTransaction = async ({
     if (message && typeof message === 'string') {
       message = convertStringToMessage(message);
     }
-    console.log('🚀 ~ file: helpers.js:521 ~ transactionFee:', transactionFee);
-    console.log('🚀 ~ file: helpers.js:383 ~ message:', message);
+
     const network = networks[selectedCrypto];
     const totalFee =
-      getByteCount(
-        { [addressType]: utxos.length },
-        { [addressType]: changeAddress ? 2 : 1 },
-        message
-      ) * transactionFee;
+      BigInt(getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message)) *
+      BigInt(transactionFee);
     addressType = addressType.toLowerCase();
-    // console.log('🚀 ~ file: helpers.js:538 ~ totalFee:', totalFee);
+
     let targets = [];
     if (amount > 0) {
-      targets.push({ address, value: amount });
+      targets.push({ address, value: Number(amount.toString()) });
     }
 
     //Change address and amount to send back to wallet.
     if (changeAddress) {
+      const totalBack = BigInt(confirmedBalance) - (BigInt(amount) + totalFee);
       targets.push({
         address: changeAddress,
-        value: confirmedBalance - (amount + totalFee)
+        value: Number(totalBack.toString())
       });
     }
 
@@ -551,9 +507,7 @@ const createTransaction = async ({
       //This is a patch for the following: https://github.com/coreyphillips/moonshine/issues/52
       const buffers = [message];
       if (messageLength > 0 && messageLength < lengthMin)
-        buffers.push(
-          Buffer.from(' '.repeat(lengthMin - messageLength), 'utf8')
-        );
+        buffers.push(Buffer.from(' '.repeat(lengthMin - messageLength), 'utf8'));
       const data = Buffer.concat(buffers);
       const embed = bitcoin.payments.embed({ data: [data], network });
       targets.push({ script: embed.output, value: 0 });
@@ -699,12 +653,7 @@ const getCoinNetwork = (coin = '') => {
   return networks[coin];
 };
 
-const getKeyPair = ({
-  selectedCrypto = 'bitcoin',
-  keyDerivationPath = '84',
-  addressIndex = 0,
-  mnemonic
-}) => {
+const getKeyPair = ({ selectedCrypto = 'bitcoin', keyDerivationPath = '84', addressIndex = 0, mnemonic }) => {
   const coinTypePath = defaultWalletShape.coinTypePath[selectedCrypto];
   const network = networks[selectedCrypto]; //Returns the network object based on the selected crypto.
 
@@ -744,9 +693,7 @@ const generateAddresses = async ({
     await Promise.all(
       addressArray.map(async (item, i) => {
         try {
-          const addressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/0/${
-            i + addressIndex
-          }`;
+          const addressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/0/${i + addressIndex}`;
           const addressKeypair = root.derivePath(addressPath);
           const address = getAddress(addressKeypair, network, addressType);
           const scriptHash = getScriptHash(address, network);
@@ -756,15 +703,9 @@ const generateAddresses = async ({
       }),
       changeAddressArray.map(async (item, i) => {
         try {
-          const changeAddressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/1/${
-            i + changeAddressIndex
-          }`;
+          const changeAddressPath = `m/${keyDerivationPath}'/${coinTypePath}'/0'/1/${i + changeAddressIndex}`;
           const changeAddressKeypair = root.derivePath(changeAddressPath);
-          const address = getAddress(
-            changeAddressKeypair,
-            network,
-            addressType
-          );
+          const address = getAddress(changeAddressKeypair, network, addressType);
           const scriptHash = getScriptHash(address, network);
           changeAddresses.push({
             address,
@@ -784,13 +725,11 @@ const generateAddresses = async ({
 
 const getAddress = (keyPair, network, type = 'bech32') => {
   try {
-    if (typeof network === 'string' && network in networks)
-      network = networks[network];
+    if (typeof network === 'string' && network in networks) network = networks[network];
     switch (type) {
       case 'bech32':
         //Get Native Bech32 (bc1) addresses
-        return bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network })
-          .address;
+        return bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network }).address;
       case 'segwit':
         //Get Segwit P2SH Address (3)
         return bitcoin.payments.p2sh({
@@ -802,8 +741,7 @@ const getAddress = (keyPair, network, type = 'bech32') => {
         }).address;
       //Get Legacy Address (1)
       case 'legacy':
-        return bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network })
-          .address;
+        return bitcoin.payments.p2pkh({ pubkey: keyPair.publicKey, network }).address;
     }
   } catch {
     return '';
@@ -863,11 +801,9 @@ const openTxId = (txid = '', selectedCrypto = '') => {
   if (!txid || !selectedCrypto) return;
   let url = '';
   if (selectedCrypto === 'bitcoin') url = `https://blockstream.info/tx/${txid}`;
-  if (selectedCrypto === 'bitcoinTestnet')
-    url = `https://blockstream.info/testnet/tx/${txid}`;
+  if (selectedCrypto === 'bitcoinTestnet') url = `https://blockstream.info/testnet/tx/${txid}`;
   if (selectedCrypto === 'litecoin') url = `https://chain.so/tx/LTC/${txid}`;
-  if (selectedCrypto === 'litecoinTestnet')
-    url = `https://chain.so/tx/LTCTEST/${txid}`;
+  if (selectedCrypto === 'litecoinTestnet') url = `https://chain.so/tx/LTCTEST/${txid}`;
   openUrl(url);
 };
 
@@ -940,9 +876,7 @@ const getInfoFromAddressPath = async (path = '') => {
 const formatNumber = (num) => {
   const n = String(num),
     p = n.indexOf('.');
-  return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, (m, i) =>
-    p < 0 || i < p ? `${m},` : m
-  );
+  return n.replace(/\d(?=(?:\d{3})+(?:\.|$))/g, (m, i) => (p < 0 || i < p ? `${m},` : m));
 };
 
 const removeDecimals = (str) => {
@@ -1024,20 +958,9 @@ const signMessage = async ({
 
     let signature = '';
     if (addressType === 'legacy') {
-      signature = bitcoinMessage.signElectrum(
-        message,
-        privateKey,
-        keyPair,
-        messagePrefix
-      );
+      signature = bitcoinMessage.signElectrum(message, privateKey, keyPair, messagePrefix);
     } else {
-      signature = bitcoinMessage.signElectrum(
-        message,
-        privateKey,
-        keyPair.compressed,
-        messagePrefix,
-        sigOptions
-      );
+      signature = bitcoinMessage.signElectrum(message, privateKey, keyPair.compressed, messagePrefix, sigOptions);
     }
     signature = signature.toString('base64');
 
@@ -1048,40 +971,23 @@ const signMessage = async ({
       signature,
       selectedCrypto
     });
-    if (isVerified === true)
-      return { error: false, data: { address, message, signature } };
+    if (isVerified === true) return { error: false, data: { address, message, signature } };
     return { error: true, data: 'Unable to verify signature.' };
   } catch (e) {
     return { error: true, data: e };
   }
 };
 
-const verifyMessage = ({
-  message = '',
-  address = '',
-  signature = '',
-  selectedCrypto = ''
-} = {}) => {
+const verifyMessage = ({ message = '', address = '', signature = '', selectedCrypto = '' } = {}) => {
   try {
     const network = networks[selectedCrypto];
     const messagePrefix = network.messagePrefix;
     let isValid = false;
     try {
-      isValid = bitcoinMessage.verify(
-        message,
-        address,
-        signature,
-        messagePrefix
-      );
+      isValid = bitcoinMessage.verify(message, address, signature, messagePrefix);
     } catch (e) {}
     //This is a fix for https://github.com/bitcoinjs/bitcoinjs-message/issues/20
-    if (!isValid)
-      isValid = bitcoinMessage.verifyElectrum(
-        message,
-        address,
-        signature,
-        messagePrefix
-      );
+    if (!isValid) isValid = bitcoinMessage.verifyElectrum(message, address, signature, messagePrefix);
     return isValid;
   } catch (e) {
     console.log(e);
@@ -1089,10 +995,7 @@ const verifyMessage = ({
   }
 };
 
-const getBaseDerivationPath = ({
-  keyDerivationPath = '84',
-  selectedCrypto = 'bitcoin'
-}) => {
+const getBaseDerivationPath = ({ keyDerivationPath = '84', selectedCrypto = 'bitcoin' }) => {
   try {
     const networkValue = defaultWalletShape.coinTypePath[selectedCrypto];
     return `m/${keyDerivationPath}'/${networkValue}'/0'/0/0`;
@@ -1131,8 +1034,7 @@ const loginWithBitid = async ({
       selectedCrypto
     });
     //Check for signing error
-    if (signMessageResponse.error)
-      return { error: true, data: signMessageResponse.data };
+    if (signMessageResponse.error) return { error: true, data: signMessageResponse.data };
     const { address, signature } = signMessageResponse.data;
     const parsedURL = new Url(url);
     const response = await fetch(
@@ -1159,10 +1061,7 @@ const sortArrOfObjByKey = (arr = [], key = '', ascending = true) => {
 const getFiatBalance = ({ balance = 0, exchangeRate = 0 } = {}) => {
   try {
     BitcoinUnit.setFiat('usd', exchangeRate);
-    const fiatBalance = new BitcoinUnit(balance, 'satoshi')
-      .to('usd')
-      .getValue()
-      .toFixed(2);
+    const fiatBalance = new BitcoinUnit(balance, 'satoshi').to('usd').getValue().toFixed(2);
     if (isNaN(fiatBalance)) return 0;
     return Number(fiatBalance);
   } catch (e) {
@@ -1170,18 +1069,11 @@ const getFiatBalance = ({ balance = 0, exchangeRate = 0 } = {}) => {
   }
 };
 
-const cryptoToFiat = ({
-  amount = 0,
-  exchangeRate = 0,
-  currencyFiat = 'usd'
-} = {}) => {
+const cryptoToFiat = ({ amount = 0, exchangeRate = 0, currencyFiat = 'usd' } = {}) => {
   try {
     amount = Number(amount);
     BitcoinUnit.setFiat(currencyFiat, exchangeRate);
-    return new BitcoinUnit(amount, 'satoshi')
-      .to(currencyFiat)
-      .getValue()
-      .toFixed(2);
+    return new BitcoinUnit(amount, 'satoshi').to(currencyFiat).getValue().toFixed(2);
   } catch (e) {
     console.log(e);
   }
@@ -1254,20 +1146,13 @@ const getByteCount = (inputs, outputs, message = '') => {
     };
 
     const checkUInt53 = (n) => {
-      if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0)
-        throw new RangeError('value out of range');
+      if (n < 0 || n > Number.MAX_SAFE_INTEGER || n % 1 !== 0) throw new RangeError('value out of range');
     };
 
     const varIntLength = (number) => {
       checkUInt53(number);
 
-      return number < 0xfd
-        ? 1
-        : number <= 0xffff
-        ? 3
-        : number <= 0xffffffff
-        ? 5
-        : 9;
+      return number < 0xfd ? 1 : number <= 0xffff ? 3 : number <= 0xffffffff ? 5 : 9;
     };
 
     Object.keys(inputs).forEach(function (key) {
@@ -1283,8 +1168,7 @@ const getByteCount = (inputs, outputs, message = '') => {
 
         totalWeight += types.inputs[newKey] * inputs[key];
         var multiplyer = newKey === 'MULTISIG-P2SH' ? 4 : 1;
-        totalWeight +=
-          (73 * mAndN[0] + 34 * mAndN[1]) * multiplyer * inputs[key];
+        totalWeight += (73 * mAndN[0] + 34 * mAndN[1]) * multiplyer * inputs[key];
       } else {
         totalWeight += types.inputs[key] * inputs[key];
       }
@@ -1317,8 +1201,7 @@ const getByteCount = (inputs, outputs, message = '') => {
 };
 
 const getScriptHash = (address = '', network = networks['bitcoin']) => {
-  if (typeof network === 'string' && network in networks)
-    network = networks[network];
+  if (typeof network === 'string' && network in networks) network = networks[network];
   const script = bitcoin.address.toOutputScript(address, network);
   let hash = bitcoin.crypto.sha256(script);
   const reversedHash = Buffer.from(hash.reverse());
@@ -1347,9 +1230,7 @@ const formatBalance = ({ coin = '', cryptoUnit = 'satoshi', balance = 0 }) => {
       });
     }
     formattedBalance = formatNumber(formattedBalance);
-    return `${formattedBalance} ${
-      getCoinData({ selectedCrypto: coin, cryptoUnit }).acronym
-    }`;
+    return `${formattedBalance} ${getCoinData({ selectedCrypto: coin, cryptoUnit }).acronym}`;
   } catch (e) {
     console.log('🚀 ~ file: helpers.js:1175 ~ formatBalance ~ e:', e);
     return '0';
@@ -1357,10 +1238,7 @@ const formatBalance = ({ coin = '', cryptoUnit = 'satoshi', balance = 0 }) => {
 };
 function toBufferLE(num, width) {
   const hex = num.toString(16);
-  const buffer = Buffer.from(
-    hex.padStart(width * 2, '0').slice(0, width * 2),
-    'hex'
-  );
+  const buffer = Buffer.from(hex.padStart(width * 2, '0').slice(0, width * 2), 'hex');
   buffer.reverse();
   return buffer;
 }
