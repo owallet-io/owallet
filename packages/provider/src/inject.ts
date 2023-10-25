@@ -714,7 +714,11 @@ export class InjectedBitcoin implements Bitcoin {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== NAMESPACE_ETHEREUM + 'proxy-request' || message.namespace !== NAMESPACE_ETHEREUM) {
+      if (
+        !message ||
+        message.type !== NAMESPACE_ETHEREUM + 'proxy-request' ||
+        message.namespace !== NAMESPACE_ETHEREUM
+      ) {
         return;
       }
 
@@ -1234,6 +1238,10 @@ export class InjectedTronWebOWallet implements ITronWeb {
           case 'tron_requestAccounts':
             try {
               result = await tronweb.getDefaultAddress();
+              console.log(
+                '🚀 ~ file: inject.ts:1237 ~ InjectedTronWebOWallet ~ eventListener.addMessageListener ~ result:',
+                result
+              );
               localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
               if (!isReactNative()) {
                 result = {

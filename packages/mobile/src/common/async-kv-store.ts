@@ -2,7 +2,7 @@ import { KVStore, KVStoreType } from '@owallet/common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // polyfill for common
-globalThis.AsyncStorage = AsyncStorage;
+(global as any).localStorage = AsyncStorage;
 
 export class AsyncKVStore implements KVStore {
   constructor(private readonly _prefix: string) {}
