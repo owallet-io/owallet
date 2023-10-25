@@ -84,11 +84,9 @@ export function formatNeworkTypeToLedgerAppName(network: string, chainId?: strin
   }
 }
 
-export const getNetworkTypeByChainId = (chainId): NetworkType => {
-  console.log('🚀 ~ file: utils.ts:88 ~ getNetworkTypeByChainId ~ chainId:', chainId);
+export const getNetworkTypeByChainId = (chainId) => {
   const network = EmbedChainInfos.find((nw) => nw.chainId === chainId);
-  console.log('🚀 ~ file: utils.ts:90 ~ getNetworkTypeByChainId ~ network:', network);
-  return network?.networkType || 'cosmos';
+  return network?.networkType ?? 'cosmos';
 };
 
 export function splitPath(path: string): BIP44HDPath {
