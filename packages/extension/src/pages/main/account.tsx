@@ -16,6 +16,7 @@ export const AccountView: FunctionComponent = observer(() => {
   const chainId = chainStore.current.chainId;
   const networkType = chainStore.current.networkType;
   const accountInfo = accountStore.getAccount(chainId);
+  console.log('🚀 ~ file: account.tsx:19 ~ constAccountView:FunctionComponent=observer ~ accountInfo:', accountInfo);
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
   const checkTronNetwork = chainId === TRON_ID;
@@ -55,7 +56,10 @@ export const AccountView: FunctionComponent = observer(() => {
     },
     [accountInfo.walletStatus, accountInfo.bech32Address, notification, intl]
   );
-  console.log('🚀 ~ file: account.tsx:109 ~ constAccountView:FunctionComponent=observer ~ accountInfo.evmosHexAddress:', accountInfo.evmosHexAddress);
+  console.log(
+    '🚀 ~ file: account.tsx:109 ~ constAccountView:FunctionComponent=observer ~ accountInfo.evmosHexAddress:',
+    accountInfo.evmosHexAddress
+  );
   return (
     <div>
       <div className={styleAccount.containerName}>
@@ -155,7 +159,7 @@ export const AccountView: FunctionComponent = observer(() => {
       )}
       <div className={styleAccount.coinType}>
         {' '}
-        {`Coin type: m/${networkType === "bitcoin"?'84':'44'}'/${
+        {`Coin type: m/${networkType === 'bitcoin' ? '84' : '44'}'/${
           (keyRingStore.keyRingType == 'ledger'
             ? chainStore?.current?.bip44?.coinType
             : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType) +

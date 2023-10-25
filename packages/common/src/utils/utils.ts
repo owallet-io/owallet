@@ -14,13 +14,6 @@ export const COINTYPE_NETWORK = {
   0: 'Bitcoin'
 };
 
-export const isWeb = typeof document !== 'undefined';
-export const isReactNative = (): boolean => {
-  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-    return true;
-  }
-  return false;
-};
 export const getEvmAddress = (base58Address) => {
   return base58Address ? '0x' + Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex') : '-';
 };
@@ -109,7 +102,13 @@ export function splitPath(path: string): BIP44HDPath {
 
   return result;
 }
-
+export const isWeb = typeof document !== 'undefined';
+export const isReactNative = (): boolean => {
+  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
+    return true;
+  }
+  return false;
+};
 export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   switch (path.coinType) {
     case 118:

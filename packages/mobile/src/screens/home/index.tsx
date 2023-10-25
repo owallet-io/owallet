@@ -175,21 +175,23 @@ export const HomeScreen: FunctionComponent = observer((props) => {
       setRefreshing(false);
       setRefreshDate(Date.now());
       return;
+    } else {
+      await Promise.all([
+        priceStore.waitFreshResponse(),
+        ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map((bal) => {
+          return bal.waitFreshResponse();
+        }),
+        queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
+        queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
+        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse()
+      ]);
     }
-    await Promise.all([
-      priceStore.waitFreshResponse(),
-      ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map((bal) => {
-        return bal.waitFreshResponse();
-      }),
-      queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
-      queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
-      queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse()
-    ]);
 
     setRefreshing(false);
     setRefreshDate(Date.now());
   }, [account.bech32Address, chainStore.current.chainId]);
   const renderAccountCard = (() => {
+    console.log(chainStore.current.networkType, 'network type');
     if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
     } else if (chainStore.current.networkType === 'evm') {

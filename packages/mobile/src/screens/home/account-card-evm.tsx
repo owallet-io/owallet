@@ -10,7 +10,6 @@ import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
 import { TRON_ID, getBase58Address, getEvmAddress } from '@owallet/common';
-import { Address } from '@owallet/crypto';
 import { findLedgerAddressWithChainId, isBase58 } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
@@ -21,6 +20,7 @@ export const AccountCardEVM: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
+  console.log('🚀 ~ file: account-card-evm.tsx:23 ~ account:', account.evmosHexAddress);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
 
