@@ -11,7 +11,8 @@ export const COINTYPE_NETWORK = {
   118: 'Cosmos',
   60: 'Ethereum',
   195: 'Tron',
-  0: 'Bitcoin'
+  0: 'Bitcoin',
+  1: 'Bitcoin Testnet'
 };
 
 export const getEvmAddress = (base58Address) => {
@@ -113,6 +114,9 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   switch (path.coinType) {
     case 118:
       return 'cosmos';
+    case 0:
+    case 1:
+      return 'btc';
     case 60:
       return 'eth';
     case 195:

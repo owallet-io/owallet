@@ -19,7 +19,7 @@ prepare_react_native_project!
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
 # flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
-flipper_config = FlipperConfiguration.enabled
+flipper_config = FlipperConfiguration.disabled
 
 linkage = ENV['USE_FRAMEWORKS']
 if linkage != nil
@@ -43,13 +43,13 @@ target 'mobile' do
     :path => config[:reactNativePath],
     # Hermes is now enabled by default. Disable by setting this flag to false.
     # :hermes_enabled => flags[:hermes_enabled],
-    :hermes_enabled => true,
+    :hermes_enabled => false,
     :fabric_enabled => flags[:fabric_enabled],
     # Enables Flipper.
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

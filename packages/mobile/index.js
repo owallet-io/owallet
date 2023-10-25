@@ -4,6 +4,7 @@ import 'text-encoding';
 
 import 'react-native-url-polyfill/auto';
 import * as Sentry from '@sentry/react-native';
+import { NativeModules, Platform } from 'react-native';
 
 import { AppRegistry } from 'react-native';
 // add router to send message
@@ -35,7 +36,9 @@ if (!__DEV__) {
     tracesSampleRate: 0.7
   });
 }
-
+if (__DEV__ && Platform.OS === 'ios') {
+  NativeModules.DevSettings.setIsDebuggingRemotely(true);
+}
 // not using CodePush for development
 const CodePushApp = __DEV__
   ? App
