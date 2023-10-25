@@ -96,6 +96,8 @@ export function splitPath(path: string): BIP44HDPath {
   const components = path.split('/');
   if (path.startsWith('44')) {
     components.shift();
+  } else if (path.startsWith('84')) {
+    components.shift();
   }
   components.forEach((element, index) => {
     result[bip44HDPathOrder[index]] = element.replace("'", '');

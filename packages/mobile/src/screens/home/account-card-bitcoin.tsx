@@ -7,12 +7,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
-import {
-  formatBalance,
-  getExchangeRate,
-  getBalanceValue,
-  getBaseDerivationPath
-} from '@owallet/bitcoin';
+import { formatBalance, getExchangeRate, getBalanceValue, getBaseDerivationPath } from '@owallet/bitcoin';
 import { AccountBox } from './account-box';
 import { btcToFiat } from '@owallet/bitcoin';
 import { CoinPretty } from '@owallet/unit';
@@ -21,18 +16,9 @@ import { findLedgerAddressWithChainId } from '@src/utils/helper';
 export const AccountCardBitcoin: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    modalStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
-  );
+  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
   console.log('🚀 ~ file: account-card-bitcoin.tsx:36 ~ selected:', selected);
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -41,10 +27,7 @@ export const AccountCardBitcoin: FunctionComponent<{
 
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
     keyRingStore.keyRingType === 'ledger'
-      ? findLedgerAddressWithChainId(
-          keyRingStore.keyRingLedgerAddresses,
-          chainStore.current.chainId
-        )
+      ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
       : account?.bech32Address
   )?.balance;
 
@@ -55,12 +38,7 @@ export const AccountCardBitcoin: FunctionComponent<{
       coin: chainStore.current.chainId
     });
     return amount;
-  }, [
-    chainStore.current.chainId,
-    account?.bech32Address,
-    chainStore.current.networkType,
-    balanceBtc
-  ]);
+  }, [chainStore.current.chainId, account?.bech32Address, chainStore.current.networkType, balanceBtc]);
   useEffect(() => {
     const getExchange = async () => {
       const exchange = (await getExchangeRate({
@@ -79,10 +57,7 @@ export const AccountCardBitcoin: FunctionComponent<{
       balance: Number(balanceBtc?.toCoin().amount),
       cryptoUnit: 'BTC'
     };
-    console.log(
-      '🚀 ~ file: account-card-bitcoin.tsx:74 ~ handleBalanceBtc ~ balanceValueParams:',
-      balanceValueParams
-    );
+    console.log('🚀 ~ file: account-card-bitcoin.tsx:74 ~ handleBalanceBtc ~ balanceValueParams:', balanceValueParams);
     const amountData = getBalanceValue(balanceValueParams);
 
     const currencyFiat = priceStore.defaultVsCurrency;
@@ -132,27 +107,19 @@ export const AccountCardBitcoin: FunctionComponent<{
     );
   };
   const renderAddress = () => {
-    if (
-      keyRingStore.keyRingLedgerAddresses &&
-      keyRingStore.keyRingType === 'ledger'
-    ) {
+    if (keyRingStore.keyRingLedgerAddresses && keyRingStore.keyRingType === 'ledger') {
       console.log(
         '🚀 ~ file: account-card-bitcoin.tsx:133 ~ renderAddress ~ keyRingStore.keyRingLedgerAddresses:',
         keyRingStore.keyRingLedgerAddresses
       );
       return (
         <AddressCopyable
-          address={findLedgerAddressWithChainId(
-            keyRingStore.keyRingLedgerAddresses,
-            chainStore.current.chainId
-          )}
+          address={findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)}
           maxCharacters={22}
         />
       );
     }
-    return (
-      <AddressCopyable address={account?.bech32Address} maxCharacters={22} />
-    );
+    return <AddressCopyable address={account?.bech32Address} maxCharacters={22} />;
   };
   return (
     <AccountBox
@@ -162,8 +129,7 @@ export const AccountCardBitcoin: FunctionComponent<{
       coinType={`${
         keyRingStore.keyRingType === 'ledger'
           ? chainStore?.current?.bip44?.coinType
-          : selected?.bip44HDPath?.coinType ??
-            chainStore?.current?.bip44?.coinType
+          : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
       hdPath={
         chainStore?.current?.networkType === 'bitcoin'
