@@ -961,6 +961,7 @@ export class InjectedEthereumOWallet implements Ethereum {
 }
 
 export class InjectedTronWebOWallet implements ITronWeb {
+  trx: { sign: (transaction: object) => Promise<object> };
   get defaultAddress() {
     return JSON.parse(localStorage.getItem('tronWeb.defaultAddress'));
   }
@@ -1116,7 +1117,13 @@ export class InjectedTronWebOWallet implements ITronWeb {
       postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
-  ) {}
+  ) {
+    this.trx = {
+      sign: async (transaction: object): Promise<object> => {
+        return await this.requestMethod('sign', [transaction]);
+      }
+    };
+  }
   sign(transaction: object): Promise<object> {
     throw new Error('Method not implemented.');
   }
