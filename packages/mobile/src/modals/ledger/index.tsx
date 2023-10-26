@@ -9,7 +9,7 @@ import { observer } from 'mobx-react-lite';
 import { State } from 'react-native-ble-plx';
 import TransportBLE, { bleManagerInstance } from '@ledgerhq/react-native-hw-transport-ble';
 import { LoadingSpinner } from '../../components/spinner';
-import { Ledger,  LedgerInitErrorOn } from '@owallet/background';
+import { Ledger, LedgerInitErrorOn } from '@owallet/background';
 import { getLastUsedLedgerDeviceId } from '../../utils/ledger';
 import { RectButton } from '../../components/rect-button';
 import { useUnmount } from '../../hooks';
@@ -17,7 +17,7 @@ import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
-import { formatNeworkTypeToLedgerAppName, LedgerAppType } from '@owallet/common';
+import { getLedgerAppNameByNetwork, LedgerAppType } from '@owallet/common';
 const AlertIcon: FunctionComponent<{
   size: number;
   color: string;
@@ -54,10 +54,7 @@ enum BLEPermissionGrantStatus {
 export const LedgerGranterModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-  bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(() => {
     const { ledgerInitStore, chainStore } = useStore();
@@ -250,7 +247,7 @@ export const LedgerGranterModal: FunctionComponent<{
                     { color: colors['text-content-onBoarding'] }
                   ]}
                 >
-                  {`1. Open ${formatNeworkTypeToLedgerAppName(
+                  {`1. Open ${getLedgerAppNameByNetwork(
                     chainStore.current.networkType,
                     chainStore.current.chainId
                   )} app on Ledger Nano X.`}
@@ -272,10 +269,7 @@ export const LedgerGranterModal: FunctionComponent<{
                   key={device.id}
                   deviceId={device.id}
                   name={device.name}
-                  ledgerType={formatNeworkTypeToLedgerAppName(
-                    chainStore.current.networkType,
-                    chainStore.current.chainId
-                  )}
+                  ledgerType={getLedgerAppNameByNetwork(chainStore.current.networkType, chainStore.current.chainId)}
                   onCanResume={async () => {
                     resumed.current = true;
                     await ledgerInitStore.resumeAll(device.id);

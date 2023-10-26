@@ -617,48 +617,48 @@ export const EmbedChainInfos: AppChainInfo[] = [
       accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
     }
   },
-  {
-    rest: 'https://api.blockcypher.com/v1/btc/main',
-    chainId: 'bitcoin',
-    chainName: 'Bitcoin',
-    bip44: {
-      coinType: 0
-    },
-    coinType: 0,
-    stakeCurrency: {
-      coinDenom: 'BTC',
-      coinMinimalDenom: 'btc',
-      coinDecimals: 8,
-      coinGeckoId: 'bitcoin',
-      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
-      gasPriceStep: {
-        low: 1,
-        average: 15,
-        high: 22
-      }
-    },
-    bech32Config: Bech32Address.defaultBech32Config('bc'),
-    networkType: 'bitcoin',
-    currencies: [
-      {
-        coinDenom: 'BTC',
-        coinMinimalDenom: 'btc',
-        coinDecimals: 8,
-        coinGeckoId: 'bitcoin',
-        coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
-      }
-    ],
-    get feeCurrencies() {
-      return this.currencies;
-    },
+  // {
+  //   rest: 'https://api.blockcypher.com/v1/btc/main',
+  //   chainId: 'bitcoin',
+  //   chainName: 'Bitcoin',
+  //   bip44: {
+  //     coinType: 0
+  //   },
+  //   coinType: 0,
+  //   stakeCurrency: {
+  //     coinDenom: 'BTC',
+  //     coinMinimalDenom: 'btc',
+  //     coinDecimals: 8,
+  //     coinGeckoId: 'bitcoin',
+  //     coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+  //     gasPriceStep: {
+  //       low: 1,
+  //       average: 15,
+  //       high: 22
+  //     }
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config('bc'),
+  //   networkType: 'bitcoin',
+  //   currencies: [
+  //     {
+  //       coinDenom: 'BTC',
+  //       coinMinimalDenom: 'btc',
+  //       coinDecimals: 8,
+  //       coinGeckoId: 'bitcoin',
+  //       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+  //     }
+  //   ],
+  //   get feeCurrencies() {
+  //     return this.currencies;
+  //   },
 
-    features: ['isBtc'],
-    txExplorer: {
-      name: 'Bitcoin',
-      txUrl: 'https://live.blockcypher.com/btc/tx/{txHash}',
-      accountUrl: 'https://live.blockcypher.com/btc/address/{address}'
-    }
-  },
+  //   features: ['isBtc'],
+  //   txExplorer: {
+  //     name: 'Bitcoin',
+  //     txUrl: 'https://live.blockcypher.com/btc/tx/{txHash}',
+  //     accountUrl: 'https://live.blockcypher.com/btc/address/{address}'
+  //   }
+  // },
 
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
