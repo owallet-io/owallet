@@ -20,6 +20,9 @@ const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selec
       changeAddresses,
       selectedCrypto
     });
+    console.log('🚀 ~ file: helpers.js:20 ~ getBalanceFromUtxos ~ addresses:', addresses);
+    console.log('🚀 ~ file: helpers.js:22 ~ getBalanceFromUtxos ~ changeAddresses:', changeAddresses);
+    console.log('🚀 ~ file: helpers.js:23 ~ getBalanceFromUtxos ~ result:', result);
     return result;
   } catch (e) {
     console.log(e);
@@ -485,7 +488,6 @@ const createTransaction = async ({
       BigInt(getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message)) *
       BigInt(transactionFee);
     addressType = addressType.toLowerCase();
-
     let targets = [];
     if (amount > 0) {
       targets.push({ address, value: Number(amount.toString()) });

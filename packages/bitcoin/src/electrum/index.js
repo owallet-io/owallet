@@ -1,7 +1,8 @@
-const bitcoin = require('bitcoinjs-lib');
-const clients = require('./clients');
-const ElectrumClient = require('./electrum-client');
-const { networks } = require('../networks');
+import bitcoin from 'bitcoinjs-lib';
+import { clients } from './clients';
+import { ElectrumClient } from './electrum-client/electrum/client';
+import { networks } from '../networks';
+import peersJson from './peers.json';
 
 let electrumKeepAlive = () => null;
 let electrumKeepAliveInterval = 60000;
@@ -19,7 +20,7 @@ const pauseExecution = (duration = 500) => {
 };
 
 const getDefaultPeers = (coin, protocol) => {
-  return require('./peers.json')[coin].map((peer) => {
+  return peersJson[coin].map((peer) => {
     try {
       return { ...peer, protocol };
     } catch {}
@@ -44,7 +45,7 @@ const getTimeout = ({ arr = undefined, timeout = 2000 } = {}) => {
 
 //peers = A list of peers acquired from default electrum servers using the getPeers method.
 //customPeers = A list of peers added by the user to connect to by default in lieu of the default peer list.
-const start = ({ id = Math.random(), coin = '', peers = [], customPeers = [] } = {}) => {
+export const start = ({ id = Math.random(), coin = '', peers = [], customPeers = [] } = {}) => {
   const method = 'connectToPeer';
   return new Promise(async (resolve) => {
     try {
@@ -60,8 +61,9 @@ const start = ({ id = Math.random(), coin = '', peers = [], customPeers = [] } =
       } catch {}
       //Attempt to connect to specified peer
       let connectionResponse = { error: true, data: '' };
+
       if (customPeersLength > 0) {
-        const { port = '', host = '', protocol = 'ssl' } = customPeers[0];
+        const { port = '', host = '', protocol = 'wss' } = customPeers[0];
         connectionResponse = await connectToPeer({
           port,
           host,
@@ -70,7 +72,7 @@ const start = ({ id = Math.random(), coin = '', peers = [], customPeers = [] } =
         });
       } else {
         //Attempt to connect to random peer if none specified
-        connectionResponse = await connectToRandomPeer(coin, peers);
+        connectionResponse = await connectToRandomPeer(coin, peers, protocol);
       }
       resolve({
         id,
@@ -87,21 +89,22 @@ const start = ({ id = Math.random(), coin = '', peers = [], customPeers = [] } =
   });
 };
 
-const batchAddresses = ({ coin = 'bitcoinTestnet', scriptHashes = [] } = {}) => {
+export const batchAddresses = ({ coin = 'bitcoinTestnet', scriptHashes = [] } = {}) => {
   return new Promise(async (resolve) => {
     const response = await promiseTimeout(
       getTimeout(scriptHashes),
-      clients.mainClient[coin].blockchainScripthash_getHistoryBatch(scriptHashes)
+      clients.mainClient[coin].blockchain_scripthash_getHistoryBatch(scriptHashes)
     );
     resolve(response);
   });
 };
 
-const connectToPeer = ({ port = 50002, host = '', protocol = 'ssl', coin = 'bitcoin' } = {}) => {
+const connectToPeer = ({ port = 50002, host = '', protocol = 'wss', coin = 'bitcoin' } = {}) => {
   return new Promise(async (resolve) => {
     try {
       clients.coin = coin;
       let needToConnect = clients.mainClient[coin] === false;
+
       let connectionResponse = { error: false, data: clients.peer[coin] };
       if (!needToConnect) {
         //Ensure the server is still alive
@@ -112,22 +115,22 @@ const connectToPeer = ({ port = 50002, host = '', protocol = 'ssl', coin = 'bitc
         }
       }
       if (needToConnect) {
-        clients.mainClient[coin] = new ElectrumClient(port, host, protocol);
-        connectionResponse = await promiseTimeout(1000, clients.mainClient[coin].connect());
+        clients.mainClient[coin] = new ElectrumClient(host, port, protocol);
+
+        connectionResponse = await promiseTimeout(10000, clients.mainClient[coin].connect());
         if (connectionResponse.error) {
-          console.log('🚀 ~ file: index.js:137 ~ returnnewPromise ~ connectionResponse:', connectionResponse);
-          console.log('connect to bitcoin error');
           return resolve(connectionResponse);
         }
         /*
          * The scripthash doesn't have to be valid.
          * We're simply testing if the server will respond to a batch request.
          */
-        const scriptHash = '77ca78f9a84b48041ad71f7cc6ff6c33460c25f0cb99f558f9813ed9e63727dd';
+        const scriptHash = '32cc2b0b1ebcf8a136e10f4a2f25ca86e0232b2161f9bab05577827c9314cd85';
         const testResponses = await Promise.all([
           pingServer(),
-          getAddressScriptHashesBalance({ coin, addresses: [scriptHash] })
+          getAddressScriptHashesBalance({ coin, addresses: [{ scriptHash }] })
         ]);
+        console.log(testResponses);
         if (testResponses[0].error || testResponses[1].error) {
           return resolve({ error: true, data: '' });
         }
@@ -138,30 +141,23 @@ const connectToPeer = ({ port = 50002, host = '', protocol = 'ssl', coin = 'bitc
           electrumKeepAlive = setInterval(async () => {
             try {
               pingServer({ id: Math.random() });
-            } catch (e) {
-              console.log('🚀 ~ file: index.js:161 ~ electrumKeepAlive=setInterval ~ e:', e);
-              console.log('connect to bitcoin error4');
-            }
+            } catch {}
           }, electrumKeepAliveInterval);
-        } catch (e) {
-          console.log('🚀 ~ file: index.js:166 ~ returnnewPromise ~ e:', e);
-          console.log('connect to bitcoin error3');
-        }
+        } catch (e) {}
         clients.peer[coin] = { port, host, protocol };
       }
       resolve(connectionResponse);
     } catch (e) {
-      console.log('🚀 ~ file: index.js:173 ~ returnnewPromise ~ e:', e);
-      console.log('connect to bitcoin error2');
       resolve({ error: true, data: e });
     }
   });
 };
 
-const connectToRandomPeer = async (coin, peers = [], protocol = 'tcp') => {
+export const connectToRandomPeer = async (coin, peers = [], protocol = 'wss') => {
   //Peers can be found in peers.json.
   //Additional Peers can be located here in servers.json & servers_testnet.json for reference: https://github.com/spesmilo/electrum/tree/master/electrum
   let hasPeers = false;
+
   try {
     hasPeers =
       (Array.isArray(peers) && peers.length) || (Array.isArray(clients.peers[coin]) && clients.peers[coin].length);
@@ -178,30 +174,26 @@ const connectToRandomPeer = async (coin, peers = [], protocol = 'tcp') => {
     //Use the default peer list for a connection if no other peers were passed down and no saved peer list is present.
     peers = getDefaultPeers(coin, protocol);
   }
+
   const initialPeerLength = peers.length; //Acquire length of our default peers.
   //Attempt to connect to a random default peer. Continue to iterate through default peers at random if unable to connect.
   for (let i = 0; i <= initialPeerLength; i++) {
     try {
       const randomIndex = (peers.length * Math.random()) | 0;
       const peer = peers[randomIndex];
-      let port = 50002;
-      let host = '';
-      if (hasPeers) {
-        port = peer.port;
-        host = peer.host;
-        protocol = peer.protocol;
-      } else {
-        port = peer[peer.protocol];
-        host = peer.host;
-        protocol = peer.protocol;
-      }
+
+      const port = peer.port;
+      const host = peer.host;
+      protocol = peer.protocol;
+
       const connectionResponse = await connectToPeer({
         port,
         host,
         protocol,
         coin
       });
-      if (connectionResponse.error === false && connectionResponse.data) {
+
+      if (connectionResponse.error === false) {
         return {
           error: connectionResponse.error,
           method: 'connectToRandomPeer',
@@ -209,7 +201,7 @@ const connectToRandomPeer = async (coin, peers = [], protocol = 'tcp') => {
           coin
         };
       } else {
-        //clients.mainClient[coin].close && clients.mainClient[coin].close();
+        clients.mainClient[coin].close && clients.mainClient[coin].close();
         clients.mainClient[coin] = false;
         if (peers.length === 1) {
           return {
@@ -232,7 +224,7 @@ const connectToRandomPeer = async (coin, peers = [], protocol = 'tcp') => {
   };
 };
 
-const stop = async ({ coin = '' } = {}) => {
+export const stop = async ({ coin = '' } = {}) => {
   return new Promise(async (resolve) => {
     try {
       //Clear/Remove Electrum's keep-alive message.
@@ -246,7 +238,7 @@ const stop = async ({ coin = '' } = {}) => {
   });
 };
 
-const promiseTimeout = async (ms, promise) => {
+export const promiseTimeout = async (ms, promise) => {
   let id;
   let timeout = new Promise((resolve) => {
     id = setTimeout(() => {
@@ -254,18 +246,16 @@ const promiseTimeout = async (ms, promise) => {
     }, ms);
   });
 
-  const ret = await Promise.race([promise, timeout]).then((result) => {
-    clearTimeout(id);
-    try {
-      if ('error' in result && 'data' in result) return result;
-    } catch {}
-    return { error: false, data: result };
-  });
-
-  return ret;
+  const result = await Promise.race([promise, timeout]);
+  console.log('🚀 ~ file: index.js:250 ~ promiseTimeout ~ result:', result);
+  clearTimeout(id);
+  try {
+    if ('error' in result && 'data' in result) return result;
+  } catch {}
+  return { error: false, data: result };
 };
 
-const subscribeHeader = async ({ id = 'subscribeHeader', coin = '', onReceive = () => null } = {}) => {
+export const subscribeHeader = async ({ id = 'subscribeHeader', coin = '', onReceive = () => null } = {}) => {
   try {
     if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
     if (clients.subscribedHeaders[coin] === true)
@@ -289,7 +279,7 @@ const subscribeHeader = async ({ id = 'subscribeHeader', coin = '', onReceive = 
   }
 };
 
-const subscribeAddress = async ({
+export const subscribeAddress = async ({
   id = 'wallet0bitcoin',
   address = '',
   coin = 'bitcoin',
@@ -307,7 +297,7 @@ const subscribeAddress = async ({
     }
     if (clients.subscribedAddresses[coin].includes(address))
       return { id, error: false, method: 'subscribeAddress', data: '' };
-    const response = await promiseTimeout(10000, clients.mainClient[coin].blockchainScripthash_subscribe(address));
+    const response = await promiseTimeout(10000, clients.mainClient[coin].blockchain_scripthash_subscribe(address));
     if (!response.error) clients.subscribedAddresses[coin].push(address);
     return { ...response, id, method: 'subscribeAddress' };
   } catch (e) {
@@ -315,7 +305,7 @@ const subscribeAddress = async ({
   }
 };
 
-const unSubscribeAddress = async (scriptHashes = [], id = Math.random()) => {
+export const unSubscribeAddress = async (scriptHashes = [], id = Math.random()) => {
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
@@ -323,7 +313,7 @@ const unSubscribeAddress = async (scriptHashes = [], id = Math.random()) => {
       await Promise.all(
         scriptHashes.map(async (scriptHash) => {
           try {
-            const response = await clients.mainClient[coin].blockchainScripthash_unsubscribe(scriptHash);
+            const response = await clients.mainClient[coin].blockchain_scripthash_unsubscribe(scriptHash);
             responses.push(response);
           } catch {}
         })
@@ -346,8 +336,7 @@ const unSubscribeAddress = async (scriptHashes = [], id = Math.random()) => {
   });
 };
 
-const disconnectFromPeer = async ({ id = Math.random(), coin = '' } = {}) => {
-  console.log('🚀 ~ file: index.js:388 ~ disconnectFromPeer ~ disconnectFromPeer:', disconnectFromPeer);
+export const disconnectFromPeer = async ({ id = Math.random(), coin = '' } = {}) => {
   const failure = (data = {}) => {
     return { error: true, id, method: 'disconnectFromPeer', data };
   };
@@ -379,7 +368,7 @@ const disconnectFromPeer = async ({ id = Math.random(), coin = '' } = {}) => {
   }
 };
 
-const getAddressBalance = ({ address = '', id = Math.random(), coin = '' } = {}) => {
+export const getAddressBalance = ({ address = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressBalance';
   return new Promise(async (resolve) => {
     try {
@@ -396,7 +385,7 @@ const getAddressBalance = ({ address = '', id = Math.random(), coin = '' } = {})
   });
 };
 
-const getAddressScriptHash = ({ address = '', coin = '' } = {}) => {
+export const getAddressScriptHash = ({ address = '', coin = '' } = {}) => {
   try {
     const scriptHash = getScriptHash(address, networks[coin]);
     return { error: false, data: scriptHash };
@@ -405,14 +394,14 @@ const getAddressScriptHash = ({ address = '', coin = '' } = {}) => {
   }
 };
 
-const getAddressScriptHashBalance = ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
+export const getAddressScriptHashBalance = ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressScriptHashBalance';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainScripthash_getBalance(scriptHash)
+        clients.mainClient[coin].blockchain_scripthash_getBalance(scriptHash)
       );
       resolve({ id, error, method, data, scriptHash, coin });
     } catch (e) {
@@ -422,7 +411,7 @@ const getAddressScriptHashBalance = ({ scriptHash = '', id = Math.random(), coin
   });
 };
 
-const getAddressScriptHashesBalance = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
+export const getAddressScriptHashesBalance = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressScriptHashesBalance';
   return new Promise(async (resolve) => {
     try {
@@ -431,7 +420,7 @@ const getAddressScriptHashesBalance = ({ addresses = [], id = Math.random(), coi
 
       const { error, data } = await promiseTimeout(
         timeout,
-        clients.mainClient[coin].blockchainScripthashes_getBalance(addresses)
+        clients.mainClient[coin].blockchain_scripthashes_getBalance(addresses.map((a) => a.scriptHash))
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -441,14 +430,14 @@ const getAddressScriptHashesBalance = ({ addresses = [], id = Math.random(), coi
   });
 };
 
-const getAddressScriptHashHistory = async ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
+export const getAddressScriptHashHistory = async ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressScriptHashHistory';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainScripthash_getHistory(scriptHash)
+        clients.mainClient[coin].blockchain_scripthash_getHistory(scriptHash)
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -458,7 +447,7 @@ const getAddressScriptHashHistory = async ({ scriptHash = '', id = Math.random()
   });
 };
 
-const getAddressScriptHashesHistory = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
+export const getAddressScriptHashesHistory = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressScriptHashesHistory';
   return new Promise(async (resolve) => {
     try {
@@ -466,7 +455,7 @@ const getAddressScriptHashesHistory = ({ addresses = [], id = Math.random(), coi
       const timeout = getTimeout({ arr: addresses });
       const { error, data } = await promiseTimeout(
         timeout,
-        clients.mainClient[coin].blockchainScripthashes_getHistory(addresses)
+        clients.mainClient[coin].blockchain_scripthashes_getHistory(addresses.map((a) => a.scriptHash))
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -476,14 +465,14 @@ const getAddressScriptHashesHistory = ({ addresses = [], id = Math.random(), coi
   });
 };
 
-const listUnspentAddressScriptHash = ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
+export const listUnspentAddressScriptHash = ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'listUnspentAddressScriptHash';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainScripthash_listunspent(scriptHash)
+        clients.mainClient[coin].blockchain_scripthash_listunspent(scriptHash)
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -493,7 +482,7 @@ const listUnspentAddressScriptHash = ({ scriptHash = '', id = Math.random(), coi
   });
 };
 
-const listUnspentAddressScriptHashes = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
+export const listUnspentAddressScriptHashes = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
   const method = 'listUnspentAddressScriptHashes';
 
   return new Promise(async (resolve) => {
@@ -511,14 +500,14 @@ const listUnspentAddressScriptHashes = ({ addresses = [], id = Math.random(), co
   });
 };
 
-const getAddressScriptHashMempool = ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
+export const getAddressScriptHashMempool = ({ scriptHash = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressScriptHashMempool';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainScripthash_getMempool(scriptHash)
+        clients.mainClient[coin].blockchain_scripthash_getMempool(scriptHash)
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -528,7 +517,7 @@ const getAddressScriptHashMempool = ({ scriptHash = '', id = Math.random(), coin
   });
 };
 
-const getAddressScriptHashesMempool = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
+export const getAddressScriptHashesMempool = ({ addresses = [], id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressScriptHashesMempool';
   return new Promise(async (resolve) => {
     try {
@@ -536,7 +525,7 @@ const getAddressScriptHashesMempool = ({ addresses = [], id = Math.random(), coi
       const timeout = getTimeout({ arr: addresses });
       const { error, data } = await promiseTimeout(
         timeout,
-        clients.mainClient[coin].blockchainScripthashes_getMempool(addresses)
+        clients.mainClient[coin].blockchain_scripthashes_getMempool(addresses.map((a) => a.scriptHash))
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -546,7 +535,7 @@ const getAddressScriptHashesMempool = ({ addresses = [], id = Math.random(), coi
   });
 };
 
-const getMempool = ({ address = '', id = Math.random(), coin = '' } = {}) => {
+export const getMempool = ({ address = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getMempool';
   return new Promise(async (resolve) => {
     try {
@@ -563,7 +552,7 @@ const getMempool = ({ address = '', id = Math.random(), coin = '' } = {}) => {
   });
 };
 
-const listUnspentAddress = ({ address = '', id = Math.random(), coin = '' } = {}) => {
+export const listUnspentAddress = ({ address = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'listUnspentAddress';
   return new Promise(async (resolve) => {
     try {
@@ -580,7 +569,7 @@ const listUnspentAddress = ({ address = '', id = Math.random(), coin = '' } = {}
   });
 };
 
-const getFeeEstimate = ({ blocksWillingToWait = 8, id = Math.random(), coin = '' } = {}) => {
+export const getFeeEstimate = ({ blocksWillingToWait = 8, id = Math.random(), coin = '' } = {}) => {
   const method = 'getFeeEstimate';
   return new Promise(async (resolve) => {
     try {
@@ -597,7 +586,7 @@ const getFeeEstimate = ({ blocksWillingToWait = 8, id = Math.random(), coin = ''
   });
 };
 
-const getAddressHistory = ({ address = '', id = Math.random(), coin = '' } = {}) => {
+export const getAddressHistory = ({ address = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressHistory';
   return new Promise(async (resolve) => {
     try {
@@ -614,14 +603,14 @@ const getAddressHistory = ({ address = '', id = Math.random(), coin = '' } = {})
   });
 };
 
-const getTransactionHex = ({ txId = '', id = Math.random(), coin = '' } = {}) => {
+export const getTransactionHex = ({ txId = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getTransactionHex';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainTransaction_get(txId)
+        clients.mainClient[coin].blockchain_transaction_get(txId)
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -631,7 +620,7 @@ const getTransactionHex = ({ txId = '', id = Math.random(), coin = '' } = {}) =>
   });
 };
 
-const getDonationAddress = ({ id = Math.random(), coin = '' } = {}) => {
+export const getDonationAddress = ({ id = Math.random(), coin = '' } = {}) => {
   const method = 'getDonationAddress';
   return new Promise(async (resolve) => {
     try {
@@ -645,7 +634,7 @@ const getDonationAddress = ({ id = Math.random(), coin = '' } = {}) => {
   });
 };
 
-const getPeers = ({ id = Math.random(), coin = '' } = {}) => {
+export const getPeers = ({ id = Math.random(), coin = '' } = {}) => {
   const method = 'getPeers';
   return new Promise(async (resolve) => {
     try {
@@ -659,7 +648,7 @@ const getPeers = ({ id = Math.random(), coin = '' } = {}) => {
   });
 };
 
-const getAvailablePeers = ({ id = Math.random(), coin, protocol = 'ssl' } = {}) => {
+export const getAvailablePeers = ({ id = Math.random(), coin, protocol = 'wss' } = {}) => {
   const method = 'getAvailablePeers';
   return new Promise(async (resolve) => {
     try {
@@ -691,7 +680,7 @@ const getVersion = ({ id = Math.random(), v1 = '3.2.3', v2 = '1.4', coin = '' } 
   });
 };
 
-const getNewBlockHeightSubscribe = ({ id = Math.random(), coin = '' } = {}) => {
+export const getNewBlockHeightSubscribe = ({ id = Math.random(), coin = '' } = {}) => {
   const method = 'getNewBlockHeightSubscribe';
   return new Promise(async (resolve) => {
     try {
@@ -709,7 +698,7 @@ const getNewBlockHeightSubscribe = ({ id = Math.random(), coin = '' } = {}) => {
 };
 
 //Returns current block height
-const getNewBlockHeadersSubscribe = ({ id = Math.random(), coin = '', updateBlockHeight = () => null } = {}) => {
+export const getNewBlockHeadersSubscribe = ({ id = Math.random(), coin = '', updateBlockHeight = () => null } = {}) => {
   const method = 'getNewBlockHeadersSubscribe';
   return new Promise(async (resolve) => {
     try {
@@ -738,14 +727,14 @@ const getNewBlockHeadersSubscribe = ({ id = Math.random(), coin = '', updateBloc
   });
 };
 
-const getTransactionMerkle = ({ id = Math.random(), txHash = '', height = '', coin = '' } = {}) => {
+export const getTransactionMerkle = ({ id = Math.random(), txHash = '', height = '', coin = '' } = {}) => {
   const method = 'getTransactionMerkle';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainTransaction_getMerkle(txHash, height)
+        clients.mainClient[coin].blockchain_transaction_getMerkle(txHash, height)
       );
       resolve({ id, error, method, data, coin });
     } catch (e) {
@@ -755,15 +744,16 @@ const getTransactionMerkle = ({ id = Math.random(), txHash = '', height = '', co
   });
 };
 
-const getTransaction = ({ id = Math.random(), txHash = '', coin = '' } = {}) => {
+export const getTransaction = ({ id = Math.random(), txHash = '', coin = '' } = {}) => {
   const method = 'getTransaction';
   return new Promise(async (resolve) => {
     try {
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchainTransaction_get(txHash, true)
+        clients.mainClient[coin].blockchain_transaction_get(txHash, true)
       );
+      console.log('🚀 ~ file: index.js:752 ~ returnnewPromise ~ data:', data);
       resolve({ id, error, method, data, coin });
     } catch (e) {
       console.log(e);
@@ -772,7 +762,7 @@ const getTransaction = ({ id = Math.random(), txHash = '', coin = '' } = {}) => 
   });
 };
 
-const getTransactions = ({ id = Math.random(), txHashes = [], coin = '' } = {}) => {
+export const getTransactions = ({ id = Math.random(), txHashes = [], coin = '' } = {}) => {
   const method = 'getTransactions';
   return new Promise(async (resolve) => {
     try {
@@ -790,7 +780,7 @@ const getTransactions = ({ id = Math.random(), txHashes = [], coin = '' } = {}) 
   });
 };
 
-const getAddressUtxo = ({ id = Math.random(), txHash = '', index = '', coin = '' } = {}) => {
+export const getAddressUtxo = ({ id = Math.random(), txHash = '', index = '', coin = '' } = {}) => {
   const method = 'getAddressUtxo';
   return new Promise(async (resolve) => {
     try {
@@ -807,7 +797,7 @@ const getAddressUtxo = ({ id = Math.random(), txHash = '', index = '', coin = ''
   });
 };
 
-const relayFee = async ({ id = Math.random(), coin = '' }) => {
+export const relayFee = async ({ id = Math.random(), coin = '' }) => {
   const method = 'relayFee';
 
   try {
@@ -820,13 +810,16 @@ const relayFee = async ({ id = Math.random(), coin = '' }) => {
   }
 };
 
-const broadcastTransaction = async ({ id = Math.random(), rawTx = '', coin = '' } = {}) => {
+export const broadcastTransaction = async ({ id = Math.random(), rawTx = '', coin = '' } = {}) => {
   const method = 'broadcastTransaction';
 
   try {
     if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
 
-    const { error, data } = await promiseTimeout(5000, clients.mainClient[coin].blockchainTransaction_broadcast(rawTx));
+    const { error, data } = await promiseTimeout(
+      5000,
+      clients.mainClient[coin].blockchain_transaction_broadcast(rawTx)
+    );
 
     return { id, error, method, data, coin };
   } catch (e) {
@@ -835,7 +828,7 @@ const broadcastTransaction = async ({ id = Math.random(), rawTx = '', coin = '' 
   }
 };
 
-const getBlockChunk = ({ id = Math.random(), index = '', coin = '' } = {}) => {
+export const getBlockChunk = ({ id = Math.random(), index = '', coin = '' } = {}) => {
   const method = 'getBlockChunk';
   return new Promise(async (resolve) => {
     try {
@@ -852,7 +845,7 @@ const getBlockChunk = ({ id = Math.random(), index = '', coin = '' } = {}) => {
   });
 };
 
-const getBlockHeader = ({ id = Math.random(), height = '', coin = '' } = {}) => {
+export const getBlockHeader = ({ id = Math.random(), height = '', coin = '' } = {}) => {
   const method = 'getBlockHeader';
   return new Promise(async (resolve) => {
     try {
@@ -869,7 +862,7 @@ const getBlockHeader = ({ id = Math.random(), height = '', coin = '' } = {}) => 
   });
 };
 
-const getHeader = ({ id = Math.random(), height = '', coin = '' } = {}) => {
+export const getHeader = ({ id = Math.random(), height = '', coin = '' } = {}) => {
   const method = 'getHeader';
   return new Promise(async (resolve) => {
     try {
@@ -886,7 +879,7 @@ const getHeader = ({ id = Math.random(), height = '', coin = '' } = {}) => {
   });
 };
 
-const getBanner = ({ id = Math.random(), coin = '' } = {}) => {
+export const getBanner = ({ id = Math.random(), coin = '' } = {}) => {
   const method = 'getBanner';
   return new Promise(async (resolve) => {
     try {
@@ -914,7 +907,7 @@ const pingServer = ({ id = Math.random(), coin = '' } = {}) => {
   });
 };
 
-const getAddressProof = ({ address = '', id = Math.random(), coin = '' } = {}) => {
+export const getAddressProof = ({ address = '', id = Math.random(), coin = '' } = {}) => {
   const method = 'getAddressProof';
   return new Promise(async (resolve) => {
     try {
@@ -929,47 +922,4 @@ const getAddressProof = ({ address = '', id = Math.random(), coin = '' } = {}) =
       resolve({ id, error: true, method, data: e, coin });
     }
   });
-};
-
-module.exports = {
-  getAddressBalance,
-  getAddressScriptHashHistory,
-  getAddressScriptHashesHistory,
-  getAddressScriptHash,
-  getAddressScriptHashBalance,
-  getAddressScriptHashesBalance,
-  getAddressScriptHashMempool,
-  getAddressScriptHashesMempool,
-  listUnspentAddressScriptHash,
-  listUnspentAddressScriptHashes,
-  getMempool,
-  listUnspentAddress,
-  getFeeEstimate,
-  getAddressHistory,
-  getTransactionHex,
-  getDonationAddress,
-  disconnectFromPeer,
-  getPeers,
-  getAvailablePeers,
-  getNewBlockHeightSubscribe,
-  getNewBlockHeadersSubscribe,
-  getTransactionMerkle,
-  getAddressUtxo,
-  getTransaction,
-  getTransactions,
-  broadcastTransaction,
-  relayFee,
-  getBlockChunk,
-  getHeader,
-  getBlockHeader,
-  getBanner,
-  pingServer,
-  getAddressProof,
-  getVersion,
-  start,
-  stop,
-  subscribeHeader,
-  subscribeAddress,
-  unSubscribeAddress,
-  batchAddresses
 };

@@ -36,7 +36,7 @@
     "url-parse": "^1.4.7",
     "uuid": "^8.3.0",
     "wif": "^2.0.6",
-    "electrum-client": "https://github.com/oraichain/node-electrum-client"
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@types/node": "^14.0.27"
