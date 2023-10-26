@@ -1,7 +1,6 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Text } from '@src/components/text';
-import Animated from 'react-native-reanimated';
 import { AlertIcon } from '../../components/icon';
 import { observer } from 'mobx-react-lite';
 import { API } from '@src/common/api';
@@ -45,8 +44,8 @@ export const WarningView: FunctionComponent = observer(() => {
     })();
   }, []);
 
-  return (
-    <Animated.View
+  return warningList.length > 0 ? (
+    <View
       style={{
         justifyContent: 'center',
         paddingTop: 16
@@ -69,6 +68,6 @@ export const WarningView: FunctionComponent = observer(() => {
           })}
         </View>
       </View>
-    </Animated.View>
-  );
+    </View>
+  ) : null;
 });
