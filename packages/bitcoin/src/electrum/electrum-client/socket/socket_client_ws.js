@@ -11,7 +11,7 @@ export class WebSocketClient {
   }
 
   async connect() {
-    const url = `wss://blockstream.info/testnet/electrum-websocket/api`;
+    const url = `wss://${this.host}`;
 
     // TODO: Add docs
     // https://github.com/theturtle32/WebSocket-Node/blob/master/docs/W3CWebSocket.md#constructor

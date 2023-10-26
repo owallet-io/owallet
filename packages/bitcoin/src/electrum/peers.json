@@ -1,4 +1,4 @@
 {
-  "bitcoin": [{ "host": "electrum.aantonop.com", "port": 60002 }],
-  "bitcoinTestnet": [{ "host": "electroncash.de", "port": 60004 }]
+  "bitcoin": [{ "host": "blockstream.info/electrum-websocket/api", "port": 0 }],
+  "bitcoinTestnet": [{ "host": "blockstream.info/testnet/electrum-websocket/api", "port": 0 }]
 }
