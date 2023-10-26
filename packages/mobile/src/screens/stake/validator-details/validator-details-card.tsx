@@ -74,26 +74,15 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const { colors } = useTheme();
   const styles = styling(colors);
   const queries = queriesStore.get(chainStore.current.chainId);
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
-  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonding
-  );
-  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Unbonded
-  );
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const unbondingValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonding);
+  const unbondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Unbonded);
   const validator = useMemo(() => {
     return bondedValidators.validators
       .concat(unbondingValidators.validators)
       .concat(unbondedValidators.validators)
       .find(val => val.operator_address === validatorAddress);
-  }, [
-    bondedValidators.validators,
-    unbondingValidators.validators,
-    unbondedValidators.validators,
-    validatorAddress
-  ]);
+  }, [bondedValidators.validators, unbondingValidators.validators, unbondedValidators.validators, validatorAddress]);
   const smartNavigation = useSmartNavigation();
   const thumbnail =
     bondedValidators.getValidatorThumbnail(validatorAddress) ||
@@ -104,17 +93,9 @@ export const ValidatorDetailsCard: FunctionComponent<{
   const renderTextDetail = (label: string) => {
     switch (label) {
       case 'Website':
-        return (
-          <Text style={{ ...styles.textDetail }}>
-            {validator?.description.website}
-          </Text>
-        );
+        return <Text style={{ ...styles.textDetail }}>{validator?.description.website}</Text>;
       case 'APR':
-        return (
-          <Text style={{ ...styles.textDetail }}>
-            {apr ? apr?.toFixed(2).toString() + '%' : '0' + '%'}
-          </Text>
-        );
+        return <Text style={{ ...styles.textDetail }}>{apr ? apr?.toFixed(2).toString() + '%' : '0' + '%'}</Text>;
       case 'Commission':
         return (
           <Text style={{ ...styles.textDetail }}>
@@ -128,12 +109,7 @@ export const ValidatorDetailsCard: FunctionComponent<{
       case 'Voting power':
         return (
           <Text style={{ ...styles.textDetail }}>
-            {new CoinPretty(
-              chainStore.current.stakeCurrency,
-              new Dec(validator.tokens)
-            )
-              .maxDecimals(0)
-              .toString()}
+            {new CoinPretty(chainStore.current.stakeCurrency, new Dec(validator.tokens)).maxDecimals(0).toString()}
           </Text>
         );
       default:
@@ -172,29 +148,27 @@ export const ValidatorDetailsCard: FunctionComponent<{
               justifyContent: 'space-between'
             }}
           >
-            {['Website', 'APR', 'Commission', 'Voting power'].map(
-              (label: string, index: number) => (
-                <View
+            {['Website', 'APR', 'Commission', 'Voting power'].map((label: string, index: number) => (
+              <View
+                style={{
+                  ...styles.containerItem
+                }}
+              >
+                {renderIconValidator(label, 24, styles)}
+                <Text
                   style={{
-                    ...styles.containerItem
+                    ...typography.h7,
+                    fontWeight: '700',
+                    textAlign: 'center',
+                    marginTop: spacing['6'],
+                    color: colors['primary-text']
                   }}
                 >
-                  {renderIconValidator(label, 24, styles)}
-                  <Text
-                    style={{
-                      ...typography.h7,
-                      fontWeight: '700',
-                      textAlign: 'center',
-                      marginTop: spacing['6'],
-                      color: colors['primary-text']
-                    }}
-                  >
-                    {label}
-                  </Text>
-                  {renderTextDetail(label)}
-                </View>
-              )
-            )}
+                  {label}
+                </Text>
+                {renderTextDetail(label)}
+              </View>
+            ))}
           </View>
           <View
             style={{
