@@ -69,5 +69,7 @@ export const WarningView: FunctionComponent = observer(() => {
         </View>
       </View>
     </View>
-  ) : null;
+  ) : (
+    <View />
+  );
 });

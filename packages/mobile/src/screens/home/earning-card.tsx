@@ -14,6 +14,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { navigate } from '../../router/root';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
+import { WarningView } from './warning-view';
 
 export const EarningCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -43,7 +44,7 @@ export const EarningCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: (txHash) => {
+          onBroadcasted: txHash => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
               chainId: chainId,
               chainName: chainStore.current.chainName
@@ -98,14 +99,20 @@ export const EarningCard: FunctionComponent<{
             ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
             : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
         </Text>
-        <Text style={[styles['amount']]}>{totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}</Text>
+        <Text style={[styles['amount']]}>
+          {totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}
+        </Text>
 
         <OWButton
           label="Claim Rewards"
           size="medium"
           onPress={_onPressClaim}
           textStyle={styles.btnTextClaimStyle}
-          disabled={!account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0}
+          disabled={
+            !account.isReadyToSendMsgs ||
+            stakingReward.toDec().equals(new Dec(0)) ||
+            queryReward.pendingRewardValidatorAddresses.length === 0
+          }
           loading={account.isSendingMsg === 'withdrawRewards'}
           style={styles.btnClaimStyle}
           icon={
@@ -113,13 +120,16 @@ export const EarningCard: FunctionComponent<{
               name="rewards"
               size={20}
               color={
-                !account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0
+                !account.isReadyToSendMsgs ||
+                stakingReward.toDec().equals(new Dec(0)) ||
+                queryReward.pendingRewardValidatorAddresses.length === 0
                   ? colors['text-btn-disable-color']
                   : colors['white']
               }
             />
           }
         />
+        <WarningView />
         <OWBox type="shadow" style={styles['view-box-staking']}>
           <Text style={{ marginBottom: 20, color: colors['gray-300'] }}>Total staked</Text>
           <View
@@ -199,7 +209,7 @@ export const EarningCard: FunctionComponent<{
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     btnClaimStyle: {
       marginTop: 10
