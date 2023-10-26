@@ -126,8 +126,7 @@
     "text-encoding": "^0.7.0",
     "utility-types": "^3.10.0",
     "@gorhom/bottom-sheet": "4.4.7",
-    "web3": "1.7.4",
-    "react-native-tcp-socket": "6.0.6"
+    "web3": "1.7.4"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",
@@ -163,10 +162,6 @@
     "webpack": "5.88.1",
     "webpack-cli": "5.1.4",
     "ts-jest": "29.1.1"
-  },
-  "react-native": {
-    "net-owallet": "react-native-tcp-socket",
-    "tls-owallet": "react-native-tcp-socket"
   },
   "resolutions": {
     "@babel/core": "7.22.6"

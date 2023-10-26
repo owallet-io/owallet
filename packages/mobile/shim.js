@@ -16,12 +16,7 @@ if (typeof process === 'undefined') {
     }
   }
 }
-if (typeof net === 'undefined') {
-  global.net = require('./net');
-}
-if (typeof tls === 'undefined') {
-  global.tls = require('tls-owallet');
-}
+
 process.browser = false;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer;
@@ -29,11 +24,11 @@ if (typeof Buffer === 'undefined') global.Buffer = require('buffer').Buffer;
 if (!global.atob || !global.btoa) {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Buffer = require('buffer').Buffer;
-  global.atob = data => {
+  global.atob = (data) => {
     return Buffer.from(data, 'base64').toString();
   };
 
-  global.btoa = data => {
+  global.btoa = (data) => {
     return Buffer.from(data).toString('base64');
   };
 }
@@ -61,6 +56,6 @@ window.removeEventListener = (type, fn) => {
   eventListener.removeListener(type, fn);
 };
 
-window.dispatchEvent = event => {
+window.dispatchEvent = (event) => {
   eventListener.emit(event.type);
 };
