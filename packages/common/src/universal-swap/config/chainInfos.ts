@@ -1,5 +1,5 @@
 import { Bech32Config, ChainInfo, Currency } from '@owallet/types';
-
+import { CoinGeckoId, NetworkChainId, EvmChainId, NetworkName } from '@oraichain/oraidex-common';
 import {
   AIRI_BSC_CONTRACT,
   KWT_BSC_CONTRACT,
@@ -19,73 +19,22 @@ import {
 } from './constants';
 
 const OraiIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
-const OraiLightIcon =
-  'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
+const OraiLightIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
 const AtomIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png';
 const AiriIcon = 'https://i.ibb.co/m8mCyMr/airi.png';
 const UsdtIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png';
 const KwtIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/12313.png';
-const OsmoLightIcon =
-  'https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885';
-const OsmoIcon =
-  'https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885';
+const OsmoLightIcon = 'https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885';
+const OsmoIcon = 'https://assets.coingecko.com/coins/images/16724/large/osmo.png?1632763885';
 const UsdcIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png';
-const ScOraiIcon =
-  'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
+const ScOraiIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
 const OraixIcon = 'https://i.ibb.co/VmMJtf7/oraix.png';
-const MilkyIcon =
-  'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png';
+const MilkyIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/14418.png';
 const TronIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png';
-const ScAtomIcon =
-  'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png';
+const ScAtomIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/3794.png';
 const EthIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png';
 const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 const OraixLightIcon = 'https://i.ibb.co/VmMJtf7/oraix.png';
-
-export type NetworkName =
-  | 'Oraichain'
-  | 'Cosmos Hub'
-  | 'Osmosis'
-  | 'OraiBridge'
-  | 'BNB Chain'
-  | 'Ethereum'
-  | 'Kawaiiverse'
-  | 'Kawaiiverse EVM'
-  | 'Tron Network';
-
-export type CosmosChainId =
-  | 'Oraichain' // oraichain
-  | 'oraibridge-subnet-2' // oraibridge
-  | 'osmosis-1' // osmosis
-  | 'cosmoshub-4' // cosmos hub
-  | 'kawaii_6886-1'; // kawaii subnetwork
-
-export type EvmChainId =
-  | '0x38' // bsc
-  | '0x01' // ethereum
-  | '0x1ae6' // kawaii
-  | '0x2b6653dc'; // tron
-
-export type NetworkChainId = CosmosChainId | EvmChainId;
-
-export type CoinGeckoId =
-  | 'oraichain-token'
-  | 'osmosis'
-  | 'cosmos'
-  | 'ethereum'
-  | 'bnb'
-  | 'airight'
-  | 'oraidex'
-  | 'tether'
-  | 'kawaii-islands'
-  | 'milky-token'
-  | 'scorai'
-  | 'oraidex'
-  | 'usd-coin'
-  | 'tron'
-  | 'weth'
-  | 'wbnb'
-  | 'scatom';
 
 export type NetworkType = 'cosmos' | 'evm';
 export type CoinIcon = React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
@@ -107,10 +56,7 @@ export type CoinType = 118 | 60 | 195;
  * some chain is already in wallet so we override some attributes as optional
  */
 export interface CustomChainInfo
-  extends Omit<
-    ChainInfo,
-    'feeCurrencies' | 'stakeCurrency' | 'currencies' | 'rest' | 'bech32Config'
-  > {
+  extends Omit<ChainInfo, 'feeCurrencies' | 'stakeCurrency' | 'currencies' | 'rest' | 'bech32Config'> {
   readonly chainId: NetworkChainId;
   readonly chainName: NetworkName;
   readonly Icon?: string;
@@ -142,11 +88,9 @@ export const defaultBech32Config = (
     bech32PrefixAccAddr: mainPrefix,
     bech32PrefixAccPub: mainPrefix + publicPrefix,
     bech32PrefixValAddr: mainPrefix + validatorPrefix + operatorPrefix,
-    bech32PrefixValPub:
-      mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
+    bech32PrefixValPub: mainPrefix + validatorPrefix + operatorPrefix + publicPrefix,
     bech32PrefixConsAddr: mainPrefix + validatorPrefix + consensusPrefix,
-    bech32PrefixConsPub:
-      mainPrefix + validatorPrefix + consensusPrefix + publicPrefix
+    bech32PrefixConsPub: mainPrefix + validatorPrefix + consensusPrefix + publicPrefix
   };
 };
 
@@ -413,8 +357,7 @@ export const chainInfos: CustomChainInfo[] = [
       },
       {
         coinDenom: 'USDT',
-        coinMinimalDenom:
-          ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + USDT_TRON_CONTRACT,
+        coinMinimalDenom: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + USDT_TRON_CONTRACT,
         bridgeNetworkIdentifier: '0x2b6653dc',
         prefixToken: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX,
         coinDecimals: 6,
@@ -423,8 +366,7 @@ export const chainInfos: CustomChainInfo[] = [
       },
       {
         coinDenom: 'wTRX',
-        coinMinimalDenom:
-          ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + WRAP_TRON_TRX_CONTRACT,
+        coinMinimalDenom: ORAI_BRIDGE_EVM_TRON_DENOM_PREFIX + WRAP_TRON_TRX_CONTRACT,
         bridgeNetworkIdentifier: '0x2b6653dc',
         coinDecimals: 6,
         coinGeckoId: 'tron',
@@ -464,13 +406,7 @@ export const chainInfos: CustomChainInfo[] = [
 
     Icon: KwtIcon,
     // features: ['ibc-transfer'],
-    features: [
-      'ibc-transfer',
-      'ibc-go',
-      'stargate',
-      'eth-address-gen',
-      'eth-key-sign'
-    ],
+    features: ['ibc-transfer', 'ibc-go', 'stargate', 'eth-address-gen', 'eth-key-sign'],
     currencies: [
       KawaiiToken,
       {
@@ -720,6 +656,5 @@ export const chainInfos: CustomChainInfo[] = [
 
 // exclude kawaiverse subnet and other special evm that has different cointype
 export const evmChains = chainInfos.filter(
-  c =>
-    c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
+  c => c.networkType === 'evm' && c.bip44.coinType === 60 && c.chainId !== '0x1ae6'
 );
