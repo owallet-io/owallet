@@ -4,6 +4,7 @@ import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
 import { OWallet } from '@owallet/types';
+import { SigningStargateClient } from '@cosmjs/stargate';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -40,17 +41,20 @@ export class SwapCosmosWallet extends CosmosWallet {
   ): Promise<{
     wallet: OfflineSigner;
     client: SigningCosmWasmClient;
-    defaultAddress: AccountData;
+    // defaultAddress: AccountData;
+    stargateClient: SigningStargateClient;
   }> {
-    const { chainId, signer } = config;
+    const { chainId, signer, rpc } = config;
     const wallet = signer ?? (await this.createCosmosSigner(chainId));
-    const defaultAddress = (await wallet.getAccounts())[0];
+    // const defaultAddress = (await wallet.getAccounts())[0];
+    const stargateClient = await SigningStargateClient.connectWithSigner(rpc, wallet, options);
 
     return new Promise(resolve =>
       resolve({
         client: this.client,
         wallet: wallet ?? config.signer!,
-        defaultAddress
+        // defaultAddress,
+        stargateClient: stargateClient
       })
     );
   }

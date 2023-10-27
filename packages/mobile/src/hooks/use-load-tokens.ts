@@ -144,12 +144,8 @@ async function loadCw20Balance(universalSwapStore: UniversalSwapStore, address: 
       })
     );
 
-    console.log(' loadCw20Balance amountDetails', amountDetails);
-
     universalSwapStore.updateAmounts(amountDetails);
-  } catch (err) {
-    console.log('loadCw20Balance error', err);
-  }
+  } catch (err) {}
 }
 
 async function loadNativeEvmBalance(address: string, chain: CustomChainInfo) {

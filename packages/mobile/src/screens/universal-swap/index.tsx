@@ -448,9 +448,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
   );
 
-  console.log('universalSwapStore?.getAmount', universalSwapStore?.getAmount);
-  console.log('prices', prices);
-
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
