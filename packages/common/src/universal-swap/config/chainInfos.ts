@@ -1,5 +1,4 @@
-import { Bech32Config, ChainInfo, Currency } from '@owallet/types';
-import { CoinGeckoId, NetworkChainId, EvmChainId, NetworkName } from '@oraichain/oraidex-common';
+import { CoinGeckoId, NetworkChainId, EvmChainId, CustomChainInfo } from '@oraichain/oraidex-common';
 import {
   AIRI_BSC_CONTRACT,
   KWT_BSC_CONTRACT,
@@ -50,32 +49,6 @@ export type BridgeAppCurrency = any & {
 };
 
 export type CoinType = 118 | 60 | 195;
-
-/**
- * A list of Cosmos chain infos. If we need to add / remove any chains, just directly update this variable.
- * some chain is already in wallet so we override some attributes as optional
- */
-export interface CustomChainInfo
-  extends Omit<ChainInfo, 'feeCurrencies' | 'stakeCurrency' | 'currencies' | 'rest' | 'bech32Config'> {
-  readonly chainId: NetworkChainId;
-  readonly chainName: NetworkName;
-  readonly Icon?: string;
-  readonly IconLight?: string;
-  readonly networkType: NetworkType;
-  readonly bip44: {
-    coinType: CoinType;
-  };
-  readonly bech32Config?: Bech32Config;
-  readonly rest?: string; // optional, rest api tron and lcd for cosmos
-  readonly txExplorer?: {
-    readonly coinDenom: string;
-    readonly txUrl: string;
-    readonly accountUrl?: string;
-  };
-  readonly stakeCurrency?: Currency;
-  readonly feeCurrencies?: any[];
-  readonly currencies: BridgeAppCurrency[];
-}
 
 export const defaultBech32Config = (
   mainPrefix: string,

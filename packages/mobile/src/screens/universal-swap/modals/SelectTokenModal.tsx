@@ -49,6 +49,9 @@ export const SelectTokenModal: FunctionComponent<{
 
   const renderTokenItem = useCallback(
     item => {
+      console.log('item.denom', item.denom);
+      console.log('universalSwapStore?.getAmount?.[item.denom]', universalSwapStore?.getAmount?.[item.denom]);
+
       if (item) {
         //@ts-ignore
         const subAmounts = Object.fromEntries(
