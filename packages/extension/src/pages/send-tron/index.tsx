@@ -1,9 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  AddressInput,
-  CoinInputEvm,
-  CoinInputTronEvm
-} from '../../components/form';
+import { AddressInput, CoinInputEvm, CoinInputTronEvm } from '../../components/form';
 import { useStore } from '../../stores';
 import { observer } from 'mobx-react-lite';
 
@@ -65,16 +61,13 @@ export const SendTronEvmPage: FunctionComponent<{
     accountInfo.evmosHexAddress,
     queriesStore.get(current.chainId).queryBalances,
     EthereumEndpoint,
-    chainStore.current.networkType === 'evm' &&
-    queriesStore.get(current.chainId).evm.queryEvmBalance,
+    chainStore.current.networkType === 'evm' && queriesStore.get(current.chainId).evm.queryEvmBalance,
     chainStore.current.networkType === 'evm' && accountInfo.evmosHexAddress
   );
 
   useEffect(() => {
     if (query.defaultDenom) {
-      const currency = current.currencies.find(
-        (cur) => cur.coinMinimalDenom === query.defaultDenom
-      );
+      const currency = current.currencies.find((cur) => cur.coinMinimalDenom === query.defaultDenom);
 
       if (currency) {
         sendConfigs.amountConfig.setSendCurrency(currency);
@@ -100,19 +93,14 @@ export const SendTronEvmPage: FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query.defaultAmount, query.defaultRecipient]);
   const feeConfig = useFeeEthereumConfig(chainStore, current.chainId);
-  const sendConfigError =
-    sendConfigs.recipientConfig.getError() ??
-    sendConfigs.amountConfig.getError();
+  const sendConfigError = sendConfigs.recipientConfig.getError() ?? sendConfigs.amountConfig.getError();
   const txStateIsValid = sendConfigError == null;
   const addressTron =
     keyRingStore?.keyRingType !== 'ledger'
       ? getBase58Address(accountInfo.evmosHexAddress)
       : keyRingStore?.keyRingLedgerAddresses?.trx;
   const tokenTrc20 =
-    (tokensTrc20Tron &&
-      query &&
-      tokensTrc20Tron.find((token) => token.coinDenom == query.defaultDenom)) ??
-    undefined;
+    (tokensTrc20Tron && query && tokensTrc20Tron.find((token) => token.coinDenom == query.defaultDenom)) ?? undefined;
   return (
     <>
       <form
@@ -128,15 +116,14 @@ export const SendTronEvmPage: FunctionComponent<{
               {
                 onFulfill: (tx) => {
                   console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+                  // console.log(typeof tx, 'type of');
+                  // const txHash = Buffer.from(tx, 'hex');
+                  // console.log('🚀 ~ file: index.tsx:120 ~ onSubmit={ ~ txHash:', txHash);
                   notification.push({
                     placement: 'top-center',
-                    type: tx?.result ? 'success' : 'danger',
+                    type: !!tx ? 'success' : 'danger',
                     duration: 5,
-                    content: tx?.result
-                      ? `Transaction successful with tx: ${tx?.txid ?? tx?.transaction?.txID
-                      }`
-                      : `Transaction failed with tx: ${tx?.txid ?? tx?.transaction?.txID
-                      }`,
+                    content: !!tx ? `Transaction successful ` : `Transaction failed`,
                     canDelete: true,
                     transition: {
                       duration: 0.25
@@ -198,10 +185,7 @@ export const SendTronEvmPage: FunctionComponent<{
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
-              cursor:
-                accountInfo.isReadyToSendMsgs || !txStateIsValid
-                  ? 'default'
-                  : 'pointer'
+              cursor: accountInfo.isReadyToSendMsgs || !txStateIsValid ? 'default' : 'pointer'
             }}
           >
             <span className={style.sendBtnText}>
