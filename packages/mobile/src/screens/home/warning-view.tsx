@@ -5,9 +5,17 @@ import { AlertIcon } from '../../components/icon';
 import { observer } from 'mobx-react-lite';
 import { API } from '@src/common/api';
 import { useStyle } from '@src/styles';
+import { useStore } from '@src/stores';
+import { BondStatus } from '@owallet/stores';
+import { find } from 'lodash';
 
 export const WarningView: FunctionComponent = observer(() => {
   const [warningList, setWarningList] = useState([]);
+  const { chainStore, queriesStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const queryDelegations = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+  const delegations = queryDelegations.delegations;
 
   const style = useStyle();
   useEffect(() => {
@@ -23,14 +31,20 @@ export const WarningView: FunctionComponent = observer(() => {
         if (res?.data?.data) {
           res.data.data.map(v => {
             if (v.uptime < 0.9) {
-              tmpList.push(v);
+              const foundValidator = find(delegations, val => {
+                return val.validator_address === v.operator_address;
+              });
+
+              if (foundValidator) {
+                tmpList.push(v);
+              }
             }
           });
         }
         setWarningList(tmpList);
       } catch (error) {}
     })();
-  }, []);
+  }, [account.bech32Address]);
 
   return warningList.length > 0 ? (
     <View
