@@ -123,7 +123,7 @@ export const SendTronEvmPage: FunctionComponent<{
                     placement: 'top-center',
                     type: !!tx ? 'success' : 'danger',
                     duration: 5,
-                    content: !!tx ? `Transaction successful ` : `Transaction failed`,
+                    content: !!tx ? `Transaction successful` : `Transaction failed`,
                     canDelete: true,
                     transition: {
                       duration: 0.25
