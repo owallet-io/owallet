@@ -108,10 +108,6 @@ export const AccountCardBitcoin: FunctionComponent<{
   };
   const renderAddress = () => {
     if (keyRingStore.keyRingLedgerAddresses && keyRingStore.keyRingType === 'ledger') {
-      console.log(
-        '🚀 ~ file: account-card-bitcoin.tsx:133 ~ renderAddress ~ keyRingStore.keyRingLedgerAddresses:',
-        keyRingStore.keyRingLedgerAddresses
-      );
       return (
         <AddressCopyable
           address={findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)}
