@@ -11,10 +11,6 @@ import { find } from 'lodash';
 
 export const WarningView: FunctionComponent = observer(() => {
   const [warningList, setWarningList] = useState([]);
-  const { chainStore, queriesStore } = useStore();
-  const queries = queriesStore.get(chainStore.current.chainId);
-
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
 
   const style = useStyle();
   useEffect(() => {
@@ -30,12 +26,7 @@ export const WarningView: FunctionComponent = observer(() => {
         if (res?.data?.data) {
           res.data.data.map(v => {
             if (v.uptime < 0.9) {
-              const foundValidator = find(bondedValidators.validators, val => {
-                return val.operator_address === v.operator_address;
-              });
-              if (foundValidator) {
-                tmpList.push(v);
-              }
+              tmpList.push(v);
             }
           });
         }
