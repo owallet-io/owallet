@@ -2,15 +2,21 @@ import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import bech32 from 'bech32';
-import tokenABI from '@src/hooks/abi/erc20.json';
+import {
+  CustomChainInfo,
+  EVM_BALANCE_RETRY_COUNT,
+  ERC20__factory,
+  getEvmAddress,
+  tronToEthAddress
+} from '@oraichain/oraidex-common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults } from 'ethereum-multicall';
-import { Multicall, evmChains, evmTokens } from '@owallet/common';
-import { chainInfos, network, CustomChainInfo } from '@oraichain/oraidex-common';
+import { Multicall, evmChains, evmTokens, isEvmNetworkNativeSwapSupported } from '@owallet/common';
+import { chainInfos, network } from '@oraichain/oraidex-common';
 import { Address } from '@owallet/crypto';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
-import { getEvmAddress } from '@owallet/common';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
 import { CWStargate } from '@src/common/cw-stargate';
 import { AccountWithAll } from '@owallet/stores';
@@ -60,6 +66,8 @@ async function loadTokens(
   universalSwapStore: any,
   { oraiAddress, metamaskAddress, tronAddress, kwtAddress, cwStargate }: LoadTokenParams
 ) {
+  console.log({ evmChains });
+
   await Promise.all(
     [
       oraiAddress && loadTokensCosmos(universalSwapStore, oraiAddress),
@@ -126,41 +134,60 @@ async function loadCw20Balance(universalSwapStore: UniversalSwapStore, address: 
   }
 }
 
+async function loadNativeEvmBalance(address: string, chain: CustomChainInfo) {
+  try {
+    const client = new JsonRpcProvider(chain.rpc);
+    const balance = await client.getBalance(address);
+    return balance;
+  } catch (error) {
+    console.log('error load native evm balance: ', error);
+  }
+}
+
 async function loadEvmEntries(
   address: string,
   chain: CustomChainInfo,
-  multicallCustomContractAddress?: string
+  multicallCustomContractAddress?: string,
+  retryCount?: number
 ): Promise<[string, string][]> {
-  const tokens = evmTokens.filter(t => t.chainId === chain.chainId);
-
-  if (!tokens.length) return [];
-  const multicall = new Multicall({
-    nodeUrl: chain.rpc,
-    multicallCustomContractAddress,
-    chainId: Number(chain.chainId)
-  });
-  const input = tokens.map(token => ({
-    reference: token.denom,
-    contractAddress: token.contractAddress,
-    abi: tokenABI,
-    calls: [
-      {
-        reference: token.denom,
-        methodName: 'balanceOf(address)',
-        methodParameters: [address]
-      }
-    ]
-  }));
-
   try {
-    const results: ContractCallResults = await multicall.call(input);
+    const tokens = evmTokens.filter(t => t.chainId === chain.chainId && t.contractAddress);
+    const nativeEvmToken = evmTokens.find(
+      t => !t.contractAddress && isEvmNetworkNativeSwapSupported(chain.chainId) && chain.chainId === t.chainId
+    );
+    if (!tokens.length) return [];
+    const multicall = new Multicall({
+      nodeUrl: chain.rpc,
+      multicallCustomContractAddress,
+      chainId: Number(chain.chainId)
+    });
+    const input = tokens.map(token => ({
+      reference: token.denom,
+      contractAddress: token.contractAddress,
+      abi: ERC20__factory.abi,
+      calls: [
+        {
+          reference: token.denom,
+          methodName: 'balanceOf(address)',
+          methodParameters: [address]
+        }
+      ]
+    }));
 
-    return tokens.map(token => {
+    const results: ContractCallResults = await multicall.call(input as any);
+    const nativeBalance = nativeEvmToken ? await loadNativeEvmBalance(address, chain) : 0;
+    let entries: [string, string][] = tokens.map(token => {
       const amount = results.results[token.denom].callsReturnContext[0].returnValues[0].hex;
       return [token.denom, amount];
     });
-  } catch (err) {
-    console.log('loadEvmEntries error', err);
+    if (nativeEvmToken) entries.push([nativeEvmToken.denom, nativeBalance.toString()]);
+    return entries;
+  } catch (error) {
+    console.log('error querying EVM balance: ', error);
+    let retry = retryCount ? retryCount + 1 : 1;
+    if (retry >= EVM_BALANCE_RETRY_COUNT) throw `Cannot query EVM balance with error: ${error}`;
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return loadEvmEntries(address, chain, multicallCustomContractAddress, retry);
   }
 }
 

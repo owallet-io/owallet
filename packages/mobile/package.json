@@ -38,7 +38,7 @@
     "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/proto-signing": "^0.29.3",
     "@oraichain/common-contracts-sdk": "^1.0.24",
-    "@oraichain/oraidex-common": "^1.0.8",
+    "@oraichain/oraidex-common": "^1.0.13",
     "@oraichain/oraidex-contracts-sdk": "^1.0.19",
     "@oraichain/cw-simulate": "^2.8.68",
     "@oraichain/oraidex-universal-swap": "^1.0.10",
