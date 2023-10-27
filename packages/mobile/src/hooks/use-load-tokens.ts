@@ -3,7 +3,7 @@ import { StargateClient } from '@cosmjs/stargate';
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { JsonRpcProvider } from '@ethersproject/providers';
-import bech32 from 'bech32';
+import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import {
   CustomChainInfo,
   EVM_BALANCE_RETRY_COUNT,
@@ -66,11 +66,11 @@ async function loadTokens(
   universalSwapStore: any,
   { oraiAddress, metamaskAddress, tronAddress, kwtAddress, cwStargate }: LoadTokenParams
 ) {
-  console.log({ evmChains });
+  console.log({ oraiAddress, cwStargate });
 
   await Promise.all(
     [
-      oraiAddress && loadTokensCosmos(universalSwapStore, oraiAddress),
+      oraiAddress && loadTokensCosmos(universalSwapStore, kwtAddress, oraiAddress),
       oraiAddress && cwStargate && loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
       // different cointype but also require keplr connected by checking oraiAddress
       kwtAddress && loadKawaiiSubnetAmount(universalSwapStore, kwtAddress),
@@ -84,14 +84,29 @@ async function loadTokens(
     ].filter(Boolean)
   );
 }
+const getAddress = (addr, prefix: string) => {
+  const { data } = fromBech32(addr);
+  return toBech32(prefix, data);
+};
 
-async function loadTokensCosmos(updateAmounts: UniversalSwapStore, address: string) {
+export const genAddressCosmos = (info, address60, address118) => {
+  const mapAddress = {
+    60: address60,
+    118: address118
+  };
+  const addr = mapAddress[info.bip44.coinType || 118];
+  const cosmosAddress = getAddress(addr, info.bech32Config.bech32PrefixAccAddr);
+  return { cosmosAddress };
+};
+
+async function loadTokensCosmos(updateAmounts: UniversalSwapStore, kwtAddress: string, oraiAddress: string) {
+  if (!kwtAddress || !oraiAddress) return;
   //   await handleCheckWallet();
-  const { words, prefix } = bech32.decode(address);
-  const cosmosInfos = chainInfos.filter(chainInfo => chainInfo.bip44.coinType === 118);
+  const cosmosInfos = chainInfos.filter(
+    chainInfo => chainInfo.networkType === 'cosmos' || chainInfo.bip44.coinType === 118
+  );
   for (const chainInfo of cosmosInfos) {
-    const networkPrefix = chainInfo.bech32Config.bech32PrefixAccAddr;
-    const cosmosAddress = networkPrefix === prefix ? address : bech32.encode(networkPrefix, words);
+    const { cosmosAddress } = genAddressCosmos(chainInfo, kwtAddress, oraiAddress);
     loadNativeBalance(updateAmounts, cosmosAddress, chainInfo);
   }
 }
@@ -116,6 +131,7 @@ async function loadCw20Balance(universalSwapStore: UniversalSwapStore, address: 
         data
       }))
     });
+
     //@ts-ignore
     const amountDetails = Object.fromEntries(
       cw20Tokens.map((t, ind) => {
@@ -127,6 +143,8 @@ async function loadCw20Balance(universalSwapStore: UniversalSwapStore, address: 
         return [t.denom, amount];
       })
     );
+
+    console.log(' loadCw20Balance amountDetails', amountDetails);
 
     universalSwapStore.updateAmounts(amountDetails);
   } catch (err) {
