@@ -48,7 +48,7 @@ import { NftDetailsPage } from './pages/nft/nft-details';
 // import * as BackgroundTxResult from "../../background/tx/foreground";
 import { AdditonalIntlMessages, AppIntlProvider, LanguageToFiatCurrency } from '@owallet/common';
 
-import { Ethereum, OWallet, TronWeb } from '@owallet/provider';
+import { Ethereum, OWallet, TronWeb, Bitcoin } from '@owallet/provider';
 import { InExtensionMessageRequester } from '@owallet/router-extension';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
@@ -71,6 +71,7 @@ const ethereum = new Ethereum(manifest.version, 'core', '', new InExtensionMessa
 
 const tronWeb = new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester());
 
+const bitcoin = new Bitcoin(manifest.version, 'core', 'bitcoinTestnet', new InExtensionMessageRequester());
 Sentry.init({
   dsn: 'https://4ce54db1095b48ab8688e701d7cc8301@o1323226.ingest.sentry.io/4504615445725184',
   integrations: [new BrowserTracing()],
@@ -88,6 +89,8 @@ window.eth_owallet = ethereum;
 window.ethereum = ethereum;
 //@ts-ignore
 window.tronWeb = tronWeb;
+//@ts-ignore
+window.bitcoin = bitcoin;
 
 // Make sure that icon file will be included in bundle
 require('./public/assets/orai_wallet_logo.png');
