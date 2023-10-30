@@ -63,6 +63,7 @@ import { SignEthereumPage } from './pages/sign/sign-ethereum';
 import { SignTronPage } from './pages/sign/sign-tron';
 import { ValidatorListPage } from './pages/stake/validator-list';
 import { TokenPage } from './pages/token';
+import { SendBtcPage } from './pages/send-btc';
 
 const owallet = new OWallet(manifest.version, 'core', new InExtensionMessageRequester());
 
@@ -134,13 +135,21 @@ const StateRenderer: FunctionComponent = observer(() => {
     window.close();
     return (
       <div style={{ height: '100%' }}>
-        <Banner icon={require('./public/assets/orai_wallet_logo.png')} logo={require('./public/assets/logo.svg')} subtitle="Cosmos x EVM in one Wallet" />
+        <Banner
+          icon={require('./public/assets/orai_wallet_logo.png')}
+          logo={require('./public/assets/logo.svg')}
+          subtitle="Cosmos x EVM in one Wallet"
+        />
       </div>
     );
   } else if (keyRingStore.status === KeyRingStatus.NOTLOADED) {
     return (
       <div style={{ height: '100%' }}>
-        <Banner icon={require('./public/assets/orai_wallet_logo.png')} logo={require('./public/assets/logo.svg')} subtitle="Cosmos x EVM in one Wallet" />
+        <Banner
+          icon={require('./public/assets/orai_wallet_logo.png')}
+          logo={require('./public/assets/logo.svg')}
+          subtitle="Cosmos x EVM in one Wallet"
+        />
       </div>
     );
   } else {
@@ -193,13 +202,18 @@ ReactDOM.render(
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
                   <Route exact path="/send-tron" component={SendTronEvmPage} />
+                  <Route exact path="/send-btc" component={SendBtcPage} />
                   <Route exact path="/ibc-transfer" component={IBCTransferPage} />
                   <Route exact path="/setting" component={SettingPage} />
                   <Route exact path="/ledger-grant" component={LedgerGrantPage} />
                   <Route exact path="/setting/language" component={SettingLanguagePage} />
                   <Route exact path="/setting/fiat" component={SettingFiatPage} />
                   <Route exact path="/setting/connections" component={SettingConnectionsPage} />
-                  <Route exact path="/setting/connections/viewing-key/:contractAddress" component={SettingSecret20ViewingKeyConnectionsPage} />
+                  <Route
+                    exact
+                    path="/setting/connections/viewing-key/:contractAddress"
+                    component={SettingSecret20ViewingKeyConnectionsPage}
+                  />
                   <Route exact path="/setting/address-book" component={AddressBookPage} />
                   <Route exact path="/setting/export-to-mobile" component={ExportToMobilePage} />
                   <Route exact path="/setting/credit" component={CreditPage} />

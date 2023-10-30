@@ -8,7 +8,7 @@ import { AccountView } from './account';
 import { AssetView, AssetViewBtc, AssetViewEvm } from './asset';
 import { LinkStakeView, StakeView } from './stake';
 import style from './style.module.scss';
-import { TxButtonEvmView, TxButtonView } from './tx-button';
+import { TxButtonBtcView, TxButtonEvmView, TxButtonView } from './tx-button';
 
 import { ChainUpdaterService } from '@owallet/background';
 import { TRON_ID } from '@owallet/common';
@@ -108,9 +108,13 @@ export const MainPage: FunctionComponent = observer(() => {
               <AccountView />
               {renderAssetView}
             </div>
-            {chainStore.current.networkType === 'evm' ? (
+            {networkType === 'evm' ? (
               <div style={{ marginTop: 24 }}>
                 <TxButtonEvmView hasSend={hasSend} setHasSend={setHasSend} />
+              </div>
+            ) : networkType === 'bitcoin' ? (
+              <div style={{ marginTop: 24 }}>
+                <TxButtonBtcView hasSend={hasSend} setHasSend={setHasSend} />
               </div>
             ) : (
               <>
@@ -128,7 +132,15 @@ export const MainPage: FunctionComponent = observer(() => {
                   }}
                 />
                 <LayoutHidePage hidePage={() => setHasSend(false)} />
-                {chainStore.current.networkType === 'evm' ? chainStore?.current.chainId === TRON_ID ? <SendTronEvmPage /> : <SendEvmPage /> : <SendPage />}
+                {chainStore.current.networkType === 'evm' ? (
+                  chainStore?.current.chainId === TRON_ID ? (
+                    <SendTronEvmPage />
+                  ) : (
+                    <SendEvmPage />
+                  )
+                ) : (
+                  <SendPage />
+                )}
               </>
             ) : null}
           </div>

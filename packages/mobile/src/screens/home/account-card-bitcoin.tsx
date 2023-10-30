@@ -19,8 +19,6 @@ export const AccountCardBitcoin: FunctionComponent<{
   const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
   const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
-  console.log('🚀 ~ file: account-card-bitcoin.tsx:36 ~ selected:', selected);
-  const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);

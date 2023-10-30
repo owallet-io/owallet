@@ -18,21 +18,11 @@ import { SendPage } from '../send';
 import { SelectChain } from '../../layouts/header';
 import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
-import {
-  getBase58Address,
-  getEvmAddress,
-  TRC20_LIST,
-  TRON_ID
-} from '@owallet/common';
+import { getBase58Address, getEvmAddress, TRC20_LIST, TRON_ID } from '@owallet/common';
+import { TokensBtcView } from '../main/tokenBtc';
 
 export const TokenPage: FunctionComponent = observer(() => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    uiConfigStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, uiConfigStore, keyRingStore } = useStore();
 
   const accountInfo = accountStore.getAccount(chainStore.current.chainId);
   const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
@@ -56,6 +46,7 @@ export const TokenPage: FunctionComponent = observer(() => {
     );
 
   const tokens = queryBalances.balances;
+  console.log('🚀 ~ file: tokens.tsx:59 ~ constTokenPage:FunctionComponent=observer ~ tokens:', tokens);
   const [tokensTron, setTokensTron] = React.useState(tokens);
   // const queryBalances = queriesStore
   //   .get(chainStore.current.chainId)
@@ -70,7 +61,7 @@ export const TokenPage: FunctionComponent = observer(() => {
       // call api get token tron network
       getTokenTron();
     }
-    return () => { };
+    return () => {};
   }, [accountInfo.evmosHexAddress]);
 
   const getTokenTron = async () => {
@@ -87,9 +78,7 @@ export const TokenPage: FunctionComponent = observer(() => {
           if (data?.data[0].trc20) {
             const tokenArr = [];
             TRC20_LIST.forEach((tk) => {
-              let token = data?.data[0].trc20.find(
-                (t) => tk.contractAddress in t
-              );
+              let token = data?.data[0].trc20.find((t) => tk.contractAddress in t);
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
               }
@@ -116,14 +105,11 @@ export const TokenPage: FunctionComponent = observer(() => {
     <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />
       <div style={{ height: 10 }} />
-      {uiConfigStore.showAdvancedIBCTransfer &&
-        chainStore.current.features?.includes('ibc-transfer') ? (
+      {uiConfigStore.showAdvancedIBCTransfer && chainStore.current.features?.includes('ibc-transfer') ? (
         <>
           <Card className={classnames(style.card, 'shadow')}>
             <CardBody>
-              <IBCTransferView
-                handleTransfer={() => setHasIBCTransfer(!hasIBCTransfer)}
-              />
+              <IBCTransferView handleTransfer={() => setHasIBCTransfer(!hasIBCTransfer)} />
             </CardBody>
           </Card>
           {hasIBCTransfer && (
@@ -149,6 +135,8 @@ export const TokenPage: FunctionComponent = observer(() => {
                 coinMinimalDenom={coinMinimalDenom}
                 handleClickToken={handleClickToken}
               />
+            ) : chainStore.current.networkType === 'bitcoin' ? (
+              <TokensBtcView handleClickToken={handleClickToken} />
             ) : (
               <TokensView
                 setHasSend={setHasSend}
@@ -176,10 +164,7 @@ export const TokenPage: FunctionComponent = observer(() => {
                 />
                 {chainStore.current.networkType === 'evm' ? (
                   chainStore.current.chainId === TRON_ID ? (
-                    <SendTronEvmPage
-                      coinMinimalDenom={coinMinimalDenom}
-                      tokensTrc20Tron={tokensTron}
-                    />
+                    <SendTronEvmPage coinMinimalDenom={coinMinimalDenom} tokensTrc20Tron={tokensTron} />
                   ) : (
                     <SendEvmPage coinMinimalDenom={coinMinimalDenom} />
                   )

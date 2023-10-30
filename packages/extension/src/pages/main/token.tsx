@@ -121,7 +121,13 @@ const TokenView: FunctionComponent<{
             fontSize: '16px'
           }}
         >
-          {balance.currency.coinImageUrl ? <img src={balance.currency.coinImageUrl} /> : name.length > 0 ? name[0] : '?'}
+          {balance.currency.coinImageUrl ? (
+            <img src={balance.currency.coinImageUrl} />
+          ) : name.length > 0 ? (
+            name[0]
+          ) : (
+            '?'
+          )}
         </div>
       </div>
       <div className={styleToken.innerContainer}>
@@ -183,7 +189,11 @@ const TokenView: FunctionComponent<{
               }
             }}
           >
-            {accountInfo.isSendingMsg === 'createSecret20ViewingKey' ? <i className="fa fa-spinner fa-spin fa-fw" /> : <i className="fas fa-wrench" />}
+            {accountInfo.isSendingMsg === 'createSecret20ViewingKey' ? (
+              <i className="fa fa-spinner fa-spin fa-fw" />
+            ) : (
+              <i className="fas fa-wrench" />
+            )}
           </div>
         ) : null}
         <div className={styleToken.rightIcon}>
@@ -206,7 +216,9 @@ export const TokensView: FunctionComponent<{
   const [tab, setTab] = useState(0);
   const displayTokens = tokens
     .filter((v, i, obj) => {
-      return v?.balance && obj.findIndex((v2) => v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom) === i;
+      return (
+        v?.balance && obj.findIndex((v2) => v2.balance.currency?.coinDenom === v.balance.currency?.coinDenom) === i
+      );
     })
     .sort((a, b) => {
       const aDecIsZero = a.balance?.toDec()?.isZero();
@@ -237,7 +249,7 @@ export const TokensView: FunctionComponent<{
               className={styleToken.title}
               onClick={() => {
                 if (i) {
-                  setHasSend(false)
+                  setHasSend(false);
                 }
                 setTab(i);
               }}

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 
 import { Dec, DecUtils } from '@owallet/unit';
 
@@ -9,7 +9,7 @@ import { ToolTip } from '../../components/tooltip';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLanguage, toDisplay, TRON_ID, getEvmAddress } from '@owallet/common';
 import { useHistory } from 'react-router';
-
+import { formatBalance, getExchangeRate, getBalanceValue, getBaseDerivationPath } from '@owallet/bitcoin';
 const LazyDoughnut = React.lazy(async () => {
   const module = await import(/* webpackChunkName: "reactChartJS" */ 'react-chartjs-2');
 
@@ -67,7 +67,10 @@ const LazyDoughnut = React.lazy(async () => {
 
         const startAngle2 = Math.PI / 2 - arc2._view.startAngle;
         // Nomalize
-        const endAngle2 = Math.atan2(Math.sin(Math.PI / 2 - arc2._view.endAngle), Math.cos(Math.PI / 2 - arc2._view.endAngle));
+        const endAngle2 = Math.atan2(
+          Math.sin(Math.PI / 2 - arc2._view.endAngle),
+          Math.cos(Math.PI / 2 - arc2._view.endAngle)
+        );
 
         // If the end of the first arc and the end of the second arc overlap,
         // Don't draw the first arc's end because it overlaps and looks weird.
@@ -110,9 +113,13 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   const stakable = balanceStakableQuery?.balance;
 
-  const delegated = queries.cosmos.queryDelegations.getQueryBech32Address(accountInfo.bech32Address).total.upperCase(true);
+  const delegated = queries.cosmos.queryDelegations
+    .getQueryBech32Address(accountInfo.bech32Address)
+    .total.upperCase(true);
 
-  const unbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(accountInfo.bech32Address).total.upperCase(true);
+  const unbonding = queries.cosmos.queryUnbondingDelegations
+    .getQueryBech32Address(accountInfo.bech32Address)
+    .total.upperCase(true);
 
   const stakedSum = delegated.add(unbonding);
 
@@ -137,7 +144,9 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
           <div className={styleAsset.big}>
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
-          <div className={styleAsset.small}>{totalPrice ? totalPrice.toString() : total.shrink(true).trim(true).maxDecimals(6).toString()}</div>
+          <div className={styleAsset.small}>
+            {totalPrice ? totalPrice.toString() : total.shrink(true).trim(true).maxDecimals(6).toString()}
+          </div>
           {/* <div className={styleAsset.indicatorIcon}>
             <React.Fragment>
               {balanceStakableQuery.isFetching ? (
@@ -223,7 +232,8 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
   if (keyRingStore.keyRingType === 'ledger' && chainStore.current.networkType === 'evm') {
     evmosAddress = keyRingStore?.keyRingLedgerAddresses?.eth;
     if (isTronNetwork) {
-      evmosAddress = keyRingStore?.keyRingLedgerAddresses?.trx && getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
+      evmosAddress =
+        keyRingStore?.keyRingLedgerAddresses?.trx && getEvmAddress(keyRingStore?.keyRingLedgerAddresses?.trx);
     }
   }
   const balance = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
@@ -234,7 +244,8 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
     if (total) {
       totalPrice =
         isTronNetwork && total
-          ? toDisplay(total.amount.int.value, 24) * priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
+          ? toDisplay(total.amount.int.value, 24) *
+            priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
           : priceStore?.calculatePrice(total, fiatCurrency);
     }
   }
@@ -246,7 +257,11 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {!isTronNetwork ? (totalPrice ? totalPrice.toString() : total?.shrink(true).maxDecimals(6).toString()) : null}
+            {!isTronNetwork
+              ? totalPrice
+                ? totalPrice.toString()
+                : total?.shrink(true).maxDecimals(6).toString()
+              : null}
 
             {isTronNetwork && totalPrice && parseFloat(totalPrice).toFixed(2) + ' $'}
           </div>
@@ -272,7 +287,9 @@ export const AssetChartViewEvm: FunctionComponent = observer(() => {
           >
             {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
 
-            {isTronNetwork && total ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}` : null}
+            {isTronNetwork && total
+              ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}`
+              : null}
           </div>
         </div>
       </div>
@@ -304,20 +321,16 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
     }
   }
   const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-  console.log("🚀 ~ file: asset.tsx:307 ~ constAssetChartViewBtc:FunctionComponent=observer ~ balance:", balance)
+  console.log('🚀 ~ file: asset.tsx:307 ~ constAssetChartViewBtc:FunctionComponent=observer ~ balance:', balance);
+  const totalAmount = useMemo(() => {
+    const amount = formatBalance({
+      balance: Number(balance?.toCoin().amount),
+      cryptoUnit: 'BTC',
+      coin: chainId
+    });
+    return amount;
+  }, [chainId, address, networkType, balance]);
 
-  // if (evmosAddress) {
-  //   total = queries.evm.queryEvmBalance.getQueryBalance(evmosAddress)?.balance;
-  //   if (total) {
-  //     totalPrice =
-  //       isTronNetwork && total
-  //         ? toDisplay(total.amount.int.value, 24) *
-  //         priceStore?.getPrice(
-  //           chainStore?.current?.stakeCurrency?.coinGeckoId
-  //         )
-  //         : priceStore?.calculatePrice(total, fiatCurrency);
-  //   }
-  // }
   return (
     <React.Fragment>
       <div className={styleAsset.containerChart}>
@@ -325,17 +338,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
           <div className={styleAsset.big}>
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
-          <div className={styleAsset.small}>
-            {/* {!isTronNetwork
-              ? totalPrice
-                ? totalPrice.toString()
-                : total?.shrink(true).maxDecimals(6).toString()
-              : null}
-
-            {isTronNetwork &&
-              totalPrice &&
-              parseFloat(totalPrice).toFixed(2) + ' $'} */}
-          </div>
+          <div className={styleAsset.small}>{totalAmount}</div>
         </div>
         <React.Suspense fallback={<div style={{ height: '150px' }} />}>
           <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
@@ -356,9 +359,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
               color: '#353945E5'
             }}
           >
-            {/* {!isTronNetwork && balance?.trim(true).shrink(true).maxDecimals(6).toString()}
-
-            {isTronNetwork && total ? toDisplay(total.amount.int.value, 24) + ` ${chainStore.current?.stakeCurrency.coinDenom}` : null} */}
+            {totalAmount}
           </div>
         </div>
       </div>
