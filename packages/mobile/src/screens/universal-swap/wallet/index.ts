@@ -67,11 +67,13 @@ export class SwapEvmWallet extends EvmWallet {
   private ethAddress: string;
   private isTronToken: boolean;
   private ethereum: Ethereum;
-  constructor(ethereum: Ethereum, ethAddress: string, isTronToken: boolean) {
+  private rpc: string;
+  constructor(ethereum: Ethereum, ethAddress: string, isTronToken: boolean, rpc: string) {
     super();
     this.ethAddress = ethAddress;
     this.ethereum = ethereum;
     this.isTronToken = isTronToken;
+    this.rpc = rpc;
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
@@ -79,11 +81,12 @@ export class SwapEvmWallet extends EvmWallet {
 
   switchNetwork(chainId: string | number): Promise<void> {
     // return undefined by default on mobile
-    // return new Promise(resolve => resolve(undefined));
-    return this.ethereum.request!({
-      method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0x' + Number(chainId).toString(16) }]
-    });
+    return new Promise(resolve => resolve(undefined));
+    // return this.ethereum.request!({
+    //   method: 'wallet_switchEthereumChain',
+    //   chainId: '0x' + Number(chainId).toString(16),
+    //   params: [{ chainId: '0x' + Number(chainId).toString(16) }]
+    // });
   }
 
   getEthAddress(): Promise<string> {
@@ -101,6 +104,7 @@ export class SwapEvmWallet extends EvmWallet {
   getSigner(): JsonRpcSigner {
     // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
     this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
+    // this.provider = new JsonRpcProvider(this.rpc);
     return this.provider.getSigner();
   }
 }

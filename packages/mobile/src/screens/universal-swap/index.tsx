@@ -273,7 +273,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setFilteredFromTokens(filteredFromTokens);
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
-  }, [fromToken, toToken]);
+  }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
   const getSimulateSwap = async (initAmount?) => {
     const data = await handleSimulateSwap(
@@ -393,9 +393,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
       const isTron = originalFromToken.coinGeckoId === 'tron';
-      console.log('isTron', isTron);
 
-      const evmWallet = new SwapEvmWallet(ethereum, accountEvm.evmosHexAddress, isTron);
+      const evmWallet = new SwapEvmWallet(ethereum, accountEvm.evmosHexAddress, isTron, originalFromToken.rpc);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
