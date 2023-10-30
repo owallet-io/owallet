@@ -48,7 +48,7 @@ import {
 } from '@oraichain/oraidex-universal-swap';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import DeviceInfo from 'react-native-device-info';
-import { OWallet } from '@owallet/provider';
+import { Ethereum, OWallet } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
 import { styling } from './styles';
 import { BalanceType, MAX, balances, oraidexURL } from './types';
@@ -363,6 +363,21 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       )
   );
 
+  const [ethereum] = useState(
+    () =>
+      new Ethereum(
+        DeviceInfo.getVersion(),
+        'core',
+        ETH_ID,
+        new RNMessageRequesterExternal(() => {
+          return {
+            url: oraidexURL,
+            origin: new URL(oraidexURL).origin
+          };
+        })
+      )
+  );
+
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
@@ -377,7 +392,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapLoading(true);
     try {
       const cosmosWallet = new SwapCosmosWallet(client, owallet);
-      const evmWallet = new SwapEvmWallet(originalFromToken.rpc, accountEvm.evmosHexAddress);
+      const isTron = originalFromToken.coinGeckoId === 'tron';
+      console.log('isTron', isTron);
+
+      const evmWallet = new SwapEvmWallet(ethereum, accountEvm.evmosHexAddress, isTron);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -541,7 +559,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             tokenFee={fromTokenFee}
           />
           <SwapBox
-            amount={toDisplay(toAmountToken.toString(), originalFromToken?.decimals).toString() ?? '0'}
+            amount={toDisplay(toAmountToken.toString()).toString() ?? '0'}
             balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
             tokenActive={originalToToken}
             onOpenTokenModal={() => setIsSelectToTokenModal(true)}

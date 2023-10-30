@@ -5,6 +5,8 @@ import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cos
 import TronWeb from 'tronweb';
 import { OWallet } from '@owallet/types';
 import { SigningStargateClient } from '@cosmjs/stargate';
+import { Ethereum } from '@owallet/provider';
+import { ethers } from 'ethers';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -63,10 +65,13 @@ export class SwapCosmosWallet extends CosmosWallet {
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
   private ethAddress: string;
-  constructor(rpc: string, ethAddress: string) {
+  private isTronToken: boolean;
+  private ethereum: Ethereum;
+  constructor(ethereum: Ethereum, ethAddress: string, isTronToken: boolean) {
     super();
-    this.provider = new JsonRpcProvider(rpc);
     this.ethAddress = ethAddress;
+    this.ethereum = ethereum;
+    this.isTronToken = isTronToken;
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
@@ -74,7 +79,11 @@ export class SwapEvmWallet extends EvmWallet {
 
   switchNetwork(chainId: string | number): Promise<void> {
     // return undefined by default on mobile
-    return new Promise(resolve => resolve(undefined));
+    // return new Promise(resolve => resolve(undefined));
+    return this.ethereum.request!({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: '0x' + Number(chainId).toString(16) }]
+    });
   }
 
   getEthAddress(): Promise<string> {
@@ -82,16 +91,16 @@ export class SwapEvmWallet extends EvmWallet {
   }
 
   checkEthereum(): boolean {
-    return true;
+    return !this.isTronToken;
   }
 
   checkTron(): boolean {
-    return true;
+    return this.isTronToken;
   }
 
   getSigner(): JsonRpcSigner {
-    console.log('this.provider.getSigner()', this.provider.getSigner());
-
+    // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
+    this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
     return this.provider.getSigner();
   }
 }
