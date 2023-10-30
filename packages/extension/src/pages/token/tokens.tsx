@@ -20,15 +20,17 @@ import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
 import { getBase58Address, getEvmAddress, TRC20_LIST, TRON_ID } from '@owallet/common';
 import { TokensBtcView } from '../main/tokenBtc';
+import { SendBtcPage } from '../send-btc';
 
 export const TokenPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, uiConfigStore, keyRingStore } = useStore();
-
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const { chainId, networkType } = chainStore.current;
+  const accountInfo = accountStore.getAccount(chainId);
   const [hasIBCTransfer, setHasIBCTransfer] = React.useState(false);
   const [hasSend, setHasSend] = React.useState(false);
   const [coinMinimalDenom, setCoinMinimalDenom] = React.useState('');
-  const checkTronNetwork = chainStore.current.chainId === TRON_ID;
+
+  const checkTronNetwork = chainId === TRON_ID;
   const ledgerAddress =
     keyRingStore.keyRingType === 'ledger'
       ? checkTronNetwork
@@ -36,9 +38,9 @@ export const TokenPage: FunctionComponent = observer(() => {
         : keyRingStore?.keyRingLedgerAddresses?.eth
       : '';
   const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
+    .get(chainId)
     .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
+      networkType === 'evm'
         ? keyRingStore.keyRingType !== 'ledger'
           ? accountInfo.evmosHexAddress
           : ledgerAddress
@@ -48,16 +50,9 @@ export const TokenPage: FunctionComponent = observer(() => {
   const tokens = queryBalances.balances;
   console.log('🚀 ~ file: tokens.tsx:59 ~ constTokenPage:FunctionComponent=observer ~ tokens:', tokens);
   const [tokensTron, setTokensTron] = React.useState(tokens);
-  // const queryBalances = queriesStore
-  //   .get(chainStore.current.chainId)
-  //   .queryBalances.getQueryBech32Address(
-  //     accountStore.getAccount(chainStore.current.chainId).bech32Address
-  //   );
-
-  // const tokens = queryBalances.balances;
 
   useEffect(() => {
-    if (chainStore.current.chainId == TRON_ID) {
+    if (chainId == TRON_ID) {
       // call api get token tron network
       getTokenTron();
     }
@@ -101,6 +96,17 @@ export const TokenPage: FunctionComponent = observer(() => {
   useEffect(() => {
     setHasSend(false);
   }, [chainStore.current]);
+  const handleCheckSendPage = () => {
+    if (networkType === 'evm') {
+      if (chainId === TRON_ID) {
+        return <SendTronEvmPage coinMinimalDenom={coinMinimalDenom} tokensTrc20Tron={tokensTron} />;
+      }
+      return <SendEvmPage coinMinimalDenom={coinMinimalDenom} />;
+    } else if (networkType === 'bitcoin') {
+      return <SendBtcPage />;
+    }
+    return <SendPage coinMinimalDenom={coinMinimalDenom} />;
+  };
   return (
     <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />
@@ -128,14 +134,14 @@ export const TokenPage: FunctionComponent = observer(() => {
       {hasTokens ? (
         <Card className={classnames(style.card, 'shadow')}>
           <CardBody>
-            {chainStore.current.chainId === TRON_ID ? (
+            {chainId === TRON_ID ? (
               <TokensTronView
                 //@ts-ignore
                 tokens={tokensTron}
                 coinMinimalDenom={coinMinimalDenom}
                 handleClickToken={handleClickToken}
               />
-            ) : chainStore.current.networkType === 'bitcoin' ? (
+            ) : networkType === 'bitcoin' ? (
               <TokensBtcView handleClickToken={handleClickToken} />
             ) : (
               <TokensView
@@ -162,15 +168,7 @@ export const TokenPage: FunctionComponent = observer(() => {
                     setCoinMinimalDenom('');
                   }}
                 />
-                {chainStore.current.networkType === 'evm' ? (
-                  chainStore.current.chainId === TRON_ID ? (
-                    <SendTronEvmPage coinMinimalDenom={coinMinimalDenom} tokensTrc20Tron={tokensTron} />
-                  ) : (
-                    <SendEvmPage coinMinimalDenom={coinMinimalDenom} />
-                  )
-                ) : (
-                  <SendPage coinMinimalDenom={coinMinimalDenom} />
-                )}
+                {handleCheckSendPage()}
               </div>
             </>
           ) : null}

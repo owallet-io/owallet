@@ -27,7 +27,13 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
-import { NAMESPACE, NAMESPACE_ETHEREUM, NAMESPACE_ETHEREUM_OWALLET, NAMESPACE_TRONWEB } from './constants';
+import {
+  NAMESPACE,
+  NAMESPACE_BITCOIN,
+  NAMESPACE_ETHEREUM,
+  NAMESPACE_ETHEREUM_OWALLET,
+  NAMESPACE_TRONWEB
+} from './constants';
 import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 
 export const localStore = new Map<string, any>();
@@ -714,11 +720,7 @@ export class InjectedBitcoin implements Bitcoin {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (
-        !message ||
-        message.type !== NAMESPACE_ETHEREUM + 'proxy-request' ||
-        message.namespace !== NAMESPACE_ETHEREUM
-      ) {
+      if (!message || message.type !== NAMESPACE_BITCOIN + 'proxy-request' || message.namespace !== NAMESPACE_BITCOIN) {
         return;
       }
 
@@ -824,7 +826,7 @@ export class InjectedBitcoin implements Bitcoin {
       } catch (e) {
         const proxyResponse: ProxyRequestResponse = {
           type: 'proxy-request-response',
-          namespace: NAMESPACE_ETHEREUM,
+          namespace: NAMESPACE_BITCOIN,
           id: message.id,
           result: {
             error: e.message || e.toString()
@@ -845,8 +847,8 @@ export class InjectedBitcoin implements Bitcoin {
       .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: (NAMESPACE_ETHEREUM + 'proxy-request') as any,
-      namespace: NAMESPACE_ETHEREUM,
+      type: (NAMESPACE_BITCOIN + 'proxy-request') as any,
+      namespace: NAMESPACE_BITCOIN,
       id,
       method,
       args: JSONUint8Array.wrap(args)
@@ -904,13 +906,15 @@ export class InjectedBitcoin implements Bitcoin {
   ) {}
 
   async enable() {
-    return await this.requestMethod('eth_requestAccounts', [[]]);
+    // return await this.requestMethod('eth_requestAccounts', [[]]);
+    return;
   }
 
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
-    console.log(`arguments: ${JSON.stringify(args)}`);
-    return await this.requestMethod(args.method as string, [args.params, args.chainId]);
+    // console.log(`arguments: ${JSON.stringify(args)}`);
+    // return await this.requestMethod(args.method as string, [args.params, args.chainId]);
+    return;
   }
 
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {

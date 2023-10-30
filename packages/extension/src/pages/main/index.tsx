@@ -22,6 +22,7 @@ import { SendPage } from '../send';
 import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
 import { BIP44SelectModal } from './bip44-select-modal';
+import { SendBtcPage } from '../send-btc';
 
 export const MainPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -32,7 +33,7 @@ export const MainPage: FunctionComponent = observer(() => {
 
   const currentChainId = chainStore.current.chainId;
   const prevChainId = useRef<string | undefined>();
-  const { networkType } = chainStore.current;
+  const { networkType, chainId } = chainStore.current;
   useEffect(() => {
     if (!chainStore.isInitializing && prevChainId.current !== currentChainId) {
       (async () => {
@@ -52,10 +53,10 @@ export const MainPage: FunctionComponent = observer(() => {
               })
             })
           ) {
-            await chainStore.tryUpdateChain(chainStore.current.chainId);
+            await chainStore.tryUpdateChain(chainId);
           }
         } else if (result.slient) {
-          await chainStore.tryUpdateChain(chainStore.current.chainId);
+          await chainStore.tryUpdateChain(chainId);
         }
       })();
 
@@ -96,6 +97,18 @@ export const MainPage: FunctionComponent = observer(() => {
       </>
     );
   }, [networkType]);
+
+  const handleCheckSendPage = () => {
+    if (networkType === 'evm') {
+      if (chainId === TRON_ID) {
+        return <SendTronEvmPage />;
+      }
+      return <SendEvmPage />;
+    } else if (networkType === 'bitcoin') {
+      return <SendBtcPage />;
+    }
+    return <SendPage />;
+  };
   return (
     <HeaderLayout showChainName canChangeChainInfo>
       <SelectChain showChainName canChangeChainInfo />
@@ -132,22 +145,14 @@ export const MainPage: FunctionComponent = observer(() => {
                   }}
                 />
                 <LayoutHidePage hidePage={() => setHasSend(false)} />
-                {chainStore.current.networkType === 'evm' ? (
-                  chainStore?.current.chainId === TRON_ID ? (
-                    <SendTronEvmPage />
-                  ) : (
-                    <SendEvmPage />
-                  )
-                ) : (
-                  <SendPage />
-                )}
+                {handleCheckSendPage()}
               </>
             ) : null}
           </div>
         </CardBody>
       </Card>
 
-      {chainStore.current.networkType === 'cosmos' && (
+      {networkType === 'cosmos' && (
         <>
           <Card className={classnames(style.card, 'shadow')}>
             <CardBody>
