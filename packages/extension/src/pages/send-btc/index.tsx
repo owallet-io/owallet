@@ -255,7 +255,7 @@ export const SendBtcPage: FunctionComponent<{
           <Button
             type="submit"
             block
-            data-loading={accountInfo.isSendingMsg === 'send'}
+            // data-loading={accountInfo.isSendingMsg === 'send'}
             disabled={!accountInfo.isReadyToSendMsgs || !txStateIsValid}
             className={style.sendBtn}
             style={{
