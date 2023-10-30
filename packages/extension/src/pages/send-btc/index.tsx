@@ -173,7 +173,7 @@ export const SendBtcPage: FunctionComponent<{
                   blacklistedUtxos: [],
                   amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
                   gasPriceStep: stakeCurrency.gasPriceStep[sendConfigs.feeConfig.feeType]
-                }
+                } as any
               );
               if (!isDetachedPage) {
                 history.replace('/');
