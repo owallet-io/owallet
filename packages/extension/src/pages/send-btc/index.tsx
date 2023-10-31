@@ -22,7 +22,7 @@ import { CoinInputBtc } from '../../components/form/coin-input-btc';
 export const SendBtcPage: FunctionComponent<{
   coinMinimalDenom?: string;
 }> = observer(({ coinMinimalDenom }) => {
-  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore } = useStore();
+  const { chainStore, accountStore, priceStore, queriesStore, analyticsStore, keyRingStore } = useStore();
   const { chainId, networkType, currencies, stakeCurrency } = chainStore.current;
   const history = useHistory();
   let search = useLocation().search || coinMinimalDenom || '';
@@ -55,7 +55,8 @@ export const SendBtcPage: FunctionComponent<{
 
   const accountInfo = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(accountInfo.bech32Address)?.response?.data;
+  const address = accountInfo.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
   const sendConfigs = useSendTxConfig(

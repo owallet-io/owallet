@@ -12,7 +12,7 @@ import { AccountBox } from './account-box';
 import { btcToFiat } from '@owallet/bitcoin';
 import { CoinPretty } from '@owallet/unit';
 import { SCREENS } from '@src/common/constants';
-import { findLedgerAddressWithChainId } from '@owallet/common';
+
 export const AccountCardBitcoin: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
@@ -22,12 +22,8 @@ export const AccountCardBitcoin: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
-
-  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    keyRingStore.keyRingType === 'ledger'
-      ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
-      : account?.bech32Address
-  )?.balance;
+  const address = account.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
 
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
@@ -104,21 +100,10 @@ export const AccountCardBitcoin: FunctionComponent<{
       })
     );
   };
-  const renderAddress = () => {
-    if (keyRingStore.keyRingLedgerAddresses && keyRingStore.keyRingType === 'ledger') {
-      return (
-        <AddressCopyable
-          address={findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)}
-          maxCharacters={22}
-        />
-      );
-    }
-    return <AddressCopyable address={account?.bech32Address} maxCharacters={22} />;
-  };
   return (
     <AccountBox
       totalBalance={!!totalAmount ? totalAmount : null}
-      addressComponent={renderAddress()}
+      addressComponent={<AddressCopyable address={address} maxCharacters={22} />}
       name={account?.name || '..'}
       coinType={`${
         keyRingStore.keyRingType === 'ledger'
