@@ -20,8 +20,10 @@ import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
 import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '../config/constants';
 import { CosmWasmClient, OraiswapOracleQueryClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { CwIcs20LatestQueryClient, Ratio } from '@oraichain/common-contracts-sdk';
+import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapToTokens } from '../config';
+import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
+import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 
 export enum SwapDirection {
   From,
@@ -97,11 +99,11 @@ export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
   return oraichainTokens.find(token => token.coinGeckoId === coingeckoId);
 };
 
-export async function fetchTaxRate(client: CosmWasmClient) {
+export async function fetchTaxRate(client: CosmWasmClient): Promise<TaxRateResponse> {
   const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
   try {
-    const data = await oracleContract.taxRate();
-    return data;
+    const data = await oracleContract.treasury({ tax_rate: {} });
+    return data as TaxRateResponse;
   } catch (error) {
     throw new Error(`Error when query TaxRate using oracle: ${error}`);
   }

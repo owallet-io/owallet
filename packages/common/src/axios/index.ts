@@ -1,5 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import settle from 'axios/lib/core/settle';
+import AxiosErrorFn from 'axios/lib/core/enhanceError';
 import buildURL from 'axios/lib/helpers/buildURL';
 import buildFullPath from 'axios/lib/core/buildFullPath';
 import { isUndefined } from 'axios/lib/utils';
@@ -51,7 +52,7 @@ async function getResponse(request: Request, config: AxiosRequestConfig): Promis
   const response: AxiosResponse = {
     status: stageOne.status,
     statusText: stageOne.statusText,
-    headers: Object.fromEntries(stageOne.headers.entries()), // Make a copy of headers
+    headers: new Headers(stageOne.headers), // Make a copy of headers
     config: config,
     request,
     data: null
@@ -81,7 +82,7 @@ async function getResponse(request: Request, config: AxiosRequestConfig): Promis
  * This function will create a Request object based on configuration's axios
  */
 function createRequest(config: AxiosRequestConfig): Request {
-  const headers = config.headers as Record<string, string>;
+  const headers = new Headers(config.headers);
 
   // HTTP basic authentication
   if (config.auth) {
