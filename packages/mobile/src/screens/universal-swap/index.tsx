@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -52,12 +52,19 @@ import { Ethereum, OWallet } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
 import { styling } from './styles';
 import { BalanceType, MAX, balances, oraidexURL } from './types';
+import WebView, { WebViewMessageEvent } from 'react-native-webview';
+import { EventEmitter } from 'eventemitter3';
+import { RNInjectedEthereum } from '@src/injected/injected-provider';
+import { useInjectedSourceCode } from '../web/components/webpage-screen';
+import { WebViewStateContext } from '../web/components/context';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
+  const chainId = chainStore?.current?.chainId;
 
+  const account = accountStore.getAccount(chainId);
   const accountEvm = accountStore.getAccount(ETH_ID);
   const accountTron = accountStore.getAccount(TRON_ID);
   const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
@@ -71,6 +78,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
   const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
+  const webviewRef = useRef<WebView | null>(null);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
@@ -299,7 +307,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = data?.amount ? calculateMinimum(data?.amount, userSlippage) : '0';
+      const minimumReceive = ratio?.amount
+        ? calculateMinReceive(
+            ratio.amount,
+            toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
+            userSlippage,
+            originalFromToken.decimals
+          )
+        : '0';
+      // const isWarningSlippage = +minimumReceive > +simulateData?.amount;
       setMininumReceive(toDisplay(minimumReceive));
       setSwapAmount([fromAmountBalance, Number(data.amount)]);
       setAmountLoading(false);
@@ -349,12 +365,45 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [balanceActive]
   );
 
+  const [eventEmitter] = useState(() => new EventEmitter());
+  const onMessage = useCallback(
+    (event: WebViewMessageEvent) => {
+      if (__DEV__) {
+        console.log('WebViewMessageEvent', event.nativeEvent.data);
+      }
+
+      eventEmitter.emit('message', event.nativeEvent);
+    },
+    [eventEmitter]
+  );
+  const eventListener = {
+    addMessageListener: (fn: any) => {
+      eventEmitter.addListener('message', fn);
+    },
+    postMessage: (message: any) => {
+      webviewRef.current?.injectJavaScript(
+        `
+            window.postMessage(${JSON.stringify(message)}, window.location.origin);
+            true; // note: this is required, or you'll sometimes get silent failures
+          `
+      );
+    }
+  };
+
   const [owallet] = useState(
     () =>
       new OWallet(
         DeviceInfo.getVersion(),
         'core',
         new RNMessageRequesterExternal(() => {
+          if (!webviewRef.current) {
+            throw new Error('Webview not initialized yet');
+          }
+
+          if (!oraidexURL) {
+            throw new Error('Current URL is empty');
+          }
+
           return {
             url: oraidexURL,
             origin: new URL(oraidexURL).origin
@@ -368,8 +417,16 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       new Ethereum(
         DeviceInfo.getVersion(),
         'core',
-        ETH_ID,
+        chainStore.current.chainId,
         new RNMessageRequesterExternal(() => {
+          if (!webviewRef.current) {
+            throw new Error('Webview not initialized yet');
+          }
+
+          if (!oraidexURL) {
+            throw new Error('Current URL is empty');
+          }
+
           return {
             url: oraidexURL,
             origin: new URL(oraidexURL).origin
@@ -378,8 +435,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       )
   );
 
+  useEffect(() => {
+    RNInjectedEthereum.startProxy(ethereum, eventListener, RNInjectedEthereum.parseWebviewMessage);
+  }, [eventEmitter, ethereum]);
+
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
+    // return;
     if (fromAmountToken <= 0) {
       showToast({
         text1: 'Error',
@@ -416,6 +478,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         },
         {
           cosmosWallet,
+          //@ts-ignore
           evmWallet
         }
       );
@@ -465,6 +528,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
   );
 
+  const sourceCode = useInjectedSourceCode();
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
@@ -473,6 +538,32 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />}
     >
+      <WebViewStateContext.Provider
+        value={{
+          webView: webviewRef.current,
+          name: '',
+          url: oraidexURL,
+          canGoBack: false,
+          canGoForward: false,
+          clearWebViewContext: () => {
+            webviewRef.current = null;
+          }
+        }}
+      >
+        {sourceCode ? (
+          <WebView
+            ref={webviewRef}
+            incognito={true}
+            injectedJavaScriptBeforeContentLoaded={sourceCode}
+            onMessage={onMessage}
+            style={{ flex: 0, height: 0, width: 0, opacity: 0 }}
+            source={{ uri: oraidexURL }}
+          />
+        ) : (
+          <View />
+        )}
+      </WebViewStateContext.Provider>
+
       <SlippageModal
         close={() => {
           setIsSlippageModal(false);

@@ -1,6 +1,6 @@
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 import { CosmosWallet, EvmWallet, NetworkChainId, CosmosChainId } from '@oraichain/oraidex-common';
-import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
 import { OWallet } from '@owallet/types';
@@ -77,20 +77,49 @@ export class SwapEvmWallet extends EvmWallet {
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
+    // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
+    this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
   }
 
-  switchNetwork(chainId: string | number): Promise<void> {
+  loadAccounts = async (): Promise<string[]> => {
+    if (!this.checkEthereum()) return;
+    // passe cointype 60 for ethereum or let it use default param
+    const accounts = await this.ethereum.request({
+      method: 'eth_accounts',
+      params: [60]
+    });
+    return accounts;
+  };
+
+  async switchNetwork(chainId: string | number): Promise<void> {
     // return undefined by default on mobile
-    return new Promise(resolve => resolve(undefined));
-    // return this.ethereum.request!({
-    //   method: 'wallet_switchEthereumChain',
-    //   chainId: '0x' + Number(chainId).toString(16),
-    //   params: [{ chainId: '0x' + Number(chainId).toString(16) }]
-    // });
+    // return new Promise(resolve => resolve(undefined));
+
+    // let accounts = await this.loadAccounts();
+    // console.log('switchNetwork accounts', accounts);
+
+    // if (accounts?.length > 0) {
+    //   const metamaskAddress = ethers.utils.getAddress(accounts[0]);
+    //   console.log('metamaskAddress', metamaskAddress);
+    // }
+    return this.ethereum.request!({
+      method: 'wallet_switchEthereumChain',
+      chainId: '0x' + Number(chainId).toString(16),
+      params: [{ chainId: '0x' + Number(chainId).toString(16) }]
+    });
   }
 
-  getEthAddress(): Promise<string> {
-    return new Promise(resolve => resolve(this.ethAddress));
+  async getEthAddress(): Promise<string> {
+    // return new Promise(resolve => resolve(this.ethAddress));
+    if (this.checkEthereum()) {
+      const [address] = await this.ethereum.request({
+        method: 'eth_requestAccounts',
+        params: []
+      });
+      console.log('getEthAddress ===', address);
+
+      return address;
+    }
   }
 
   checkEthereum(): boolean {
@@ -102,9 +131,7 @@ export class SwapEvmWallet extends EvmWallet {
   }
 
   getSigner(): JsonRpcSigner {
-    // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
-    this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
-    // this.provider = new JsonRpcProvider(this.rpc);
+    // this.provider = new ethers.providers.JsonRpcProvider(this.rpc);
     return this.provider.getSigner();
   }
 }
