@@ -23,7 +23,7 @@ export const useSendTxConfig = (
   ensEndpoint?: string,
   queryEvmBalances?: ObservableQueryEvmBalance,
   senderEvm?: string,
-  queryBtcBalances?: ObservableQueryBitcoinBalance,
+  queryBtcBalances?: ObservableQueryBitcoinBalance
 ) => {
   const chainInfo = chainGetter.getChain(chainId);
   const amountConfig = useAmountConfig(
@@ -31,18 +31,13 @@ export const useSendTxConfig = (
     chainId,
     sender,
     queryBalances,
-    chainInfo.networkType === "evm" && queryEvmBalances,
-    chainInfo.networkType === "evm" && senderEvm,
-    chainInfo.networkType === "bitcoin" && queryBtcBalances
+    chainInfo.networkType === 'evm' && queryEvmBalances,
+    chainInfo.networkType === 'evm' && senderEvm
+    // chainInfo.networkType === "bitcoin" && queryBtcBalances
   );
 
   const memoConfig = useMemoConfig(chainGetter, chainId);
-  const gasConfig = useSendGasConfig(
-    chainGetter,
-    chainId,
-    amountConfig,
-    sendMsgOpts
-  );
+  const gasConfig = useSendGasConfig(chainGetter, chainId, amountConfig, sendMsgOpts);
   const feeConfig = useFeeConfig(
     chainGetter,
     chainId,
@@ -51,8 +46,8 @@ export const useSendTxConfig = (
     amountConfig,
     gasConfig,
     true,
-    chainInfo.networkType === "evm" && queryEvmBalances,
-    chainInfo.networkType === "evm" && senderEvm,
+    chainInfo.networkType === 'evm' && queryEvmBalances,
+    chainInfo.networkType === 'evm' && senderEvm
   );
   // Due to the circular references between the amount config and gas/fee configs,
   // set the fee config of the amount config after initing the gas/fee configs.

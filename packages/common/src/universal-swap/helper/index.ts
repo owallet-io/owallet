@@ -15,7 +15,8 @@ import {
 } from '@oraichain/oraidex-common';
 import { TokenInfo } from '../types/token';
 import { SimulateSwapOperationsResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapRouter.types';
-import { generateSwapOperationMsgs, getEvmSwapRoute, isEvmSwappable } from '../api';
+import { getEvmSwapRoute, isEvmSwappable } from '../api';
+import { generateSwapOperationMsgs } from '@oraichain/oraidex-universal-swap';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
 import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '../config/constants';
@@ -24,6 +25,7 @@ import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapToTokens } from '../config';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
+import { getBase58Address, getEvmAddress } from 'src/utils';
 
 export enum SwapDirection {
   From,
@@ -86,10 +88,10 @@ export function getTokenOnSpecificChainId(
   return flattenTokens.find(t => t.coinGeckoId === coingeckoId && t.chainId === chainId);
 }
 
-export const tronToEthAddress = (base58: string) => Address.getEvmAddress(base58);
+export const tronToEthAddress = (base58: string) => getEvmAddress(base58);
 
 export const ethToTronAddress = (address: string) => {
-  return Address.getBase58Address(address);
+  return getBase58Address(address);
 };
 
 export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {

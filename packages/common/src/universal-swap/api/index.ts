@@ -1,16 +1,10 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { TokenItemType, TokenInfo, toTokenInfo, network } from '@oraichain/oraidex-common';
-import {
-  AssetInfo,
-  OraiswapTokenQueryClient,
-  OraiswapTokenTypes,
-  SwapOperation
-} from '@oraichain/oraidex-contracts-sdk';
-import { ORAI_INFO, swapEvmRoutes } from '../config/constants';
-import { Pairs } from '../config/pools';
-import isEqual from 'lodash/isEqual';
+import { OraiswapTokenQueryClient, OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
+import { swapEvmRoutes } from '../config/constants';
 import { Coin } from '@cosmjs/stargate';
+import { generateSwapOperationMsgs } from '@oraichain/oraidex-universal-swap';
 
 async function fetchTokenInfo(token: TokenItemType, client): Promise<TokenInfo> {
   let data: OraiswapTokenTypes.TokenInfoResponse;
@@ -94,40 +88,6 @@ function parseTokenInfo(tokenInfo: TokenItemType, amount?: string | number) {
   }
   return { info: { token: { contract_addr: tokenInfo?.contractAddress } } };
 }
-
-const generateSwapOperationMsgs = (offerInfo: AssetInfo, askInfo: AssetInfo): SwapOperation[] => {
-  const pairExist = Pairs.pairs.some(pair => {
-    let assetInfos = pair.asset_infos;
-    return (
-      (isEqual(assetInfos[0], offerInfo) && isEqual(assetInfos[1], askInfo)) ||
-      (isEqual(assetInfos[1], offerInfo) && isEqual(assetInfos[0], askInfo))
-    );
-  });
-
-  return pairExist
-    ? [
-        {
-          orai_swap: {
-            offer_asset_info: offerInfo,
-            ask_asset_info: askInfo
-          }
-        }
-      ]
-    : [
-        {
-          orai_swap: {
-            offer_asset_info: offerInfo,
-            ask_asset_info: ORAI_INFO
-          }
-        },
-        {
-          orai_swap: {
-            offer_asset_info: ORAI_INFO,
-            ask_asset_info: askInfo
-          }
-        }
-      ];
-};
 
 const handleSentFunds = (...funds: (Coin | undefined)[]): Coin[] | null => {
   let sent_funds = [];

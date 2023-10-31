@@ -6,16 +6,8 @@ import { action, computed, makeObservable, override } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
 import { getBaseDerivationPath } from '@owallet/bitcoin';
-import {
-  getScriptHash,
-  getBalanceFromUtxos,
-  getCoinNetwork
-} from '@owallet/bitcoin';
-import {
-  BalanceRegistry,
-  BalanceRegistryType,
-  ObservableQueryBalanceInner
-} from '../balances';
+import { getScriptHash, getBalanceFromUtxos, getCoinNetwork } from '@owallet/bitcoin';
+import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
 import { Currency } from '@owallet/types';
 
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
@@ -23,12 +15,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
 
   protected duplicatedFetchCheck: boolean = false;
 
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    legacyAddress: string
-  ) {
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, legacyAddress: string) {
     super(kvStore, chainId, chainGetter, `bitcoin/balances/${legacyAddress}`);
 
     this.legacyAddress = legacyAddress;
@@ -40,17 +27,12 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
     return this.legacyAddress.length > 0;
   }
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
+  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result>> {
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
       keyDerivationPath: '44'
     }) as string;
-    const scriptHash = getScriptHash(
-      this.legacyAddress,
-      getCoinNetwork(this.chainId)
-    );
+    const scriptHash = getScriptHash(this.legacyAddress, getCoinNetwork(this.chainId));
     const response = await getBalanceFromUtxos({
       addresses: [{ address: this.legacyAddress, path, scriptHash }],
       changeAddresses: [],
@@ -130,50 +112,47 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
     ) {
       return new CoinPretty(currency, new Int(new MyBigInt(0)?.toString()));
     }
-    return new CoinPretty(
-      currency,
-      new Int(new MyBigInt(this.response?.data?.balance)?.toString())
-    );
+    return new CoinPretty(currency, new Int(new MyBigInt(this.response?.data?.balance)?.toString()));
   }
 }
-export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
-  protected nativeBalances: Map<string, ObservableQueryBtcBalances> = new Map();
-  readonly type: BalanceRegistryType = 'bitcoin';
+// export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
+//   protected nativeBalances: Map<string, ObservableQueryBtcBalances> = new Map();
+//   readonly type: BalanceRegistryType = 'bitcoin';
 
-  constructor(protected readonly kvStore: KVStore) {}
+//   constructor(protected readonly kvStore: KVStore) {}
 
-  getBalanceInner(
-    chainId: string,
-    chainGetter: ChainGetter,
-    legacyAddress: string,
-    minimalDenom: string
-  ): ObservableQueryBalanceInner | undefined {
-    const denomHelper = new DenomHelper(minimalDenom);
+//   getBalanceInner(
+//     chainId: string,
+//     chainGetter: ChainGetter,
+//     legacyAddress: string,
+//     minimalDenom: string
+//   ): ObservableQueryBalanceInner | undefined {
+//     const denomHelper = new DenomHelper(minimalDenom);
 
-    if (denomHelper.type !== 'native') {
-      return;
-    }
+//     if (denomHelper.type !== 'native') {
+//       return;
+//     }
 
-    const key = `${chainId}/${legacyAddress}`;
-    if (!this.nativeBalances.has(key)) {
-      this.nativeBalances.set(
-        key,
-        new ObservableQueryBtcBalances(
-          this.kvStore,
-          chainId,
-          chainGetter,
-          legacyAddress
-        )
-      );
-    }
+//     const key = `${chainId}/${legacyAddress}`;
+//     if (!this.nativeBalances.has(key)) {
+//       this.nativeBalances.set(
+//         key,
+//         new ObservableQueryBtcBalances(
+//           this.kvStore,
+//           chainId,
+//           chainGetter,
+//           legacyAddress
+//         )
+//       );
+//     }
 
-    return new ObservableQueryBitcoinBalanceNative(
-      this.kvStore,
-      chainId,
-      chainGetter,
-      denomHelper,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.nativeBalances.get(key)!
-    );
-  }
-}
+//     return new ObservableQueryBitcoinBalanceNative(
+//       this.kvStore,
+//       chainId,
+//       chainGetter,
+//       denomHelper,
+//       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+//       this.nativeBalances.get(key)!
+//     );
+//   }
+// }
