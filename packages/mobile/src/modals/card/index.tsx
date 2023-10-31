@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from 'react';
-import { StyleSheet, TextStyle, View, ViewStyle, ScrollView } from 'react-native';
+import { StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,33 +15,22 @@ export const CardModal: FunctionComponent<{
   childrenContainerStyle?: ViewStyle;
   disableGesture?: boolean;
   labelStyle?: TextStyle;
-  disabledScrollView?:boolean;
-}> = ({
-  title,
-  right,
-  children,
-  childrenContainerStyle,
-  labelStyle,
-  disabledScrollView=true
-}) => {
+  disabledScrollView?: boolean;
+}> = ({ title, right, children, childrenContainerStyle, labelStyle, disabledScrollView = true }) => {
   const style = useStyle();
   const { colors } = useTheme();
   const safeAreaInsets = useSafeAreaInsets();
   const { appInitStore } = useStore();
 
   const scheme = appInitStore.getInitApp.theme;
-const ContainerElement = disabledScrollView?View:ScrollView;
+  const ContainerElement = disabledScrollView ? View : ScrollView;
   return (
     <ContainerElement
-      keyboardDismissMode='interactive'
+      keyboardDismissMode="interactive"
       keyboardShouldPersistTaps="handled"
       style={[
         StyleSheet.flatten([
-          style.flatten([
-            'border-radius-top-left-8',
-            'border-radius-top-right-8',
-            'overflow-hidden'
-          ]),
+          style.flatten(['border-radius-top-left-8', 'border-radius-top-right-8', 'overflow-hidden']),
           {
             paddingBottom: safeAreaInsets.bottom
           }
@@ -54,20 +44,11 @@ const ContainerElement = disabledScrollView?View:ScrollView;
       <View style={style.flatten(['padding-x-page'])}>
         {title ? (
           <React.Fragment>
-            <View
-              style={style.flatten([
-                'flex-row',
-                'items-center',
-                'margin-bottom-16'
-              ])}
-            >
+            <View style={style.flatten(['flex-row', 'items-center', 'margin-bottom-16'])}>
               <Text
                 style={{
                   ...style.flatten(['h4']),
-                  color:
-                    scheme === 'dark'
-                      ? colors['white']
-                      : colors['text-black-high'],
+                  color: scheme === 'dark' ? colors['white'] : colors['text-black-high'],
                   ...labelStyle
                 }}
               >
@@ -87,12 +68,7 @@ const ContainerElement = disabledScrollView?View:ScrollView;
         ) : null}
       </View>
 
-      <View
-        style={StyleSheet.flatten([
-          style.flatten(['padding-page', 'padding-top-16']),
-          childrenContainerStyle
-        ])}
-      >
+      <View style={StyleSheet.flatten([style.flatten(['padding-page', 'padding-top-16']), childrenContainerStyle])}>
         {children}
       </View>
     </ContainerElement>

@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { registerModal } from '../../modals/base';
 import { CardModal } from '../../modals/card';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { observer } from 'mobx-react-lite';
@@ -23,16 +24,10 @@ export const ChainSelectorModal: FunctionComponent<{
     const style = useStyle();
 
     return (
-      <CardModal
-        disabledScrollView
-        title="Select Chain"
-        childrenContainerStyle={style.flatten(['padding-0'])}
-      >
+      <CardModal disabledScrollView title="Select Chain" childrenContainerStyle={style.flatten(['padding-0'])}>
         <ScrollView style={style.flatten(['max-height-600'])}>
           {chainIds.map((chainId) => {
-            const chainName = chainStore.hasChain(chainId)
-              ? chainStore.getChain(chainId).chainName
-              : chainId;
+            const chainName = chainStore.hasChain(chainId) ? chainStore.getChain(chainId).chainName : chainId;
 
             const chainImage = chainStore.hasChain(chainId)
               ? chainStore.getChain(chainId).raw.chainSymbolImageUrl
@@ -41,12 +36,7 @@ export const ChainSelectorModal: FunctionComponent<{
             return (
               <RectButton
                 key={chainId}
-                style={style.flatten([
-                  'padding-x-20',
-                  'padding-y-15',
-                  'flex-row',
-                  'items-center'
-                ])}
+                style={style.flatten(['padding-x-20', 'padding-y-15', 'flex-row', 'items-center'])}
                 onPress={() => {
                   onSelectChain(chainId);
                 }}
@@ -74,16 +64,10 @@ export const ChainSelectorModal: FunctionComponent<{
                       }}
                     />
                   ) : (
-                    <VectorCharacter
-                      char={chainName}
-                      color="white"
-                      height={14}
-                    />
+                    <VectorCharacter char={chainName} color="white" height={14} />
                   )}
                 </View>
-                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>
-                  {chainName}
-                </Text>
+                <Text style={style.flatten(['h5', 'color-text-black-medium'])}>{chainName}</Text>
               </RectButton>
             );
           })}

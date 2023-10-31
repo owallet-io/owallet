@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Keyboard, StyleSheet, View, ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStyle } from '../../styles';
@@ -17,6 +11,7 @@ import BottomSheet, {
   BottomSheetProps
 } from '@gorhom/bottom-sheet';
 import { useTheme } from '@src/themes/theme-provider';
+import { metrics } from '@src/themes';
 
 export interface ModalBaseProps {
   align?: 'top' | 'center' | 'bottom';
@@ -73,14 +68,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   }, [isOpen]);
 
   const renderBackdrop = useCallback(
-    (props) => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        pressBehavior={'close'}
-      />
-    ),
+    (props) => <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} pressBehavior={'close'} />,
     []
   );
   const handleDismiss = useCallback(() => {
@@ -93,18 +81,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   }, []);
   const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
 
-  const {
-    animatedHandleHeight,
-    animatedSnapPoints,
-    animatedContentHeight,
-    handleContentLayout
-  } = useBottomSheetDynamicSnapPoints(initialSnapPoints);
+  const { animatedHandleHeight, animatedSnapPoints, animatedContentHeight, handleContentLayout } =
+    useBottomSheetDynamicSnapPoints(initialSnapPoints);
   const { colors } = useTheme();
   return (
-    <View
-      style={style.flatten(['absolute-fill', 'overflow-visible'])}
-      pointerEvents="box-none"
-    >
+    <View style={style.flatten(['absolute-fill', 'overflow-visible'])} pointerEvents="box-none">
       {!disableSafeArea ? (
         <SafeAreaView
           style={style.flatten(
@@ -137,7 +118,23 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onClose={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
-            <View style={containerStyle} onLayout={handleContentLayout}>
+            <View
+              style={containerStyle}
+              onLayout={(event: {
+                nativeEvent: {
+                  layout: {
+                    height: number;
+                  };
+                };
+              }) => {
+                const maxHeight = metrics.screenHeight - 40;
+                if (event.nativeEvent.layout.height > maxHeight) {
+                  event.nativeEvent.layout.height = maxHeight;
+                  return handleContentLayout(event);
+                }
+                return handleContentLayout(event);
+              }}
+            >
               {children}
             </View>
           </BottomSheet>
@@ -174,7 +171,23 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             onClose={handleDismiss}
             android_keyboardInputMode="adjustResize"
           >
-            <View style={containerStyle} onLayout={handleContentLayout}>
+            <View
+              style={containerStyle}
+              onLayout={(event: {
+                nativeEvent: {
+                  layout: {
+                    height: number;
+                  };
+                };
+              }) => {
+                const maxHeight = metrics.screenHeight - 40;
+                if (event.nativeEvent.layout.height > maxHeight) {
+                  event.nativeEvent.layout.height = maxHeight;
+                  return handleContentLayout(event);
+                }
+                return handleContentLayout(event);
+              }}
+            >
               {children}
             </View>
           </BottomSheet>

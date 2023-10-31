@@ -1,13 +1,8 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import {
-  ScrollView,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import { Text, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { Button, OWButton } from '../../components/button';
@@ -35,10 +30,7 @@ export const SignBitcoinModal: FunctionComponent<{
     });
 
     const [dataSign, setDataSign] = useState(null);
-    console.log(
-      '🚀 ~ file: sign-bitcoin.tsx:40 ~ observer ~ dataSign:',
-      dataSign
-    );
+    console.log('🚀 ~ file: sign-bitcoin.tsx:40 ~ observer ~ dataSign:', dataSign);
 
     useEffect(() => {
       if (signInteractionStore.waitingBitcoinData) {
@@ -58,20 +50,11 @@ export const SignBitcoinModal: FunctionComponent<{
 
     return (
       <CardModal>
-        <KeyboardAvoidingView
-          behavior="position"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
+        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={keyboardVerticalOffset}>
           <View style={style.flatten(['margin-bottom-16'])}>
             <Text style={style.flatten(['margin-bottom-3'])}>
-              <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-                {`1 `}
-              </Text>
-              <Text
-                style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-              >
-                Message
-              </Text>
+              <Text style={style.flatten(['subtitle3', 'color-primary'])}>{`1 `}</Text>
+              <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Message</Text>
             </Text>
             <View
               style={style.flatten([
@@ -81,10 +64,7 @@ export const SignBitcoinModal: FunctionComponent<{
                 'overflow-hidden'
               ])}
             >
-              <ScrollView
-                style={style.flatten(['max-height-214'])}
-                persistentScrollbar={true}
-              >
+              <ScrollView style={style.flatten(['max-height-214'])} persistentScrollbar={true}>
                 <Text
                   style={{
                     color: colors['sub-text']
@@ -103,11 +83,7 @@ export const SignBitcoinModal: FunctionComponent<{
               alignItems: 'center'
             }}
           >
-            <Text
-              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-            >
-              Amount
-            </Text>
+            <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Amount</Text>
             <Text
               style={{
                 ...style.flatten(['subtitle2']),
@@ -129,11 +105,7 @@ export const SignBitcoinModal: FunctionComponent<{
               alignItems: 'center'
             }}
           >
-            <Text
-              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-            >
-              Fee
-            </Text>
+            <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Fee</Text>
             <Text
               style={{
                 ...style.flatten(['subtitle2']),
