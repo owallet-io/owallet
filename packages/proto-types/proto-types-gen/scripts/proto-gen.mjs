@@ -143,7 +143,7 @@ function setOutputHash(root, hash) {
 
     setOutputHash(packageRoot, outputHash);
   } catch (e) {
-    console.log(e);
+    console.log('🚀 ~ file: proto-gen.mjs:146 ~ e:', e);
     process.exit(1);
   }
 })();
