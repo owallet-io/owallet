@@ -273,7 +273,7 @@ export const TxButtonBtcView: FunctionComponent<TxButtonViewProps> = observer(({
           },
           styleTxButton.btnSend
         )}
-        data-loading={accountInfo.isSendingMsg === 'send'}
+        // data-loading={accountInfo.isSendingMsg === 'send'}
         onClick={(e) => {
           e.preventDefault();
 

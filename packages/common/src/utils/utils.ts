@@ -131,17 +131,17 @@ export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
   let address;
 
   if (chainId === TRON_ID) {
-    address = AddressesLedger.trx;
+    address = AddressesLedger?.trx;
   } else if (chainId === ChainIdEnum.BitcoinTestnet) {
-    address = AddressesLedger.tbtc;
+    address = AddressesLedger?.tbtc;
   } else {
     const networkType = getNetworkTypeByChainId(chainId);
     if (networkType === 'evm') {
-      address = AddressesLedger.eth;
+      address = AddressesLedger?.eth;
     } else if (networkType === 'bitcoin') {
-      address = AddressesLedger.btc;
+      address = AddressesLedger?.btc;
     } else {
-      address = AddressesLedger.cosmos;
+      address = AddressesLedger?.cosmos;
     }
   }
   return address;
