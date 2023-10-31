@@ -7,11 +7,7 @@ import { ObservableChainQuery } from '../../chain-query';
 import { ChainGetter } from '../../../common';
 import { ObservableQueryIrisMintingInfation } from './iris-minting';
 import { ObservableQuerySifchainLiquidityAPY } from './sifchain';
-import {
-  ObservableQueryOsmosisEpochProvisions,
-  ObservableQueryOsmosisEpochs,
-  ObservableQueryOsmosisMintParmas
-} from './osmosis';
+import { ObservableQueryOsmosisEpochProvisions, ObservableQueryOsmosisEpochs, ObservableQueryOsmosisMintParmas } from './osmosis';
 
 export class ObservableQueryInflation {
   constructor(
@@ -30,19 +26,11 @@ export class ObservableQueryInflation {
   }
 
   get error() {
-    return (
-      this._queryMint.error ??
-      this._queryPool.error ??
-      this._querySupplyTotal.getQueryStakeDenom().error
-    );
+    return this._queryMint.error ?? this._queryPool.error ?? this._querySupplyTotal.getQueryStakeDenom().error;
   }
 
   get isFetching() {
-    return (
-      this._queryMint.isFetching ||
-      this._queryPool.isFetching ||
-      this._querySupplyTotal.getQueryStakeDenom().isFetching
-    );
+    return this._queryMint.isFetching || this._queryPool.isFetching || this._querySupplyTotal.getQueryStakeDenom().isFetching;
   }
 
   // Return an inflation as `IntPrety`.
@@ -55,15 +43,11 @@ export class ObservableQueryInflation {
       // XXX: Hard coded part for the iris hub and sifchain.
       // TODO: Remove this part.
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.chainId?.startsWith('irishub')) {
-        dec = new Dec(
-          this._queryIrisMint.response?.data.result.inflation ?? '0'
-        ).mul(DecUtils.getTenExponentNInPrecisionRange(2));
-      } else if (chainInfo.chainId?.startsWith('sifchain')) {
-        return new IntPretty(
-          new Dec(this._querySifchainAPY.liquidityAPY.toString())
-        );
-      } else if (chainInfo.chainId?.startsWith('osmosis')) {
+      if (chainInfo.chainId.startsWith('irishub')) {
+        dec = new Dec(this._queryIrisMint.response?.data.result.inflation ?? '0').mul(DecUtils.getTenExponentNInPrecisionRange(2));
+      } else if (chainInfo.chainId.startsWith('sifchain')) {
+        return new IntPretty(new Dec(this._querySifchainAPY.liquidityAPY.toString()));
+      } else if (chainInfo.chainId.startsWith('osmosis')) {
         /*
           XXX: Temporary and unfinished implementation for the osmosis staking APY.
                Osmosis has different minting method.
@@ -75,35 +59,23 @@ export class ObservableQueryInflation {
          */
         const mintParams = this._queryOsmosisMintParams;
         if (mintParams.epochIdentifier) {
-          const epochDuration = this._queryOsmosisEpochs.getEpoch(
-            mintParams.epochIdentifier
-          ).duration;
+          const epochDuration = this._queryOsmosisEpochs.getEpoch(mintParams.epochIdentifier).duration;
           if (epochDuration) {
-            const epochProvision =
-              this._queryOsmosisEpochProvisions.epochProvisions;
-            if (
-              epochProvision &&
-              this._querySupplyTotal.getQueryStakeDenom().response
-            ) {
-              const mintingEpochProvision = new Dec(
-                epochProvision
-                  .toDec()
-                  .mul(mintParams.distributionProportions.staking)
-                  .truncate()
-                  .toString()
-              );
-              const yearMintingProvision = mintingEpochProvision.mul(
-                new Dec(((365 * 24 * 3600) / epochDuration).toString())
-              );
+            const epochProvision = this._queryOsmosisEpochProvisions.epochProvisions;
+            if (epochProvision && this._querySupplyTotal.getQueryStakeDenom().response) {
+              const mintingEpochProvision = new Dec(epochProvision.toDec().mul(mintParams.distributionProportions.staking).truncate().toString());
+              const yearMintingProvision = mintingEpochProvision.mul(new Dec(((365 * 24 * 3600) / epochDuration).toString()));
               const total = DecUtils.getTenExponentNInPrecisionRange(8);
-              dec = yearMintingProvision
-                .quo(total)
-                .mul(DecUtils.getTenExponentNInPrecisionRange(2));
+              dec = yearMintingProvision.quo(total).mul(DecUtils.getTenExponentNInPrecisionRange(2));
             }
           }
         }
       } else {
-        dec = new Dec(this._queryMint.response?.data.result ?? '0').mul(
+        // console.log(
+        //   '🚀 ~ file: inflation.ts:75 ~ ObservableQueryInflation ~ getinflation ~ this._queryMint.response?.data.inflation:',
+        //   this._queryMint.response?.data?.result
+        // );
+        dec = new Dec(this._queryMint.response?.data?.inflation || (this._queryMint.response?.data as any)?.result || '0').mul(
           DecUtils.getTenExponentNInPrecisionRange(2)
         );
       }
@@ -112,13 +84,8 @@ export class ObservableQueryInflation {
         return new IntPretty(new Int(0)).ready(false);
       }
 
-      if (
-        this._queryPool.response &&
-        this._querySupplyTotal.getQueryStakeDenom().response
-      ) {
-        const bondedToken = new Dec(
-          this._queryPool.response.data.result.bonded_tokens
-        );
+      if (this._queryPool.response && this._querySupplyTotal.getQueryStakeDenom().response) {
+        const bondedToken = new Dec(this._queryPool.response.data.pool.bonded_tokens);
         const totalStr = (() => {
           if (chainInfo.chainId.startsWith('osmosis')) {
             // For osmosis, for now, just assume that the curreny supply is 100,000,000 with 6 decimals.
@@ -126,13 +93,11 @@ export class ObservableQueryInflation {
           }
 
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          const response =
-            this._querySupplyTotal.getQueryStakeDenom().response!.data.result;
-
-          if (typeof response === 'string') {
-            return response;
+          const supplyTotalRes = this._querySupplyTotal.getQueryStakeDenom().response;
+          if (!supplyTotalRes) {
+            return '0';
           } else {
-            return response.amount;
+            return supplyTotalRes.data.amount.amount;
           }
         })();
         const total = new Dec(totalStr);

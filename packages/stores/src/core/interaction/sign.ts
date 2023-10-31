@@ -31,11 +31,11 @@ export class SignInteractionStore {
           this.rejectWithId(datasEthereum[i].id);
         }
       }
-      const datasBitcoin = this.waitingBitcoinDatas?.slice();
 
-      if (datasBitcoin.length > 1) {
-        for (let i = 1; i < datasBitcoin.length; i++) {
-          this.rejectWithId(datasBitcoin[i].id);
+      const datasTron = this.waitingTronDatas?.slice();
+      if (datasTron.length > 1) {
+        for (let i = 1; i < datasTron.length; i++) {
+          this.rejectWithId(datasTron[i].id);
         }
       }
     });
@@ -113,23 +113,6 @@ export class SignInteractionStore {
     >('request-sign-tron');
   }
 
-  get waitingTronData() {
-    const datas = this.waitingTronDatas;
-    if (datas.length === 0) {
-      return undefined;
-    }
-    const data: any = datas[0];
-
-    return {
-      id: data.id,
-      type: data.type,
-      data: {
-        ...data.data
-      },
-      isInternal: data.isInternal
-    };
-  }
-
   @computed
   get waitingData():
     | InteractionWaitingData<{
@@ -149,9 +132,7 @@ export class SignInteractionStore {
 
     const data = datas[0];
     const wrapper =
-      data.data.mode === 'amino'
-        ? SignDocWrapper.fromAminoSignDoc(data.data.signDoc)
-        : SignDocWrapper.fromDirectSignDocBytes(data.data.signDocBytes);
+      data.data.mode === 'amino' ? SignDocWrapper.fromAminoSignDoc(data.data.signDoc) : SignDocWrapper.fromDirectSignDocBytes(data.data.signDocBytes);
 
     return {
       id: data.id,
@@ -163,10 +144,7 @@ export class SignInteractionStore {
         signer: data.data.signer,
         signDocWrapper: wrapper,
         signOptions: data.data.signOptions,
-        isADR36WithString:
-          'isADR36WithString' in data.data
-            ? data.data.isADR36WithString
-            : undefined
+        isADR36WithString: 'isADR36WithString' in data.data ? data.data.isADR36WithString : undefined
       }
     };
   }
@@ -226,15 +204,29 @@ export class SignInteractionStore {
     };
   }
 
+  get waitingTronData() {
+    const datas = this.waitingTronDatas;
+    if (datas.length === 0) {
+      return undefined;
+    }
+    const data: any = datas[0];
+
+    return {
+      id: data.id,
+      type: data.type,
+      data: {
+        ...data.data
+      },
+      isInternal: data.isInternal
+    };
+  }
+
   protected isEnded(): boolean {
     return this.interactionStore.getEvents<void>('request-sign-end').length > 0;
   }
 
   protected isEthereumEnded(): boolean {
-    return (
-      this.interactionStore.getEvents<void>('request-sign-ethereum-end')
-        .length > 0
-    );
+    return this.interactionStore.getEvents<void>('request-sign-ethereum-end').length > 0;
   }
   protected isBitcoinEnded(): boolean {
     const isEnd =
@@ -244,16 +236,14 @@ export class SignInteractionStore {
   }
 
   protected isTronEnded(): boolean {
-    return (
-      this.interactionStore.getEvents<void>('request-sign-tron-end').length > 0
-    );
+    return this.interactionStore.getEvents<void>('request-sign-tron-end').length > 0;
   }
 
   protected clearEnded() {
     this.interactionStore.clearEvent('request-sign-end');
     this.interactionStore.clearEvent('request-sign-tron-end');
     this.interactionStore.clearEvent('request-sign-ethereum-end');
-    this.interactionStore.clearEvent('request-sign-bitcoin-end');
+    this.interactionStore.clearEvent('request-sign-tron-end');
   }
 
   protected waitEnd(): Promise<void> {
@@ -328,10 +318,7 @@ export class SignInteractionStore {
     this._isLoading = true;
     const id = this.waitingDatas[0].id;
     try {
-      const newSignDoc =
-        newSignDocWrapper.mode === 'amino'
-          ? newSignDocWrapper.aminoSignDoc
-          : newSignDocWrapper.protoSignDoc.toBytes();
+      const newSignDoc = newSignDocWrapper.mode === 'amino' ? newSignDocWrapper.aminoSignDoc : newSignDocWrapper.protoSignDoc.toBytes();
 
       yield this.interactionStore.approveWithoutRemovingData(id, newSignDoc);
     } finally {
@@ -342,54 +329,7 @@ export class SignInteractionStore {
   }
 
   @flow
-  *approveTronAndWaitEnd() {
-    if (this.waitingTronDatas?.length === 0) {
-      return;
-    }
-
-    this._isLoading = true;
-    const idTron = this.waitingTronDatas?.[0]?.id;
-    try {
-      if (this.waitingTronDatas?.length > 0) {
-        yield this.interactionStore.approveWithoutRemovingData(idTron, {
-          ...this.waitingTronDatas[0].data
-        });
-      }
-      console.log('yield waitingTronDatas length > 0');
-    } finally {
-      yield this.waitTronEnd();
-      this.interactionStore.removeData('request-sign-tron', idTron);
-      this._isLoading = false;
-    }
-  }
-  @flow
-  *approveBitcoinAndWaitEnd() {
-    if (this.waitingBitcoinDatas?.length === 0) {
-      return;
-    }
-
-    this._isLoading = true;
-    const idBitcoin = this.waitingBitcoinDatas?.[0]?.id;
-    try {
-      if (this.waitingBitcoinDatas?.length > 0) {
-        yield this.interactionStore.approveWithoutRemovingData(idBitcoin, {
-          ...this.waitingBitcoinDatas[0].data
-        });
-      }
-    } finally {
-      yield this.waitBitcoinEnd();
-      this.interactionStore.removeData('request-sign-bitcoin', idBitcoin);
-      this._isLoading = false;
-    }
-  }
-
-  @flow
-  *approveEthereumAndWaitEnd({
-    gasPrice = '0x0',
-    memo = '',
-    gasLimit = '0x0',
-    fees = '0x0'
-  }) {
+  *approveEthereumAndWaitEnd({ gasPrice = '0x0', memo = '', gasLimit = '0x0', fees = '0x0' }) {
     if (this.waitingEthereumDatas?.length === 0) {
       return;
     }
@@ -414,6 +354,29 @@ export class SignInteractionStore {
   }
 
   @flow
+  *approveTronAndWaitEnd() {
+    if (this.waitingTronDatas?.length === 0) {
+      return;
+    }
+
+    this._isLoading = true;
+    const idTron = this.waitingTronDatas?.[0]?.id;
+    try {
+      if (this.waitingTronDatas?.length > 0) {
+        yield this.interactionStore.approveWithoutRemovingData(idTron, {
+          ...this.waitingTronDatas[0].data
+        });
+      }
+      console.log('yield waitingTronDatas length > 0');
+    } finally {
+      yield this.waitTronEnd();
+      console.log('yield waitTronEnd length > 0');
+      this._isLoading = false;
+      this.interactionStore.removeData('request-sign-tron', idTron);
+    }
+  }
+
+  @flow
   *reject() {
     if (this.waitingDatas.length === 0) {
       return;
@@ -432,22 +395,9 @@ export class SignInteractionStore {
 
     this._isLoading = true;
     try {
-      yield this.interactionStore.reject(
-        'request-sign',
-        this.waitingDatas[0].id
-      );
-      yield this.interactionStore.reject(
-        'request-sign-ethereum',
-        this.waitingEthereumDatas?.[0].id
-      );
-      yield this.interactionStore.reject(
-        'request-sign-tron',
-        this.waitingTronDatas?.[0].id
-      );
-      yield this.interactionStore.reject(
-        'request-sign-bitcoin',
-        this.waitingBitcoinDatas?.[0].id
-      );
+      yield this.interactionStore.reject('request-sign', this.waitingDatas?.[0]?.id);
+      yield this.interactionStore.reject('request-sign-ethereum', this.waitingEthereumDatas?.[0].id);
+      yield this.interactionStore.reject('request-sign-tron', this.waitingTronDatas?.[0].id);
     } finally {
       this._isLoading = false;
     }

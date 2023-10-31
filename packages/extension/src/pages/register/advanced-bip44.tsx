@@ -4,7 +4,7 @@ import { useConfirm } from '../../components/confirm';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react-lite';
-import { BIP44HDPath } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 
 export class BIP44Option {
   @observable
@@ -89,7 +89,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
   const [isOpen, setIsOpen] = useState(
     bip44Option.account !== 0 ||
       bip44Option.change !== 0 ||
-      bip44Option.index !== 0 || 
+      bip44Option.index !== 0 ||
       bip44Option.coinType !== undefined
   );
   const toggleOpen = async () => {
@@ -156,17 +156,13 @@ export const AdvancedBIP44Option: FunctionComponent<{
               type="number"
               className="form-control-alternative"
               style={{ maxWidth: '92px', textAlign: 'right' }}
-              value={
-                bip44Option.coinType != null
-                  ? bip44Option?.coinType?.toString()
-                  : 0
-              }
+              value={bip44Option.coinType != null ? bip44Option?.coinType?.toString() : 0}
               onChange={(e) => {
                 e.preventDefault();
 
                 let value = e.target.value;
                 if (value) {
-                  if (value.replace(/^0+/,'')) {
+                  if (value.replace(/^0+/, '')) {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
                       if (value[i] === '0') {
@@ -197,7 +193,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
 
                 let value = e.target.value;
                 if (value) {
-                  if (value.replace(/^0+/,'')) {
+                  if (value.replace(/^0+/, '')) {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
                       if (value[i] === '0') {
@@ -228,7 +224,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
 
                 let value = e.target.value;
                 if (value) {
-                  if (value.replace(/^0+/,'')) {
+                  if (value.replace(/^0+/, '')) {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
                       if (value[i] === '0') {
@@ -240,10 +236,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
                   }
                   const parsed = parseFloat(value);
                   // Should be integer and positive.
-                  if (
-                    Number.isInteger(parsed) &&
-                    (parsed === 0 || parsed === 1)
-                  ) {
+                  if (Number.isInteger(parsed) && (parsed === 0 || parsed === 1)) {
                     bip44Option.setChange(parsed);
                   }
                 } else {
@@ -262,7 +255,7 @@ export const AdvancedBIP44Option: FunctionComponent<{
 
                 let value = e.target.value;
                 if (value) {
-                  if (value.replace(/^0+/,'')) {
+                  if (value.replace(/^0+/, '')) {
                     // Remove leading zeros
                     for (let i = 0; i < value.length; i++) {
                       if (value[i] === '0') {

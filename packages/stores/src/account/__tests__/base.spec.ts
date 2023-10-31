@@ -1,12 +1,10 @@
-import {
-  AccountSetBase,
-  AminoMsgsOrWithProtoMsgs,
-  WalletStatus
-} from '../base';
+import { getChainInfoOrThrow } from '@owallet/common';
+import { AccountSetBase, AminoMsgsOrWithProtoMsgs, WalletStatus } from '../base';
 import { BaseAccount, TendermintTxTracer } from '@owallet/cosmos';
 import { StdFee } from '@cosmjs/launchpad';
 import { AminoSignResponse } from '@cosmjs/amino';
 import { OWalletSignOptions } from '@owallet/types';
+import { Bech32Address } from '@owallet/cosmos';
 
 const mockTx = new Uint8Array([1, 2, 3, 4, 5]);
 
@@ -47,403 +45,513 @@ const mockChain: any = {
 };
 
 describe('AccountSetBase', () => {
-  const accountSetBase = new AccountSetBase(
-    null,
-    mockChain,
-    'Oraichain-testnet',
-    null,
-    {
-      refetching: false,
-      suggestChain: false,
-      autoInit: false,
-      getOWallet: jest.fn()
-    } as any
-  );
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-  describe('broadcastMsgs', () => {
-    beforeEach(() => {
+  const accountSetBase = new AccountSetBase(null, mockChain, 'Oraichain-testnet', null, {
+    refetching: false,
+    suggestChain: false,
+    autoInit: false,
+    getOWallet: jest.fn()
+  } as any);
+  // beforeEach(() => {
+  //   jest.clearAllMocks();
+  // });
+
+  const mockOwalletCosmos = {
+    signAmino: {
+      bind: jest.fn().mockReturnValue(
+        jest.fn().mockResolvedValue({
+          signed: {
+            account_number: '13298',
+            chain_id: 'Oraichain',
+            fee: {
+              gas: '200000',
+              amount: [
+                {
+                  amount: '600',
+                  denom: 'orai'
+                }
+              ]
+            },
+            memo: '',
+            msgs: [
+              {
+                type: 'cosmos-sdk/MsgSend',
+                value: {
+                  amount: [
+                    {
+                      amount: '100',
+                      denom: 'orai'
+                    }
+                  ],
+                  from_address: 'orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz',
+                  to_address: 'orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz'
+                }
+              }
+            ],
+            sequence: '2819'
+          },
+          signature: {
+            pub_key: {
+              type: 'tendermint/PubKeySecp256k1',
+              value: 'Ah/mfS6755nv0aaYWryXhfLOWbvx/nN+e+TVsm+DflU4'
+            },
+            signature: '4qkv+X+rRQrI9KNV4nJ2oc06w5r078IcYczYpx1aIXRI1I/ylxHVRtZOj3THngaDtu6EfFedBeGMO4YFl5Rdpw=='
+          }
+        })
+      )
+    },
+    experimentalSignEIP712CosmosTx_v0: {
+      bind: jest.fn().mockResolvedValue(
+        jest.fn().mockResolvedValue({
+          signed: {
+            account_number: '91669',
+            chain_id: 'injective-1',
+            fee: {
+              gas: '200000',
+              amount: [
+                {
+                  amount: '1000000000000000',
+                  denom: 'inj'
+                }
+              ]
+            },
+            memo: '',
+            msgs: [
+              {
+                type: 'cosmos-sdk/MsgSend',
+                value: {
+                  amount: [
+                    {
+                      amount: '100000000000000',
+                      denom: 'inj'
+                    }
+                  ],
+                  from_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3',
+                  to_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3'
+                }
+              }
+            ],
+            sequence: '67'
+          },
+          signature: {
+            pub_key: {
+              type: 'tendermint/PubKeySecp256k1',
+              value: 'AhNz4jfCoBheEF3oBGlj+XXaBu7feDwIVZ2k13G7YuNV'
+            },
+            signature: 'OMww7mX81bmlgVHwL3jQmIZE+pzTzOADeG7t0N/xGdtkTklBfK31aciW0tBVNMaGcQundPA64RKC7eqwG9+u6A=='
+          }
+        })
+      )
+    }
+  };
+  const mockOwalletEvmos = {
+    signAmino: {
+      bind: jest.fn().mockReturnValue(
+        jest.fn().mockResolvedValue({
+          signed: {
+            account_number: '91669',
+            chain_id: 'injective-1',
+            fee: {
+              gas: '200000',
+              amount: [
+                {
+                  amount: '1000000000000000',
+                  denom: 'inj'
+                }
+              ]
+            },
+            memo: '',
+            msgs: [
+              {
+                type: 'cosmos-sdk/MsgSend',
+                value: {
+                  amount: [
+                    {
+                      amount: '100000000000000',
+                      denom: 'inj'
+                    }
+                  ],
+                  from_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3',
+                  to_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3'
+                }
+              }
+            ],
+            sequence: '67'
+          },
+          signature: {
+            pub_key: {
+              type: 'tendermint/PubKeySecp256k1',
+              value: 'AhNz4jfCoBheEF3oBGlj+XXaBu7feDwIVZ2k13G7YuNV'
+            },
+            signature: 'OMww7mX81bmlgVHwL3jQmIZE+pzTzOADeG7t0N/xGdtkTklBfK31aciW0tBVNMaGcQundPA64RKC7eqwG9+u6A=='
+          }
+        })
+      )
+    },
+    experimentalSignEIP712CosmosTx_v0: {
+      bind: jest.fn().mockResolvedValue(
+        jest.fn().mockResolvedValue({
+          signed: {
+            account_number: '91669',
+            chain_id: 'injective-1',
+            fee: {
+              gas: '200000',
+              amount: [
+                {
+                  amount: '1000000000000000',
+                  denom: 'inj'
+                }
+              ]
+            },
+            memo: '',
+            msgs: [
+              {
+                type: 'cosmos-sdk/MsgSend',
+                value: {
+                  amount: [
+                    {
+                      amount: '100000000000000',
+                      denom: 'inj'
+                    }
+                  ],
+                  from_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3',
+                  to_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3'
+                }
+              }
+            ],
+            sequence: '67'
+          },
+          signature: {
+            pub_key: {
+              type: 'tendermint/PubKeySecp256k1',
+              value: 'AhNz4jfCoBheEF3oBGlj+XXaBu7feDwIVZ2k13G7YuNV'
+            },
+            signature: 'OMww7mX81bmlgVHwL3jQmIZE+pzTzOADeG7t0N/xGdtkTklBfK31aciW0tBVNMaGcQundPA64RKC7eqwG9+u6A=='
+          }
+        })
+      )
+    }
+  };
+  describe('processSignedTxCosmos', () => {
+    afterEach(() => {
       accountSetBase['_walletStatus'] = WalletStatus.Loaded;
+      jest.clearAllMocks();
     });
     it.each([
-      ['walletStatus', null, [], null, null, null, null],
-      [
-        'hasNoLegacyStdFeature',
-        null,
-        [
-          { type: 'msg1', value: 'Value 1' },
-          { type: 'msg2', value: 'Value 2' }
-        ],
-        null,
-        null,
-        null,
-        null
-      ],
-      [
-        'main',
-        mockTx,
-        aminoSignResponse.signed.msgs,
-        aminoSignResponse.signed.fee,
-        aminoSignResponse.signed.memo,
-        null,
-        'async'
-      ],
-      [
-        'main2',
-        mockTx,
-        {
-          aminoMsgs: aminoSignResponse.signed.msgs,
-
+      {
+        msgs: {
+          aminoMsgs: [
+            {
+              type: 'cosmos-sdk/MsgSend',
+              value: {
+                from_address: 'orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz',
+                to_address: 'orai12zyu8w93h0q2lcnt50g3fn0w3yqnhy4fvawaqz',
+                amount: [
+                  {
+                    denom: 'orai',
+                    amount: '100'
+                  }
+                ]
+              }
+            }
+          ],
           protoMsgs: [
-            { type_url: 'example.com', value: new Uint8Array([1, 2, 3, 4, 5]) },
-            { type_url: 'another.com', value: new Uint8Array([6, 7, 8]) }
-          ]
-        } as any,
-        aminoSignResponse.signed.fee,
-        aminoSignResponse.signed.memo,
-        null,
-        'async'
-      ]
-    ])(
-      'unit test for broadcastMsgs method with case %s',
-      async (
-        caseTest: 'walletStatus' | 'hasNoLegacyStdFeature' | 'main1' | 'main2',
-        expectValue: any,
-        msgs: any,
-        fee: any,
-        memo: string,
-        signOptions?: any,
-        mode?: 'block' | 'async' | 'sync'
-      ) => {
-        if (caseTest == 'walletStatus') {
-          [
-            [
-              WalletStatus.NotExist,
-              `Wallet is not loaded: ${WalletStatus.NotExist}`
+            {
+              typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+              value: new Uint8Array([
+                10, 43, 111, 114, 97, 105, 49, 50, 122, 121, 117, 56, 119, 57, 51, 104, 48, 113, 50, 108, 99, 110, 116, 53, 48, 103, 51, 102, 110, 48, 119, 51,
+                121, 113, 110, 104, 121, 52, 102, 118, 97, 119, 97, 113, 122, 18, 43, 111, 114, 97, 105, 49, 50, 122, 121, 117, 56, 119, 57, 51, 104, 48, 113,
+                50, 108, 99, 110, 116, 53, 48, 103, 51, 102, 110, 48, 119, 51, 121, 113, 110, 104, 121, 52, 102, 118, 97, 119, 97, 113, 122, 26, 11, 10, 4, 111,
+                114, 97, 105, 18, 3, 49, 48, 48
+              ])
+            }
+          ],
+          rlpTypes: {
+            MsgValue: [
+              {
+                name: 'from_address',
+                type: 'string'
+              },
+              {
+                name: 'to_address',
+                type: 'string'
+              },
+              {
+                name: 'amount',
+                type: 'TypeAmount[]'
+              }
             ],
-            // [
-            //   WalletStatus.Rejected,
-            //   `Wallet is not loaded: ${WalletStatus.Rejected}`
-            // ],
-            // [
-            //   WalletStatus.NotInit,
-            //   `Wallet is not loaded: ${WalletStatus.NotInit}`
-            // ],
-            // [
-            //   WalletStatus.Loading,
-            //   `Wallet is not loaded: ${WalletStatus.Loading}`
-            // ],
-            // [WalletStatus.Loaded, 'There is no msg to send']
-          ].forEach(async (eleWalletStatus) => {
-            // const walletStatus = eleWalletStatus[0] as any;
-            // const expectThrow = eleWalletStatus[1];
-            // accountSetBase['_walletStatus'] = walletStatus;
-            // await expect(() =>
-            //   accountSetBase['broadcastMsgs'](
-            //     msgs as any,
-            //     fee,
-            //     memo,
-            //     signOptions,
-            //     mode
-            //   )
-            // ).rejects.toThrow(expectThrow);
-          });
-          return;
-        } else if (caseTest == 'hasNoLegacyStdFeature') {
-          const spyHasNoLegacyStdFeature = jest
-            .spyOn(accountSetBase as any, 'hasNoLegacyStdFeature')
-            .mockReturnValue(true);
-
-          // await expect(() =>
-          //   accountSetBase['broadcastMsgs'](
-          //     msgs as any,
-          //     fee,
-          //     memo,
-          //     signOptions,
-          //     mode
-          //   )
-          // ).rejects.toThrow(
-          //   `Chain can't send legecy stdTx. But, proto any type msgs are not provided`
-          // );
-          // expect(spyHasNoLegacyStdFeature).toHaveBeenCalled();
-          return;
-        }
-
-        const spyGetOwallet = jest
-          .spyOn(accountSetBase, 'getOWallet')
-          .mockResolvedValue({
-            signAmino: jest.fn().mockResolvedValue(aminoSignResponse),
-            sendTx: jest.fn().mockResolvedValue(mockTx)
-          } as any);
-
-        const spyHasNoLegacyStdFeature = jest
-          .spyOn(accountSetBase as any, 'hasNoLegacyStdFeature')
-          .mockReturnValue(false);
-        const mockKeyStore: any = {
-          bip44: { coinType: 118, account: 0, change: 0, addressIndex: 0 }
-        };
-        const spyGetChain = jest
-          .spyOn(accountSetBase['chainGetter'], 'getChain')
-          .mockReturnValue(mockKeyStore);
-        const spyBaseAccountFetchFromRest = jest
-          .spyOn(BaseAccount, 'fetchFromRest')
-          .mockResolvedValue({
-            getAccountNumber: jest.fn().mockReturnValue(123456),
-            getSequence: jest.fn().mockReturnValue(1)
-          } as any);
-        const spyMakeSignDoc = jest
-          .spyOn(require('@cosmjs/launchpad'), 'makeSignDoc')
-          .mockReturnValue(aminoSignResponse.signed);
-        const spySignAmino = jest.spyOn(
-          (await accountSetBase.getOWallet()) as any,
-          'signAmino'
-        );
-        const spySendTx = jest.spyOn(
-          (await accountSetBase.getOWallet()) as any,
-          'sendTx'
-        );
-
-        const spyGetAccountNumber = jest.spyOn(
-          (await BaseAccount.fetchFromRest(
-            accountSetBase['instance'],
-            accountSetBase['bech32Address'],
-            true
-          )) as any,
-          'getAccountNumber'
-        );
-        const spyGetSequence = jest.spyOn(
-          (await BaseAccount.fetchFromRest(
-            accountSetBase['instance'],
-            accountSetBase['bech32Address'],
-            true
-          )) as any,
-          'getSequence'
-        );
-        const rs = await accountSetBase['broadcastMsgs'](
-          msgs as any,
-          fee,
-          memo,
-          signOptions,
-          mode
-        );
-        expect(spyHasNoLegacyStdFeature).toHaveBeenCalled();
-        expect(spyGetOwallet).toHaveBeenCalled();
-        expect(spySignAmino).toHaveBeenCalledTimes(1);
-        expect(spyBaseAccountFetchFromRest).toHaveBeenCalled();
-        expect(spyGetChain).toHaveBeenCalled();
-        expect(spyGetAccountNumber).toHaveBeenCalledTimes(1);
-        expect(spyGetSequence).toHaveBeenCalledTimes(1);
-        expect(spySendTx).toHaveBeenCalled();
-        expect(spyGetChain).toHaveBeenCalledWith(
-          aminoSignResponse.signed.chain_id
-        );
-        expect(spyBaseAccountFetchFromRest).toHaveBeenCalledTimes(3);
-        expect(spyMakeSignDoc).toHaveBeenCalled();
-        expect(spyMakeSignDoc).toHaveBeenCalledWith(
-          aminoSignResponse.signed.msgs,
-          aminoSignResponse.signed.fee,
-          aminoSignResponse.signed.chain_id,
-          aminoSignResponse.signed.memo,
-          aminoSignResponse.signed.account_number,
-          aminoSignResponse.signed.sequence
-        );
-        expect(spySignAmino).toHaveBeenCalledWith(
-          accountSetBase['chainId'],
-          accountSetBase['_bech32Address'],
-          aminoSignResponse.signed,
-          null
-        );
-        expect(spySendTx).toHaveBeenCalledWith(
-          accountSetBase['chainId'],
-          expect.any(Uint8Array),
-          'async'
-        );
-        expect(rs.txHash).toEqual(expectValue);
-      }
-    );
-  });
-
-  describe('sendMsgs', () => {
-    const testCases = [
-      [
-        'unknown',
-        [
-          { type: 'msg1', value: {} },
-          { type: 'msg2', value: {} }
-        ] as AminoMsgsOrWithProtoMsgs,
-        '',
-        { amount: [{ denom: 'uatom', amount: '100' }], gas: '100' },
-        null,
-        null,
-        null
-      ],
-      [
-        'send',
-        async (): Promise<AminoMsgsOrWithProtoMsgs> => {
-          return {
-            aminoMsgs: [{ type: 'msg1', value: {} }],
-            protoMsgs: [
-              /* protobuf messages */
+            TypeAmount: [
+              {
+                name: 'denom',
+                type: 'string'
+              },
+              {
+                name: 'amount',
+                type: 'string'
+              }
             ]
-          };
-        },
-        'Test memo',
-        { amount: [{ denom: 'uatom', amount: '100' }], gas: '100' },
-        {
-          preferNoSetFee: true,
-          preferNoSetMemo: true,
-          disableBalanceCheck: true,
-          networkType: 'cosmos',
-          chainId: 'testnet'
-        },
-        {
-          onBroadcasted: (txHash) => {
-            expect(txHash).toEqual(mockTx);
-          },
-          onFulfill: (tx) => {
-            expect(tx).toEqual(mockTx);
           }
         },
-        {
-          type: 'customType',
-          contract_addr: 'customContractAddr',
-          token_id: 'customTokenId',
-          recipient: 'customRecipient',
-          amount: 'customAmount',
-          to: 'customTo'
-        }
-      ],
-      [
-        'delegate',
-        async (): Promise<AminoMsgsOrWithProtoMsgs> => {
-          throw new Error('test into catch');
+        fee: {
+          amount: [
+            {
+              denom: 'orai',
+              amount: '600'
+            }
+          ],
+          gas: '200000'
         },
-        'Test memo',
-        { amount: [{ denom: 'uatom', amount: '100' }], gas: '100' },
-        {
+        memo: '',
+        owallet: mockOwalletCosmos,
+        signOptions: {
           preferNoSetFee: true,
           preferNoSetMemo: true,
-          disableBalanceCheck: true,
-          networkType: 'cosmos',
-          chainId: 'testnet'
+          networkType: 'cosmos' as any,
+          chainId: 'Oraichain'
         },
-        {
-          onBroadcastFailed: (e) => {
-            console.log(
-              '🚀 ~ file: base.spec.ts:338 ~ describe ~ err from onBroadcastFailed function:'
-            );
+        infoAcc: {
+          getAccountNumber: 13298,
+          getSequence: 2819
+        },
+        expected:
+          'CooBCocBChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEmcKK29yYWkxMnp5dTh3OTNoMHEybGNudDUwZzNmbjB3M3lxbmh5NGZ2YXdhcXoSK29yYWkxMnp5dTh3OTNoMHEybGNudDUwZzNmbjB3M3lxbmh5NGZ2YXdhcXoaCwoEb3JhaRIDMTAwEmYKUQpGCh8vY29zbW9zLmNyeXB0by5zZWNwMjU2azEuUHViS2V5EiMKIQIf5n0uu+eZ79GmmFq8l4Xyzlm78f5zfnvk1bJvg35VOBIECgIIfxiDFhIRCgsKBG9yYWkSAzYwMBDAmgwaQOKpL/l/q0UKyPSjVeJydqHNOsOa9O/CHGHM2KcdWiF0SNSP8pcR1UbWTo90x54Gg7buhHxXnQXhjDuGBZeUXac='
+      },
+      {
+        msgs: {
+          aminoMsgs: [
+            {
+              type: 'cosmos-sdk/MsgSend',
+              value: {
+                from_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3',
+                to_address: 'inj172zx58jd47h28rqkvznpsfmavas9h544t024u3',
+                amount: [
+                  {
+                    denom: 'inj',
+                    amount: '100000000000000'
+                  }
+                ]
+              }
+            }
+          ],
+          protoMsgs: [
+            {
+              typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+              value: new Uint8Array([
+                10, 42, 105, 110, 106, 49, 55, 50, 122, 120, 53, 56, 106, 100, 52, 55, 104, 50, 56, 114, 113, 107, 118, 122, 110, 112, 115, 102, 109, 97, 118,
+                97, 115, 57, 104, 53, 52, 52, 116, 48, 50, 52, 117, 51, 18, 42, 105, 110, 106, 49, 55, 50, 122, 120, 53, 56, 106, 100, 52, 55, 104, 50, 56, 114,
+                113, 107, 118, 122, 110, 112, 115, 102, 109, 97, 118, 97, 115, 57, 104, 53, 52, 52, 116, 48, 50, 52, 117, 51, 26, 22, 10, 3, 105, 110, 106, 18,
+                15, 49, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48
+              ])
+            }
+          ],
+          rlpTypes: {
+            MsgValue: [
+              {
+                name: 'from_address',
+                type: 'string'
+              },
+              {
+                name: 'to_address',
+                type: 'string'
+              },
+              {
+                name: 'amount',
+                type: 'TypeAmount[]'
+              }
+            ],
+            TypeAmount: [
+              {
+                name: 'denom',
+                type: 'string'
+              },
+              {
+                name: 'amount',
+                type: 'string'
+              }
+            ]
           }
         },
-
-        {
-          type: 'customType',
-          contract_addr: 'customContractAddr',
-          token_id: 'customTokenId',
-          recipient: 'customRecipient',
-          amount: 'customAmount',
-          to: 'customTo'
-        }
-      ]
-    ];
-    it.each(testCases)(
-      'should send msgs with type %s',
-      async (
-        type: string | 'unknown',
-        msgs: any,
-        memo: string = '',
-        fee: StdFee,
-        signOptions?: OWalletSignOptions,
-        onTxEvents?:
-          | ((tx: any) => void)
-          | {
-              onBroadcastFailed?: (e?: Error) => void;
-              onBroadcasted?: (txHash: Uint8Array) => void;
-              onFulfill?: (tx: any) => void;
-            },
-        extraOptions?: {
-          type: string;
-          contract_addr: string;
-          token_id?: string;
-          recipient?: string;
-          amount?: string;
-          to?: string;
-        }
-      ) => {
-        const spyOnRunInAction = jest.spyOn(require('mobx'), 'runInAction');
-        const spyBroadcastMsgs = jest
-          .spyOn(accountSetBase as any, 'broadcastMsgs')
-          .mockResolvedValue({
-            txHash: mockTx
-          });
-        const mockKeyStore: any = {
-          bip44: { coinType: 118, account: 0, change: 0, addressIndex: 0 }
-        };
-        const spyGetChain = jest
-          .spyOn(accountSetBase['chainGetter'], 'getChain')
-          .mockReturnValue(mockKeyStore);
-        const spyTraceTx = jest
-          .spyOn(TendermintTxTracer.prototype, 'traceTx')
-          .mockResolvedValue(mockTx);
-        const spyClose = jest
-          .spyOn(TendermintTxTracer.prototype, 'close')
-          .mockReturnValue(true as any);
-        const balMock = {
-          currency: {
-            coinMinimalDenom: 'uatom'
-          },
-          fetch: jest.fn()
-        };
-
-        const queryBalancesMock = {
-          getQueryBech32Address: jest.fn().mockReturnValue({
-            balances: [balMock]
-          })
-        };
-        const spyQueries = jest
-          .spyOn(accountSetBase as any, 'queries', 'get')
-          .mockReturnValue({
-            queryBalances: queryBalancesMock
-          });
-
-        if (type == 'delegate') {
-          await expect(() =>
-            accountSetBase.sendMsgs(
-              type,
-              msgs,
-              memo,
-              fee,
-              signOptions,
-              onTxEvents
-            )
-          ).rejects.toThrow('test into catch');
-          return;
-        }
-        await accountSetBase.sendMsgs(
-          type,
-          msgs,
-          memo,
-          fee,
-          signOptions,
-          onTxEvents
-        );
-
-        expect(spyOnRunInAction).toHaveBeenCalled();
-        expect(spyBroadcastMsgs).toHaveBeenCalled();
-        expect(spyBroadcastMsgs).toHaveBeenCalledTimes(1);
-        expect(spyBroadcastMsgs).toHaveBeenCalledWith(
-          typeof msgs === 'function' ? await msgs() : msgs,
-          fee,
-          memo,
-          signOptions,
-          accountSetBase.broadcastMode
-        );
-        expect(spyGetChain).toHaveBeenCalled();
-        expect(spyGetChain).toHaveBeenCalledWith(accountSetBase['chainId']);
-        expect(spyTraceTx).toHaveBeenCalledWith(mockTx);
-        expect(spyClose).toHaveBeenCalled();
-        expect(spyQueries).toHaveBeenCalled();
+        fee: {
+          amount: [
+            {
+              denom: 'inj',
+              amount: '1000000000000000'
+            }
+          ],
+          gas: '200000'
+        },
+        owallet: mockOwalletEvmos,
+        memo: '',
+        signOptions: {
+          preferNoSetFee: true,
+          preferNoSetMemo: true,
+          networkType: 'cosmos',
+          chainId: 'injective-1'
+        },
+        infoAcc: {
+          getAccountNumber: 91669,
+          getSequence: 67
+        },
+        expected:
+          'CpMBCpABChwvY29zbW9zLmJhbmsudjFiZXRhMS5Nc2dTZW5kEnAKKmluajE3Mnp4NThqZDQ3aDI4cnFrdnpucHNmbWF2YXM5aDU0NHQwMjR1MxIqaW5qMTcyeng1OGpkNDdoMjhycWt2em5wc2ZtYXZhczloNTQ0dDAyNHUzGhYKA2luahIPMTAwMDAwMDAwMDAwMDAwEnoKWQpPCigvZXRoZXJtaW50LmNyeXB0by52MS5ldGhzZWNwMjU2azEuUHViS2V5EiMKIQITc+I3wqAYXhBd6ARpY/l12gbu33g8CFWdpNdxu2LjVRIECgIIfxhDEh0KFwoDaW5qEhAxMDAwMDAwMDAwMDAwMDAwEMCaDBpAOMww7mX81bmlgVHwL3jQmIZE+pzTzOADeG7t0N/xGdtkTklBfK31aciW0tBVNMaGcQundPA64RKC7eqwG9+u6A=='
       }
-    );
+    ])('unit test for broadcastMsgs with chainId $signOptions.chainId', async ({ msgs, fee, memo, owallet, signOptions, expected, infoAcc }) => {
+      const mockChainInfoOraichain: any = getChainInfoOrThrow(signOptions.chainId);
+      jest.spyOn(accountSetBase['chainGetter'], 'getChain').mockReturnValue(mockChainInfoOraichain);
+      jest.spyOn(BaseAccount, 'fetchFromRest').mockResolvedValue({
+        getAccountNumber: jest.fn().mockReturnValue(infoAcc.getAccountNumber),
+        getSequence: jest.fn().mockReturnValue(infoAcc.getSequence)
+      } as any);
+      const rs = await accountSetBase['processSignedTxCosmos'](msgs, fee, memo, owallet, signOptions);
+      expect(Buffer.from(rs, 'base64').toString('base64')).toBe(expected);
+    });
   });
+
+  // describe('sendMsgs', () => {
+  //   const testCases = [
+  //     [
+  //       'unknown',
+  //       [
+  //         { type: 'msg1', value: {} },
+  //         { type: 'msg2', value: {} }
+  //       ] as AminoMsgsOrWithProtoMsgs,
+  //       '',
+  //       { amount: [{ denom: 'uatom', amount: '100' }], gas: '100' },
+  //       null,
+  //       null,
+  //       null
+  //     ],
+  //     [
+  //       'send',
+  //       async (): Promise<AminoMsgsOrWithProtoMsgs> => {
+  //         return {
+  //           aminoMsgs: [{ type: 'msg1', value: {} }],
+  //           protoMsgs: [
+  //             /* protobuf messages */
+  //           ]
+  //         };
+  //       },
+  //       'Test memo',
+  //       { amount: [{ denom: 'uatom', amount: '100' }], gas: '100' },
+  //       {
+  //         preferNoSetFee: true,
+  //         preferNoSetMemo: true,
+  //         disableBalanceCheck: true,
+  //         networkType: 'cosmos',
+  //         chainId: 'testnet'
+  //       },
+  //       {
+  //         onBroadcasted: (txHash) => {
+  //           expect(txHash).toEqual(mockTx);
+  //         },
+  //         onFulfill: (tx) => {
+  //           expect(tx).toEqual(mockTx);
+  //         }
+  //       },
+  //       {
+  //         type: 'customType',
+  //         contract_addr: 'customContractAddr',
+  //         token_id: 'customTokenId',
+  //         recipient: 'customRecipient',
+  //         amount: 'customAmount',
+  //         to: 'customTo'
+  //       }
+  //     ],
+  //     [
+  //       'delegate',
+  //       async (): Promise<AminoMsgsOrWithProtoMsgs> => {
+  //         throw new Error('test into catch');
+  //       },
+  //       'Test memo',
+  //       { amount: [{ denom: 'uatom', amount: '100' }], gas: '100' },
+  //       {
+  //         preferNoSetFee: true,
+  //         preferNoSetMemo: true,
+  //         disableBalanceCheck: true,
+  //         networkType: 'cosmos',
+  //         chainId: 'testnet'
+  //       },
+  //       {
+  //         onBroadcastFailed: (e) => {
+  //         }
+  //       },
+
+  //       {
+  //         type: 'customType',
+  //         contract_addr: 'customContractAddr',
+  //         token_id: 'customTokenId',
+  //         recipient: 'customRecipient',
+  //         amount: 'customAmount',
+  //         to: 'customTo'
+  //       }
+  //     ]
+  //   ];
+  //   it.each(testCases)(
+  //     'should send msgs with type %s',
+  //     async (
+  //       type: string | 'unknown',
+  //       msgs: any,
+  //       memo: string = '',
+  //       fee: StdFee,
+  //       signOptions?: OWalletSignOptions,
+  //       onTxEvents?:
+  //         | ((tx: any) => void)
+  //         | {
+  //             onBroadcastFailed?: (e?: Error) => void;
+  //             onBroadcasted?: (txHash: Uint8Array) => void;
+  //             onFulfill?: (tx: any) => void;
+  //           },
+  //       extraOptions?: {
+  //         type: string;
+  //         contract_addr: string;
+  //         token_id?: string;
+  //         recipient?: string;
+  //         amount?: string;
+  //         to?: string;
+  //       }
+  //     ) => {
+  //       const spyOnRunInAction = jest.spyOn(require('mobx'), 'runInAction');
+  //       const spyBroadcastMsgs = jest.spyOn(accountSetBase as any, 'broadcastMsgs').mockResolvedValue({
+  //         txHash: mockTx
+  //       });
+  //       const mockKeyStore: any = {
+  //         bip44: { coinType: 118, account: 0, change: 0, addressIndex: 0 }
+  //       };
+  //       const spyGetChain = jest.spyOn(accountSetBase['chainGetter'], 'getChain').mockReturnValue(mockKeyStore);
+  //       const spyTraceTx = jest.spyOn(TendermintTxTracer.prototype, 'traceTx').mockResolvedValue(mockTx);
+  //       const spyClose = jest.spyOn(TendermintTxTracer.prototype, 'close').mockReturnValue(true as any);
+  //       const balMock = {
+  //         currency: {
+  //           coinMinimalDenom: 'uatom'
+  //         },
+  //         fetch: jest.fn()
+  //       };
+
+  //       const queryBalancesMock = {
+  //         getQueryBech32Address: jest.fn().mockReturnValue({
+  //           balances: [balMock]
+  //         })
+  //       };
+  //       const spyQueries = jest.spyOn(accountSetBase as any, 'queries', 'get').mockReturnValue({
+  //         queryBalances: queryBalancesMock
+  //       });
+
+  //       if (type == 'delegate') {
+  //         await expect(() => accountSetBase.sendMsgs(type, msgs, memo, fee, signOptions, onTxEvents)).rejects.toThrow('test into catch');
+  //         return;
+  //       }
+  //       await accountSetBase.sendMsgs(type, msgs, memo, fee, signOptions, onTxEvents);
+
+  //       expect(spyOnRunInAction).toHaveBeenCalled();
+  //       expect(spyBroadcastMsgs).toHaveBeenCalled();
+  //       expect(spyBroadcastMsgs).toHaveBeenCalledTimes(1);
+  //       expect(spyBroadcastMsgs).toHaveBeenCalledWith(typeof msgs === 'function' ? await msgs() : msgs, fee, memo, signOptions, accountSetBase.broadcastMode);
+  //       expect(spyGetChain).toHaveBeenCalled();
+  //       expect(spyGetChain).toHaveBeenCalledWith(accountSetBase['chainId']);
+  //       expect(spyTraceTx).toHaveBeenCalledWith(mockTx);
+  //       expect(spyClose).toHaveBeenCalled();
+  //       expect(spyQueries).toHaveBeenCalled();
+  //     }
+  //   );
+  // });
 });

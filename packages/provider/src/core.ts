@@ -10,9 +10,7 @@ import {
   Key,
   EthereumMode,
   RequestArguments,
-  TronWebMode,
-  ChainInfoWithoutEndpoints,
-  BitcoinMode
+  ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
 import { BroadcastMode, AminoSignResponse, StdSignDoc, StdTx, OfflineSigner, StdSignature } from '@cosmjs/launchpad';
@@ -36,8 +34,7 @@ import {
   RequestSignDecryptDataMsg,
   RequestSignReEncryptDataMsg,
   RequestPublicKeyMsg,
-  GetChainInfosWithoutEndpointsMsg,
-  RequestUniversalSwapMsg
+  RequestSignEIP712CosmosTxMsg_v0
 } from '@owallet/background';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 
@@ -48,13 +45,7 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import {
-  RequestSignDirectMsg,
-  RequestSignEthereumMsg,
-  RequestSignTronMsg,
-  RequestSignBitcoinMsg,
-  GetDefaultAddressTronMsg
-} from './msgs';
+import { GetChainInfosWithoutEndpointsMsg, GetDefaultAddressTronMsg, RequestSignDirectMsg, RequestSignEthereumMsg, RequestSignTronMsg } from './msgs';
 import { TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
@@ -62,11 +53,7 @@ export class OWallet implements IOWallet {
 
   public defaultOptions: OWalletIntereactionOptions = {};
 
-  constructor(
-    public readonly version: string,
-    public readonly mode: OWalletMode,
-    protected readonly requester: MessageRequester
-  ) {}
+  constructor(public readonly version: string, public readonly mode: OWalletMode, protected readonly requester: MessageRequester) {}
 
   async getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]> {
     const msg = new GetChainInfosWithoutEndpointsMsg();
@@ -101,18 +88,22 @@ export class OWallet implements IOWallet {
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
-  async signAmino(
+  async signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions: OWalletSignOptions = {}): Promise<AminoSignResponse> {
+    const msg = new RequestSignAminoMsg(chainId, signer, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions));
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+  async experimentalSignEIP712CosmosTx_v0(
     chainId: string,
     signer: string,
+    eip712: {
+      types: Record<string, { name: string; type: string }[] | undefined>;
+      domain: Record<string, any>;
+      primaryType: string;
+    },
     signDoc: StdSignDoc,
-    signOptions: OWalletSignOptions = {}
+    signOptions?: OWalletSignOptions
   ): Promise<AminoSignResponse> {
-    const msg = new RequestSignAminoMsg(
-      chainId,
-      signer,
-      signDoc,
-      deepmerge(this.defaultOptions.sign ?? {}, signOptions)
-    );
+    const msg = new RequestSignEIP712CosmosTxMsg_v0(chainId, signer, eip712, signDoc, deepmerge(this.defaultOptions.sign ?? {}, signOptions));
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -153,7 +144,7 @@ export class OWallet implements IOWallet {
     };
   }
 
-  async signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string }> {
+  async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
     const msg = new RequestSignTronMsg(chainId, data);
     console.log('data signAndBroadcastTron:', data, msg);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
@@ -194,20 +185,12 @@ export class OWallet implements IOWallet {
     return (await this.requester.sendMessage(BACKGROUND_PORT, msg)).signature;
   }
 
-  async verifyArbitrary(
-    chainId: string,
-    signer: string,
-    data: string | Uint8Array,
-    signature: StdSignature
-  ): Promise<boolean> {
+  async verifyArbitrary(chainId: string, signer: string, data: string | Uint8Array, signature: StdSignature): Promise<boolean> {
     if (typeof data === 'string') {
       data = Buffer.from(data);
     }
 
-    return await this.requester.sendMessage(
-      BACKGROUND_PORT,
-      new RequestVerifyADR36AminoSignDoc(chainId, signer, data, signature)
-    );
+    return await this.requester.sendMessage(BACKGROUND_PORT, new RequestVerifyADR36AminoSignDoc(chainId, signer, data, signature));
   }
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner {
@@ -274,12 +257,7 @@ export class OWallet implements IOWallet {
 }
 
 export class Ethereum implements IEthereum {
-  constructor(
-    public readonly version: string,
-    public readonly mode: EthereumMode,
-    public initChainId: string,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(public readonly version: string, public readonly mode: EthereumMode, public initChainId: string, protected readonly requester: MessageRequester) {
     this.initChainId = initChainId;
   }
 
@@ -315,7 +293,7 @@ export class Ethereum implements IEthereum {
     }
   }
 
-  async signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string }> {
+  async signAndBroadcastTron(chainId: string, data: object): Promise<{ rawTxHex: string } | any> {
     const msg = new RequestSignTronMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
@@ -347,12 +325,7 @@ export class Ethereum implements IEthereum {
 }
 
 export class TronWeb implements ITronWeb {
-  constructor(
-    public readonly version: string,
-    public readonly mode: TronWebMode,
-    public initChainId: string,
-    protected readonly requester: MessageRequester
-  ) {
+  constructor(public readonly version: string, public readonly mode: EthereumMode, public initChainId: string, protected readonly requester: MessageRequester) {
     this.initChainId = initChainId;
   }
 

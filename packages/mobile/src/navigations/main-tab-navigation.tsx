@@ -26,7 +26,7 @@ export const MainTabNavigation: FC = observer(() => {
   const isNorthSafe = insets.bottom > 0;
   const checkTabbarVisible = useMemo(() => {
     return visibleTabBar
-      ? SCREENS_OPTIONS[visibleTabBar].showTabBar || false
+      ? SCREENS_OPTIONS[visibleTabBar]?.showTabBar || false
       : false;
   }, [visibleTabBar]);
   return (

@@ -267,11 +267,6 @@ export const WebpageScreen: FunctionComponent<
     }
   }, [canGoBack, navigation]);
 
-  // const _onScroll = syntheticEvent => {
-  //   const currentOffet = syntheticEvent.nativeEvent.contentOffset.y;
-  //   scrollY.setValue(currentOffet);
-  // };
-
   const sourceCode = useInjectedSourceCode();
 
   return (
@@ -325,7 +320,7 @@ export const WebpageScreen: FunctionComponent<
                 incognito={true}
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 containerStyle={{ marginBottom: bottomHeight }}
-                // cacheEnabled={true}
+                cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onLoad={handleWebViewLoaded}
                 onMessage={onMessage}

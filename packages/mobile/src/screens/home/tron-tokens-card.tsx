@@ -8,7 +8,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useTheme } from '@src/themes/theme-provider';
-import { findLedgerAddressWithChainId, _keyExtract } from '../../utils/helper';
+import { findLedgerAddressWithChainId, TRC20_LIST, _keyExtract } from '../../utils/helper';
 import { Address } from '@owallet/crypto';
 import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
@@ -17,6 +17,7 @@ import { VectorCharacter } from '../../components/vector-character';
 import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { OWEmpty } from '@src/components/empty';
+import { getBase58Address } from '@owallet/common';
 
 const size = 44;
 const imageScale = 0.54;
@@ -42,11 +43,8 @@ export const TronTokensCard: FunctionComponent<{
           {
             address:
               keyRingStore.keyRingType === 'ledger'
-                ? findLedgerAddressWithChainId(
-                    keyRingStore.keyRingLedgerAddresses,
-                    chainStore.current.chainId
-                  )
-                : Address.getBase58Address(account.evmosHexAddress)
+                ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
+                : getBase58Address(account.evmosHexAddress)
           },
           {
             baseURL: chainStore.current.rpc
@@ -57,10 +55,8 @@ export const TronTokensCard: FunctionComponent<{
         if (res.data?.data.length > 0) {
           if (res.data?.data[0].trc20) {
             const tokenArr = [];
-            trc20_list.map(tk => {
-              let token = res.data?.data[0].trc20.find(
-                t => tk.contractAddress in t
-              );
+            TRC20_LIST.map((tk) => {
+              let token = res.data?.data[0].trc20.find((t) => tk.contractAddress in t);
               if (token) {
                 tokenArr.push({ ...tk, amount: token[tk.contractAddress] });
               } else {
@@ -120,11 +116,7 @@ export const TronTokensCard: FunctionComponent<{
                 }}
               />
             ) : (
-              <VectorCharacter
-                char={item.coinDenom}
-                height={Math.floor(size * 0.35)}
-                color="black"
-              />
+              <VectorCharacter char={item.coinDenom} height={Math.floor(size * 0.35)} color="black" />
             )}
           </View>
           <View
@@ -149,9 +141,7 @@ export const TronTokensCard: FunctionComponent<{
                 fontWeight: '700'
               }}
             >
-              {`${new Big(parseInt(item.amount)).div(
-                new Big(10).pow(6).toFixed(6)
-              )} ${item.coinDenom}`}
+              {`${new Big(parseInt(item.amount)).div(new Big(10).pow(6).toFixed(6))} ${item.coinDenom}`}
             </Text>
 
             <Text
@@ -165,15 +155,8 @@ export const TronTokensCard: FunctionComponent<{
               {`${
                 item?.amount
                   ? (
-                      parseFloat(
-                        new Big(parseInt(item.amount))
-                          .div(new Big(10).pow(6).toFixed(6))
-                          .toString()
-                      ) *
-                      Number(
-                        priceStore?.getPrice(item.coinGeckoId) ??
-                          USDT_DEFAULT_PRICE
-                      )
+                      parseFloat(new Big(parseInt(item.amount)).div(new Big(10).pow(6).toFixed(6)).toString()) *
+                      Number(priceStore?.getPrice(item.coinGeckoId) ?? USDT_DEFAULT_PRICE)
                     ).toFixed(6)
                   : 0
               }` || '$0'}
@@ -268,7 +251,7 @@ export const TronTokensCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     textLoadMore: {
       ...typography['h7'],

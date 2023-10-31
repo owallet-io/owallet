@@ -15,12 +15,9 @@ import { AccountCardEVM } from './account-card-evm';
 import { DashboardCard } from './dashboard';
 import { UndelegationsCard } from '../stake/dashboard/undelegations-card';
 import messaging from '@react-native-firebase/messaging';
-import { showToast } from '../../utils/helper';
+import { API } from '../../common/api';
+import { TRON_ID } from '../../utils/helper';
 import { TronTokensCard } from './tron-tokens-card';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
-import { AccountCardBitcoin } from './account-card-bitcoin';
-import { TokensBitcoinCard } from './tokens-bitcoin-card';
-import { TRON_ID } from '@owallet/common';
 
 export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
@@ -64,52 +61,55 @@ export const HomeScreen: FunctionComponent = observer(props => {
       subscription.remove();
     };
   }, [checkAndUpdateChainInfo]);
-  const onNavigateToTransaction = () => {
-    navigation.navigate('Others', {
-      screen: 'Transactions'
-    });
-    Toast.hide();
-    return;
-  };
-  useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Notification caused app to open from background state:', remoteMessage);
-      onNavigateToTransaction();
-    });
-    messaging()
-      .getInitialNotification()
-      .then(async remoteMessage => {
-        // showToast({
-        //   title:remoteMessage?.notification?.title,
-        //   text:remoteMessage?.notification?.body,
-        // })
-        console.log('remoteMessage2: ', remoteMessage);
-        // const data = JSON.parse(remoteMessage?.data?.data);
-        // console.log('message', data.message);
-      });
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      showToast({
-        text1: remoteMessage?.notification?.title,
-        text2: remoteMessage?.notification?.body,
-        onPress: onNavigateToTransaction
-      });
-      // const formatData = JSON.parse(remoteMessage?.data?.data);
-      // console.log('raw', remoteMessage?.data);
-      // console.log('formattedData', formatData);
-    });
+  // const onNavigateToTransaction = () => {
+  //   navigation.navigate('Others', {
+  //     screen: 'Transactions'
+  //   });
+  //   Toast.hide();
+  //   return;
+  // };
+  // useEffect(() => {
+  //   messaging().onNotificationOpenedApp((remoteMessage) => {
+  //     console.log(
+  //       'Notification caused app to open from background state:',
+  //       remoteMessage
+  //     );
+  //     onNavigateToTransaction();
+  //   });
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(async (remoteMessage) => {
+  //       // showToast({
+  //       //   title:remoteMessage?.notification?.title,
+  //       //   text:remoteMessage?.notification?.body,
+  //       // })
+  //       console.log('remoteMessage2: ', remoteMessage);
+  //       // const data = JSON.parse(remoteMessage?.data?.data);
+  //       // console.log('message', data.message);
+  //     });
+  //   const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+  //     showToast({
+  //       text1: remoteMessage?.notification?.title,
+  //       text2: remoteMessage?.notification?.body,
+  //       onPress: onNavigateToTransaction
+  //     });
+  //     // const formatData = JSON.parse(remoteMessage?.data?.data);
+  //     // console.log('raw', remoteMessage?.data);
+  //     // console.log('formattedData', formatData);
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
-  useEffect(() => {
-    if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
-      // Do something with the notification data here
-      navigation.navigate('Others', {
-        screen: 'Notifications'
-      });
-      notificationStore.removeNotidata();
-    }
-  }, [notificationStore]);
+  // useEffect(() => {
+  //   if (Object.keys(notificationStore?.getNotiData ?? {}).length > 0) {
+  //     // Do something with the notification data here
+  //     navigation.navigate('Others', {
+  //       screen: 'Notifications'
+  //     });
+  //     notificationStore.removeNotidata();
+  //   }
+  // }, [notificationStore]);
 
   useFocusEffect(
     useCallback(() => {
@@ -140,6 +140,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
   // const onSubscribeToTopic = React.useCallback(async () => {
   //   const fcmToken = await AsyncStorage.getItem('FCM_TOKEN');
+  //   console.log('fcmToken ===', fcmToken);
 
   //   if (fcmToken) {
   //     const subcriber = await API.subcribeToTopic(
@@ -156,6 +157,10 @@ export const HomeScreen: FunctionComponent = observer(props => {
   //     );
   //   }
   // }, []);
+  useEffect(() => {
+    onRefresh();
+    return () => {};
+  }, []);
 
   const onRefresh = React.useCallback(async () => {
     const queries = queriesStore.get(chainStore.current.chainId);
@@ -180,23 +185,8 @@ export const HomeScreen: FunctionComponent = observer(props => {
 
     setRefreshing(false);
     setRefreshDate(Date.now());
-  }, [accountStore, chainStore, priceStore, queriesStore]);
-  const renderAccountCard = useMemo(() => {
-    if (chainStore.current.networkType === 'bitcoin') {
-      return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
-    } else if (chainStore.current.networkType === 'evm') {
-      return <AccountCardEVM containerStyle={styles.containerStyle} />;
-    }
-    return <AccountCard containerStyle={styles.containerStyle} />;
-  }, [chainStore.current.networkType]);
-  const renderTokenCard = useMemo(() => {
-    if (chainStore.current.networkType === 'bitcoin') {
-      return <TokensBitcoinCard refreshDate={refreshDate} />;
-    } else if (chainStore.current.chainId === TRON_ID) {
-      return <TronTokensCard />;
-    }
-    return <TokensCard refreshDate={refreshDate} />;
-  }, [chainStore.current.networkType, chainStore.current.chainId]);
+  }, [account.bech32Address, chainStore.current.chainId]);
+
   return (
     <PageWithScrollViewInBottomTabView
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}

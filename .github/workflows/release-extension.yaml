@@ -1,0 +1,103 @@
+name: Extension release workflow
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04 #orai-self-hosted
+    strategy:
+      matrix:
+        node-version: [18.17.0]
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      # - uses: sonarsource/sonarqube-scan-action@master
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: |
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            ./node_modules/
+          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Checkout submodule repo
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      # - name: Git Sumbodule Update
+      #   working-directory: packages/background
+      #   run: |
+      #     git pull origin stable
+
+      - name: Install Dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn --ignore-platform --ignore-scripts
+
+      - name: Install extension packages
+        working-directory: packages/extension
+        run: yarn --silent
+
+      - name: Build Libs
+        run: yarn build:libs
+
+      - name: Build extension
+        working-directory: packages/extension
+        run: yarn build
+
+      - name: Publish extension for test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          chmod 777 -R ./scripts
+          ./scripts/release.sh
+
+      - name: Upload & release
+        uses: mnao305/chrome-extension-upload@v4.0.1
+        if: ${{ (env.PRERELEASE == '') }}
+        with:
+          file-path: packages/extension/owallet-extension-${{ github.ref_name }}.zip
+          extension-id: ${{ secrets.EXT_ID }}
+          client-id: ${{ secrets.EXT_CLIENT_ID }}
+          client-secret: ${{ secrets.EXT_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.EXT_REFRESH_TOKEN }}
+          publish: false
+
+      - name: Send discord message
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Extension released successe! comment=${{ github.event.head_commit.message }}
+
+      - name: Send discord message
+        if: ${{ failure() }}
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          username: "GitBot"
+          message: Extension released fail! ${{ github.job }} job in worflow ${{ github.workflow }} of ${{ github.repository }} has ${{ job.status }}

@@ -22,9 +22,10 @@ export const EarningCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const { chainStore, accountStore, queriesStore, priceStore, analyticsStore } = useStore();
   const { colors } = useTheme();
+  const chainId = chainStore.current.chainId;
   const styles = styling(colors);
-  const queries = queriesStore.get(chainStore.current.chainId);
-  const account = accountStore.getAccount(chainStore.current.chainId);
+  const queries = queriesStore.get(chainId);
+  const account = accountStore.getAccount(chainId);
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
   const delegated = queryDelegated.total;
   const queryReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address);
@@ -43,9 +44,9 @@ export const EarningCard: FunctionComponent<{
         {},
         {},
         {
-          onBroadcasted: txHash => {
+          onBroadcasted: (txHash) => {
             analyticsStore.logEvent('Claim reward tx broadcasted', {
-              chainId: chainStore.current.chainId,
+              chainId: chainId,
               chainName: chainStore.current.chainName
             });
             smartNavigation.pushSmart('TxPendingResult', {
@@ -67,7 +68,7 @@ export const EarningCard: FunctionComponent<{
       }
     }
   };
-
+  const decimalChain = chainStore?.current?.stakeCurrency?.coinDecimals;
   return (
     <OWBox
       style={{
@@ -94,22 +95,18 @@ export const EarningCard: FunctionComponent<{
             { color: colors['primary-text'] }
           ]}
         >
-          {stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()}
+          {stakingReward.toDec().gt(new Dec(0.001))
+            ? stakingReward.shrink(true).maxDecimals(6).trim(true).upperCase(true).toString()
+            : `< 0.001 ${stakingReward.toCoin().denom.toUpperCase()}`}
         </Text>
-        <Text style={[styles['amount']]}>
-          {totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}
-        </Text>
+        <Text style={[styles['amount']]}>{totalStakingReward ? totalStakingReward.toString() : stakingReward.shrink(true).maxDecimals(6).toString()}</Text>
 
         <OWButton
           label="Claim Rewards"
           size="medium"
           onPress={_onPressClaim}
           textStyle={styles.btnTextClaimStyle}
-          disabled={
-            !account.isReadyToSendMsgs ||
-            stakingReward.toDec().equals(new Dec(0)) ||
-            queryReward.pendingRewardValidatorAddresses.length === 0
-          }
+          disabled={!account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0}
           loading={account.isSendingMsg === 'withdrawRewards'}
           style={styles.btnClaimStyle}
           icon={
@@ -117,9 +114,7 @@ export const EarningCard: FunctionComponent<{
               name="rewards"
               size={20}
               color={
-                !account.isReadyToSendMsgs ||
-                stakingReward.toDec().equals(new Dec(0)) ||
-                queryReward.pendingRewardValidatorAddresses.length === 0
+                !account.isReadyToSendMsgs || stakingReward.toDec().equals(new Dec(0)) || queryReward.pendingRewardValidatorAddresses.length === 0
                   ? colors['text-btn-disable-color']
                   : colors['white']
               }
@@ -206,7 +201,7 @@ export const EarningCard: FunctionComponent<{
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     btnClaimStyle: {
       marginTop: 10

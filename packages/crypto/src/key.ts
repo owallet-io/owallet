@@ -2,7 +2,7 @@ import { ec } from 'elliptic';
 import CryptoJS from 'crypto-js';
 
 import { Buffer } from 'buffer';
-
+import { Hash } from "./hash";
 export class PrivKeySecp256k1 {
   static generateRandomKey(): PrivKeySecp256k1 {
     const secp256k1 = new ec('secp256k1');
@@ -49,19 +49,56 @@ export class PrivKeySecp256k1 {
 export class PubKeySecp256k1 {
   constructor(protected readonly pubKey: Uint8Array) {}
 
-  toBytes(): Uint8Array {
-    return new Uint8Array(this.pubKey);
+  // toBytes(): Uint8Array {
+  //   return new Uint8Array(this.pubKey);
+  // }
+  toBytes(uncompressed?: boolean): Uint8Array {
+    if (uncompressed && this.pubKey.length === 65) {
+      return this.pubKey;
+    }
+    if (!uncompressed && this.pubKey.length === 33) {
+      return this.pubKey;
+    }
+
+    const keyPair = this.toKeyPair();
+    if (uncompressed) {
+      return new Uint8Array(
+        Buffer.from(keyPair.getPublic().encode("hex", false), "hex")
+      );
+    } else {
+      return new Uint8Array(
+        Buffer.from(keyPair.getPublic().encodeCompressed("hex"), "hex")
+      );
+    }
+  }
+  // getAddress(): Uint8Array {
+  //   let hash = CryptoJS.SHA256(
+  //     CryptoJS.lib.WordArray.create(this.pubKey as any)
+  //   ).toString();
+  //   hash = CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(hash)).toString();
+
+  //   return new Uint8Array(Buffer.from(hash, 'hex'));
+  // }
+  getAddress(): Uint8Array {
+    return this.getCosmosAddress();
   }
 
-  getAddress(): Uint8Array {
+  getCosmosAddress(): Uint8Array {
     let hash = CryptoJS.SHA256(
-      CryptoJS.lib.WordArray.create(this.pubKey as any)
+      CryptoJS.lib.WordArray.create(this.toBytes(false) as any)
     ).toString();
     hash = CryptoJS.RIPEMD160(CryptoJS.enc.Hex.parse(hash)).toString();
 
-    return new Uint8Array(Buffer.from(hash, 'hex'));
+    return new Uint8Array(Buffer.from(hash, "hex"));
   }
 
+  getEthAddress(): Uint8Array {
+    // Should be uncompressed.
+    // And remove prefix byte.
+    // And hash by keccak256.
+    // Use last 20 bytes.
+    return Hash.keccak256(this.toBytes(true).slice(1)).slice(-20);
+  }
   toKeyPair(): ec.KeyPair {
     const secp256k1 = new ec('secp256k1');
 

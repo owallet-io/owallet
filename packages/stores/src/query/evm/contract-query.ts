@@ -4,11 +4,9 @@ import { KVStore } from '@owallet/common';
 import { ChainGetter } from '../../common';
 import { CancelToken } from 'axios';
 import { QueryResponse } from '../../common';
-import ERC20_ABI from './erc20.json';
+import ERC20_ABI from './erc20';
 
-export class ObservableEvmContractChainQuery<
-  T
-> extends ObservableChainQuery<T> {
+export class ObservableEvmContractChainQuery<T> extends ObservableChainQuery<T> {
   constructor(
     kvStore: KVStore,
     chainId: string,
@@ -24,9 +22,7 @@ export class ObservableEvmContractChainQuery<
     return this.contractAddress?.length !== 0;
   }
 
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<T>> {
+  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<T>> {
     try {
       const response = await super.fetchResponse(cancelToken);
       const resultFetchBalance = response.data;
@@ -34,17 +30,11 @@ export class ObservableEvmContractChainQuery<
       const web3 = new Web3(provider);
       // @ts-ignore
       const tokenInfo = new web3.eth.Contract(ERC20_ABI, this.contractAddress);
-      console.log(
-        '🚀 ~ file: contract-query.ts ~ line 37 ~ tokenInfo',
-        tokenInfo
-      );
+      console.log('🚀 ~ file: contract-query.ts ~ line 37 ~ tokenInfo', tokenInfo);
       const tokenDecimal = await tokenInfo.methods.decimals().call();
       const tokenSymbol = await tokenInfo.methods.symbol().call();
       const tokenName = await tokenInfo.methods.name().call();
-      console.log(
-        '🚀 ~ file: contract-query.ts ~ line 41 ~ tokenName',
-        tokenName
-      );
+      console.log('🚀 ~ file: contract-query.ts ~ line 41 ~ tokenName', tokenName);
 
       if (!resultFetchBalance) {
         throw new Error('Failed to get the response from the contract');

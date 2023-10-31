@@ -12,6 +12,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useNotification } from '../../components/notification';
 import delay from 'delay';
 import { useInteractionInfo } from '@owallet/hooks';
+import { getLedgerAppNameByNetwork } from '@owallet/common';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 
@@ -19,7 +20,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
   // Force to fit the screen size.
   useInteractionInfo();
 
-  const { ledgerInitStore } = useStore();
+  const { ledgerInitStore, chainStore } = useStore();
 
   const intl = useIntl();
 
@@ -67,8 +68,12 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
     let initErrorOn: LedgerInitErrorOn | undefined;
 
     try {
-      const ledger = await Ledger.init(ledgerInitStore.isWebHID ? 'webhid' : 'webusb', [], 'cosmos');
-      // await ledger.close();
+      const ledger = await Ledger.init(
+        ledgerInitStore.isWebHID ? 'webhid' : 'webusb',
+        [],
+        getLedgerAppNameByNetwork(chainStore.current.networkType, chainStore.current.chainId)
+      );
+      await ledger.close();
       // Unfortunately, closing ledger blocks the writing to Ledger on background process.
       // I'm not sure why this happens. But, not closing reduce this problem if transport is webhid.
       if (!ledgerInitStore.isWebHID) {
@@ -102,7 +107,9 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
       ) : (
         <div className={style.instructions}>
           <Instruction
-            icon={<img src={require('../../public/assets/img/icons8-usb-2.svg')} style={{ height: '50px' }} alt="usb" />}
+            icon={
+              <img src={require('../../public/assets/img/icons8-usb-2.svg')} style={{ height: '50px' }} alt="usb" />
+            }
             title={intl.formatMessage({ id: 'ledger.step1' })}
             paragraph={intl.formatMessage({ id: 'ledger.step1.paragraph' })}
             pass={initTryCount > 0 && initErrorOn === LedgerInitErrorOn.App}
@@ -137,18 +144,21 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => {
-                        navigator.clipboard.writeText('chrome://flags/#enable-experimental-web-platform-features').then(() => {
-                          notification.push({
-                            placement: 'top-center',
-                            type: 'success',
-                            duration: 2,
-                            content: intl.formatMessage({
-                              id: 'ledger.option.webhid.link.copied'
-                            }),
-                            canDelete: true,
-                            transition: {
-                              duration: 0.25
-                            }
+                        navigator.clipboard
+                          .writeText('chrome://flags/#enable-experimental-web-platform-features')
+                          .then(() => {
+                            notification.push({
+                              placement: 'top-center',
+                              type: 'success',
+                              duration: 2,
+                              content: intl.formatMessage({
+                                id: 'ledger.option.webhid.link.copied'
+                              }),
+                              canDelete: true,
+                              transition: {
+                                duration: 0.25
+                              }
+                            });
                           });
                         });
                       }}
@@ -163,7 +173,7 @@ export const LedgerGrantPage: FunctionComponent = observer(() => {
           <Button
             color="primary"
             block
-            onClick={async (e) => {
+            onClick={async e => {
               e.preventDefault();
               await tryInit();
             }}
@@ -222,7 +232,11 @@ const SignCompleteDialog: FunctionComponent<{
           justifyContent: 'flex-end'
         }}
       >
-        {!rejected ? <img src={require('../../public/assets/img/icons8-checked.svg')} alt="success" /> : <img src={require('../../public/assets/img/icons8-cancel.svg')} alt="rejected" />}
+        {!rejected ? (
+          <img src={require('../../public/assets/img/icons8-checked.svg')} alt="success" />
+        ) : (
+          <img src={require('../../public/assets/img/icons8-cancel.svg')} alt="rejected" />
+        )}
       </div>
       <p>{!rejected ? intl.formatMessage({ id: 'ledger.confirm.success' }) : intl.formatMessage({ id: 'ledger.confirm.rejected' })}</p>
       <div

@@ -97,7 +97,7 @@ export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally>
     const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
 
     const bondedToken = new Dec(
-      pool.response.data.result.bonded_tokens
+      pool.response.data.pool.bonded_tokens
     ).quoTruncate(
       DecUtils.getTenExponentNInPrecisionRange(stakeCurrency.coinDecimals)
     );

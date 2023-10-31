@@ -6,8 +6,7 @@ import { TRON_ID, getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
-import { ToastShowParams } from 'react-native-toast-message';
+import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
@@ -26,12 +25,13 @@ export const handleError = (error, url, method) => {
     console.log(`[1;34m: ---------------------------------------`);
   }
 };
-export const showToast = ({ ...params }: ToastShowParams) => {
-  Toast.show({
+export const showToast = ({ ...params }: MessageOptions) => {
+  showMessage({
     type: params?.type ?? 'success',
-    visibilityTime: 4000,
+    duration: 5000,
     ...params
   });
+  return;
 };
 export const handleDeepLink = async ({ url }) => {
   if (url) {
@@ -206,7 +206,7 @@ export function removeEmptyElements(array) {
 
 function convertVarToWord(str) {
   const words = str && str.split('_');
-  const capitalizedWords = words && words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+  const capitalizedWords = words && words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
   return capitalizedWords && capitalizedWords.join(' ');
 }
 export function removeSpecialChars(str) {
@@ -223,10 +223,7 @@ export const getTransactionValue = ({ data, address, logs }) => {
   let eventType = null;
   let unbond = null;
   let isRecipient = false;
-  if (
-    checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) ||
-    checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)
-  ) {
+  if (checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) || checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)) {
     eventType = 'withdraw_rewards';
   }
   if (checkType(transactionType, TRANSACTION_TYPE.DELEGATE)) {
@@ -398,12 +395,10 @@ export const getTxTypeNew = (type, rawLog = '[]', result = '') => {
 };
 
 export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_data') => {
-  const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find(e => e?.type === type);
-  const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find(ele => ele?.key === key);
+  const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
+  const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
-    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String
-      ? JSON.parse(ibcDemonPackData?.value ?? '{}')
-      : { denom: '' };
+    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String ? JSON.parse(ibcDemonPackData?.value ?? '{}') : { denom: '' };
   return ibcDemonObj;
 };
 
@@ -475,17 +470,17 @@ export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }
 
-export function findLedgerAddressWithChainId(ledgerAddresses, chainId) {
+export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
   let address;
 
   if (chainId === TRON_ID) {
-    address = ledgerAddresses.trx;
+    address = AddressesLedger.trx;
   } else {
     const networkType = getNetworkTypeByChainId(chainId);
     if (networkType === 'evm') {
-      address = ledgerAddresses.eth;
+      address = AddressesLedger.eth;
     } else {
-      address = ledgerAddresses.cosmos;
+      address = AddressesLedger.cosmos;
     }
   }
   return address;

@@ -19,7 +19,12 @@ import {
   getEthereumFromWindow,
   getTronWebFromWindow
 } from '@owallet/stores';
-import { ExtensionRouter, ContentScriptEnv, ContentScriptGuards, InExtensionMessageRequester } from '@owallet/router-extension';
+import {
+  ExtensionRouter,
+  ContentScriptEnv,
+  ContentScriptGuards,
+  InExtensionMessageRequester
+} from '@owallet/router-extension';
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
@@ -79,7 +84,11 @@ export class RootStore {
     // Order is important.
     this.interactionStore = new InteractionStore(router, new InExtensionMessageRequester());
 
-    this.chainStore = new ChainStore(EmbedChainInfos, new InExtensionMessageRequester());
+    this.chainStore = new ChainStore(
+      EmbedChainInfos,
+      new InExtensionMessageRequester(),
+      localStorage.getItem('initchain')
+    );
 
     this.keyRingStore = new KeyRingStore(
       {
@@ -100,9 +109,14 @@ export class RootStore {
     this.ledgerInitStore = new LedgerInitStore(this.interactionStore, new InExtensionMessageRequester());
     this.chainSuggestStore = new ChainSuggestStore(this.interactionStore);
 
-    this.queriesStore = new QueriesStore(new ExtensionKVStore('store_queries'), this.chainStore, getOWalletFromWindow, QueriesWithCosmosAndSecretAndCosmwasmAndEvm);
+    this.queriesStore = new QueriesStore(
+      new ExtensionKVStore('store_queries'),
+      this.chainStore,
+      getOWalletFromWindow,
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+    );
 
-    const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
+    const chainOpts = this.chainStore.chainInfos.map(chainInfo => {
       // In certik, change the msg type of the MsgSend to "bank/MsgSend"
       if (chainInfo.chainId.startsWith('shentu-')) {
         return {
@@ -212,11 +226,11 @@ export class RootStore {
         // To prevent this problem, just check the first uri is "#/unlcok" and
         // if it is "#/unlock", don't use the prefetching option.
         prefetching: !window.location.href.includes('#/unlock'),
-        getTronWeb: getTronWebFromWindow,
         suggestChain: false,
         autoInit: true,
         getOWallet: getOWalletFromWindow,
-        getEthereum: getEthereumFromWindow
+        getEthereum: getEthereumFromWindow,
+        getTronWeb: getTronWebFromWindow
       },
       chainOpts
     });
@@ -256,9 +270,21 @@ export class RootStore {
       'usd'
     );
 
-    this.tokensStore = new TokensStore(window, this.chainStore, new InExtensionMessageRequester(), this.interactionStore);
+    this.tokensStore = new TokensStore(
+      window,
+      this.chainStore,
+      new InExtensionMessageRequester(),
+      this.interactionStore
+    );
 
-    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(new ExtensionKVStore('store_ibc_curreny_registrar'), 24 * 3600 * 1000, this.chainStore, this.accountStore, this.queriesStore, this.queriesStore);
+    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
+      new ExtensionKVStore('store_ibc_currency_registrar'),
+      24 * 3600 * 1000,
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore,
+      this.queriesStore
+    );
 
     this.analyticsStore = new AnalyticsStore(
       (() => {

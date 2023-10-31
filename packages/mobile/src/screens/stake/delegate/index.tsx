@@ -11,13 +11,8 @@ import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { OWButton } from '../../../components/button';
-import {
-  AmountInput,
-  FeeButtons,
-  MemoInput,
-  TextInput
-} from '../../../components/input';
-import { PageWithScrollViewInBottomTabView } from '../../../components/page';
+import { AmountInput, FeeButtons, MemoInput, TextInput } from '../../../components/input';
+import { PageWithScrollView } from '../../../components/page';
 import { Toggle } from '../../../components/toggle';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { useStore } from '../../../stores';
@@ -69,9 +64,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
     sendConfigs.feeConfig.getError();
   const txStateIsValid = sendConfigError == null;
 
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
 
   const validator = bondedValidators.getValidator(validatorAddress);
 
@@ -85,7 +78,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
   // };
 
   return (
-    <PageWithScrollViewInBottomTabView backgroundColor={colors['background']}>
+    <PageWithScrollView backgroundColor={colors['background']}>
       <OWSubTitleHeader title="Staking" />
       <OWBox
         style={{
@@ -93,10 +86,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         }}
       >
         <AmountInput label={'Amount'} amountConfig={sendConfigs.amountConfig} />
-        <MemoInput
-          label={'Memo (Optional)'}
-          memoConfig={sendConfigs.memoConfig}
-        />
+        <MemoInput label={'Memo (Optional)'} memoConfig={sendConfigs.memoConfig} />
 
         {/* Need to some custom fee here */}
 
@@ -109,13 +99,10 @@ export const DelegateScreen: FunctionComponent = observer(() => {
         >
           <Toggle
             on={customFee}
-            onChange={value => {
+            onChange={(value) => {
               setCustomFee(value);
               if (!value) {
-                if (
-                  sendConfigs.feeConfig.feeCurrency &&
-                  !sendConfigs.feeConfig.fee
-                ) {
+                if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
                   sendConfigs.feeConfig.setFeeType('average');
                 }
               }
@@ -140,10 +127,8 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             placeholder="Type your Fee here"
             keyboardType={'numeric'}
             labelStyle={styles.sendlabelInput}
-            onChangeText={text => {
-              const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                DecUtils.getTenExponentNInPrecisionRange(6)
-              );
+            onChangeText={(text) => {
+              const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
               sendConfigs.feeConfig.setManualFee({
                 amount: fee.roundUp().toString(),
@@ -152,12 +137,7 @@ export const DelegateScreen: FunctionComponent = observer(() => {
             }}
           />
         ) : chainStore.current.networkType !== 'evm' ? (
-          <FeeButtons
-            label="Fee"
-            gasLabel="gas"
-            feeConfig={sendConfigs.feeConfig}
-            gasConfig={sendConfigs.gasConfig}
-          />
+          <FeeButtons label="Fee" gasLabel="gas" feeConfig={sendConfigs.feeConfig} gasConfig={sendConfigs.gasConfig} />
         ) : null}
 
         {/* <TouchableOpacity
@@ -203,61 +183,59 @@ export const DelegateScreen: FunctionComponent = observer(() => {
           </View>
           <View />
         </View>
-      </OWBox>
-
-      <OWButton
-        style={{
-          marginHorizontal: spacing['20'],
-          marginBottom: 20
-        }}
-        label="Stake"
-        fullWidth={false}
-        disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-        loading={account.isSendingMsg === 'delegate'}
-        onPress={async () => {
-          if (account.isReadyToSendMsgs && txStateIsValid) {
-            try {
-              await account.cosmos.sendDelegateMsg(
-                sendConfigs.amountConfig.amount,
-                sendConfigs.recipientConfig.recipient,
-                sendConfigs.memoConfig.memo,
-                sendConfigs.feeConfig.toStdFee(),
-                {
-                  preferNoSetMemo: true,
-                  preferNoSetFee: true
-                },
-                {
-                  onBroadcasted: txHash => {
-                    analyticsStore.logEvent('Delegate tx broadcasted', {
-                      chainId: chainStore.current.chainId,
-                      chainName: chainStore.current.chainName,
-                      validatorName: validator?.description.moniker ?? '...',
-                      feeType: sendConfigs.feeConfig.feeType
-                    });
-                    smartNavigation.pushSmart('TxPendingResult', {
-                      txHash: Buffer.from(txHash).toString('hex')
-                    });
+        <OWButton
+          style={{
+            marginTop: 20
+          }}
+          label="Stake"
+          fullWidth={false}
+          disabled={!account.isReadyToSendMsgs || !txStateIsValid}
+          loading={account.isSendingMsg === 'delegate'}
+          onPress={async () => {
+            if (account.isReadyToSendMsgs && txStateIsValid) {
+              try {
+                await account.cosmos.sendDelegateMsg(
+                  sendConfigs.amountConfig.amount,
+                  sendConfigs.recipientConfig.recipient,
+                  sendConfigs.memoConfig.memo,
+                  sendConfigs.feeConfig.toStdFee(),
+                  {
+                    preferNoSetMemo: true,
+                    preferNoSetFee: true
+                  },
+                  {
+                    onBroadcasted: (txHash) => {
+                      analyticsStore.logEvent('Delegate tx broadcasted', {
+                        chainId: chainStore.current.chainId,
+                        chainName: chainStore.current.chainName,
+                        validatorName: validator?.description.moniker ?? '...',
+                        feeType: sendConfigs.feeConfig.feeType
+                      });
+                      smartNavigation.pushSmart('TxPendingResult', {
+                        txHash: Buffer.from(txHash).toString('hex')
+                      });
+                    }
                   }
+                );
+              } catch (e) {
+                if (e?.message === 'Request rejected') {
+                  return;
                 }
-              );
-            } catch (e) {
-              if (e?.message === 'Request rejected') {
-                return;
+                if (e?.message.includes('Cannot read properties of undefined')) {
+                  return;
+                }
+                console.log(e);
+                smartNavigation.navigate('Home', {});
               }
-              if (e?.message.includes('Cannot read properties of undefined')) {
-                return;
-              }
-              console.log(e);
-              smartNavigation.navigate('Home', {});
             }
-          }
-        }}
-      />
-    </PageWithScrollViewInBottomTabView>
+          }}
+        />
+      </OWBox>
+    </PageWithScrollView>
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     page: {
       padding: spacing['page']

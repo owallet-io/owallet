@@ -1,5 +1,5 @@
 import { action, computed, makeObservable, observable } from 'mobx';
-import { BIP44HDPath } from '@owallet/background';
+import { BIP44HDPath } from '@owallet/types';
 import { useState } from 'react';
 
 export class BIP44Option {

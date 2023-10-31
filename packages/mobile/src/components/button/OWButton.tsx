@@ -1,15 +1,5 @@
-import {
-  View,
-  Text,
-  TouchableOpacityProps,
-  TouchableOpacity as NativeButton,
-  StyleSheet,
-  StyleProp,
-  TextStyle,
-  ViewStyle,
-  Keyboard
-} from 'react-native';
-import React, { FunctionComponent, useCallback } from 'react';
+import { View, Text, TouchableOpacityProps, TouchableOpacity, StyleSheet, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import React, { FunctionComponent } from 'react';
 import { useMapStyles } from './hooks';
 import { LoadingSpinner } from '../spinner';
 import { useTheme } from '@src/themes/theme-provider';
@@ -30,7 +20,7 @@ export interface IOWButtonProps extends TouchableOpacityProps {
   icon?: React.ReactNode;
   contentAlign?: 'left' | 'center' | 'right';
   borderStyle?: 'dashed' | 'none';
-  isBottomSheet?: boolean;
+  colorLoading?: TextStyle['color'];
 }
 
 const OWButton: FunctionComponent<IOWButtonProps> = ({
@@ -48,8 +38,7 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
   children,
   borderStyle,
   contentAlign,
-  circle,
-  isBottomSheet,
+  colorLoading = 'white',
   ...props
 }) => {
   const handleOnPress = useCallback(
@@ -85,21 +74,12 @@ const OWButton: FunctionComponent<IOWButtonProps> = ({
       ]}
     >
       {loading ? (
-        <LoadingSpinner color={colors['white']} size={20} />
+        <LoadingSpinner color={colorLoading} size={20} />
       ) : (
         <>
           {!!icon && icon}
           {!!label && (
-            <OWText
-              variant={textVariant}
-              typo={textTypo}
-              style={[
-                styles.textBtn,
-                !!icon && styles.iconInBtn,
-                styleMapped.text,
-                textStyle
-              ]}
-            >
+            <OWText variant={textVariant} typo={textTypo} style={[styles.textBtn, !!icon && styles.iconInBtn, styleMapped.text, textStyle]}>
               {label}
             </OWText>
           )}

@@ -272,6 +272,7 @@ export const SendScreen: FunctionComponent = observer(() => {
                         );
                       },
                       onBroadcasted: txHash => {
+                        console.log("🚀 ~ file: index.tsx:275 ~ onPress={ ~ txHash:", txHash)
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,

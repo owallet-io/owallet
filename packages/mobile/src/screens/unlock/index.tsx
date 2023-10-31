@@ -1,20 +1,5 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react';
-import {
-  Alert,
-  AppState,
-  AppStateStatus,
-  Image,
-  Platform,
-  StyleSheet,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, AppState, AppStateStatus, Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { TextInput } from '../../components/input';
 import delay from 'delay';
@@ -38,17 +23,13 @@ import { Text } from '@src/components/text';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
 import { showToast } from '@src/utils/helper';
-import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
-async function waitAccountLoad(
-  accountStore: AccountStore<any, any, any, any>,
-  chainId: string
-): Promise<void> {
+async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
     return;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -101,14 +82,7 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
 };
 
 export const UnlockScreen: FunctionComponent = observer(() => {
-  const {
-    keyRingStore,
-    keychainStore,
-    accountStore,
-    chainStore,
-    appInitStore,
-    notificationStore
-  } = useStore();
+  const { keyRingStore, keychainStore, accountStore, chainStore, appInitStore, notificationStore } = useStore();
   const navigation = useNavigation();
   const { colors } = useTheme();
   const [downloading, setDownloading] = useState(false);
@@ -118,9 +92,15 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const [statusPass, setStatusPass] = useState(true);
   const navigateToHomeOnce = useRef(false);
   const navigateToHome = useCallback(async () => {
+    const chainId = chainStore.current.chainId;
+    const isLedger = accountStore.getAccount(chainId).isNanoLedger;
     if (!navigateToHomeOnce.current) {
-      await waitAccountLoad(accountStore, chainStore.current.chainId);
-      navigation.dispatch(StackActions.replace('MainTab'));
+      if (!!accountStore.getAccount(chainId).bech32Address === false && chainId?.startsWith('inj') && isLedger) {
+        navigation.dispatch(StackActions.replace('MainTab'));
+      } else {
+        await waitAccountLoad(accountStore, chainId);
+        navigation.dispatch(StackActions.replace('MainTab'));
+      }
     }
     navigateToHomeOnce.current = true;
   }, [accountStore, chainStore, navigation]);
@@ -141,7 +121,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // },
         installMode: CodePush.InstallMode.IMMEDIATE
       },
-      status => {
+      (status) => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             console.log('UP_TO_DATE');
@@ -201,7 +181,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     try {
       setIsLoading(true);
       await delay(10);
-      await keyRingStore.unlock(password);
+      await keyRingStore.unlock(password, false);
     } catch (e) {
       console.log(e);
       setIsLoading(false);
@@ -211,10 +191,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   const routeToRegisterOnce = useRef(false);
   useEffect(() => {
-    if (
-      !routeToRegisterOnce.current &&
-      keyRingStore.status === KeyRingStatus.EMPTY
-    ) {
+    if (!routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY) {
       (() => {
         routeToRegisterOnce.current = true;
         navigation.dispatch(
@@ -250,38 +227,32 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
 
-  useEffect(() => {
-    messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log(
-        'Notification caused app to open from background state:',
-        remoteMessage
-      );
-      // const data = JSON.parse(remoteMessage?.data?.data);
-      const data = { data: JSON.stringify(remoteMessage) };
+  // useEffect(() => {
+  //   messaging().onNotificationOpenedApp(remoteMessage => {
+  //     console.log('Notification caused app to open from background state:', remoteMessage);
+  //     // const data = JSON.parse(remoteMessage?.data?.data);
+  //     const data = { data: JSON.stringify(remoteMessage) };
 
-      notificationStore?.updateNotidata(data);
+  //     notificationStore?.updateNotidata(data);
 
-      console.log(
-        'Notification caused app to open from background state with data:',
-        data
-      );
-    });
-    messaging()
-      .getInitialNotification()
-      .then(async remoteMessage => {});
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      showToast({
-        text1: remoteMessage?.notification?.title,
-        text2: remoteMessage?.notification?.body,
-        onPress: () => Toast.hide()
-      });
-    });
+  //     console.log('Notification caused app to open from background state with data:', data);
+  //   });
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(async remoteMessage => {});
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     showToast({
+  //       text1: remoteMessage?.notification?.title,
+  //       text2: remoteMessage?.notification?.body,
+  //       onPress: () => Toast.hide()
+  //     });
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async FCMToken => {
+  const regisFcmToken = useCallback(async (FCMToken) => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
@@ -291,15 +262,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async FCMToken => {
-          console.log('FCMToken ===', FCMToken);
+        .then(async (FCMToken) => {
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
             // Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch(error => {
+        .catch((error) => {
           // let err = `FCM token get error: ${error}`;
           // Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
@@ -313,7 +283,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (Platform.OS === 'ios') {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then(register => {
+        .then((register) => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -328,7 +298,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch(error => {
+      .catch((error) => {
         console.log('[FCMService] Requested persmission rejected ', error);
       });
   }, [registerAppWithFCM]);
@@ -336,7 +306,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then(enabled => {
+      .then((enabled) => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -345,7 +315,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch(error => {
+      .catch((error) => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -368,8 +338,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
 
   // return <MaintainScreen />;
   const showPass = () => setStatusPass(!statusPass);
-  return !routeToRegisterOnce.current &&
-    keyRingStore.status === KeyRingStatus.EMPTY ? (
+  return !routeToRegisterOnce.current && keyRingStore.status === KeyRingStatus.EMPTY ? (
     <View />
   ) : downloading || installing ? (
     <View
@@ -488,12 +457,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             />
           }
         />
-        <OWButton
-          label="Sign In"
-          disabled={isLoading || !password}
-          onPress={tryUnlock}
-          loading={isLoading || isBiometricLoading}
-        />
+        <OWButton label="Sign In" disabled={isLoading || !password} onPress={tryUnlock} loading={isLoading || isBiometricLoading} />
         {keychainStore.isBiometryOn && (
           <>
             <OrText />

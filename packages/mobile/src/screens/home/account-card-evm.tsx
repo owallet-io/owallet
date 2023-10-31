@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { observer } from 'mobx-react-lite';
-import { ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
 import { AddressCopyable } from '../../components/address-copyable';
 import { useSmartNavigation } from '../../navigation.provider';
@@ -9,49 +9,32 @@ import { AddressQRCodeModal } from './components';
 import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
-import { TRON_ID } from '@owallet/common';
+import { TRON_ID, getBase58Address, getEvmAddress } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import { findLedgerAddressWithChainId, isBase58 } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({}) => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    modalStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-  
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    keyStore => keyStore?.selected
-  );
+  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
 
   let total;
   if (account.evmosHexAddress) {
     if (keyRingStore.keyRingType === 'ledger') {
       if (keyRingStore.keyRingLedgerAddresses) {
-        const address = findLedgerAddressWithChainId(
-          keyRingStore.keyRingLedgerAddresses,
-          chainStore.current.chainId
-        );
+        const address = findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId);
         total = queries.evm.queryEvmBalance.getQueryBalance(
-          chainStore.current.chainId === TRON_ID && isBase58(address)
-            ? Address.getEvmAddress(address)
-            : address
+          chainStore.current.chainId === TRON_ID && isBase58(address) ? getEvmAddress(address) : address
         )?.balance;
       }
     } else {
-      total = queries.evm.queryEvmBalance.getQueryBalance(
-        account.evmosHexAddress
-      )?.balance;
+      total = queries.evm.queryEvmBalance.getQueryBalance(account.evmosHexAddress)?.balance;
     }
   }
 
@@ -81,7 +64,30 @@ export const AccountCardEVM: FunctionComponent<{
       })
     );
   };
-
+  const renderAddress = () => {
+    if (keyRingStore.keyRingLedgerAddresses && keyRingStore.keyRingType === 'ledger') {
+      return (
+        <AddressCopyable
+          address={findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)}
+          maxCharacters={22}
+        />
+      );
+    } else if (chainStore.current.chainId === TRON_ID) {
+      return (
+        <View>
+          <View>
+            <Text>Base58: </Text>
+            <AddressCopyable address={getBase58Address(account?.evmosHexAddress)} maxCharacters={22} />
+          </View>
+          <View>
+            <Text>Evmos: </Text>
+            <AddressCopyable address={account?.evmosHexAddress} maxCharacters={22} />
+          </View>
+        </View>
+      );
+    }
+    return <AddressCopyable address={account?.evmosHexAddress} maxCharacters={22} />;
+  };
   return (
     <AccountBox
       totalBalance={
@@ -95,16 +101,12 @@ export const AccountCardEVM: FunctionComponent<{
           }}
         >
           {chainStore.current.chainId !== TRON_ID && total
-            ? `${new Big(parseInt(total?.amount?.int))
-                .div(new Big(10).pow(36))
-                .toFixed(8)}` +
+            ? `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(36)).toFixed(8)}` +
               ` ${chainStore.current?.stakeCurrency.coinDenom}`
             : null}
 
           {chainStore.current.chainId === TRON_ID && total
-            ? `${new Big(parseInt(total?.amount?.int))
-                .div(new Big(10).pow(24))
-                .toFixed(6)}` +
+            ? `${new Big(parseInt(total?.amount?.int)).div(new Big(10).pow(24)).toFixed(6)}` +
               ` ${chainStore.current?.stakeCurrency.coinDenom}`
             : null}
         </Text>
@@ -112,8 +114,7 @@ export const AccountCardEVM: FunctionComponent<{
       coinType={`${
         keyRingStore.keyRingType === 'ledger'
           ? chainStore?.current?.bip44?.coinType
-          : selected?.bip44HDPath?.coinType ??
-            chainStore?.current?.bip44?.coinType
+          : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
       networkType={'evm'}
       name={account.name || '...'}
@@ -121,45 +122,17 @@ export const AccountCardEVM: FunctionComponent<{
       totalAmount={`$${
         chainStore.current.chainId !== TRON_ID && total
           ? (
-              parseFloat(
-                new Big(parseInt(total.amount?.int?.value))
-                  .div(new Big(10).pow(36))
-                  .toString()
-              ) *
-              priceStore?.getPrice(
-                chainStore?.current?.stakeCurrency?.coinGeckoId
-              )
+              parseFloat(new Big(parseInt(total.amount?.int?.value)).div(new Big(10).pow(36)).toString()) *
+              priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
             ).toFixed(6)
           : chainStore.current.chainId === TRON_ID && total
           ? (
-              parseFloat(
-                new Big(parseInt(total.amount?.int))
-                  .div(new Big(10).pow(24))
-                  .toString()
-              ) *
-              priceStore?.getPrice(
-                chainStore?.current?.stakeCurrency?.coinGeckoId
-              )
+              parseFloat(new Big(parseInt(total.amount?.int)).div(new Big(10).pow(24)).toString()) *
+              priceStore?.getPrice(chainStore?.current?.stakeCurrency?.coinGeckoId)
             ).toFixed(6)
           : 0
       }`}
-      addressComponent={
-        <AddressCopyable
-          address={
-            keyRingStore.keyRingLedgerAddresses &&
-            keyRingStore.keyRingType === 'ledger'
-              ? findLedgerAddressWithChainId(
-                  keyRingStore.keyRingLedgerAddresses,
-                  chainStore.current.chainId
-                )
-              : chainStore.current.chainId === TRON_ID &&
-                account.evmosHexAddress
-              ? Address.getBase58Address(account.evmosHexAddress)
-              : account.evmosHexAddress
-          }
-          maxCharacters={22}
-        />
-      }
+      addressComponent={renderAddress()}
     />
   );
 });

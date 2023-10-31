@@ -7,6 +7,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
@@ -20,19 +21,21 @@ const fallback = {
   path: false,
   assert: false,
   querystring: false,
-  buffer: require.resolve('buffer'),
   http: require.resolve('stream-http'),
   crypto: require.resolve('crypto-browserify'),
   stream: require.resolve('stream-browserify'),
-  https: require.resolve('https-browserify')
+  https: require.resolve('https-browserify'),
+  assert: require.resolve('assert')
 };
-const commonResolve = (dir) => ({
+
+const commonResolve = dir => ({
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss'],
   alias: {
     assets: path.resolve(__dirname, dir)
   },
   fallback
 });
+
 const sassRule = {
   test: /(\.s?css)|(\.sass)$/,
   oneOf: [
@@ -109,7 +112,7 @@ const extensionConfig = {
     injectedScript: ['./src/content-scripts/inject/injected-script.ts']
   },
   output: {
-    path: path.resolve(__dirname, isEnvDevelopment ? 'dist' : 'prod'),
+    path: path.resolve(__dirname, process.env.OUT_DIR || (isEnvDevelopment ? 'dist' : 'prod')),
     filename: '[name].bundle.js'
   },
   resolve: commonResolve('src/public/assets'),
@@ -120,6 +123,22 @@ const extensionConfig = {
     hints: false,
     maxEntrypointSize: 512000,
     maxAssetSize: 512000
+  },
+  optimization: {
+    minimize: !isEnvDevelopment,
+    minimizer: [
+      new TerserPlugin({
+        test: /\.js(\?.*)?$/i, // you should add this property
+        extractComments: false,
+        terserOptions: {
+          compress: {
+            drop_console: true,
+            drop_debugger: true,
+            pure_funcs: ['console.log', 'console.info'] // Delete console
+          }
+        }
+      })
+    ]
   },
   plugins: [
     // Remove all and write anyway
@@ -157,6 +176,10 @@ const extensionConfig = {
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: isEnvAnalyzer ? 'server' : 'disabled'
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+      Buffer: ['buffer', 'Buffer']
     })
   ]
 };

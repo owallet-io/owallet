@@ -1,5 +1,5 @@
 interface CurrencyInfo {
-  prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | '';
+  prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | 'ibc' | '';
   coinDenom?: string;
   coinMinimalDenom?: string;
   contractAddress?: string;

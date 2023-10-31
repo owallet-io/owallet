@@ -90,13 +90,6 @@ export const ethToTronAddress = (address: string) => {
   return Address.getBase58Address(address);
 };
 
-export const getEvmAddress = (bech32Address: string) => {
-  if (!bech32Address) return;
-  const decoded = bech32.decode(bech32Address);
-  const evmAddress = '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
-  return evmAddress;
-};
-
 export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
   if (coingeckoId === 'kawaii-islands' || coingeckoId === 'milky-token') {
     throw new Error('KWT and MILKY not supported in this function');

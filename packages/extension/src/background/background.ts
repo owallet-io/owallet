@@ -1,13 +1,8 @@
 import { BACKGROUND_PORT } from '@owallet/router';
-import {
-  ExtensionRouter,
-  ExtensionGuards,
-  ExtensionEnv,
-  ContentScriptMessageRequester
-} from '@owallet/router-extension';
+import { ExtensionRouter, ExtensionGuards, ExtensionEnv, ContentScriptMessageRequester } from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
 import { init, Ledger, ScryptParams } from '@owallet/background';
-import scrypt from 'scrypt-js';
+import { scrypt } from '@owallet/crypto';
 import { Buffer } from 'buffer';
 
 import { EmbedChainInfos, PrivilegedOrigins } from '@owallet/common';
@@ -16,8 +11,6 @@ const router = new ExtensionRouter(ExtensionEnv.produceEnv);
 router.addGuard(ExtensionGuards.checkOriginIsValid);
 router.addGuard(ExtensionGuards.checkMessageIsInternal);
 
-// can extends more origins to PrivilegedOrigins
-console.log('re-init', 'service worker re-load again', Date.now());
 init(
   router,
   (prefix: string) => new ExtensionKVStore(prefix),
@@ -29,27 +22,22 @@ init(
   },
   {
     scrypt: async (text: string, params: ScryptParams) => {
-      return await scrypt.scrypt(
-        Buffer.from(text),
-        Buffer.from(params.salt, 'hex'),
-        params.n,
-        params.r,
-        params.p,
-        params.dklen
-      );
+      const buf = await scrypt(text, Buffer.from(params.salt, 'hex'), {
+        dkLen: params.dklen,
+        N: params.n,
+        r: params.r,
+        p: params.p,
+        encoding: 'binary'
+      });
+
+      return buf;
     }
   },
   {
-    create: (params: {
-      iconRelativeUrl?: string;
-      title: string;
-      message: string;
-    }) => {
+    create: (params: { iconRelativeUrl?: string; title: string; message: string }) => {
       browser.notifications.create({
         type: 'basic',
-        iconUrl: params.iconRelativeUrl
-          ? browser.runtime.getURL(params.iconRelativeUrl)
-          : undefined,
+        iconUrl: params.iconRelativeUrl ? browser.runtime.getURL(params.iconRelativeUrl) : undefined,
         title: params.title,
         message: params.message
       });
