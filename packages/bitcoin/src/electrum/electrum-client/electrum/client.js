@@ -6,8 +6,14 @@ const keepAliveInterval = 450 * 1000; // 7.5 minutes as recommended by ElectrumX
 export class ElectrumClient extends SocketClient {
   constructor(host, port, protocol, options) {
     super(host, port, protocol, options);
+    this.timeLastCall = 0;
   }
-
+  initElectrum(electrumConfig, persistencePolicy = { maxRetry: 1000, callback: null }) {
+    this.persistencePolicy = persistencePolicy;
+    this.electrumConfig = electrumConfig;
+    this.timeLastCall = 0;
+    return this.connect().then(() => this.server_version(this.electrumConfig.client, this.electrumConfig.version));
+  }
   async connect(clientName, electrumProtocolVersion, persistencePolicy = { maxRetry: 10, callback: null }) {
     this.persistencePolicy = persistencePolicy;
 
@@ -61,27 +67,27 @@ export class ElectrumClient extends SocketClient {
    * minutes. It sends a ping request every 2 minutes. If the request fails it
    * logs an error and closes the connection.
    */
-  async keepAlive() {
-    if (this.status !== 0) {
-      this.keepAliveHandle = setInterval(
-        async (client) => {
-          if (this.timeLastCall !== 0 && new Date().getTime() > this.timeLastCall + keepAliveInterval / 2) {
-            await client.server_ping().catch((err) => {
-              console.error(`ping to server failed: [${err}]`);
-              client.close(); // TODO: we should reconnect
-            });
-          }
-        },
-        keepAliveInterval,
-        this // pass this context as an argument to function
-      );
+  keepAlive() {
+    if (this.timeout != null) {
+      clearTimeout(this.timeout);
     }
+    this.timeout = setTimeout(() => {
+      if (this.timeLastCall !== 0 && new Date().getTime() > this.timeLastCall + 5000) {
+        this.server_ping();
+      }
+    }, 5000);
   }
 
   close() {
-    return super.close();
+    super.close();
+    if (this.timeout != null) {
+      clearTimeout(this.timeout);
+    }
+    this.reconnect = this.reconnect = this.onClose = this.keepAlive = () => {}; // dirty hack to make it stop reconnecting
   }
-
+  reconnect() {
+    return this.initElectrum(this.electrumConfig);
+  }
   onClose() {
     super.onClose();
 
@@ -96,17 +102,19 @@ export class ElectrumClient extends SocketClient {
     list.forEach((event) => this.events.removeAllListeners(event));
 
     // Stop keep alive.
-    clearInterval(this.keepAliveHandle);
+    // clearInterval(this.keepAliveHandle);
 
     // TODO: Refactor persistency
-    // if (this.persistencePolicy) {
-    //   if (this.persistencePolicy.maxRetry > 0) {
-    //     this.reconnect();
-    //     this.persistencePolicy.maxRetry -= 1;
-    //   } else if (this.persistencePolicy.callback != null) {
-    //     this.persistencePolicy.callback();
-    //   }
-    // }
+    setTimeout(() => {
+      if (this.persistencePolicy != null && this.persistencePolicy.maxRetry > 0) {
+        this.reconnect();
+        this.persistencePolicy.maxRetry -= 1;
+      } else if (this.persistencePolicy != null && this.persistencePolicy.callback != null) {
+        this.persistencePolicy.callback();
+      } else if (this.persistencePolicy == null) {
+        this.reconnect();
+      }
+    }, 10000);
   }
 
   // TODO: Refactor persistency
