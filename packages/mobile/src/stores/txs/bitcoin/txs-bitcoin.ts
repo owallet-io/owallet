@@ -1,7 +1,7 @@
 import { ChainInfoInner } from '@owallet/stores';
 import { Txs } from '../abstract/txs';
 import { ChainInfo } from '@owallet/types';
-import { ChainIdEnum } from '../helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import { TxsBtcTestNet } from './txs-btc-test';
 import { TxsBtc } from './txs-btc-main';
@@ -14,11 +14,7 @@ export class TxsBitcoin extends Txs {
     this.txsBtcTest = new TxsBtcTestNet(current_chain);
     this.txsBtc = new TxsBtc(current_chain);
   }
-  async getTxs(
-    page: number,
-    current_page: number,
-    params: ParamsFilterReqTxs
-  ): Promise<Partial<ResTxs>> {
+  async getTxs(page: number, current_page: number, params: ParamsFilterReqTxs): Promise<Partial<ResTxs>> {
     try {
       switch (this.chainId) {
         case ChainIdEnum.BitcoinTestnet:
@@ -34,16 +30,11 @@ export class TxsBitcoin extends Txs {
     }
   }
 
-  async getAllMethodActionTxs(
-    addressAccount?: string
-  ): Promise<Partial<ResTxs>> {
+  async getAllMethodActionTxs(addressAccount?: string): Promise<Partial<ResTxs>> {
     return Promise.resolve({} as ResTxs);
   }
 
-  getTxsByHash(
-    txHash: string,
-    addressAccount?: string
-  ): Promise<Partial<ResTxsInfo>> {
+  getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
     switch (this.chainId) {
       //   case ChainIdEnum.Ethereum:
       //     return this.txsEth.getTxsByHash(txHash);

@@ -9,7 +9,6 @@ import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
 import { Linking, Platform } from 'react-native';
-import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
 export const ORAICHAIN_ID = 'Oraichain';
@@ -554,26 +553,6 @@ export const getCurrencyByMinimalDenom = (tokens, minimalDenom): AppCurrency => 
 };
 export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
-}
-
-export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
-  let address;
-
-  if (chainId === TRON_ID) {
-    address = AddressesLedger.trx;
-  } else if (chainId === ChainIdEnum.BitcoinTestnet) {
-    address = AddressesLedger.tbtc;
-  } else {
-    const networkType = getNetworkTypeByChainId(chainId);
-    if (networkType === 'evm') {
-      address = AddressesLedger.eth;
-    } else if (networkType === 'bitcoin') {
-      address = AddressesLedger.btc;
-    } else {
-      address = AddressesLedger.cosmos;
-    }
-  }
-  return address;
 }
 
 export const isBase58 = (value: string): boolean => /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);

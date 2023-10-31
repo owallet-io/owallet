@@ -2,7 +2,7 @@ import { Txs } from '../abstract/txs';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { API } from '../../../common/api';
-import { ChainIdEnum } from '../helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 
 export class TxsBtc extends Txs {
   // private readonly
@@ -11,16 +11,9 @@ export class TxsBtc extends Txs {
     this.infoApi = this.txsHelper.INFO_API_BITCOIN[ChainIdEnum.Bitcoin];
   }
 
-  async getTxs(
-    page: number,
-    current_page: number,
-    params: ParamsFilterReqTxs
-  ): Promise<Partial<ResTxs>> {
+  async getTxs(page: number, current_page: number, params: ParamsFilterReqTxs): Promise<Partial<ResTxs>> {
     try {
-      const data = await API.getTxsBitcoin(
-        this.infoApi.BASE_URL,
-        params?.addressAccount
-      );
+      const data = await API.getTxsBitcoin(this.infoApi.BASE_URL, params?.addressAccount);
 
       if (data?.txs?.length > 0) {
         const rsConverted = this.txsHelper.cleanDataBtcResToStandFormat(
@@ -43,10 +36,7 @@ export class TxsBtc extends Txs {
       throw new Error(error);
     }
   }
-  getTxsByHash(
-    txHash: string,
-    addressAccount?: string
-  ): Promise<Partial<ResTxsInfo>> {
+  getTxsByHash(txHash: string, addressAccount?: string): Promise<Partial<ResTxsInfo>> {
     return;
   }
 }

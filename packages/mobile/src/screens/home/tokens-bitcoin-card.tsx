@@ -12,7 +12,8 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import { _keyExtract, findLedgerAddressWithChainId } from '../../utils/helper';
+import { _keyExtract } from '../../utils/helper';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
 import OWFlatList from '@src/components/page/ow-flat-list';
@@ -24,8 +25,7 @@ export const TokensBitcoinCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   refreshDate: number;
 }> = observer(({ containerStyle, refreshDate }) => {
-  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
-    useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
   const [exchangeRate, setExchangeRate] = useState<number>(0);
@@ -40,10 +40,7 @@ export const TokensBitcoinCard: FunctionComponent<{
   const queries = queriesStore.get(chainStore.current.chainId);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
     keyRingStore.keyRingType === 'ledger'
-      ? findLedgerAddressWithChainId(
-          keyRingStore.keyRingLedgerAddresses,
-          chainStore.current.chainId
-        )
+      ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
       : account?.bech32Address
   )?.balance;
   const tokens = useMemo(() => {
@@ -70,13 +67,7 @@ export const TokensBitcoinCard: FunctionComponent<{
     return () => {};
   }, [priceStore.defaultVsCurrency]);
 
-  const _renderFlatlistOrchai = ({
-    item,
-    index
-  }: {
-    item: SoulboundNftInfoResponse;
-    index: number;
-  }) => {
+  const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
     return (
       <TouchableOpacity
         style={styles.ContainerBtnNft}
@@ -91,9 +82,7 @@ export const TokensBitcoinCard: FunctionComponent<{
           return;
         }}
       >
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
-        >
+        <View style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}>
           <ProgressiveImage
             source={{
               uri: item.token_uri
@@ -102,12 +91,7 @@ export const TokensBitcoinCard: FunctionComponent<{
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
           />
-          <Text
-            weight="700"
-            variant="body2"
-            numberOfLines={1}
-            style={styles.titleNft}
-          >
+          <Text weight="700" variant="body2" numberOfLines={1} style={styles.titleNft}>
             {item?.extension?.name}
           </Text>
           <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
@@ -133,14 +117,12 @@ export const TokensBitcoinCard: FunctionComponent<{
                 onPress={() => onActiveType(i)}
                 label={title}
                 textStyle={{
-                  color:
-                    index === i ? colors['primary-text'] : colors['gray-300'],
+                  color: index === i ? colors['primary-text'] : colors['gray-300'],
                   fontWeight: '700'
                 }}
                 style={{
                   width: '90%',
-                  borderBottomColor:
-                    index === i ? colors['primary-text'] : colors['primary'],
+                  borderBottomColor: index === i ? colors['primary-text'] : colors['primary'],
                   borderBottomWidth: 2
                 }}
               />

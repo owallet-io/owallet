@@ -6,15 +6,15 @@ import { observer } from 'mobx-react-lite';
 import { FlatList, TouchableOpacity, View } from 'react-native';
 import { PageWithView } from '../../components/page';
 import { useStore } from '../../stores';
-import { _keyExtract, findLedgerAddressWithChainId } from '../../utils/helper';
+import { _keyExtract } from '../../utils/helper';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 import { TokenItem } from './components/token-item';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Text } from '@src/components/text';
 import { useSmartNavigation } from '@src/navigation.provider';
 
 export const TokensScreen: FunctionComponent = observer(() => {
-  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
-    useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
@@ -23,10 +23,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
     .queryBalances.getQueryBech32Address(
       chainStore.current.networkType === 'evm'
         ? keyRingStore.keyRingType === 'ledger'
-          ? findLedgerAddressWithChainId(
-              keyRingStore.keyRingLedgerAddresses,
-              chainStore.current.chainId
-            )
+          ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
           : account.evmosHexAddress
         : account.bech32Address
     );
@@ -38,10 +35,8 @@ export const TokensScreen: FunctionComponent = observer(() => {
 
   const unique = useMemo(() => {
     const uniqTokens = [];
-    tokens.map(token =>
-      uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
-      ).length > 0
+    tokens.map((token) =>
+      uniqTokens.filter((ut) => ut.balance.currency.coinDenom == token.balance.currency.coinDenom).length > 0
         ? null
         : uniqTokens.push(token)
     );

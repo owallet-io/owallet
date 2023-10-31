@@ -12,13 +12,8 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import {
-  capitalizedText,
-  convertAmount,
-  _keyExtract,
-  findLedgerAddressWithChainId,
-  delay
-} from '../../utils/helper';
+import { capitalizedText, convertAmount, _keyExtract, delay } from '../../utils/helper';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
@@ -31,8 +26,7 @@ export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   refreshDate: number;
 }> = observer(({ containerStyle, refreshDate }) => {
-  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
-    useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
 
@@ -50,10 +44,7 @@ export const TokensCard: FunctionComponent<{
   const queryBalances = queries.queryBalances.getQueryBech32Address(
     chainStore.current.networkType === 'evm'
       ? keyRingStore.keyRingType === 'ledger'
-        ? findLedgerAddressWithChainId(
-            keyRingStore.keyRingLedgerAddresses,
-            chainStore.current.chainId
-          )
+        ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
         : account.evmosHexAddress
       : account.bech32Address
   );
@@ -65,10 +56,7 @@ export const TokensCard: FunctionComponent<{
     );
     const uniqTokens = [];
     queryTokens.map((token) =>
-      uniqTokens.filter(
-        (ut) =>
-          ut.balance.currency.coinDenom == token.balance.currency.coinDenom
-      ).length > 0
+      uniqTokens.filter((ut) => ut.balance.currency.coinDenom == token.balance.currency.coinDenom).length > 0
         ? null
         : uniqTokens.push(token)
     );
@@ -85,13 +73,7 @@ export const TokensCard: FunctionComponent<{
     setIndex(i);
   };
 
-  const _renderFlatlistOrchai = ({
-    item,
-    index
-  }: {
-    item: SoulboundNftInfoResponse;
-    index: number;
-  }) => {
+  const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
     return (
       <TouchableOpacity
         style={styles.ContainerBtnNft}
@@ -106,9 +88,7 @@ export const TokensCard: FunctionComponent<{
           return;
         }}
       >
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
-        >
+        <View style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}>
           <ProgressiveImage
             source={{
               uri: item.token_uri
@@ -117,12 +97,7 @@ export const TokensCard: FunctionComponent<{
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
           />
-          <Text
-            weight="700"
-            variant="body2"
-            numberOfLines={1}
-            style={styles.titleNft}
-          >
+          <Text weight="700" variant="body2" numberOfLines={1} style={styles.titleNft}>
             {item?.extension?.name}
           </Text>
           <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
@@ -148,14 +123,12 @@ export const TokensCard: FunctionComponent<{
                 onPress={() => onActiveType(i)}
                 label={title}
                 textStyle={{
-                  color:
-                    index === i ? colors['primary-text'] : colors['gray-300'],
+                  color: index === i ? colors['primary-text'] : colors['gray-300'],
                   fontWeight: '700'
                 }}
                 style={{
                   width: '90%',
-                  borderBottomColor:
-                    index === i ? colors['primary-text'] : colors['primary'],
+                  borderBottomColor: index === i ? colors['primary-text'] : colors['primary'],
                   borderBottomWidth: 2
                 }}
               />

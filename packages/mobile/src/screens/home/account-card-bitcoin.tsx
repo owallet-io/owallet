@@ -12,7 +12,7 @@ import { AccountBox } from './account-box';
 import { btcToFiat } from '@owallet/bitcoin';
 import { CoinPretty } from '@owallet/unit';
 import { SCREENS } from '@src/common/constants';
-import { findLedgerAddressWithChainId } from '@src/utils/helper';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 export const AccountCardBitcoin: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {

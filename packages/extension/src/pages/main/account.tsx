@@ -16,7 +16,6 @@ export const AccountView: FunctionComponent = observer(() => {
   const chainId = chainStore.current.chainId;
   const networkType = chainStore.current.networkType;
   const accountInfo = accountStore.getAccount(chainId);
-  console.log('🚀 ~ file: account.tsx:19 ~ constAccountView:FunctionComponent=observer ~ accountInfo:', accountInfo);
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
   const checkTronNetwork = chainId === TRON_ID;
@@ -56,10 +55,7 @@ export const AccountView: FunctionComponent = observer(() => {
     },
     [accountInfo.walletStatus, accountInfo.bech32Address, notification, intl]
   );
-  console.log(
-    '🚀 ~ file: account.tsx:109 ~ constAccountView:FunctionComponent=observer ~ accountInfo.evmosHexAddress:',
-    accountInfo.evmosHexAddress
-  );
+
   return (
     <div>
       <div className={styleAccount.containerName}>

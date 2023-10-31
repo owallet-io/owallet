@@ -15,7 +15,7 @@ import { spacing } from '../../themes';
 import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
 import { Address } from '@owallet/crypto';
-import { findLedgerAddressWithChainId } from '../../utils/helper';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 import { useTheme } from '@src/themes/theme-provider';
 
 const styling = (colors) =>

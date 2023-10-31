@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
 import { SUCCESS } from '../../utils/helper';
-import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 import { API } from '@src/common/api';
 import { OwalletEvent, TxRestCosmosClient, TRON_ID } from '@owallet/common';
 export const TxPendingResultScreen: FunctionComponent = observer(() => {

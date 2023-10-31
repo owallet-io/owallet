@@ -311,15 +311,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
   // wait for account to be
   const networkType = chainStore.current.networkType;
   const chainId = chainStore.current.chainId;
-  let address = accountInfo.bech32Address;
-  // const isTronNetwork = chainStore.current.chainId === TRON_ID;
-  if (keyRingStore.keyRingType === 'ledger' && networkType === 'bitcoin') {
-    if (chainId === 'bitcoin') {
-      address = keyRingStore?.keyRingLedgerAddresses?.btc;
-    } else {
-      address = keyRingStore?.keyRingLedgerAddresses?.tbtc;
-    }
-  }
+  let address = accountInfo.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
   const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
   console.log('🚀 ~ file: asset.tsx:307 ~ constAssetChartViewBtc:FunctionComponent=observer ~ balance:', balance);
   const totalAmount = useMemo(() => {

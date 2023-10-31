@@ -9,44 +9,25 @@ import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
 import { AccountBox } from './account-box';
 import { SCREENS } from '@src/common/constants';
-import {
-  findLedgerAddressWithChainId,
-  getAddressFromLedgerWhenChangeNetwork
-} from '@src/utils/helper';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
 }> = observer(({ containerStyle }) => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    modalStore,
-    keyRingStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, modalStore, keyRingStore } = useStore();
 
-  const selected = keyRingStore?.multiKeyStoreInfo.find(
-    (keyStore) => keyStore?.selected
-  );
+  const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
 
-  const queryStakable = queries.queryBalances.getQueryBech32Address(
-    account.bech32Address
-  ).stakable;
+  const queryStakable = queries.queryBalances.getQueryBech32Address(account.bech32Address).stakable;
 
   const stakable = queryStakable.balance;
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(
-    account.bech32Address
-  );
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
   const delegated = queryDelegated.total;
 
-  const queryUnbonding =
-    queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(
-      account.bech32Address
-    );
+  const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address);
   const unbonding = queryUnbonding.total;
 
   const stakedSum = delegated.add(unbonding);
@@ -58,10 +39,7 @@ export const AccountCard: FunctionComponent<{
     if (!!totalPrice) {
       return totalPrice?.toString();
     }
-    return total
-      .shrink(true)
-      .maxDecimals(chainStore.current.stakeCurrency.coinDecimals)
-      ?.toString();
+    return total.shrink(true).maxDecimals(chainStore.current.stakeCurrency.coinDecimals)?.toString();
   }, [
     totalPrice,
     total,
@@ -111,15 +89,12 @@ export const AccountCard: FunctionComponent<{
   return (
     <AccountBox
       totalBalance={totalBalance}
-      addressComponent={
-        <AddressCopyable address={renderAddress()} maxCharacters={22} />
-      }
+      addressComponent={<AddressCopyable address={renderAddress()} maxCharacters={22} />}
       name={account?.name || '..'}
       coinType={`${
         keyRingStore.keyRingType === 'ledger'
           ? chainStore?.current?.bip44?.coinType
-          : selected?.bip44HDPath?.coinType ??
-            chainStore?.current?.bip44?.coinType
+          : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
       networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}

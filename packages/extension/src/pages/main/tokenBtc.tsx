@@ -6,7 +6,7 @@ import { useStore } from '../../stores';
 import { useHistory } from 'react-router';
 import classmames from 'classnames';
 import { Input } from '../../components/form';
-import { findLedgerAddressWithChainId } from '../helpers';
+import { findLedgerAddressWithChainId } from '@owallet/common';
 import { formatBalance, getExchangeRate, getBalanceValue, btcToFiat } from '@owallet/bitcoin';
 import { CoinPretty } from '@owallet/unit';
 export const TokensBtcView: FunctionComponent<{
@@ -20,9 +20,7 @@ export const TokensBtcView: FunctionComponent<{
   const account = accountStore.getAccount(chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    keyRingStore.keyRingType === 'ledger'
-      ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainId)
-      : account?.bech32Address
+    account.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses)
   )?.balance;
   const totalAmount = useMemo(() => {
     const amount = formatBalance({

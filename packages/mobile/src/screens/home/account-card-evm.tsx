@@ -9,8 +9,8 @@ import { AddressQRCodeModal } from './components';
 import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
-import { TRON_ID, getBase58Address, getEvmAddress } from '@owallet/common';
-import { findLedgerAddressWithChainId, isBase58 } from '@src/utils/helper';
+import { TRON_ID, getBase58Address, getEvmAddress, findLedgerAddressWithChainId } from '@owallet/common';
+import { isBase58 } from '@src/utils/helper';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;

@@ -23,7 +23,8 @@ import {
   TxRestCosmosClient,
   OwalletEvent,
   sortObjectByKey,
-  escapeHTML
+  escapeHTML,
+  findLedgerAddressWithChainId
 } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
@@ -42,6 +43,7 @@ import { PubKey } from '@owallet/proto-types/cosmos/crypto/secp256k1/keys';
 import { ETH } from '@hanchon/ethermint-address-converter';
 // can use this request from mobile ?
 import { request } from '@owallet/background';
+import { AddressesLedger } from '@owallet/types';
 import { wallet } from '@owallet/bitcoin';
 
 import { getEip712TypedDataBasedOnChainId } from './utils';
@@ -306,7 +308,12 @@ export class AccountSetBase<MsgOpts, Queries> {
   get isReadyToSendMsgs(): boolean {
     return this.walletStatus === WalletStatus.Loaded && this.bech32Address !== '';
   }
-
+  getAddressLedgerOrBech32(keyRingLedgerAddresses: AddressesLedger): string {
+    if (this._isNanoLedger) {
+      return findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
+    }
+    return this._bech32Address;
+  }
   async sendMsgs(
     type: string | 'unknown',
     msgs: AminoMsgsOrWithProtoMsgs | (() => Promise<AminoMsgsOrWithProtoMsgs> | AminoMsgsOrWithProtoMsgs),

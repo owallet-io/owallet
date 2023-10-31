@@ -9,9 +9,7 @@ import { AccountWithAll, KeyRingStore } from '@owallet/stores';
 import { Text } from '@src/components/text';
 import { Address } from '@owallet/crypto';
 import { TRON_ID, getBase58Address } from '@owallet/common';
-
-import { findLedgerAddressWithChainId } from '@src/utils/helper';
-
+import { findLedgerAddressWithChainId } from '@owallet/common';
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
   chainStore?: any;
@@ -20,15 +18,9 @@ export const AddressQRCodeModal: FunctionComponent<{
   console.log('🚀 ~ file: qrcode-modal.tsx:17 ~ account:', account);
 
   let addressToshow = '';
-  if (
-    chainStore?.networkType === 'cosmos' ||
-    chainStore?.networkType === 'bitcoin'
-  ) {
+  if (chainStore?.networkType === 'cosmos' || chainStore?.networkType === 'bitcoin') {
     if (keyRingStore.keyRingType === 'ledger') {
-      addressToshow = findLedgerAddressWithChainId(
-        keyRingStore.keyRingLedgerAddresses,
-        chainStore.chainId
-      );
+      addressToshow = findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.chainId);
     } else {
       addressToshow = account.bech32Address;
     }
