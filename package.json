@@ -36,7 +36,7 @@
     "clean:watchman": "watchman watch-del-all",
     "build": "lerna run build",
     "rebuild": "lerna run rebuild",
-    "build:libs": "yarn build:proto && lerna run build --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/proto-types --include-filtered-dependencies",
+    "build:libs": "yarn build:proto && lerna run build --ignore @owallet/extension --ignore @owallet/mobile --ignore @owallet/proto-types --include-dependencies --stream",
     "postinstall": "patch-package",
     "build:proto":"lerna run build --scope @owallet/proto-types",
     "test": "lerna run test --parallel",
