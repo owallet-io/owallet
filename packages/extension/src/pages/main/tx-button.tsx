@@ -16,7 +16,7 @@ import { useHistory } from 'react-router';
 import classnames from 'classnames';
 import { Dec } from '@owallet/unit';
 import { toDisplay, TRON_ID } from '@owallet/common';
-import { findLedgerAddressWithChainId } from '../helpers';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const QrCode = require('qrcode');
 
@@ -231,11 +231,8 @@ export const TxButtonBtcView: FunctionComponent<TxButtonViewProps> = observer(({
 
   const sendBtnRef = useRef<HTMLButtonElement>(null);
   const { chainId } = chainStore.current;
-  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    keyRingStore.keyRingType === 'ledger'
-      ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainId)
-      : accountInfo?.bech32Address
-  )?.balance;
+  const address = accountInfo.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
   console.log(
     '🚀 ~ file: tx-button.tsx:255 ~ constTxButtonBtcView:FunctionComponent<TxButtonViewProps>=observer ~ balanceBtc:',
     balanceBtc
@@ -249,13 +246,7 @@ export const TxButtonBtcView: FunctionComponent<TxButtonViewProps> = observer(({
   return (
     <div className={styleTxButton.containerTxButton}>
       <Modal toggle={() => setIsDepositOpen(false)} centered isOpen={isDepositOpen}>
-        <DepositModal
-          bech32Address={
-            keyRingStore.keyRingType === 'ledger'
-              ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainId)
-              : accountInfo?.bech32Address
-          }
-        />
+        <DepositModal bech32Address={address} />
       </Modal>
       <Button
         className={classnames(styleTxButton.button, styleTxButton.btnReceive)}

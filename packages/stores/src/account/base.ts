@@ -309,7 +309,9 @@ export class AccountSetBase<MsgOpts, Queries> {
     return this.walletStatus === WalletStatus.Loaded && this.bech32Address !== '';
   }
   getAddressLedgerOrBech32(keyRingLedgerAddresses: AddressesLedger): string {
-    if (this._isNanoLedger) {
+    const chainInfo = this.chainGetter.getChain(this.chainId);
+    const { networkType } = chainInfo;
+    if (this._isNanoLedger && networkType !== 'cosmos') {
       return findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
     }
     return this._bech32Address;
