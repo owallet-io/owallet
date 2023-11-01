@@ -19,7 +19,6 @@ export const AccountCardEVM: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
 
   const account = accountStore.getAccount(chainStore.current.chainId);
-  console.log('🚀 ~ file: account-card-evm.tsx:23 ~ account:', account.evmosHexAddress);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);

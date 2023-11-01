@@ -1,19 +1,7 @@
-import React, {
-  FunctionComponent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { FunctionComponent, ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { StyleSheet, View } from 'react-native';
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon
-} from '../../components/icon/button';
+import { BuyIcon, DepositIcon, SendDashboardIcon } from '../../components/icon/button';
 import { TokenSymbol } from '../../components/token-symbol';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
@@ -34,14 +22,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SCREENS } from '@src/common/constants';
 
 export const TokenDetailScreen: FunctionComponent = observer((props) => {
-  const {
-    chainStore,
-    modalStore,
-    txsStore,
-    accountStore,
-    keyRingStore,
-    queriesStore
-  } = useStore();
+  const { chainStore, modalStore, txsStore, accountStore, keyRingStore, queriesStore } = useStore();
   const smartNavigation = useSmartNavigation();
   const navigation = useNavigation();
   const { colors } = useTheme();
@@ -49,29 +30,18 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const styles = styling(colors);
-  const {
-    amountBalance,
-    balanceCoinDenom,
-    priceBalance,
-    balanceCoinFull,
-    balanceCurrency
-  } = props?.route?.params ?? {};
+  const { amountBalance, balanceCoinDenom, priceBalance, balanceCoinFull, balanceCurrency } =
+    props?.route?.params ?? {};
 
   const txs = txsStore(chainStore.current);
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const queryBalances = queriesStore
     .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? account.evmosHexAddress
-        : account.bech32Address
-    );
+    .queryBalances.getQueryBech32Address(addressDisplay);
 
   const tokens = queryBalances.balances
-    .concat(
-      queryBalances.nonNativeBalances,
-      queryBalances.positiveNativeUnstakables
-    )
+    .concat(queryBalances.nonNativeBalances, queryBalances.positiveNativeUnstakables)
     .slice(0, 2);
 
   const page = useRef(1);
@@ -143,10 +113,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
         return;
       }
       smartNavigation.navigateSmart('Send', {
-        currency:
-          balanceCoinFull ??
-          balanceCoinDenom ??
-          chainStore.current.stakeCurrency.coinMinimalDenom
+        currency: balanceCoinFull ?? balanceCoinDenom ?? chainStore.current.stakeCurrency.coinMinimalDenom
       });
       return;
     }
@@ -181,13 +148,8 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       setLoadMore(true);
       fetchData(
         {
-          addressAccount:
-            chainStore.current.networkType == 'evm'
-              ? account?.evmosHexAddress
-              : account?.bech32Address,
-          token:
-            balanceCurrency?.contractAddress ||
-            balanceCurrency?.coinMinimalDenom
+          addressAccount: chainStore.current.networkType == 'evm' ? account?.evmosHexAddress : account?.bech32Address,
+          token: balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
         },
         true
       );
@@ -204,38 +166,27 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
     return;
   };
   const renderItem = ({ item, index }) => {
-    return (
-      <OWTransactionItem
-        key={`item-${index}`}
-        onPress={() => onTransactionDetail(item)}
-        item={item}
-      />
-    );
+    return <OWTransactionItem key={`item-${index}`} onPress={() => onTransactionDetail(item)} item={item} />;
   };
-  const address = useMemo(() => {
-    if (chainStore.current.networkType === 'evm') {
-      return account?.evmosHexAddress;
-    } else if (chainStore.current.networkType === 'bitcoin') {
-      return account?.bech32Address;
-    }
-    return account?.bech32Address;
-  }, [
-    account?.evmosHexAddress,
-    account?.bech32Address,
-    chainStore.current.networkType
-  ]);
+  // const address = useMemo(() => {
+  //   if (chainStore.current.networkType === 'evm') {
+  //     return account?.evmosHexAddress;
+  //   } else if (chainStore.current.networkType === 'bitcoin') {
+  //     return account?.bech32Address;
+  //   }
+  //   return account?.bech32Address;
+  // }, [account?.evmosHexAddress, account?.bech32Address, chainStore.current.networkType]);
   const refreshData = useCallback(() => {
     page.current = 1;
     hasMore.current = true;
     fetchData(
       {
-        addressAccount: address,
-        token:
-          balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
+        addressAccount: addressDisplay,
+        token: balanceCurrency?.contractAddress || balanceCurrency?.coinMinimalDenom
       },
       false
     );
-  }, [chainStore?.current?.rest, account?.bech32Address]);
+  }, [chainStore?.current?.rest, addressDisplay]);
   const onRefresh = () => {
     setRefreshing(true);
     refreshData();
@@ -320,13 +271,7 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
       <OWBox style={styles.containerListTransaction}>
         <View style={styles.containerTitleList}>
           <Text>Transaction List</Text>
-          <OWButton
-            type="link"
-            size="medium"
-            fullWidth={false}
-            label="View all"
-            onPress={onTransactions}
-          />
+          <OWButton type="link" size="medium" fullWidth={false} label="View all" onPress={onTransactions} />
         </View>
 
         <OWFlatList
