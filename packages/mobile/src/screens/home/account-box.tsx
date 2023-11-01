@@ -8,11 +8,7 @@ import { useStore } from '../../stores';
 import { LoadingSpinner } from '../../components/spinner';
 import { useSmartNavigation } from '../../navigation.provider';
 import { DownArrowIcon } from '../../components/icon';
-import {
-  BuyIcon,
-  DepositIcon,
-  SendDashboardIcon
-} from '../../components/icon/button';
+import { BuyIcon, DepositIcon, SendDashboardIcon } from '../../components/icon/button';
 import { metrics, spacing, typography } from '../../themes';
 
 import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
@@ -30,16 +26,7 @@ export const AccountBox: FunctionComponent<{
   addressComponent?: React.ReactNode;
   onPressBtnMain?: (name?: string) => void;
 }> = observer(
-  ({
-    totalBalance,
-    coinType,
-    addressComponent,
-    networkType,
-    name,
-    hdPath,
-    totalAmount,
-    onPressBtnMain
-  }) => {
+  ({ totalBalance, coinType, addressComponent, networkType, name, hdPath, totalAmount, onPressBtnMain }) => {
     const { colors } = useTheme();
     const styles = styling(colors);
     const {
@@ -55,9 +42,7 @@ export const AccountBox: FunctionComponent<{
     const account = accountStore.getAccount(chainStore.current.chainId);
     const queries = queriesStore.get(chainStore.current.chainId);
 
-    const queryStakable = queries.queryBalances.getQueryBech32Address(
-      account.bech32Address
-    ).stakable;
+    const queryStakable = queries.queryBalances.getQueryBech32Address(account.bech32Address).stakable;
 
     const _onPressMyWallet = () => {
       modalStore.setOptions({
@@ -243,9 +228,7 @@ export const AccountBox: FunctionComponent<{
             label="Transactions history"
             type="secondary"
             size="medium"
-            icon={
-              <OWIcon color={colors['purple-700']} size={18} name="history" />
-            }
+            icon={<OWIcon color={colors['purple-700']} size={18} name="history" />}
           />
         </OWBox>
       </View>

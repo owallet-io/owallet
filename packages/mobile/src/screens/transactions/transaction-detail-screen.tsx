@@ -1,4 +1,4 @@
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import { PageWithScrollView } from '@src/components/page';
 
@@ -186,10 +186,13 @@ const TransactionDetailScreen = observer(() => {
       <TransactionBox label={'Information'}>
         <ItemReceivedToken
           label="Transaction hash"
-          valueProps={{
-            color: colors['purple-700']
-          }}
-          valueDisplay={formatContractAddress(txHash)}
+          valueDisplay={
+            <TouchableOpacity onPress={onViewScan}>
+              <Text color={colors['purple-700']} variant="body1">
+                {formatContractAddress(txHash)}
+              </Text>
+            </TouchableOpacity>
+          }
           value={txHash}
         />
         <ItemDetail
