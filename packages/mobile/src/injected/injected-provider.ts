@@ -1,9 +1,4 @@
-import {
-  InjectedOWallet,
-  InjectedEthereum,
-  InjectedTronWebOWallet,
-  InjectedBitcoin
-} from '@owallet/provider';
+import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
 import { OWalletMode, EthereumMode, BitcoinMode } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
@@ -12,7 +7,7 @@ export class RNInjectedEthereum extends InjectedEthereum {
       try {
         return JSON.parse(message);
       } catch (err) {
-        console.log('err: ', err);
+        console.log('parseWebviewMessage err: ', err);
         // alert(`parseWebviewMessage err`);
         // alert(err.message);
         // noop
@@ -22,11 +17,10 @@ export class RNInjectedEthereum extends InjectedEthereum {
     return message;
   }
 
-  protected override async requestMethod(
-    method: string,
-    args: any[]
-  ): Promise<any> {
+  protected override async requestMethod(method: string, args: any[]): Promise<any> {
     const result = await super.requestMethod(method, args);
+    console.log('result requestMethod', result);
+
     if (method === 'wallet_switchEthereumChain') {
       this.chainId = result;
     }
@@ -41,8 +35,7 @@ export class RNInjectedEthereum extends InjectedEthereum {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -77,8 +70,7 @@ export class RNInjectedBitcoin extends InjectedBitcoin {
         addMessageListener: (fn: (e: any) => void) => {
           window.addEventListener('message', fn);
         },
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -108,10 +100,8 @@ export class RNInjectedOWallet extends InjectedOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -126,10 +116,7 @@ export class RNInjectedOWallet extends InjectedOWallet {
 export class RNInjectedTronWeb extends InjectedTronWebOWallet {
   trx: { sign: (transaction: object) => Promise<object> };
 
-  protected override async requestMethod(
-    method: string,
-    args: any[]
-  ): Promise<any> {
+  protected override async requestMethod(method: string, args: any[]): Promise<any> {
     const result = await super.requestMethod(method, args);
     if (method === 'tron_requestAccounts') {
       this.defaultAddress = result;
@@ -154,10 +141,8 @@ export class RNInjectedTronWeb extends InjectedTronWebOWallet {
       version,
       mode,
       {
-        addMessageListener: (fn: (e: any) => void) =>
-          window.addEventListener('message', fn),
-        removeMessageListener: (fn: (e: any) => void) =>
-          window.removeEventListener('message', fn),
+        addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
         postMessage: message => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore

@@ -54,7 +54,7 @@ import { styling } from './styles';
 import { BalanceType, MAX, balances, oraidexURL } from './types';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { EventEmitter } from 'eventemitter3';
-import { RNInjectedEthereum } from '@src/injected/injected-provider';
+import { RNInjectedEthereum, RNInjectedOWallet } from '@src/injected/injected-provider';
 import { useInjectedSourceCode } from '../web/components/webpage-screen';
 import { WebViewStateContext } from '../web/components/context';
 
@@ -434,6 +434,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         })
       )
   );
+
+  useEffect(() => {
+    RNInjectedOWallet.startProxy(owallet, eventListener, RNInjectedOWallet.parseWebviewMessage);
+  }, [eventEmitter, owallet]);
 
   useEffect(() => {
     RNInjectedEthereum.startProxy(ethereum, eventListener, RNInjectedEthereum.parseWebviewMessage);
