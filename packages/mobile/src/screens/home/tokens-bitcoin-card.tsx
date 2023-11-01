@@ -13,7 +13,6 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
 import { _keyExtract } from '../../utils/helper';
-import { findLedgerAddressWithChainId } from '@owallet/common';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
 import OWFlatList from '@src/components/page/ow-flat-list';
@@ -38,11 +37,8 @@ export const TokensBitcoinCard: FunctionComponent<{
     chainStore.current.rpc
   );
   const queries = queriesStore.get(chainStore.current.chainId);
-  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    keyRingStore.keyRingType === 'ledger'
-      ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
-      : account?.bech32Address
-  )?.balance;
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
   const tokens = useMemo(() => {
     return [
       {

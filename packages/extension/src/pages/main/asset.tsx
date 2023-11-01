@@ -311,7 +311,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
   // wait for account to be
   const networkType = chainStore.current.networkType;
   const chainId = chainStore.current.chainId;
-  let address = accountInfo.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  let address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
   console.log('🚀 ~ file: asset.tsx:307 ~ constAssetChartViewBtc:FunctionComponent=observer ~ balance:', balance);
   const totalAmount = useMemo(() => {

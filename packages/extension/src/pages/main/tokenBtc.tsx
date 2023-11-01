@@ -18,7 +18,7 @@ export const TokensBtcView: FunctionComponent<{
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
-  const address = account.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
   const totalAmount = useMemo(() => {
     const amount = formatBalance({

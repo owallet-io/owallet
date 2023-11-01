@@ -55,7 +55,7 @@ export const SendBtcPage: FunctionComponent<{
 
   const accountInfo = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
-  const address = accountInfo.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;

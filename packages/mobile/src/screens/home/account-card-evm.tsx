@@ -9,8 +9,7 @@ import { AddressQRCodeModal } from './components';
 import Big from 'big.js';
 import { Text } from '@src/components/text';
 import { AccountBox } from './account-box';
-import { TRON_ID, getBase58Address, getEvmAddress, findLedgerAddressWithChainId } from '@owallet/common';
-import { isBase58 } from '@src/utils/helper';
+import { TRON_ID } from '@owallet/common';
 
 export const AccountCardEVM: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -23,20 +22,9 @@ export const AccountCardEVM: FunctionComponent<{
   console.log('🚀 ~ file: account-card-evm.tsx:23 ~ account:', account.evmosHexAddress);
   const queries = queriesStore.get(chainStore.current.chainId);
   const selected = keyRingStore?.multiKeyStoreInfo.find((keyStore) => keyStore?.selected);
-
-  let total;
-  if (account.evmosHexAddress) {
-    if (keyRingStore.keyRingType === 'ledger') {
-      if (keyRingStore.keyRingLedgerAddresses) {
-        const address = findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId);
-        total = queries.evm.queryEvmBalance.getQueryBalance(
-          chainStore.current.chainId === TRON_ID && isBase58(address) ? getEvmAddress(address) : address
-        )?.balance;
-      }
-    } else {
-      total = queries.evm.queryEvmBalance.getQueryBalance(account.evmosHexAddress)?.balance;
-    }
-  }
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const addressCore = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses, false);
+  let total: any = queries.evm.queryEvmBalance.getQueryBalance(addressCore)?.balance;
 
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
@@ -69,28 +57,21 @@ export const AccountCardEVM: FunctionComponent<{
     );
   };
   const renderAddress = () => {
-    if (keyRingStore.keyRingLedgerAddresses && keyRingStore.keyRingType === 'ledger') {
-      return (
-        <AddressCopyable
-          address={findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)}
-          maxCharacters={22}
-        />
-      );
-    } else if (chainStore.current.chainId === TRON_ID) {
+    if (chainStore.current.chainId === TRON_ID) {
       return (
         <View>
           <View>
             <Text>Base58: </Text>
-            <AddressCopyable address={getBase58Address(account?.evmosHexAddress)} maxCharacters={22} />
+            <AddressCopyable address={addressDisplay} maxCharacters={22} />
           </View>
           <View>
             <Text>Evmos: </Text>
-            <AddressCopyable address={account?.evmosHexAddress} maxCharacters={22} />
+            <AddressCopyable address={addressCore} maxCharacters={22} />
           </View>
         </View>
       );
     }
-    return <AddressCopyable address={account?.evmosHexAddress} maxCharacters={22} />;
+    return <AddressCopyable address={addressDisplay} maxCharacters={22} />;
   };
   return (
     <AccountBox

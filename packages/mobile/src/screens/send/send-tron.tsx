@@ -14,8 +14,6 @@ import { Buffer } from 'buffer';
 import { spacing } from '../../themes';
 import { Text } from '@src/components/text';
 import { Toggle } from '../../components/toggle';
-import { Address } from '@owallet/crypto';
-import { findLedgerAddressWithChainId } from '@owallet/common';
 import { useTheme } from '@src/themes/theme-provider';
 
 const styling = (colors) =>
@@ -112,7 +110,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
       setReceiveAddress(route.params.recipient);
     }
   }, [route?.params?.recipient, sendConfigs.recipientConfig]);
-
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   return (
     <PageWithScrollView>
       <View style={{ marginBottom: 99 }}>
@@ -231,9 +229,7 @@ export const SendTronScreen: FunctionComponent = observer((props) => {
                   sendConfigs.amountConfig.amount,
                   sendConfigs.amountConfig.sendCurrency!,
                   receiveAddress,
-                  keyRingStore.keyRingType === 'ledger'
-                    ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
-                    : getBase58Address(account.evmosHexAddress),
+                  address,
                   {
                     onBroadcasted: (txHash) => {
                       smartNavigation.pushSmart('TxPendingResult', {

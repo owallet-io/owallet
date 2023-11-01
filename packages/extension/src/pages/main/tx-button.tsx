@@ -231,7 +231,7 @@ export const TxButtonBtcView: FunctionComponent<TxButtonViewProps> = observer(({
 
   const sendBtnRef = useRef<HTMLButtonElement>(null);
   const { chainId } = chainStore.current;
-  const address = accountInfo.getAddressLedgerOrBech32(keyRingStore.keyRingLedgerAddresses);
+  const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
   console.log(
     '🚀 ~ file: tx-button.tsx:255 ~ constTxButtonBtcView:FunctionComponent<TxButtonViewProps>=observer ~ balanceBtc:',

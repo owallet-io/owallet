@@ -13,7 +13,6 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
 import { capitalizedText, convertAmount, _keyExtract, delay } from '../../utils/helper';
-import { findLedgerAddressWithChainId } from '@owallet/common';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
@@ -40,14 +39,8 @@ export const TokensCard: FunctionComponent<{
   );
 
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryBalances = queries.queryBalances.getQueryBech32Address(
-    chainStore.current.networkType === 'evm'
-      ? keyRingStore.keyRingType === 'ledger'
-        ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
-        : account.evmosHexAddress
-      : account.bech32Address
-  );
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
 
   const tokens = useMemo(() => {
     const queryTokens = queryBalances.balances.concat(

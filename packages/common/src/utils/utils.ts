@@ -127,6 +127,7 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
       return 'cosmos';
   }
 }
+export const isBase58 = (value: string): boolean => /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
 export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
   let address;
 

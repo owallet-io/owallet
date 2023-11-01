@@ -8,8 +8,6 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
 import { AccountBox } from './account-box';
-import { SCREENS } from '@src/common/constants';
-import { findLedgerAddressWithChainId } from '@owallet/common';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -73,23 +71,12 @@ export const AccountCard: FunctionComponent<{
       })
     );
   };
-  const renderAddress = () => {
-    if (keyRingStore.keyRingType === 'ledger') {
-      const addressLedger = findLedgerAddressWithChainId(
-        keyRingStore.keyRingLedgerAddresses,
-        chainStore.current.chainId
-      );
-      if (!addressLedger) {
-        return '';
-      }
-      return account.bech32Address;
-    }
-    return account.bech32Address;
-  };
+
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   return (
     <AccountBox
       totalBalance={totalBalance}
-      addressComponent={<AddressCopyable address={renderAddress()} maxCharacters={22} />}
+      addressComponent={<AddressCopyable address={addressDisplay} maxCharacters={22} />}
       name={account?.name || '..'}
       coinType={`${
         keyRingStore.keyRingType === 'ledger'

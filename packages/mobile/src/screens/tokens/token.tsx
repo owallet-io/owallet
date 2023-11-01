@@ -7,7 +7,6 @@ import { FlatList, TouchableOpacity, View } from 'react-native';
 import { PageWithView } from '../../components/page';
 import { useStore } from '../../stores';
 import { _keyExtract } from '../../utils/helper';
-import { findLedgerAddressWithChainId } from '@owallet/common';
 import { TokenItem } from './components/token-item';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import { Text } from '@src/components/text';
@@ -18,15 +17,8 @@ export const TokensScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? keyRingStore.keyRingType === 'ledger'
-          ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
-          : account.evmosHexAddress
-        : account.bech32Address
-    );
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const queryBalances = queriesStore.get(chainStore.current.chainId).queryBalances.getQueryBech32Address(address);
 
   const tokens = queryBalances.balances.concat(
     queryBalances.nonNativeBalances,

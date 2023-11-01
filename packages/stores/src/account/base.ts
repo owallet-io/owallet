@@ -24,7 +24,11 @@ import {
   OwalletEvent,
   sortObjectByKey,
   escapeHTML,
-  findLedgerAddressWithChainId
+  findLedgerAddressWithChainId,
+  ChainIdEnum,
+  isBase58,
+  getBase58Address,
+  getEvmAddress
 } from '@owallet/common';
 import Web3 from 'web3';
 import ERC20_ABI from '../query/evm/erc20';
@@ -308,11 +312,27 @@ export class AccountSetBase<MsgOpts, Queries> {
   get isReadyToSendMsgs(): boolean {
     return this.walletStatus === WalletStatus.Loaded && this.bech32Address !== '';
   }
-  getAddressLedgerOrBech32(keyRingLedgerAddresses: AddressesLedger): string {
+  getAddressDisplay(keyRingLedgerAddresses: AddressesLedger, toDisplay: boolean = true): string {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const { networkType } = chainInfo;
-    if (!!this._isNanoLedger && networkType !== 'cosmos') {
-      return findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
+    if (!!this._isNanoLedger) {
+      if (networkType !== 'cosmos') {
+        const address = findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
+        if (this.chainId === ChainIdEnum.TRON && isBase58(address)) {
+          if (!toDisplay) {
+            return getEvmAddress(address);
+          }
+        }
+        return address;
+      }
+    }
+    if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
+      if (this.chainId === ChainIdEnum.TRON) {
+        if (toDisplay) {
+          return getBase58Address(this.evmosHexAddress);
+        }
+      }
+      return this.evmosHexAddress;
     }
     return this._bech32Address;
   }
