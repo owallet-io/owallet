@@ -21,9 +21,10 @@ import { OWButtonPage } from '@src/components/button';
 import { Text } from '@src/components/text';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, txsStore, modalStore } = useStore();
+  const { chainStore, accountStore, txsStore, modalStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -88,7 +89,7 @@ const HistoryTransactionsScreen = observer(() => {
     try {
       if (chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm || chainStore?.current?.networkType === 'cosmos') {
         setLoadingType(true);
-        const types = await txs.getAllMethodActionTxs(account?.bech32Address);
+        const types = await txs.getAllMethodActionTxs(addressDisplay);
         setLoadingType(false);
         setDataType(types?.result);
       }
@@ -131,7 +132,7 @@ const HistoryTransactionsScreen = observer(() => {
     if (isFocused && chainInfo?.networkType == 'cosmos') {
       msgTracer = new TendermintTxTracer(chainInfo?.rpc, '/websocket');
       msgTracer
-        .subscribeMsgByAddress(account.bech32Address)
+        .subscribeMsgByAddress(addressDisplay)
         .then((tx) => {
           onRefresh();
         })
@@ -145,21 +146,14 @@ const HistoryTransactionsScreen = observer(() => {
       }
     };
   }, [chainStore, isFocused, data]);
-  const checkAddressByNetworkType = (networkType, account) => {
-    if (networkType === 'evm') {
-      return account.evmosHexAddress;
-    } else if (networkType === 'bitcoin') {
-      return account.bech32Address;
-    }
-    return account.bech32Address;
-  };
+
   const refreshData = useCallback(
     ({ activeType, isActiveType, activePage }) => {
       page.current = 0;
       hasMore.current = true;
       fetchData(
         {
-          address: checkAddressByNetworkType(chainStore.current.networkType, account),
+          address: addressDisplay,
           action: activeType?.value,
           isActiveType,
           activePage
@@ -167,7 +161,7 @@ const HistoryTransactionsScreen = observer(() => {
         false
       );
     },
-    [chainStore.current.networkType, account?.bech32Address, account.evmosHexAddress]
+    [chainStore.current.networkType, addressDisplay]
   );
   const styles = styling();
   const onActionType = useCallback(
@@ -190,25 +184,15 @@ const HistoryTransactionsScreen = observer(() => {
   const onEndReached = useCallback(() => {
     if (page.current !== 0) {
       setLoadMore(true);
-      if (chainStore.current.networkType === 'bitcoin') {
-        fetchData(
-          {
-            address: account.bech32Address,
-            action: activeType?.value,
-            activePage
-          },
-          false
-        );
-        return;
-      }
       fetchData(
         {
-          address: chainStore.current.networkType === 'evm' ? account.evmosHexAddress : account.bech32Address,
+          address: addressDisplay,
           action: activeType?.value,
           activePage
         },
-        true
+        false
       );
+      return;
     }
   }, [data, activeType, activePage]);
   const onRefresh = useCallback(() => {
