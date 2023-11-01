@@ -13,11 +13,12 @@ import {
   ChainSuggestStore,
   IBCChannelStore,
   IBCCurrencyRegsitrar,
-  QueriesWithCosmosAndSecretAndCosmwasmAndEvm,
+  QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin,
   AccountWithAll,
   getOWalletFromWindow,
   getEthereumFromWindow,
-  getTronWebFromWindow
+  getTronWebFromWindow,
+  getBitcoinFromWindow
 } from '@owallet/stores';
 import { ExtensionRouter, ContentScriptEnv, ContentScriptGuards, InExtensionMessageRequester } from '@owallet/router-extension';
 import { APP_PORT } from '@owallet/router';
@@ -42,7 +43,7 @@ export class RootStore {
   public readonly ledgerInitStore: LedgerInitStore;
   public readonly chainSuggestStore: ChainSuggestStore;
 
-  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvm>;
+  public readonly queriesStore: QueriesStore<QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin>;
   public readonly accountStore: AccountStore<AccountWithAll>;
   // public readonly accountEvmStore: AccountEvmStore<AccountWithAll>;
   public readonly priceStore: CoinGeckoPriceStore;
@@ -104,7 +105,7 @@ export class RootStore {
       new ExtensionKVStore('store_queries'),
       this.chainStore,
       getOWalletFromWindow,
-      QueriesWithCosmosAndSecretAndCosmwasmAndEvm
+      QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
 
     const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
@@ -221,7 +222,8 @@ export class RootStore {
         autoInit: true,
         getOWallet: getOWalletFromWindow,
         getEthereum: getEthereumFromWindow,
-        getTronWeb: getTronWebFromWindow
+        getTronWeb: getTronWebFromWindow,
+        getBitcoin: getBitcoinFromWindow
       },
       chainOpts
     });

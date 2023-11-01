@@ -1,29 +1,12 @@
-import React, {
-  FunctionComponent,
-  MouseEvent,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, MouseEvent, useEffect, useState } from 'react';
 
 import styleFeeButtons from './fee-buttons.module.scss';
 
-import {
-  Button,
-  ButtonGroup,
-  FormFeedback,
-  FormGroup,
-  FormText,
-  Label
-} from 'reactstrap';
+import { Button, ButtonGroup, FormFeedback, FormGroup, FormText, Label } from 'reactstrap';
 
 import classnames from 'classnames';
 import { observer } from 'mobx-react-lite';
-import {
-  IFeeConfig,
-  IGasConfig,
-  InsufficientFeeError,
-  NotLoadedFeeError
-} from '@owallet/hooks';
+import { IFeeConfig, IGasConfig, InsufficientFeeError, NotLoadedFeeError } from '@owallet/hooks';
 import { CoinGeckoPriceStore } from '@owallet/stores';
 import { useLanguage } from '@owallet/common';
 import { useIntl } from 'react-intl';
@@ -45,6 +28,7 @@ export interface FeeButtonsProps {
   };
 
   gasLabel?: string;
+  isGasInput?: boolean;
 }
 
 class FeeButtonState {
@@ -72,7 +56,8 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
     priceStore,
     label,
     feeSelectLabels = { low: 'Low', average: 'Average', high: 'High' },
-    gasLabel
+    gasLabel,
+    isGasInput = true
   }) => {
     // This may be not the good way to handle the states across the components.
     // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
@@ -92,17 +77,14 @@ export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
         {/* {feeButtonState.isGasInputOpen || !feeConfig.feeCurrency ? (
           <GasInput label={gasLabel} gasConfig={gasConfig} />
         ) : null} */}
-        <GasInput label={gasLabel} gasConfig={gasConfig} />
+        {isGasInput ? <GasInput label={gasLabel} gasConfig={gasConfig} /> : null}
       </React.Fragment>
     );
   }
 );
 
 export const FeeButtonsInner: FunctionComponent<
-  Pick<
-    FeeButtonsProps,
-    'feeConfig' | 'priceStore' | 'label' | 'feeSelectLabels'
-  > & { feeButtonState: FeeButtonState }
+  Pick<FeeButtonsProps, 'feeConfig' | 'priceStore' | 'label' | 'feeSelectLabels'> & { feeButtonState: FeeButtonState }
 > = observer(
   ({
     feeConfig,
@@ -128,26 +110,11 @@ export const FeeButtonsInner: FunctionComponent<
     const renderIconTypeFee = (label: string) => {
       switch (label) {
         case 'low':
-          return (
-            <img
-              src={require('../../../public/assets/img/slow.svg')}
-              alt={label}
-            />
-          );
+          return <img src={require('../../../public/assets/img/slow.svg')} alt={label} />;
         case 'average':
-          return (
-            <img
-              src={require('../../../public/assets/img/average.svg')}
-              alt={label}
-            />
-          );
+          return <img src={require('../../../public/assets/img/average.svg')} alt={label} />;
         case 'high':
-          return (
-            <img
-              src={require('../../../public/assets/img/fast.svg')}
-              alt={label}
-            />
-          );
+          return <img src={require('../../../public/assets/img/fast.svg')} alt={label} />;
       }
     };
 
@@ -190,10 +157,7 @@ export const FeeButtonsInner: FunctionComponent<
             isFeeLoading = true;
             return undefined;
           default:
-            return (
-              error.message ||
-              intl.formatMessage({ id: 'input.fee.error.unknown' })
-            );
+            return error.message || intl.formatMessage({ id: 'input.fee.error.unknown' });
         }
       }
     })();
@@ -211,9 +175,7 @@ export const FeeButtonsInner: FunctionComponent<
               <div
                 key={i}
                 style={{
-                  border: `1px solid ${
-                    feeConfig.feeType == fee ? '#7664E4' : '#fff'
-                  }`,
+                  border: `1px solid ${feeConfig.feeType == fee ? '#7664E4' : '#fff'}`,
                   borderRadius: 8,
                   boxShadow: '0px 10px 35px -3px rgba(24, 39, 75, 0.12)',
                   flex: 1,
@@ -223,22 +185,18 @@ export const FeeButtonsInner: FunctionComponent<
                   cursor: 'pointer'
                 }}
                 onClick={(e) => {
-                  feeConfig.setFeeType(
-                    fee == 'low' ? 'low' : fee == 'average' ? 'average' : 'high'
-                  );
+                  feeConfig.setFeeType(fee == 'low' ? 'low' : fee == 'average' ? 'average' : 'high');
                   e.preventDefault();
                 }}
               >
                 {renderIconTypeFee(fee)}
-                <div className={styleFeeButtons.title}>
-                  {feeSelectLabels[fee]}
-                </div>
+                <div className={styleFeeButtons.title}>{feeSelectLabels[fee]}</div>
                 <div
                   className={classnames(styleFeeButtons.coin, {
                     'text-muted': feeConfig.feeType !== fee
                   })}
                 >
-                  {[lowFee, averageFee, highFee][i].trim(true).toString() || 0} 
+                  {[lowFee, averageFee, highFee][i].trim(true).toString() || 0}
                 </div>
                 {[lowFeePrice, averageFeePrice, highFeePrice][i] ? (
                   <div

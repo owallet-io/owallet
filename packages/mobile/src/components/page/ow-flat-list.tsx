@@ -17,8 +17,10 @@ import { metrics } from '@src/themes';
 import { useTheme } from '@src/themes/theme-provider';
 import OWButtonIcon from '../button/ow-button-icon';
 import delay from 'delay';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 interface IOWFlatListProps extends FlatListProps<any> {
   loadMore?: boolean;
+  isBottomSheet?: boolean;
   loading?: boolean;
   containerSkeletonStyle?: ViewStyle;
   skeletonStyle?: ViewStyle;
@@ -47,6 +49,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     refreshing,
     containerSkeletonStyle = {},
     skeletonStyle = {},
+    isBottomSheet = false,
     ...rest
   } = props;
   const onScrollToTop = () => {
@@ -84,10 +87,10 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
   //     onScrollToTop();
   //     return () => {};
   //   }, [loading, refreshing]);
-
+  const ElementFlatlist = isBottomSheet ? BottomSheetFlatList : FlatList;
   return (
     <>
-      <FlatList
+      <ElementFlatlist
         ref={listRef}
         onScroll={handleScroll}
         ListEmptyComponent={
@@ -107,6 +110,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         }
         keyExtractor={_keyExtract}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         ListFooterComponent={
           <View>
             <View style={styles.footer}>

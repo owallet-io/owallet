@@ -24,6 +24,7 @@ import {
   RegisterNavigation
 } from './navigations';
 import { useTheme } from './themes/theme-provider';
+
 const Stack = createStackNavigator();
 export const AppNavigation: FunctionComponent = observer(() => {
   const { keyRingStore, deepLinkUriStore } = useStore();
@@ -53,11 +54,13 @@ export const AppNavigation: FunctionComponent = observer(() => {
       <FocusedScreenProvider>
         <SmartNavigatorProvider>
           <NavigationContainer
-            theme={{
-              colors: {
-                background: colors['background']
-              }
-            } as any}
+            theme={
+              {
+                colors: {
+                  background: colors['background']
+                }
+              } as any
+            }
             ref={navigationRef}
           >
             <Stack.Navigator

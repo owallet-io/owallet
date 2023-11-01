@@ -1,16 +1,10 @@
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PageWithView } from '@src/components/page';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
-import { _keyExtract, limitString, createTxsHelper } from '@src/utils/helper';
+import { _keyExtract, limitString } from '@src/utils/helper';
 import crashlytics from '@react-native-firebase/crashlytics';
 import { OWBox } from '@src/components/card';
 import { metrics, spacing } from '@src/themes';
@@ -19,7 +13,7 @@ import { SCREENS, defaultAll } from '@src/common/constants';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import OWFlatList from '@src/components/page/ow-flat-list';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 import TypeModal from './components/type-modal';
 import ButtonFilter from './components/button-filter';
 import { TendermintTxTracer } from '@owallet/cosmos';
@@ -27,9 +21,10 @@ import { OWButtonPage } from '@src/components/button';
 import { Text } from '@src/components/text';
 
 const HistoryTransactionsScreen = observer(() => {
-  const { chainStore, accountStore, txsStore, modalStore } = useStore();
+  const { chainStore, accountStore, txsStore, modalStore, keyRingStore } = useStore();
   const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,9 +32,7 @@ const HistoryTransactionsScreen = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const page = useRef(0);
-  const [activePage, setActivePage] = useState(
-    chainStore.current?.networkType !== 'evm' ? 1 : 0
-  );
+  const [activePage, setActivePage] = useState(chainStore.current?.networkType === 'cosmos' ? 1 : 0);
   const navigation = useNavigation();
   const [activeType, setActiveType] = useState(defaultAll);
 
@@ -94,12 +87,9 @@ const HistoryTransactionsScreen = observer(() => {
   );
   const getTypeAction = async () => {
     try {
-      if (
-        chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm ||
-        chainStore?.current?.networkType === 'cosmos'
-      ) {
+      if (chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm || chainStore?.current?.networkType === 'cosmos') {
         setLoadingType(true);
-        const types = await txs.getAllMethodActionTxs(account?.bech32Address);
+        const types = await txs.getAllMethodActionTxs(addressDisplay);
         setLoadingType(false);
         setDataType(types?.result);
       }
@@ -142,7 +132,7 @@ const HistoryTransactionsScreen = observer(() => {
     if (isFocused && chainInfo?.networkType == 'cosmos') {
       msgTracer = new TendermintTxTracer(chainInfo?.rpc, '/websocket');
       msgTracer
-        .subscribeMsgByAddress(account.bech32Address)
+        .subscribeMsgByAddress(addressDisplay)
         .then((tx) => {
           onRefresh();
         })
@@ -156,16 +146,14 @@ const HistoryTransactionsScreen = observer(() => {
       }
     };
   }, [chainStore, isFocused, data]);
+
   const refreshData = useCallback(
     ({ activeType, isActiveType, activePage }) => {
       page.current = 0;
       hasMore.current = true;
       fetchData(
         {
-          address:
-            chainStore.current.networkType === 'evm'
-              ? account.evmosHexAddress
-              : account.bech32Address,
+          address: addressDisplay,
           action: activeType?.value,
           isActiveType,
           activePage
@@ -173,11 +161,7 @@ const HistoryTransactionsScreen = observer(() => {
         false
       );
     },
-    [
-      chainStore.current.networkType,
-      account?.bech32Address,
-      account.evmosHexAddress
-    ]
+    [chainStore.current.networkType, addressDisplay]
   );
   const styles = styling();
   const onActionType = useCallback(
@@ -194,29 +178,21 @@ const HistoryTransactionsScreen = observer(() => {
   );
 
   const onType = useCallback(() => {
-    modalStore.setOpen();
-    modalStore.setChildren(
-      <TypeModal
-        actionType={onActionType}
-        active={activeType?.value}
-        transactions={dataType}
-      />
-    );
+    modalStore.setOptions();
+    modalStore.setChildren(<TypeModal actionType={onActionType} active={activeType?.value} transactions={dataType} />);
   }, [activeType, dataType]);
   const onEndReached = useCallback(() => {
     if (page.current !== 0) {
       setLoadMore(true);
       fetchData(
         {
-          address:
-            chainStore.current.networkType === 'evm'
-              ? account.evmosHexAddress
-              : account.bech32Address,
+          address: addressDisplay,
           action: activeType?.value,
           activePage
         },
-        true
+        false
       );
+      return;
     }
   }, [data, activeType, activePage]);
   const onRefresh = useCallback(() => {
@@ -245,38 +221,22 @@ const HistoryTransactionsScreen = observer(() => {
   };
   const renderItem = ({ item, index }) => {
     return (
-      <OWTransactionItem
-        key={`item-${index + 1}-${index}`}
-        onPress={() => onTransactionDetail(item)}
-        item={item}
-      />
+      <OWTransactionItem key={`item-${index + 1}-${index}`} onPress={() => onTransactionDetail(item)} item={item} />
     );
   };
   const handleCheckFilter = useMemo(() => {
     if (loadingType) {
       return <SkeletonTypeBtn />;
     } else if (dataType && dataType?.length > 0) {
-      return (
-        <ButtonFilter
-          label={'Type'}
-          onPress={onType}
-          value={limitString(activeType?.label, 15)}
-        />
-      );
+      return <ButtonFilter label={'Type'} onPress={onType} value={limitString(activeType?.label, 15)} />;
     }
     return null;
   }, [activeType, dataType, loadingType]);
 
   return (
     <PageWithView>
-      {chainStore?.current?.networkType === 'cosmos' ||
-      chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm ? (
-        <View
-          style={[
-            styles.containerBtnPage,
-            { backgroundColor: colors['background-box'], borderRadius: 16 }
-          ]}
-        >
+      {chainStore?.current?.networkType === 'cosmos' || chainStore?.current?.chainId === ChainIdEnum?.KawaiiEvm ? (
+        <View style={[styles.containerBtnPage, { backgroundColor: colors['background-box'], borderRadius: 16 }]}>
           {['Transfer', 'Receive'].map((title: string, i: number) => (
             <TouchableOpacity
               key={i}
@@ -284,10 +244,7 @@ const HistoryTransactionsScreen = observer(() => {
                 width: (metrics.screenWidth - 60) / 2,
                 alignItems: 'center',
                 paddingVertical: spacing['12'],
-                backgroundColor:
-                  activePage === i
-                    ? colors['purple-700']
-                    : colors['background-box'],
+                backgroundColor: activePage === i ? colors['purple-700'] : colors['background-box'],
                 borderRadius: spacing['12']
               }}
               onPress={() => {
@@ -343,21 +300,14 @@ const SkeletonTypeBtn = () => {
         backgroundColor={colors['background-item-list']}
         borderRadius={12}
       >
-        <SkeletonPlaceholder.Item
-          width={60}
-          height={15}
-          marginBottom={5}
-        ></SkeletonPlaceholder.Item>
+        <SkeletonPlaceholder.Item width={60} height={15} marginBottom={5}></SkeletonPlaceholder.Item>
       </SkeletonPlaceholder>
       <SkeletonPlaceholder
         highlightColor={colors['skeleton']}
         backgroundColor={colors['background-item-list']}
         borderRadius={12}
       >
-        <SkeletonPlaceholder.Item
-          width={metrics.screenWidth / 2 - 30}
-          height={40}
-        ></SkeletonPlaceholder.Item>
+        <SkeletonPlaceholder.Item width={metrics.screenWidth / 2 - 30} height={40}></SkeletonPlaceholder.Item>
       </SkeletonPlaceholder>
     </View>
   );

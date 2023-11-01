@@ -1,5 +1,10 @@
 import { BACKGROUND_PORT } from '@owallet/router';
-import { ExtensionRouter, ExtensionGuards, ExtensionEnv, ContentScriptMessageRequester } from '@owallet/router-extension';
+import {
+  ExtensionRouter,
+  ExtensionGuards,
+  ExtensionEnv,
+  ContentScriptMessageRequester
+} from '@owallet/router-extension';
 import { ExtensionKVStore } from '@owallet/common';
 import { init, Ledger, ScryptParams } from '@owallet/background';
 import { scrypt } from '@owallet/crypto';
@@ -42,6 +47,9 @@ init(
         message: params.message
       });
     }
+  },
+  {
+    defaultMode: 'webhid'
   }
 );
 

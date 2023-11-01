@@ -457,7 +457,12 @@ export const UnlockScreen: FunctionComponent = observer(() => {
             />
           }
         />
-        <OWButton label="Sign In" disabled={isLoading || !password} onPress={tryUnlock} loading={isLoading || isBiometricLoading} />
+        <OWButton
+          label="Sign In"
+          disabled={isLoading || !password}
+          onPress={tryUnlock}
+          loading={isLoading || isBiometricLoading}
+        />
         {keychainStore.isBiometryOn && (
           <>
             <OrText />

@@ -1,4 +1,3 @@
-
 interface CurrencyInfo {
   prefix?: 'cw20' | 'trc20' | 'erc20' | 'bep20' | 'ibc' | '';
   coinDenom?: string;
@@ -86,12 +85,14 @@ interface TransferDetail {
   transferInfo: TransferInfo[];
 }
 interface TransferInfo {
-  from: string;
-  to: string;
-  isMinus: boolean;
-  isPlus: boolean;
-  amount: string;
-  token: string;
+  from?: string;
+  to?: string;
+  isMinus?: boolean;
+  isPlus?: boolean;
+  amount?: string;
+  token?: string;
+  address?: string;
+  txId?: string;
 }
 interface ResDataTxsTron {
   total: number;
@@ -187,7 +188,7 @@ interface ResTxsInfo {
   time: timeTxs;
   denomFee: string;
   height: string;
-  status: 'success' | 'fail';
+  status: 'success' | 'fail' | 'pending';
   memo: string;
   gasUsed: string;
   gasWanted: string;
@@ -196,7 +197,8 @@ interface ResTxsInfo {
   transfers: Partial<TransferDetail>[];
   isRefreshData?: boolean;
   isCosmos?: boolean;
-  infoTransaction?:any;
+  confirmations?: number;
+  infoTransaction?: any;
 }
 interface ResTxs {
   current_page: number;
@@ -230,6 +232,61 @@ interface txsEthAndBscResult {
   message: string;
   result: InfoTxEthAndBsc[];
   status: string;
+}
+
+interface txBitcoinResult {
+  address: string;
+  total_received: number;
+  total_sent: number;
+  balance: number;
+  unconfirmed_balance: number;
+  final_balance: number;
+  n_tx: number;
+  unconfirmed_n_tx: number;
+  final_n_tx: number;
+  txs: TxBitcoin[];
+}
+
+interface TxBitcoin {
+  block_hash: string;
+  block_height: number;
+  block_index: number;
+  hash: string;
+  addresses: string[];
+  total: number;
+  fees: number;
+  size: number;
+  vsize: number;
+  preference: string;
+  relayed_by: string;
+  confirmed: string;
+  received: string;
+  ver: number;
+  double_spend: boolean;
+  vin_sz: number;
+  vout_sz: number;
+  confirmations: number;
+  confidence: number;
+  inputs: Input[];
+  outputs: Output[];
+}
+
+interface Input {
+  prev_hash: string;
+  output_index: number;
+  output_value: number;
+  sequence: number;
+  addresses: string[];
+  script_type: string;
+  age: number;
+  witness: string[];
+}
+
+interface Output {
+  value: number;
+  script: string;
+  addresses: string[];
+  script_type: string;
 }
 
 //Cosmos type////////////////////////

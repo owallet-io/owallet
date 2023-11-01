@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "rimraf node_modules build",
     "build": "tsc --project tsconfig.build.json",
+    "rebuild": "rimraf build && yarn build",
     "dev": "tsc -w --project tsconfig.build.json",
     "test": "jest --passWithNoTests",
     "lint-test": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
@@ -20,7 +21,7 @@
     "@ensdomains/eth-ens-namehash": "^2.0.15",
     "@owallet/common": "0.9.10",
     "ethereumjs-abi": "^0.6.8",
-    "axios": "^0.21.4",
+    "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "mobx": "^6.1.7"
   }

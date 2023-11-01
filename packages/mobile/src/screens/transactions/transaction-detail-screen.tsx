@@ -1,4 +1,4 @@
-import { RefreshControl, StyleSheet, View } from 'react-native';
+import { RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 import React, { FC, useEffect, useState } from 'react';
 import { PageWithScrollView } from '@src/components/page';
 
@@ -23,7 +23,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { DenomHelper } from '@owallet/common';
 import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
-import { ChainIdEnum } from '@src/stores/txs/helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 import { ItemBtnViewOnScan } from './components';
 const TransactionDetailScreen = observer(() => {
   const [data, setData] = useState<Partial<ResTxsInfo>>();
@@ -71,9 +71,7 @@ const TransactionDetailScreen = observer(() => {
     try {
       const tx = await txs.getTxsByHash(
         txHash,
-        chainStore?.current?.networkType === 'cosmos'
-          ? account?.bech32Address
-          : account?.evmosHexAddress
+        chainStore?.current?.networkType === 'cosmos' ? account?.bech32Address : account?.evmosHexAddress
       );
       setIsRefreshing(false);
       setData(tx);
@@ -84,10 +82,7 @@ const TransactionDetailScreen = observer(() => {
   };
 
   const onViewScan = async () => {
-    const url = chainStore?.current?.raw?.txExplorer.txUrl.replace(
-      '{txHash}',
-      txHash
-    );
+    const url = chainStore?.current?.raw?.txExplorer.txUrl.replace('{txHash}', txHash);
     await openLink(url);
   };
   const itemEvents = data?.transfers && getValueFromDataEvents(data?.transfers);
@@ -101,81 +96,66 @@ const TransactionDetailScreen = observer(() => {
           subLabel={itemEv?.typeEvent ? `${itemEv?.typeEvent || ''}` : ''}
         >
           {itemEv?.transferInfo?.map((itemDataTrans, inDtTransfer) => {
-            if (
-              itemDataTrans?.amount ||
-              itemDataTrans?.amount == '0' ||
-              itemDataTrans?.amount == 0
-            ) {
+            if (itemDataTrans?.amount || itemDataTrans?.amount == '0' || itemDataTrans?.amount == 0) {
               return (
                 <View key={`itemEv-${inDtTransfer}`}>
                   {itemDataTrans?.from && (
                     <ItemReceivedToken
                       valueDisplay={formatContractAddress(
-                        typeof itemDataTrans?.from === 'string'
-                          ? itemDataTrans?.from
-                          : itemDataTrans?.from?.value
+                        typeof itemDataTrans?.from === 'string' ? itemDataTrans?.from : itemDataTrans?.from?.value
                       )}
-                      value={
-                        typeof itemDataTrans?.from === 'string'
-                          ? itemDataTrans?.from
-                          : itemDataTrans?.from?.value
-                      }
-                      label="From"
+                      value={typeof itemDataTrans?.from === 'string' ? itemDataTrans?.from : itemDataTrans?.from?.value}
+                      label={'From'}
                     />
                   )}
                   {itemDataTrans?.to && (
                     <ItemReceivedToken
                       valueDisplay={formatContractAddress(
-                        typeof itemDataTrans?.to === 'string'
-                          ? itemDataTrans?.to
-                          : itemDataTrans?.to?.value
+                        typeof itemDataTrans?.to === 'string' ? itemDataTrans?.to : itemDataTrans?.to?.value
                       )}
-                      value={
-                        typeof itemDataTrans?.to === 'string'
-                          ? itemDataTrans?.to
-                          : itemDataTrans?.to?.value
-                      }
-                      label="To"
+                      value={typeof itemDataTrans?.to === 'string' ? itemDataTrans?.to : itemDataTrans?.to?.value}
+                      label={'To'}
                     />
                   )}
-                  {itemDataTrans?.amount ||
-                  itemDataTrans?.amount == '0' ||
-                  itemDataTrans?.amount == 0 ? (
+                  {itemDataTrans?.address && (
+                    <ItemReceivedToken
+                      valueDisplay={formatContractAddress(itemDataTrans?.address)}
+                      value={itemDataTrans?.address}
+                      label={'Address'}
+                    />
+                  )}
+                  {itemDataTrans?.txId && (
+                    <ItemReceivedToken
+                      valueDisplay={formatContractAddress(itemDataTrans?.txId)}
+                      value={itemDataTrans?.txId}
+                      label={'TxID'}
+                    />
+                  )}
+                  {itemDataTrans?.amount || itemDataTrans?.amount == '0' || itemDataTrans?.amount == 0 ? (
                     <ItemReceivedToken
                       label="Amount"
                       btnCopy={false}
                       borderBottom={
-                        inEv == itemEvents?.value?.length - 1 &&
-                        inDtTransfer == itemEv?.transferInfo?.length - 1
+                        inEv == itemEvents?.value?.length - 1 && inDtTransfer == itemEv?.transferInfo?.length - 1
                           ? false
                           : true
                       }
                       value={itemDataTrans?.amount}
                       valueProps={{
                         color:
-                          itemDataTrans?.amount &&
-                          itemDataTrans?.isPlus &&
-                          !itemDataTrans?.isMinus
+                          itemDataTrans?.amount && itemDataTrans?.isPlus && !itemDataTrans?.isMinus
                             ? colors['green-500']
-                            : itemDataTrans?.amount &&
-                              itemDataTrans?.isMinus &&
-                              !itemDataTrans?.isPlus
+                            : itemDataTrans?.amount && itemDataTrans?.isMinus && !itemDataTrans?.isPlus
                             ? colors['orange-800']
                             : colors['title-modal-login-failed']
                       }}
                       valueDisplay={`${
-                        itemDataTrans?.amount &&
-                        itemDataTrans?.isPlus &&
-                        !itemDataTrans?.isMinus
+                        itemDataTrans?.amount && itemDataTrans?.isPlus && !itemDataTrans?.isMinus
                           ? '+'
-                          : itemDataTrans?.amount &&
-                            itemDataTrans?.isMinus &&
-                            !itemDataTrans?.isPlus
+                          : itemDataTrans?.amount && itemDataTrans?.isMinus && !itemDataTrans?.isPlus
                           ? '-'
                           : ''
-                      }${itemDataTrans?.amount} ${
-                        limitString(itemDataTrans?.token, 25) || ''
-                      }`}
+                      }${itemDataTrans?.amount} ${limitString(itemDataTrans?.token, 25) || ''}`}
                     />
                   ) : null}
                 </View>
@@ -200,20 +180,19 @@ const TransactionDetailScreen = observer(() => {
       showsVerticalScrollIndicator={false}
       style={styles.container}
       refreshControl={
-        <RefreshControl
-          tintColor={colors['text-title-login']}
-          onRefresh={refreshData}
-          refreshing={refreshing}
-        />
+        <RefreshControl tintColor={colors['text-title-login']} onRefresh={refreshData} refreshing={refreshing} />
       }
     >
       <TransactionBox label={'Information'}>
         <ItemReceivedToken
           label="Transaction hash"
-          valueProps={{
-            color: colors['purple-700']
-          }}
-          valueDisplay={formatContractAddress(txHash)}
+          valueDisplay={
+            <TouchableOpacity onPress={onViewScan}>
+              <Text color={colors['purple-700']} variant="body1">
+                {formatContractAddress(txHash)}
+              </Text>
+            </TouchableOpacity>
+          }
           value={txHash}
         />
         <ItemDetail
@@ -225,37 +204,46 @@ const TransactionDetailScreen = observer(() => {
               color={
                 data?.status === 'success'
                   ? colors['green-500']
+                  : data?.status === 'pending'
+                  ? colors['purple-700']
                   : colors['orange-800']
               }
-              name={data?.status === 'success' ? 'check_stroke' : 'close_shape'}
+              name={
+                data?.status === 'success' ? 'check_stroke' : data?.status === 'pending' ? 'history-1' : 'close_shape'
+              }
             />
           }
           valueProps={{
             color:
               data?.status === 'success'
                 ? colors['green-500']
+                : data?.status === 'pending'
+                ? colors['purple-700']
                 : colors['orange-800']
           }}
         />
-        <ItemDetail label="Block height" value={data?.height} />
-        {data?.memo ? (
-          <ItemDetail label="Memo" value={limitString(data?.memo, 25)} />
-        ) : null}
-
-        {data?.gasUsed &&
-        data?.gasWanted &&
-        data?.gasUsed != '0' &&
-        data?.gasWanted != '0' ? (
+        <ItemDetail label="Block height" value={data?.height === '-1' ? '0' : data?.height} />
+        {data?.memo ? <ItemDetail label="Memo" value={limitString(data?.memo, 25)} /> : null}
+        {chainStore?.current?.networkType === 'bitcoin' ? (
           <ItemDetail
-            label="Gas (used/ wanted)"
-            value={`${data?.gasUsed}/${data?.gasWanted}`}
+            valueProps={{
+              color:
+                data?.confirmations > 6
+                  ? colors['green-500']
+                  : data?.confirmations > 0
+                  ? colors['profile-orange']
+                  : colors['text-title-login'],
+              weight: '900'
+            }}
+            label="Confirmations"
+            value={`${data?.confirmations > 6 ? data?.confirmations : `${data?.confirmations}/6`}`}
           />
+        ) : null}
+        {data?.gasUsed && data?.gasWanted && data?.gasUsed != '0' && data?.gasWanted != '0' ? (
+          <ItemDetail label="Gas (used/ wanted)" value={`${data?.gasUsed}/${data?.gasWanted}`} />
         ) : null}
         {data?.fee && data?.fee != '0' ? (
-          <ItemDetail
-            label="Fee"
-            value={`${data?.fee} ${data?.denomFee || ''}`}
-          />
+          <ItemDetail label="Fee" value={`${data?.fee} ${data?.denomFee || ''}`} />
         ) : null}
         <ItemDetail
           label="Time"
@@ -275,22 +263,20 @@ const TransactionDetailScreen = observer(() => {
           }
           borderBottom={!!chainStore?.current?.raw?.txExplorer}
         />
-        {chainStore?.current?.raw?.txExplorer && (
-          <ItemBtnViewOnScan onPress={onViewScan} />
-        )}
+        {chainStore?.current?.raw?.txExplorer && <ItemBtnViewOnScan onPress={onViewScan} />}
       </TransactionBox>
 
       {chainStore.current?.networkType === 'evm' &&
         chainStore.current.chainId !== ChainIdEnum.KawaiiEvm &&
         itemEvents?.typeId !== 0 &&
         itemEvents?.value?.map(handleMapData)}
+      {chainStore.current?.networkType === 'bitcoin' &&
+        itemEvents?.typeId !== 0 &&
+        itemEvents?.value?.map(handleMapData)}
       {infoTransaction?.length > 0 &&
         infoTransaction?.map((item, index) => {
           return (
-            <TransactionBox
-              key={`title-${index}`}
-              label={txsHelper.convertToWord(item?.messages?.value)}
-            >
+            <TransactionBox key={`title-${index}`} label={txsHelper.convertToWord(item?.messages?.value)}>
               {item?.events?.length > 0 ? (
                 item?.events?.map((ev, indexEv) => {
                   return (
@@ -302,54 +288,32 @@ const TransactionDetailScreen = observer(() => {
                         paddingTop: 0
                       }}
                       key={`sub-title-${indexEv}`}
-                      label={
-                        ev?.type == 'transfer'
-                          ? 'Transfer Info'
-                          : txsHelper.convertToWord(ev?.type)
-                      }
+                      label={ev?.type == 'transfer' ? 'Transfer Info' : txsHelper.convertToWord(ev?.type)}
                     >
                       {ev?.attributes?.map((attr, indexAttr) => (
                         <ItemReceivedToken
                           key={`attr-${indexAttr}`}
                           valueProps={{
                             numberOfLines: 4,
-                            color: txsHelper.isAddress(
-                              attr?.value,
-                              chainStore?.current?.networkType
-                            )
+                            color: txsHelper.isAddress(attr?.value, chainStore?.current?.networkType)
                               ? colors['purple-700']
                               : colors['text-title-login']
                           }}
-                          btnCopy={txsHelper.isAddress(
-                            attr?.value,
-                            chainStore?.current?.networkType
-                          )}
+                          btnCopy={txsHelper.isAddress(attr?.value, chainStore?.current?.networkType)}
                           value={attr?.value}
                           label={txsHelper.convertToWord(attr?.key)}
                           valueDisplay={
                             txsHelper.isAmount(attr?.value, attr?.key)
                               ? `${
-                                  txsHelper.convertValueTransactionToDisplay(
-                                    attr?.value,
-                                    attr?.key,
-                                    chainStore.current
-                                  )?.amount
+                                  txsHelper.convertValueTransactionToDisplay(attr?.value, attr?.key, chainStore.current)
+                                    ?.amount
                                 } ${
-                                  txsHelper.convertValueTransactionToDisplay(
-                                    attr?.value,
-                                    attr?.key,
-                                    chainStore.current
-                                  )?.token
+                                  txsHelper.convertValueTransactionToDisplay(attr?.value, attr?.key, chainStore.current)
+                                    ?.token
                                 }`
-                              : txsHelper.isAddress(
-                                  attr?.value,
-                                  chainStore?.current?.networkType
-                                )
+                              : txsHelper.isAddress(attr?.value, chainStore?.current?.networkType)
                               ? formatContractAddress(attr?.value)
-                              : limitString(
-                                  txsHelper.trimQuotes(attr?.value),
-                                  40
-                                )
+                              : limitString(txsHelper.trimQuotes(attr?.value), 40)
                           }
                         />
                       ))}

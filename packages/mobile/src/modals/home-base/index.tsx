@@ -13,43 +13,46 @@ import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
 import { useStore } from '../../stores';
 import { useTheme } from '@src/themes/theme-provider';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const HomeBaseModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetProps,
+    'snapPoints' | 'children'
+  >;
 }> = registerModal(
   observer(({ children }) => {
     const style = useStyle();
     const { modalStore } = useStore();
     const { colors } = useTheme();
-    const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0;
+    // const keyboardVerticalOffset = Platform.OS === 'ios' ? 70 : 0;
     return (
-      <KeyboardAvoidingView
-        behavior="position"
-        keyboardVerticalOffset={keyboardVerticalOffset}
+      // <KeyboardAvoidingView
+      //   behavior="position"
+      //   keyboardVerticalOffset={keyboardVerticalOffset}
+      // >
+      <TouchableWithoutFeedback
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
       >
-        <TouchableWithoutFeedback
-          onPress={() => {
-            Keyboard.dismiss();
+        <CardModal
+          childrenContainerStyle={{
+            backgroundColor: colors['background-box']
           }}
+          title={''}
         >
-          <CardModal
-            childrenContainerStyle={{
-              backgroundColor: colors['background-box']
-            }}
-            title={''}
-          >
-            <View style={style.flatten(['margin-bottom-16'])}>
-              {children}
-              {modalStore.getChildren()}
-            </View>
-          </CardModal>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+          <View style={style.flatten(['margin-bottom-16'])}>
+            {children}
+            {modalStore.getChildren()}
+          </View>
+        </CardModal>
+      </TouchableWithoutFeedback>
+      // </KeyboardAvoidingView>
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

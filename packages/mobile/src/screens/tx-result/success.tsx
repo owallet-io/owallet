@@ -1,29 +1,19 @@
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
-import {
-  PageWithScrollViewInBottomTabView,
-  PageWithView
-} from '../../components/page';
-import {
-  View,
-  Animated,
-  StyleSheet,
-  Image,
-  TouchableOpacity
-} from 'react-native';
+import { PageWithView } from '../../components/page';
+import { View, Image, TouchableOpacity } from 'react-native';
 import { Text } from '@src/components/text';
-import { Button } from '../../components/button';
 import { useSmartNavigation } from '../../navigation.provider';
-import { Card, OWBox } from '../../components/card';
+import { OWBox } from '../../components/card';
 import { metrics } from '../../themes';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { CommonActions } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
-import { TRON_ID, openLink } from '../../utils/helper';
+import { openLink } from '../../utils/helper';
 import imagesAssets from '@src/assets/images';
+import { TRON_ID } from '@owallet/common';
 
 export const TxSuccessResultScreen: FunctionComponent = observer(() => {
   const { chainStore } = useStore();
@@ -44,10 +34,9 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
     >
   >();
 
-  const chainId = route.params?.chainId
-    ? route.params?.chainId
-    : chainStore.current?.chainId;
+  const chainId = route.params?.chainId ? route.params?.chainId : chainStore.current?.chainId;
   const txHash = route.params?.txHash;
+  console.log('🚀 ~ file: success.tsx:51 ~ constTxSuccessResultScreen:FunctionComponent=observer ~ txHash:', txHash);
 
   const smartNavigation = useSmartNavigation();
 
@@ -126,8 +115,7 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                 paddingTop: 6
               }}
             >
-              Your transaction has been confirmed by the blockchain.
-              Congratulations!
+              Your transaction has been confirmed by the blockchain. Congratulations!
             </Text>
             {chainInfo.raw.txExplorer && txHash ? (
               <TouchableOpacity
@@ -138,11 +126,11 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
                   alignItems: 'center'
                 }}
                 onPress={async () => {
-                  if (chainInfo.raw.txExplorer) {
+                  if (chainInfo.raw.txExplorer && txHash) {
                     await openLink(
                       chainInfo.raw.txExplorer.txUrl.replace(
                         '{txHash}',
-                        chainInfo.chainId === TRON_ID
+                        chainInfo.chainId === TRON_ID || chainInfo.networkType === 'bitcoin'
                           ? txHash
                           : txHash.toUpperCase()
                       )

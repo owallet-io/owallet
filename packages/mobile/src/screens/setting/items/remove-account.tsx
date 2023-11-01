@@ -125,10 +125,10 @@ export const SettingRemoveAccountItem: FunctionComponent<{
 
           if (index >= 0) {
             await keyRingStore.deleteKeyRing(index, password);
-            await onUnSubscribeToTopic();
+            // await onUnSubscribeToTopic();
             analyticsStore.logEvent('Account removed');
 
-            if (keyRingStore.multiKeyStoreInfo.length === 0) {
+            if (!keyRingStore.multiKeyStoreInfo.length) {
               await keychainStore.reset();
 
               navigation.reset({

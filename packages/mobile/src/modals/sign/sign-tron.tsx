@@ -1,13 +1,8 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import {
-  ScrollView,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import { Text, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { Button } from '../../components/button';
@@ -15,7 +10,7 @@ import { colors, typography } from '../../themes';
 
 import { observer } from 'mobx-react-lite';
 import { useUnmount } from '../../hooks';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { navigationRef } from '../../router/root';
 
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
@@ -23,6 +18,7 @@ const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 export const SignTronModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(() => {
     const { chainStore, signInteractionStore } = useStore();
@@ -53,20 +49,11 @@ export const SignTronModal: FunctionComponent<{
 
     return (
       <CardModal>
-        <KeyboardAvoidingView
-          behavior="position"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
+        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={keyboardVerticalOffset}>
           <View style={style.flatten(['margin-bottom-16'])}>
             <Text style={style.flatten(['margin-bottom-3'])}>
-              <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-                {`1 `}
-              </Text>
-              <Text
-                style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-              >
-                Message
-              </Text>
+              <Text style={style.flatten(['subtitle3', 'color-primary'])}>{`1 `}</Text>
+              <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Message</Text>
             </Text>
             <View
               style={style.flatten([
@@ -76,10 +63,7 @@ export const SignTronModal: FunctionComponent<{
                 'overflow-hidden'
               ])}
             >
-              <ScrollView
-                style={style.flatten(['max-height-214'])}
-                persistentScrollbar={true}
-              >
+              <ScrollView style={style.flatten(['max-height-214'])} persistentScrollbar={true}>
                 <Text
                   style={{
                     color: colors['sub-text']
@@ -125,9 +109,7 @@ export const SignTronModal: FunctionComponent<{
                 color: colors['white']
               }}
               style={{
-                backgroundColor: signInteractionStore.isLoading
-                  ? colors['gray-400']
-                  : colors['purple-900']
+                backgroundColor: signInteractionStore.isLoading ? colors['gray-400'] : colors['purple-900']
               }}
               loading={signInteractionStore.isLoading}
               onPress={async () => {
@@ -151,7 +133,6 @@ export const SignTronModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

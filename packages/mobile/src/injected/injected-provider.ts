@@ -1,5 +1,5 @@
-import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet } from '@owallet/provider';
-import { OWalletMode, EthereumMode, TronWeb } from '@owallet/types';
+import { InjectedOWallet, InjectedEthereum, InjectedTronWebOWallet, InjectedBitcoin } from '@owallet/provider';
+import { OWalletMode, EthereumMode, BitcoinMode, TronWeb } from '@owallet/types';
 
 export class RNInjectedEthereum extends InjectedEthereum {
   static parseWebviewMessage(message: any): any {
@@ -16,6 +16,7 @@ export class RNInjectedEthereum extends InjectedEthereum {
 
     return message;
   }
+
   protected override async requestMethod(method: string, args: any[]): Promise<any> {
     const result = await super.requestMethod(method, args);
     if (method === 'wallet_switchEthereumChain') {
@@ -40,6 +41,41 @@ export class RNInjectedEthereum extends InjectedEthereum {
         }
       },
       RNInjectedEthereum.parseWebviewMessage
+    );
+  }
+}
+export class RNInjectedBitcoin extends InjectedBitcoin {
+  static parseWebviewMessage(message: any): any {
+    if (message && typeof message === 'string') {
+      try {
+        return JSON.parse(message);
+      } catch (err) {
+        console.log('err: ', err);
+        // alert(`parseWebviewMessage err`);
+        // alert(err.message);
+        // noop
+      }
+    }
+
+    return message;
+  }
+
+  constructor(version: string, mode: BitcoinMode) {
+    super(
+      version,
+      mode,
+      {
+        addMessageListener: (fn: (e: any) => void) => {
+          window.addEventListener('message', fn);
+        },
+        removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
+        postMessage: (message) => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          window.ReactNativeWebView.postMessage(JSON.stringify(message));
+        }
+      },
+      RNInjectedBitcoin.parseWebviewMessage
     );
   }
 }

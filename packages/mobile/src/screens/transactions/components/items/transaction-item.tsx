@@ -41,11 +41,15 @@ const OWTransactionItem = observer(
                     color={
                       item?.status === 'success'
                         ? colors['green-500']
+                        : item?.status === 'pending'
+                        ? colors['purple-700']
                         : colors['orange-800']
                     }
                     name={
                       item?.status === 'success'
                         ? 'check_stroke'
+                        : item?.status === 'pending'
+                        ? 'history-1'
                         : 'close_shape'
                     }
                   />

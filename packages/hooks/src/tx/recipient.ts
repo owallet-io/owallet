@@ -2,13 +2,7 @@ import { IRecipientConfig } from './types';
 import { TxChainSetter } from './chain';
 import { ChainGetter } from '@owallet/stores';
 import Web3 from 'web3';
-import {
-  action,
-  computed,
-  makeObservable,
-  observable,
-  runInAction
-} from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import {
   EmptyAddressError,
   ENSFailedToFetchError,
@@ -21,6 +15,7 @@ import {
 import { Bech32Address } from '@owallet/cosmos';
 import { useState } from 'react';
 import { ObservableEnsFetcher } from '@owallet/ens';
+import { validateAddress } from '@owallet/bitcoin';
 import { TRON_ID } from '@owallet/common';
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
@@ -64,17 +59,11 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
           return '';
         }
 
-        if (
-          !ensFetcher.address ||
-          ensFetcher.error != null ||
-          ensFetcher.address.length !== 20
-        ) {
+        if (!ensFetcher.address || ensFetcher.error != null || ensFetcher.address.length !== 20) {
           return '';
         }
 
-        return new Bech32Address(ensFetcher.address).toBech32(
-          this.bech32Prefix
-        );
+        return new Bech32Address(ensFetcher.address).toBech32(this.bech32Prefix);
       } else {
         // Can't try to fetch the ENS.
         return '';
@@ -126,14 +115,8 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
         return new ENSIsFetchingError('ENS is fetching');
       }
 
-      if (
-        !ensFetcher.address ||
-        ensFetcher.error != null ||
-        ensFetcher.address.length !== 20
-      ) {
-        return new ENSFailedToFetchError(
-          'Failed to fetch the address from ENS'
-        );
+      if (!ensFetcher.address || ensFetcher.error != null || ensFetcher.address.length !== 20) {
+        return new ENSFailedToFetchError('Failed to fetch the address from ENS');
       }
 
       return;
@@ -147,19 +130,21 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
             return new InvalidTronAddressError(`Invalid tron address`);
           }
         } else {
-          if (
-            !Web3.utils.isAddress(
-              this.recipient,
-              Number(this.chainInfo.chainId)
-            )
-          )
-            return new InvalidEvmAddressError(`Invalid evm address`);
+          if (!Web3.utils.isAddress(this.recipient, Number(this.chainInfo.chainId))) return new InvalidEvmAddressError(`Invalid evm address`);
+        }
+      } else if (this.chainInfo.networkType === 'bitcoin') {
+        const { isValid } = validateAddress(this.recipient, this.chainInfo.chainId);
+        // console.log("🚀 ~ file: recipient.ts:147 ~ RecipientConfig ~ getError ~ this.recipient:", this.recipient)
+        // console.log(
+        //   '🚀 ~ file: recipient.ts:146 ~ RecipientConfig ~ getError ~ isValid:',
+        //   isValid
+        // );
+        if (!isValid) {
+          return new InvalidBech32Error(`Invalid bitcoin address`);
         }
       } else Bech32Address.validate(this.recipient, this.bech32Prefix);
     } catch (e) {
-      return new InvalidBech32Error(
-        `Invalid bech32: ${e.message || e.toString()}`
-      );
+      return new InvalidBech32Error(`Invalid bech32: ${e.message || e.toString()}`);
     }
     return;
   }
@@ -174,11 +159,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   }
 }
 
-export const useRecipientConfig = (
-  chainGetter: ChainGetter,
-  chainId: string,
-  ensEndpoint?: string
-) => {
+export const useRecipientConfig = (chainGetter: ChainGetter, chainId: string, ensEndpoint?: string) => {
   const [config] = useState(() => new RecipientConfig(chainGetter, chainId));
   config.setChain(chainId);
   config.setENSEndpoint(ensEndpoint);

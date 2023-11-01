@@ -3,7 +3,7 @@ import { Txs } from '../abstract/txs';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { API } from '@src/common/api';
-import { ChainIdEnum } from '../helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 
 export class TxsTron extends Txs {
@@ -11,18 +11,9 @@ export class TxsTron extends Txs {
     super(current_chain);
     this.infoApi = this.txsHelper.INFO_API_EVM[ChainIdEnum.TRON];
   }
-  async getTxs(
-    page: number,
-    current_page: number,
-    params: ParamsFilterReqTxs
-  ): Promise<Partial<ResTxs>> {
+  async getTxs(page: number, current_page: number, params: ParamsFilterReqTxs): Promise<Partial<ResTxs>> {
     try {
-      const data = await API.getTxsTron(
-        this.infoApi.BASE_URL,
-        params?.addressAccount,
-        current_page * page,
-        page
-      );
+      const data = await API.getTxsTron(this.infoApi.BASE_URL, params?.addressAccount, current_page * page, page);
 
       if (data?.data && data?.total && page) {
         const rsConverted = this.txsHelper.cleanDataTronResToStandFormat(

@@ -1,6 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import settle from 'axios/lib/core/settle';
-import AxiosErrorFn from 'axios/lib/core/enhanceError';
+import AxiosErrorFn from 'axios/lib/core/AxiosError';
 import buildURL from 'axios/lib/helpers/buildURL';
 import buildFullPath from 'axios/lib/core/buildFullPath';
 import { isUndefined } from 'axios/lib/utils';
@@ -50,7 +50,7 @@ async function getResponse(request: Request, config: AxiosRequestConfig): Promis
   const response: AxiosResponse = {
     status: stageOne.status,
     statusText: stageOne.statusText,
-    headers: new Headers(stageOne.headers), // Make a copy of headers
+    headers: Object.fromEntries(stageOne.headers.entries()), // Make a copy of headers
     config: config,
     request,
     data: null
@@ -80,13 +80,13 @@ async function getResponse(request: Request, config: AxiosRequestConfig): Promis
  * This function will create a Request object based on configuration's axios
  */
 function createRequest(config: AxiosRequestConfig): Request {
-  const headers = new Headers(config.headers);
+  const headers = config.headers as Record<string, string>;
 
   // HTTP basic authentication
   if (config.auth) {
     const username = config.auth.username || '';
     const password = config.auth.password ? decodeURI(encodeURIComponent(config.auth.password)) : '';
-    headers.set('Authorization', `Basic ${btoa(username + ':' + password)}`);
+    headers['Authorization'] = `Basic ${btoa(username + ':' + password)}`;
   }
 
   const method = config.method.toUpperCase();

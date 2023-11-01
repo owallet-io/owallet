@@ -4,7 +4,13 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import Long from 'long';
 import { SignEthereumTypedDataObject } from '../typedMessage';
-
+export type AddressesLedger = {
+  cosmos?: string;
+  eth?: string;
+  trx?: string;
+  btc?: string;
+  tbtc?: string;
+};
 export interface Key {
   // Name of the selected key store.
   readonly name: string;
@@ -12,6 +18,7 @@ export interface Key {
   readonly pubKey: Uint8Array;
   readonly address: Uint8Array;
   readonly bech32Address: string;
+  readonly legacyAddress?: string;
   // Indicate whether the selected account is from the nano ledger.
   // Because current cosmos app in the nano ledger doesn't support the direct (proto) format msgs,
   // this can be used to select the amino or direct signer.
@@ -47,7 +54,12 @@ export interface OWallet {
   getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   enable(chainIds: string | string[]): Promise<void>;
   getKey(chainId: string): Promise<Key>;
-  signAmino(chainId: string, signer: string, signDoc: StdSignDoc, signOptions?: OWalletSignOptions): Promise<AminoSignResponse>;
+  signAmino(
+    chainId: string,
+    signer: string,
+    signDoc: StdSignDoc,
+    signOptions?: OWalletSignOptions
+  ): Promise<AminoSignResponse>;
   signDirect(
     chainId: string,
     signer: string,
@@ -77,17 +89,21 @@ export interface OWallet {
   ): Promise<Uint8Array>;
 
   signArbitrary(chainId: string, signer: string, data: string | Uint8Array): Promise<StdSignature>;
-  verifyArbitrary(chainId: string, signer: string, data: string | Uint8Array, signature: StdSignature): Promise<boolean>;
+  verifyArbitrary(
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array,
+    signature: StdSignature
+  ): Promise<boolean>;
 
   getOfflineSigner(chainId: string): OfflineSigner & OfflineDirectSigner;
   getOfflineSignerOnlyAmino(chainId: string): OfflineSigner;
   getOfflineSignerAuto(chainId: string): Promise<OfflineSigner | OfflineDirectSigner>;
-  getChainInfosWithoutEndpoints(): Promise<ChainInfoWithoutEndpoints[]>;
   suggestToken(chainId: string, contractAddress: string, viewingKey?: string): Promise<void>;
   getSecret20ViewingKey(chainId: string, contractAddress: string): Promise<string>;
   getEnigmaUtils(chainId: string): SecretUtils;
-  
-/**
+
+  /**
    * Sign the sign doc with ethermint's EIP-712 format.
    * The difference from signEthereum(..., EthSignType.EIP712) is that this api returns a new sign doc changed by the user's fee setting and the signature for that sign doc.
    * Encoding tx to EIP-712 format should be done on the side using this api.
@@ -100,17 +116,17 @@ export interface OWallet {
    * @param signDoc
    * @param signOptions
    */
-experimentalSignEIP712CosmosTx_v0(
-  chainId: string,
-  signer: string,
-  eip712: {
-    types: Record<string, { name: string; type: string }[] | undefined>;
-    domain: Record<string, any>;
-    primaryType: string;
-  },
-  signDoc: StdSignDoc,
-  signOptions?: OWalletSignOptions
-): Promise<AminoSignResponse>;
+  experimentalSignEIP712CosmosTx_v0(
+    chainId: string,
+    signer: string,
+    eip712: {
+      types: Record<string, { name: string; type: string }[] | undefined>;
+      domain: Record<string, any>;
+      primaryType: string;
+    },
+    signDoc: StdSignDoc,
+    signOptions?: OWalletSignOptions
+  ): Promise<AminoSignResponse>;
   // Related to Enigma.
   // But, recommended to use `getEnigmaUtils` rather than using below.
   getEnigmaPubKey(chainId: string): Promise<Uint8Array>;
@@ -125,7 +141,7 @@ experimentalSignEIP712CosmosTx_v0(
 }
 
 export type EthereumMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
-
+export type BitcoinMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 export type TronWebMode = 'core' | 'extension' | 'mobile-web' | 'walletconnect';
 
 export interface RequestArguments {
@@ -162,5 +178,16 @@ export interface TronWeb {
   defaultAddress?: object;
   initChainId: string;
   sign(transaction: object): Promise<object>;
-  getDefaultAddress(): object;
+  getDefaultAddress(): Promise<object>;
+}
+export interface Bitcoin {
+  readonly version: string;
+  /**
+   * mode means that how Ethereum is connected.
+   * If the connected Ethereum is browser's extension, the mode should be "extension".
+   * If the connected Ethereum is on the mobile app with the embeded web browser, the mode should be "mobile-web".
+   */
+  readonly mode: BitcoinMode;
+  initChainId: string;
+  signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }>;
 }

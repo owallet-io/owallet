@@ -12,14 +12,12 @@ import { CardModal } from '../../modals/card';
 import { AddressCopyable } from '../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { useNavigation } from '@react-navigation/native';
-
 import { Bech32Address } from '@owallet/cosmos';
 import { FullScreenCameraView } from '../../components/camera';
-// import { AddressBookConfigMap, useRegisterConfig } from '@owallet/hooks';
-// import { AsyncKVStore } from '../../common';
 import { useFocusEffect } from '@react-navigation/native';
-import { checkValidDomain, TRON_ID } from '../../utils/helper';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { TRON_ID } from '@owallet/common';
+import { checkValidDomain } from '@src/utils/helper';
 interface keyable {
   [key: string]: any;
 }
@@ -44,10 +42,8 @@ export const CameraScreen: FunctionComponent = observer(props => {
   );
 
   const [isSelectChainModalOpen, setIsSelectChainModalOpen] = useState(false);
-  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] =
-    useState(false);
-  const [showingAddressQRCodeChainId, setShowingAddressQRCodeChainId] =
-    useState(chainStore.current.chainId);
+  const [isAddressQRCodeModalOpen, setIsAddressQRCodeModalOpen] = useState(false);
+  const [showingAddressQRCodeChainId, setShowingAddressQRCodeChainId] = useState(chainStore.current.chainId);
 
   // const registerConfig = useRegisterConfig(keyRingStore, []);
 
@@ -93,15 +89,11 @@ export const CameraScreen: FunctionComponent = observer(props => {
               if (isBech32Address) {
                 const prefix = data.slice(0, data.indexOf('1'));
                 const chainInfo = chainStore.chainInfosInUI.find(
-                  chainInfo =>
-                    chainInfo.bech32Config.bech32PrefixAccAddr === prefix
+                  chainInfo => chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                 );
                 if (chainInfo) {
-                  const routersParam: keyable =
-                    smartNavigation?.getState()?.routes;
-                  const isParamAddressBook = routersParam.find(
-                    route => route?.params?.screenCurrent === 'addressbook'
-                  );
+                  const routersParam: keyable = smartNavigation?.getState()?.routes;
+                  const isParamAddressBook = routersParam.find(route => route?.params?.screenCurrent === 'addressbook');
                   if (isParamAddressBook) {
                     smartNavigation.navigateSmart('AddAddressBook', {
                       chainId: chainInfo.chainId,
@@ -152,6 +144,7 @@ export const CameraScreen: FunctionComponent = observer(props => {
 export const AddressQRCodeModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   chainId: string;
 }> = registerModal(
   observer(({ chainId }) => {

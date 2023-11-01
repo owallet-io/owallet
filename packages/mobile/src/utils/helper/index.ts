@@ -2,16 +2,18 @@ import { navigate } from '../../router/root';
 import isValidDomain from 'is-valid-domain';
 import { find } from 'lodash';
 import moment from 'moment';
-import { getNetworkTypeByChainId } from '@owallet/common';
+import { TRON_ID, getNetworkTypeByChainId } from '@owallet/common';
 import { AppCurrency } from '@owallet/types';
 import get from 'lodash/get';
 import { TxsHelper } from '@src/stores/txs/helpers/txs-helper';
 import { showMessage, hideMessage, MessageOptions } from 'react-native-flash-message';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import { Alert, Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 const SCHEME_IOS = 'owallet://open_url?url=';
 const SCHEME_ANDROID = 'app.owallet.oauth://google/open_url?url=';
-export const TRON_ID = '0x2b6653dc';
+export const ORAICHAIN_ID = 'Oraichain';
+export const KAWAII_ID = 'kawaii_6886-1';
+export const ETH_ID = '0x01';
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
 export const FAILED = 'FAILED';
@@ -294,7 +296,10 @@ export const getTransactionValue = ({ data, address, logs }) => {
   let eventType = null;
   let unbond = null;
   let isRecipient = false;
-  if (checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) || checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)) {
+  if (
+    checkType(transactionType, TRANSACTION_TYPE.CLAIM_REWARD) ||
+    checkType(transactionType, TRANSACTION_TYPE.WITHDRAW)
+  ) {
     eventType = 'withdraw_rewards';
   }
   if (checkType(transactionType, TRANSACTION_TYPE.DELEGATE)) {
@@ -469,7 +474,9 @@ export const parseIbcMsgTransfer = (rawLog, type = 'send_packet', key = 'packet_
   const arrayIbcDemonPacket = rawLog && rawLog?.[0]?.events?.find((e) => e?.type === type);
   const ibcDemonPackData = arrayIbcDemonPacket && arrayIbcDemonPacket?.attributes?.find((ele) => ele?.key === key);
   const ibcDemonObj =
-    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String ? JSON.parse(ibcDemonPackData?.value ?? '{}') : { denom: '' };
+    typeof ibcDemonPackData?.value === 'string' || ibcDemonPackData?.value instanceof String
+      ? JSON.parse(ibcDemonPackData?.value ?? '{}')
+      : { denom: '' };
   return ibcDemonObj;
 };
 
@@ -512,6 +519,13 @@ export function nFormatter(num, digits: 1) {
       }
     : { value: 0, symbol: '' };
 }
+export const getAddressFromLedgerWhenChangeNetwork = (address, ledgerAddress) => {
+  if (address === ledgerAddress) {
+    return ledgerAddress;
+  }
+  return null;
+};
+
 export const getCurrencyByMinimalDenom = (tokens, minimalDenom): AppCurrency => {
   if (tokens && tokens?.length > 0 && minimalDenom) {
     const info = tokens?.filter((item, index) => {
@@ -541,23 +555,6 @@ export function numberWithCommas(x) {
   return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
 }
 
-export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
-  let address;
-
-  if (chainId === TRON_ID) {
-    address = AddressesLedger.trx;
-  } else {
-    const networkType = getNetworkTypeByChainId(chainId);
-    if (networkType === 'evm') {
-      address = AddressesLedger.eth;
-    } else {
-      address = AddressesLedger.cosmos;
-    }
-  }
-  return address;
-}
-
-export const isBase58 = (value: string): boolean => /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
 export function createTxsHelper() {
   return new TxsHelper();
 }

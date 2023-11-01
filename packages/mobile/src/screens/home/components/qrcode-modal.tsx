@@ -5,27 +5,15 @@ import { CardModal } from '../../../modals/card';
 import { AddressCopyable } from '../../../components/address-copyable';
 import QRCode from 'react-native-qrcode-svg';
 import { colors, spacing, typography } from '../../../themes';
-import { AccountWithAll } from '@owallet/stores';
+import { AccountWithAll, KeyRingStore } from '@owallet/stores';
 import { Text } from '@src/components/text';
-import { Address } from '@owallet/crypto';
-import { TRON_ID, getBase58Address } from '@owallet/common';
-
 export const AddressQRCodeModal: FunctionComponent<{
   account?: AccountWithAll;
   chainStore?: any;
-}> = ({ account, chainStore }) => {
-  console.log('chainStore', chainStore);
-
-  let addressToshow = '';
-  if (chainStore?.networkType === 'cosmos') {
-    addressToshow = account.bech32Address;
-  } else {
-    if (chainStore?.chainId === TRON_ID) {
-      addressToshow = getBase58Address(account.evmosHexAddress);
-    } else {
-      addressToshow = account.evmosHexAddress;
-    }
-  }
+  keyRingStore?: KeyRingStore;
+}> = ({ account, chainStore, keyRingStore }) => {
+  console.log('🚀 ~ file: qrcode-modal.tsx:17 ~ account:', account);
+  const addressToShow = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
 
   return (
     <View
@@ -36,7 +24,6 @@ export const AddressQRCodeModal: FunctionComponent<{
       <Text
         style={{
           ...typography.h6,
-          color: colors['primary-text'],
           fontWeight: '900'
         }}
       >{`Receive`}</Text>
@@ -49,10 +36,10 @@ export const AddressQRCodeModal: FunctionComponent<{
             marginVertical: spacing['16']
           }}
         >{`Scan QR Code or copy below address`}</Text>
-        <AddressCopyable address={addressToshow} maxCharacters={22} />
+        <AddressCopyable address={addressToShow} maxCharacters={22} />
         <View style={{ marginVertical: spacing['32'] }}>
-          {account.bech32Address ? (
-            <QRCode size={200} value={addressToshow} />
+          {!!addressToShow ? (
+            <QRCode size={200} value={addressToShow} />
           ) : (
             <View
               style={{
@@ -66,11 +53,11 @@ export const AddressQRCodeModal: FunctionComponent<{
         <View style={{ flexDirection: 'row' }}>
           <OWButton
             label="Share Address"
-            loading={account.bech32Address === ''}
-            disabled={account.bech32Address === ''}
+            loading={addressToShow === ''}
+            disabled={addressToShow === ''}
             onPress={() => {
               Share.share({
-                message: addressToshow
+                message: addressToShow
               }).catch((e) => {
                 console.log(e);
               });

@@ -1,4 +1,4 @@
-import {  StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import React, { FC, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import useHeaderOptions from '@src/hooks/use-header';
@@ -33,7 +33,6 @@ export const MainNavigation: FC = observer(() => {
     <Stack.Navigator
       screenOptions={handleScreenOptions}
       initialRouteName={SCREENS.Home}
-      headerMode="screen"
     >
       <Stack.Screen
         options={() => {

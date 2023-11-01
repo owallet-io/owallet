@@ -1,6 +1,6 @@
 import { WEBPAGE_PORT } from '@owallet/router';
 import { ContentScriptEnv, ContentScriptGuards, ExtensionRouter, InExtensionMessageRequester } from '@owallet/router-extension';
-import { OWallet, InjectedOWallet, Ethereum, InjectedEthereum, InjectedEthereumOWallet, InjectedTronWebOWallet, TronWeb } from '@owallet/provider';
+import { OWallet, InjectedOWallet, Ethereum, InjectedEthereum, InjectedEthereumOWallet, InjectedTronWebOWallet, TronWeb, InjectedBitcoin, Bitcoin } from '@owallet/provider';
 import { initEvents } from './events';
 
 import manifest from '../manifest.json';
@@ -8,7 +8,7 @@ import manifest from '../manifest.json';
 InjectedOWallet.startProxy(new OWallet(manifest.version, 'core', new InExtensionMessageRequester()));
 
 InjectedEthereum.startProxy(new Ethereum(manifest.version, 'core', '0x38', new InExtensionMessageRequester()));
-
+InjectedBitcoin.startProxy(new Bitcoin(manifest.version, 'core', 'bitcoin', new InExtensionMessageRequester()));
 InjectedEthereumOWallet.startProxy(new Ethereum(manifest.version, 'core', '0x38', new InExtensionMessageRequester()));
 
 InjectedTronWebOWallet.startProxy(new TronWeb(manifest.version, 'core', '0x2b6653dc', new InExtensionMessageRequester()));
