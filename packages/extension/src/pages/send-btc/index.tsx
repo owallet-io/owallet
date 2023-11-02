@@ -231,11 +231,7 @@ export const SendBtcPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
-              placeholder="Enter your memo message"
-            />
+            <MemoInput memoConfig={sendConfigs.memoConfig} label={'Message'} placeholder="Enter your message" />
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}
