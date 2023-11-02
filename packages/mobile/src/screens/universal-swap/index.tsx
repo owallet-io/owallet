@@ -25,7 +25,14 @@ import {
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { evmTokens } from '@owallet/common';
-import { TokenItemType, NetworkChainId, oraichainNetwork, tokenMap, toAmount } from '@oraichain/oraidex-common';
+import {
+  TokenItemType,
+  NetworkChainId,
+  oraichainNetwork,
+  tokenMap,
+  toAmount,
+  network
+} from '@oraichain/oraidex-common';
 import {
   SwapDirection,
   calculateMinimum,
@@ -49,14 +56,10 @@ import {
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import DeviceInfo from 'react-native-device-info';
 import { Ethereum, OWallet } from '@owallet/provider';
-import { RNMessageRequesterExternal } from '@src/router';
+import { RNMessageRequesterInternal } from '@src/router';
 import { styling } from './styles';
-import { BalanceType, MAX, balances, interpolateURL } from './types';
-import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { EventEmitter } from 'eventemitter3';
-import { RNInjectedEthereum, RNInjectedOWallet } from '@src/injected/injected-provider';
+import { BalanceType, MAX, balances } from './types';
 import { useInjectedSourceCode } from '../web/components/webpage-screen';
-import { WebViewStateContext } from '../web/components/context';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore, chainStore, keyRingStore } = useStore();
@@ -77,7 +80,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
   const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
-  const webviewRef = useRef<WebView | null>(null);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
@@ -366,85 +368,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     [balanceActive]
   );
 
-  const [eventEmitter] = useState(() => new EventEmitter());
-  const onMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      if (__DEV__) {
-        console.log('WebViewMessageEvent', event.nativeEvent.data);
-      }
-
-      eventEmitter.emit('message', event.nativeEvent);
-      setUniversalSwapData(null);
-    },
-    [eventEmitter]
-  );
-  const eventListener = {
-    addMessageListener: (fn: any) => {
-      eventEmitter.addListener('message', fn);
-    },
-    postMessage: (message: any) => {
-      webviewRef.current?.injectJavaScript(
-        `
-            window.postMessage(${JSON.stringify(message)}, window.location.origin);
-            true; // note: this is required, or you'll sometimes get silent failures
-          `
-      );
-    }
-  };
-
-  const [owallet] = useState(
-    () =>
-      new OWallet(
-        DeviceInfo.getVersion(),
-        'core',
-        new RNMessageRequesterExternal(() => {
-          if (!webviewRef.current) {
-            throw new Error('Webview not initialized yet');
-          }
-
-          if (!interpolateURL) {
-            throw new Error('Current URL is empty');
-          }
-
-          return {
-            url: interpolateURL,
-            origin: new URL(interpolateURL).origin
-          };
-        })
-      )
-  );
-
-  const [ethereum] = useState(
-    () =>
-      new Ethereum(
-        DeviceInfo.getVersion(),
-        'core',
-        chainStore.current.chainId,
-        new RNMessageRequesterExternal(() => {
-          if (!webviewRef.current) {
-            throw new Error('Webview not initialized yet');
-          }
-
-          if (!interpolateURL) {
-            throw new Error('Current URL is empty');
-          }
-
-          return {
-            url: interpolateURL,
-            origin: new URL(interpolateURL).origin
-          };
-        })
-      )
-  );
-
-  useEffect(() => {
-    RNInjectedOWallet.startProxy(owallet, eventListener, RNInjectedOWallet.parseWebviewMessage);
-  }, [eventEmitter, owallet]);
-
-  useEffect(() => {
-    RNInjectedEthereum.startProxy(ethereum, eventListener, RNInjectedEthereum.parseWebviewMessage);
-  }, [eventEmitter, ethereum]);
-
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     // return;
@@ -459,10 +382,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     setSwapLoading(true);
     try {
-      // const cosmosWallet = new SwapCosmosWallet(client, owallet);
-      // const isTron = originalFromToken.coinGeckoId === 'tron';
+      const cosmosWallet = new SwapCosmosWallet(client);
 
-      // const evmWallet = new SwapEvmWallet(ethereum, accountEvm.evmosHexAddress, isTron, originalFromToken.rpc);
+      const isTron = originalFromToken.coinGeckoId === 'tron';
+
+      const evmWallet = new SwapEvmWallet(isTron);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -478,28 +402,27 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         fromAmount: fromAmountToken
       };
 
-      setUniversalSwapData(universalSwapData);
-      // const universalSwapHandler = new UniversalSwapHandler(
-      //   {
-      //     ...universalSwapData
-      //   },
-      //   {
-      //     cosmosWallet,
-      //     //@ts-ignore
-      //     evmWallet
-      //   }
-      // );
+      const universalSwapHandler = new UniversalSwapHandler(
+        {
+          ...universalSwapData
+        },
+        {
+          cosmosWallet,
+          //@ts-ignore
+          evmWallet
+        }
+      );
 
-      // const result = await universalSwapHandler.processUniversalSwap();
+      const result = await universalSwapHandler.processUniversalSwap();
 
-      // if (result) {
-      //   setSwapLoading(false);
-      //   showToast({
-      //     text1: 'Success',
-      //     type: 'success'
-      //   });
-      //   await handleFetchAmounts();
-      // }
+      if (result) {
+        setSwapLoading(false);
+        showToast({
+          text1: 'Success',
+          type: 'success'
+        });
+        await handleFetchAmounts();
+      }
     } catch (error) {
       setSwapLoading(false);
       console.log({ error });
@@ -545,32 +468,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />}
     >
-      <WebViewStateContext.Provider
-        value={{
-          webView: webviewRef.current,
-          name: '',
-          url: interpolateURL,
-          canGoBack: false,
-          canGoForward: false,
-          clearWebViewContext: () => {
-            webviewRef.current = null;
-          }
-        }}
-      >
-        {sourceCode && universalSwapData && (
-          <WebView
-            originWhitelist={['*']}
-            ref={webviewRef}
-            injectedJavaScriptBeforeContentLoaded={
-              sourceCode + `; window.universalSwapData = '${JSON.stringify(universalSwapData)}';`
-            }
-            onMessage={onMessage}
-            style={{ flex: 0, height: 0, width: 0, opacity: 0 }}
-            source={{ uri: interpolateURL }}
-          />
-        )}
-      </WebViewStateContext.Provider>
-
       <SlippageModal
         close={() => {
           setIsSlippageModal(false);

@@ -11,10 +11,11 @@ import { ethers } from 'ethers';
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
   private owallet: OWallet;
-  constructor(client: SigningCosmWasmClient, owallet: OWallet) {
+  constructor(client: SigningCosmWasmClient) {
     super();
     this.client = client;
-    this.owallet = owallet;
+    //@ts-ignore
+    this.owallet = window.owallet;
   }
 
   async getKeplrAddr(chainId?: NetworkChainId | undefined): Promise<string> {
@@ -64,32 +65,19 @@ export class SwapCosmosWallet extends CosmosWallet {
 
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
-  private ethAddress: string;
-  private isTronToken: boolean;
   private ethereum: Ethereum;
-  private rpc: string;
-  constructor(ethereum: Ethereum, ethAddress: string, isTronToken: boolean, rpc: string) {
+  private isTronToken: boolean;
+  constructor(isTronToken: boolean) {
     super();
-    this.ethAddress = ethAddress;
-    this.ethereum = ethereum;
+    //@ts-ignore
+    this.ethereum = window.ethereum;
     this.isTronToken = isTronToken;
-    this.rpc = rpc;
     this.tronWeb = new TronWeb({
       fullHost: 'https://api.trongrid.io'
     });
     // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
     this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
   }
-
-  loadAccounts = async (): Promise<string[]> => {
-    if (!this.checkEthereum()) return;
-    // passe cointype 60 for ethereum or let it use default param
-    const accounts = await this.ethereum.request({
-      method: 'eth_accounts',
-      params: [60]
-    });
-    return accounts;
-  };
 
   async switchNetwork(chainId: string | number): Promise<void> {
     // return undefined by default on mobile

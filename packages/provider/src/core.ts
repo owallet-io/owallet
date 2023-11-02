@@ -289,7 +289,7 @@ export class Ethereum implements IEthereum {
   async request(args: RequestArguments): Promise<any> {
     const msg = new RequestEthereumMsg(args.chainId, args.method, args.params);
     console.log('msg request ===', msg);
-
+    console.log('args request ===', args);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

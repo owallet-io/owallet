@@ -19,7 +19,6 @@ export class RNInjectedEthereum extends InjectedEthereum {
 
   protected override async requestMethod(method: string, args: any[]): Promise<any> {
     const result = await super.requestMethod(method, args);
-    console.log('result requestMethod', result);
 
     if (method === 'wallet_switchEthereumChain') {
       this.chainId = result;
