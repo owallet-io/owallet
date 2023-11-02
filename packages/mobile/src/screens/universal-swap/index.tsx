@@ -51,13 +51,12 @@ import DeviceInfo from 'react-native-device-info';
 import { Ethereum, OWallet } from '@owallet/provider';
 import { RNMessageRequesterExternal } from '@src/router';
 import { styling } from './styles';
-import { BalanceType, MAX, balances, oraidexURL } from './types';
+import { BalanceType, MAX, balances, interpolateURL } from './types';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { EventEmitter } from 'eventemitter3';
 import { RNInjectedEthereum, RNInjectedOWallet } from '@src/injected/injected-provider';
 import { useInjectedSourceCode } from '../web/components/webpage-screen';
 import { WebViewStateContext } from '../web/components/context';
-import html from './asset/interpolate.html';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore, chainStore, keyRingStore } = useStore();
@@ -403,13 +402,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             throw new Error('Webview not initialized yet');
           }
 
-          if (!oraidexURL) {
+          if (!interpolateURL) {
             throw new Error('Current URL is empty');
           }
 
           return {
-            url: oraidexURL,
-            origin: new URL(oraidexURL).origin
+            url: interpolateURL,
+            origin: new URL(interpolateURL).origin
           };
         })
       )
@@ -426,13 +425,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             throw new Error('Webview not initialized yet');
           }
 
-          if (!oraidexURL) {
+          if (!interpolateURL) {
             throw new Error('Current URL is empty');
           }
 
           return {
-            url: oraidexURL,
-            origin: new URL(oraidexURL).origin
+            url: interpolateURL,
+            origin: new URL(interpolateURL).origin
           };
         })
       )
@@ -550,7 +549,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         value={{
           webView: webviewRef.current,
           name: '',
-          url: oraidexURL,
+          url: interpolateURL,
           canGoBack: false,
           canGoForward: false,
           clearWebViewContext: () => {
@@ -567,7 +566,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             }
             onMessage={onMessage}
             style={{ flex: 0, height: 0, width: 0, opacity: 0 }}
-            source={isAndroid ? { uri: 'file:///android_asset/interpolate.html' } : html}
+            source={{ uri: interpolateURL }}
           />
         )}
       </WebViewStateContext.Provider>

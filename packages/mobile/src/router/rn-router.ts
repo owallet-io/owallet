@@ -3,10 +3,7 @@ import { EnvProducer, MessageSender, Result, Router } from '@owallet/router';
 import EventEmitter from 'eventemitter3';
 
 export class RNRouterBase extends Router {
-  constructor(
-    protected readonly envProducer: EnvProducer,
-    protected readonly eventEmitter: EventEmitter
-  ) {
+  constructor(protected readonly envProducer: EnvProducer, protected readonly eventEmitter: EventEmitter) {
     super(envProducer);
   }
 
@@ -24,7 +21,6 @@ export class RNRouterBase extends Router {
     this.eventEmitter.removeListener('message', this.onMessage);
   }
 
-  // some how it get here
   protected onMessage = async (params: {
     message: any;
     sender: MessageSender & {
@@ -36,27 +32,25 @@ export class RNRouterBase extends Router {
       return;
     }
 
-    console.log("in the onMessage function, ready to handle message with sender: ", sender);
-    console.log("message: ", message)
+    console.log('in the onMessage function, ready to handle message with sender: ', sender);
+    console.log('message: ', message);
 
     try {
       const result = await this.handleMessage(message, sender);
-      console.log("result after handling the message: ", result)
+      console.log('result after handling the message: ', result);
       sender.resolver({
-        return: result,
+        return: result
       });
       return;
     } catch (e) {
-      console.log(
-        `Failed to process msg ${message.type}: ${e?.message || e?.toString()}`
-      );
+      console.log(`Failed to process msg ${message.type}: ${e?.message || e?.toString()}`);
       if (e) {
         sender.resolver({
-          error: e.message || e.toString(),
+          error: e.message || e.toString()
         });
       } else {
         sender.resolver({
-          error: 'Unknown error, and error is null',
+          error: 'Unknown error, and error is null'
         });
       }
     }

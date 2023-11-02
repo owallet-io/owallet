@@ -3,29 +3,35 @@
 
 <head>
   <script type="module">
-    const {UniversalSwapHandler, universalSwapData, Metamask} = window ?? {}
-    // alert(typeof UniversalSwapHandler);
+    const {UniversalSwapHandler, universalSwapData, Metamask, KeplrWallet} = window ?? {}
     try {
+      const keplrWallet = new KeplrWallet('owallet');
+      window.kelpr = keplrWallet;
+      const dataToSwap = JSON.parse(universalSwapData)
       const universalSwapHandler = new UniversalSwapHandler(
         {
-          ...universalSwapData,
+         ...dataToSwap,
         },
-        { cosmosWallet: window.Keplr, evmWallet: new Metamask(window.tronWeb) }
+        { cosmosWallet: keplrWallet, evmWallet: new Metamask(window.tronWeb) }
     );
-      // alert(JSON.stringify(JSON.parse(universalSwapData)))
-      alert('universalSwapHandler')
-      window.ReactNativeWebView.postMessage(JSON.stringify({}));
+      // alert(JSON.stringify(universalSwapHandler))
+      // alert(typeof(universalSwapHandler.processUniversalSwap)) 
+      // window.owallet.enable('Oraichain-testnet');
+      
+      universalSwapHandler.processUniversalSwap()
+      // .then(() => {
+      //   try {
+      //     alert(JSON.stringify('success'))
+      //   } catch(err) {
+      //     alert(JSON.stringify(err.message))
+      //   }
+      //   // window.ReactNativeWebView.postMessage(JSON.stringify({result}));
+      // })
     } catch(err) {
       alert(JSON.stringify(err.message))
+      window.ReactNativeWebView.postMessage(JSON.stringify({error: error.message}));
     }
   
-    // try {
-    //     universalSwapHandler.processUniversalSwap().then((result) => {
-    //         window.ReactNativeWebView.postMessage(JSON.stringify({result}));
-    //     })
-    // } catch (error) {
-    //     window.ReactNativeWebView.postMessage(JSON.stringify({error: error.message}));
-    // }
   </script>
 
 </head>

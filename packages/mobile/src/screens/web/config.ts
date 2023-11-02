@@ -19,6 +19,11 @@ export const DAppInfos: DAppInfo[] = [
     logo: oraiLogo
   },
   {
+    name: 'Static Orai',
+    uri: 'https://static.orai.io',
+    logo: oraiLogo
+  },
+  {
     name: 'Orderbook',
     uri: 'https://orderbook.oraidex.io',
     logo: oraiLogo

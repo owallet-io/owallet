@@ -4,6 +4,7 @@ import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { UniversalSwapHandler } from '@oraichain/oraidex-universal-swap';
 import Metamask from './metamask';
+import Keplr from './keplr';
 
 export function init(
   owallet: OWallet,
@@ -36,4 +37,6 @@ export function init(
   window.UniversalSwapHandler = UniversalSwapHandler;
   // @ts-ignore
   window.Metamask = Metamask;
+  // @ts-ignore
+  window.KeplrWallet = Keplr;
 }
