@@ -448,6 +448,10 @@ export class InjectedEthereum implements Ethereum {
 
         // TODO: eth_sendTransaction is special case. Other case => pass through custom request RPC without signing
         var result: any;
+        console.log('message.args', message.args);
+        console.log('message.args', localStore.get('ethereum.chainId'));
+        console.log('ethereum.initChainId', ethereum.initChainId);
+
         const chainId = message.args[1] ?? localStore.get('ethereum.chainId') ?? ethereum.initChainId;
 
         // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
@@ -746,6 +750,8 @@ export class InjectedBitcoin implements Bitcoin {
             break;
           case 'eth_sendTransaction' as any:
             result = await (async () => {
+              console.log('message.args[0][0]', message.args[0][0]);
+
               const { rawTxHex } = await ethereum.signAndBroadcastEthereum(
                 chainId,
                 message.args[0][0] // TODO: is this okay to assume that we only need the first item of the params?

@@ -83,13 +83,6 @@ export class SwapEvmWallet extends EvmWallet {
     // return undefined by default on mobile
     // return new Promise(resolve => resolve(undefined));
 
-    // let accounts = await this.loadAccounts();
-    // console.log('switchNetwork accounts', accounts);
-
-    // if (accounts?.length > 0) {
-    //   const metamaskAddress = ethers.utils.getAddress(accounts[0]);
-    //   console.log('metamaskAddress', metamaskAddress);
-    // }
     return this.ethereum.request!({
       method: 'wallet_switchEthereumChain',
       chainId: '0x' + Number(chainId).toString(16),

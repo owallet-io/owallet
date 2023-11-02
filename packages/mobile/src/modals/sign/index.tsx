@@ -5,14 +5,7 @@ import { ScrollView, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
-import { AmountInput, MemoInput } from '../../components/input';
-import {
-  useFeeConfig,
-  useGasConfig,
-  useMemoConfig,
-  useSignDocAmountConfig,
-  useSignDocHelper
-} from '@owallet/hooks';
+import { useFeeConfig, useGasConfig, useMemoConfig, useSignDocAmountConfig, useSignDocHelper } from '@owallet/hooks';
 import { Button } from '../../components/button';
 import { Msg as AminoMsg } from '@cosmjs/launchpad';
 import { observer } from 'mobx-react-lite';
@@ -29,17 +22,10 @@ export const SignModal: FunctionComponent<{
   bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(({}) => {
-    const {
-      chainStore,
-      accountStore,
-      queriesStore,
-      signInteractionStore,
-      appInitStore
-    } = useStore();
+    const { chainStore, accountStore, queriesStore, signInteractionStore, appInitStore } = useStore();
     useUnmount(() => {
       signInteractionStore.rejectAll();
     });
-    const scheme = appInitStore.getInitApp.theme;
 
     const style = useStyle();
 
@@ -49,12 +35,7 @@ export const SignModal: FunctionComponent<{
 
     // Make the gas config with 1 gas initially to prevent the temporary 0 gas error at the beginning.
     const gasConfig = useGasConfig(chainStore, chainId, 1);
-    const amountConfig = useSignDocAmountConfig(
-      chainStore,
-      chainId,
-      accountStore.getAccount(chainId).msgOpts,
-      signer
-    );
+    const amountConfig = useSignDocAmountConfig(chainStore, chainId, accountStore.getAccount(chainId).msgOpts, signer);
     const feeConfig = useFeeConfig(
       chainStore,
       chainId,
@@ -81,10 +62,7 @@ export const SignModal: FunctionComponent<{
         setChainId(data.data.signDocWrapper.chainId);
         gasConfig.setGas(data.data.signDocWrapper.gas);
         memoConfig.setMemo(data.data.signDocWrapper.memo);
-        if (
-          data.data.signOptions.preferNoSetFee &&
-          data.data.signDocWrapper.fees[0]
-        ) {
+        if (data.data.signOptions.preferNoSetFee && data.data.signDocWrapper.fees[0]) {
           feeConfig.setManualFee(data.data.signDocWrapper.fees[0]);
         } else {
           feeConfig.setFeeType('average');
@@ -95,17 +73,9 @@ export const SignModal: FunctionComponent<{
       if (signInteractionStore.waitingEthereumData) {
         const data = signInteractionStore.waitingEthereumData;
       }
-    }, [
-      feeConfig,
-      gasConfig,
-      memoConfig,
-      signDocHelper,
-      signInteractionStore.waitingData
-    ]);
+    }, [feeConfig, gasConfig, memoConfig, signDocHelper, signInteractionStore.waitingData]);
 
-    const mode = signDocHelper.signDocWrapper
-      ? signDocHelper.signDocWrapper.mode
-      : 'none';
+    const mode = signDocHelper.signDocWrapper ? signDocHelper.signDocWrapper.mode : 'none';
     const msgs = signDocHelper.signDocWrapper
       ? signDocHelper.signDocWrapper.mode === 'amino'
         ? signDocHelper.signDocWrapper.aminoSignDoc.msgs
@@ -122,9 +92,7 @@ export const SignModal: FunctionComponent<{
       try {
         if (signDocHelper.signDocWrapper) {
           //
-          await signInteractionStore.approveAndWaitEnd(
-            signDocHelper.signDocWrapper
-          );
+          await signInteractionStore.approveAndWaitEnd(signDocHelper.signDocWrapper);
         }
       } catch (error) {
         crashlytics().recordError(error);
@@ -149,11 +117,7 @@ export const SignModal: FunctionComponent<{
         return (msgs as readonly AminoMsg[]).map((msg, i) => {
           const account = accountStore.getAccount(chainId);
           const chainInfo = chainStore.getChain(chainId);
-          const { content, scrollViewHorizontal } = renderAminoMessage(
-            account.msgOpts,
-            msg,
-            chainInfo.currencies
-          );
+          const { content, scrollViewHorizontal } = renderAminoMessage(account.msgOpts, msg, chainInfo.currencies);
 
           return (
             <View key={i.toString()}>
@@ -170,10 +134,7 @@ export const SignModal: FunctionComponent<{
       } else if (mode === 'direct') {
         return (msgs as any[]).map((msg, i) => {
           const chainInfo = chainStore.getChain(chainId);
-          const { title, content } = renderDirectMessage(
-            msg,
-            chainInfo.currencies
-          );
+          const { title, content } = renderDirectMessage(msg, chainInfo.currencies);
 
           return <View key={i.toString()}>{content}</View>;
         });
@@ -235,9 +196,7 @@ export const SignModal: FunctionComponent<{
               width: '40%'
             }}
             style={{
-              backgroundColor: isDisable
-                ? colors['gray-400']
-                : colors['purple-700']
+              backgroundColor: isDisable ? colors['gray-400'] : colors['purple-700']
             }}
             textStyle={{
               color: isDisable ? colors['gray-10'] : colors['white']

@@ -43,7 +43,8 @@ export class RNRouterBase extends Router {
       });
       return;
     } catch (e) {
-      console.log(`Failed to process msg ${message.type}: ${e?.message || e?.toString()}`);
+      console.log('e.message', JSON.stringify(e.message));
+      // console.log(`Failed to process msg ${message.type}: ${e?.message || e?.toString()}`);
       if (e) {
         sender.resolver({
           error: e.message || e.toString()
