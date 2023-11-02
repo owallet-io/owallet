@@ -2,9 +2,6 @@ import { OWallet, Ethereum, TronWeb, Bitcoin } from '@owallet/types';
 import { OfflineSigner } from '@cosmjs/launchpad';
 import { SecretUtils } from 'secretjs/types/enigmautils';
 import { OfflineDirectSigner } from '@cosmjs/proto-signing';
-import { UniversalSwapHandler } from '@oraichain/oraidex-universal-swap';
-import Metamask from './metamask';
-import Keplr from './keplr';
 
 export function init(
   owallet: OWallet,
@@ -32,11 +29,4 @@ export function init(
   window.getOfflineSigner = getOfflineSigner;
   // @ts-ignore
   window.getEnigmaUtils = getEnigmaUtils;
-  /* eslint-enable @typescript-eslint/ban-ts-comment */
-  // @ts-ignore
-  window.UniversalSwapHandler = UniversalSwapHandler;
-  // @ts-ignore
-  window.Metamask = Metamask;
-  // @ts-ignore
-  window.KeplrWallet = Keplr;
 }

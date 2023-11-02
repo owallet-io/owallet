@@ -25,14 +25,7 @@ import {
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { evmTokens } from '@owallet/common';
-import {
-  TokenItemType,
-  NetworkChainId,
-  oraichainNetwork,
-  tokenMap,
-  toAmount,
-  network
-} from '@oraichain/oraidex-common';
+import { TokenItemType, NetworkChainId, oraichainNetwork, tokenMap, toAmount } from '@oraichain/oraidex-common';
 import {
   SwapDirection,
   calculateMinimum,
@@ -54,18 +47,14 @@ import {
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
-import DeviceInfo from 'react-native-device-info';
-import { Ethereum, OWallet } from '@owallet/provider';
-import { RNMessageRequesterInternal } from '@src/router';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { useInjectedSourceCode } from '../web/components/webpage-screen';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore, chainStore, keyRingStore } = useStore();
+  const { accountStore, universalSwapStore } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
-  const chainId = chainStore?.current?.chainId;
 
   const accountEvm = accountStore.getAccount(ETH_ID);
   const accountTron = accountStore.getAccount(TRON_ID);
@@ -84,8 +73,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
   const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
-
-  const [universalSwapData, setUniversalSwapData] = useState(null);
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
