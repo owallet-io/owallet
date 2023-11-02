@@ -1,4 +1,4 @@
-import { MsgOpt } from './base';
+import { ExtraOptionSendToken, MsgOpt } from './base';
 import { AccountSetBase, AccountSetOpts } from './base';
 import { AppCurrency, OWalletSignOptions } from '@owallet/types';
 import { StdFee } from '@cosmjs/launchpad';
@@ -71,19 +71,14 @@ export class EthereumAccount {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: any) => void;
         },
-    extraOptions?: {
-      from: string;
-      contract_addr: string;
-      token_id?: string;
-      recipient?: string;
-      amount?: string;
-      to?: string;
-      gas?: string;
-    }
+    extraOptions?: ExtraOptionSendToken
   ): Promise<boolean> {
-    const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-    console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
-    if (signOptions.networkType === 'evm' || EVMOS_NETWORKS.includes(signOptions.chainId)) {
+    if (
+      signOptions.networkType === 'evm' ||
+      EVMOS_NETWORKS.includes(signOptions.chainId)
+    ) {
+      const denomHelper = new DenomHelper(currency.coinMinimalDenom);
+      console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
       switch (denomHelper.type) {
         case 'erc20':
           const realAmount = (() => {

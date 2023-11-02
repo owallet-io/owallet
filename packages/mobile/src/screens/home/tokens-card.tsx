@@ -3,7 +3,7 @@ import { OWEmpty } from '@src/components/empty';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, View, ViewStyle } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native';
 import { API } from '../../common/api';
@@ -12,12 +12,7 @@ import ProgressiveImage from '../../components/progessive-image';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
 import { metrics, spacing, typography } from '../../themes';
-import {
-  capitalizedText,
-  convertAmount,
-  _keyExtract,
-  findLedgerAddressWithChainId
-} from '../../utils/helper';
+import { capitalizedText, convertAmount, _keyExtract, delay } from '../../utils/helper';
 import { TokenItem } from '../tokens/components/token-item';
 import { SoulboundNftInfoResponse } from './types';
 import { useSoulbound } from '../nfts/hooks/useSoulboundNft';
@@ -30,12 +25,10 @@ export const TokensCard: FunctionComponent<{
   containerStyle?: ViewStyle;
   refreshDate: number;
 }> = observer(({ containerStyle, refreshDate }) => {
-  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } =
-    useStore();
+  const { chainStore, queriesStore, accountStore, priceStore, keyRingStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const { colors } = useTheme();
 
-  const [tokens, setTokens] = useState([]);
   const styles = styling(colors);
   const smartNavigation = useSmartNavigation();
   const [index, setIndex] = useState<number>(0);
@@ -44,53 +37,36 @@ export const TokensCard: FunctionComponent<{
     account,
     chainStore.current.rpc
   );
-  // const [price, setPrice] = useState<object>({});
-  const queryBalances = queriesStore
-    .get(chainStore.current.chainId)
-    .queryBalances.getQueryBech32Address(
-      chainStore.current.networkType === 'evm'
-        ? keyRingStore.keyRingType === 'ledger'
-          ? findLedgerAddressWithChainId(
-              keyRingStore.keyRingLedgerAddresses,
-              chainStore.current.chainId
-            )
-          : account.evmosHexAddress
-        : account.bech32Address
-    );
 
-  useEffect(() => {
+  const queries = queriesStore.get(chainStore.current.chainId);
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
+
+  const tokens = useMemo(() => {
     const queryTokens = queryBalances.balances.concat(
       queryBalances.nonNativeBalances,
       queryBalances.positiveNativeUnstakables
     );
-
     const uniqTokens = [];
-    queryTokens.map(token =>
-      uniqTokens.filter(
-        ut => ut.balance.currency.coinDenom == token.balance.currency.coinDenom
-      ).length > 0
+    queryTokens.map((token) =>
+      uniqTokens.filter((ut) => ut.balance.currency.coinDenom == token.balance.currency.coinDenom).length > 0
         ? null
         : uniqTokens.push(token)
     );
-    setTokens(uniqTokens);
+    return uniqTokens;
   }, [
     chainStore.current.chainId,
     account.bech32Address,
     account.evmosHexAddress,
+    chainStore.current.networkType,
     refreshDate
   ]);
 
-  const onActiveType = i => {
+  const onActiveType = (i) => {
     setIndex(i);
   };
 
-  const _renderFlatlistOrchai = ({
-    item,
-    index
-  }: {
-    item: SoulboundNftInfoResponse;
-    index: number;
-  }) => {
+  const _renderFlatlistOrchai = ({ item, index }: { item: SoulboundNftInfoResponse; index: number }) => {
     return (
       <TouchableOpacity
         style={styles.ContainerBtnNft}
@@ -105,9 +81,7 @@ export const TokensCard: FunctionComponent<{
           return;
         }}
       >
-        <View
-          style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}
-        >
+        <View style={[styles.wrapViewNft, { backgroundColor: colors['box-nft'] }]}>
           <ProgressiveImage
             source={{
               uri: item.token_uri
@@ -116,12 +90,7 @@ export const TokensCard: FunctionComponent<{
             resizeMode="cover"
             styleContainer={styles.containerImgNft}
           />
-          <Text
-            weight="700"
-            variant="body2"
-            numberOfLines={1}
-            style={styles.titleNft}
-          >
+          <Text weight="700" variant="body2" numberOfLines={1} style={styles.titleNft}>
             {item?.extension?.name}
           </Text>
           <Text variant="body2" numberOfLines={2} style={styles.subTextNft}>
@@ -147,14 +116,12 @@ export const TokensCard: FunctionComponent<{
                 onPress={() => onActiveType(i)}
                 label={title}
                 textStyle={{
-                  color:
-                    index === i ? colors['primary-text'] : colors['gray-300'],
+                  color: index === i ? colors['primary-text'] : colors['gray-300'],
                   fontWeight: '700'
                 }}
                 style={{
                   width: '90%',
-                  borderBottomColor:
-                    index === i ? colors['primary-text'] : colors['primary'],
+                  borderBottomColor: index === i ? colors['primary-text'] : colors['primary'],
                   borderBottomWidth: 2
                 }}
               />
@@ -164,16 +131,15 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map(token => {
+              tokens.slice(0, 3).map((token, index) => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
-                console.log('token', token.balance);
-
                 return (
                   <TokenItem
-                    key={token.currency?.coinMinimalDenom}
+                    key={index?.toString()}
                     chainInfo={{
                       stakeCurrency: chainStore.current.stakeCurrency,
-                      networkType: chainStore.current.networkType
+                      networkType: chainStore.current.networkType,
+                      chainId: chainStore.current.chainId
                     }}
                     balance={token.balance}
                     priceBalance={priceBalance}
@@ -260,7 +226,7 @@ export const SkeletonNft = () => {
     </SkeletonPlaceholder>
   );
 };
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     titleNft: {
       paddingTop: 12

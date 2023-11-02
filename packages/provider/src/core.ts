@@ -3,12 +3,15 @@ import {
   OWallet as IOWallet,
   Ethereum as IEthereum,
   TronWeb as ITronWeb,
+  Bitcoin as IBitcoin,
   OWalletIntereactionOptions,
   OWalletMode,
   OWalletSignOptions,
   Key,
   EthereumMode,
   RequestArguments,
+  TronWebMode,
+  BitcoinMode,
   ChainInfoWithoutEndpoints
 } from '@owallet/types';
 import { BACKGROUND_PORT, MessageRequester } from '@owallet/router';
@@ -44,7 +47,14 @@ import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
 import { Buffer } from 'buffer';
-import { GetChainInfosWithoutEndpointsMsg, GetDefaultAddressTronMsg, RequestSignDirectMsg, RequestSignEthereumMsg, RequestSignTronMsg } from './msgs';
+import {
+  RequestSignBitcoinMsg,
+  GetChainInfosWithoutEndpointsMsg,
+  GetDefaultAddressTronMsg,
+  RequestSignDirectMsg,
+  RequestSignEthereumMsg,
+  RequestSignTronMsg
+} from './msgs';
 import { TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
@@ -328,6 +338,15 @@ export class TronWeb implements ITronWeb {
 
   async getDefaultAddress(): Promise<object> {
     const msg = new GetDefaultAddressTronMsg(TRON_ID);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+}
+export class Bitcoin implements IBitcoin {
+  constructor(public readonly version: string, public readonly mode: BitcoinMode, public initChainId: string, protected readonly requester: MessageRequester) {
+    this.initChainId = initChainId;
+  }
+  async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
+    const msg = new RequestSignBitcoinMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 }

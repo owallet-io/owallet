@@ -8,8 +8,7 @@ import { useSmartNavigation } from '../../navigation.provider';
 import { metrics, spacing, typography } from '../../themes';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { useTheme } from '@src/themes/theme-provider';
-import { findLedgerAddressWithChainId, TRC20_LIST, _keyExtract } from '../../utils/helper';
-import { Address } from '@owallet/crypto';
+import { TRC20_LIST, _keyExtract } from '../../utils/helper';
 import { RightArrowIcon } from '../../components/icon';
 import { API } from '../../common/api';
 import FastImage from 'react-native-fast-image';
@@ -33,16 +32,13 @@ export const TronTokensCard: FunctionComponent<{
   const styles = styling(colors);
 
   const smartNavigation = useSmartNavigation();
-
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   useEffect(() => {
     (async function get() {
       try {
         const res = await API.getTronAccountInfo(
           {
-            address:
-              keyRingStore.keyRingType === 'ledger'
-                ? findLedgerAddressWithChainId(keyRingStore.keyRingLedgerAddresses, chainStore.current.chainId)
-                : getBase58Address(account.evmosHexAddress)
+            address
           },
           {
             baseURL: chainStore.current.rpc

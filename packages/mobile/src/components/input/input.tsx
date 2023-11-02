@@ -11,7 +11,7 @@ import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
 import { spacing, typography } from '../../themes';
 import { useTheme } from '@src/themes/theme-provider';
-
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
 // eslint-disable-next-line react/display-name
 export const TextInput = React.forwardRef<
   NativeTextInput,
@@ -35,13 +35,16 @@ export const TextInput = React.forwardRef<
     inputRight?: React.ReactNode;
 
     multiline?: boolean;
+    isBottomSheet?: boolean;
   }
 >((props, ref) => {
   const { style: propsStyle, ...restProps } = props;
 
   const style = useStyle();
   const { colors } = useTheme();
-
+  const ElementTextInput = restProps.isBottomSheet
+    ? BottomSheetTextInput
+    : NativeTextInput;
   return (
     <View
       style={StyleSheet.flatten([
@@ -97,7 +100,7 @@ export const TextInput = React.forwardRef<
         {props.topInInputContainer}
         <View style={style.flatten(['flex-row', 'items-center'])}>
           {props.inputLeft}
-          <NativeTextInput
+          <ElementTextInput
             multiline={props.multiline}
             style={[
               StyleSheet.flatten([

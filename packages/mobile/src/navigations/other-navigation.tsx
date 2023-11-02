@@ -26,6 +26,7 @@ import { NotificationScreen } from '@src/screens/notifications/home';
 import HistoryTransactionsScreen from '@src/screens/transactions/history-transactions-screen';
 import TransactionDetailScreen from '@src/screens/transactions/transaction-detail-screen';
 import { AddTokenScreen } from '@src/screens/network/add-token';
+import { SendBtcScreen } from '@src/screens/send/send-btc';
 const Stack = createStackNavigator();
 export const OtherNavigation: FC = () => {
   const handleScreenOptions = ({ route, navigation }) => {
@@ -36,7 +37,7 @@ export const OtherNavigation: FC = () => {
     return headerOptions;
   };
   return (
-    <Stack.Navigator screenOptions={handleScreenOptions} headerMode="screen">
+    <Stack.Navigator screenOptions={handleScreenOptions}>
       <Stack.Screen name={SCREENS.Send} component={SendScreen} />
       <Stack.Screen name={SCREENS.TransferNFT} component={TransferNFTScreen} />
       <Stack.Screen
@@ -95,6 +96,10 @@ export const OtherNavigation: FC = () => {
       <Stack.Screen
         name={SCREENS.Notifications}
         component={NotificationScreen}
+      />
+      <Stack.Screen
+        name={SCREENS.SendBtc}
+        component={SendBtcScreen}
       />
       <Stack.Screen
         options={{

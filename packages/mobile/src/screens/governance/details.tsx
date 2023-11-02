@@ -17,7 +17,7 @@ import { dateToLocalString } from './utils';
 import { registerModal } from '../../modals/base';
 import { RectButton } from '../../components/rect-button';
 import { useSmartNavigation } from '../../navigation.provider';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const TallyVoteInfoView: FunctionComponent<{
   vote: 'yes' | 'no' | 'abstain' | 'noWithVeto';
   percentage: IntPretty;
@@ -258,6 +258,10 @@ export const GovernanceDetailsCardBody: FunctionComponent<{
 export const GovernanceVoteModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<
+    BottomSheetProps,
+    'snapPoints' | 'children'
+  >;
   proposalId: string;
 
   // Modal can't use the `useSmartNavigation` hook directly.

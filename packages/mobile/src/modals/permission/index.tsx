@@ -1,24 +1,20 @@
 import React, { FunctionComponent } from 'react';
 import { registerModal } from '../base';
 import { CardModal } from '../card';
-import {
-  ScrollView,
-  Text,
-  View,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import { Text, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useStyle } from '../../styles';
 import { useStore } from '../../stores';
 import { Button } from '../../components/button';
 import { observer } from 'mobx-react-lite';
 import { colors } from '../../themes';
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 const keyboardVerticalOffset = Platform.OS === 'ios' ? 130 : 0;
 
 export const AccessModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   waitingData: any;
 }> = registerModal(
   observer(({ waitingData }) => {
@@ -36,20 +32,11 @@ export const AccessModal: FunctionComponent<{
 
     return (
       <CardModal title="Confirm Grant Access">
-        <KeyboardAvoidingView
-          behavior="position"
-          keyboardVerticalOffset={keyboardVerticalOffset}
-        >
+        <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={keyboardVerticalOffset}>
           <View style={style.flatten(['margin-bottom-16'])}>
             <Text style={style.flatten(['margin-bottom-3'])}>
-              <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-                {`1 `}
-              </Text>
-              <Text
-                style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-              >
-                Message
-              </Text>
+              <Text style={style.flatten(['subtitle3', 'color-primary'])}>{`1 `}</Text>
+              <Text style={style.flatten(['subtitle3', 'color-text-black-medium'])}>Message</Text>
             </Text>
             <View
               style={style.flatten([
@@ -59,10 +46,7 @@ export const AccessModal: FunctionComponent<{
                 'overflow-hidden'
               ])}
             >
-              <ScrollView
-                style={style.flatten(['max-height-214'])}
-                persistentScrollbar={true}
-              >
+              <ScrollView style={style.flatten(['max-height-214'])} persistentScrollbar={true}>
                 <Text
                   style={{
                     color: colors['sub-text']
@@ -108,9 +92,7 @@ export const AccessModal: FunctionComponent<{
                 color: colors['white']
               }}
               style={{
-                backgroundColor: permissionStore.isLoading
-                  ? colors['gray-400']
-                  : colors['purple-700']
+                backgroundColor: permissionStore.isLoading ? colors['gray-400'] : colors['purple-700']
               }}
               loading={permissionStore.isLoading}
               onPress={async () => {
@@ -130,7 +112,6 @@ export const AccessModal: FunctionComponent<{
     );
   }),
   {
-    disableSafeArea: true,
-    blurBackdropOnIOS: true
+    disableSafeArea: true
   }
 );

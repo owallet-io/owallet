@@ -16,6 +16,7 @@ import { useUnmount } from '../../hooks';
 import Svg, { Path } from 'react-native-svg';
 import { Button } from '../../components/button';
 import { colors } from '@src/themes';
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { getLedgerAppNameByNetwork, LedgerAppType } from '@owallet/common';
 const AlertIcon: FunctionComponent<{
   size: number;
@@ -53,6 +54,7 @@ enum BLEPermissionGrantStatus {
 export const LedgerGranterModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
+  bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
 }> = registerModal(
   observer(() => {
     const { ledgerInitStore, chainStore } = useStore();
@@ -67,7 +69,7 @@ export const LedgerGranterModal: FunctionComponent<{
       // Ledger transport library for BLE seems to cache the transport internally.
       // But this can be small problem when the ledger connection is failed.
       // So, when this modal appears, try to disconnect the bluetooth connection for nano X.
-      getLastUsedLedgerDeviceId().then(deviceId => {
+      getLastUsedLedgerDeviceId().then((deviceId) => {
         if (deviceId) {
           TransportBLE.disconnect(deviceId);
         }
@@ -82,7 +84,7 @@ export const LedgerGranterModal: FunctionComponent<{
     });
 
     useEffect(() => {
-      const subscription = bleManagerInstance().onStateChange(newState => {
+      const subscription = bleManagerInstance().onStateChange((newState) => {
         if (newState === State.PoweredOn) {
           setIsBLEAvailable(true);
         } else {
@@ -146,7 +148,7 @@ export const LedgerGranterModal: FunctionComponent<{
         permissionStatus === BLEPermissionGrantStatus.FailedAndRetry
       ) {
         if (Platform.OS === 'android') {
-          PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then(granted => {
+          PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((granted) => {
             if (granted == PermissionsAndroid.RESULTS.GRANTED) {
               setPermissionStatus(BLEPermissionGrantStatus.Granted);
             } else {
@@ -177,7 +179,7 @@ export const LedgerGranterModal: FunctionComponent<{
               if (e.type === 'add') {
                 const device = e.descriptor;
 
-                if (!_devices.find(d => d.id === device.id)) {
+                if (!_devices.find((d) => d.id === device.id)) {
                   console.log(`Ledger device found (id: ${device.id}, name: ${device.name})`);
                   _devices = [
                     ..._devices,
@@ -261,7 +263,7 @@ export const LedgerGranterModal: FunctionComponent<{
               </React.Fragment>
             )}
 
-            {devices.map(device => {
+            {devices.map((device) => {
               return (
                 <LedgerNanoBLESelector
                   key={device.id}

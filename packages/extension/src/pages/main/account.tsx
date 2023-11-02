@@ -13,10 +13,13 @@ import { TRON_ID, getBase58Address } from '@owallet/common';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
-  const accountInfo = accountStore.getAccount(chainStore.current.chainId);
+  const chainId = chainStore.current.chainId;
+  const networkType = chainStore.current.networkType;
+  const accountInfo = accountStore.getAccount(chainId);
   const selected = keyRingStore?.multiKeyStoreInfo?.find((keyStore) => keyStore?.selected);
   const intl = useIntl();
-  const checkTronNetwork = chainStore.current.chainId === TRON_ID;
+  const checkTronNetwork = chainId === TRON_ID;
+
   const ledgerAddress =
     keyRingStore.keyRingType == 'ledger'
       ? checkTronNetwork
@@ -67,7 +70,7 @@ export const AccountView: FunctionComponent = observer(() => {
         </div>
         <div style={{ flex: 1, textAlign: 'right' }}></div>
       </div>
-      {chainStore.current.networkType === 'cosmos' && (
+      {(networkType === 'cosmos' || networkType === 'bitcoin') && (
         <div className={styleAccount.containerAccount}>
           <div style={{ flex: 1 }} />
           <div className={styleAccount.address} onClick={() => copyAddress(accountInfo.bech32Address)}>
@@ -84,7 +87,7 @@ export const AccountView: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
         </div>
       )}
-      {(accountInfo.hasEvmosHexAddress || chainStore.current.networkType === 'evm') && (
+      {(accountInfo.hasEvmosHexAddress || networkType === 'evm') && (
         <div
           className={styleAccount.containerAccount}
           style={{
@@ -152,7 +155,7 @@ export const AccountView: FunctionComponent = observer(() => {
       )}
       <div className={styleAccount.coinType}>
         {' '}
-        {`Coin type: m/44'/${
+        {`Coin type: m/${networkType === 'bitcoin' ? '84' : '44'}'/${
           (keyRingStore.keyRingType == 'ledger'
             ? chainStore?.current?.bip44?.coinType
             : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType) +

@@ -43,11 +43,15 @@ export class ObservableQueryInflation {
       // XXX: Hard coded part for the iris hub and sifchain.
       // TODO: Remove this part.
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.chainId.startsWith('irishub')) {
-        dec = new Dec(this._queryIrisMint.response?.data.result.inflation ?? '0').mul(DecUtils.getTenExponentNInPrecisionRange(2));
-      } else if (chainInfo.chainId.startsWith('sifchain')) {
-        return new IntPretty(new Dec(this._querySifchainAPY.liquidityAPY.toString()));
-      } else if (chainInfo.chainId.startsWith('osmosis')) {
+      if (chainInfo.chainId?.startsWith('irishub')) {
+        dec = new Dec(
+          this._queryIrisMint.response?.data.result.inflation ?? '0'
+        ).mul(DecUtils.getTenExponentNInPrecisionRange(2));
+      } else if (chainInfo.chainId?.startsWith('sifchain')) {
+        return new IntPretty(
+          new Dec(this._querySifchainAPY.liquidityAPY.toString())
+        );
+      } else if (chainInfo.chainId?.startsWith('osmosis')) {
         /*
           XXX: Temporary and unfinished implementation for the osmosis staking APY.
                Osmosis has different minting method.

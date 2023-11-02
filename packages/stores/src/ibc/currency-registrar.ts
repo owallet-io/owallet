@@ -128,7 +128,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
     const denomHelper = new DenomHelper(coinMinimalDenom);
     if (
       denomHelper.type !== 'native' ||
-      !denomHelper.denom.startsWith('ibc/')
+      !denomHelper.denom?.startsWith('ibc/')
     ) {
       // IBC Currency's denom should start with "ibc/"
       return;
@@ -228,7 +228,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
         // If the origin currency is ics20-cw20.
         let cw20Currency = originChainInfo.currencies.find(
           (cur) =>
-            denomTrace && cur.coinMinimalDenom.startsWith(denomTrace.denom)
+            denomTrace && cur.coinMinimalDenom?.startsWith(denomTrace.denom)
         );
         if (!cw20Currency && this.cosmwasmQueriesStore) {
           const cosmwasmQuries = this.cosmwasmQueriesStore.get(

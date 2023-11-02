@@ -11,13 +11,9 @@ import { _keyExtract } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID } from '@owallet/common';
+import { TRON_ID,COINTYPE_NETWORK } from '@owallet/common';
+import OWFlatList from '@src/components/page/ow-flat-list';
 
-const COINTYPE_NETWORK = {
-  118: 'Cosmos',
-  60: 'Ethereum',
-  195: 'Tron'
-};
 
 export const NetworkModal = ({
   profileColor,
@@ -30,7 +26,7 @@ export const NetworkModal = ({
 }) => {
   const styles = styling(colors);
 
-  const handleSwitchNetwork = item => {
+  const handleSwitchNetwork = (item) => {
     try {
       if (keyRingStore.keyRingType === 'ledger') {
         Alert.alert(
@@ -57,7 +53,9 @@ export const NetworkModal = ({
                   typeof keyRingStore.setKeyStoreLedgerAddress === 'function'
                 ) {
                   keyRingStore.setKeyStoreLedgerAddress(
-                    `44'/${item.bip44.coinType ?? item.coinType}'/${
+                    `${
+                      chainStore.current.networkType === 'bitcoin' ? '84' : '44'
+                    }'/${item.bip44.coinType ?? item.coinType}'/${
                       bip44Option.bip44HDPath.account
                     }'/${bip44Option.bip44HDPath.change}/${
                       bip44Option.bip44HDPath.addressIndex
@@ -229,25 +227,25 @@ export const NetworkModal = ({
           height: metrics.screenHeight / 2
         }}
       >
-        <FlatList
-          showsVerticalScrollIndicator={false}
+        <OWFlatList
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
+          isBottomSheet
           keyExtractor={_keyExtract}
-          ListFooterComponent={() => (
-            <View
-              style={{
-                height: spacing['10']
-              }}
-            />
-          )}
+          // ListFooterComponent={() => (
+          //   <View
+          //     style={{
+          //       height: spacing['10']
+          //     }}
+          //   />
+          // )}
         />
       </View>
     </View>
   );
 };
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerBtn: {
       backgroundColor: colors['background-item-list'],

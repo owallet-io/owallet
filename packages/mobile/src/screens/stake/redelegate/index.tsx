@@ -124,7 +124,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           }
         );
       } catch (e) {
-        console.log('🚀 ~ file: index.tsx:126 ~ const_onPressSwitchValidator= ~ e:', e);
+        
         if (e?.message === 'Request rejected') {
           return;
         }
@@ -270,8 +270,13 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
             borderColor: colors['border-input-login']
           }}
           onPress={() => {
-            modalStore.setOpen();
-            modalStore.setChildren(<ValidatorsList onPressSelectValidator={onPressSelectValidator} dstValidatorAddress={dstValidatorAddress} />);
+            modalStore.setOptions();
+            modalStore.setChildren(
+              <ValidatorsList
+                onPressSelectValidator={onPressSelectValidator}
+                dstValidatorAddress={dstValidatorAddress}
+              />
+            );
           }}
         >
           <View

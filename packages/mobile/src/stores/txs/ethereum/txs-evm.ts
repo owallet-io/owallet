@@ -5,7 +5,7 @@ import { TxsBsc } from './txs-bsc';
 import { TxsEth } from './txs-eth';
 import { TxsTron } from './txs-tron';
 import { TxsKawaii } from './txs-kawaii';
-import { ChainIdEnum } from '../helpers/txs-enums';
+import { ChainIdEnum } from '@owallet/common';
 import { TxsCosmos } from '../cosmos/txs-cosmos';
 import { getBase58Address } from '@owallet/common';
 

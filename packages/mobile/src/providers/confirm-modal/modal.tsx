@@ -4,11 +4,14 @@ import { useStyle } from "../../styles";
 import { StyleSheet, TextStyle, View, ViewStyle } from "react-native";
 import { Text } from '@src/components/text';
 import { Button } from "../../components/button";
-
+import { BottomSheetProps } from '@gorhom/bottom-sheet';
 export const ConfirmModal: FunctionComponent<{
   isOpen: boolean;
   close: () => void;
-
+  bottomSheetModalConfig?: Omit<
+  BottomSheetProps,
+  'snapPoints' | 'children'
+>;
   title: string;
   paragraph?: string;
 

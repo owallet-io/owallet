@@ -125,18 +125,34 @@ export class BaseAccount implements Account {
   ) {}
 
   getType(): string {
+    console.log(
+      '🚀 ~ file: index.ts:100 ~ BaseAccount ~ getType ~ this.type:',
+      this.type
+    );
     return this.type;
   }
 
   getAddress(): string {
+    console.log(
+      '🚀 ~ file: index.ts:108 ~ BaseAccount ~ getAddress ~ this.address:',
+      this.address
+    );
     return this.address;
   }
 
   getAccountNumber(): Int {
+    console.log(
+      '🚀 ~ file: index.ts:114 ~ BaseAccount ~ getAccountNumber ~ this.accountNumber:',
+      this.accountNumber
+    );
     return this.accountNumber;
   }
 
   getSequence(): Int {
+    console.log(
+      '🚀 ~ file: index.ts:119 ~ BaseAccount ~ getSequence ~ this.sequence:',
+      this.sequence
+    );
     return this.sequence;
   }
 }

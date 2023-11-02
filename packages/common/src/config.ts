@@ -245,7 +245,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     // beta: true // use v1beta1
   },
   {
-    rpc: 'https://sentry.tm.injective.network',
+    rpc: 'https://injective-rpc-global.orai.io',
     rest: 'https://sentry.lcd.injective.network',
     chainId: 'injective-1',
     chainName: 'Injective',
@@ -354,15 +354,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
           coinGeckoId: 'tether',
           coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/825.png'
         }
-        // {
-        //   coinDenom: 'USDC',
-        //   coinMinimalDenom:
-        //     'erc20:0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48:USDC',
-        //   coinDecimals: 6,
-        //   coinGeckoId: 'usd-coin',
-        //   coinImageUrl:
-        //     'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
-        // }
       ];
     },
     get feeCurrencies() {
@@ -400,7 +391,11 @@ export const EmbedChainInfos: AppChainInfo[] = [
       return [this.stakeCurrency];
     },
     // features: ['ibc-transfer', 'ibc-go', 'stargate']
-    features: ['isEvm']
+    features: ['isEvm'],
+    txExplorer: {
+      name: 'Kawaii',
+      txUrl: 'https://scan.kawaii.global/tx/{txHash}'
+    }
   },
   {
     rpc: 'https://tendermint1.kawaii.global',
@@ -423,7 +418,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinType: 60
     },
     coinType: 60,
-    bech32Config: Bech32Address.defaultBech32Config('oraie'),
+    bech32Config: Bech32Address.defaultBech32Config('evmos'),
     get currencies() {
       return [
         this.stakeCurrency,
@@ -561,7 +556,6 @@ export const EmbedChainInfos: AppChainInfo[] = [
     bip44: {
       coinType: 118
     },
-    coinType: 118,
     bech32Config: Bech32Address.defaultBech32Config('juno'),
     currencies: [
       {
@@ -582,6 +576,89 @@ export const EmbedChainInfos: AppChainInfo[] = [
       txUrl: 'https://www.mintscan.io/juno/txs/{txHash}'
     }
   },
+  {
+    rest: 'https://api.blockcypher.com/v1/btc/test3',
+    chainId: 'bitcoinTestnet',
+    chainName: 'Bitcoin Testnet',
+    bip44: {
+      coinType: 1
+    },
+    coinType: 1,
+    stakeCurrency: {
+      coinDenom: 'BTC',
+      coinMinimalDenom: 'btc',
+      coinDecimals: 8,
+      coinGeckoId: 'bitcoin',
+      coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+      gasPriceStep: {
+        low: 1,
+        average: 15,
+        high: 22
+      }
+    },
+    bech32Config: Bech32Address.defaultBech32Config('tb'),
+    networkType: 'bitcoin',
+    currencies: [
+      {
+        coinDenom: 'BTC',
+        coinMinimalDenom: 'btc',
+        coinDecimals: 8,
+        coinGeckoId: 'bitcoin',
+        coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+      }
+    ],
+    get feeCurrencies() {
+      return this.currencies;
+    },
+    features: ['isBtc'],
+    txExplorer: {
+      name: 'Blockcypher',
+      txUrl: 'https://live.blockcypher.com/btc-testnet/tx/{txHash}',
+      accountUrl: 'https://live.blockcypher.com/btc-testnet/address/{address}'
+    }
+  },
+  // {
+  //   rest: 'https://api.blockcypher.com/v1/btc/main',
+  //   chainId: 'bitcoin',
+  //   chainName: 'Bitcoin',
+  //   bip44: {
+  //     coinType: 0
+  //   },
+  //   coinType: 0,
+  //   stakeCurrency: {
+  //     coinDenom: 'BTC',
+  //     coinMinimalDenom: 'btc',
+  //     coinDecimals: 8,
+  //     coinGeckoId: 'bitcoin',
+  //     coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
+  //     gasPriceStep: {
+  //       low: 1,
+  //       average: 15,
+  //       high: 22
+  //     }
+  //   },
+  //   bech32Config: Bech32Address.defaultBech32Config('bc'),
+  //   networkType: 'bitcoin',
+  //   currencies: [
+  //     {
+  //       coinDenom: 'BTC',
+  //       coinMinimalDenom: 'btc',
+  //       coinDecimals: 8,
+  //       coinGeckoId: 'bitcoin',
+  //       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png'
+  //     }
+  //   ],
+  //   get feeCurrencies() {
+  //     return this.currencies;
+  //   },
+
+  //   features: ['isBtc'],
+  //   txExplorer: {
+  //     name: 'Bitcoin',
+  //     txUrl: 'https://live.blockcypher.com/btc/tx/{txHash}',
+  //     accountUrl: 'https://live.blockcypher.com/btc/address/{address}'
+  //   }
+  // },
 
   {
     rest: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
@@ -642,7 +719,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     features: ['isEvm'],
     txExplorer: {
       name: 'Bsc Scan Testnet',
-      txUrl: 'https://testnet.bscscan.com/tx/${txHash}',
+      txUrl: 'https://testnet.bscscan.com/tx/{txHash}',
       accountUrl: 'https://testnet.bscscan.com/address/{address}'
     }
   },
@@ -679,6 +756,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         coinDenom: 'ORAI',
         coinMinimalDenom: 'erc20:0x4c11249814f11b9346808179cf06e71ac328c1b5:Oraichain Token',
+        contractAddress: '0x4c11249814f11b9346808179cf06e71ac328c1b5',
         coinDecimals: 18,
         coinGeckoId: 'oraichain-token',
         coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png'

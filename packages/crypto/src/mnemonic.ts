@@ -65,6 +65,7 @@ export class Mnemonic {
     const hd = masterKey.derivePath(path);
 
     const privateKey = hd.privateKey;
+
     if (!privateKey) {
       throw new Error('null hd key');
     }

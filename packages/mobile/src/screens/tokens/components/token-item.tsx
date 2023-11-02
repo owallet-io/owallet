@@ -4,19 +4,21 @@ import { CoinPretty, PricePretty } from '@owallet/unit';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { formatContractAddress } from '@src/utils/helper';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { RightArrowIcon } from '../../../components/icon';
 import { TokenSymbol } from '../../../components/token-symbol';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { spacing, typography } from '../../../themes';
+import { formatBalance } from '@owallet/bitcoin';
 
 interface TokenItemProps {
   containerStyle?: ViewStyle;
   chainInfo: {
     stakeCurrency: Currency;
     networkType?: string;
+    chainId?: string;
   };
   balance: CoinPretty;
   totalBalance?: number;
@@ -35,39 +37,51 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
   // The IBC currency could have long denom (with the origin chain/channel information).
   // Because it is shown in the title, there is no need to show such long denom twice in the actual balance.
   let balanceCoinDenom: string;
-  let name = balance.currency.coinDenom;
+  let name = balance?.currency?.coinDenom;
 
-  if ('originCurrency' in balance.currency && balance.currency.originCurrency) {
+  if ('originCurrency' in balance?.currency && balance?.currency?.originCurrency) {
     balanceCoinDenom = balance.currency.originCurrency.coinDenom;
   } else {
-    const denomHelper = new DenomHelper(balance.currency.coinMinimalDenom);
-    balanceCoinDenom = balance.currency.coinDenom;
+    const denomHelper = new DenomHelper(balance?.currency?.coinMinimalDenom);
+    balanceCoinDenom = balance?.currency?.coinDenom;
 
-    if (denomHelper.contractAddress && denomHelper.contractAddress !== '') {
+    if (denomHelper?.contractAddress && denomHelper?.contractAddress !== '') {
       name += ` (${formatContractAddress(denomHelper.contractAddress, 34)})`;
 
       console.log('nam', name, denomHelper.contractAddress);
     }
   }
-  const amountBalance = balance
-    .trim(true)
-    .shrink(true)
-    .maxDecimals(6)
-    .upperCase(true)
-    .hideDenom(true)
-    .toString();
 
+  const amountBalance = useMemo(() => {
+    if (chainInfo.networkType === 'bitcoin') {
+      const amount = formatBalance({
+        balance: Number(balance?.toCoin()?.amount),
+        cryptoUnit: 'BTC',
+        coin: chainInfo.chainId
+      });
+      return amount;
+    }
+    const amount = balance
+      .trim(true)
+      .shrink(true)
+      .maxDecimals(6)
+      .upperCase(true)
+      .hideDenom(true)
+      .toString();
+    return `${amount} ${balanceCoinDenom}`;
+  }, [chainInfo.networkType, chainInfo.chainId, balance, balanceCoinDenom]);
   return (
     <TouchableOpacity
+      key={chainInfo.chainId}
       activeOpacity={0.7}
       style={{ ...styles.containerToken, ...containerStyle }}
       onPress={() => {
         smartNavigation.navigateSmart('Tokens.Detail', {
           balanceCoinDenom,
           amountBalance,
-          balanceCurrency: balance.currency,
+          balanceCurrency: balance?.currency,
           priceBalance,
-          balanceCoinFull: balance.currency.coinDenom ?? balanceCoinDenom
+          balanceCoinFull: balance?.currency.coinDenom ?? balanceCoinDenom
         });
       }}
     >
@@ -86,7 +100,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
           }}
           size={44}
           chainInfo={chainInfo}
-          currency={balance.currency}
+          currency={balance?.currency}
           imageScale={0.54}
         />
         <View
@@ -111,7 +125,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
               fontWeight: '700'
             }}
           >
-            {`${amountBalance} ${balanceCoinDenom}`}
+            {amountBalance}
           </Text>
 
           <Text

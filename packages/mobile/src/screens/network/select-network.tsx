@@ -35,12 +35,11 @@ interface FormData {
 
 export const SelectNetworkType = ({ onChange }) => {
   const { colors } = useTheme();
-  const [radioButtons, setRadioButtons] = useState([
+  const radioButtons = [
     {
       id: 'cosmos',
       label: 'Cosmos',
       value: 'cosmos',
-      selected: true,
       borderColor: colors['primary-text'],
       labelStyle: {
         color: colors['primary-text']
@@ -55,11 +54,12 @@ export const SelectNetworkType = ({ onChange }) => {
         color: colors['primary-text']
       }
     }
-  ]);
+  ];
 
-  function onPressRadioButton(radioButtonGroup) {
-    setRadioButtons(radioButtonGroup);
-    const selected = radioButtonGroup.find((rb) => rb.selected);
+  const [selectedId, setSelectedId] = useState('cosmos');
+  function onPressRadioButton(idRadio) {
+    setSelectedId(idRadio);
+    const selected = radioButtons.find((rb) => rb.id == idRadio);
     onChange && onChange(selected);
   }
 
@@ -68,6 +68,7 @@ export const SelectNetworkType = ({ onChange }) => {
       layout={'row'}
       radioButtons={radioButtons}
       onPress={onPressRadioButton}
+      selectedId={selectedId}
     />
   );
 };
@@ -241,7 +242,6 @@ export const SelectNetworkScreen = () => {
       };
 
       await chainStore.addChain(chainInfo);
-      alert('Network added successfully!');
       smartNavigation.goBack();
     } catch (err) {
       console.log('err: ', err);
@@ -252,6 +252,10 @@ export const SelectNetworkScreen = () => {
 
   const handleChangeNetwork = (selected) => {
     setValue('networkType', selected.value);
+    console.log(
+      '🚀 ~ file: select-network.tsx:256 ~ handleChangeNetwork ~ selected.value:',
+      selected.value
+    );
     setNetworkType(selected.value);
   };
 

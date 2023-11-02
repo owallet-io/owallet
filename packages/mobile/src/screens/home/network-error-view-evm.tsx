@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { View } from 'react-native';
 import { Text } from '@src/components/text';
-import Animated, { Easing } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { AlertIcon, RefreshIcon } from '../../components/icon';
 import { useStyle } from '../../styles';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -83,7 +83,7 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
   }, [queryStakable?.error, networkIsConnected]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const spinAnimated = useSpinAnimated(isRefreshing);
+  const spinAnimated = useSpinAnimated();
 
   useEffect(() => {
     if (isRefreshing) {
@@ -101,36 +101,36 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
     height: 0
   });
 
-  const [animatedValue] = useState(() => new Animated.Value(0));
+  // const [animatedValue] = useState(() => new Animated.Value(0));
 
-  useEffect(() => {
-    if (isOpen) {
-      Animated.timing(animatedValue, {
-        toValue: 1,
-        duration: 500,
-        easing: Easing.out(Easing.cubic)
-      }).start();
-    } else {
-      Animated.timing(animatedValue, {
-        toValue: 0,
-        duration: 330,
-        easing: Easing.out(Easing.sin)
-      }).start();
-    }
-  }, [animatedValue, isOpen]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     Animated.timing(animatedValue, {
+  //       toValue: 1,
+  //       duration: 500,
+  //       easing: Easing.out(Easing.cubic)
+  //     }).start();
+  //   } else {
+  //     Animated.timing(animatedValue, {
+  //       toValue: 0,
+  //       duration: 330,
+  //       easing: Easing.out(Easing.sin)
+  //     }).start();
+  //   }
+  // }, [animatedValue, isOpen]);
 
-  const animatedHeight = useMemo(() => {
-    return animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, childLayout.height + extraHeight]
-    });
-  }, [animatedValue, childLayout.height]);
+  // const animatedHeight = useMemo(() => {
+  //   return animatedValue.interpolate({
+  //     inputRange: [0, 1],
+  //     outputRange: [0, childLayout.height + extraHeight]
+  //   });
+  // }, [animatedValue, childLayout.height]);
 
   return (
-    <Animated.View
+    <View
       style={{
         overflow: 'hidden',
-        height: animatedHeight,
+        // height: childLayout.height + extraHeight,
         justifyContent: 'center'
       }}
     >
@@ -143,7 +143,7 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
           'padding-right-24',
           'height-80'
         ])}
-        onLayout={e => {
+        onLayout={(e) => {
           setChildLayout(e.nativeEvent.layout);
         }}
       >
@@ -179,19 +179,13 @@ export const NetworkErrorViewEVM: FunctionComponent = observer(() => {
             ])}
           >
             <Animated.View
-              style={{
-                transform: [
-                  {
-                    rotate: spinAnimated
-                  }
-                ]
-              }}
+              style={spinAnimated}
             >
               <RefreshIcon color={style.get('color-danger').color} size={24} />
             </Animated.View>
           </TouchableOpacity>
         ) : null}
       </View>
-    </Animated.View>
+    </View>
   );
 });
