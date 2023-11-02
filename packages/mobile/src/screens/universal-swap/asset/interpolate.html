@@ -3,23 +3,33 @@
 
 <head>
   <script type="module">
-    import { UniversalSwapHandler } from 'https://unpkg.com/@oraichain/oraidex-universal-swap@1.0.24/build/handler.js';
-    const universalSwapData = JSON.parse(window.universalSwapData);
-    console.log('universalSwapData module', universalSwapData);
-    const universalSwapHandler = new UniversalSwapHandler(
+    const {UniversalSwapHandler, universalSwapData, Metamask} = window ?? {}
+    // alert(typeof UniversalSwapHandler);
+    try {
+      const universalSwapHandler = new UniversalSwapHandler(
         {
-          ...universalSwapData
+          ...universalSwapData,
         },
         { cosmosWallet: window.Keplr, evmWallet: new Metamask(window.tronWeb) }
     );
-    try {
-        universalSwapHandler.processUniversalSwap().then((result) => {
-            window.ReactNativeWebView.postMessage(JSON.stringify({result}));
-        })
-    } catch (error) {
-        window.ReactNativeWebView.postMessage(JSON.stringify({error: error.message}));
+      // alert(JSON.stringify(JSON.parse(universalSwapData)))
+      alert('universalSwapHandler')
+      window.ReactNativeWebView.postMessage(JSON.stringify({}));
+    } catch(err) {
+      alert(JSON.stringify(err.message))
     }
+  
+    // try {
+    //     universalSwapHandler.processUniversalSwap().then((result) => {
+    //         window.ReactNativeWebView.postMessage(JSON.stringify({result}));
+    //     })
+    // } catch (error) {
+    //     window.ReactNativeWebView.postMessage(JSON.stringify({error: error.message}));
+    // }
   </script>
+
 </head>
 
 </html>
+
+

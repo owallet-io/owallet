@@ -57,6 +57,7 @@ import { EventEmitter } from 'eventemitter3';
 import { RNInjectedEthereum, RNInjectedOWallet } from '@src/injected/injected-provider';
 import { useInjectedSourceCode } from '../web/components/webpage-screen';
 import { WebViewStateContext } from '../web/components/context';
+import html from './asset/interpolate.html';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore, chainStore, keyRingStore } = useStore();
@@ -64,7 +65,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { data: prices } = useCoinGeckoPrices();
   const chainId = chainStore?.current?.chainId;
 
-  const account = accountStore.getAccount(chainId);
   const accountEvm = accountStore.getAccount(ETH_ID);
   const accountTron = accountStore.getAccount(TRON_ID);
   const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
@@ -83,6 +83,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
   const [[fromTokenInfoData, toTokenInfoData], setTokenInfoData] = useState<TokenItemType[]>([]);
+
+  const [universalSwapData, setUniversalSwapData] = useState(null);
 
   const [fromTokenFee, setFromTokenFee] = useState<number>(0);
   const [toTokenFee, setToTokenFee] = useState<number>(0);
@@ -373,6 +375,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
 
       eventEmitter.emit('message', event.nativeEvent);
+      setUniversalSwapData(null);
     },
     [eventEmitter]
   );
@@ -457,10 +460,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
     setSwapLoading(true);
     try {
-      const cosmosWallet = new SwapCosmosWallet(client, owallet);
-      const isTron = originalFromToken.coinGeckoId === 'tron';
+      // const cosmosWallet = new SwapCosmosWallet(client, owallet);
+      // const isTron = originalFromToken.coinGeckoId === 'tron';
 
-      const evmWallet = new SwapEvmWallet(ethereum, accountEvm.evmosHexAddress, isTron, originalFromToken.rpc);
+      // const evmWallet = new SwapEvmWallet(ethereum, accountEvm.evmosHexAddress, isTron, originalFromToken.rpc);
 
       const universalSwapData: UniversalSwapData = {
         sender: {
@@ -476,27 +479,28 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         fromAmount: fromAmountToken
       };
 
-      const universalSwapHandler = new UniversalSwapHandler(
-        {
-          ...universalSwapData
-        },
-        {
-          cosmosWallet,
-          //@ts-ignore
-          evmWallet
-        }
-      );
+      setUniversalSwapData(universalSwapData);
+      // const universalSwapHandler = new UniversalSwapHandler(
+      //   {
+      //     ...universalSwapData
+      //   },
+      //   {
+      //     cosmosWallet,
+      //     //@ts-ignore
+      //     evmWallet
+      //   }
+      // );
 
-      const result = await universalSwapHandler.processUniversalSwap();
+      // const result = await universalSwapHandler.processUniversalSwap();
 
-      if (result) {
-        setSwapLoading(false);
-        showToast({
-          text1: 'Success',
-          type: 'success'
-        });
-        await handleFetchAmounts();
-      }
+      // if (result) {
+      //   setSwapLoading(false);
+      //   showToast({
+      //     text1: 'Success',
+      //     type: 'success'
+      //   });
+      //   await handleFetchAmounts();
+      // }
     } catch (error) {
       setSwapLoading(false);
       console.log({ error });
@@ -554,17 +558,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           }
         }}
       >
-        {sourceCode ? (
+        {sourceCode && universalSwapData && (
           <WebView
+            originWhitelist={['*']}
             ref={webviewRef}
-            incognito={true}
-            injectedJavaScriptBeforeContentLoaded={sourceCode}
+            injectedJavaScriptBeforeContentLoaded={
+              sourceCode + `; window.universalSwapData = '${JSON.stringify(universalSwapData)}';`
+            }
             onMessage={onMessage}
             style={{ flex: 0, height: 0, width: 0, opacity: 0 }}
-            source={{ uri: oraidexURL }}
+            source={isAndroid ? { uri: 'file:///android_asset/interpolate.html' } : html}
           />
-        ) : (
-          <View />
         )}
       </WebViewStateContext.Provider>
 
