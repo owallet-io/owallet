@@ -178,6 +178,13 @@ export interface TronWeb {
   defaultAddress?: object;
   initChainId: string;
   sign(transaction: object): Promise<object>;
+  triggerSmartContract(
+    address: string,
+    functionSelector: string,
+    options: any,
+    parameters: any[],
+    issuerAddress: string
+  ): Promise<any>;
   getDefaultAddress(): Promise<object>;
 }
 export interface Bitcoin {

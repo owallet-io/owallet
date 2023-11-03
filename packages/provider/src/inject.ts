@@ -1197,6 +1197,15 @@ export class InjectedEthereumOWallet implements Ethereum {
 
 export class InjectedTronWebOWallet implements ITronWeb {
   trx: { sign: (transaction: object) => Promise<object> };
+  transactionBuilder: {
+    triggerSmartContract: (
+      address: string,
+      functionSelector: string,
+      options: { feeLimit?: number },
+      parameters: any[],
+      issuerAddress: string
+    ) => any;
+  };
   get defaultAddress() {
     return JSON.parse(localStorage.getItem('tronWeb.defaultAddress'));
   }
@@ -1239,6 +1248,15 @@ export class InjectedTronWebOWallet implements ITronWeb {
         switch (message.method) {
           case 'sign':
             result = await tronweb.sign(message.args[0]);
+            break;
+          case 'triggerSmartContract':
+            result = await tronweb.triggerSmartContract(
+              message.args[0].address,
+              message.args[0].functionSelector,
+              message.args[0].options,
+              message.args[0].parameters,
+              message.args[0].issuerAddress
+            );
             break;
           case 'tron_requestAccounts':
             try {
@@ -1362,7 +1380,31 @@ export class InjectedTronWebOWallet implements ITronWeb {
         return await this.requestMethod('sign', [transaction]);
       }
     };
+
+    this.transactionBuilder = {
+      triggerSmartContract: async (
+        address: string,
+        functionSelector: string,
+        options,
+        parameters,
+        issuerAddress: string
+      ): Promise<any> => {
+        return await this.requestMethod('triggerSmartContract', [
+          {
+            address,
+            functionSelector,
+            options,
+            parameters,
+            issuerAddress
+          }
+        ]);
+      }
+    };
   }
+  triggerSmartContract(address, functionSelector, options, parameters, issuerAddress): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
   sign(transaction: object): Promise<object> {
     throw new Error('Method not implemented.');
   }

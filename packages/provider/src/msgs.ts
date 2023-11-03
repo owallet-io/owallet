@@ -181,6 +181,51 @@ export class GetDefaultAddressTronMsg extends Message<{}> {
   }
 }
 
+export class TriggerSmartContractMsg extends Message<{
+  result: any;
+  transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  };
+}> {
+  public static type() {
+    return 'trigger-smart-contract-tron';
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly data: {
+      address: string;
+      functionSelector: string;
+      options: { feeLimit?: number };
+      parameters: any[];
+      issuerAddress: string;
+    }
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return TriggerSmartContractMsg.type();
+  }
+}
+
 export class GetChainInfosWithoutEndpointsMsg extends Message<{
   chainInfos: ChainInfoWithoutEndpoints[];
 }> {
