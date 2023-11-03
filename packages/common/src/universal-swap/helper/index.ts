@@ -184,39 +184,6 @@ export function isSupportedNoPoolSwapEvm(coingeckoId: CoinGeckoId) {
   }
 }
 
-export async function handleSimulateSwap(
-  query: {
-    fromInfo: TokenInfo;
-    toInfo: TokenInfo;
-    originalFromInfo: TokenItemType;
-    originalToInfo: TokenItemType;
-    amount: string;
-  },
-  client: CosmWasmClient
-): Promise<SimulateSwapOperationsResponse> {
-  // if the from token info is on bsc or eth, then we simulate using uniswap / pancake router
-  // otherwise, simulate like normal
-  if (
-    isSupportedNoPoolSwapEvm(query.originalFromInfo.coinGeckoId) ||
-    isEvmSwappable({
-      fromChainId: query.originalFromInfo.chainId,
-      toChainId: query.originalToInfo.chainId,
-      fromContractAddr: query.originalFromInfo.contractAddress,
-      toContractAddr: query.originalToInfo.contractAddress
-    })
-  ) {
-    // reset previous amount calculation since now we need to deal with original from & to info, not oraichain token info
-    const originalAmount = toDisplay(query.amount, query.fromInfo.decimals);
-    return simulateSwapEvm({
-      fromInfo: query.originalFromInfo,
-      toInfo: query.originalToInfo,
-      amount: toAmount(originalAmount, query.originalFromInfo.decimals).toString()
-    });
-  }
-
-  return simulateSwap(query, client);
-}
-
 export function filterTokens(
   chainId: string,
   coingeckoId: CoinGeckoId,
