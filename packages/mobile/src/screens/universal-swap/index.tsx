@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -35,7 +35,6 @@ import {
 } from '@oraichain/oraidex-common';
 import {
   SwapDirection,
-  calculateMinimum,
   feeEstimate,
   fetchTaxRate,
   filterTokens,
@@ -56,7 +55,6 @@ import {
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
-import { useInjectedSourceCode } from '../web/components/webpage-screen';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -450,8 +448,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     },
     [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
   );
-
-  const sourceCode = useInjectedSourceCode();
 
   return (
     <PageWithScrollViewInBottomTabView

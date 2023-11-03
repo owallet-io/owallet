@@ -8,14 +8,11 @@ import {
   oraichainTokens,
   CoinGeckoId,
   NetworkChainId,
-  toAmount,
-  toDisplay,
   atomic,
   parseTokenInfo
 } from '@oraichain/oraidex-common';
 import { TokenInfo } from '../types/token';
-import { SimulateSwapOperationsResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapRouter.types';
-import { generateSwapOperationMsgs, getEvmSwapRoute, isEvmSwappable } from '../api';
+import { generateSwapOperationMsgs, getEvmSwapRoute } from '../api';
 import { ethers } from 'ethers';
 import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
 import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '../config/constants';
@@ -34,20 +31,6 @@ export const calculateTimeoutTimestamp = (timeout: number): string => {
     .toString();
 };
 
-export const getNetworkGasPrice = async (): Promise<number> => {
-  try {
-    // const chainInfosWithoutEndpoints =
-    //   await window.Keplr?.getChainInfosWithoutEndpoints();
-    // const findToken = chainInfosWithoutEndpoints.find(
-    //   e => e.chainId == network.chainId
-    // );
-    // if (findToken) {
-    //   return findToken.feeCurrencies[0].gasPriceStep.average;
-    // }
-  } catch {}
-  return 0;
-};
-
 export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {
   switch (chainId) {
     case '0x01':
@@ -58,7 +41,6 @@ export function isEvmNetworkNativeSwapSupported(chainId: NetworkChainId) {
   }
 }
 
-//hardcode fee
 export const feeEstimate = (tokenInfo: TokenItemType, gasDefault: number) => {
   if (!tokenInfo) return 0;
   return (gasDefault * MULTIPLIER * HIGH_GAS_PRICE) / 10 ** tokenInfo?.decimals;
@@ -165,7 +147,6 @@ export async function simulateSwapEvm(query: { fromInfo: TokenItemType; toInfo: 
     const swapRouterV2 = IUniswapV2Router02__factory.connect(proxyContractInfo[fromInfo.chainId].routerAddr, provider);
     const route = getEvmSwapRoute(fromInfo.chainId, fromInfo.contractAddress, toTokenInfoOnSameChainId.contractAddress);
     const outs = await swapRouterV2.getAmountsOut(amount, route);
-    console.log('outs simulateSwapEvm ===', outs, outs.slice(-1)[0].toString());
     return {
       amount: outs.slice(-1)[0].toString() // get the final out amount, which is the token out amount we want
     };
@@ -226,45 +207,3 @@ export const findToTokenOnOraiBridge = (fromToken: TokenItemType, toNetwork: Net
   );
   return toToken;
 };
-
-// export const transferEvmToIBC = async (
-//   from: TokenItemType,
-//   fromAmount: number,
-//   address: {
-//     metamaskAddress?: string;
-//     tronAddress?: string;
-//     oraiAddress?: string;
-//   },
-//   combinedReceiver: string
-// ) => {
-//   const { metamaskAddress, tronAddress, oraiAddress } = address;
-//   const finalTransferAddress = window.Metamask.getFinalEvmAddress(
-//     from.chainId,
-//     {
-//       metamaskAddress,
-//       tronAddress
-//     }
-//   );
-//   const oraiAddr = oraiAddress ?? (await window.Keplr.getKeplrAddr());
-//   if (!finalTransferAddress || !oraiAddr)
-//     throw generateError('Please login both metamask or tronlink and keplr!');
-//   const gravityContractAddr = gravityContracts[from!.chainId!];
-//   if (!gravityContractAddr || !from) {
-//     throw generateError('No gravity contract addr or no from token');
-//   }
-
-//   const finalFromAmount = toAmount(fromAmount, from.decimals).toString();
-//   await window.Metamask.checkOrIncreaseAllowance(
-//     from,
-//     finalTransferAddress,
-//     gravityContractAddr,
-//     finalFromAmount
-//   );
-//   const result = await window.Metamask.transferToGravity(
-//     from,
-//     finalFromAmount,
-//     finalTransferAddress,
-//     combinedReceiver
-//   );
-//   return result;
-// };

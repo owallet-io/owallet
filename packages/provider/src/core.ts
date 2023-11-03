@@ -285,18 +285,28 @@ export class Ethereum implements IEthereum {
 
   async request(args: RequestArguments): Promise<any> {
     const chainId = args.chainId ?? this.initChainId;
-    this.handleRequest(args, chainId);
+    if (args.method === 'wallet_switchEthereumChain') {
+      const msg = new RequestEthereumMsg(chainId, args.method, args.params);
+      const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      this.initChainId = result;
+      return result;
+    } else if (args.method === 'eth_sendTransaction') {
+      try {
+        const { rawTxHex } = await this.signAndBroadcastEthereum(chainId, args.params[0]);
+        return rawTxHex;
+      } catch (err) {
+        console.log('eth_sendTransaction err', err);
+      }
+    } else {
+      const msg = new RequestEthereumMsg(chainId, args.method, args.params);
+      const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      return result;
+    }
   }
 
   async handleRequest(args: RequestArguments, chainId: string): Promise<any> {
     let result;
-    let msg;
     switch (args.method) {
-      case 'wallet_switchEthereumChain':
-        msg = new RequestEthereumMsg(chainId, args.method, args.params);
-        result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-        this.initChainId = result;
-        break;
       case 'wallet_addEthereumChain':
         await this.experimentalSuggestChain(args.params[0]);
         break;
@@ -325,12 +335,13 @@ export class Ethereum implements IEthereum {
         result = await this.signDecryptData(chainId, args.params[0]);
         break;
       case 'eth_getTransactionReceipt':
+      // case 'eth_chainId':
       case 'eth_accounts':
       case 'net_version':
       case 'eth_blockNumber':
       case 'eth_estimateGas':
       default:
-        msg = new RequestEthereumMsg(chainId, args.method, args.params);
+        const msg = new RequestEthereumMsg(chainId, args.method, args.params);
         result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
         break;
     }
