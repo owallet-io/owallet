@@ -9,7 +9,7 @@ import { useStore } from '../../stores';
 import { useNotification } from '../../components/notification';
 import { useIntl } from 'react-intl';
 import { WalletStatus } from '@owallet/stores';
-import { TRON_ID, getBase58Address } from '@owallet/common';
+import { ChainIdEnum, TRON_ID, getBase58Address } from '@owallet/common';
 
 export const AccountView: FunctionComponent = observer(() => {
   const { accountStore, chainStore, keyRingStore } = useStore();
@@ -167,6 +167,13 @@ export const AccountView: FunctionComponent = observer(() => {
           (selected?.bip44HDPath?.addressIndex ?? '0')
         }`}
       </div>
+      {chainId === ChainIdEnum.BitcoinTestnet && (
+        <div className={styleAccount.coinType}>
+          <a target="_blank" href="https://bitcoinfaucet.uo1.net/">
+            BTC Testnet Faucet
+          </a>
+        </div>
+      )}
     </div>
   );
 });

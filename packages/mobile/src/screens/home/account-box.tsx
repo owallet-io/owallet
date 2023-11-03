@@ -242,7 +242,7 @@ export const AccountBox: FunctionComponent<{
               style={{
                 marginTop: 16
               }}
-              label="BTC Testnet Faucet Now"
+              label="BTC Testnet Faucet"
               size="small"
             />
           )}
