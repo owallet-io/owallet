@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactElement, useCallback } from 'react';
+import React, { FunctionComponent, ReactElement, useCallback, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { OWBox } from '../../components/card';
 import { View, Image, StyleSheet } from 'react-native';
@@ -15,6 +15,8 @@ import MyWalletModal from './components/my-wallet-modal/my-wallet-modal';
 import { useTheme } from '@src/themes/theme-provider';
 import { OWButton } from '@src/components/button';
 import OWIcon from '@src/components/ow-icon/ow-icon';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;
@@ -216,9 +218,6 @@ export const AccountBox: FunctionComponent<{
           </View>
           {/* <NetworkErrorView /> */}
           <OWButton
-            style={{
-              width: '100%'
-            }}
             onPress={() => {
               smartNavigation.navigateSmart('Transactions', {});
             }}
@@ -230,6 +229,23 @@ export const AccountBox: FunctionComponent<{
             size="medium"
             icon={<OWIcon color={colors['purple-700']} size={18} name="history" />}
           />
+          {chainStore.current.chainId == 'bitcoinTestnet' && (
+            <OWButton
+              onPress={() => {
+                navigate(SCREENS.STACK.Others, {
+                  screen: SCREENS.BtcFaucet
+                });
+              }}
+              textStyle={{
+                paddingLeft: 8
+              }}
+              style={{
+                marginTop: 16
+              }}
+              label="BTC Testnet Faucet Now"
+              size="small"
+            />
+          )}
         </OWBox>
       </View>
     );
