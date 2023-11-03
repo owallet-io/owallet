@@ -25,7 +25,14 @@ import {
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { evmTokens } from '@owallet/common';
-import { TokenItemType, NetworkChainId, oraichainNetwork, tokenMap, toAmount } from '@oraichain/oraidex-common';
+import {
+  TokenItemType,
+  NetworkChainId,
+  oraichainNetwork,
+  tokenMap,
+  toAmount,
+  network
+} from '@oraichain/oraidex-common';
 import {
   SwapDirection,
   calculateMinimum,
@@ -33,9 +40,10 @@ import {
   fetchTaxRate,
   filterTokens,
   getTokenOnSpecificChainId,
-  getTransferTokenFee,
-  handleSimulateSwap
+  getTransferTokenFee
 } from '@owallet/common';
+import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
+
 import { fetchTokenInfos, toSubAmount } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
@@ -50,6 +58,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { useInjectedSourceCode } from '../web/components/webpage-screen';
+import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore } = useStore();
@@ -274,16 +283,14 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
   const getSimulateSwap = async (initAmount?) => {
-    const data = await handleSimulateSwap(
-      {
-        fromInfo: fromTokenInfoData!,
-        toInfo: toTokenInfoData!,
-        originalFromInfo: originalFromToken,
-        originalToInfo: originalToToken,
-        amount: toAmount(initAmount ?? fromAmountToken, fromTokenInfoData!.decimals).toString()
-      },
-      client
-    );
+    const routerClient = new OraiswapRouterQueryClient(client, network.router);
+
+    const data = await handleSimulateSwap({
+      originalFromInfo: originalFromToken,
+      originalToInfo: originalToToken,
+      originalAmount: initAmount ?? fromAmountToken,
+      routerClient
+    });
     setAmountLoading(false);
     return data;
   };

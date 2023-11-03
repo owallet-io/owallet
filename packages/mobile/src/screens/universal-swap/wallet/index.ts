@@ -80,9 +80,6 @@ export class SwapEvmWallet extends EvmWallet {
   }
 
   async switchNetwork(chainId: string | number): Promise<void> {
-    // return undefined by default on mobile
-    // return new Promise(resolve => resolve(undefined));
-
     return this.ethereum.request!({
       method: 'wallet_switchEthereumChain',
       chainId: '0x' + Number(chainId).toString(16),
@@ -91,14 +88,11 @@ export class SwapEvmWallet extends EvmWallet {
   }
 
   async getEthAddress(): Promise<string> {
-    // return new Promise(resolve => resolve(this.ethAddress));
     if (this.checkEthereum()) {
       const [address] = await this.ethereum.request({
         method: 'eth_requestAccounts',
         params: []
       });
-      console.log('getEthAddress ===', address);
-
       return address;
     }
   }
@@ -112,7 +106,6 @@ export class SwapEvmWallet extends EvmWallet {
   }
 
   getSigner(): JsonRpcSigner {
-    // this.provider = new ethers.providers.JsonRpcProvider(this.rpc);
     return this.provider.getSigner();
   }
 }

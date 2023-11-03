@@ -308,7 +308,6 @@ export class Ethereum implements IEthereum {
       case 'public_key':
         result = await this.getPublicKey(chainId);
         break;
-
       case 'eth_initChainId' as any:
         result = this.initChainId;
         break;
