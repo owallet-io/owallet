@@ -283,38 +283,38 @@ export class Ethereum implements IEthereum {
     this.initChainId = initChainId;
   }
 
-  // async send(): Promise<void> {
-  //   console.log('');
-  // }
   async request(args: RequestArguments): Promise<any> {
     const chainId = args.chainId ?? this.initChainId;
-    if (
-      args.method === 'wallet_switchEthereumChain' ||
-      args.method === 'eth_accounts' ||
-      args.method === 'net_version' ||
-      args.method === 'eth_blockNumber' ||
-      args.method === 'eth_chainId' ||
-      args.method === 'eth_estimateGas'
-    ) {
-      const msg = new RequestEthereumMsg(chainId, args.method, args.params);
-      let result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      if (args.method === 'wallet_switchEthereumChain') {
-        this.initChainId = result;
-      }
+    this.handleRequest(args, chainId);
+  }
 
-      return result;
-    } else if (args.method === 'eth_sendTransaction') {
-      try {
-        const res = this.signAndBroadcastEthereum(chainId, args.params[0]);
-        console.log('res', res);
-      } catch (err) {
-        console.log('eth_sendTransaction err', err);
-      }
+  async handleRequest(args: RequestArguments, chainId: string): Promise<any> {
+    let result;
+    let msg;
+    switch (args.method) {
+      case 'wallet_switchEthereumChain':
+        msg = new RequestEthereumMsg(chainId, args.method, args.params);
+        result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+        this.initChainId = result;
+        break;
+      case 'eth_sendTransaction':
+        const { rawTxHex } = await this.signAndBroadcastEthereum(chainId, args.params[0]);
+        result = rawTxHex;
+        break;
+      case 'eth_accounts':
+      case 'net_version':
+      case 'eth_blockNumber':
+      case 'eth_chainId':
+      case 'eth_estimateGas':
+      default:
+        msg = new RequestEthereumMsg(chainId, args.method, args.params);
+        result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+        break;
     }
+    return result;
   }
 
   async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    // data = arg.params[0]
     const msg = new RequestSignEthereumMsg(chainId, data);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
