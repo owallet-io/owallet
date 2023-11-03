@@ -297,14 +297,38 @@ export class Ethereum implements IEthereum {
         result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
         this.initChainId = result;
         break;
+      case 'wallet_addEthereumChain':
+        await this.experimentalSuggestChain(args.params[0]);
+        break;
+      case 'eth_chainId':
+        if (chainId?.toString()?.startsWith('0x')) {
+          result = chainId;
+        } else result = '0x0';
+        break;
+      case 'public_key':
+        result = await this.getPublicKey(chainId);
+        break;
+
+      case 'eth_initChainId' as any:
+        result = this.initChainId;
+        break;
       case 'eth_sendTransaction':
         const { rawTxHex } = await this.signAndBroadcastEthereum(chainId, args.params[0]);
         result = rawTxHex;
         break;
+      case 'eth_signTypedData_v4':
+        result = await this.signEthereumTypeData(chainId, args.params[0]);
+        break;
+      case 'eth_signReEncryptData':
+        result = await this.signReEncryptData(chainId, args.params[0]);
+        break;
+      case 'eth_signDecryptData':
+        result = await this.signDecryptData(chainId, args.params[0]);
+        break;
+      case 'eth_getTransactionReceipt':
       case 'eth_accounts':
       case 'net_version':
       case 'eth_blockNumber':
-      case 'eth_chainId':
       case 'eth_estimateGas':
       default:
         msg = new RequestEthereumMsg(chainId, args.method, args.params);
