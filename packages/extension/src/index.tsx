@@ -198,11 +198,6 @@ ReactDOM.render(
                   <Route exact path="/access/viewing-key" component={Secret20ViewingKeyAccessPage} />
                   <Route exact path="/register" component={RegisterPage} />
                   <Route exact path="/confirm-ledger/:chain" component={ConfirmLedgerPage} />
-                  {/* <Route
-                    exact
-                    path="/connect-social/:index/:name"
-                    component={ConnectSocialPage}
-                  /> */}
                   <Route exact path="/send" component={SendPage} />
                   <Route exact path="/send-evm" component={SendEvmPage} />
                   <Route exact path="/send-tron" component={SendTronEvmPage} />
