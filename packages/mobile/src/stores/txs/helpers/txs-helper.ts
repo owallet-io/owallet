@@ -342,6 +342,7 @@ export class TxsHelper {
     let transferItem: Partial<TransferDetail> = {};
     transferItem.transferInfo = [];
     if (data?.inputs?.length > 0) {
+      console.log('🚀 ~ file: txs-helper.ts:345 ~ TxsHelper ~ data:', data);
       for (let i = 0; i < data?.inputs.length; i++) {
         const element = data?.inputs[i];
         if (element?.addresses?.length > 0 && element?.addresses[0]?.toLowerCase() === addressAccount?.toLowerCase()) {
@@ -354,22 +355,29 @@ export class TxsHelper {
             }),
             isMinus: true
           });
-        } else if (
-          element?.addresses?.length > 0 &&
-          element?.addresses[0]?.toLowerCase() !== addressAccount?.toLowerCase()
-        ) {
+          break;
+        }
+      }
+    }
+    if (data?.outputs?.length > 0) {
+      console.log('🚀 ~ file: txs-helper.ts:345 ~ TxsHelper ~ data:', data);
+      for (let i = 0; i < data?.outputs.length; i++) {
+        const element = data?.outputs[i];
+        if (element?.addresses?.length > 0 && element?.addresses[0]?.toLowerCase() === addressAccount?.toLowerCase()) {
           transferItem.transferInfo.push({
             txId: data?.hash,
             amount: formatBalance({
-              balance: Number(element?.output_value),
+              balance: Number(element?.value),
               cryptoUnit: 'BTC',
               coin: currentChain.chainId
             }),
             isPlus: true
           });
+          break;
         }
       }
     }
+
     transferItem.typeEvent = 'Transaction';
 
     let transferItemIn: Partial<TransferDetail> = {};
