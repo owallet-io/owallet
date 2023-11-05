@@ -1,28 +1,9 @@
 import { InteractionManager, StyleSheet, Text, View } from 'react-native';
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
-import {
-  AddressInput,
-  AmountInput,
-  CurrencySelector,
-  FeeButtons,
-  MemoInput,
-  TextInput
-} from '@src/components/input';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { AddressInput, AmountInput, CurrencySelector, FeeButtons, MemoInput, TextInput } from '@src/components/input';
 import { OWButton } from '@src/components/button';
 import { PageWithScrollView } from '@src/components/page';
-import {
-  createTransaction,
-  calculatorFee,
-  formatBalance,
-  BtcToSats,
-  validateAddress
-} from '@owallet/bitcoin';
+import { createTransaction, calculatorFee, formatBalance, BtcToSats, validateAddress } from '@owallet/bitcoin';
 import { OWSubTitleHeader } from '@src/components/header';
 import { OWBox } from '@src/components/card';
 import { useSendTxConfig } from '@owallet/hooks';
@@ -36,11 +17,23 @@ import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import { delay, showToast } from '@src/utils/helper';
 import { Toggle } from '@src/components/toggle';
+import { RouteProp, useRoute } from '@react-navigation/native';
 
 export const SendBtcScreen: FunctionComponent = observer(({}) => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
-    useStore();
-  const chainId = chainStore?.current?.chainId;
+  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } = useStore();
+  const route = useRoute<
+    RouteProp<
+      Record<
+        string,
+        {
+          chainId?: string;
+          recipient?: string;
+        }
+      >,
+      string
+    >
+  >();
+  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore.current.chainId;
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
   const sendConfigs = useSendTxConfig(
@@ -54,9 +47,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     null,
     queries.bitcoin.queryBitcoinBalance
   );
-  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-    account.bech32Address
-  )?.response?.data;
+  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
   const [customFee, setCustomFee] = useState(false);
@@ -70,14 +61,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { colors } = useTheme();
   const refreshBalance = async (address) => {
     try {
-      await queries.bitcoin.queryBitcoinBalance
-        .getQueryBalance(address)
-        .waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address).waitFreshResponse();
     } catch (error) {
-      console.log(
-        '🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:',
-        error
-      );
+      console.log('🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:', error);
     }
   };
   useEffect(() => {
@@ -88,7 +74,11 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
     return () => {};
   }, [account.bech32Address]);
-
+  useEffect(() => {
+    if (route?.params?.recipient) {
+      sendConfigs.recipientConfig.setRawRecipient(route.params.recipient);
+    }
+  }, [route?.params?.recipient, sendConfigs.recipientConfig]);
   const onSend = useCallback(async () => {
     try {
       await account.sendToken(
@@ -101,7 +91,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           preferNoSetFee: true,
           preferNoSetMemo: true,
           networkType: chainStore.current.networkType,
-          chainId: chainStore.current.chainId
+          chainId: chainId
         },
 
         {
@@ -113,7 +103,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
                 screen: SCREENS.TxSuccessResult,
                 params: {
                   txHash: tx,
-                  chainId: chainStore.current.chainId
+                  chainId: chainId
                 }
               });
             }
@@ -122,22 +112,16 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
-              console.log(
-                '🚀 ~ file: send-btc.tsx:126 ~ onBroadcasted: ~ txHash:',
-                txHash
-              );
+              console.log('🚀 ~ file: send-btc.tsx:126 ~ onBroadcasted: ~ txHash:', txHash);
               analyticsStore.logEvent('Send Btc tx broadcasted', {
-                chainId: chainStore.current.chainId,
+                chainId: chainId,
                 chainName: chainStore.current.chainName,
                 feeType: sendConfigs.feeConfig.feeType
               });
 
               return;
             } catch (error) {
-              console.log(
-                '🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:',
-                error
-              );
+              console.log('🚀 ~ file: send-btc.tsx:149 ~ onBroadcasted: ~ error:', error);
             }
           }
         },
@@ -146,10 +130,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           utxos: utxos,
           blacklistedUtxos: [],
           amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
-          gasPriceStep:
-            chainStore.current.stakeCurrency.gasPriceStep[
-              sendConfigs.feeConfig.feeType
-            ]
+          gasPriceStep: chainStore.current.stakeCurrency.gasPriceStep[sendConfigs.feeConfig.feeType]
         }
       );
     } catch (error) {
@@ -166,13 +147,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       });
       console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
     }
-  }, [
-    chainStore.current.networkType,
-    chainStore.current.chainId,
-    utxos,
-    account.bech32Address,
-    confirmedBalance
-  ]);
+  }, [chainStore.current.networkType, chainId, utxos, account.bech32Address, confirmedBalance]);
 
   const styles = styling(colors);
   return (
@@ -258,11 +233,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
             selectTextOnFocus={false}
             value={totalFee.feeDisplay || '0'}
           /> */}
-          <OWButton
-            disabled={!account.isReadyToSendMsgs || !txStateIsValid}
-            label="Send"
-            onPress={onSend}
-          />
+          <OWButton disabled={!account.isReadyToSendMsgs || !txStateIsValid} label="Send" onPress={onSend} />
         </OWBox>
       </View>
     </PageWithScrollView>
