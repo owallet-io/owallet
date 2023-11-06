@@ -61,12 +61,12 @@ function setOutputHash(root, hash) {
     $.verbose = true;
 
     // When executed in CI, the proto output should not be different with ones built locally.
-    let lastOutputHash = undefined;
-    if (process.env.CI === 'true') {
-      console.log('You are ci runner');
-      lastOutputHash = getOutputHash(packageRoot);
-      console.log('Expected output hash is', lastOutputHash);
-    }
+    // let lastOutputHash = undefined;
+    // if (process.env.CI === 'true') {
+    //   console.log('You are ci runner');
+    //   lastOutputHash = getOutputHash(packageRoot);
+    //   console.log('Expected output hash is', lastOutputHash);
+    // }
 
     const protoTsBinPath = (() => {
       try {
@@ -141,7 +141,7 @@ function setOutputHash(root, hash) {
     //   throw new Error('Output is different');
     // }
 
-    setOutputHash(packageRoot, outputHash);
+    // setOutputHash(packageRoot, outputHash);
   } catch (e) {
     console.log('🚀 ~ file: proto-gen.mjs:146 ~ e:', e);
     process.exit(1);
