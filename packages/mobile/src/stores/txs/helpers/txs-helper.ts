@@ -9,8 +9,8 @@ import moment from 'moment';
 import { formatContractAddress, get, limitString } from '@src/utils/helper';
 import { isArray, isString } from 'util';
 import { TYPE_ACTIONS_COSMOS_HISTORY } from '@src/common/constants';
-import { Bech32Address, ibc } from '@owallet/cosmos';
-import { calculatorFee, formatBalance } from '@owallet/bitcoin';
+import { Bech32Address } from '@owallet/cosmos';
+import { formatBalance } from '@owallet/bitcoin';
 export class TxsHelper {
   public readonly INFO_API_EVM = {
     [ChainIdEnum.TRON]: {
