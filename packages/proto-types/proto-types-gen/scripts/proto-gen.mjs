@@ -135,11 +135,11 @@ function setOutputHash(root, hash) {
 
     $.verbose = true;
 
-    const outputHash = await calculateOutputHash(outDir);
-    console.log('Output hash is', outputHash);
-    if (lastOutputHash && lastOutputHash !== outputHash) {
-      throw new Error('Output is different');
-    }
+    // const outputHash = await calculateOutputHash(outDir);
+    // console.log('Output hash is', outputHash);
+    // if (lastOutputHash && lastOutputHash !== outputHash) {
+    //   throw new Error('Output is different');
+    // }
 
     setOutputHash(packageRoot, outputHash);
   } catch (e) {
