@@ -13,7 +13,8 @@ import messaging from '@react-native-firebase/messaging';
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 import firebase from '@react-native-firebase/app';
-
+import LogRocket from '@logrocket/react-native';
+LogRocket.init(process.env.LOG_ROCKET);
 const config = {
   apiKey: process.env.API_KEY,
   projectId: 'owallet-829a1',
