@@ -54,6 +54,7 @@ import {
   RequestSignDirectMsg,
   RequestSignEthereumMsg,
   RequestSignTronMsg,
+  RequestSendRawTransactionMsg,
   TriggerSmartContractMsg
 } from './msgs';
 import { TRON_ID } from '@owallet/common';
@@ -372,6 +373,16 @@ export class TronWeb implements ITronWeb {
 
   async sign(transaction: object): Promise<object> {
     const msg = new RequestSignTronMsg(TRON_ID, transaction);
+    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+  }
+
+  async sendRawTransaction(transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  }): Promise<object> {
+    const msg = new RequestSendRawTransactionMsg(TRON_ID, transaction);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 

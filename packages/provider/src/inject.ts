@@ -1196,7 +1196,15 @@ export class InjectedEthereumOWallet implements Ethereum {
 }
 
 export class InjectedTronWebOWallet implements ITronWeb {
-  trx: { sign: (transaction: object) => Promise<object> };
+  trx: {
+    sign: (transaction: object) => Promise<object>;
+    sendRawTransaction: (transaction: {
+      raw_data: any;
+      raw_data_hex: string;
+      txID: string;
+      visible?: boolean;
+    }) => Promise<object>;
+  };
   transactionBuilder: {
     triggerSmartContract: (
       address: string,
@@ -1248,6 +1256,9 @@ export class InjectedTronWebOWallet implements ITronWeb {
         switch (message.method) {
           case 'sign':
             result = await tronweb.sign(message.args[0]);
+            break;
+          case 'sendRawTransaction':
+            result = await tronweb.sendRawTransaction(message.args[0]);
             break;
           case 'triggerSmartContract':
             result = await tronweb.triggerSmartContract(
@@ -1378,6 +1389,14 @@ export class InjectedTronWebOWallet implements ITronWeb {
     this.trx = {
       sign: async (transaction: object): Promise<object> => {
         return await this.requestMethod('sign', [transaction]);
+      },
+      sendRawTransaction: async (transaction: {
+        raw_data: any;
+        raw_data_hex: string;
+        txID: string;
+        visible?: boolean;
+      }): Promise<object> => {
+        return await this.requestMethod('sendRawTransaction', [transaction]);
       }
     };
 
@@ -1385,8 +1404,8 @@ export class InjectedTronWebOWallet implements ITronWeb {
       triggerSmartContract: async (
         address: string,
         functionSelector: string,
-        options,
-        parameters,
+        options: object,
+        parameters: any[],
         issuerAddress: string
       ): Promise<any> => {
         const parametersConvert = parameters.map((par) =>
@@ -1404,7 +1423,22 @@ export class InjectedTronWebOWallet implements ITronWeb {
       }
     };
   }
-  triggerSmartContract(address, functionSelector, options, parameters, issuerAddress): Promise<any> {
+  sendRawTransaction(transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  }): Promise<object> {
+    throw new Error('Method not implemented.');
+  }
+
+  triggerSmartContract(
+    address: string,
+    functionSelector: string,
+    options: object,
+    parameters: any[],
+    issuerAddress: string
+  ): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
