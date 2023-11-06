@@ -28,10 +28,6 @@ const BtcFaucet = observer(() => {
               if(!!inputValue){
                   inputValue.value='${account.bech32Address}'   
                   }
-                  setTimeout(()=>{
-                    const btnSend = document.getElementsByClassName("g-recaptcha btn btn-primary"); 
-                    btnSend[0].click();
-                },2000)
               `}
           source={{ uri: 'https://bitcoinfaucet.uo1.net/' }}
           onMessage={(event) => {}}
