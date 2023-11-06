@@ -1,21 +1,20 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Text } from '@src/components/text';
-import Animated from 'react-native-reanimated';
 import { AlertIcon } from '../../components/icon';
 import { observer } from 'mobx-react-lite';
 import { API } from '@src/common/api';
 import { useStyle } from '@src/styles';
 import { useStore } from '@src/stores';
-import { BondStatus } from '@owallet/stores';
 import { find } from 'lodash';
 
 export const WarningView: FunctionComponent = observer(() => {
   const [warningList, setWarningList] = useState([]);
-  const { chainStore, queriesStore } = useStore();
+  const { chainStore, queriesStore, accountStore } = useStore();
+  const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
+  const queryDelegations = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+  const delegations = queryDelegations.delegations;
 
   const style = useStyle();
   useEffect(() => {
@@ -31,9 +30,10 @@ export const WarningView: FunctionComponent = observer(() => {
         if (res?.data?.data) {
           res.data.data.map(v => {
             if (v.uptime < 0.9) {
-              const foundValidator = find(bondedValidators.validators, val => {
-                return val.operator_address === v.operator_address;
+              const foundValidator = find(delegations, val => {
+                return val.validator_address === v.operator_address;
               });
+
               if (foundValidator) {
                 tmpList.push(v);
               }
@@ -43,10 +43,10 @@ export const WarningView: FunctionComponent = observer(() => {
         setWarningList(tmpList);
       } catch (error) {}
     })();
-  }, []);
+  }, [account.bech32Address]);
 
-  return (
-    <Animated.View
+  return warningList.length > 0 ? (
+    <View
       style={{
         justifyContent: 'center',
         paddingTop: 16
@@ -69,6 +69,8 @@ export const WarningView: FunctionComponent = observer(() => {
           })}
         </View>
       </View>
-    </Animated.View>
+    </View>
+  ) : (
+    <View />
   );
 });
