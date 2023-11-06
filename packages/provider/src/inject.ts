@@ -1389,12 +1389,15 @@ export class InjectedTronWebOWallet implements ITronWeb {
         parameters,
         issuerAddress: string
       ): Promise<any> => {
+        const parametersConvert = parameters.map((par) =>
+          par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
+        );
         return await this.requestMethod('triggerSmartContract', [
           {
             address,
             functionSelector,
             options,
-            parameters,
+            parameters: parametersConvert,
             issuerAddress
           }
         ]);
