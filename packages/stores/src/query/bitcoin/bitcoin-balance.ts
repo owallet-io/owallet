@@ -6,16 +6,8 @@ import { action, computed, makeObservable, override } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
 import { getBaseDerivationPath } from '@owallet/bitcoin';
-import {
-  getScriptHash,
-  getBalanceFromUtxos,
-  getCoinNetwork
-} from '@owallet/bitcoin';
-import {
-  BalanceRegistry,
-  BalanceRegistryType,
-  ObservableQueryBalanceInner
-} from '../balances';
+import { getScriptHash, getBalanceFromUtxos, getCoinNetwork } from '@owallet/bitcoin';
+import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
 import { Currency } from '@owallet/types';
 
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
@@ -23,12 +15,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
 
   protected duplicatedFetchCheck: boolean = false;
 
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    bech32Address: string
-  ) {
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, bech32Address: string) {
     super(kvStore, chainId, chainGetter, `/addrs/${bech32Address}/full`);
 
     this.bech32Address = bech32Address;
@@ -40,31 +27,19 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     // If bech32 address is empty, it will always fail, so don't need to fetch it.
     return this.bech32Address.length > 0;
   }
-  protected async fetchResponse(
-    cancelToken: CancelToken
-  ): Promise<QueryResponse<Result>> {
+  protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result>> {
     const resApi = await super.fetchResponse(cancelToken);
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
       keyDerivationPath: '84'
     }) as string;
-    const scriptHash = getScriptHash(
-      this.bech32Address,
-      getCoinNetwork(this.chainId)
-    );
+    const scriptHash = getScriptHash(this.bech32Address, getCoinNetwork(this.chainId));
     const response = await getBalanceFromUtxos({
       addresses: [{ address: this.bech32Address, path, scriptHash }],
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-    console.log(
-      '🚀 ~ file: bitcoin-query.ts:55 ~ ObservableQueryBitcoinBalanceInner ~ this.address:',
-      this.bech32Address
-    );
-    console.log(
-      '🚀 ~ file: bitcoin-balance.ts:64 ~ ObservableQueryBtcBalances ~ response:',
-      JSON.stringify(response)
-    );
+
     const btcResult = response.data;
     if (!btcResult) {
       throw new Error('Failed to get the response from bitcoin');
@@ -134,10 +109,7 @@ export class ObservableQueryBitcoinBalanceNative extends ObservableQueryBalanceI
     ) {
       return new CoinPretty(currency, new Int(new MyBigInt(0)?.toString()));
     }
-    return new CoinPretty(
-      currency,
-      new Int(new MyBigInt(this.response?.data?.balance)?.toString())
-    );
+    return new CoinPretty(currency, new Int(new MyBigInt(this.response?.data?.balance)?.toString()));
   }
 }
 export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
@@ -160,15 +132,7 @@ export class ObservableQueryBitcoinBalanceRegistry implements BalanceRegistry {
 
     const key = `${chainId}/${bech32Address}`;
     if (!this.nativeBalances.has(key)) {
-      this.nativeBalances.set(
-        key,
-        new ObservableQueryBtcBalances(
-          this.kvStore,
-          chainId,
-          chainGetter,
-          bech32Address
-        )
-      );
+      this.nativeBalances.set(key, new ObservableQueryBtcBalances(this.kvStore, chainId, chainGetter, bech32Address));
     }
 
     return new ObservableQueryBitcoinBalanceNative(

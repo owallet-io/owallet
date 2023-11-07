@@ -72,7 +72,7 @@ export const ImportLedgerPage: FunctionComponent<{
               data.password,
               bip44Option.bip44HDPath
             );
-            console.log(result, 'result create ledger ====');
+            
             analyticsStore.setUserProperties({
               registerType: 'ledger',
               accountType: 'ledger'

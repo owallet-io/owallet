@@ -112,7 +112,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           },
           onBroadcasted: async (txHash) => {
             try {
-              console.log('🚀 ~ file: send-btc.tsx:126 ~ onBroadcasted: ~ txHash:', txHash);
+           
               analyticsStore.logEvent('Send Btc tx broadcasted', {
                 chainId: chainId,
                 chainName: chainStore.current.chainName,

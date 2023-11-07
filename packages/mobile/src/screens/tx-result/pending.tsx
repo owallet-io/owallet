@@ -93,7 +93,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
       } else if (chainId === ChainIdEnum.BitcoinTestnet) {
         API.checkStatusTxBitcoinTestNet(chainInfo.rest, txHash)
           .then((res: any) => {
-            console.log('🚀 ~ file: pending.tsx:107 ~ useEffect ~ res:', res);
+           
             if (res?.confirmed) {
               smartNavigation.pushSmart('TxSuccessResult', {
                 txHash: txHash
@@ -103,7 +103,7 @@ export const TxPendingResultScreen: FunctionComponent = observer(() => {
           .catch((err) => console.log(err, 'err data'));
       } else if (chainId.startsWith('injective')) {
         OwalletEvent.txHashListener(txHash, (txInfo) => {
-          console.log('🚀 ~ file: pending.tsx:105 ~ OwalletEvent.txHashListener ~ txInfo:', txInfo);
+          
           if (txInfo?.code === 0) {
             smartNavigation.replaceSmart('TxSuccessResult', {
               chainId,

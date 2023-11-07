@@ -130,7 +130,7 @@ const connectToPeer = ({ port = 50002, host = '', protocol = 'wss', coin = 'bitc
           pingServer(),
           getAddressScriptHashesBalance({ coin, addresses: [{ scriptHash }] })
         ]);
-        console.log(testResponses);
+
         if (testResponses[0].error || testResponses[1].error) {
           return resolve({ error: true, data: '' });
         }
@@ -247,7 +247,7 @@ export const promiseTimeout = async (ms, promise) => {
   });
 
   const result = await Promise.race([promise, timeout]);
-  console.log('🚀 ~ file: index.js:250 ~ promiseTimeout ~ result:', result);
+
   clearTimeout(id);
   try {
     if ('error' in result && 'data' in result) return result;
@@ -674,7 +674,7 @@ const getVersion = ({ id = Math.random(), v1 = '3.2.3', v2 = '1.4', coin = '' } 
       resolve({ id, error: false, method, data: response, peerData, coin });
     } catch (e) {
       console.log('bad connection:', JSON.stringify(e));
-      console.log('trying again');
+
       return await getVersion({ id, coin });
     }
   });
@@ -753,7 +753,7 @@ export const getTransaction = ({ id = Math.random(), txHash = '', coin = '' } = 
         getTimeout(),
         clients.mainClient[coin].blockchain_transaction_get(txHash, true)
       );
-      console.log('🚀 ~ file: index.js:752 ~ returnnewPromise ~ data:', data);
+
       resolve({ id, error, method, data, coin });
     } catch (e) {
       console.log(e);

@@ -156,7 +156,6 @@ export const SendBtcPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
-                    console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
                     notification.push({
                       placement: 'top-center',
                       type: tx ? 'success' : 'danger',
@@ -203,7 +202,7 @@ export const SendBtcPage: FunctionComponent<{
               if (!isDetachedPage) {
                 history.replace('/');
               }
-              console.log(e.message, 'Catch Error on send!!!');
+
               notification.push({
                 type: 'warning',
                 placement: 'top-center',

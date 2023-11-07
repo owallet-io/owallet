@@ -123,7 +123,7 @@ export const AddEvmTokenPage: FunctionComponent = observer(() => {
               ) {
                 await tokensStore.approveSuggestedToken(currency);
               } else {
-                console.log('REACH ADD TOKEN!');
+                
                 await tokensOf.addToken(currency);
               }
             } else {

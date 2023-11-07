@@ -26,7 +26,6 @@ export class ElectrumClient extends SocketClient {
 
         // Get banner.
         const banner = await this.server_banner();
-        console.log(banner);
 
         // Negotiate protocol version.
         if (clientName && electrumProtocolVersion) {
@@ -57,7 +56,7 @@ export class ElectrumClient extends SocketClient {
 
       this.client.send(content + '\n');
     });
-    console.log(method, params, ret);
+
     return ret;
   }
 
@@ -209,10 +208,6 @@ export class ElectrumClient extends SocketClient {
   }
 
   async blockchainScripthashes_listunspent(scripthashes) {
-    console.log(
-      '🚀 ~ file: client.js:198 ~ ElectrumClient ~ blockchainScripthashes_listunspent ~ scripthashes:',
-      scripthashes
-    );
     try {
       const result = [];
       await Promise.all(
@@ -220,7 +215,7 @@ export class ElectrumClient extends SocketClient {
           try {
             const { scriptHash, address, path } = scripthashData;
             const response = await this.request('blockchain.scripthash.listunspent', [scriptHash]);
-            console.log('🚀 ~ file: index.js:230 ~ ElectrumClient ~ scripthashes.map ~ response:', response);
+
             const responseLength = response.length;
 
             if (responseLength > 0) {

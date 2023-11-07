@@ -47,7 +47,7 @@ export class Bech32Address {
       throw new Error('Unmatched prefix');
     }
     const addressHex = new Uint8Array(fromWords(decoded.words.slice(1)));
-    console.log("🚀 ~ file: index.ts:50 ~ Bech32Address ~ fromBech32Btc ~ addressHex:", addressHex)
+    
     return new Bech32Address(addressHex);
   }
   static validate(bech32Address: string, prefix?: string) {

@@ -26,7 +26,7 @@ export const MyRewardCard: FunctionComponent<{
   const pendingStakableReward = queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).stakableReward;
   const stakingReward = queryReward.stakableReward;
   const apy = queries.cosmos.queryInflation.inflation;
-  console.log('🚀 ~ file: reward-card.tsx:33 ~ apy:', apy);
+  
 
   const smartNavigation = useSmartNavigation();
 

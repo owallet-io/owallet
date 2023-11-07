@@ -313,7 +313,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
   const chainId = chainStore.current.chainId;
   let address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-  console.log('🚀 ~ file: asset.tsx:307 ~ constAssetChartViewBtc:FunctionComponent=observer ~ balance:', balance);
+  
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
       balance: Number(balance?.toCoin().amount),

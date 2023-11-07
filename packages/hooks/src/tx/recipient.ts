@@ -134,11 +134,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
         }
       } else if (this.chainInfo.networkType === 'bitcoin') {
         const { isValid } = validateAddress(this.recipient, this.chainInfo.chainId);
-        // console.log("🚀 ~ file: recipient.ts:147 ~ RecipientConfig ~ getError ~ this.recipient:", this.recipient)
-        // console.log(
-        //   '🚀 ~ file: recipient.ts:146 ~ RecipientConfig ~ getError ~ isValid:',
-        //   isValid
-        // );
+        
         if (!isValid) {
           return new InvalidBech32Error(`Invalid bitcoin address`);
         }

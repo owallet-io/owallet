@@ -79,7 +79,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
   const decimals = useRef(chainStore.current.feeCurrencies[0].coinDecimals);
 
   useEffect(() => {
-    console.log('dataSign: ', dataSign);
+    
     try {
       if (dataSign) {
         decimals.current = dataSign?.data?.data?.data?.decimals;
@@ -99,7 +99,7 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
           .div(new Big(10).pow(decimals.current))
           .toFixed(decimals.current);
 
-        console.log(estimatedGasPrice, '');
+        
 
         if (!isNaN(estimatedGasLimit) && estimatedGasPrice !== 'NaN') {
           setGasPrice(estimatedGasPrice);
@@ -115,9 +115,6 @@ export const SignEthereumPage: FunctionComponent = observer(() => {
       console.log(error);
     }
   }, [dataSign]);
-
-  console.log(gasPrice, 'GAS PRICE!!!!!!!!!!!');
-  console.log(feeConfig.feeRaw, 'FEE RAWWWWWWWWW!!!!!!!!!!!');
 
   const memoConfig = useMemoConfig(chainStore, current.chainId);
 

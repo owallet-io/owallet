@@ -30,7 +30,7 @@ async function calculateOutputHash(root) {
     const p = path.join(root, dir.name);
     const buf = Buffer.from((await FolderHash.hashElement(p)).hash, 'base64');
 
-    console.log(p, buf.toString('base64'));
+    
 
     hash = Buffer.concat([hash, buf]);
   }
@@ -60,13 +60,6 @@ function setOutputHash(root, hash) {
     await $`mkdir -p ${outDir}`;
     $.verbose = true;
 
-    // When executed in CI, the proto output should not be different with ones built locally.
-    // let lastOutputHash = undefined;
-    // if (process.env.CI === 'true') {
-    //   console.log('You are ci runner');
-    //   lastOutputHash = getOutputHash(packageRoot);
-    //   console.log('Expected output hash is', lastOutputHash);
-    // }
 
     const protoTsBinPath = (() => {
       try {

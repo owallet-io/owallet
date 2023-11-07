@@ -18,7 +18,7 @@ export const LoadingScreenModal: FunctionComponent<{
     onOpenCompleteRef.current = onOpenComplete;
 
     const modal = useModalState();
-    console.log('🚀 ~ file: modal.tsx:20 ~ modal:', modal);
+    
 
     useEffect(() => {
       if (!modal.isTransitionOpening) {

@@ -75,10 +75,7 @@ export class ObservableQueryInflation {
           }
         }
       } else {
-        // console.log(
-        //   '🚀 ~ file: inflation.ts:75 ~ ObservableQueryInflation ~ getinflation ~ this._queryMint.response?.data.inflation:',
-        //   this._queryMint.response?.data?.result
-        // );
+        
         dec = new Dec(this._queryMint.response?.data?.inflation || (this._queryMint.response?.data as any)?.result || '0').mul(
           DecUtils.getTenExponentNInPrecisionRange(2)
         );

@@ -44,7 +44,7 @@ export const SettingRemoveAccountItem: FunctionComponent<{
           baseURL: 'https://tracking-tx.orai.io'
         }
       );
-      console.log('un-subcriber ===', unsubcriber);
+      
     }
   }, []);
 
@@ -55,10 +55,10 @@ export const SettingRemoveAccountItem: FunctionComponent<{
         onPress={() => {
           CodePush.checkForUpdate().then((update) => {
             if (!update) {
-              console.log('The app is up to date!');
+          
               alert('The app is up to date!');
             } else {
-              console.log('An update is available! Should we download it?');
+          
               alert(
                 'Getting a new update...Please keep this screen on until completion. '
               );
@@ -69,21 +69,21 @@ export const SettingRemoveAccountItem: FunctionComponent<{
                 (status) => {
                   switch (status) {
                     case CodePush.SyncStatus.UP_TO_DATE:
-                      console.log('UP_TO_DATE');
+                     
                       // Show "downloading" modal
                       // modal.open();
                       break;
                     case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
-                      console.log('DOWNLOADING_PACKAGE');
+                     
                       // Show "downloading" modal
                       // modal.open();
                       break;
                     case CodePush.SyncStatus.INSTALLING_UPDATE:
-                      console.log('INSTALLING_UPDATE');
+                      
                       // show installing
                       break;
                     case CodePush.SyncStatus.UPDATE_INSTALLED:
-                      console.log('UPDATE_INSTALLED');
+                      
 
                       // Hide loading modal
                       break;

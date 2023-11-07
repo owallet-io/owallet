@@ -36,7 +36,7 @@ export const NftDetailsPage: FunctionComponent<{
         });
       }
     } catch (error) {
-      console.log({ error });
+      
     } finally {
       setIsLoading(false);
     }

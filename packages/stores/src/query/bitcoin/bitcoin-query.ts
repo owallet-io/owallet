@@ -54,16 +54,13 @@ export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Res
       this.address,
       getCoinNetwork(this.chainId)
     );
-    console.log(
-      '🚀 ~ file: bitcoin-query.ts:55 ~ ObservableQueryBitcoinBalanceInner ~ this.address:',
-      this.address
-    );
+    
     const response = await getBalanceFromUtxos({
       addresses: [{ address: this.address, path, scriptHash }],
       changeAddresses: [],
       selectedCrypto: this.chainId
     });
-    console.log("🚀 ~ file: bitcoin-query.ts:66 ~ ObservableQueryBitcoinBalanceInner ~ response:", response)
+   
     const btcResult = response.data;
 
     if (!btcResult) {

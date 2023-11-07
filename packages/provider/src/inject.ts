@@ -597,7 +597,6 @@ export class InjectedEthereum implements Ethereum {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
-        console.log('Result proxy request: ', result);
 
         if (!result) {
           reject(new Error('Result is null'));
@@ -640,12 +639,10 @@ export class InjectedEthereum implements Ethereum {
 
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
-    console.log(`arguments: ${JSON.stringify(args)}`);
     return await this.requestMethod(args.method as string, [args.params, args.chainId]);
   }
 
   async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    console.log('console.log sign');
     return { rawTxHex: '' };
   }
 
@@ -868,7 +865,6 @@ export class InjectedBitcoin implements Bitcoin {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
-        console.log('Result proxy request: ', result);
 
         if (!result) {
           reject(new Error('Result is null'));
@@ -918,7 +914,6 @@ export class InjectedBitcoin implements Bitcoin {
   }
 
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    console.log('console.log sign');
     return { rawTxHex: '' };
   }
 }
@@ -1097,7 +1092,6 @@ export class InjectedEthereumOWallet implements Ethereum {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
-        console.log('Result proxy request: ', result);
 
         if (!result) {
           reject(new Error('Result is null'));
@@ -1140,7 +1134,6 @@ export class InjectedEthereumOWallet implements Ethereum {
 
   // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
   async request(args: RequestArguments): Promise<any> {
-    console.log(`arguments: ${JSON.stringify(args)}`);
     return await this.requestMethod(args.method as string, [args.params, args.chainId]);
   }
 
@@ -1150,7 +1143,6 @@ export class InjectedEthereumOWallet implements Ethereum {
   }
 
   async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    console.log('console.log sign');
     return { rawTxHex: '' };
   }
 
@@ -1272,10 +1264,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
           case 'tron_requestAccounts':
             try {
               result = await tronweb.getDefaultAddress();
-              console.log(
-                '🚀 ~ file: inject.ts:1237 ~ InjectedTronWebOWallet ~ eventListener.addMessageListener ~ result:',
-                result
-              );
+
               localStorage.setItem('tronWeb.defaultAddress', JSON.stringify(result));
               if (!isReactNative()) {
                 result = {
@@ -1350,7 +1339,6 @@ export class InjectedTronWebOWallet implements ITronWeb {
 
         this.eventListener.removeMessageListener(receiveResponse);
         const result = JSONUint8Array.unwrap(proxyResponse.result);
-        console.log('Result proxy request: ', result);
 
         if (!result) {
           reject(new Error('Result is null'));

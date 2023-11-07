@@ -25,7 +25,6 @@ export const AccessModal: FunctionComponent<{
       if (waitingData) {
         await permissionStore.reject(waitingData.id);
         if (permissionStore.waitingBasicAccessPermissions.length === 0) {
-          console.log('permissionStore - all clear');
         }
       }
     };

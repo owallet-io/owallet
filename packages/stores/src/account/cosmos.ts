@@ -135,8 +135,7 @@ export class CosmosAccount {
     gasUsed: number;
   }> {
     const account = await BaseAccount.fetchFromRest(this.instance, this.base.bech32Address, true);
-    console.log('🚀 ~ file: cosmos.ts:149 ~ CosmosAccount ~ account:', account);
-    console.log('🚀 ~ file: cosmos.ts:145 ~ CosmosAccount ~ fee:', fee);
+
     const unsignTx = TxRaw.encode({
       bodyBytes: TxBody.encode(
         TxBody.fromPartial({
@@ -169,12 +168,12 @@ export class CosmosAccount {
       }).finish(),
       signatures: [new Uint8Array(64)]
     }).finish();
-    console.log('🚀 ~ file: cosmos.ts:167 ~ CosmosAccount ~ unsignTx:', unsignTx);
+    
 
     const result = await this.instance.post('/cosmos/tx/v1beta1/simulate', {
       tx_bytes: Buffer.from(unsignTx).toString('base64')
     });
-    console.log('🚀 ~ file: cosmos.ts:172 ~ CosmosAccount ~ result:', result);
+    
 
     const gasUsed = parseInt(result.data.gas_info.gas_used);
     if (Number.isNaN(gasUsed)) {
@@ -263,9 +262,11 @@ export class CosmosAccount {
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               if (tx.code == null || tx.code === 0) {
                 // After succeeding to send token, refresh the balance.
-                const queryBalance = this.queries.queryBalances.getQueryBech32Address(this.base.bech32Address).balances.find((bal) => {
-                  return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
-                });
+                const queryBalance = this.queries.queryBalances
+                  .getQueryBech32Address(this.base.bech32Address)
+                  .balances.find((bal) => {
+                    return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
+                  });
 
                 if (queryBalance) {
                   queryBalance.fetch();
@@ -309,7 +310,9 @@ export class CosmosAccount {
       return dec.truncate().toString();
     })();
 
-    const destinationBlockHeight = this.queriesStore.get(channel.counterpartyChainId).cosmos.queryBlock.getBlock('latest');
+    const destinationBlockHeight = this.queriesStore
+      .get(channel.counterpartyChainId)
+      .cosmos.queryBlock.getBlock('latest');
 
     const msg = {
       type: this.base.msgOpts.ibcTransfer.type,
@@ -341,7 +344,9 @@ export class CosmosAccount {
             sender: msg.value.sender,
             receiver: msg.value.receiver,
             timeoutHeight: {
-              revisionNumber: msg.value.timeout_height.revision_number ? Long.fromString(msg.value.timeout_height.revision_number) : null,
+              revisionNumber: msg.value.timeout_height.revision_number
+                ? Long.fromString(msg.value.timeout_height.revision_number)
+                : null,
               revisionHeight: Long.fromString(msg.value.timeout_height.revision_height)
             }
           }).finish()
@@ -375,7 +380,9 @@ export class CosmosAccount {
             sender: this.base.bech32Address,
             receiver: recipient,
             timeout_height: {
-              revision_number: ChainIdHelper.parse(channel.counterpartyChainId).version.toString() as string | undefined,
+              revision_number: ChainIdHelper.parse(channel.counterpartyChainId).version.toString() as
+                | string
+                | undefined,
               // Set the timeout height as the current height + 150.
               revision_height: destinationBlockHeight.height.add(new Int('150')).toString()
             }
@@ -398,7 +405,9 @@ export class CosmosAccount {
                 sender: msg.value.sender,
                 receiver: msg.value.receiver,
                 timeoutHeight: {
-                  revisionNumber: msg.value.timeout_height.revision_number ? Long.fromString(msg.value.timeout_height.revision_number) : null,
+                  revisionNumber: msg.value.timeout_height.revision_number
+                    ? Long.fromString(msg.value.timeout_height.revision_number)
+                    : null,
                   revisionHeight: Long.fromString(msg.value.timeout_height.revision_height)
                 }
               }).finish()
@@ -446,9 +455,11 @@ export class CosmosAccount {
       this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
         if (tx.code == null || tx.code === 0) {
           // After succeeding to send token, refresh the balance.
-          const queryBalance = this.queries.queryBalances.getQueryBech32Address(this.base.bech32Address).balances.find((bal) => {
-            return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
-          });
+          const queryBalance = this.queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.find((bal) => {
+              return bal.currency.coinMinimalDenom === currency.coinMinimalDenom;
+            });
 
           if (queryBalance) {
             queryBalance.fetch();
@@ -785,7 +796,7 @@ export class CosmosAccount {
         }
       };
     });
-    console.log('🚀 ~ file: cosmos.ts:725 ~ CosmosAccount ~ msgs ~ msgs:', msgs);
+    
 
     const simulateTx = await this.simulateTx(
       msgs.map((msg) => {
@@ -802,7 +813,7 @@ export class CosmosAccount {
       },
       memo
     );
-    console.log('🚀 ~ file: cosmos.ts:741 ~ CosmosAccount ~ simulateTx:', simulateTx);
+    
 
     await this.base.sendMsgs(
       'withdrawRewards',
@@ -838,13 +849,15 @@ export class CosmosAccount {
       signOptions,
       this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
         if (tx.code == null || tx.code === 0) {
-          console.log({ currency });
+          
           // After succeeding to send token, refresh the balance.
-          const queryBalance = this.queries.queryBalances.getQueryBech32Address(this.base.bech32Address).balances.find((bal) => {
-            return (
-              bal.currency.coinMinimalDenom === currency //currency.coinMinimalDenom
-            );
-          });
+          const queryBalance = this.queries.queryBalances
+            .getQueryBech32Address(this.base.bech32Address)
+            .balances.find((bal) => {
+              return (
+                bal.currency.coinMinimalDenom === currency //currency.coinMinimalDenom
+              );
+            });
 
           if (queryBalance) {
             queryBalance.fetch();

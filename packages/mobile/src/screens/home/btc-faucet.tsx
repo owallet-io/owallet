@@ -4,7 +4,6 @@ import { WebView } from 'react-native-webview';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 const BtcFaucet = observer(() => {
-  // console.log('🚀 ~ file: btc-faucet.tsx:5 ~ BtcFaucet ~ address:', address);
   const {
     chainStore,
     accountStore,
@@ -24,7 +23,7 @@ const BtcFaucet = observer(() => {
           javaScriptEnabled={true}
           injectedJavaScript={`
               const inputValue = document.getElementById('validationTooltipAddress');
-              console.log(inputValue,"inputValue");
+              
               if(!!inputValue){
                   inputValue.value='${account.bech32Address}'   
                   }

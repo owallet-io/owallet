@@ -233,15 +233,8 @@ export const TxButtonBtcView: FunctionComponent<TxButtonViewProps> = observer(({
   const { chainId } = chainStore.current;
   const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-  console.log(
-    '🚀 ~ file: tx-button.tsx:255 ~ constTxButtonBtcView:FunctionComponent<TxButtonViewProps>=observer ~ balanceBtc:',
-    balanceBtc
-  );
+
   const hasAssets = balanceBtc?.toDec().gt(new Dec(0));
-  console.log(
-    '🚀 ~ file: tx-button.tsx:256 ~ constTxButtonBtcView:FunctionComponent<TxButtonViewProps>=observer ~ hasAssets:',
-    hasAssets
-  );
 
   return (
     <div className={styleTxButton.containerTxButton}>

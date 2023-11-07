@@ -115,10 +115,8 @@ export const SendTronEvmPage: FunctionComponent<{
               addressTron,
               {
                 onFulfill: (tx) => {
-                  console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
-                  // console.log(typeof tx, 'type of');
-                  // const txHash = Buffer.from(tx, 'hex');
-                  // console.log('🚀 ~ file: index.tsx:120 ~ onSubmit={ ~ txHash:', txHash);
+               
+                
                   notification.push({
                     placement: 'top-center',
                     type: !!tx ? 'success' : 'danger',
