@@ -5,6 +5,8 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
+import tokenImg from '../helpers';
+import { find } from 'lodash';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -16,6 +18,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   const { colors } = useTheme();
   const styles = styling(colors);
   const [txt, setText] = useState('0');
+  const [tokenIcon, setTokenIcon] = useState(null);
 
   useEffect(() => {
     setText(amount);
@@ -26,10 +29,15 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
     onChangeAmount(newAmount);
   };
 
+  useEffect(() => {
+    const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === tokenActive.coinGeckoId);
+    setTokenIcon(tokenIcon);
+  }, [tokenActive]);
+
   return (
     <View style={[styles.containerInputSelectToken]}>
       <TouchableOpacity onPress={onOpenTokenModal} style={styles.btnChainContainer}>
-        <OWIcon type="images" source={{ uri: tokenActive?.Icon }} size={30} />
+        <OWIcon type="images" source={{ uri: tokenIcon?.Icon }} size={30} />
         <View style={[styles.ml8, styles.itemTopBtn]}>
           <View style={styles.pr4}>
             <Text weight="700" size={20} color={colors['text-title']}>

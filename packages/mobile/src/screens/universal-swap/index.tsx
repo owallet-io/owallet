@@ -37,7 +37,6 @@ import {
   SwapDirection,
   feeEstimate,
   fetchTaxRate,
-  filterTokens,
   getTokenOnSpecificChainId,
   getTransferTokenFee
 } from '@owallet/common';
@@ -326,10 +325,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           )
         : '0';
 
-      const isWarningSlippage = +minimumReceive > +data?.amount;
-      setIsWarningSlippage(isWarningSlippage);
       setMininumReceive(toDisplay(minimumReceive));
-      setSwapAmount([fromAmountBalance, Number(data.amount)]);
+      if (data) {
+        const isWarningSlippage = +minimumReceive > +data.amount;
+        setIsWarningSlippage(isWarningSlippage);
+        setSwapAmount([fromAmountBalance, Number(data.amount)]);
+      }
       setAmountLoading(false);
     } catch (error) {
       console.log('error', error);
@@ -634,12 +635,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
           ) : null}
-          {/* {!!relayerFeeToken && (
+          {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
               <BalanceText>{toAmount(relayerFeeToken, RELAYER_DECIMAL)} ORAI</BalanceText>
             </View>
-          )} */}
+          )}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (
             <View style={styles.itemBottom}>
               <BalanceText color={colors['danger']}>Current slippage exceed configuration!</BalanceText>

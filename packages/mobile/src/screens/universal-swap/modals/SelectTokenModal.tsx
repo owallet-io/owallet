@@ -11,6 +11,8 @@ import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/or
 import { useStore } from '@src/stores';
 import { getTotalUsd } from '@owallet/common';
 import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
+import tokenImg from '../helpers';
+import { find } from 'lodash';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -57,6 +59,8 @@ export const SelectTokenModal: FunctionComponent<{
           )
         ) as AmountDetails;
 
+        const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === item.coinGeckoId);
+
         const totalUsd = getTotalUsd(subAmounts, prices, item);
         return (
           <TouchableOpacity
@@ -78,7 +82,7 @@ export const SelectTokenModal: FunctionComponent<{
                   backgroundColor: colors['gray-10']
                 }}
               >
-                <OWIcon type="images" source={{ uri: item.Icon }} size={35} />
+                <OWIcon type="images" source={{ uri: tokenIcon?.Icon }} size={35} />
               </View>
               <View style={styles.pl10}>
                 <Text size={16} color={colors['text-title']} weight="500">
