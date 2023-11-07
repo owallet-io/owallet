@@ -17,13 +17,19 @@ import LogRocket from '@logrocket/react-native';
 LogRocket.init(process.env.LOG_ROCKET, {
   redactionTags: ['private'],
   console: {
-    isEnabled: false
+    isEnabled: {
+      error: true,
+      log: false,
+      warn: false,
+      debug: false,
+      info: false
+    }
   }
 });
-const name = __DEV__ ? 'DEV_Admin' : 'Admin';
+
 LogRocket.identify(name, {
-  name: name,
-  email: __DEV__ ? 'foundationDev@orai.com' : 'foundation@orai.com'
+  name: 'Admin',
+  email: 'foundation@orai.com'
 });
 const config = {
   apiKey: process.env.API_KEY,
