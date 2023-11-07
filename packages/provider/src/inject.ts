@@ -1408,6 +1408,9 @@ export class InjectedTronWebOWallet implements ITronWeb {
         parameters: any[],
         issuerAddress: string
       ): Promise<any> => {
+        if (!address || !functionSelector || !issuerAddress) {
+          throw new Error('You need to provide enough data address,functionSelector and issuerAddress');
+        }
         const parametersConvert = parameters.map((par) =>
           par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
         );
