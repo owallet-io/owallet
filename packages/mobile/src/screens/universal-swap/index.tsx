@@ -101,6 +101,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const relayerFee = useRelayerFee(client);
   const relayerFeeToken = relayerFee.reduce((acc, cur) => {
     if (
+      originalFromToken &&
+      originalToToken &&
       originalFromToken.chainId !== originalToToken.chainId &&
       (cur.prefix === originalFromToken.prefix || cur.prefix === originalToToken.prefix)
     ) {
