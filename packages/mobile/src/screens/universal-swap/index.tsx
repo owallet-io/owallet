@@ -294,16 +294,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
   const getSimulateSwap = async (initAmount?) => {
-    const routerClient = new OraiswapRouterQueryClient(client, network.router);
+    if (client) {
+      const routerClient = new OraiswapRouterQueryClient(client, network.router);
 
-    const data = await handleSimulateSwap({
-      originalFromInfo: originalFromToken,
-      originalToInfo: originalToToken,
-      originalAmount: initAmount ?? fromAmountToken,
-      routerClient
-    });
-    setAmountLoading(false);
-    return data;
+      const data = await handleSimulateSwap({
+        originalFromInfo: originalFromToken,
+        originalToInfo: originalToToken,
+        originalAmount: initAmount ?? fromAmountToken,
+        routerClient
+      });
+      setAmountLoading(false);
+      return data;
+    }
   };
 
   const estimateAverageRatio = async () => {
@@ -352,7 +354,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     estimateAverageRatio();
-  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken]);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
 
   useEffect(() => {
     // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
@@ -632,12 +634,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
           ) : null}
-          {!!relayerFeeToken && (
+          {/* {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
               <BalanceText>{toAmount(relayerFeeToken, RELAYER_DECIMAL)} ORAI</BalanceText>
             </View>
-          )}
+          )} */}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (
             <View style={styles.itemBottom}>
               <BalanceText color={colors['danger']}>Current slippage exceed configuration!</BalanceText>
