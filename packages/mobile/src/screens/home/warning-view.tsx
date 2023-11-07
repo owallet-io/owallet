@@ -6,7 +6,6 @@ import { observer } from 'mobx-react-lite';
 import { API } from '@src/common/api';
 import { useStyle } from '@src/styles';
 import { useStore } from '@src/stores';
-import { BondStatus } from '@owallet/stores';
 import { find } from 'lodash';
 
 export const WarningView: FunctionComponent = observer(() => {

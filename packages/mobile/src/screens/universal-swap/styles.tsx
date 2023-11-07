@@ -68,6 +68,7 @@ export const styling = (colors: TypeTheme['colors']) =>
       justifyContent: 'space-between',
       paddingVertical: 5
     },
+
     theFirstLabel: {
       flexDirection: 'row',
       justifyContent: 'space-between',

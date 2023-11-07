@@ -71,6 +71,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [userSlippage, setUserSlippage] = useState(DEFAULT_SLIPPAGE);
   const [swapLoading, setSwapLoading] = useState(false);
   const [amountLoading, setAmountLoading] = useState(false);
+  const [isWarningSlippage, setIsWarningSlippage] = useState(false);
   const [loadingRefresh, setLoadingRefresh] = useState(false);
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
@@ -309,7 +310,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             originalFromToken.decimals
           )
         : '0';
-      // const isWarningSlippage = +minimumReceive > +simulateData?.amount;
+
+      const isWarningSlippage = +minimumReceive > +data?.amount;
+      setIsWarningSlippage(isWarningSlippage);
       setMininumReceive(toDisplay(minimumReceive));
       setSwapAmount([fromAmountBalance, Number(data.amount)]);
       setAmountLoading(false);
@@ -611,6 +614,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
           ) : null}
+          {!fromTokenFee && !toTokenFee && isWarningSlippage && (
+            <View style={styles.itemBottom}>
+              <BalanceText color={colors['danger']}>Current slippage exceed configuration!</BalanceText>
+            </View>
+          )}
           <View style={styles.itemBottom}>
             <BalanceText>Slippage</BalanceText>
             <BalanceText>{userSlippage}%</BalanceText>
