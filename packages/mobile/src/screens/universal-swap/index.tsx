@@ -33,13 +33,7 @@ import {
   toAmount,
   network
 } from '@oraichain/oraidex-common';
-import {
-  SwapDirection,
-  feeEstimate,
-  fetchTaxRate,
-  getTokenOnSpecificChainId,
-  getTransferTokenFee
-} from '@owallet/common';
+import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, toSubAmount } from '@owallet/common';
 import { CWStargate } from '@src/common/cw-stargate';
@@ -210,11 +204,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const loadTokenAmounts = useLoadTokens(universalSwapStore);
   // handle fetch all tokens of all chains
   const handleFetchAmounts = async () => {
-    const accounts = await Promise.all([
-      accountStore.getAccount(ETH_ID),
-      accountStore.getAccount(TRON_ID),
-      accountStore.getAccount(KAWAII_ID)
-    ]);
     let loadTokenParams = {};
     try {
       const cwStargate = {
@@ -228,26 +217,20 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         oraiAddress: accountOrai.bech32Address,
         cwStargate
       };
-      accounts.map(async account => {
-        if (account.chainId === ETH_ID) {
-          loadTokenParams = {
-            ...loadTokenParams,
-            metamaskAddress: account.evmosHexAddress
-          };
-        }
-        if (account.chainId === TRON_ID) {
-          loadTokenParams = {
-            ...loadTokenParams,
-            tronAddress: Address.getBase58Address(account.evmosHexAddress)
-          };
-        }
-        if (account.chainId === KAWAII_ID) {
-          loadTokenParams = {
-            ...loadTokenParams,
-            kwtAddress: account.bech32Address
-          };
-        }
-      });
+      loadTokenParams = {
+        ...loadTokenParams,
+        metamaskAddress: accountEvm.evmosHexAddress
+      };
+      loadTokenParams = {
+        ...loadTokenParams,
+        kwtAddress: accountOrai.bech32Address
+      };
+      if (accountTron) {
+        loadTokenParams = {
+          ...loadTokenParams,
+          tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
+        };
+      }
 
       loadTokenAmounts(loadTokenParams);
     } catch (error) {
@@ -256,7 +239,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    handleFetchAmounts();
     setTimeout(() => {
       handleFetchAmounts();
     }, 2000);
