@@ -9,7 +9,8 @@ import {
   CoinGeckoId,
   NetworkChainId,
   atomic,
-  parseTokenInfo
+  parseTokenInfo,
+  IBC_WASM_CONTRACT
 } from '@oraichain/oraidex-common';
 import { TokenInfo } from '../types/token';
 import { generateSwapOperationMsgs, getEvmSwapRoute } from '../api';
@@ -93,6 +94,16 @@ export async function fetchTaxRate(client: CosmWasmClient) {
     return data;
   } catch (error) {
     throw new Error(`Error when query TaxRate using oracle: ${error}`);
+  }
+}
+
+export async function fetchRelayerFee(client: CosmWasmClient): Promise<any> {
+  const ics20Contract = new CwIcs20LatestQueryClient(client, IBC_WASM_CONTRACT);
+  try {
+    const { relayer_fees } = await ics20Contract.config();
+    return relayer_fees;
+  } catch (error) {
+    throw new Error(`Error when query Relayer Fee using oracle: ${error}`);
   }
 }
 

@@ -364,7 +364,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
-    // return;
     if (fromAmountToken <= 0) {
       showToast({
         text1: 'Error',
