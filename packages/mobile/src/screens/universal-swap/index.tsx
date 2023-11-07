@@ -632,6 +632,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               <BalanceText>{Number(taxRate) * 100}%</BalanceText>
             </View>
           ) : null}
+          {!!relayerFeeToken && (
+            <View style={styles.itemBottom}>
+              <BalanceText>Relayer Fee</BalanceText>
+              <BalanceText>{toAmount(relayerFeeToken, RELAYER_DECIMAL)} ORAI</BalanceText>
+            </View>
+          )}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (
             <View style={styles.itemBottom}>
               <BalanceText color={colors['danger']}>Current slippage exceed configuration!</BalanceText>
