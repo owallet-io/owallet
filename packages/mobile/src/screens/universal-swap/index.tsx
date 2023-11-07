@@ -24,7 +24,7 @@ import {
 } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
-import { evmTokens } from '@owallet/common';
+import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
   TokenItemType,
   NetworkChainId,
@@ -272,7 +272,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     : BigInt(0);
 
   useEffect(() => {
-    const filteredToTokens = filterTokens(
+    const filteredToTokens = filterNonPoolEvmTokens(
       fromToken.chainId,
       fromToken.coinGeckoId,
       fromTokenDenom,
@@ -281,7 +281,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     );
     setFilteredToTokens(filteredToTokens);
 
-    const filteredFromTokens = filterTokens(
+    const filteredFromTokens = filterNonPoolEvmTokens(
       toToken.chainId,
       toToken.coinGeckoId,
       toTokenDenom,
