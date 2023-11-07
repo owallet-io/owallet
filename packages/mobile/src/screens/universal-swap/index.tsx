@@ -56,6 +56,7 @@ import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useRelayerFee } from '@src/hooks/use-relayer-fee';
+import { useTaxRate } from '@src/hooks/use-tax-rate';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -102,6 +103,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     getClient();
   }, []);
 
+  const taxRate = useTaxRate(client);
   const relayerFee = useRelayerFee(client);
   const relayerFeeToken = relayerFee.reduce((acc, cur) => {
     if (
@@ -337,17 +339,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setAmountLoading(false);
     }
   };
-
-  const [taxRate, setTaxRate] = useState('');
-
-  const queryTaxRate = async () => {
-    const data = await fetchTaxRate(client);
-    setTaxRate(data?.rate);
-  };
-
-  useEffect(() => {
-    queryTaxRate();
-  }, []);
 
   useEffect(() => {
     estimateSwapAmount(fromAmountToken);
