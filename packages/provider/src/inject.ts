@@ -1196,7 +1196,24 @@ export class InjectedEthereumOWallet implements Ethereum {
 }
 
 export class InjectedTronWebOWallet implements ITronWeb {
-  trx: { sign: (transaction: object) => Promise<object> };
+  trx: {
+    sign: (transaction: object) => Promise<object>;
+    sendRawTransaction: (transaction: {
+      raw_data: any;
+      raw_data_hex: string;
+      txID: string;
+      visible?: boolean;
+    }) => Promise<object>;
+  };
+  transactionBuilder: {
+    triggerSmartContract: (
+      address: string,
+      functionSelector: string,
+      options: { feeLimit?: number },
+      parameters: any[],
+      issuerAddress: string
+    ) => any;
+  };
   get defaultAddress() {
     return JSON.parse(localStorage.getItem('tronWeb.defaultAddress'));
   }
@@ -1239,6 +1256,18 @@ export class InjectedTronWebOWallet implements ITronWeb {
         switch (message.method) {
           case 'sign':
             result = await tronweb.sign(message.args[0]);
+            break;
+          case 'sendRawTransaction':
+            result = await tronweb.sendRawTransaction(message.args[0]);
+            break;
+          case 'triggerSmartContract':
+            result = await tronweb.triggerSmartContract(
+              message.args[0].address,
+              message.args[0].functionSelector,
+              message.args[0].options,
+              message.args[0].parameters,
+              message.args[0].issuerAddress
+            );
             break;
           case 'tron_requestAccounts':
             try {
@@ -1360,9 +1389,62 @@ export class InjectedTronWebOWallet implements ITronWeb {
     this.trx = {
       sign: async (transaction: object): Promise<object> => {
         return await this.requestMethod('sign', [transaction]);
+      },
+      sendRawTransaction: async (transaction: {
+        raw_data: any;
+        raw_data_hex: string;
+        txID: string;
+        visible?: boolean;
+      }): Promise<object> => {
+        return await this.requestMethod('sendRawTransaction', [transaction]);
+      }
+    };
+
+    this.transactionBuilder = {
+      triggerSmartContract: async (
+        address: string,
+        functionSelector: string,
+        options: object,
+        parameters: any[],
+        issuerAddress: string
+      ): Promise<any> => {
+        if (!address || !functionSelector || !issuerAddress) {
+          throw new Error('You need to provide enough data address,functionSelector and issuerAddress');
+        }
+        const parametersConvert = parameters.map((par) =>
+          par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
+        );
+        return await this.requestMethod('triggerSmartContract', [
+          {
+            address,
+            functionSelector,
+            options,
+            parameters: parametersConvert,
+            issuerAddress
+          }
+        ]);
       }
     };
   }
+  sendRawTransaction(transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  }): Promise<object> {
+    throw new Error('Method not implemented.');
+  }
+
+  triggerSmartContract(
+    address: string,
+    functionSelector: string,
+    options: object,
+    parameters: any[],
+    issuerAddress: string
+  ): Promise<any> {
+    throw new Error('Method not implemented.');
+  }
+
   sign(transaction: object): Promise<object> {
     throw new Error('Method not implemented.');
   }
