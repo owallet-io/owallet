@@ -56,6 +56,8 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { useRelayerFee } from '@src/hooks/use-relayer-fee';
+const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { accountStore, universalSwapStore } = useStore();
@@ -100,6 +102,17 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     getClient();
   }, []);
+
+  const relayerFee = useRelayerFee(client);
+  const relayerFeeToken = relayerFee.reduce((acc, cur) => {
+    if (
+      originalFromToken.chainId !== originalToToken.chainId &&
+      (cur.prefix === originalFromToken.prefix || cur.prefix === originalToToken.prefix)
+    ) {
+      return +cur.amount + acc;
+    }
+    return acc;
+  }, 0);
 
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([undefined, toAmountToken]);
@@ -381,6 +394,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       const evmWallet = new SwapEvmWallet(isTron);
 
+      const relayerFee = relayerFeeToken && {
+        relayerAmount: relayerFeeToken.toString(),
+        relayerDecimals: RELAYER_DECIMAL
+      };
+
       const universalSwapData: UniversalSwapData = {
         sender: {
           cosmos: accountOrai.bech32Address,
@@ -392,7 +410,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         simulateAmount: toAmountToken.toString(),
         simulatePrice: ratio.amount,
         userSlippage: userSlippage,
-        fromAmount: fromAmountToken
+        fromAmount: fromAmountToken,
+        relayerFee
       };
 
       const universalSwapHandler = new UniversalSwapHandler(
