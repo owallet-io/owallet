@@ -5,7 +5,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
-import tokenImg from '../helpers';
+import { tokenImg } from '../helpers';
 import { find } from 'lodash';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
