@@ -1,5 +1,5 @@
 import { TypeTextAndCustomizeComponent } from './types';
-
+import { TokenItemType, CustomChainInfo } from '@oraichain/oraidex-common';
 export const checkFnComponent = (titleRight: TypeTextAndCustomizeComponent, Element: React.ReactNode) => {
   if (!!titleRight) {
     if (typeof titleRight === 'string') {
@@ -31,7 +31,67 @@ const BnbIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 const InjIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7226.png';
 const OraixLightIcon = 'https://assets.coingecko.com/coins/images/28104/standard/oraix.png?1696527113';
 
-const tokenImg = [
+type TokenIcon = Pick<TokenItemType, 'coinGeckoId' | 'Icon' | 'IconLight'>;
+type ChainIcon = Pick<CustomChainInfo, 'chainId' | 'Icon' | 'IconLight' | 'chainName'>;
+
+export const chainIcons: ChainIcon[] = [
+  {
+    chainId: 'Oraichain',
+    chainName: 'Oraichain',
+    Icon: OraiIcon,
+    IconLight: OraiLightIcon
+  },
+  {
+    chainId: 'kawaii_6886-1',
+    chainName: 'Kawaiiverse',
+    Icon: KwtIcon,
+    IconLight: KwtIcon
+  },
+  {
+    chainId: 'osmosis-1',
+    chainName: 'Osmosis',
+    Icon: OsmoIcon,
+    IconLight: OsmoLightIcon
+  },
+  {
+    chainId: 'injective-1',
+    chainName: 'Injective',
+    Icon: InjIcon,
+    IconLight: InjIcon
+  },
+  {
+    chainId: 'cosmoshub-4',
+    chainName: 'Cosmos Hub',
+    Icon: AtomIcon,
+    IconLight: AtomIcon
+  },
+  {
+    chainId: '0x01',
+    chainName: 'Ethereum',
+    Icon: EthIcon,
+    IconLight: EthIcon
+  },
+  {
+    chainId: '0x2b6653dc',
+    chainName: 'Tron Network',
+    Icon: TronIcon,
+    IconLight: TronIcon
+  },
+  {
+    chainId: '0x38',
+    chainName: 'BNB Chain',
+    Icon: BnbIcon,
+    IconLight: BnbIcon
+  },
+  {
+    chainId: '0x1ae6',
+    chainName: 'Kawaiiverse EVM',
+    Icon: KwtIcon,
+    IconLight: KwtIcon
+  }
+];
+
+export const tokenImg: TokenIcon[] = [
   {
     coinGeckoId: 'airight',
     Icon: AiriIcon,
@@ -113,5 +173,3 @@ const tokenImg = [
     IconLight: OraixLightIcon
   }
 ];
-
-export default tokenImg;

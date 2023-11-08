@@ -72,6 +72,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
   const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
+  const [selectChainFilter, setChainFilter] = useState(null);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
@@ -191,7 +192,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const getTokenInfos = async () => {
     const data = await fetchTokenInfos([fromToken!, toToken!], client);
     setTokenInfoData(data);
-    return;
   };
 
   useEffect(() => {
@@ -507,12 +507,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         setSearchTokenName={setSearchTokenName}
         isOpen={isSelectToTokenModal}
       />
-      {/* <SelectNetworkModal
+      <SelectNetworkModal
         close={() => {
           setIsNetworkModal(false);
         }}
+        //@ts-ignore
+        selectChainFilter={selectChainFilter}
+        setChainFilter={setChainFilter}
         isOpen={isNetworkModal}
-      /> */}
+      />
       <View>
         <View style={styles.boxTop}>
           <Text color={colors['text-title-login']} variant="h3" weight="700">

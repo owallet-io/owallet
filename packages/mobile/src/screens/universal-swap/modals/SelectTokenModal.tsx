@@ -11,8 +11,9 @@ import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/or
 import { useStore } from '@src/stores';
 import { getTotalUsd } from '@owallet/common';
 import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
-import tokenImg from '../helpers';
+import { tokenImg } from '../helpers';
 import { find } from 'lodash';
+import images from '@src/assets/images';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
@@ -127,22 +128,18 @@ export const SelectTokenModal: FunctionComponent<{
         <Text color={colors['blue-400']} weight="500">
           List Token
         </Text>
-        {/* <TouchableOpacity
+        <TouchableOpacity
           onPress={() => {
             onNetworkModal();
           }}
           style={styles.btnNetwork}
         >
           <OWIcon type="images" source={images.push} size={16} />
-          <Text
-            style={styles.txtNetwork}
-            color={colors['blue-400']}
-            weight="500"
-          >
+          <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
             Network
           </Text>
           <OWIcon size={16} color={colors['blue-400']} name="down" />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
       <OWFlatList
         isBottomSheet

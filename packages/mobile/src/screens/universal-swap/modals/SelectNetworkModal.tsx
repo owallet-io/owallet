@@ -8,47 +8,10 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { metrics } from '@src/themes';
-const dataFake = [
-  {
-    symbol: 'USDT',
-    networkChain: 'Ethereum',
-    available: 0,
-    networkLogo: images.push,
-    isCheck: true
-  },
-  {
-    symbol: 'USDT',
-    networkChain: 'BSC',
-    available: 0,
-    networkLogo: images.push_inactive
-  },
-  {
-    symbol: 'ORAI',
-    networkChain: 'Oraichain',
-    available: 0,
-    networkLogo: images.crypto
-  },
+import { chainIcons } from '../helpers';
 
-  {
-    symbol: 'USDT',
-    networkChain: 'TRON',
-    available: 0,
-    networkLogo: images.push
-  },
-  {
-    symbol: 'USDT',
-    networkChain: 'COSMOS',
-    available: 0,
-    networkLogo: images.push
-  },
-  {
-    symbol: 'USDT',
-    networkChain: 'Omosis',
-    available: 0,
-    networkLogo: images.push
-  }
-];
-export const SelectNetworkModal = registerModal(({ close }) => {
+//@ts-ignore
+export const SelectNetworkModal = registerModal(({ close, selectChainFilter, setChainFilter }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
@@ -57,36 +20,42 @@ export const SelectNetworkModal = registerModal(({ close }) => {
         Select Network
       </Text>
       <OWFlatList
-        data={dataFake}
+        data={chainIcons}
         isBottomSheet
         renderItem={({ item }) => {
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                close();
-              }}
-              style={styles.btn}
-            >
-              <View style={styles.logo}>
-                <OWIcon type="images" size={30} source={item.networkLogo} />
-                <Text
-                  style={styles.pl24}
-                  size={16}
-                  weight="500"
-                  color={colors['gray-500']}
-                >
-                  {item?.networkChain}
-                </Text>
-              </View>
-              {item?.isCheck && (
-                <OWIcon
-                  name="check_stroke"
-                  color={colors['green-500']}
-                  size={18}
-                />
-              )}
-            </TouchableOpacity>
-          );
+          if (item) {
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  setChainFilter(item.chainId);
+                  close();
+                }}
+                style={styles.btn}
+              >
+                <View style={styles.logo}>
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 12,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      backgroundColor: colors['gray-10']
+                    }}
+                  >
+                    <OWIcon type="images" source={{ uri: item.Icon }} size={35} />
+                  </View>
+                  <Text style={styles.pl24} size={16} weight="500" color={colors['gray-500']}>
+                    {item.chainName}
+                  </Text>
+                </View>
+                {selectChainFilter === item.chainId && (
+                  <OWIcon name="check_stroke" color={colors['green-500']} size={18} />
+                )}
+              </TouchableOpacity>
+            );
+          }
         }}
       />
     </View>
