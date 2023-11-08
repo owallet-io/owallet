@@ -208,6 +208,7 @@ describe('helper', () => {
       {
         selectedCrypto: 'bitcoin',
         keyDerivationPath: '84',
+        //this is mnemonic for test
         mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
       'xprvA2q8XgFXw2swTGJXa2TJBqmSZmPyUBhzCXndumbPH5ScyipLMMKJp32R7jGSHLJwApTFj8nRp4GkZcdeFqEhfdXU3LYkaz3LwWHZxfSaZqx'
@@ -216,6 +217,7 @@ describe('helper', () => {
       {
         selectedCrypto: 'bitcoinTestnet',
         keyDerivationPath: '84',
+        //this is mnemonic for test
         mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
       'tprv8kUr2PQcA1spigZD2FVbFZDtQcHUtZniwP75j4xGZmgjYfLydmGmcUYwEEBxCMPNgrxut21GkZDDgucQVxja1W9qfzidYTrsBGsGHrdQ1od'
@@ -229,6 +231,7 @@ describe('helper', () => {
       getKeyPair({
         selectedCrypto: 'bitcoin',
         keyDerivationPath: '84',
+        //this is mnemonic for test
         mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
       'bitcoin',
@@ -238,6 +241,7 @@ describe('helper', () => {
       getKeyPair({
         selectedCrypto: 'bitcoinTestnet',
         keyDerivationPath: '84',
+        //this is mnemonic for test
         mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
       'bitcoinTestnet',
@@ -254,7 +258,7 @@ describe('helper', () => {
   it('getByteCount', () => {
     const msg = convertStringToMessage('HelloWord');
     const rs = getByteCount({ ['bech32']: 27 }, { ['bech32']: 2 }, msg);
-    
+
     expect(rs).toBe(1934);
   });
 });
