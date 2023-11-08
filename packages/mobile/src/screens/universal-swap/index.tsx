@@ -474,10 +474,12 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         data={filteredFromTokens}
         close={() => {
           setIsSelectFromTokenModal(false);
+          setChainFilter(null);
         }}
         onNetworkModal={() => {
           setIsNetworkModal(true);
         }}
+        selectedChainFilter={selectedChainFilter}
         setToken={denom => {
           setSwapTokens([denom, toTokenDenom]);
           setSwapAmount([0, 0]);
@@ -496,6 +498,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         selectedChainFilter={selectedChainFilter}
         close={() => {
           setIsSelectToTokenModal(false);
+          setChainFilter(null);
         }}
         onNetworkModal={() => {
           setIsNetworkModal(true);
