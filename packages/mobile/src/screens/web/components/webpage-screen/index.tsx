@@ -24,13 +24,13 @@ export const useInjectedSourceCode = () => {
 
   useEffect(() => {
     fetch(InjectedProviderUrl)
-      .then((res) => {
+      .then(res => {
         return res.text();
       })
-      .then((res) => {
+      .then(res => {
         setCode(res);
       })
-      .catch((err) => console.log(err));
+      .catch(err => console.log(err));
   }, []);
 
   return code;
@@ -40,7 +40,7 @@ export const WebpageScreen: FunctionComponent<
   React.ComponentProps<typeof WebView> & {
     name: string;
   }
-> = observer((props) => {
+> = observer(props => {
   const { keyRingStore, chainStore, browserStore } = useStore();
   const { colors } = useTheme();
   const bottomHeight = 80;
@@ -284,14 +284,14 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 originWhitelist={['*']} // to allowing WebView to load blob
                 ref={webviewRef}
-                // incognito={true}
+                incognito={true}
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 containerStyle={{ marginBottom: bottomHeight }}
                 cacheEnabled={true}
                 injectedJavaScriptBeforeContentLoaded={sourceCode}
                 onLoad={handleWebViewLoaded}
                 onMessage={onMessage}
-                onNavigationStateChange={(e) => {
+                onNavigationStateChange={e => {
                   // Strangely, `onNavigationStateChange` is only invoked whenever page changed only in IOS.
                   // Use two handlers to measure simultaneously in ios and android.
                   setCanGoBack(e.canGoBack);
@@ -299,7 +299,7 @@ export const WebpageScreen: FunctionComponent<
 
                   setCurrentURL(e.url);
                 }}
-                onLoadProgress={(e) => {
+                onLoadProgress={e => {
                   // Strangely, `onLoadProgress` is only invoked whenever page changed only in Android.
                   // Use two handlers to measure simultaneously in ios and android.
                   setCanGoBack(e.nativeEvent.canGoBack);
