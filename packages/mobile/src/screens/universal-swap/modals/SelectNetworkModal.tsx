@@ -1,9 +1,8 @@
 import { StyleSheet, View } from 'react-native';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { registerModal } from '@src/modals/base';
 import { Text } from '@src/components/text';
 import OWFlatList from '@src/components/page/ow-flat-list';
-import images from '@src/assets/images';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { TouchableOpacity } from '@gorhom/bottom-sheet';
@@ -11,7 +10,12 @@ import { metrics } from '@src/themes';
 import { chainIcons } from '../helpers';
 
 //@ts-ignore
-export const SelectNetworkModal = registerModal(({ close, selectChainFilter, setChainFilter }) => {
+export const SelectNetworkModal: FunctionComponent<{
+  setChainFilter: (chainId: string) => void;
+  close?: () => void;
+  isOpen?: boolean;
+  selectedChainFilter: string;
+}> = registerModal(({ close, selectedChainFilter, setChainFilter }) => {
   const { colors } = useTheme();
   const styles = styling(colors);
   return (
@@ -19,6 +23,17 @@ export const SelectNetworkModal = registerModal(({ close, selectChainFilter, set
       <Text style={styles.title} weight="500" size={16}>
         Select Network
       </Text>
+      <TouchableOpacity
+        style={styles.clear}
+        onPress={() => {
+          setChainFilter(null);
+          close();
+        }}
+      >
+        <Text size={16} color={colors['blue-400']} weight="500">
+          Clear
+        </Text>
+      </TouchableOpacity>
       <OWFlatList
         data={chainIcons}
         isBottomSheet
@@ -50,7 +65,7 @@ export const SelectNetworkModal = registerModal(({ close, selectChainFilter, set
                     {item.chainName}
                   </Text>
                 </View>
-                {selectChainFilter === item.chainId && (
+                {selectedChainFilter === item.chainId && (
                   <OWIcon name="check_stroke" color={colors['green-500']} size={18} />
                 )}
               </TouchableOpacity>
@@ -70,6 +85,11 @@ const styling = (colors: TypeTheme['colors']) =>
     logo: {
       flexDirection: 'row',
       alignItems: 'center'
+    },
+    clear: {
+      alignSelf: 'flex-end',
+      marginHorizontal: 24,
+      marginBottom: 16
     },
     btn: {
       flexDirection: 'row',

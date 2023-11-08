@@ -72,7 +72,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [searchTokenName, setSearchTokenName] = useState('');
   const [filteredToTokens, setFilteredToTokens] = useState([] as TokenItemType[]);
   const [filteredFromTokens, setFilteredFromTokens] = useState([] as TokenItemType[]);
-  const [selectChainFilter, setChainFilter] = useState(null);
+  const [selectedChainFilter, setChainFilter] = useState(null);
 
   const [[fromTokenDenom, toTokenDenom], setSwapTokens] = useState<[string, string]>(['orai', 'usdt']);
 
@@ -493,6 +493,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         }}
         prices={prices}
         data={filteredToTokens}
+        selectedChainFilter={selectedChainFilter}
         close={() => {
           setIsSelectToTokenModal(false);
         }}
@@ -511,8 +512,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         close={() => {
           setIsNetworkModal(false);
         }}
-        //@ts-ignore
-        selectChainFilter={selectChainFilter}
+        selectedChainFilter={selectedChainFilter}
         setChainFilter={setChainFilter}
         isOpen={isNetworkModal}
       />

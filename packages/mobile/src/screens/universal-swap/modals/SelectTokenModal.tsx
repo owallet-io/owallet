@@ -21,10 +21,11 @@ export const SelectTokenModal: FunctionComponent<{
   data: TokenItemType[];
   isOpen?: boolean;
   prices: CoinGeckoPrices<string>;
+  selectedChainFilter?: string;
   bottomSheetModalConfig?: unknown;
   setToken: (denom: string) => void;
   setSearchTokenName: Function;
-}> = registerModal(({ close, onNetworkModal, data, setToken, prices }) => {
+}> = registerModal(({ close, onNetworkModal, data, setToken, prices, selectedChainFilter }) => {
   const safeAreaInsets = useSafeAreaInsets();
   const { universalSwapStore } = useStore();
   const [filteredTokens, setTokens] = useState([]);
@@ -46,6 +47,21 @@ export const SelectTokenModal: FunctionComponent<{
       setTokens(tmpData);
     }
   }, [data, keyword]);
+
+  useEffect(() => {
+    if (
+      selectedChainFilter === '' ||
+      selectedChainFilter === null ||
+      selectedChainFilter === undefined ||
+      !selectedChainFilter
+    ) {
+      setTokens(data);
+    } else {
+      const tmpData = data.filter(d => d.chainId.toString().includes(selectedChainFilter));
+
+      setTokens(tmpData);
+    }
+  }, [data, selectedChainFilter]);
 
   const { colors } = useTheme();
   const styles = styling(colors);
