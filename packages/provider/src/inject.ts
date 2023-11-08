@@ -1,4 +1,3 @@
-import { isReactNative } from '@owallet/common';
 import {
   ChainInfo,
   OWallet,
@@ -58,7 +57,6 @@ export interface ProxyRequestResponse {
  * This will use `window.postMessage` to interact with the content script.
  */
 // const checkType: any = isReactNative() ? 'proxy-request' : `${NAMESPACE}-proxy-request`;
-const checkType: string = 'proxy-request';
 export class InjectedOWallet implements IOWallet {
   static startProxy(
     owallet: IOWallet,
@@ -76,7 +74,7 @@ export class InjectedOWallet implements IOWallet {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
 
       // filter proxy-request by namespace
-      if (!message || message.type !== checkType || message.namespace !== NAMESPACE) {
+      if (!message || message.namespace !== NAMESPACE) {
         return;
       }
 
@@ -192,7 +190,7 @@ export class InjectedOWallet implements IOWallet {
       .join('');
 
     const proxyMessage: ProxyRequest = {
-      type: checkType,
+      type: `${NAMESPACE}-proxy-request`,
       namespace: NAMESPACE,
       id,
       method,
