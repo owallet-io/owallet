@@ -24,8 +24,6 @@ export const AccessModal: FunctionComponent<{
     const _onPressReject = async () => {
       if (waitingData) {
         await permissionStore.reject(waitingData.id);
-        if (permissionStore.waitingBasicAccessPermissions.length === 0) {
-        }
       }
     };
 
