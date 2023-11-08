@@ -125,6 +125,7 @@ export const SendBtcPage: FunctionComponent<{
 
     return () => {};
   }, [accountInfo.bech32Address]);
+
   return (
     <>
       <form
@@ -156,6 +157,7 @@ export const SendBtcPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
+                    const url = chainStore?.current?.raw?.txExplorer.txUrl.replace('{txHash}', tx);
                     notification.push({
                       placement: 'top-center',
                       type: tx ? 'success' : 'danger',
@@ -163,7 +165,7 @@ export const SendBtcPage: FunctionComponent<{
                       content: tx ? (
                         <div className="alert-inner--text">
                           Transaction successful with tx:{' '}
-                          <a target="_blank" href={`https://live.blockcypher.com/btc-testnet/tx/${tx}/`}>
+                          <a target="_blank" href={url}>
                             {Address.shortAddress(tx)}
                           </a>
                         </div>
