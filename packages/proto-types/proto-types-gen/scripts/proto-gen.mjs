@@ -30,7 +30,7 @@ async function calculateOutputHash(root) {
     const p = path.join(root, dir.name);
     const buf = Buffer.from((await FolderHash.hashElement(p)).hash, 'base64');
 
-    console.log(p, buf.toString('base64'));
+    
 
     hash = Buffer.concat([hash, buf]);
   }

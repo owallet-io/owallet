@@ -139,7 +139,6 @@ export const SendPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
-                    console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
                     notification.push({
                       placement: 'top-center',
                       type: tx?.data ? 'success' : 'danger',

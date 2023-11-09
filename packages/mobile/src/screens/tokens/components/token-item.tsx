@@ -48,7 +48,7 @@ export const TokenItem: FunctionComponent<TokenItemProps> = ({
     if (denomHelper?.contractAddress && denomHelper?.contractAddress !== '') {
       name += ` (${formatContractAddress(denomHelper.contractAddress, 34)})`;
 
-      console.log('nam', name, denomHelper.contractAddress);
+      
     }
   }
 

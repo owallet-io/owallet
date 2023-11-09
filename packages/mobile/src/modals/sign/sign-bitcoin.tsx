@@ -30,7 +30,7 @@ export const SignBitcoinModal: FunctionComponent<{
     });
 
     const [dataSign, setDataSign] = useState(null);
-    console.log('🚀 ~ file: sign-bitcoin.tsx:40 ~ observer ~ dataSign:', dataSign);
+    
 
     useEffect(() => {
       if (signInteractionStore.waitingBitcoinData) {

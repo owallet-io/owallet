@@ -172,7 +172,7 @@ export class OWallet implements IOWallet {
 
   async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
     const msg = new RequestSignTronMsg(chainId, data);
-    console.log('data signAndBroadcastTron:', data, msg);
+ 
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -315,7 +315,7 @@ export class Ethereum implements IEthereum {
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
-    console.log('🚀 ~ file: core.ts ~ line 313 ~ Ethereum ~ experimentalSuggestChain ~ chainInfo', chainInfo);
+  
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -323,7 +323,7 @@ export class Ethereum implements IEthereum {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-      console.log('RESULT AFTER ALL!!!!!!!!!!!!');
+   
       return result;
     } catch (error) {
       console.log(error, 'error on send message!!!!!!!!!!!!!!!');

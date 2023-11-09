@@ -1,18 +1,10 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, ReactNode, useEffect } from 'react';
 
-import { Alert } from "reactstrap";
+import { Alert } from 'reactstrap';
 
 export interface NotificationElementProps {
-  type:
-    | "primary"
-    | "link"
-    | "info"
-    | "success"
-    | "warning"
-    | "danger"
-    | "default"
-    | "secondary";
-  content: string;
+  type: 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger' | 'default' | 'secondary';
+  content: string | ReactNode;
   duration: number; // Seconds
   canDelete?: boolean;
 }
@@ -31,12 +23,18 @@ export const NotificationElement: FunctionComponent<
 
   return (
     <Alert
-      className={type === "default" ? "alert-default" : undefined}
-      color={type !== "default" ? type : undefined}
+      className={type === 'default' ? 'alert-default' : undefined}
+      color={type !== 'default' ? type : undefined}
       fade={false}
       toggle={canDelete ? onDelete : undefined}
     >
-      <span className="alert-inner--text" style={{ wordWrap: 'break-word'}}>{content}</span>
+      {typeof content === 'string' ? (
+        <span className="alert-inner--text" style={{ wordWrap: 'break-word' }}>
+          {content}
+        </span>
+      ) : (
+        <>{content}</>
+      )}
     </Alert>
   );
 };

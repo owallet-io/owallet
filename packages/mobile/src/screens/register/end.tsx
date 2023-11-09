@@ -127,8 +127,7 @@ export const RegisterEndScreen: FunctionComponent = observer(() => {
           setIsLoading(true);
           try {
             if (password && isBiometricOn) {
-              console.log('password', password);
-              console.log('isBiometricOn', isBiometricOn);
+         
 
               await keychainStore.turnOnBiometry(password);
             }

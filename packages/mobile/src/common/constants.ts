@@ -9,6 +9,7 @@ export const SCREENS = {
   Home: 'Home',
   TransactionDetail: 'Transactions.Detail',
   RegisterMain: 'RegisterMain',
+  BtcFaucet: 'BtcFaucet',
   RegisterVerifyMnemonicMain: 'RegisterVerifyMnemonicMain',
   RegisterEnd: 'Register.End',
   RegisterRecoverMnemonicMain: 'RegisterRecoverMnemonicMain',
@@ -214,6 +215,9 @@ export const SCREENS_OPTIONS: IScreenOption = {
   [SCREENS.SettingViewPrivateData]: {
     title: 'Mnemonic Seed'
   },
+  [SCREENS.BtcFaucet]: {
+    title: 'Bitcoin Faucet'
+  },
   [SCREENS.SettingVersion]: {
     title: 'About'
   },
@@ -281,8 +285,7 @@ export const TYPE_ACTIONS_COSMOS_HISTORY = {
   ['execute']: 'execute',
   ['wasm/MsgExecuteContract']: '/cosmwasm.wasm.v1.MsgExecuteContract',
   ['bank/MsgSend']: '/cosmos.bank.v1beta1.MsgSend',
-  ['distribution/MsgWithdrawDelegatorReward']:
-    '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+  ['distribution/MsgWithdrawDelegatorReward']: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
   ['staking/MsgDelegate']: '/cosmos.staking.v1beta1.MsgDelegate',
   ['staking/MsgUndelegate']: '/cosmos.staking.v1beta1.MsgUndelegate',
   ['submit_proposal']: 'submit_proposal',

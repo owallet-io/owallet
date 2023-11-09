@@ -23,7 +23,7 @@ export class TxRestCosmosClient {
         `/cosmos/tx/v1beta1/txs/${txHash}`,
         params
       );
-      console.log("🚀 ~ file: index.ts:26 ~ TxRestCosmosClient ~ fetchTx ~ response:", response)
+      
 
       const { tx_response: txResponse } = response.data;
 

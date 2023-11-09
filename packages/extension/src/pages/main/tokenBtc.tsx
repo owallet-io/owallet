@@ -34,7 +34,7 @@ export const TokensBtcView: FunctionComponent<{
       const exchange = (await getExchangeRate({
         selectedCurrency: priceStore.defaultVsCurrency
       })) as { data: number };
-      console.log('🚀 ~ file: tokenBtc.tsx:43 ~ getExchange ~ exchange:', exchange);
+      
       if (Number(exchange?.data)) {
         setExchangeRate(Number(exchange?.data));
       }
@@ -48,7 +48,7 @@ export const TokensBtcView: FunctionComponent<{
       balance: Number(balanceBtc?.toCoin().amount),
       cryptoUnit: 'BTC'
     };
-    console.log('🚀 ~ file: account-card-bitcoin.tsx:74 ~ handleBalanceBtc ~ balanceValueParams:', balanceValueParams);
+    
     const amountData = getBalanceValue(balanceValueParams);
 
     const currencyFiat = priceStore.defaultVsCurrency;

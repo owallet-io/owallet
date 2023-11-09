@@ -346,7 +346,7 @@ export class SignInteractionStore {
           ...this.waitingTronDatas[0].data
         });
       }
-      console.log('yield waitingTronDatas length > 0');
+      
     } finally {
       yield this.waitTronEnd();
       this.interactionStore.removeData('request-sign-tron', idTron);

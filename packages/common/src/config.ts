@@ -579,7 +579,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
   {
     rest: 'https://api.blockcypher.com/v1/btc/test3',
     chainId: 'bitcoinTestnet',
-    chainName: 'Bitcoin Testnet',
+    chainName: 'Bitcoin-Segwit Testnet',
     bip44: {
       coinType: 1
     },

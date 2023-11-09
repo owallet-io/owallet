@@ -37,7 +37,7 @@ export const registerModal: <P>(
       }
       
       if (!props.isOpen && key.current) {
-        console.log('props.isOpen: ', props.isOpen);
+        
         globalModalRendererState.closeModal(key.current);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps

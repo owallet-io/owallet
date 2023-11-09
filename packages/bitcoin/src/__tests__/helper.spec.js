@@ -16,7 +16,6 @@ const {
 
 describe('helper', () => {
   it('getBalanceValue', () => {
-    console.log('ok');
     const res = getBalanceValue({
       balance: 756871,
       cryptoUnit: 'BTC'
@@ -32,7 +31,6 @@ describe('helper', () => {
     expect(res).toBe('219.49');
   });
   it('formatBalance', () => {
-    console.log('ok');
     const res = formatBalance({
       balance: 7568371000,
       cryptoUnit: 'BTC',
@@ -210,8 +208,8 @@ describe('helper', () => {
       {
         selectedCrypto: 'bitcoin',
         keyDerivationPath: '84',
-        mnemonic:
-          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+        //this is mnemonic for test
+        mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
       'xprvA2q8XgFXw2swTGJXa2TJBqmSZmPyUBhzCXndumbPH5ScyipLMMKJp32R7jGSHLJwApTFj8nRp4GkZcdeFqEhfdXU3LYkaz3LwWHZxfSaZqx'
     ],
@@ -219,8 +217,8 @@ describe('helper', () => {
       {
         selectedCrypto: 'bitcoinTestnet',
         keyDerivationPath: '84',
-        mnemonic:
-          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+        //this is mnemonic for test
+        mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       },
       'tprv8kUr2PQcA1spigZD2FVbFZDtQcHUtZniwP75j4xGZmgjYfLydmGmcUYwEEBxCMPNgrxut21GkZDDgucQVxja1W9qfzidYTrsBGsGHrdQ1od'
     ]
@@ -233,8 +231,8 @@ describe('helper', () => {
       getKeyPair({
         selectedCrypto: 'bitcoin',
         keyDerivationPath: '84',
-        mnemonic:
-          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+        //this is mnemonic for test
+        mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
       'bitcoin',
       'bc1q0vh389f8xtr87jcnt0xhc5sh9c0ahrqwv9kz7j'
@@ -243,8 +241,8 @@ describe('helper', () => {
       getKeyPair({
         selectedCrypto: 'bitcoinTestnet',
         keyDerivationPath: '84',
-        mnemonic:
-          'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
+        //this is mnemonic for test
+        mnemonic: 'wrist illness circle evidence accident loan thing mystery output inhale fat rookie'
       }),
       'bitcoinTestnet',
       'tb1q55ddlnqp7spzeskdd82p5sseyqexy67s7esc3g'
@@ -255,14 +253,12 @@ describe('helper', () => {
   });
   it('convertStringToMessage', () => {
     const rs = convertStringToMessage('HelloWord');
-    expect(JSON.stringify(rs)).toEqual(
-      '{"type":"Buffer","data":[72,101,108,108,111,87,111,114,100]}'
-    );
+    expect(JSON.stringify(rs)).toEqual('{"type":"Buffer","data":[72,101,108,108,111,87,111,114,100]}');
   });
   it('getByteCount', () => {
     const msg = convertStringToMessage('HelloWord');
     const rs = getByteCount({ ['bech32']: 27 }, { ['bech32']: 2 }, msg);
-    console.log('🚀 ~ file: helper.spec.js:264 ~ it ~ rs:', rs);
+
     expect(rs).toBe(1934);
   });
 });

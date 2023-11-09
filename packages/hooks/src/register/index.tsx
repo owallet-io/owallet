@@ -134,7 +134,7 @@ export class RegisterConfig {
     this._isLoading = true;
     try {
       if (this.mode === 'create') {
-        console.log('create ledger 2');
+        
         yield this.keyRingStore.createLedgerKey(
           password,
           {

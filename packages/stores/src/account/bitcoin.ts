@@ -74,8 +74,7 @@ export class BitcoinAccount {
   ): Promise<boolean> {
     if (signOptions.networkType === 'bitcoin') {
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-      console.log(stdFee, 'STD FEE BITCOIN!!!!!!!!!!!!!!!!!!!!!');
-      console.log('🚀 ~ file: bitcoin.ts:103 ~ BitcoinAccount ~ denomHelper.type:', denomHelper.type);
+
       switch (denomHelper.type) {
         case 'native':
           const msg: any = {
@@ -88,7 +87,6 @@ export class BitcoinAccount {
             confirmedBalance: extraOptions.confirmedBalance,
             gasPriceStep: extraOptions.gasPriceStep
           };
-          console.log('🚀 ~ file: bitcoin.ts:117 ~ BitcoinAccount ~ msg:', msg);
 
           await this.base.sendBtcMsgs(
             'send',
@@ -97,7 +95,6 @@ export class BitcoinAccount {
             stdFee,
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              console.log('Tx on fullfill: ', tx);
               if (tx) {
                 // After succeeding to send token, refresh the balance.
                 const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(

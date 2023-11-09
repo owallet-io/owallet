@@ -36,7 +36,6 @@ export const TxSuccessResultScreen: FunctionComponent = observer(() => {
 
   const chainId = route.params?.chainId ? route.params?.chainId : chainStore.current?.chainId;
   const txHash = route.params?.txHash;
-  console.log('🚀 ~ file: success.tsx:51 ~ constTxSuccessResultScreen:FunctionComponent=observer ~ txHash:', txHash);
 
   const smartNavigation = useSmartNavigation();
 

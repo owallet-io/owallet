@@ -55,7 +55,7 @@ export const FeeInput: FunctionComponent<GasInputProps> = observer(
         }
       } catch (error) {
         feeConfig.setFee(parseFloat(feeConfig.feeRaw).toString());
-        console.log(error);
+       
       }
     }, [gasConfig.gasRaw, gasPrice]);
 

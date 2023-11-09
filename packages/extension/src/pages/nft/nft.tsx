@@ -21,7 +21,7 @@ export const NftPage: FunctionComponent = observer(() => {
         fetchInfoNft(res?.tokens?.[0], client);
       }
     } catch (error) {
-      console.log({ error });
+      
       setToken([]);
     }
   };

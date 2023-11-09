@@ -73,12 +73,9 @@ export class EthereumAccount {
         },
     extraOptions?: ExtraOptionSendToken
   ): Promise<boolean> {
-    if (
-      signOptions.networkType === 'evm' ||
-      EVMOS_NETWORKS.includes(signOptions.chainId)
-    ) {
+    if (signOptions.networkType === 'evm' || EVMOS_NETWORKS.includes(signOptions.chainId)) {
       const denomHelper = new DenomHelper(currency.coinMinimalDenom);
-      console.log(stdFee, 'STD FEE ETHEREUM!!!!!!!!!!!!!!!!!!!!!');
+
       switch (denomHelper.type) {
         case 'erc20':
           const realAmount = (() => {
@@ -100,7 +97,7 @@ export class EthereumAccount {
             },
             signOptions,
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
-              console.log('Tx on fullfill: ', tx);
+              
               if (tx) {
                 // After succeeding to send token, refresh the balance.
                 const queryEvmBalance = this.queries.evm.queryEvmBalance.getQueryBalance(this.base.evmosHexAddress);

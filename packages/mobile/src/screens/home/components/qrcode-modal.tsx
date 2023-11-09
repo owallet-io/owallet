@@ -12,7 +12,7 @@ export const AddressQRCodeModal: FunctionComponent<{
   chainStore?: any;
   keyRingStore?: KeyRingStore;
 }> = ({ account, chainStore, keyRingStore }) => {
-  console.log('🚀 ~ file: qrcode-modal.tsx:17 ~ account:', account);
+  
   const addressToShow = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
 
   return (

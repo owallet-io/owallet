@@ -30,8 +30,6 @@ export const SignTronModal: FunctionComponent<{
     const [dataSign, setDataSign] = useState(null);
 
     useEffect(() => {
-      console.log('waitingTronData', signInteractionStore.waitingTronData);
-
       if (signInteractionStore.waitingTronData) {
         setDataSign(signInteractionStore.waitingTronData);
       }

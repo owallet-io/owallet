@@ -7,14 +7,7 @@ import { PageWithScrollView } from '../../components/page';
 import { StyleSheet, View } from 'react-native';
 import { Dec, DecUtils } from '@owallet/unit';
 
-import {
-  AddressInput,
-  AmountInput,
-  MemoInput,
-  CurrencySelector,
-  FeeButtons,
-  TextInput
-} from '../../components/input';
+import { AddressInput, AmountInput, MemoInput, CurrencySelector, FeeButtons, TextInput } from '../../components/input';
 import { OWButton } from '../../components/button';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { useTheme } from '@src/themes/theme-provider';
@@ -26,7 +19,7 @@ import { Toggle } from '../../components/toggle';
 import { OWBox } from '@src/components/card';
 import { OWSubTitleHeader } from '@src/components/header';
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     sendInputRoot: {
       paddingHorizontal: spacing['20'],
@@ -47,8 +40,7 @@ const styling = colors =>
   });
 
 export const SendScreen: FunctionComponent = observer(() => {
-  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } =
-    useStore();
+  const { chainStore, accountStore, queriesStore, analyticsStore, sendStore } = useStore();
   const { colors } = useTheme();
   const styles = styling(colors);
   const [customFee, setCustomFee] = useState(false);
@@ -69,9 +61,7 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   const smartNavigation = useSmartNavigation();
 
-  const chainId = route?.params?.chainId
-    ? route?.params?.chainId
-    : chainStore?.current?.chainId;
+  const chainId = route?.params?.chainId ? route?.params?.chainId : chainStore?.current?.chainId;
 
   const account = accountStore.getAccount(chainId);
   const queries = queriesStore.get(chainId);
@@ -87,7 +77,7 @@ export const SendScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     if (route?.params?.currency) {
-      const currency = sendConfigs.amountConfig.sendableCurrencies.find(cur => {
+      const currency = sendConfigs.amountConfig.sendableCurrencies.find((cur) => {
         if (cur?.type === 'cw20') {
           return cur.coinDenom == route.params.currency;
         }
@@ -163,13 +153,10 @@ export const SendScreen: FunctionComponent = observer(() => {
             >
               <Toggle
                 on={customFee}
-                onChange={value => {
+                onChange={(value) => {
                   setCustomFee(value);
                   if (!value) {
-                    if (
-                      sendConfigs.feeConfig.feeCurrency &&
-                      !sendConfigs.feeConfig.fee
-                    ) {
+                    if (sendConfigs.feeConfig.feeCurrency && !sendConfigs.feeConfig.fee) {
                       sendConfigs.feeConfig.setFeeType('average');
                     }
                   }
@@ -198,10 +185,8 @@ export const SendScreen: FunctionComponent = observer(() => {
               placeholder="Type your Fee here"
               keyboardType={'numeric'}
               labelStyle={styles.sendlabelInput}
-              onChangeText={text => {
-                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(
-                  DecUtils.getTenExponentNInPrecisionRange(6)
-                );
+              onChangeText={(text) => {
+                const fee = new Dec(Number(text.replace(/,/g, '.'))).mul(DecUtils.getTenExponentNInPrecisionRange(6));
 
                 sendConfigs.feeConfig.setManualFee({
                   amount: fee.roundUp().toString(),
@@ -235,18 +220,11 @@ export const SendScreen: FunctionComponent = observer(() => {
             onPress={async () => {
               if (account.isReadyToSendMsgs && txStateIsValid) {
                 try {
-                  if (
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      'erc20'
-                    )
-                  ) {
+                  if (sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')) {
                     sendStore.updateSendObject({
                       type: 'erc20',
                       from: account.evmosHexAddress,
-                      contract_addr:
-                        sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                          ':'
-                        )[1],
+                      contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
                       recipient: sendConfigs.recipientConfig.recipient,
                       amount: sendConfigs.amountConfig.amount
                     });
@@ -265,14 +243,8 @@ export const SendScreen: FunctionComponent = observer(() => {
                     },
 
                     {
-                      onFulfill: tx => {
-                        console.log(
-                          tx,
-                          'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                        );
-                      },
-                      onBroadcasted: txHash => {
-                        console.log("🚀 ~ file: index.tsx:275 ~ onPress={ ~ txHash:", txHash)
+                      onFulfill: (tx) => {},
+                      onBroadcasted: (txHash) => {
                         analyticsStore.logEvent('Send token tx broadcasted', {
                           chainId: chainStore.current.chainId,
                           chainName: chainStore.current.chainName,
@@ -284,16 +256,11 @@ export const SendScreen: FunctionComponent = observer(() => {
                       }
                     },
                     // In case send erc20 in evm network
-                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith(
-                      'erc20'
-                    )
+                    sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.startsWith('erc20')
                       ? {
                           type: 'erc20',
                           from: account.evmosHexAddress,
-                          contract_addr:
-                            sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(
-                              ':'
-                            )[1],
+                          contract_addr: sendConfigs.amountConfig.sendCurrency.coinMinimalDenom.split(':')[1],
                           recipient: sendConfigs.recipientConfig.recipient,
                           amount: sendConfigs.amountConfig.amount
                         }
@@ -303,14 +270,13 @@ export const SendScreen: FunctionComponent = observer(() => {
                   if (e?.message === 'Request rejected') {
                     return;
                   }
-                  console.log('e?.message', e?.message);
 
                   // if (
                   //   e?.message?.includes('Cannot read properties of undefined')
                   // ) {
                   //   return;
                   // }
-                  console.log('send error', e);
+
                   // alert(e.message);
                   if (smartNavigation.canGoBack) {
                     smartNavigation.goBack();

@@ -9,7 +9,7 @@ export const SettingSwitchModeItem: FunctionComponent<{
   topBorder?: boolean;
 }> = observer(({ topBorder }) => {
   const { appInitStore } = useStore();
-  console.log('appInitStore.getInitApp.theme: ', appInitStore.getInitApp.theme);
+  
 
   const [toggle, setToggle] = useState(
     appInitStore.getInitApp.theme == 'dark' ? true : false

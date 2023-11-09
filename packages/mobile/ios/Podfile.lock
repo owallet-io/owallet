@@ -141,11 +141,11 @@ PODS:
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
   - MultiplatformBleAdapter (0.1.9)
-  - nanopb (2.30909.1):
-    - nanopb/decode (= 2.30909.1)
-    - nanopb/encode (= 2.30909.1)
-  - nanopb/decode (2.30909.1)
-  - nanopb/encode (2.30909.1)
+  - nanopb (2.30909.0):
+    - nanopb/decode (= 2.30909.0)
+    - nanopb/encode (= 2.30909.0)
+  - nanopb/decode (2.30909.0)
+  - nanopb/encode (2.30909.0)
   - PromisesObjC (2.3.1)
   - PromisesSwift (2.3.1):
     - PromisesObjC (= 2.3.1)
@@ -910,7 +910,7 @@ SPEC CHECKSUMS:
   JWT: ef71dfb03e1f842081e64dc42eef0e164f35d251
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MultiplatformBleAdapter: 5a6a897b006764392f9cef785e4360f54fb9477d
-  nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
+  nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   PromisesSwift: 28dca69a9c40779916ac2d6985a0192a5cb4a265
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
@@ -980,4 +980,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 306cbad6cac2ad670e4105fc0290d38d15b042d9
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

@@ -3,7 +3,6 @@ import { device, expect, element, by, waitFor } from 'detox';
 describe('Example', () => {
   beforeAll(async () => {
     await device.launchApp();
-    console.log('launch app');
   });
 
   beforeEach(async () => {
