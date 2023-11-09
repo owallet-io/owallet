@@ -8,7 +8,6 @@ import {
   SwapOperation
 } from '@oraichain/oraidex-contracts-sdk';
 import { ORAI_INFO, swapEvmRoutes } from '../config/constants';
-import { Pairs } from '../config/pools';
 import isEqual from 'lodash/isEqual';
 import { Coin } from '@cosmjs/stargate';
 
@@ -95,40 +94,6 @@ function parseTokenInfo(tokenInfo: TokenItemType, amount?: string | number) {
   return { info: { token: { contract_addr: tokenInfo?.contractAddress } } };
 }
 
-const generateSwapOperationMsgs = (offerInfo: AssetInfo, askInfo: AssetInfo): SwapOperation[] => {
-  const pairExist = Pairs.pairs.some(pair => {
-    let assetInfos = pair.asset_infos;
-    return (
-      (isEqual(assetInfos[0], offerInfo) && isEqual(assetInfos[1], askInfo)) ||
-      (isEqual(assetInfos[1], offerInfo) && isEqual(assetInfos[0], askInfo))
-    );
-  });
-
-  return pairExist
-    ? [
-        {
-          orai_swap: {
-            offer_asset_info: offerInfo,
-            ask_asset_info: askInfo
-          }
-        }
-      ]
-    : [
-        {
-          orai_swap: {
-            offer_asset_info: offerInfo,
-            ask_asset_info: ORAI_INFO
-          }
-        },
-        {
-          orai_swap: {
-            offer_asset_info: ORAI_INFO,
-            ask_asset_info: askInfo
-          }
-        }
-      ];
-};
-
 const handleSentFunds = (...funds: (Coin | undefined)[]): Coin[] | null => {
   let sent_funds = [];
   for (let fund of funds) {
@@ -138,108 +103,6 @@ const handleSentFunds = (...funds: (Coin | undefined)[]): Coin[] | null => {
   sent_funds.sort((a, b) => a.denom.localeCompare(b.denom));
   return sent_funds;
 };
-
-function generateContractMessages(
-  query: SwapQuery | ProvideQuery | WithdrawQuery | IncreaseAllowanceQuery | TransferQuery
-) {
-  const { type, sender, ...params } = query;
-  let sent_funds;
-  // for withdraw & provide liquidity methods, we need to interact with the oraiswap pair contract
-  let contractAddr = network.router;
-  let input;
-  switch (type) {
-    case Type.SWAP:
-      const swapQuery = params as SwapQuery;
-      const { fund: offerSentFund, info: offerInfo } = parseTokenInfo(swapQuery.fromInfo, swapQuery.amount.toString());
-      const { fund: askSentFund, info: askInfo } = parseTokenInfo(swapQuery.toInfo);
-      sent_funds = handleSentFunds(offerSentFund, askSentFund);
-      let inputTemp = {
-        execute_swap_operations: {
-          operations: generateSwapOperationMsgs(offerInfo, askInfo),
-          minimum_receive: swapQuery.minimumReceive
-        }
-      };
-      // if cw20 => has to send through cw20 contract
-      if (!swapQuery.fromInfo.contractAddress) {
-        input = inputTemp;
-      } else {
-        input = {
-          send: {
-            contract: contractAddr,
-            amount: swapQuery.amount.toString(),
-            msg: toBinary(inputTemp)
-          }
-        };
-        contractAddr = swapQuery.fromInfo.contractAddress;
-      }
-      break;
-    case Type.PROVIDE:
-      const provideQuery = params as ProvideQuery;
-      const { fund: fromSentFund, info: fromInfoData } = parseTokenInfo(provideQuery.fromInfo, provideQuery.fromAmount);
-      const { fund: toSentFund, info: toInfoData } = parseTokenInfo(provideQuery.toInfo, provideQuery.toAmount);
-      sent_funds = handleSentFunds(fromSentFund, toSentFund);
-      input = {
-        provide_liquidity: {
-          assets: [
-            {
-              info: toInfoData,
-              amount: provideQuery.toAmount.toString()
-            },
-            { info: fromInfoData, amount: provideQuery.fromAmount.toString() }
-          ],
-          slippage_tolerance: provideQuery.slippage
-        }
-      };
-      contractAddr = provideQuery.pair;
-      break;
-    case Type.WITHDRAW:
-      const withdrawQuery = params as WithdrawQuery;
-
-      input = {
-        send: {
-          // owner: sender,
-          contract: withdrawQuery.pair,
-          amount: withdrawQuery.amount.toString(),
-          msg: 'eyJ3aXRoZHJhd19saXF1aWRpdHkiOnt9fQ==' // withdraw liquidity msg in base64 : {"withdraw_liquidity":{}}
-        }
-      };
-      contractAddr = withdrawQuery.lpAddr;
-      break;
-    case Type.INCREASE_ALLOWANCE:
-      const increaseAllowanceQuery = params as IncreaseAllowanceQuery;
-      input = {
-        increase_allowance: {
-          amount: increaseAllowanceQuery.amount.toString(),
-          spender: increaseAllowanceQuery.spender
-        }
-      };
-      contractAddr = increaseAllowanceQuery.token;
-      break;
-    case Type.TRANSFER:
-      const transferQuery = params as TransferQuery;
-      input = {
-        transfer: {
-          recipient: transferQuery.recipientAddress,
-          amount: transferQuery.amount
-        }
-      };
-      contractAddr = transferQuery.token;
-      break;
-    default:
-      break;
-  }
-
-  const msgs = [
-    {
-      contract: contractAddr,
-      msg: Buffer.from(JSON.stringify(input)),
-      sender,
-      sent_funds
-    }
-  ];
-
-  return msgs;
-}
 
 export enum Type {
   'TRANSFER' = 'Transfer',
@@ -302,4 +165,4 @@ export type IncreaseAllowanceQuery = {
   token: string; //token contract addr
 };
 
-export { fetchTokenInfo, fetchTokenInfos, parseTokenInfo, generateSwapOperationMsgs, generateContractMessages };
+export { fetchTokenInfo, fetchTokenInfos, parseTokenInfo };

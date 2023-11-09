@@ -31,7 +31,8 @@ import {
   oraichainNetwork,
   tokenMap,
   toAmount,
-  network
+  network,
+  Networks
 } from '@oraichain/oraidex-common';
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
@@ -42,9 +43,9 @@ import {
   isEvmNetworkNativeSwapSupported,
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
-  UniversalSwapData,
-  UniversalSwapHandler
+  UniversalSwapData
 } from '@oraichain/oraidex-universal-swap';
+import { UniversalSwapHandler } from './handler/src';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
@@ -368,7 +369,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       const cosmosWallet = new SwapCosmosWallet(client);
 
-      const isTron = originalFromToken.coinGeckoId === 'tron';
+      const isTron = Number(originalFromToken.chainId) === Networks.tron;
 
       const evmWallet = new SwapEvmWallet(isTron);
 

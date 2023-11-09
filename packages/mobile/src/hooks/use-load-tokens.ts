@@ -4,13 +4,7 @@ import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import {
-  CustomChainInfo,
-  EVM_BALANCE_RETRY_COUNT,
-  ERC20__factory,
-  getEvmAddress,
-  tronToEthAddress
-} from '@oraichain/oraidex-common';
+import { CustomChainInfo, EVM_BALANCE_RETRY_COUNT, ERC20__factory, getEvmAddress } from '@oraichain/oraidex-common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults } from 'ethereum-multicall';
 import { Multicall, evmChains, evmTokens, isEvmNetworkNativeSwapSupported } from '@owallet/common';

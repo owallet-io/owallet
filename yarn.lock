@@ -3916,15 +3916,10 @@
   dependencies:
     "@oraichain/common-contracts-sdk" "1.0.31"
 
-"@oraichain/common-contracts-sdk@1.0.31":
+"@oraichain/common-contracts-sdk@1.0.31", "@oraichain/common-contracts-sdk@^1.0.31":
   version "1.0.31"
   resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.31.tgz#595f93b168438d69d64896909b37855c9afc92fb"
   integrity sha512-s8H20RXy5gCnu3DnM7L5ClQyj2mdQpbSBpZrXCpIAX9qY0LKsDdZG3sYaDQ8+VN333jz9Pp/qGWdFSYD+6PBsg==
-
-"@oraichain/common-contracts-sdk@^1.0.24":
-  version "1.0.24"
-  resolved "https://registry.yarnpkg.com/@oraichain/common-contracts-sdk/-/common-contracts-sdk-1.0.24.tgz#e856da3b0086a944a7f710cbcba9fa2dcab2cd74"
-  integrity sha512-dBmr6L9H82dm8EDjOycNTO6/S/VzBBwOifF4e2nrrbGnNtA42akCdA/e93S3bgoxiDZpFWEt4pPUkvZisWReJQ==
 
 "@oraichain/cosmwasm-vm-js@^0.2.77":
   version "0.2.77"

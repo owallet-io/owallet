@@ -1,6 +1,6 @@
 import { StdSignature } from '@cosmjs/launchpad';
 import { Message } from '@owallet/router';
-import { OWalletSignOptions } from '@owallet/types';
+import { OWalletSignOptions, ChainInfoWithoutEndpoints } from '@owallet/types';
 
 export class RequestSignDirectMsg extends Message<{
   readonly signed: {
@@ -86,65 +86,7 @@ export class RequestSignBitcoinMsg extends Message<{
     return RequestSignBitcoinMsg.type();
   }
 }
-export class RequestSignTronMsg extends Message<{
-  readonly rawTxHex: string; // raw tx signature to broadcast
-}> {
-  public static type() {
-    return 'request-sign-tron';
-  }
 
-  constructor(public readonly chainId: string, public readonly data: object) {
-    super();
-  }
-
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error('chain id not set');
-    }
-
-    if (!this.data) {
-      throw new Error('data not set');
-    }
-  }
-
-  approveExternal(): boolean {
-    return true;
-  }
-
-  route(): string {
-    return 'keyring';
-  }
-
-  type(): string {
-    return RequestSignTronMsg.type();
-  }
-}
-
-export class GetDefaultAddressTronMsg extends Message<{}> {
-  public static type() {
-    return 'get-default-address-tron';
-  }
-
-  constructor(public readonly chainId: string) {
-    super();
-  }
-
-  validateBasic(): void {
-    if (!this.chainId) {
-      throw new Error('chain id not set');
-    }
-  }
-
-  route(): string {
-    return 'keyring';
-  }
-
-  type(): string {
-    return GetDefaultAddressTronMsg.type();
-  }
-}
-
-// request sign ethereum goes here
 export class RequestSignEthereumMsg extends Message<{
   readonly rawTxHex: string; // raw tx signature to broadcast
 }> {
@@ -179,5 +121,167 @@ export class RequestSignEthereumMsg extends Message<{
 
   type(): string {
     return RequestSignEthereumMsg.type();
+  }
+}
+
+// request sign tron
+export class RequestSignTronMsg extends Message<object> {
+  public static type() {
+    return 'request-sign-tron';
+  }
+
+  constructor(public readonly chainId: string, public readonly data: object) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return RequestSignTronMsg.type();
+  }
+}
+
+export class RequestSendRawTransactionMsg extends Message<object> {
+  public static type() {
+    return 'request-send-raw-transaction';
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly data: {
+      raw_data: any;
+      raw_data_hex: string;
+      txID: string;
+      visible?: boolean;
+    }
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  approveExternal(): boolean {
+    return true;
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return RequestSendRawTransactionMsg.type();
+  }
+}
+
+export class GetDefaultAddressTronMsg extends Message<{}> {
+  public static type() {
+    return 'get-default-address-tron';
+  }
+
+  constructor(public readonly chainId: string) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return GetDefaultAddressTronMsg.type();
+  }
+}
+
+export class TriggerSmartContractMsg extends Message<{
+  result: any;
+  transaction: {
+    raw_data: any;
+    raw_data_hex: string;
+    txID: string;
+    visible?: boolean;
+  };
+}> {
+  public static type() {
+    return 'trigger-smart-contract-tron';
+  }
+
+  constructor(
+    public readonly chainId: string,
+    public readonly data: {
+      address: string;
+      functionSelector: string;
+      options: { feeLimit?: number };
+      parameters: any[];
+      issuerAddress: string;
+    }
+  ) {
+    super();
+  }
+
+  validateBasic(): void {
+    if (!this.chainId) {
+      throw new Error('chain id not set');
+    }
+
+    if (!this.data) {
+      throw new Error('data not set');
+    }
+  }
+
+  route(): string {
+    return 'keyring';
+  }
+
+  type(): string {
+    return TriggerSmartContractMsg.type();
+  }
+}
+
+export class GetChainInfosWithoutEndpointsMsg extends Message<{
+  chainInfos: ChainInfoWithoutEndpoints[];
+}> {
+  public static type() {
+    return 'get-chain-infos-without-endpoints';
+  }
+
+  validateBasic(): void {
+    // noop
+  }
+
+  route(): string {
+    return 'chains';
+  }
+
+  type(): string {
+    return GetChainInfosWithoutEndpointsMsg.type();
   }
 }

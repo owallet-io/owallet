@@ -1,5 +1,16 @@
+//@ts-nocheck
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
-import { CosmosWallet, EvmWallet, NetworkChainId, CosmosChainId } from '@oraichain/oraidex-common';
+import {
+  CosmosWallet,
+  EvmWallet,
+  NetworkChainId,
+  CosmosChainId,
+  TokenItemType,
+  EvmResponse,
+  Networks,
+  IERC20Upgradeable__factory,
+  ethToTronAddress
+} from '@oraichain/oraidex-common';
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate';
 import TronWeb from 'tronweb';
@@ -7,6 +18,7 @@ import { OWallet } from '@owallet/types';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { Ethereum } from '@owallet/provider';
 import { ethers } from 'ethers';
+import { tronToEthAddress } from '../handler/src';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -72,9 +84,8 @@ export class SwapEvmWallet extends EvmWallet {
     //@ts-ignore
     this.ethereum = window.ethereum;
     this.isTronToken = isTronToken;
-    this.tronWeb = new TronWeb({
-      fullHost: 'https://api.trongrid.io'
-    });
+    //@ts-ignore
+    this.tronWeb = window.tronWeb;
     // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
     this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
   }
@@ -101,11 +112,100 @@ export class SwapEvmWallet extends EvmWallet {
     return !this.isTronToken;
   }
 
+  public isTron(chainId: string | number) {
+    return Number(chainId) === Networks.tron;
+  }
+
   checkTron(): boolean {
     return this.isTronToken;
   }
 
   getSigner(): JsonRpcSigner {
     return this.provider.getSigner();
+  }
+  public async submitTronSmartContract(
+    address: string,
+    functionSelector: string,
+    options: { feeLimit?: number } = { feeLimit: 40 * 1e6 }, // submitToCosmos costs about 40 TRX
+    parameters = [],
+    issuerAddress: string
+  ): Promise<EvmResponse> {
+    if (!this.tronWeb) {
+      throw new Error('You need to initialize tron web before calling submitTronSmartContract.');
+    }
+    try {
+      console.log('before building tx: ', issuerAddress);
+
+      const transaction = await window.tronWeb.triggerSmartContract(
+        address,
+        functionSelector,
+        options,
+        parameters,
+        ethToTronAddress(issuerAddress)
+      );
+
+      console.log('transaction builder: ', transaction);
+
+      if (!transaction.result || !transaction.result.result) {
+        throw new Error('Unknown trigger error: ' + JSON.stringify(transaction.transaction));
+      }
+      console.log('before signing');
+
+      // sign from inject tronWeb
+      const singedTransaction = await window.tronWeb.sign(transaction.transaction);
+      console.log('signed tx: ', singedTransaction);
+      const result = await window.tronWeb.sendRawTransaction(singedTransaction);
+      return { transactionHash: result.txid };
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  public async checkOrIncreaseAllowance(
+    token: TokenItemType,
+    owner: string,
+    spender: string,
+    amount: string
+  ): Promise<EvmResponse> {
+    // we store the tron address in base58 form, so we need to convert to hex if its tron because the contracts are using the hex form as parameters
+    if (!token.contractAddress) return;
+    console.log('token chainid', token.chainId, Number(token.chainId), Networks.tron);
+
+    const ownerHex = this.isTron(token.chainId) ? tronToEthAddress(owner) : owner;
+    // using static rpc for querying both tron and evm
+    const tokenContract = IERC20Upgradeable__factory.connect(
+      token.contractAddress,
+      new ethers.providers.JsonRpcProvider(token.rpc)
+    );
+    console.log('tron address', owner);
+    console.log('tron to eth address', tronToEthAddress(owner));
+
+    const currentAllowance = await tokenContract.allowance(ownerHex, spender);
+
+    if (BigInt(currentAllowance.toString()) >= BigInt(amount)) return;
+
+    if (this.isTron(token.chainId)) {
+      console.log('is it Tron ?');
+
+      if (this.checkTron())
+        return this.submitTronSmartContract(
+          ethToTronAddress(token.contractAddress),
+          'approve(address,uint256)',
+          {},
+          [
+            { type: 'address', value: spender },
+            { type: 'uint256', value: amount }
+          ],
+          ownerHex
+        );
+    } else if (this.checkEthereum()) {
+      console.log('is it checkEthereum ?');
+      // using window.ethereum for signing
+      // if you call this function on evm, you have to switch network before calling. Otherwise, unexpected errors may happen
+      const tokenContract = IERC20Upgradeable__factory.connect(token.contractAddress, this.getSigner());
+      const result = await tokenContract.approve(spender, amount, { from: ownerHex });
+      await result.wait();
+      return { transactionHash: result.hash };
+    }
   }
 }
