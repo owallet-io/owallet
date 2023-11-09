@@ -48,7 +48,7 @@ export const TokenPage: FunctionComponent = observer(() => {
     );
 
   const tokens = queryBalances.balances;
-  console.log('🚀 ~ file: tokens.tsx:59 ~ constTokenPage:FunctionComponent=observer ~ tokens:', tokens);
+
   const [tokensTron, setTokensTron] = React.useState(tokens);
 
   useEffect(() => {

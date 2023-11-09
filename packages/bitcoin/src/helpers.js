@@ -20,9 +20,6 @@ const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selec
       changeAddresses,
       selectedCrypto
     });
-    console.log('🚀 ~ file: helpers.js:20 ~ getBalanceFromUtxos ~ addresses:', addresses);
-    console.log('🚀 ~ file: helpers.js:22 ~ getBalanceFromUtxos ~ changeAddresses:', changeAddresses);
-    console.log('🚀 ~ file: helpers.js:23 ~ getBalanceFromUtxos ~ result:', result);
     return result;
   } catch (e) {
     console.log(e);
@@ -527,7 +524,7 @@ const createTransaction = async ({
         if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
         const path = utxo.path;
         const keyPair = root.derivePath(path);
-        console.log(path);
+
         if (addressType === 'bech32') {
           const p2wpkh = bitcoin.payments.p2wpkh({
             pubkey: keyPair.publicKey,
@@ -565,7 +562,7 @@ const createTransaction = async ({
             txHash: utxo.txid,
             coin: selectedCrypto
           });
-          // console.log('🚀 ~ file: helpers.js:610 ~ transaction:', transaction);
+          
           const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
           psbt.addInput({
             hash: utxo.txid,

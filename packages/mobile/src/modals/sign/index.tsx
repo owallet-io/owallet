@@ -124,7 +124,6 @@ export const SignModal: FunctionComponent<{
 
           return (
             <View key={i.toString()}>
-              {/* <Msg title={title}> */}
               {scrollViewHorizontal ? (
                 <ScrollView horizontal={true}>
                   <Text style={style.flatten(['body3'])}>{content}</Text>
@@ -132,44 +131,16 @@ export const SignModal: FunctionComponent<{
               ) : (
                 <View>{content}</View>
               )}
-              {/* </Msg> */}
-              {/* {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null} */}
             </View>
           );
         });
       } else if (mode === 'direct') {
-        console.log('🚀 ~ file: index.tsx:186 ~ return ~ msgs:', msgs);
         return (msgs as any[]).map((msg, i) => {
-          console.log('🚀 ~ file: index.tsx:186 ~ return ~ msg:', msg);
+          
           const chainInfo = chainStore.getChain(chainId);
           const { title, content } = renderDirectMessage(msg, chainInfo.currencies);
 
-          return (
-            <View key={i.toString()}>
-              {content}
-              {/* <Msg title={title}> */}
-              {/* <Text style={style.flatten(['body3', 'color-text-black-low'])}> */}
-              {/* </Text> */}
-              {/* </Msg> */}
-              {/* {msgs.length - 1 !== i ? (
-                <View
-                  style={style.flatten([
-                    'height-1',
-                    'background-color-border-white',
-                    'margin-x-16'
-                  ])}
-                />
-              ) : null} */}
-            </View>
-          );
+          return <View key={i.toString()}>{content}</View>;
         });
       } else {
         return null;
@@ -179,16 +150,7 @@ export const SignModal: FunctionComponent<{
     return (
       <CardModal title="Confirm Transaction">
         <View style={style.flatten(['margin-bottom-16'])}>
-          {/* <Text style={style.flatten(['margin-bottom-3'])}>
-            <Text style={style.flatten(['subtitle3', 'color-primary'])}>
-              {`${msgs.length.toString()} `}
-            </Text>
-            <Text
-              style={style.flatten(['subtitle3', 'color-text-black-medium'])}
-            >
-              Messages
-            </Text>
-          </Text> */}
+       
           <View
             style={style.flatten([
               'border-radius-8',

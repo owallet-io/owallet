@@ -18,6 +18,7 @@ import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
 import { EthereumEndpoint } from '@owallet/common';
 import { BtcToSats } from '@owallet/bitcoin';
 import { CoinInputBtc } from '../../components/form/coin-input-btc';
+import { Address } from '@owallet/crypto';
 
 export const SendBtcPage: FunctionComponent<{
   coinMinimalDenom?: string;
@@ -124,6 +125,7 @@ export const SendBtcPage: FunctionComponent<{
 
     return () => {};
   }, [accountInfo.bech32Address]);
+
   return (
     <>
       <form
@@ -155,12 +157,21 @@ export const SendBtcPage: FunctionComponent<{
                     });
                   },
                   onFulfill: (tx) => {
-                    console.log(tx, 'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!');
+                    const url = chainStore?.current?.raw?.txExplorer.txUrl.replace('{txHash}', tx);
                     notification.push({
                       placement: 'top-center',
                       type: tx ? 'success' : 'danger',
                       duration: 5,
-                      content: tx ? `Transaction successful with tx: ${tx}` : `Transaction failed with tx: ${tx}`,
+                      content: tx ? (
+                        <div className="alert-inner--text">
+                          Transaction successful with tx:{' '}
+                          <a target="_blank" href={url}>
+                            {Address.shortAddress(tx)}
+                          </a>
+                        </div>
+                      ) : (
+                        `Transaction failed`
+                      ),
                       canDelete: true,
                       transition: {
                         duration: 0.25
@@ -179,21 +190,21 @@ export const SendBtcPage: FunctionComponent<{
               if (!isDetachedPage) {
                 history.replace('/');
               }
-              notification.push({
-                placement: 'top-center',
-                type: 'success',
-                duration: 5,
-                content: 'Transaction submitted!',
-                canDelete: true,
-                transition: {
-                  duration: 0.25
-                }
-              });
+              // notification.push({
+              //   placement: 'top-center',
+              //   type: 'success',
+              //   duration: 5,
+              //   content: 'Transaction submitted!',
+              //   canDelete: true,
+              //   transition: {
+              //     duration: 0.25
+              //   }
+              // });
             } catch (e: any) {
               if (!isDetachedPage) {
                 history.replace('/');
               }
-              console.log(e.message, 'Catch Error on send!!!');
+
               notification.push({
                 type: 'warning',
                 placement: 'top-center',
@@ -231,11 +242,7 @@ export const SendBtcPage: FunctionComponent<{
               })}
               placeholder="Enter your amount"
             />
-            <MemoInput
-              memoConfig={sendConfigs.memoConfig}
-              label={intl.formatMessage({ id: 'send.input.memo' })}
-              placeholder="Enter your memo message"
-            />
+            <MemoInput memoConfig={sendConfigs.memoConfig} label={'Message'} placeholder="Enter your message" />
             <FeeButtons
               feeConfig={sendConfigs.feeConfig}
               gasConfig={sendConfigs.gasConfig}

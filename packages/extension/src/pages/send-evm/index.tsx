@@ -168,7 +168,7 @@ export const SendEvmPage: FunctionComponent<{
           new Big(estimate ?? 21000).mul(new Big(gasPrice)).toFixed(decimals)
         );
       } catch (error) {
-        console.log(error, 'zzz');
+        
         gasConfig.setGas(50000);
         feeConfig.setFee(
           new Big(50000).mul(new Big(gasPrice)).toFixed(decimals)
@@ -300,7 +300,7 @@ export const SendEvmPage: FunctionComponent<{
                     .div(parseFloat(gasConfig.gasRaw))
                     .toFixed(decimals)
                 ).toString(16);
-              console.log(gasPrice, 'GAS PRICE ON SUBMIT');
+             
               const stdFee = {
                 gas: '0x' + parseFloat(gasConfig.gasRaw).toString(16),
                 gasPrice
@@ -327,10 +327,7 @@ export const SendEvmPage: FunctionComponent<{
                     });
                   },
                   onFulfill: tx => {
-                    console.log(
-                      tx,
-                      'TX INFO ON SEND PAGE!!!!!!!!!!!!!!!!!!!!!'
-                    );
+                    
                     notification.push({
                       placement: 'top-center',
                       type: tx?.status === '0x1' ? 'success' : 'danger',
@@ -378,7 +375,7 @@ export const SendEvmPage: FunctionComponent<{
               if (!isDetachedPage) {
                 history.replace('/');
               }
-              console.log(e.message, 'Catch Error on send!!!');
+              
               notification.push({
                 type: 'warning',
                 placement: 'top-center',

@@ -59,26 +59,6 @@ const useAutoBiomtric = (keychainStore: KeychainStore, tryEnabled: boolean) => {
     }
   }, [keychainStore.isBiometryOn, status]);
 
-  // useEffect(() => {
-  //   if (
-  //     !tryBiometricAutoOnce.current &&
-  //     status === AutoBiomtricStatus.NEED &&
-  //     tryEnabled
-  //   ) {
-  //     tryBiometricAutoOnce.current = true;
-  //     (async () => {
-  //       try {
-  //         await delay(2000);
-  //         await keychainStore.tryUnlockWithBiometry();
-  //         setStatus(AutoBiomtricStatus.SUCCESS);
-  //       } catch (e) {
-  //         console.log(e);
-  //         setStatus(AutoBiomtricStatus.FAILED);
-  //       }
-  //     })();
-  //   }
-  // }, [keychainStore, status, tryEnabled]);
-
   return status;
 };
 
@@ -125,25 +105,21 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       (status) => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
-            console.log('UP_TO_DATE');
             // Show "downloading" modal
             // modal.open();
             setLoaded(true);
             break;
           case CodePush.SyncStatus.DOWNLOADING_PACKAGE:
-            console.log('DOWNLOADING_PACKAGE');
             // Show "downloading" modal
             // modal.open();
             appInitStore?.updateDate(Date.now());
             setDownloading(true);
             break;
           case CodePush.SyncStatus.INSTALLING_UPDATE:
-            console.log('INSTALLING_UPDATE');
             // show installing
             setInstalling(true);
             break;
           case CodePush.SyncStatus.UPDATE_INSTALLED:
-            console.log('UPDATE_INSTALLED');
             setDownloading(false);
             setInstalling(false);
             setLoaded(true);
@@ -227,30 +203,6 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       })();
     }
   }, [keyRingStore.status, navigateToHome, downloading]);
-
-  // useEffect(() => {
-  //   messaging().onNotificationOpenedApp(remoteMessage => {
-  //     console.log('Notification caused app to open from background state:', remoteMessage);
-  //     // const data = JSON.parse(remoteMessage?.data?.data);
-  //     const data = { data: JSON.stringify(remoteMessage) };
-
-  //     notificationStore?.updateNotidata(data);
-
-  //     console.log('Notification caused app to open from background state with data:', data);
-  //   });
-  //   messaging()
-  //     .getInitialNotification()
-  //     .then(async remoteMessage => {});
-  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
-  //     showToast({
-  //       text1: remoteMessage?.notification?.title,
-  //       text2: remoteMessage?.notification?.body,
-  //       onPress: () => Toast.hide()
-  //     });
-  //   });
-
-  //   return unsubscribe;
-  // }, []);
 
   // Notification setup section
   const regisFcmToken = useCallback(async (FCMToken) => {

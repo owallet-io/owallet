@@ -1,13 +1,5 @@
 import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import {
-  AppState,
-  BackHandler,
-  Platform,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  View,
-  ViewStyle
-} from 'react-native';
+import { AppState, BackHandler, Platform, StyleSheet, TouchableWithoutFeedback, View, ViewStyle } from 'react-native';
 import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import { ModalBase } from './base';
@@ -26,10 +18,7 @@ export interface Modal {
   props: any;
   close: () => void;
   onCloseTransitionEnd: () => void;
-  readonly bottomSheetModalConfig?: Omit<
-    BottomSheetProps,
-    'snapPoints' | 'children'
-  >;
+  readonly bottomSheetModalConfig?: Omit<BottomSheetProps, 'snapPoints' | 'children'>;
   options: ModalOptions;
 }
 
@@ -130,15 +119,12 @@ AppState.addEventListener('change', (state) => {
 });
 
 export const ModalsProvider: FunctionComponent = observer(({ children }) => {
-  const hasOpenedModal =
-    globalModalRendererState.modals.find((modal) => modal.isOpen) != null;
+  const hasOpenedModal = globalModalRendererState.modals.find((modal) => modal.isOpen) != null;
 
   useEffect(() => {
     if (hasOpenedModal) {
       const handler = () => {
-        const openedModals = globalModalRendererState.modals.filter(
-          (modal) => modal.isOpen
-        );
+        const openedModals = globalModalRendererState.modals.filter((modal) => modal.isOpen);
         // The topmost modal can be closed by the back button if this modal can be closed by pressing the backdrop.
         if (openedModals.length > 0) {
           const topmost = openedModals[openedModals.length - 1];
@@ -219,12 +205,11 @@ export const ModalRenderer: FunctionComponent<{
           setIsOpenTransitioning(false);
         }}
         onCloseTransitionEnd={() => {
-          console.log('onCloseTransitionEnd');
           globalModalRendererState.removeModal(modal.key);
           modal.onCloseTransitionEnd();
         }}
         close={() => {
-          console.log('close');
+          
           modal.close();
         }}
         bottomSheetModalConfig={modal.bottomSheetModalConfig}

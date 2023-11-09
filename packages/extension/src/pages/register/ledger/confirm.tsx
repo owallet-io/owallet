@@ -73,7 +73,7 @@ export const ConfirmLedgerPage: FunctionComponent = observer(() => {
         }
       });
     } catch (error) {
-      console.log({ error });
+      
       notification.push({
         placement: 'top-center',
         type: 'danger',

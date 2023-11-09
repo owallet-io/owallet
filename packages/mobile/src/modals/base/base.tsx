@@ -39,7 +39,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
 
   // callbacks
   const handleSheetChanges = useCallback((index: number) => {
-    console.log('index: ', index);
     if (openTransitionRef.current && index == 0) {
       openTransitionRef.current();
     }
@@ -62,7 +61,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       bottomSheetModalRef.current?.expand();
       return;
     }
-    console.log('🚀 ~ file: base.tsx:75 ~ isOpen:', isOpen);
+
     bottomSheetModalRef.current?.forceClose();
     handleDismiss();
   }, [isOpen]);

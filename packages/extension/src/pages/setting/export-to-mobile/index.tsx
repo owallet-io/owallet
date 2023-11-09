@@ -43,20 +43,14 @@ export const ExportToMobilePage: FunctionComponent = () => {
   const history = useHistory();
   const intl = useIntl();
 
-  const [exportKeyRingDatas, setExportKeyRingDatas] = useState<
-    ExportKeyRingData[]
-  >([]);
+  const [exportKeyRingDatas, setExportKeyRingDatas] = useState<ExportKeyRingData[]>([]);
 
   return (
     <>
       {exportKeyRingDatas.length === 0 ? (
-        <EnterPasswordToExportKeyRingView
-          onSetExportKeyRingDatas={setExportKeyRingDatas}
-        />
+        <EnterPasswordToExportKeyRingView onSetExportKeyRingDatas={setExportKeyRingDatas} />
       ) : (
-        <WalletConnectToExportKeyRingView
-          exportKeyRingDatas={exportKeyRingDatas}
-        />
+        <WalletConnectToExportKeyRingView exportKeyRingDatas={exportKeyRingDatas} />
       )}
     </>
   );
@@ -184,9 +178,7 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
         onSubmit={handleSubmit(async (data) => {
           setLoading(true);
           try {
-            onSetExportKeyRingDatas(
-              await keyRingStore.exportKeyRingDatas(data.password)
-            );
+            onSetExportKeyRingDatas(await keyRingStore.exportKeyRingDatas(data.password));
           } catch (e) {
             console.log('Fail to decrypt: ' + e.message);
             setError(
@@ -227,10 +219,7 @@ export const EnterPasswordToExportKeyRingView: FunctionComponent<{
               disabled={false}
               style={{ boxShadow: 'none !important' }}
             >
-              <img
-                src={require('../../../public/assets/svg/eyes.svg')}
-                alt="logo"
-              />
+              <img src={require('../../../public/assets/svg/eyes.svg')} alt="logo" />
             </Button>
           }
         />
@@ -252,8 +241,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
   const loadingIndicator = useLoadingIndicator();
 
   const [addressBookConfigMap] = useState(
-    () =>
-      new AddressBookConfigMap(new ExtensionKVStore('address-book'), chainStore)
+    () => new AddressBookConfigMap(new ExtensionKVStore('address-book'), chainStore)
   );
 
   const [connector, setConnector] = useState<WalletConnect | undefined>();
@@ -312,12 +300,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
           loadingIndicator.setIsLoading('export-to-mobile', true);
 
           connector.on('call_request', (error, payload) => {
-            if (
-              error ||
-              payload.method !==
-                'keplr_request_export_keyring_datas_wallet_connect_v1'
-            ) {
-              console.log(error, payload?.method);
+            if (error || payload.method !== 'keplr_request_export_keyring_datas_wallet_connect_v1') {
               history.replace('/');
               connector.killSession();
               loadingIndicator.setIsLoading('export-to-mobile', false);
@@ -330,10 +313,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
 
               const counter = new Counter(0);
               counter.setBytes(iv);
-              const aesCtr = new AES.ModeOfOperation.ctr(
-                Buffer.from(qrCodeData!.sharedPassword, 'hex'),
-                counter
-              );
+              const aesCtr = new AES.ModeOfOperation.ctr(Buffer.from(qrCodeData!.sharedPassword, 'hex'), counter);
 
               (async () => {
                 const addressBooks: {
@@ -341,24 +321,18 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
                 } = {};
 
                 if (payload.params && payload.params.length > 0) {
-                  for (const chainId of payload.params[0].addressBookChainIds ??
-                    []) {
-                    const addressBookConfig =
-                      addressBookConfigMap.getAddressBookConfig(chainId);
+                  for (const chainId of payload.params[0].addressBookChainIds ?? []) {
+                    const addressBookConfig = addressBookConfigMap.getAddressBookConfig(chainId);
 
                     await addressBookConfig.waitLoaded();
 
-                    addressBooks[chainId] = toJS(
-                      addressBookConfig.addressBookDatas
-                    ) as AddressBookData[];
+                    addressBooks[chainId] = toJS(addressBookConfig.addressBookDatas) as AddressBookData[];
                   }
                 }
 
                 const response: WCExportKeyRingDatasResponse = {
                   encrypted: {
-                    ciphertext: Buffer.from(aesCtr.encrypt(buf)).toString(
-                      'hex'
-                    ),
+                    ciphertext: Buffer.from(aesCtr.encrypt(buf)).toString('hex'),
                     // Hex encoded
                     iv: iv.toString('hex')
                   },
@@ -451,10 +425,7 @@ export const WalletConnectToExportKeyRingView: FunctionComponent<{
           height: '132px'
         }}
       >
-        <QRCode
-          size={130}
-          value={qrCodeData ? JSON.stringify(qrCodeData) : ''}
-        />
+        <QRCode size={130} value={qrCodeData ? JSON.stringify(qrCodeData) : ''} />
       </div>
       <div
         style={{

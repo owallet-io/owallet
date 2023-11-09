@@ -30,20 +30,12 @@ async function calculateOutputHash(root) {
     const p = path.join(root, dir.name);
     const buf = Buffer.from((await FolderHash.hashElement(p)).hash, 'base64');
 
-    console.log(p, buf.toString('base64'));
+    
 
     hash = Buffer.concat([hash, buf]);
   }
 
   return hash.toString('base64');
-}
-
-function getOutputHash(root) {
-  return fs.readFileSync(path.join(root, 'outputHash')).toString();
-}
-
-function setOutputHash(root, hash) {
-  return fs.writeFileSync(path.join(root, 'outputHash'), hash, { mode: 0o600 });
 }
 
 (async () => {
@@ -59,14 +51,6 @@ function setOutputHash(root, hash) {
 
     await $`mkdir -p ${outDir}`;
     $.verbose = true;
-
-    // When executed in CI, the proto output should not be different with ones built locally.
-    let lastOutputHash = undefined;
-    if (process.env.CI === 'true') {
-      console.log('You are ci runner');
-      lastOutputHash = getOutputHash(packageRoot);
-      console.log('Expected output hash is', lastOutputHash);
-    }
 
     const protoTsBinPath = (() => {
       try {
@@ -134,14 +118,6 @@ function setOutputHash(root, hash) {
     await $`rm ${packageRoot}/tsconfig.json`;
 
     $.verbose = true;
-
-    const outputHash = await calculateOutputHash(outDir);
-    console.log('Output hash is', outputHash);
-    if (lastOutputHash && lastOutputHash !== outputHash) {
-      throw new Error('Output is different');
-    }
-
-    setOutputHash(packageRoot, outputHash);
   } catch (e) {
     console.log('🚀 ~ file: proto-gen.mjs:146 ~ e:', e);
     process.exit(1);

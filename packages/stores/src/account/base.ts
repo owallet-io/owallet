@@ -521,7 +521,6 @@ export class AccountSetBase<MsgOpts, Queries> {
     });
 
     let txHash: string;
-    console.log('FEE in SEND EVM: ', fee);
 
     try {
       if (msgs.type === 'erc20') {
@@ -643,7 +642,7 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     try {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
-      console.log('🚀 ~ file: base.ts:641 ~ AccountSetBase<MsgOpts, ~ result:', result);
+     
 
       txHash = result?.txHash;
     } catch (e: any) {

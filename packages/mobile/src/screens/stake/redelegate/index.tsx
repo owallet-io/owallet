@@ -132,7 +132,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           return;
         }
         if (e?.response && e?.response?.data?.message) {
-          // // console.log(JSON.parse(e?.response?.data?.message),"ok nhe");
+          
           const inputString = e?.response?.data?.message;
           // Replace single quotes with double quotes
           const regex = /redelegation to this validator already in progress; first redelegation to this validator must complete before next redelegation/g;
@@ -154,7 +154,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
 
           // Parse the JSON string into a TypeScript object
           // const parsedObject = JSON.parse(`{${validJsonString}}`);
-          // console.log('🚀 ~ file: index.tsx:146 ~ const_onPressSwitchValidator= ~ parsedObject:', parsedObject);
+         
         }
         console.log(e);
         if (smartNavigation.canGoBack) {

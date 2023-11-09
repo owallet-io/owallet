@@ -215,10 +215,7 @@ export const API = {
       const rs = await API.get(`/api/tx/${txHash}/status`, {
         baseURL: url
       });
-      console.log(
-        '🚀 ~ file: api.ts:217 ~ checkStatusBitcoinTestNet: ~ rs:',
-        rs
-      );
+      
       return Promise.reject(rs?.data);
     } catch (error) {
       handleError(

@@ -18,11 +18,13 @@ import { useFocusEffect } from '@react-navigation/native';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { TRON_ID } from '@owallet/common';
 import { checkValidDomain } from '@src/utils/helper';
+import { navigate } from '@src/router/root';
+import { SCREENS } from '@src/common/constants';
 interface keyable {
   [key: string]: any;
 }
 
-export const CameraScreen: FunctionComponent = observer(props => {
+export const CameraScreen: FunctionComponent = observer((props) => {
   const { chainStore, keyRingStore } = useStore();
   const navigation = useNavigation();
   const smartNavigation = useSmartNavigation();
@@ -89,17 +91,27 @@ export const CameraScreen: FunctionComponent = observer(props => {
               if (isBech32Address) {
                 const prefix = data.slice(0, data.indexOf('1'));
                 const chainInfo = chainStore.chainInfosInUI.find(
-                  chainInfo => chainInfo.bech32Config.bech32PrefixAccAddr === prefix
+                  (chainInfo) => chainInfo.bech32Config.bech32PrefixAccAddr === prefix
                 );
                 if (chainInfo) {
                   const routersParam: keyable = smartNavigation?.getState()?.routes;
-                  const isParamAddressBook = routersParam.find(route => route?.params?.screenCurrent === 'addressbook');
+                  const isParamAddressBook = routersParam.find(
+                    (route) => route?.params?.screenCurrent === 'addressbook'
+                  );
                   if (isParamAddressBook) {
                     smartNavigation.navigateSmart('AddAddressBook', {
                       chainId: chainInfo.chainId,
                       recipient: data,
                       addressBookObj: {
                         name: isParamAddressBook.params.name
+                      }
+                    });
+                  } else if (chainStore.current.networkType === 'bitcoin') {
+                    navigate(SCREENS.STACK.Others, {
+                      screen: SCREENS.SendBtc,
+                      params: {
+                        chainId: chainInfo.chainId,
+                        recipient: data
                       }
                     });
                   } else {
@@ -125,8 +137,8 @@ export const CameraScreen: FunctionComponent = observer(props => {
       <ChainSelectorModal
         isOpen={isSelectChainModalOpen}
         close={() => setIsSelectChainModalOpen(false)}
-        chainIds={chainStore.chainInfosInUI.map(chainInfo => chainInfo.chainId)}
-        onSelectChain={chainId => {
+        chainIds={chainStore.chainInfosInUI.map((chainInfo) => chainInfo.chainId)}
+        onSelectChain={(chainId) => {
           setShowingAddressQRCodeChainId(chainId);
           setIsAddressQRCodeModalOpen(true);
           setIsSelectChainModalOpen(false);
@@ -195,7 +207,7 @@ export const AddressQRCodeModal: FunctionComponent<{
               onPress={() => {
                 Share.share({
                   message: account.bech32Address
-                }).catch(e => {
+                }).catch((e) => {
                   console.log(e);
                 });
               }}

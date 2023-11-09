@@ -180,7 +180,7 @@ export const LedgerGranterModal: FunctionComponent<{
                 const device = e.descriptor;
 
                 if (!_devices.find((d) => d.id === device.id)) {
-                  console.log(`Ledger device found (id: ${device.id}, name: ${device.name})`);
+                  
                   _devices = [
                     ..._devices,
                     {

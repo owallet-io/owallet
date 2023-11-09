@@ -26,7 +26,7 @@ export const ConfirmModalProvider: FunctionComponent = ({ children }) => {
       resolver: (result: boolean) => void;
     })[]
   >([]);
-  console.log('🚀 ~ file: index.tsx:24 ~ waitingConfirms:', waitingConfirms);
+  
   const onSelectConfirm = (
     confirm: ConfirmModalContextProps & {
       key: string;

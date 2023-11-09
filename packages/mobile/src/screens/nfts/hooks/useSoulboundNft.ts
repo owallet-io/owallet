@@ -1,8 +1,7 @@
 import React from 'react';
 import { SoulboundNftInfoResponse } from '@src/screens/home/types';
 import { CWStargate } from '@src/common/cw-stargate';
-const contractAddress =
-  'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
+const contractAddress = 'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
 
 export const useSoulbound = (
   chainId,
@@ -31,16 +30,12 @@ export const useSoulbound = (
         // 'orai1ntdmh848kktumfw5tx8l2semwkxa5s7e5rs03x'
         account.bech32Address
       );
-      console.log(
-        '🚀 ~ file: useSoulboundNft.ts:35 ~ init ~ tokensInfo:',
-        tokensInfo
-      );
+
       setState({
         soulboundNft: tokensInfo,
         loading: false
       });
     } catch (error) {
-      console.log('error: ', error);
       setState({
         soulboundNft: [],
         loading: false
@@ -89,9 +84,7 @@ export const getTokensInfoFromContract = async (client, accountAddress) => {
   if (!tokensInfoPromise?.length) {
     throw new Error('NFT is empty');
   }
-  const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(
-    tokensInfoPromise
-  );
+  const tokensInfo: SoulboundNftInfoResponse[] = await Promise.all(tokensInfoPromise);
   if (!tokensInfo?.length) {
     throw new Error('NFT is empty');
   }

@@ -1,11 +1,7 @@
 import bigInteger from 'big-integer';
 import { Int } from './int';
 import { CoinUtils } from './coin-utils';
-import {
-  exponentDecStringToDecString,
-  isExponentDecString,
-  isValidDecimalString
-} from './etc';
+import { exponentDecStringToDecString, isExponentDecString, isValidDecimalString } from './etc';
 
 export class Dec {
   public static readonly precision = 18;
@@ -22,9 +18,7 @@ export class Dec {
   protected static readonly precisionMultipliers: {
     [key: string]: bigInteger.BigInteger | undefined;
   } = {};
-  protected static calcPrecisionMultiplier(
-    prec: number
-  ): bigInteger.BigInteger {
+  protected static calcPrecisionMultiplier(prec: number): bigInteger.BigInteger {
     if (prec < 0) {
       throw new Error('Invalid prec');
     }
@@ -86,14 +80,13 @@ export class Dec {
       if (int.length === 0) {
         int = '0.0';
         // throw new Error('empty string');
-        console.log('empty string');
       }
       if (!isValidDecimalString(int)) {
         if (isExponentDecString(int)) {
           int = exponentDecStringToDecString(int);
         } else {
           int = '0.0';
-          console.log(`invalid decimal: ${int}`);
+
           // throw new Error(`invalid decimal: ${int}`);
         }
       }
@@ -322,10 +315,7 @@ export class Dec {
     return this.int.divide(precision);
   }
 
-  public toString(
-    prec: number = Dec.precision,
-    locale: boolean = false
-  ): string {
+  public toString(prec: number = Dec.precision, locale: boolean = false): string {
     const precision = Dec.calcPrecisionMultiplier(0);
     const int = this.int.abs();
     const { quotient: integer, remainder: fraction } = int.divmod(precision);
@@ -336,9 +326,7 @@ export class Dec {
     }
     fractionStr = fractionStr.substring(0, prec);
 
-    const isNegative =
-      this.isNegative() &&
-      !(integer.eq(bigInteger(0)) && fractionStr.length === 0);
+    const isNegative = this.isNegative() && !(integer.eq(bigInteger(0)) && fractionStr.length === 0);
 
     const integerStr = locale
       ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -346,9 +334,7 @@ export class Dec {
         CoinUtils.integerStringToUSLocaleString(integer.toString())
       : integer.toString();
 
-    return `${isNegative ? '-' : ''}${integerStr}${
-      fractionStr.length > 0 ? '.' + fractionStr : ''
-    }`;
+    return `${isNegative ? '-' : ''}${integerStr}${fractionStr.length > 0 ? '.' + fractionStr : ''}`;
   }
 
   public round(): Int {
