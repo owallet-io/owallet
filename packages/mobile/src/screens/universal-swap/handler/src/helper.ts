@@ -32,15 +32,12 @@ import {
   cosmosTokens,
   StargateMsg,
   IBC_WASM_HOOKS_CONTRACT,
-  toTokenInfo,
-  network,
   isInPairList
 } from '@oraichain/oraidex-common';
 import { OraiBridgeRouteData, SimulateResponse, SwapRoute, UniversalSwapConfig } from './types';
 import {
   AssetInfo,
   CosmWasmClient,
-  OraiswapRouterClient,
   OraiswapRouterReadOnlyInterface,
   OraiswapTokenQueryClient
 } from '@oraichain/oraidex-contracts-sdk';
@@ -48,8 +45,7 @@ import {
 import { isEqual } from 'lodash';
 import { ethers } from 'ethers';
 import { Amount, CwIcs20LatestQueryClient, CwIcs20LatestReadOnlyInterface } from '@oraichain/common-contracts-sdk';
-import { SigningCosmWasmClient, toBinary } from '@cosmjs/cosmwasm-stargate';
-import { GasPrice } from '@cosmjs/stargate';
+import { toBinary } from '@cosmjs/cosmwasm-stargate';
 
 export const tronToEthAddress = (base58: string) => {
   const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(1, -4);

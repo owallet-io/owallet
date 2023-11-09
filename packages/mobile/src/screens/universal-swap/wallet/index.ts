@@ -137,7 +137,7 @@ export class SwapEvmWallet extends EvmWallet {
       const tmpParameters = [...parameters];
       const uint256Index = tmpParameters.findIndex(param => param.type === 'uint256');
 
-      if (uint256Index) {
+      if (uint256Index && tmpParameters.length > uint256Index) {
         tmpParameters[uint256Index] = {
           ...tmpParameters[uint256Index],
           value:
@@ -182,7 +182,6 @@ export class SwapEvmWallet extends EvmWallet {
   ): Promise<EvmResponse> {
     // we store the tron address in base58 form, so we need to convert to hex if its tron because the contracts are using the hex form as parameters
     if (!token.contractAddress) return;
-    console.log('token chainid', token.chainId, Number(token.chainId), Networks.tron);
 
     const ownerHex = this.isTron(token.chainId) ? tronToEthAddress(owner) : owner;
     // using static rpc for querying both tron and evm
@@ -190,16 +189,12 @@ export class SwapEvmWallet extends EvmWallet {
       token.contractAddress,
       new ethers.providers.JsonRpcProvider(token.rpc)
     );
-    console.log('tron address', owner);
-    console.log('tron to eth address', tronToEthAddress(owner));
 
     const currentAllowance = await tokenContract.allowance(ownerHex, spender);
 
     if (BigInt(currentAllowance.toString()) >= BigInt(amount)) return;
 
     if (this.isTron(token.chainId)) {
-      console.log('is it Tron ?');
-
       if (this.checkTron())
         return this.submitTronSmartContract(
           ethToTronAddress(token.contractAddress),
@@ -212,7 +207,6 @@ export class SwapEvmWallet extends EvmWallet {
           ownerHex
         );
     } else if (this.checkEthereum()) {
-      console.log('is it checkEthereum ?');
       // using window.ethereum for signing
       // if you call this function on evm, you have to switch network before calling. Otherwise, unexpected errors may happen
       const tokenContract = IERC20Upgradeable__factory.connect(token.contractAddress, this.getSigner());
