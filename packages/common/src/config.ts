@@ -627,7 +627,12 @@ export const EmbedChainInfos: AppChainInfo[] = [
         }
       }
     ],
-    features: []
+    features: [],
+    txExplorer: {
+      name: 'Mintscan',
+      txUrl: 'https://www.mintscan.io/noble/txs/{txHash}',
+      accountUrl: 'https://www.mintscan.io/noble/address/{address}'
+    }
   },
   {
     rest: 'https://api.blockcypher.com/v1/btc/test3',
