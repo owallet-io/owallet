@@ -134,13 +134,24 @@ export class SwapEvmWallet extends EvmWallet {
       throw new Error('You need to initialize tron web before calling submitTronSmartContract.');
     }
     try {
-      console.log('before building tx: ', issuerAddress);
+      const tmpParameters = [...parameters];
+      const uint256Index = tmpParameters.findIndex(param => param.type === 'uint256');
+
+      if (uint256Index) {
+        tmpParameters[uint256Index] = {
+          ...tmpParameters[uint256Index],
+          value:
+            typeof tmpParameters[uint256Index].value === 'bigint'
+              ? tmpParameters[uint256Index].value.toString()
+              : tmpParameters[uint256Index].value
+        };
+      }
 
       const transaction = await window.tronWeb.triggerSmartContract(
         address,
         functionSelector,
         options,
-        parameters,
+        tmpParameters,
         ethToTronAddress(issuerAddress)
       );
 
@@ -157,6 +168,8 @@ export class SwapEvmWallet extends EvmWallet {
       const result = await window.tronWeb.sendRawTransaction(singedTransaction);
       return { transactionHash: result.txid };
     } catch (error) {
+      console.log('error', error);
+
       throw new Error(error);
     }
   }
