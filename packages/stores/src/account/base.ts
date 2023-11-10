@@ -434,7 +434,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         });
       }
     }
-    //TO DO: Disbale loading on chainId noble-1
+    //TO DO: Disbale loading on chainId noble-1 because rpc noble not support websocket
     if (this.chainId === 'noble-1') {
       this._isSendingMsg = false;
     }
