@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 import {
   CosmosWallet,
@@ -13,10 +12,8 @@ import {
 } from '@oraichain/oraidex-common';
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate';
-import TronWeb from 'tronweb';
-import { OWallet } from '@owallet/types';
+import { OWallet, Ethereum, TronWeb } from '@owallet/types';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { Ethereum } from '@owallet/provider';
 import { ethers } from 'ethers';
 import { tronToEthAddress } from '../handler/src';
 
@@ -78,11 +75,15 @@ export class SwapCosmosWallet extends CosmosWallet {
 export class SwapEvmWallet extends EvmWallet {
   private provider: JsonRpcProvider;
   private ethereum: Ethereum;
+  //@ts-ignore
+  private tronWeb: TronWeb;
   private isTronToken: boolean;
   constructor(isTronToken: boolean) {
     super();
+    //@ts-ignore
     this.ethereum = window.ethereum;
     this.isTronToken = isTronToken;
+    //@ts-ignore
     this.tronWeb = window.tronWeb;
     // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
     this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
@@ -161,10 +162,19 @@ export class SwapEvmWallet extends EvmWallet {
       console.log('before signing');
 
       // sign from inject tronWeb
-      const singedTransaction = await this.tronWeb.sign(transaction.transaction);
+      const singedTransaction = (await this.tronWeb.sign(transaction.transaction)) as {
+        raw_data: any;
+        raw_data_hex: string;
+        txID: string;
+        visible?: boolean;
+      };
       console.log('signed tx: ', singedTransaction);
-      const result = await this.tronWeb.sendRawTransaction(singedTransaction);
-      return { transactionHash: result.txid };
+      const result = (await this.tronWeb.sendRawTransaction(singedTransaction)) as {
+        txid: string;
+      };
+      if (result) {
+        return { transactionHash: result.txid };
+      }
     } catch (error) {
       console.log('error', error);
 

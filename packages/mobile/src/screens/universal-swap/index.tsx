@@ -18,7 +18,6 @@ import {
   ORAI,
   TRON_ID,
   ETH_ID,
-  KAWAII_ID,
   ORAICHAIN_ID,
   toDisplay
 } from '@owallet/common';

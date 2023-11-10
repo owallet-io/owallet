@@ -11,9 +11,8 @@ import {
   atomic,
   IBC_WASM_CONTRACT
 } from '@oraichain/oraidex-common';
-import { IUniswapV2Router02__factory } from '../config/abi/v2-periphery/contracts/interfaces';
-import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '../config/constants';
-import { CosmWasmClient, OraiswapOracleQueryClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { HIGH_GAS_PRICE, MULTIPLIER, swapEvmRoutes } from '../config/constants';
+import { CosmWasmClient, OraiswapOracleQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
