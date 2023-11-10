@@ -434,10 +434,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         });
       }
     }
-    //TO DO: Disbale loading on chainId noble-1 because rpc noble not support websocket
-    if (this.chainId === 'noble-1') {
-      this._isSendingMsg = false;
-    }
+
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
