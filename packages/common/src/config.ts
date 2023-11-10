@@ -577,8 +577,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rpc: 'https://rpc-noble.keplr.app',
-    rest: 'https://lcd-noble.keplr.app',
+    rpc: 'https://rpc.cosmos.directory/noble',
+    rest: 'https://rest.cosmos.directory/noble',
     chainId: 'noble-1',
     networkType: 'cosmos',
     chainName: 'Noble',
