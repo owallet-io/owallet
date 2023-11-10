@@ -607,19 +607,25 @@ export const EmbedChainInfos: AppChainInfo[] = [
       {
         coinDenom: 'USDC',
         coinMinimalDenom: 'uusdc',
-        coinDecimals: 6
+        coinDecimals: 6,
+        coinGeckoId: 'usd-coin',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
       }
     ],
     feeCurrencies: [
       {
         coinDenom: 'USDC',
         coinMinimalDenom: 'uusdc',
-        coinDecimals: 6
+        coinDecimals: 6,
+        coinGeckoId: 'usd-coin',
+        coinImageUrl: 'https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png'
       },
       {
         coinDenom: 'ATOM',
         coinMinimalDenom: 'ibc/EF48E6B1A1A19F47ECAEA62F5670C37C0580E86A9E88498B7E393EB6F49F33C0',
         coinDecimals: 6,
+        coinGeckoId: 'cosmos',
+        coinImageUrl: 'https://dhj8dql1kzq2v.cloudfront.net/white/atom.png',
         gasPriceStep: {
           low: 0.001,
           average: 0.001,
