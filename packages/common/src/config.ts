@@ -633,7 +633,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
         }
       }
     ],
-    features: [],
+    features: ['stargate', 'ibc-transfer', 'cosmwasm', 'no-legacy-stdTx'],
     txExplorer: {
       name: 'Mintscan',
       txUrl: 'https://www.mintscan.io/noble/txs/{txHash}',
