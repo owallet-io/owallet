@@ -16,6 +16,7 @@ import { HIGH_GAS_PRICE, MULTIPLIER, proxyContractInfo, swapEvmRoutes } from '..
 import { CosmWasmClient, OraiswapOracleQueryClient, OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapFromTokens, swapToTokens } from '../config';
+import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 
 export enum SwapDirection {
   From,
@@ -79,6 +80,22 @@ export async function fetchTaxRate(client: CosmWasmClient) {
     throw new Error(`Error when query TaxRate using oracle: ${error}`);
   }
 }
+
+/**
+ * Get transfer token fee when universal swap
+ * @param param0
+ * @returns
+ */
+export const getTransferTokenFee = async ({ remoteTokenDenom, client }): Promise<Ratio | undefined> => {
+  try {
+    const ibcWasmContractAddress = IBC_WASM_CONTRACT;
+    const ibcWasmContract = new CwIcs20LatestQueryClient(client, ibcWasmContractAddress);
+    const ratio = await ibcWasmContract.getTransferTokenFee({ remoteTokenDenom });
+    return ratio;
+  } catch (error) {
+    console.log({ error });
+  }
+};
 
 export async function fetchRelayerFee(client: CosmWasmClient): Promise<any> {
   const ics20Contract = new CwIcs20LatestQueryClient(client, IBC_WASM_CONTRACT);

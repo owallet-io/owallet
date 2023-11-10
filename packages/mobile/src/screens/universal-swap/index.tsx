@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -347,12 +347,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     }
   }, [fromToken]);
 
-  const handleBalanceActive = useCallback(
-    (item: BalanceType) => {
-      setBalanceActive(item);
-    },
-    [balanceActive]
-  );
+  const handleBalanceActive = (item: BalanceType) => {
+    setBalanceActive(item);
+  };
 
   const handleSubmit = async () => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
@@ -441,13 +438,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // setSwapAmount([toAmountToken, fromAmountToken]);
   };
 
-  const handleActiveAmount = useCallback(
-    item => {
-      handleBalanceActive(item);
-      onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
-    },
-    [toAmountToken, toTokenBalance, originalFromToken, originalToToken, fromTokenBalance]
-  );
+  const handleActiveAmount = item => {
+    handleBalanceActive(item);
+    onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
+  };
 
   return (
     <PageWithScrollViewInBottomTabView
