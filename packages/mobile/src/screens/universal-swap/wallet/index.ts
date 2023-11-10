@@ -170,7 +170,7 @@ export class SwapEvmWallet extends EvmWallet {
       };
       console.log('signed tx: ', singedTransaction);
       const result = (await this.tronWeb.sendRawTransaction(singedTransaction)) as {
-        txid: string;
+        txid?: string;
       };
       if (result) {
         return { transactionHash: result.txid };
