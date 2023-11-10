@@ -434,6 +434,10 @@ export class AccountSetBase<MsgOpts, Queries> {
         });
       }
     }
+    //TO DO: Disbale loading on chainId noble-1
+    if (this.chainId === 'noble-1') {
+      this._isSendingMsg = false;
+    }
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
@@ -642,7 +646,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     try {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
-     
 
       txHash = result?.txHash;
     } catch (e: any) {
