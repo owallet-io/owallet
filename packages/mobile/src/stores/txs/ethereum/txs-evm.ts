@@ -7,7 +7,6 @@ import { TxsTron } from './txs-tron';
 import { TxsKawaii } from './txs-kawaii';
 import { ChainIdEnum } from '@owallet/common';
 import { TxsCosmos } from '../cosmos/txs-cosmos';
-import { getBase58Address } from '@owallet/common';
 
 export class TxsEVM extends Txs {
   protected readonly txsBsc: TxsBsc;
@@ -32,7 +31,7 @@ export class TxsEVM extends Txs {
         case ChainIdEnum.TRON:
           return await this.txsTron.getTxs(page, current_page, {
             ...params,
-            addressAccount: getBase58Address(params?.addressAccount)
+            addressAccount: params?.addressAccount
           });
         default:
           break;
