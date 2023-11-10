@@ -81,10 +81,8 @@ export class SwapEvmWallet extends EvmWallet {
   private isTronToken: boolean;
   constructor(isTronToken: boolean) {
     super();
-    //@ts-ignore
     this.ethereum = window.ethereum;
     this.isTronToken = isTronToken;
-    //@ts-ignore
     this.tronWeb = window.tronWeb;
     // used 'any' to fix the following bug: https://github.com/ethers-io/ethers.js/issues/1107 -> https://github.com/Geo-Web-Project/cadastre/pull/220/files
     this.provider = new ethers.providers.Web3Provider(this.ethereum, 'any');
@@ -123,6 +121,7 @@ export class SwapEvmWallet extends EvmWallet {
   getSigner(): JsonRpcSigner {
     return this.provider.getSigner();
   }
+
   public async submitTronSmartContract(
     address: string,
     functionSelector: string,
@@ -134,24 +133,23 @@ export class SwapEvmWallet extends EvmWallet {
       throw new Error('You need to initialize tron web before calling submitTronSmartContract.');
     }
     try {
-      const tmpParameters = [...parameters];
-      const uint256Index = tmpParameters.findIndex(param => param.type === 'uint256');
+      const uint256Index = parameters.findIndex(param => param.type === 'uint256');
 
-      if (uint256Index && tmpParameters.length > uint256Index) {
-        tmpParameters[uint256Index] = {
-          ...tmpParameters[uint256Index],
+      if (uint256Index && parameters.length > uint256Index) {
+        parameters[uint256Index] = {
+          ...parameters[uint256Index],
           value:
-            typeof tmpParameters[uint256Index].value === 'bigint'
-              ? tmpParameters[uint256Index].value.toString()
-              : tmpParameters[uint256Index].value
+            typeof parameters[uint256Index].value === 'bigint'
+              ? parameters[uint256Index].value.toString()
+              : parameters[uint256Index].value
         };
       }
 
-      const transaction = await window.tronWeb.triggerSmartContract(
+      const transaction = await this.tronWeb.triggerSmartContract(
         address,
         functionSelector,
         options,
-        tmpParameters,
+        parameters,
         ethToTronAddress(issuerAddress)
       );
 
@@ -163,9 +161,9 @@ export class SwapEvmWallet extends EvmWallet {
       console.log('before signing');
 
       // sign from inject tronWeb
-      const singedTransaction = await window.tronWeb.sign(transaction.transaction);
+      const singedTransaction = await this.tronWeb.sign(transaction.transaction);
       console.log('signed tx: ', singedTransaction);
-      const result = await window.tronWeb.sendRawTransaction(singedTransaction);
+      const result = await this.tronWeb.sendRawTransaction(singedTransaction);
       return { transactionHash: result.txid };
     } catch (error) {
       console.log('error', error);
