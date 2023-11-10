@@ -297,7 +297,7 @@ export class Ethereum implements IEthereum {
     const chainId = args.chainId ?? this.initChainId;
     if (args.method === 'wallet_switchEthereumChain') {
       const msg = new RequestEthereumMsg(chainId, args.method, args.params);
-      const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      const result = (await this.requester.sendMessage(BACKGROUND_PORT, msg)) as string;
       this.initChainId = result;
       return result;
     } else if (args.method === 'eth_sendTransaction') {
