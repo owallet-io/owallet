@@ -434,6 +434,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         });
       }
     }
+
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
@@ -642,7 +643,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     try {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
-     
 
       txHash = result?.txHash;
     } catch (e: any) {
