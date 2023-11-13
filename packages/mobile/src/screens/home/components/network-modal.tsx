@@ -1,19 +1,15 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  Alert,
-  TouchableOpacity
-} from 'react-native';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
+
 import { metrics, spacing, typography } from '../../../themes';
-import { _keyExtract } from '../../../utils/helper';
+import { _keyExtract, delay } from '../../../utils/helper';
 import FastImage from 'react-native-fast-image';
 import { VectorCharacter } from '../../../components/vector-character';
 import { Text } from '@src/components/text';
-import { TRON_ID,COINTYPE_NETWORK } from '@owallet/common';
+import { TRON_ID, COINTYPE_NETWORK } from '@owallet/common';
 import OWFlatList from '@src/components/page/ow-flat-list';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
 export const NetworkModal = ({
   profileColor,
@@ -26,14 +22,12 @@ export const NetworkModal = ({
 }) => {
   const styles = styling(colors);
 
-  const handleSwitchNetwork = (item) => {
+  const handleSwitchNetwork = async (item) => {
     try {
       if (keyRingStore.keyRingType === 'ledger') {
         Alert.alert(
           'Switch network',
-          `You are switching to ${
-            COINTYPE_NETWORK[item.bip44.coinType]
-          } network. Please confirm that you have ${
+          `You are switching to ${COINTYPE_NETWORK[item.bip44.coinType]} network. Please confirm that you have ${
             COINTYPE_NETWORK[item.bip44.coinType]
           } App opened before switch network`,
           [
@@ -46,37 +40,30 @@ export const NetworkModal = ({
             },
             {
               text: 'Switch',
-              onPress: () => {
+              onPress: async () => {
                 chainStore.selectChain(item?.chainId);
-                chainStore.saveLastViewChainId();
-                if (
-                  typeof keyRingStore.setKeyStoreLedgerAddress === 'function'
-                ) {
-                  keyRingStore.setKeyStoreLedgerAddress(
-                    `${
-                      chainStore.current.networkType === 'bitcoin' ? '84' : '44'
-                    }'/${item.bip44.coinType ?? item.coinType}'/${
-                      bip44Option.bip44HDPath.account
-                    }'/${bip44Option.bip44HDPath.change}/${
+                await chainStore.saveLastViewChainId();
+                if (typeof keyRingStore.setKeyStoreLedgerAddress === 'function') {
+                  await keyRingStore.setKeyStoreLedgerAddress(
+                    `${chainStore.current.networkType === 'bitcoin' ? '84' : '44'}'/${
+                      item.bip44.coinType ?? item.coinType
+                    }'/${bip44Option.bip44HDPath.account}'/${bip44Option.bip44HDPath.change}/${
                       bip44Option.bip44HDPath.addressIndex
                     }`,
                     item?.chainId
                   );
                 }
-
-                modalStore.close();
               }
             }
           ]
         );
       } else {
         chainStore.selectChain(item?.chainId);
-        chainStore.saveLastViewChainId();
-        modalStore.close();
+        await chainStore.saveLastViewChainId();
       }
     } catch (error) {
       console.log('error: ', error);
-      // alert(JSON.stringify(error.message));
+    } finally {
       modalStore.close();
     }
   };
@@ -87,7 +74,7 @@ export const NetworkModal = ({
         style={{
           ...styles.containerBtn
         }}
-        onPress={async () => {
+        onPress={() => {
           handleSwitchNetwork(item);
         }}
       >
@@ -121,11 +108,7 @@ export const NetworkModal = ({
                 }}
               />
             ) : (
-              <VectorCharacter
-                char={item.chainName[0]}
-                height={15}
-                color={colors['white']}
-              />
+              <VectorCharacter char={item.chainName[0]} height={15} color={colors['white']} />
             )}
           </View>
 
@@ -155,9 +138,7 @@ export const NetworkModal = ({
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                item?.chainId === chainStore.current.chainId
-                  ? colors['purple-700']
-                  : colors['bg-circle-select-modal'],
+                item?.chainId === chainStore.current.chainId ? colors['purple-700'] : colors['bg-circle-select-modal'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -227,11 +208,11 @@ export const NetworkModal = ({
           height: metrics.screenHeight / 2
         }}
       >
-        <OWFlatList
+        <BottomSheetFlatList
           data={chainStore.chainInfosInUI}
           renderItem={_renderItem}
-          isBottomSheet
           keyExtractor={_keyExtract}
+
           // ListFooterComponent={() => (
           //   <View
           //     style={{
