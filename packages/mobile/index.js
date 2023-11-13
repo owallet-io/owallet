@@ -27,7 +27,7 @@ LogRocket.init(process.env.LOG_ROCKET, {
   }
 });
 
-LogRocket.identify(name, {
+LogRocket.identify(appName, {
   name: 'Admin',
   email: 'foundation@orai.com'
 });
