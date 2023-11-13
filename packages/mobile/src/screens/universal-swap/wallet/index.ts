@@ -136,6 +136,7 @@ export class SwapEvmWallet extends EvmWallet {
     try {
       const uint256Index = parameters.findIndex(param => param.type === 'uint256');
 
+      // type uint256 is bigint, so we need to convert to string if its uint256 because the JSONUint8Array can not stringify bigint
       if (uint256Index && parameters.length > uint256Index) {
         parameters[uint256Index] = {
           ...parameters[uint256Index],

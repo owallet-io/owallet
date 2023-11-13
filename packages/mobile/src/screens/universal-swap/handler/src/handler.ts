@@ -270,13 +270,9 @@ export class UniversalSwapHandler {
 
     if (evmWallet.isTron(token.chainId)) {
       from = this.swapData.sender.tron;
-      console.log('is this from', from);
-      console.log('is this evmWallet.checkTron()', evmWallet.checkTron());
 
       if (!from) throw generateError('Tron address is not specified. Cannot transfer!');
       if (evmWallet.checkTron()) {
-        console.log('get here checkTron', from);
-
         return evmWallet.submitTronSmartContract(
           ethToTronAddress(gravityContractAddr),
           'sendToCosmos(address,string,uint256)',
