@@ -320,7 +320,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       setAmountLoading(false);
     } catch (error) {
       console.log('error', error);
+
       setAmountLoading(false);
+      showToast({
+        text1: 'Error',
+        text2: error?.message ?? 'Something went wrong',
+        type: 'error'
+      });
     }
   };
 
@@ -412,10 +418,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     } catch (error) {
       setSwapLoading(false);
-      console.log({ error });
       showToast({
         text1: 'Error',
-        text2: JSON.stringify(error.message ?? 'Failed'),
+        text2: error?.message ?? 'Failed',
         type: 'error'
       });
     } finally {
