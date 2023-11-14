@@ -199,8 +199,8 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
           }
         />
 
-        {/* <BrowserBookmark />
-        <View
+        <BrowserBookmark />
+        {/* <View
           style={{
             paddingHorizontal: 20,
             paddingTop: 20
@@ -231,12 +231,10 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
               >
                 {`Orderbook`}
               </Text>
-              <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-                {`https://orderbook.oraidex.io/`}
-              </Text>
+              <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{`https://orderbook.oraidex.io/`}</Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <OWFlatList
           style={{
@@ -250,11 +248,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
             return (
               <TouchableOpacity
                 key={e.id ?? e.uri}
-                style={style.flatten([
-                  'height-44',
-                  'margin-bottom-15',
-                  'flex-row'
-                ])}
+                style={style.flatten(['height-44', 'margin-bottom-15', 'flex-row'])}
                 onPress={() => onHandleUrl(e.uri)}
               >
                 <View style={style.flatten(['padding-top-5'])}>
@@ -277,14 +271,12 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
                   >
                     {e.name}
                   </Text>
-                  <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-                    {e.uri}
-                  </Text>
+                  <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{e.uri}</Text>
                 </View>
               </TouchableOpacity>
             );
           }}
-        /> */}
+        />
       </View>
     );
   };
