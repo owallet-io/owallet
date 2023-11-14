@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '@src/themes/theme-provider';
-import { Alert, BackHandler, Platform, View } from 'react-native';
+import { BackHandler, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
@@ -145,8 +145,6 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      
-
       eventEmitter.emit('message', event.nativeEvent);
     },
     [eventEmitter]
