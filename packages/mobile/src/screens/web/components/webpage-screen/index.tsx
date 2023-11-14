@@ -282,7 +282,7 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 originWhitelist={['*']} // to allowing WebView to load blob
                 ref={webviewRef}
-                incognito={true}
+                // incognito={true}
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 containerStyle={{ marginBottom: bottomHeight }}
                 cacheEnabled={true}
