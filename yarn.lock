@@ -4733,25 +4733,25 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-9.4.1.tgz#7b880758adca65fe47ee866cf7b00416b9dcc192"
   integrity sha512-dAbY5mfw+6Kas/GJ6QX9AZyY+K+eq9ad4Su6utoph/nxyH3whp5cMSgRNgE2VhGQVRZ/OG0qq3IaD3+wzoqJXw==
 
-"@react-native-firebase/app@18.6.0", "@react-native-firebase/app@=18.6.0":
-  version "18.6.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-18.6.0.tgz#939c92fda17c2641079314f30d52797db43a673e"
-  integrity sha512-pJwq2D0VBk8QvmIw6qZ5P3Y5Uaq4LL9NarAcTdEIA342VlhmTB1rovcYHE/F/hohdGBwFzi5qXAQnZmTxv27sg==
+"@react-native-firebase/app@=18.6.1":
+  version "18.6.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-18.6.1.tgz#9dd741b9b4e0493a7fa037c7e5717ba0c53086e4"
+  integrity sha512-lqINQLLTCmBSeln/cSPfvuJNQuwsPY9n6QyxSRRCTjyZdEPI3EY2df7isOCp8BwuxqYmkR9YhTNw2yFI72th+w==
   dependencies:
     opencollective-postinstall "^2.0.3"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@18.6.0", "@react-native-firebase/crashlytics@=18.6.0":
-  version "18.6.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-18.6.0.tgz#3a37d03178de6f2a1019f8054376f015f940503a"
-  integrity sha512-VGBvY8hNbyk30Fd1rTsQlUvSO425AnOootB+B0HCmuS2Mhn02RDA/ylPbkjGAavX+bM8TB6bOZ7hbpCAFgpa0Q==
+"@react-native-firebase/crashlytics@=18.6.1":
+  version "18.6.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-18.6.1.tgz#79b7c566a6cbc9df5aa5b3540c9bf0ce5195ee3e"
+  integrity sha512-mPP6RKwy0cCL4rYyanplwg2HGAswE4z4I9p0p3q8ZOuvD/F48IwVMebbE0f5aeEztlEBguL3KOeGXGUttw61+w==
   dependencies:
     stacktrace-js "^2.0.2"
 
-"@react-native-firebase/messaging@18.6.0", "@react-native-firebase/messaging@=18.6.0":
-  version "18.6.0"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-18.6.0.tgz#be0a7b8841c65a7b6d4dfd8407e9e216e7b57633"
-  integrity sha512-0fBDvbu13MJazAJhiT1rm//hnxhzOSu1ZpqmGUKpNu73llxPqVYDk4L8uZ7WBRtu3e6TP7Mw8IfH3gGB1qeelA==
+"@react-native-firebase/messaging@=18.6.1":
+  version "18.6.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-18.6.1.tgz#e1bbdcf11f34544687ed79e35539d31b62ba375e"
+  integrity sha512-HdZ5eGBynGM2gOUxoemaVmYE0UJP2oRg8+rLPB6kncv6eCRuMvpDQY4zhQS1jken5m2/KVU9/ZxDkI2659PCug==
 
 "@react-native-masked-view/masked-view@0.2.9":
   version "0.2.9"
