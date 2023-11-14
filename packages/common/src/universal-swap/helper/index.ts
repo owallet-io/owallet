@@ -17,6 +17,7 @@ import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { getBase58Address } from 'src/utils';
+import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 
 export enum SwapDirection {
   From,
@@ -71,16 +72,15 @@ export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
   return oraichainTokens.find(token => token.coinGeckoId === coingeckoId);
 };
 
-export async function fetchTaxRate(client: CosmWasmClient) {
+export async function fetchTaxRate(client: CosmWasmClient): Promise<TaxRateResponse> {
   const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
   try {
-    const data = await oracleContract.taxRate();
-    return data;
+    const data = await oracleContract.treasury({ tax_rate: {} });
+    return data as TaxRateResponse;
   } catch (error) {
     throw new Error(`Error when query TaxRate using oracle: ${error}`);
   }
 }
-
 /**
  * Get transfer token fee when universal swap
  * @param param0

@@ -1,12 +1,7 @@
 import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { fromBinary, toBinary } from '@cosmjs/cosmwasm-stargate';
 import { TokenItemType, TokenInfo, toTokenInfo, network } from '@oraichain/oraidex-common';
-import {
-  AssetInfo,
-  OraiswapTokenQueryClient,
-  OraiswapTokenTypes,
-  SwapOperation
-} from '@oraichain/oraidex-contracts-sdk';
+import { AssetInfo, OraiswapTokenQueryClient, OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { ORAI_INFO, swapEvmRoutes } from '../config/constants';
 import isEqual from 'lodash/isEqual';
 import { Coin } from '@cosmjs/stargate';
