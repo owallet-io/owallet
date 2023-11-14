@@ -65,7 +65,7 @@ export class InjectedOWallet implements IOWallet {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -73,7 +73,7 @@ export class InjectedOWallet implements IOWallet {
     eventListener.addMessageListener(async (e: MessageEvent) => {
       const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
       //TO DO: this version got from packages/mobile/package.json
-      const isReactNative = owallet.version === '0.0.1';
+      const isReactNative = owallet.version.includes('mobile');
       // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
       const typeProxy: any = !isReactNative ? `${NAMESPACE}-proxy-request` : 'proxy-request';
       // filter proxy-request by namespace
@@ -187,14 +187,13 @@ export class InjectedOWallet implements IOWallet {
   protected requestMethod(method: keyof IOWallet, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
 
-
-      // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
-      // TO DO: Mode 'extension' got from params InjectOwallet extension
+    // TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
+    // TO DO: Mode 'extension' got from params InjectOwallet extension
     const typeProxy: any = this.mode === 'extension' ? `${NAMESPACE}-proxy-request` : 'proxy-request';
     const proxyMessage: ProxyRequest = {
       type: typeProxy,
@@ -251,7 +250,7 @@ export class InjectedOWallet implements IOWallet {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -440,7 +439,7 @@ export class InjectedEthereum implements Ethereum {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -574,7 +573,7 @@ export class InjectedEthereum implements Ethereum {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -632,7 +631,7 @@ export class InjectedEthereum implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -712,7 +711,7 @@ export class InjectedBitcoin implements Bitcoin {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -759,7 +758,7 @@ export class InjectedBitcoin implements Bitcoin {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -817,7 +816,7 @@ export class InjectedBitcoin implements Bitcoin {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -855,7 +854,7 @@ export class InjectedEthereumOWallet implements Ethereum {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -986,7 +985,7 @@ export class InjectedEthereumOWallet implements Ethereum {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -1044,7 +1043,7 @@ export class InjectedEthereumOWallet implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -1142,7 +1141,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -1227,7 +1226,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
   protected requestMethod(method: keyof ITronWeb | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map((value) => {
+      .map(value => {
         return value.toString(16);
       })
       .join('');
@@ -1285,7 +1284,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: (message) => window.postMessage(message, window.location.origin)
+      postMessage: message => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {
@@ -1314,7 +1313,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
         if (!address || !functionSelector || !issuerAddress) {
           throw new Error('You need to provide enough data address,functionSelector and issuerAddress');
         }
-        const parametersConvert = parameters.map((par) =>
+        const parametersConvert = parameters.map(par =>
           par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
         );
         return await this.requestMethod('triggerSmartContract', [

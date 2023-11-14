@@ -8,7 +8,7 @@ import { BackHandler, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { version } from '../../../../../package.json';
+import { version, name } from '../../../../../package.json';
 import { PageWithView } from '../../../../components/page';
 import { RNInjectedEthereum, RNInjectedOWallet, RNInjectedTronWeb } from '../../../../injected/injected-provider';
 import { RNMessageRequesterExternal } from '../../../../router';
@@ -65,7 +65,7 @@ export const WebpageScreen: FunctionComponent<
   const [owallet] = useState(
     () =>
       new OWallet(
-        version,
+        `${name}-${version}`,
         'core',
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
