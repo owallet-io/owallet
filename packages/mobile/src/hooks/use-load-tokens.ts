@@ -72,7 +72,7 @@ async function loadTokens(
       tronAddress &&
         loadEvmAmounts(
           universalSwapStore,
-          Address.getEvmAddress(tronAddress),
+          getEvmAddress(tronAddress),
           chainInfos.filter(c => c.chainId == '0x2b6653dc')
         )
     ].filter(Boolean)

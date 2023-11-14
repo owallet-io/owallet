@@ -16,6 +16,7 @@ import { CosmWasmClient, OraiswapOracleQueryClient } from '@oraichain/oraidex-co
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
+import { getBase58Address } from 'src/utils';
 
 export enum SwapDirection {
   From,
@@ -50,13 +51,13 @@ export function getTokenOnSpecificChainId(
   return flattenTokens.find(t => t.coinGeckoId === coingeckoId && t.chainId === chainId);
 }
 
-export const tronToEthAddress = (base58: string) => Address.getEvmAddress(base58);
+export const tronToEthAddress = (base58: string) => getEvmAddress(base58);
 
 export const ethToTronAddress = (address: string) => {
-  return Address.getBase58Address(address);
+  return getBase58Address(address);
 };
 
-export const getEvmAddress = (bech32Address: string) => {
+const getEvmAddress = (bech32Address: string) => {
   if (!bech32Address) return;
   const decoded = bech32.decode(bech32Address);
   const evmAddress = '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
