@@ -154,9 +154,9 @@ export const styling = (colors: TypeTheme['colors']) =>
     },
     containerInfo: {
       borderRadius: 8,
-      padding: 16,
       backgroundColor: colors['bg-swap-box'],
-      marginTop: 4
+      marginTop: 4,
+      width: '100%'
     },
     flr: {
       flexDirection: 'row',

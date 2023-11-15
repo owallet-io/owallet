@@ -539,33 +539,35 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         </View>
 
         <View>
-          <SwapBox
-            amount={fromAmountToken?.toString() ?? '0'}
-            balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
-            onChangeAmount={onChangeFromAmount}
-            tokenActive={originalFromToken}
-            onOpenTokenModal={() => setIsSelectFromTokenModal(true)}
-            tokenFee={fromTokenFee}
-          />
-          <SwapBox
-            amount={toDisplay(toAmountToken.toString()).toString() ?? '0'}
-            balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
-            tokenActive={originalToToken}
-            onOpenTokenModal={() => setIsSelectToTokenModal(true)}
-            editable={false}
-            tokenFee={toTokenFee}
-          />
-
-          <View style={styles.containerBtnCenter}>
-            <OWButtonIcon
-              fullWidth={false}
-              name="arrow_down_2"
-              circle
-              style={styles.btnSwapBox}
-              colorIcon={'#7C8397'}
-              sizeIcon={24}
-              onPress={handleReverseDirection}
+          <View>
+            <SwapBox
+              amount={fromAmountToken?.toString() ?? '0'}
+              balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
+              onChangeAmount={onChangeFromAmount}
+              tokenActive={originalFromToken}
+              onOpenTokenModal={() => setIsSelectFromTokenModal(true)}
+              tokenFee={fromTokenFee}
             />
+            <SwapBox
+              amount={toDisplay(toAmountToken.toString()).toString() ?? '0'}
+              balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
+              tokenActive={originalToToken}
+              onOpenTokenModal={() => setIsSelectToTokenModal(true)}
+              editable={false}
+              tokenFee={toTokenFee}
+            />
+
+            <View style={styles.containerBtnCenter}>
+              <OWButtonIcon
+                fullWidth={false}
+                name="arrow_down_2"
+                circle
+                style={styles.btnSwapBox}
+                colorIcon={'#7C8397'}
+                sizeIcon={24}
+                onPress={handleReverseDirection}
+              />
+            </View>
           </View>
         </View>
         <View style={styles.containerBtnBalance}>
