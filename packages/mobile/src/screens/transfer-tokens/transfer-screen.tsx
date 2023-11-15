@@ -1,11 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { Text } from '@src/components/text';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, ViewStyle } from 'react-native';
 import { Card, CardBody, OWBox } from '../../components/card';
 import { spacing } from '../../themes';
-import TransferTokensHeader from './transfer-header';
 import TransferTokensOptions from './transfer-options';
 import TransferViewBtn from './transfer-view-btn';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
@@ -25,10 +22,7 @@ const TransferTokensScreen: FunctionComponent<{
   const { colors } = useTheme();
 
   return (
-    <PageWithScrollViewInBottomTabView
-      style={[containerStyle]}
-      backgroundColor={colors['background']}
-    >
+    <PageWithScrollViewInBottomTabView style={[containerStyle]} backgroundColor={colors['background']}>
       <OWSubTitleHeader title="Transfer" />
       <OWBox
         style={{
