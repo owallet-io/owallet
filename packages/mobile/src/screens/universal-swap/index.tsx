@@ -10,7 +10,7 @@ import { OWButton } from '@src/components/button';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
-import { isAndroid, showToast } from '@src/utils/helper';
+import { showToast } from '@src/utils/helper';
 import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import {
   DEFAULT_SLIPPAGE,
@@ -398,7 +398,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           ...universalSwapData
         },
         {
-          //@ts-ignore
           cosmosWallet,
           //@ts-ignore
           evmWallet
@@ -417,6 +416,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       }
     } catch (error) {
       setSwapLoading(false);
+      console.log('error', error);
+
       showToast({
         message: error?.message ?? 'Failed',
         type: 'danger'
@@ -437,7 +438,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setSwapTokens([toTokenDenom, fromTokenDenom]);
     setSwapAmount([0, 0]);
     setBalanceActive(null);
-    // setSwapAmount([toAmountToken, fromAmountToken]);
   };
 
   const handleActiveAmount = item => {
@@ -448,7 +448,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
-      style={[styles.container, isAndroid ? styles.pt30 : {}]}
+      style={[styles.container, styles.pt30]}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />}
     >
