@@ -22,7 +22,6 @@ import {
   toDisplay,
   getBase58Address
 } from '@owallet/common';
-import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
 import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
@@ -450,7 +449,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
       style={[styles.container, isAndroid ? styles.pt30 : {}]}
-      disableSafeArea={false}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={loadingRefresh} onRefresh={onRefresh} />}
     >
