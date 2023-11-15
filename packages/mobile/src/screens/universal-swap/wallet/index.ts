@@ -11,9 +11,9 @@ import {
   ethToTronAddress
 } from '@oraichain/oraidex-common';
 import { OfflineSigner } from '@cosmjs/proto-signing';
-import { SigningCosmWasmClient, SigningCosmWasmClientOptions } from '@cosmjs/cosmwasm-stargate';
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { OWallet, Ethereum, TronWeb } from '@owallet/types';
-import { SigningStargateClient } from '@cosmjs/stargate';
+import { SigningStargateClient, SigningStargateClientOptions } from '@cosmjs/stargate';
 import { ethers } from 'ethers';
 import { tronToEthAddress } from '../handler/src';
 
@@ -49,7 +49,7 @@ export class SwapCosmosWallet extends CosmosWallet {
       rpc?: string;
       chainId: CosmosChainId;
     },
-    options?: SigningCosmWasmClientOptions
+    options?: SigningStargateClientOptions
   ): Promise<{
     wallet: OfflineSigner;
     client: SigningCosmWasmClient;

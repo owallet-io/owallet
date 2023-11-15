@@ -229,8 +229,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: accountOrai.bech32Address
       };
       if (accountTron) {
-        console.log('accountTron', accountTron);
-
         loadTokenParams = {
           ...loadTokenParams,
           tronAddress: getBase58Address(accountTron.evmosHexAddress)
@@ -447,8 +445,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleBalanceActive(item);
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
-
-  console.log('prices,', prices);
 
   return (
     <PageWithScrollViewInBottomTabView
