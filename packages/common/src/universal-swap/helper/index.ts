@@ -16,7 +16,7 @@ import { CosmWasmClient, OraiswapOracleQueryClient } from '@oraichain/oraidex-co
 import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
 import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
-import { getBase58Address } from 'src/utils';
+import { getBase58Address } from '../../utils';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
 
 export enum SwapDirection {
