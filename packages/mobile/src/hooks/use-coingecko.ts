@@ -1,4 +1,4 @@
-import { cosmosTokens } from '@owallet/common';
+import { cosmosTokens, evmTokens } from '@owallet/common';
 import { useEffect, useState } from 'react';
 
 /**
@@ -8,9 +8,7 @@ import { useEffect, useState } from 'react';
  */
 export const buildCoinGeckoPricesURL = (tokens: any[]): string =>
   // `https://api.coingecko.com/api/v3/simple/price?ids=${tokens.join('%2C')}&vs_currencies=usd`;
-  `https://price.market.orai.io/simple/price?ids=${tokens.join(
-    '%2C'
-  )}&vs_currencies=usd`;
+  `https://price.market.orai.io/simple/price?ids=${tokens.join('%2C')}&vs_currencies=usd`;
 
 /**
  * Prices of each token.
@@ -25,7 +23,7 @@ export type CoinGeckoPrices<T extends string> = {
  */
 export const useCoinGeckoPrices = () => {
   const [data, setData] = useState();
-  const tokens = [...new Set(cosmosTokens.map(t => t.coinGeckoId))];
+  const tokens = [...new Set([...cosmosTokens, ...evmTokens].map(t => t.coinGeckoId))];
   tokens.sort();
 
   const getCoingeckoPrices = async () => {
@@ -44,9 +42,7 @@ export const useCoinGeckoPrices = () => {
     } catch {
       // remain old cache
     }
-    setData(
-      Object.fromEntries(tokens.map((token: any) => [token, prices[token]]))
-    );
+    setData(Object.fromEntries(tokens.map((token: any) => [token, prices[token]])));
   };
 
   useEffect(() => {

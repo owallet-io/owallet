@@ -1,7 +1,6 @@
 import Long from 'long';
 import bech32 from 'bech32';
 import { TokenItemType, network } from '@oraichain/oraidex-common';
-import { Address } from '@owallet/crypto';
 import {
   cosmosTokens,
   flattenTokens,

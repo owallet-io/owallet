@@ -4,12 +4,11 @@ import { MulticallQueryClient } from '@oraichain/common-contracts-sdk';
 import { OraiswapTokenTypes } from '@oraichain/oraidex-contracts-sdk';
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { fromBech32, toBech32 } from '@cosmjs/encoding';
-import { CustomChainInfo, EVM_BALANCE_RETRY_COUNT, ERC20__factory, getEvmAddress } from '@oraichain/oraidex-common';
+import { CustomChainInfo, EVM_BALANCE_RETRY_COUNT, ERC20__factory } from '@oraichain/oraidex-common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults } from 'ethereum-multicall';
-import { Multicall, evmChains, evmTokens, isEvmNetworkNativeSwapSupported } from '@owallet/common';
+import { Multicall, evmChains, evmTokens, isEvmNetworkNativeSwapSupported, getEvmAddress } from '@owallet/common';
 import { chainInfos, network } from '@oraichain/oraidex-common';
-import { Address } from '@owallet/crypto';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
 import { CWStargate } from '@src/common/cw-stargate';
@@ -200,6 +199,8 @@ async function loadEvmEntries(
 }
 
 async function loadEvmAmounts(universalSwapStore: UniversalSwapStore, evmAddress: string, chains: CustomChainInfo[]) {
+  console.log('evmAddress', evmAddress);
+
   //@ts-ignore
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain))))

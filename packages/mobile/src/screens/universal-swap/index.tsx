@@ -19,7 +19,8 @@ import {
   TRON_ID,
   ETH_ID,
   ORAICHAIN_ID,
-  toDisplay
+  toDisplay,
+  getBase58Address
 } from '@owallet/common';
 import { Address } from '@owallet/crypto';
 import useLoadTokens from '@src/hooks/use-load-tokens';
@@ -210,7 +211,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       const cwStargate = {
         account: accountOrai,
-        chainId: accountOrai.chainId,
+        chainId: ORAICHAIN_ID,
         rpc: oraichainNetwork.rpc
       };
 
@@ -228,9 +229,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         kwtAddress: accountOrai.bech32Address
       };
       if (accountTron) {
+        console.log('accountTron', accountTron);
+
         loadTokenParams = {
           ...loadTokenParams,
-          tronAddress: Address.getBase58Address(accountTron.evmosHexAddress)
+          tronAddress: getBase58Address(accountTron.evmosHexAddress)
         };
       }
 
@@ -323,9 +326,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       setAmountLoading(false);
       showToast({
-        text1: 'Error',
-        text2: error?.message ?? 'Something went wrong',
-        type: 'error'
+        message: error?.message ?? 'Something went wrong',
+        type: 'danger'
       });
     }
   };
@@ -360,9 +362,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // account.handleUniversalSwap(chainId, { key: 'value' });
     if (fromAmountToken <= 0) {
       showToast({
-        text1: 'Error',
-        text2: 'From amount should be higher than 0!',
-        type: 'error'
+        message: 'From amount should be higher than 0!',
+        type: 'danger'
       });
       return;
     }
@@ -384,7 +385,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         sender: {
           cosmos: accountOrai.bech32Address,
           evm: accountEvm.evmosHexAddress,
-          tron: Address.getBase58Address(accountTron.evmosHexAddress)
+          tron: getBase58Address(accountTron.evmosHexAddress)
         },
         originalFromToken: originalFromToken,
         originalToToken: originalToToken,
@@ -400,6 +401,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           ...universalSwapData
         },
         {
+          //@ts-ignore
           cosmosWallet,
           //@ts-ignore
           evmWallet
@@ -411,7 +413,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       if (result) {
         setSwapLoading(false);
         showToast({
-          text1: 'Success',
+          message: 'Success',
           type: 'success'
         });
         await handleFetchAmounts();
@@ -419,9 +421,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     } catch (error) {
       setSwapLoading(false);
       showToast({
-        text1: 'Error',
-        text2: error?.message ?? 'Failed',
-        type: 'error'
+        message: error?.message ?? 'Failed',
+        type: 'danger'
       });
     } finally {
       setSwapLoading(false);
@@ -446,6 +447,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     handleBalanceActive(item);
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
+
+  console.log('prices,', prices);
 
   return (
     <PageWithScrollViewInBottomTabView
@@ -524,7 +527,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             Universal Swap
           </Text>
           <OWButtonIcon
-            isBottomSheet
             fullWidth={false}
             style={[styles.btnTitleRight]}
             sizeIcon={24}
