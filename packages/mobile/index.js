@@ -14,7 +14,7 @@ import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 import firebase from '@react-native-firebase/app';
 import LogRocket from '@logrocket/react-native';
-LogRocket.init(process.env.LOG_ROCKET, {
+LogRocket.init('swrly2/owallet', {
   redactionTags: ['private'],
   console: {
     isEnabled: {
@@ -27,10 +27,6 @@ LogRocket.init(process.env.LOG_ROCKET, {
   }
 });
 
-LogRocket.identify(appName, {
-  name: 'Admin',
-  email: 'foundation@orai.com'
-});
 const config = {
   apiKey: process.env.API_KEY,
   projectId: 'owallet-829a1',
