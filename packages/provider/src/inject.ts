@@ -239,6 +239,7 @@ export class InjectedOWallet implements IOWallet {
   constructor(
     public readonly version: string,
     public readonly mode: OWalletMode,
+    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -620,6 +621,7 @@ export class InjectedEthereum implements Ethereum {
   constructor(
     public readonly version: string,
     public readonly mode: EthereumMode,
+    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -805,6 +807,7 @@ export class InjectedBitcoin implements Bitcoin {
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
+    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1032,6 +1035,7 @@ export class InjectedEthereumOWallet implements Ethereum {
   constructor(
     public readonly version: string,
     public readonly mode: EthereumMode,
+    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1273,6 +1277,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
   constructor(
     public readonly version: string,
     public readonly mode: TronWebMode,
+    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
