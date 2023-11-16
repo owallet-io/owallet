@@ -235,11 +235,11 @@ export class InjectedOWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
 
   public defaultOptions: OWalletIntereactionOptions = {};
+  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
     public readonly mode: OWalletMode,
-    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -617,11 +617,11 @@ export class InjectedEthereum implements Ethereum {
   }
 
   public initChainId: string;
+  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
     public readonly mode: EthereumMode,
-    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -803,11 +803,11 @@ export class InjectedBitcoin implements Bitcoin {
   }
 
   public initChainId: string;
+  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
     public readonly mode: BitcoinMode,
-    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1031,11 +1031,11 @@ export class InjectedEthereumOWallet implements Ethereum {
   }
 
   public initChainId: string;
+  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
     public readonly mode: EthereumMode,
-    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
@@ -1273,11 +1273,11 @@ export class InjectedTronWebOWallet implements ITronWeb {
   }
 
   public initChainId: string;
+  public isOwallet: boolean = true;
 
   constructor(
     public readonly version: string,
     public readonly mode: TronWebMode,
-    public readonly isOwallet: boolean = true,
     protected readonly eventListener: {
       addMessageListener: (fn: (e: any) => void) => void;
       removeMessageListener: (fn: (e: any) => void) => void;
