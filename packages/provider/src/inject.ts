@@ -57,6 +57,7 @@ export interface ProxyRequestResponse {
  * So, to request some methods of the extension, this will proxy the request to the content script that is injected to webpage on the extension level.
  * This will use `window.postMessage` to interact with the content script.
  */
+// TO DO: Check type proxy for duplicate popup sign with keplr wallet on extension
 const typeProxy: any = isWeb ? `${NAMESPACE}-proxy-request` : 'proxy-request';
 export class InjectedOWallet implements IOWallet {
   static startProxy(

@@ -25,10 +25,6 @@ const HistoryTransactionsScreen = observer(() => {
   const { colors } = useTheme();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  console.log(
-    '🚀 ~ file: history-transactions-screen.tsx:28 ~ HistoryTransactionsScreen ~ addressDisplay:',
-    addressDisplay
-  );
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState([]);
   const [loading, setLoading] = useState(false);
