@@ -4,11 +4,11 @@ import EventEmitter from 'eventemitter3';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '@src/themes/theme-provider';
-import { Alert, BackHandler, Platform, View } from 'react-native';
+import { BackHandler, Platform, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import { URL } from 'react-native-url-polyfill';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
-import { version } from '../../../../../package.json';
+import { version, name } from '../../../../../package.json';
 import { PageWithView } from '../../../../components/page';
 import { RNInjectedEthereum, RNInjectedOWallet, RNInjectedTronWeb } from '../../../../injected/injected-provider';
 import { RNMessageRequesterExternal } from '../../../../router';
@@ -66,7 +66,7 @@ export const WebpageScreen: FunctionComponent<
   const [owallet] = useState(
     () =>
       new OWallet(
-        version,
+        `${name}-${version}`,
         'core',
         new RNMessageRequesterExternal(() => {
           if (!webviewRef.current) {
@@ -146,8 +146,6 @@ export const WebpageScreen: FunctionComponent<
   const [eventEmitter] = useState(() => new EventEmitter());
   const onMessage = useCallback(
     (event: WebViewMessageEvent) => {
-      
-
       eventEmitter.emit('message', event.nativeEvent);
     },
     [eventEmitter]
@@ -285,7 +283,7 @@ export const WebpageScreen: FunctionComponent<
               <WebView
                 originWhitelist={['*']} // to allowing WebView to load blob
                 ref={webviewRef}
-                incognito={true}
+                // incognito={true}
                 style={pageLoaded ? {} : { flex: 0, height: 0, opacity: 0 }}
                 containerStyle={{ marginBottom: bottomHeight }}
                 cacheEnabled={true}
