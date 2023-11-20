@@ -11,15 +11,11 @@ import { PageWithScrollViewInBottomTabView } from '../../../../components/page';
 import { useSimpleTimer } from '../../../../hooks';
 import { useStyle } from '../../../../styles';
 import { spacing, typography } from '../../../../themes';
+import { LRRedact } from '@logrocket/react-native';
 
-export const getPrivateDataTitle = (
-  keyRingType: string,
-  capitalize?: boolean
-) => {
+export const getPrivateDataTitle = (keyRingType: string, capitalize?: boolean) => {
   if (capitalize) {
-    return `View ${
-      keyRingType === 'mnemonic' ? 'Mnemonic Seed' : 'Private Key'
-    }`;
+    return `View ${keyRingType === 'mnemonic' ? 'Mnemonic Seed' : 'Private Key'}`;
   }
 
   return `View ${keyRingType === 'mnemonic' ? 'mnemonic seed' : 'private key'}`;
@@ -61,45 +57,41 @@ export const ViewPrivateDataScreen: FunctionComponent = () => {
   const { colors } = useTheme();
   return (
     <PageWithScrollViewInBottomTabView>
-      <OWBox>
-        <View
-          style={[
-            styles.containerMnemonicWord
-            // { backgroundColor: colors['background-item-list'] }
-          ]}
-        >
-          {privateDataType === 'mnemonic' ? (
-            words.map((word, i) => {
-              return <WordChip key={i.toString()} index={i + 1} word={word} />;
-            })
-          ) : (
-            <Text
-              style={{
-                ...typography['h6'],
-                marginBottom: spacing['30']
-              }}
-            >
-              {words}
-            </Text>
-          )}
-        </View>
-        <OWButton
-          size="medium"
-          onPress={() => {
-            Clipboard.setString(words.join(' ').trim());
-            setTimer(2000);
-          }}
-          label="Copy to Clipboard"
-          textStyle={styles.textStyle}
-          icon={
-            isTimedOut ? (
-              <CheckIcon />
+      <LRRedact>
+        <OWBox>
+          <View
+            style={[
+              styles.containerMnemonicWord
+              // { backgroundColor: colors['background-item-list'] }
+            ]}
+          >
+            {privateDataType === 'mnemonic' ? (
+              words.map((word, i) => {
+                return <WordChip key={i.toString()} index={i + 1} word={word} />;
+              })
             ) : (
-              <CopyFillIcon color={colors['white']} />
-            )
-          }
-        />
-      </OWBox>
+              <Text
+                style={{
+                  ...typography['h6'],
+                  marginBottom: spacing['30']
+                }}
+              >
+                {words}
+              </Text>
+            )}
+          </View>
+          <OWButton
+            size="medium"
+            onPress={() => {
+              Clipboard.setString(words.join(' ').trim());
+              setTimer(2000);
+            }}
+            label="Copy to Clipboard"
+            textStyle={styles.textStyle}
+            icon={isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors['white']} />}
+          />
+        </OWBox>
+      </LRRedact>
     </PageWithScrollViewInBottomTabView>
   );
 };

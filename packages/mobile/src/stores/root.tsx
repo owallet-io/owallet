@@ -30,13 +30,11 @@ import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { FiatCurrency } from '@owallet/types';
 import { ModalStore } from './modal';
-
-import { version } from '../../package.json';
+import { version, name } from '../../package.json';
 import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
-import { Alert } from 'react-native';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -100,7 +98,11 @@ export class RootStore {
     this.ledgerInitStore = new LedgerInitStore(this.interactionStore, new RNMessageRequesterInternal());
     this.signInteractionStore = new SignInteractionStore(this.interactionStore);
 
-    this.chainStore = new ChainStore(EmbedChainInfos, new RNMessageRequesterInternal(), new AsyncKVStore('store_chains'));
+    this.chainStore = new ChainStore(
+      EmbedChainInfos,
+      new RNMessageRequesterInternal(),
+      new AsyncKVStore('store_chains')
+    );
 
     this.keyRingStore = new KeyRingStore(
       {
@@ -121,7 +123,7 @@ export class RootStore {
       new AsyncKVStore('store_queries_fix2'),
       this.chainStore,
       async () => {
-        return new OWallet(version, 'core', new RNMessageRequesterInternal());
+        return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
       },
       QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
@@ -144,24 +146,19 @@ export class RootStore {
           suggestChain: false,
           autoInit: true,
           getOWallet: async () => {
-            return new OWallet(version, 'core', new RNMessageRequesterInternal());
+            return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
           },
           getEthereum: async () => {
             return new Ethereum(version, 'core', '0x38', new RNMessageRequesterInternal());
           },
           getBitcoin: async () => {
-            return new Bitcoin(
-              version,
-              'core',
-              'bitcoin',
-              new RNMessageRequesterInternal()
-            );
+            return new Bitcoin(version, 'core', 'bitcoin', new RNMessageRequesterInternal());
           },
           getTronWeb: async () => {
             return new TronWeb(version, 'core', '0x2b6653dc', new RNMessageRequesterInternal());
           }
         },
-        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
+        chainOpts: this.chainStore.chainInfos.map(chainInfo => {
           if (chainInfo.chainId.startsWith('osmosis')) {
             return {
               chainId: chainInfo.chainId,
@@ -200,7 +197,14 @@ export class RootStore {
       this.interactionStore
     );
 
-    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(new AsyncKVStore('store_test_ibc_currency_registrar'), 24 * 3600 * 1000, this.chainStore, this.accountStore, this.queriesStore, this.queriesStore);
+    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
+      new AsyncKVStore('store_test_ibc_currency_registrar'),
+      24 * 3600 * 1000,
+      this.chainStore,
+      this.accountStore,
+      this.queriesStore,
+      this.queriesStore
+    );
 
     router.listen(APP_PORT);
 

@@ -31,6 +31,7 @@ import { LoadingSpinner } from '../../../components/spinner';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
+import { LRRedact } from '@logrocket/react-native';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
@@ -345,6 +346,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.container}
       backgroundColor={colors['plain-background']}
     >
+      <LRRedact>
       <View style={styles.headerView}>
         <Text style={styles.titleHeader}>Import wallet</Text>
         <View>
@@ -410,6 +412,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
           height: 20
         }}
       />
+      </LRRedact>
     </PageWithScrollView>
   );
 });

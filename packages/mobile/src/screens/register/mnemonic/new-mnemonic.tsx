@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, Platform, Clipboard } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
@@ -25,6 +20,7 @@ import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { spacing } from '../../../themes';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
+import { LRRedact } from '@logrocket/react-native';
 
 interface FormData {
   name: string;
@@ -32,7 +28,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer(props => {
+export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -152,14 +148,9 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
       return 'Password must be longer than 8 characters';
     }
   };
-  const showConfirmPass = useCallback(
-    () => setStatusConfirmPass(!statusConfirmPass),
-    [statusConfirmPass]
-  );
+  const showConfirmPass = useCallback(() => setStatusConfirmPass(!statusConfirmPass), [statusConfirmPass]);
 
-  const renderConfirmPassword = ({
-    field: { onChange, onBlur, value, ref }
-  }) => {
+  const renderConfirmPassword = ({ field: { onChange, onBlur, value, ref } }) => {
     return (
       <TextInput
         label="Confirm password"
@@ -202,54 +193,53 @@ export const NewMnemonicScreen: FunctionComponent = observer(props => {
   const styles = useStyles();
 
   return (
-    <PageWithScrollView
-      contentContainerStyle={styles.container}
-      backgroundColor={colors['plain-background']}
-    >
+    <PageWithScrollView contentContainerStyle={styles.container} backgroundColor={colors['plain-background']}>
       {/* Mock for flexible margin top */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.title}>Create new wallet</Text>
-        <View>
-          <OWalletLogo size={72} />
+      <LRRedact>
+        <View style={styles.headerContainer}>
+          <Text style={styles.title}>Create new wallet</Text>
+          <View>
+            <OWalletLogo size={72} />
+          </View>
         </View>
-      </View>
-      <WordsCard words={words} />
-      <Controller
-        control={control}
-        rules={{
-          required: 'Name is required'
-        }}
-        render={renderUserName}
-        name="name"
-        defaultValue=""
-      />
-      {mode === 'create' ? (
-        <React.Fragment>
-          <Controller
-            control={control}
-            rules={{
-              required: 'Password is required',
-              validate: validatePassword
-            }}
-            render={renderPassword}
-            name="password"
-            defaultValue=""
-          />
-          <Controller
-            control={control}
-            rules={{
-              required: 'Confirm password is required',
-              validate: validateConfirmPassword
-            }}
-            render={renderConfirmPassword}
-            name="confirmPassword"
-            defaultValue=""
-          />
-        </React.Fragment>
-      ) : null}
-      <BIP44AdvancedButton bip44Option={bip44Option} />
-      <OWButton onPress={submit} label="Next" />
-      <OWButton onPress={onGoBack} label="Go back" type="link" />
+        <WordsCard words={words} />
+        <Controller
+          control={control}
+          rules={{
+            required: 'Name is required'
+          }}
+          render={renderUserName}
+          name="name"
+          defaultValue=""
+        />
+        {mode === 'create' ? (
+          <React.Fragment>
+            <Controller
+              control={control}
+              rules={{
+                required: 'Password is required',
+                validate: validatePassword
+              }}
+              render={renderPassword}
+              name="password"
+              defaultValue=""
+            />
+            <Controller
+              control={control}
+              rules={{
+                required: 'Confirm password is required',
+                validate: validateConfirmPassword
+              }}
+              render={renderConfirmPassword}
+              name="confirmPassword"
+              defaultValue=""
+            />
+          </React.Fragment>
+        ) : null}
+        <BIP44AdvancedButton bip44Option={bip44Option} />
+        <OWButton onPress={submit} label="Next" />
+        <OWButton onPress={onGoBack} label="Go back" type="link" />
+      </LRRedact>
     </PageWithScrollView>
   );
 });
@@ -285,14 +275,7 @@ const WordsCard: FunctionComponent<{
   return (
     <View style={styles.containerWord}>
       {words.map((word, i) => {
-        return (
-          <WordChip
-            key={i.toString()}
-            index={i + 1}
-            word={word}
-            hideWord={hideWord}
-          />
-        );
+        return <WordChip key={i.toString()} index={i + 1} word={word} hideWord={hideWord} />;
       })}
 
       <View style={styles.containerBtnCopy}>
@@ -304,17 +287,7 @@ const WordsCard: FunctionComponent<{
         <OWButton
           style={styles.padIcon}
           onPress={onCopy}
-          icon={
-            isTimedOut ? (
-              <CheckIcon />
-            ) : (
-              <OWIcon
-                name="copy"
-                color={colors['icon-purple-700-gray']}
-                size={20}
-              />
-            )
-          }
+          icon={isTimedOut ? <CheckIcon /> : <OWIcon name="copy" color={colors['icon-purple-700-gray']} size={20} />}
           type="link"
         />
       </View>

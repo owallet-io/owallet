@@ -19,14 +19,13 @@ import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
 import { TRON_ID } from '@owallet/common';
 
-export const HomeScreen: FunctionComponent = observer((props) => {
+export const HomeScreen: FunctionComponent = observer(props => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
-  const navigation = useNavigation();
 
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore, notificationStore, keyRingStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -102,7 +101,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     } else {
       await Promise.all([
         priceStore.waitFreshResponse(),
-        ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map((bal) => {
+        ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map(bal => {
           return bal.waitFreshResponse();
         }),
         queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
@@ -115,7 +114,6 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     setRefreshDate(Date.now());
   }, [account.bech32Address, chainStore.current.chainId]);
   const renderAccountCard = (() => {
-    
     if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
     } else if (chainStore.current.networkType === 'evm') {
@@ -148,7 +146,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
   );
 });
 
-const styling = (colors) =>
+const styling = colors =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
