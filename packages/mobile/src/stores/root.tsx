@@ -35,7 +35,6 @@ import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
-import { Alert } from 'react-native';
 import { UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
