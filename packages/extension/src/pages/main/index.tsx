@@ -23,6 +23,7 @@ import { SendEvmPage } from '../send-evm';
 import { SendTronEvmPage } from '../send-tron';
 import { BIP44SelectModal } from './bip44-select-modal';
 import { SendBtcPage } from '../send-btc';
+import { UniversalSwapPage } from '../universal-swap';
 
 export const MainPage: FunctionComponent = observer(() => {
   const intl = useIntl();
@@ -151,7 +152,11 @@ export const MainPage: FunctionComponent = observer(() => {
           </div>
         </CardBody>
       </Card>
-
+      <Card className={classnames(style.card, 'shadow')}>
+        <CardBody>
+          <UniversalSwapPage />
+        </CardBody>
+      </Card>
       {networkType === 'cosmos' && (
         <>
           <Card className={classnames(style.card, 'shadow')}>

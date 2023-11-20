@@ -20,7 +20,12 @@ import {
   getTronWebFromWindow,
   getBitcoinFromWindow
 } from '@owallet/stores';
-import { ExtensionRouter, ContentScriptEnv, ContentScriptGuards, InExtensionMessageRequester } from '@owallet/router-extension';
+import {
+  ExtensionRouter,
+  ContentScriptEnv,
+  ContentScriptGuards,
+  InExtensionMessageRequester
+} from '@owallet/router-extension';
 import { APP_PORT } from '@owallet/router';
 import { ChainInfoWithEmbed } from '@owallet/background';
 import { FiatCurrency } from '@owallet/types';
@@ -29,11 +34,13 @@ import { FeeType } from '@owallet/hooks';
 import { AnalyticsStore, NoopAnalyticsClient } from '@owallet/analytics';
 import Amplitude from 'amplitude-js';
 import { ChainIdHelper } from '@owallet/cosmos';
+import { UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
 
   public readonly chainStore: ChainStore;
+  public readonly universalSwapStore: UniversalSwapStore;
   public readonly keyRingStore: KeyRingStore;
   public readonly ibcChannelStore: IBCChannelStore;
 
@@ -80,7 +87,11 @@ export class RootStore {
     // Order is important.
     this.interactionStore = new InteractionStore(router, new InExtensionMessageRequester());
 
-    this.chainStore = new ChainStore(EmbedChainInfos, new InExtensionMessageRequester(), localStorage.getItem('initchain'));
+    this.chainStore = new ChainStore(
+      EmbedChainInfos,
+      new InExtensionMessageRequester(),
+      localStorage.getItem('initchain')
+    );
 
     this.keyRingStore = new KeyRingStore(
       {
@@ -108,7 +119,7 @@ export class RootStore {
       QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
 
-    const chainOpts = this.chainStore.chainInfos.map((chainInfo) => {
+    const chainOpts = this.chainStore.chainInfos.map(chainInfo => {
       // In certik, change the msg type of the MsgSend to "bank/MsgSend"
       if (chainInfo.chainId.startsWith('shentu-')) {
         return {
@@ -263,7 +274,14 @@ export class RootStore {
       'usd'
     );
 
-    this.tokensStore = new TokensStore(window, this.chainStore, new InExtensionMessageRequester(), this.interactionStore);
+    this.tokensStore = new TokensStore(
+      window,
+      this.chainStore,
+      new InExtensionMessageRequester(),
+      this.interactionStore
+    );
+
+    this.universalSwapStore = new UniversalSwapStore();
 
     this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar<ChainInfoWithEmbed>(
       new ExtensionKVStore('store_ibc_currency_registrar'),

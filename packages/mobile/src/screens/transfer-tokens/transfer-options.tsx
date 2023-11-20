@@ -24,7 +24,8 @@ const styling = colors =>
     },
     sendTokenCardContent: {
       width: '47%',
-      padding: 0
+      padding: 0,
+      marginTop: 12
     },
     sendTokenCardText: {
       height: 130,
@@ -51,8 +52,7 @@ const tokenTransferInfo = [
   {
     icon: <SendCrossChainIcon />,
     titleLine1: 'Universal Swap',
-    type: 'send_cross',
-    titleLine2: '(IBC Transfer)'
+    type: 'send_cross'
   },
   // {
   //   icon: <SendBridgeIcon />,
