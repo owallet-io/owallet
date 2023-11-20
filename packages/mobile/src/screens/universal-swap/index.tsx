@@ -35,7 +35,7 @@ import {
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, toSubAmount } from '@owallet/common';
-import { CWStargate } from '@src/common/cw-stargate';
+import { CWStargate } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,

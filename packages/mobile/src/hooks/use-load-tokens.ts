@@ -11,7 +11,7 @@ import { Multicall, evmChains, evmTokens, isEvmNetworkNativeSwapSupported, getEv
 import { chainInfos, network } from '@oraichain/oraidex-common';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
 import { UniversalSwapStore } from '@src/stores/universal_swap';
-import { CWStargate } from '@src/common/cw-stargate';
+import { CWStargate } from '@owallet/common';
 import { AccountWithAll } from '@owallet/stores';
 
 export type CWStargateType = {

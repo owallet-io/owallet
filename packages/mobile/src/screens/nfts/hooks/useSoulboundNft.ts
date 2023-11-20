@@ -1,6 +1,6 @@
 import React from 'react';
 import { SoulboundNftInfoResponse } from '@src/screens/home/types';
-import { CWStargate } from '@src/common/cw-stargate';
+import { CWStargate } from '@owallet/common';
 const contractAddress = 'orai15g3lhqtsdhsjr2qzhtrc06jfshyuaegmf75rn5jf3ql3u8lc4l2sje4xpu';
 
 export const useSoulbound = (

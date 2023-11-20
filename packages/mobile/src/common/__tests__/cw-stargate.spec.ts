@@ -1,10 +1,10 @@
-import { CWStargate } from '../cw-stargate';
+import { CWStargate } from '@owallet/common';
 import * as cosmwasm from '@cosmjs/cosmwasm-stargate';
 
 jest.mock('@cosmjs/cosmwasm-stargate', () => ({
   SigningCosmWasmClient: {
-    connectWithSigner: jest.fn().mockResolvedValue('mockClient'),
-  },
+    connectWithSigner: jest.fn().mockResolvedValue('mockClient')
+  }
 }));
 
 describe('CWStargate', () => {
@@ -15,8 +15,8 @@ describe('CWStargate', () => {
   beforeEach(() => {
     mockAccount = {
       getOWallet: jest.fn().mockResolvedValue({
-        getOfflineSigner: jest.fn().mockReturnValue('mockOfflineSigner'),
-      }),
+        getOfflineSigner: jest.fn().mockReturnValue('mockOfflineSigner')
+      })
     };
     mockChainId = 'Oraichain';
     mockRpc = 'https://rpc.orai.io';
@@ -29,17 +29,12 @@ describe('CWStargate', () => {
     expect(result).toBe('mockClient');
 
     expect(mockAccount.getOWallet).toHaveBeenCalled();
-    expect(cosmwasm.SigningCosmWasmClient.connectWithSigner).toHaveBeenCalledWith(
-      mockRpc,
-      'mockOfflineSigner'
-    );
+    expect(cosmwasm.SigningCosmWasmClient.connectWithSigner).toHaveBeenCalledWith(mockRpc, 'mockOfflineSigner');
   });
 
   it("should throw an error if owallet API can't be obtained", async () => {
     mockAccount.getOWallet.mockResolvedValueOnce(null);
-    await expect(
-      CWStargate.init(mockAccount, mockChainId, mockRpc)
-    ).rejects.toThrowError("Can't get the owallet API");
+    await expect(CWStargate.init(mockAccount, mockChainId, mockRpc)).rejects.toThrowError("Can't get the owallet API");
 
     expect(mockAccount.getOWallet).toHaveBeenCalled();
     expect(cosmwasm.SigningCosmWasmClient.connectWithSigner).not.toHaveBeenCalled();
