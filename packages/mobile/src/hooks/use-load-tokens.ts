@@ -197,8 +197,6 @@ async function loadEvmEntries(
 }
 
 async function loadEvmAmounts(universalSwapStore: UniversalSwapStore, evmAddress: string, chains: CustomChainInfo[]) {
-  console.log('evmAddress', evmAddress);
-
   //@ts-ignore
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain))))

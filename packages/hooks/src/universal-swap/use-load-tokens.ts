@@ -29,7 +29,11 @@ export type LoadTokenParams = {
 };
 type AmountDetails = { [denom: string]: string };
 
-async function loadNativeBalance(updateAmounts: any, address: string, tokenInfo: { chainId?: string; rpc?: string }) {
+async function loadNativeBalance(
+  universalSwapStore: any,
+  address: string,
+  tokenInfo: { chainId?: string; rpc?: string }
+) {
   if (!address) return;
   const client = await StargateClient.connect(tokenInfo.rpc);
   const amountAll = await client.getAllBalances(address);
@@ -47,7 +51,7 @@ async function loadNativeBalance(updateAmounts: any, address: string, tokenInfo:
     Object.fromEntries(amountAll.filter(coin => tokenMap[coin.denom]).map(coin => [coin.denom, coin.amount]))
   );
 
-  updateAmounts.updateAmounts(amountDetails);
+  universalSwapStore.updateAmounts(amountDetails);
 }
 
 async function loadTokens(
@@ -87,7 +91,6 @@ export const genAddressCosmos = (info, address60, address118) => {
 
 async function loadTokensCosmos(updateAmounts: any, kwtAddress: string, oraiAddress: string) {
   if (!kwtAddress || !oraiAddress) return;
-  //   await handleCheckWallet();
   const cosmosInfos = chainInfos.filter(
     chainInfo => chainInfo.networkType === 'cosmos' || chainInfo.bip44.coinType === 118
   );
@@ -192,8 +195,6 @@ async function loadEvmEntries(
 }
 
 async function loadEvmAmounts(universalSwapStore: any, evmAddress: string, chains: CustomChainInfo[]) {
-  console.log('evmAddress', evmAddress);
-
   //@ts-ignore
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain))))
@@ -219,6 +220,6 @@ export async function loadKawaiiSubnetAmount(universalSwapStore: any, kwtAddress
   }
 }
 
-export default function useLoadTokens(universalSwapStore: any): (params: LoadTokenParams) => Promise<void> {
+export function useLoadTokens(universalSwapStore: any): (params: LoadTokenParams) => Promise<void> {
   return loadTokens.bind(null, universalSwapStore);
 }

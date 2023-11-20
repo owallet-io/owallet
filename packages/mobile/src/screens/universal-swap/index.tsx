@@ -22,7 +22,6 @@ import {
   toDisplay,
   getBase58Address
 } from '@owallet/common';
-import useLoadTokens from '@src/hooks/use-load-tokens';
 import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
   TokenItemType,
@@ -49,8 +48,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useRelayerFee } from '@src/hooks/use-relayer-fee';
-import { useTaxRate } from '@src/hooks/use-tax-rate';
+import { useRelayerFee, useTaxRate, useLoadTokens } from '@owallet/hooks';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
