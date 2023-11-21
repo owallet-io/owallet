@@ -14,7 +14,8 @@ import {
   getBase58Address,
   CWStargate,
   getEvmAddress,
-  getTokenOnOraichain
+  getTokenOnOraichain,
+  getTokenOnSpecificChainId
 } from '@owallet/common';
 import { SwapInput } from './components/input-swap';
 import { Button } from 'reactstrap';
@@ -173,6 +174,20 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
 
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
+
+  useEffect(() => {
+    // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
+    if (isSupportedNoPoolSwapEvm(toToken.coinGeckoId) && !isSupportedNoPoolSwapEvm(fromToken.coinGeckoId)) {
+      const fromTokenSameToChainId = getTokenOnSpecificChainId(fromToken.coinGeckoId, toToken.chainId);
+      if (!fromTokenSameToChainId) {
+        const sameChainIdTokens = evmTokens.find(t => t.chainId === toToken.chainId);
+        if (!sameChainIdTokens) throw Error('Impossible case! An EVM chain should at least have one token');
+        setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
+        return;
+      }
+      setSwapTokens([fromTokenSameToChainId.denom, toToken.denom]);
+    }
+  }, [fromToken]);
 
   return (
     <div>
