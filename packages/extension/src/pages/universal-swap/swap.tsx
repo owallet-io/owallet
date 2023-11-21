@@ -13,15 +13,31 @@ import {
   toDisplay,
   getBase58Address,
   CWStargate,
-  oraichainNetwork,
-  TokenItemType,
-  getEvmAddress
+  getEvmAddress,
+  getTokenOnOraichain
 } from '@owallet/common';
 import { SwapInput } from './components/input-swap';
 import { Button } from 'reactstrap';
 import { useIntl } from 'react-intl';
 import { useRelayerFee, useTaxRate, useLoadTokens, useCoinGeckoPrices } from '@owallet/hooks';
 import { fetchTokenInfos, toSubAmount } from '@owallet/common';
+import { evmTokens, filterNonPoolEvmTokens, SwapDirection } from '@owallet/common';
+import {
+  isEvmNetworkNativeSwapSupported,
+  isEvmSwappable,
+  isSupportedNoPoolSwapEvm,
+  UniversalSwapData,
+  UniversalSwapHandler
+} from '@oraichain/oraidex-universal-swap';
+import {
+  TokenItemType,
+  NetworkChainId,
+  oraichainNetwork,
+  tokenMap,
+  toAmount,
+  network,
+  Networks
+} from '@oraichain/oraidex-common';
 
 export const UniversalSwapPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, universalSwapStore } = useStore();
@@ -111,8 +127,45 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     }, 2000);
   }, []);
 
-  console.log('universalSwapStore.getAmount', universalSwapStore.getAmount);
-  console.log('universalSwapStore.prices', prices);
+  // get token on oraichain to simulate swap amount.
+  const originalFromToken = tokenMap[fromTokenDenom];
+  const originalToToken = tokenMap[toTokenDenom];
+  const isEvmSwap = isEvmSwappable({
+    fromChainId: originalFromToken.chainId,
+    toChainId: originalToToken.chainId,
+    fromContractAddr: originalFromToken.contractAddress,
+    toContractAddr: originalToToken.contractAddress
+  });
+
+  // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
+  const fromToken = isEvmSwap
+    ? tokenMap[fromTokenDenom]
+    : getTokenOnOraichain(tokenMap[fromTokenDenom].coinGeckoId) ?? tokenMap[fromTokenDenom];
+  const toToken = isEvmSwap
+    ? tokenMap[toTokenDenom]
+    : getTokenOnOraichain(tokenMap[toTokenDenom].coinGeckoId) ?? tokenMap[toTokenDenom];
+
+  useEffect(() => {
+    const filteredToTokens = filterNonPoolEvmTokens(
+      fromToken.chainId,
+      fromToken.coinGeckoId,
+      fromTokenDenom,
+      searchTokenName,
+      SwapDirection.To
+    );
+    setFilteredToTokens(filteredToTokens);
+
+    const filteredFromTokens = filterNonPoolEvmTokens(
+      toToken.chainId,
+      toToken.coinGeckoId,
+      toTokenDenom,
+      searchTokenName,
+      SwapDirection.From
+    );
+    setFilteredFromTokens(filteredFromTokens);
+
+    // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
+  }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
   return (
     <div>
