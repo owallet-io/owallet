@@ -24,13 +24,7 @@ import { DirectSignResponse, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import { CosmJSOfflineSigner, CosmJSOfflineSignerOnlyAmino } from './cosmjs';
 import deepmerge from 'deepmerge';
 import Long from 'long';
-import {
-  NAMESPACE,
-  NAMESPACE_BITCOIN,
-  NAMESPACE_ETHEREUM,
-  NAMESPACE_ETHEREUM_OWALLET,
-  NAMESPACE_TRONWEB
-} from './constants';
+import { NAMESPACE, NAMESPACE_BITCOIN, NAMESPACE_ETHEREUM, NAMESPACE_TRONWEB } from './constants';
 import { SignEthereumTypedDataObject } from '@owallet/types/build/typedMessage';
 
 export const localStore = new Map<string, any>();
@@ -65,7 +59,7 @@ export class InjectedOWallet implements IOWallet {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -187,7 +181,7 @@ export class InjectedOWallet implements IOWallet {
   protected requestMethod(method: keyof IOWallet, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map(value => {
+      .map((value) => {
         return value.toString(16);
       })
       .join('');
@@ -251,7 +245,7 @@ export class InjectedOWallet implements IOWallet {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -440,7 +434,7 @@ export class InjectedEthereum implements Ethereum {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -574,7 +568,7 @@ export class InjectedEthereum implements Ethereum {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map(value => {
+      .map((value) => {
         return value.toString(16);
       })
       .join('');
@@ -633,7 +627,7 @@ export class InjectedEthereum implements Ethereum {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -713,7 +707,7 @@ export class InjectedBitcoin implements Bitcoin {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -760,7 +754,7 @@ export class InjectedBitcoin implements Bitcoin {
   protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map(value => {
+      .map((value) => {
         return value.toString(16);
       })
       .join('');
@@ -819,7 +813,7 @@ export class InjectedBitcoin implements Bitcoin {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {}
@@ -839,276 +833,6 @@ export class InjectedBitcoin implements Bitcoin {
   async signAndBroadcast(chainId: string, data: object): Promise<{ rawTxHex: string }> {
     return { rawTxHex: '' };
   }
-}
-export class InjectedEthereumOWallet implements Ethereum {
-  // we use this chain id for chain id switching from user
-  get chainId() {
-    return localStore.get('eth_owallet.chainId');
-  }
-
-  set chainId(chainId: string) {
-    localStore.set('eth_owallet.chainId', chainId);
-  }
-
-  static startProxy(
-    eth_owallet: Ethereum,
-    eventListener: {
-      addMessageListener: (fn: (e: any) => void) => void;
-      postMessage: (message: any) => void;
-    } = {
-      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
-    },
-    parseMessage?: (message: any) => any
-  ) {
-    // listen method when inject send to
-    eventListener.addMessageListener(async (e: MessageEvent) => {
-      const message: ProxyRequest = parseMessage ? parseMessage(e.data) : e.data;
-
-      // filter proxy-request by namespace
-      if (
-        !message ||
-        message.type !== NAMESPACE_ETHEREUM_OWALLET + 'proxy-request' ||
-        message.namespace !== NAMESPACE_ETHEREUM_OWALLET
-      ) {
-        return;
-      }
-
-      try {
-        if (!message.id) {
-          throw new Error('Empty id');
-        }
-
-        if (message.method === 'version') {
-          throw new Error('Version is not function');
-        }
-
-        if (message.method === 'mode') {
-          throw new Error('Mode is not function');
-        }
-
-        if (message.method === 'chainId') {
-          throw new Error('chain id is not function');
-        }
-
-        // TODO: eth_sendTransaction is special case. Other case => pass through custom request RPC without signing
-        var result: any;
-        const chainId = message.args[1] ?? localStore.get('eth_owallet.chainId') ?? eth_owallet.initChainId;
-
-        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message.method", message.method)
-        // console.log("🚀 ~ file: inject.ts ~ line 524 ~ InjectedEthereum ~ eventListener.addMessageListener ~ message & chain id", message, chainId)
-        switch (message.method) {
-          case 'eth_signTypedData_v4':
-            result = await eth_owallet.signEthereumTypeData(chainId, message.args[0]);
-            break;
-          case 'public_key':
-            result = await eth_owallet.getPublicKey(chainId);
-            break;
-          case 'eth_signDecryptData':
-            result = await eth_owallet.signDecryptData(chainId, message.args[0]);
-            break;
-          // thang1
-          case 'eth_signReEncryptData':
-            result = await eth_owallet.signReEncryptData(chainId, message.args[0]);
-            break;
-          case 'wallet_addEthereumChain':
-            await eth_owallet.experimentalSuggestChain(message.args[0]);
-            break;
-          case 'eth_sendTransaction' as any:
-            result = await (async () => {
-              const { rawTxHex } = await eth_owallet.signAndBroadcastEthereum(
-                chainId,
-                message.args[0][0] // TODO: is this okay to assume that we only need the first item of the params?
-              );
-
-              return rawTxHex;
-            })();
-            break;
-          case 'eth_chainId' as any:
-            if (chainId?.toString()?.startsWith('0x')) {
-              result = chainId;
-            } else result = '0x0';
-            break;
-          case 'wallet_switchEthereumChain' as any:
-            result = await eth_owallet.request({
-              method: message.method as string,
-              params: message.args[0],
-              chainId
-            });
-            localStore.set('eth_owallet.chainId', result);
-            break;
-          case 'eth_getTransactionReceipt' as any:
-            try {
-              result = await eth_owallet.request({
-                method: message.method as string,
-                params: message.args[0],
-                chainId
-              });
-            } catch (error) {
-              // Will catch here if receipt is not ready yet
-              console.log('Error on getting receipt: ', error);
-            }
-            break;
-          default:
-            result = await eth_owallet.request({
-              method: message.method as string,
-              params: message.args[0],
-              chainId
-            });
-
-            break;
-        }
-
-        const proxyResponse: ProxyRequestResponse = {
-          type: 'proxy-request-response',
-          namespace: NAMESPACE_ETHEREUM,
-          id: message.id,
-          result: {
-            return: JSONUint8Array.wrap(result)
-          }
-        };
-
-        // thang9 -- End
-        eventListener.postMessage(proxyResponse);
-      } catch (e) {
-        const proxyResponse: ProxyRequestResponse = {
-          type: 'proxy-request-response',
-          namespace: NAMESPACE_ETHEREUM,
-          id: message.id,
-          result: {
-            error: e.message || e.toString()
-          }
-        };
-
-        eventListener.postMessage(proxyResponse);
-      }
-    });
-  }
-
-  protected requestMethod(method: keyof IEthereum | string, args: any[]): Promise<any> {
-    const bytes = new Uint8Array(8);
-    const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map(value => {
-        return value.toString(16);
-      })
-      .join('');
-
-    const proxyMessage: ProxyRequest = {
-      type: (NAMESPACE_ETHEREUM_OWALLET + 'proxy-request') as any,
-      namespace: NAMESPACE_ETHEREUM_OWALLET,
-      id,
-      method,
-      args: JSONUint8Array.wrap(args)
-    };
-
-    return new Promise((resolve, reject) => {
-      const receiveResponse = (e: MessageEvent) => {
-        const proxyResponse: ProxyRequestResponse = this.parseMessage ? this.parseMessage(e.data) : e.data;
-
-        if (!proxyResponse || proxyResponse.type !== 'proxy-request-response') {
-          return;
-        }
-
-        if (proxyResponse.id !== id) {
-          return;
-        }
-
-        this.eventListener.removeMessageListener(receiveResponse);
-        const result = JSONUint8Array.unwrap(proxyResponse.result);
-
-        if (!result) {
-          reject(new Error('Result is null'));
-          return;
-        }
-
-        if (result.error) {
-          reject(new Error(result.error));
-          return;
-        }
-
-        resolve(result.return);
-      };
-
-      this.eventListener.addMessageListener(receiveResponse);
-      this.eventListener.postMessage(proxyMessage);
-    });
-  }
-
-  public initChainId: string;
-  public isOwallet: boolean = true;
-
-  constructor(
-    public readonly version: string,
-    public readonly mode: EthereumMode,
-    protected readonly eventListener: {
-      addMessageListener: (fn: (e: any) => void) => void;
-      removeMessageListener: (fn: (e: any) => void) => void;
-      postMessage: (message: any) => void;
-    } = {
-      addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
-    },
-    protected readonly parseMessage?: (message: any) => any
-  ) {}
-
-  async enable() {
-    return await this.requestMethod('eth_requestAccounts', [[]]);
-  }
-
-  // THIS IS THE ENTRYPOINT OF THE INJECTED ETHEREUM WHEN USER CALLS window.ethereum.request
-  async request(args: RequestArguments): Promise<any> {
-    return await this.requestMethod(args.method as string, [args.params, args.chainId]);
-  }
-
-  async signAndBroadcastTron(chainId: string, data: SignEthereumTypedDataObject): Promise<{ rawTxHex: string }> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
-  async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }> {
-    return { rawTxHex: '' };
-  }
-
-  async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
-    // await this.requestMethod('evmSuggestChain', [chainInfo]);
-    console.log('WILL NOT USE');
-  }
-
-  // async on(method: string, cb: any): Promise<void> {
-  //   // await this.requestMethod('evmSuggestChain', [chainInfo]);
-  //   console.log("WILL NOT USE")
-  //   window.addEventListener(method, cb)
-  // }
-
-  async signEthereumTypeData(chainId: string, data: SignEthereumTypedDataObject): Promise<void> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
-  async signReEncryptData(chainId: string, data: object): Promise<object> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
-  async signDecryptData(chainId: string, data: object): Promise<object> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
-  async getPublicKey(chainId: string): Promise<object> {
-    console.log('WILL NOT USE');
-    return;
-  }
-
-  // async asyncRequest(): Promise<void> {
-  //   console.log('console.log asyncRequest');
-  //   alert('console.log asyncRequest');
-  // }
-
-  // async getKey(chainId: string): Promise<Key> {
-  //   return await this.requestMethod('getKey', [chainId]);
-  // }
 }
 
 export class InjectedTronWebOWallet implements ITronWeb {
@@ -1145,7 +869,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
       postMessage: (message: any) => void;
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     parseMessage?: (message: any) => any
   ) {
@@ -1230,7 +954,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
   protected requestMethod(method: keyof ITronWeb | string, args: any[]): Promise<any> {
     const bytes = new Uint8Array(8);
     const id: string = Array.from(crypto.getRandomValues(bytes))
-      .map(value => {
+      .map((value) => {
         return value.toString(16);
       })
       .join('');
@@ -1289,7 +1013,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
     } = {
       addMessageListener: (fn: (e: any) => void) => window.addEventListener('message', fn),
       removeMessageListener: (fn: (e: any) => void) => window.removeEventListener('message', fn),
-      postMessage: message => window.postMessage(message, window.location.origin)
+      postMessage: (message) => window.postMessage(message, window.location.origin)
     },
     protected readonly parseMessage?: (message: any) => any
   ) {
@@ -1318,7 +1042,7 @@ export class InjectedTronWebOWallet implements ITronWeb {
         if (!address || !functionSelector || !issuerAddress) {
           throw new Error('You need to provide enough data address,functionSelector and issuerAddress');
         }
-        const parametersConvert = parameters.map(par =>
+        const parametersConvert = parameters.map((par) =>
           par.type === 'uint256' ? { type: 'uint256', value: par.value && par.value.toString() } : par
         );
         return await this.requestMethod('triggerSmartContract', [
