@@ -91,6 +91,12 @@ window.ethereum = ethereum;
 //@ts-ignore
 window.tronWeb = tronWeb;
 //@ts-ignore
+window.tronLink = tronWeb;
+//@ts-ignore
+window.tronWeb_owallet = tronWeb;
+//@ts-ignore
+window.tronLink_owallet = tronWeb;
+//@ts-ignore
 window.bitcoin = bitcoin;
 
 // Make sure that icon file will be included in bundle

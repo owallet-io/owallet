@@ -7,7 +7,6 @@ import { OfflineDirectSigner } from '@cosmjs/proto-signing';
 export function init(
   owallet: OWallet,
   ethereum: Ethereum,
-  eth_owallet: Ethereum,
   tronWeb: TronWeb,
   bitcoin: Bitcoin,
   getOfflineSigner: (chainId: string) => OfflineSigner & OfflineDirectSigner,
@@ -23,12 +22,17 @@ export function init(
     window.bitcoin = bitcoin;
   }
 
-  if (!window.eth_owallet) {
-    window.eth_owallet = eth_owallet;
-  }
-
   if (!window.ethereum) {
     window.ethereum = ethereum;
+  }
+
+  if (ethereum) {
+    window.eth_owallet = ethereum;
+  }
+
+  if (tronWeb) {
+    window.tronWeb_owallet = tronWeb;
+    window.tronLink_owallet = tronWeb;
   }
 
   if (!window.tronWeb) {
