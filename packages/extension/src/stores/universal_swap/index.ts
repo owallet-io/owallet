@@ -5,6 +5,7 @@ export class UniversalSwapStore {
   protected amounts: any;
 
   constructor() {
+    this.amounts = {};
     makeAutoObservable(this);
   }
 

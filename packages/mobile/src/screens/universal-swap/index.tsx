@@ -11,7 +11,6 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { showToast } from '@src/utils/helper';
-import { useCoinGeckoPrices } from '@src/hooks/use-coingecko';
 import {
   DEFAULT_SLIPPAGE,
   GAS_ESTIMATION_SWAP_DEFAULT,
@@ -48,7 +47,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useRelayerFee, useTaxRate, useLoadTokens } from '@owallet/hooks';
+import { useRelayerFee, useTaxRate, useLoadTokens, useCoinGeckoPrices } from '@owallet/hooks';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
