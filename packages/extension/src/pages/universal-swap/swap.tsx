@@ -113,8 +113,6 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         };
       }
 
-      console.log('loadTokenParams', loadTokenParams);
-
       loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
@@ -126,6 +124,15 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
       handleFetchAmounts();
     }, 2000);
   }, []);
+
+  const getTokenInfos = async () => {
+    const data = await fetchTokenInfos([fromToken!, toToken!], client);
+    setTokenInfoData(data);
+  };
+
+  useEffect(() => {
+    getTokenInfos();
+  }, [toTokenDenom, fromTokenDenom]);
 
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];
