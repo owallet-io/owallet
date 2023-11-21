@@ -189,10 +189,32 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     }
   }, [fromToken]);
 
+  const subAmountFrom = toSubAmount(universalSwapStore.getAmount, originalFromToken);
+  const subAmountTo = toSubAmount(universalSwapStore.getAmount, originalToToken);
+  const fromTokenBalance = originalFromToken
+    ? BigInt(universalSwapStore.getAmount?.[originalFromToken.denom] ?? '0') + subAmountFrom
+    : BigInt(0);
+
+  const toTokenBalance = originalToToken
+    ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') + subAmountTo
+    : BigInt(0);
+
   return (
     <div>
-      <SwapInput tokens={[1, 2, 3, 4, 5]} selectedToken={1} />
-      <SwapInput tokens={[1, 2, 3, 4, 5]} selectedToken={3} />
+      <SwapInput
+        tokens={filteredFromTokens}
+        selectedToken={originalFromToken}
+        prices={prices}
+        onChangeAmount={() => {}}
+        balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
+      />
+      <SwapInput
+        tokens={filteredToTokens}
+        selectedToken={originalToToken}
+        prices={prices}
+        onChangeAmount={() => {}}
+        balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
+      />
       <Button
         type="submit"
         block
