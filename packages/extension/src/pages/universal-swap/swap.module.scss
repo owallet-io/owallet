@@ -1,0 +1,26 @@
+@import '../../styles/var';
+
+.card {
+  margin-bottom: $layout-margin;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}
+
+.swap-input-group {
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.token-item {
+  flex-direction: row;
+  justify-content: space-between;
+  display: flex;
+}
+
+.dropdown {
+  min-width: 270px;
+}

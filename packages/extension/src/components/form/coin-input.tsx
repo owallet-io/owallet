@@ -41,7 +41,7 @@ export interface CoinInputProps {
   disableAllBalance?: boolean;
 }
 
-const reduceStringAssets = (str) => {
+const reduceStringAssets = str => {
   return (str && str.split('(')[0]) || '';
 };
 
@@ -91,38 +91,27 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
     const queryBalances = queriesStore
       .get(amountConfig.chainId)
       .queryBalances.getQueryBech32Address(amountConfig.sender);
-    const [balance, setBalance] = useState(
-      new CoinPretty(amountConfig.sendCurrency, new Int(0))
-    );
+    const [balance, setBalance] = useState(new CoinPretty(amountConfig.sendCurrency, new Int(0)));
 
     // let balance = new CoinPretty(amountConfig.sendCurrency, new Int(0));
-    const tokenDenom = new CoinPretty(amountConfig.sendCurrency, new Int(0))
-      .currency.coinDenom;
+    const tokenDenom = new CoinPretty(amountConfig.sendCurrency, new Int(0)).currency.coinDenom;
 
     useEffect(() => {
       if (chainStore.current.networkType === 'evm') {
         if (!accountInfo.evmosHexAddress) return null;
 
-        const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(
-          accountInfo.evmosHexAddress
-        ).balance;
+        const evmBalance = queries.evm.queryEvmBalance.getQueryBalance(accountInfo.evmosHexAddress).balance;
         setBalance(evmBalance);
       } else {
         const queryBalance = queryBalances.balances.find(
-          (bal) =>
-            amountConfig.sendCurrency.coinMinimalDenom ===
-            bal.currency.coinMinimalDenom
+          bal => amountConfig.sendCurrency.coinMinimalDenom === bal.currency.coinMinimalDenom
         );
-        setBalance(
-          queryBalance
-            ? queryBalance.balance
-            : new CoinPretty(amountConfig.sendCurrency, new Int(0))
-        );
+        setBalance(queryBalance ? queryBalance.balance : new CoinPretty(amountConfig.sendCurrency, new Int(0)));
       }
     }, [tokenDenom, chainStore.current.chainId]);
 
     const selectableCurrencies = amountConfig.sendableCurrencies
-      .filter((cur) => {
+      .filter(cur => {
         const bal = queryBalances.getBalanceFromCurrency(cur);
         return !bal?.toDec()?.isZero();
       })
@@ -130,18 +119,12 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
         return a.coinDenom < b.coinDenom ? -1 : 1;
       });
 
-    const denomHelper = new DenomHelper(
-      amountConfig.sendCurrency.coinMinimalDenom
-    );
+    const denomHelper = new DenomHelper(amountConfig.sendCurrency.coinMinimalDenom);
 
     return (
       <React.Fragment>
         <FormGroup className={className}>
-          <Label
-            for={`selector-${randomId}`}
-            className="form-control-label"
-            style={{ width: '100%' }}
-          >
+          <Label for={`selector-${randomId}`} className="form-control-label" style={{ width: '100%' }}>
             <FormattedMessage id="component.form.coin-input.token.label" />
           </Label>
           <ButtonDropdown
@@ -150,33 +133,26 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
               disabled: amountConfig.fraction === 1
             })}
             isOpen={isOpenTokenSelector}
-            toggle={() => setIsOpenTokenSelector((value) => !value)}
+            toggle={() => setIsOpenTokenSelector(value => !value)}
             disabled={amountConfig.fraction === 1}
           >
             <DropdownToggle caret>
-              {amountConfig.sendCurrency.coinDenom}{' '}
-              {denomHelper.contractAddress &&
-                ` (${denomHelper.contractAddress})`}
+              {amountConfig.sendCurrency.coinDenom} {denomHelper.contractAddress && ` (${denomHelper.contractAddress})`}
             </DropdownToggle>
             <DropdownMenu>
-              {selectableCurrencies.map((currency) => {
+              {selectableCurrencies.map(currency => {
                 const denomHelper = new DenomHelper(currency.coinMinimalDenom);
                 return (
                   <DropdownItem
                     key={currency.coinMinimalDenom}
-                    active={
-                      currency.coinMinimalDenom ===
-                      amountConfig.sendCurrency.coinMinimalDenom
-                    }
-                    onClick={(e) => {
+                    active={currency.coinMinimalDenom === amountConfig.sendCurrency.coinMinimalDenom}
+                    onClick={e => {
                       e.preventDefault();
 
                       amountConfig.setSendCurrency(currency);
                     }}
                   >
-                    {currency.coinDenom}{' '}
-                    {denomHelper.contractAddress &&
-                      ` (${denomHelper.contractAddress})`}
+                    {currency.coinDenom} {denomHelper.contractAddress && ` (${denomHelper.contractAddress})`}
                   </DropdownItem>
                 );
               })}
@@ -185,58 +161,37 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
         </FormGroup>
         <FormGroup className={className}>
           {label ? (
-            <Label
-              for={`input-${randomId}`}
-              className={classnames(
-                'form-control-label',
-                styleCoinInput.labelBalance
-              )}
-            >
+            <Label for={`input-${randomId}`} className={classnames('form-control-label', styleCoinInput.labelBalance)}>
               <div>{label}</div>
               {!disableAllBalance ? (
                 <div
-                  className={classnames(
-                    styleCoinInput.balance,
-                    styleCoinInput.clickable,
-                    {
-                      [styleCoinInput.clicked]: amountConfig.isMax
-                    }
-                  )}
-                  onClick={(e) => {
+                  className={classnames(styleCoinInput.balance, styleCoinInput.clickable, {
+                    [styleCoinInput.clicked]: amountConfig.isMax
+                  })}
+                  onClick={e => {
                     e.preventDefault();
 
                     amountConfig.toggleIsMax();
                   }}
                 >
-                  <span>{`Total: ${
-                    reduceStringAssets(
-                      balance?.trim(true)?.maxDecimals(6)?.toString()
-                    ) || 0
-                  }`}</span>
+                  <span>{`Total: ${reduceStringAssets(balance?.trim(true)?.maxDecimals(6)?.toString()) || 0}`}</span>
                 </div>
               ) : null}
             </Label>
           ) : null}
           <InputGroup className={styleCoinInput.inputGroup}>
             <Input
-              className={classnames(
-                'form-control-alternative',
-                styleCoinInput.input
-              )}
+              className={classnames('form-control-alternative', styleCoinInput.input)}
               id={`input-${randomId}`}
               type="number"
               value={amountConfig.amount}
-              onChange={(e) => {
+              onChange={e => {
                 e.preventDefault();
 
                 amountConfig.setAmount(e.target.value);
               }}
               step={new Dec(1)
-                .quo(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    amountConfig.sendCurrency?.coinDecimals ?? 0
-                  )
-                )
+                .quo(DecUtils.getTenExponentNInPrecisionRange(amountConfig.sendCurrency?.coinDecimals ?? 0))
                 .toString(amountConfig.sendCurrency?.coinDecimals ?? 0)}
               min={0}
               disabled={amountConfig.isMax}
@@ -245,7 +200,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             />
             <div
               style={{ padding: 7.5, textAlign: 'center', cursor: 'pointer' }}
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault();
                 amountConfig.toggleIsMax();
               }}
@@ -270,9 +225,7 @@ export const CoinInput: FunctionComponent<CoinInputProps> = observer(
             </div>
           </InputGroup>
           {errorText != null ? (
-            <FormFeedback style={{ display: 'block', position: 'sticky' }}>
-              {errorText}
-            </FormFeedback>
+            <FormFeedback style={{ display: 'block', position: 'sticky' }}>{errorText}</FormFeedback>
           ) : null}
         </FormGroup>
       </React.Fragment>
