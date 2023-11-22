@@ -3,10 +3,9 @@ import React, { FunctionComponent, useEffect, useState } from 'react';
 import classnames from 'classnames';
 import styleCoinInput from '../../../components/form/coin-input.module.scss';
 import style from '../swap.module.scss';
-
 import { ButtonDropdown, DropdownItem, DropdownMenu, DropdownToggle, FormGroup, Input, Label } from 'reactstrap';
 import { observer } from 'mobx-react-lite';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { AmountDetails, CoinGeckoPrices, getTotalUsd, toDisplay, tokenMap } from '@owallet/common';
 import { useStore } from '../../../stores';
 
@@ -16,7 +15,8 @@ export const SwapInput: FunctionComponent<{
   prices: CoinGeckoPrices<string>;
   balanceValue: number;
   onChangeAmount: Function;
-}> = observer(({ tokens, selectedToken, prices, balanceValue, onChangeAmount }) => {
+  setToken: Function;
+}> = observer(({ tokens, selectedToken, prices, balanceValue, onChangeAmount, setToken }) => {
   const [randomId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
@@ -25,11 +25,6 @@ export const SwapInput: FunctionComponent<{
   const { universalSwapStore } = useStore();
 
   const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
-  const [currentToken, setToken] = useState(1);
-
-  useEffect(() => {
-    setToken(selectedToken);
-  }, [selectedToken]);
 
   return (
     <React.Fragment>
@@ -71,11 +66,11 @@ export const SwapInput: FunctionComponent<{
 
                     return (
                       <DropdownItem
-                        key={token.coinGeckoId + index}
+                        key={token.denom + index}
                         active={false}
                         onClick={e => {
                           e.preventDefault();
-                          setToken(token);
+                          setToken(token.denom);
                         }}
                       >
                         <div className={classnames(style.tokenItem)}>

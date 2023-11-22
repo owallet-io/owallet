@@ -139,7 +139,8 @@ export default {
   'register.intro.button.new-account.content': 'Create a new wallet using a new seed',
   'register.intro.button.import-account.title': 'Import from Mnemonic / Private key ',
   'register.intro.button.import-account.content': 'Use a 12/24 word seed to import an existing wallet',
-  'register.intro.sub-content': 'All sensitive information is stored only on your device.{br}This process does not require an internet connection.',
+  'register.intro.sub-content':
+    'All sensitive information is stored only on your device.{br}This process does not require an internet connection.',
 
   'register.recover.title': 'Input your seed',
 
@@ -194,7 +195,8 @@ export default {
   'access.button.reject': 'Reject',
 
   'access.viewing-key.title': 'Requesting Viewing Key',
-  'access.viewing-key.paragraph': "<b>{host}</b> is requesting to get your token's viewing key on <b>{contractAddress}</b>.",
+  'access.viewing-key.paragraph':
+    "<b>{host}</b> is requesting to get your token's viewing key on <b>{contractAddress}</b>.",
   'access.viewing-key.permission.title': 'By approving this request, the website will:',
   'access.viewing-key.permission.secret': 'Be able to know your balance of the token',
   'access.viewing-key.button.approve': 'Approve',
@@ -220,6 +222,8 @@ export default {
   'send.input.gas': 'Gas',
   'send.input-button.balance': 'Balance',
   'send.button.send': 'Send',
+
+  'swap.button.swap': 'Swap',
 
   'ibc.transfer.next': 'Next',
   'ibc.transfer.submit': 'Submit',
@@ -248,11 +252,14 @@ export default {
   'sign.list.message.cosmos-sdk/MsgDelegate.title': 'Delegate',
   'sign.list.message.cosmos-sdk/MsgDelegate.content': 'Delegate <b>{amount}</b> to <b>{validator}</b>',
   'sign.list.message.cosmos-sdk/MsgUndelegate.title': 'Undelegate',
-  'sign.list.message.cosmos-sdk/MsgUndelegate.content': 'Undelegate <b>{amount}</b> from <b>{validator}</b>{br}Asset will be liquid after unbonding period',
+  'sign.list.message.cosmos-sdk/MsgUndelegate.content':
+    'Undelegate <b>{amount}</b> from <b>{validator}</b>{br}Asset will be liquid after unbonding period',
   'sign.list.message.cosmos-sdk/MsgBeginRedelegate.title': 'Redelegate',
-  'sign.list.message.cosmos-sdk/MsgBeginRedelegate.content': 'Redelegate <b>{amount}</b> from <b>{fromValidator}</b> to <b>{toValidator}</b>',
+  'sign.list.message.cosmos-sdk/MsgBeginRedelegate.content':
+    'Redelegate <b>{amount}</b> from <b>{fromValidator}</b> to <b>{toValidator}</b>',
   'sign.list.message.cosmos-sdk/MsgWithdrawDelegatorReward.title': 'Claim Staking Reward',
-  'sign.list.message.cosmos-sdk/MsgWithdrawDelegatorReward.content': 'Claim pending staking reward from <b>{validator}</b>',
+  'sign.list.message.cosmos-sdk/MsgWithdrawDelegatorReward.content':
+    'Claim pending staking reward from <b>{validator}</b>',
   'sign.list.message.cosmos-sdk/MsgVote.title': 'Vote',
   'sign.list.message.cosmos-sdk/MsgVote.content': 'Vote <b>{option}</b> on <b>Proposal {id}</b>',
 
@@ -262,7 +269,8 @@ export default {
   'sign.list.message.wasm/MsgInstantiateContract.content':
     'Instantiate code ID <b>{codeId}</b> contract with<only-admin-exist> <b>{admin}</b> admin account and</only-admin-exist> <b>{label}</b> label<only-funds-exist> by funding <b>{funds}</b></only-funds-exist>',
   'sign.list.message.wasm/MsgExecuteContract.title': 'Execute Wasm Contract',
-  'sign.list.message.wasm/MsgExecuteContract.content': 'Execute contract <b>{address}</b><only-sent-exist> by sending <b>{sent}</b></only-sent-exist>',
+  'sign.list.message.wasm/MsgExecuteContract.content':
+    'Execute contract <b>{address}</b><only-sent-exist> by sending <b>{sent}</b></only-sent-exist>',
   'sign.list.message.wasm/MsgExecuteContract.content.badge.secret-wasm': 'Encrypted',
   'sign.list.message.wasm/MsgExecuteContract.content.warning.secret-wasm.failed-decryption':
     'Failed to decrypt Secret message. This may be due to OWallet viewing key not matching the transaction viewing key.',
@@ -275,7 +283,8 @@ export default {
   'ledger.step2': 'Step 2',
   'ledger.step2.paragraph': 'Open the Cosmos app on your Ledger device.',
   'ledger.option.webhid.checkbox': 'Use alternative USB connection method(HID)',
-  'ledger.option.webhid.warning': 'Please copy and paste the following link {link} on your browser and enable ‘experimental web platform features’',
+  'ledger.option.webhid.warning':
+    'Please copy and paste the following link {link} on your browser and enable ‘experimental web platform features’',
   'ledger.option.webhid.link.copied': 'Link copied!',
   'ledger.button.next': 'Next',
   'ledger.confirm.waiting.paragraph': 'Waiting for confirmation on Ledger device',

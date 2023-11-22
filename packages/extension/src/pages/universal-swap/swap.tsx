@@ -207,6 +207,10 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         prices={prices}
         onChangeAmount={() => {}}
         balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
+        setToken={denom => {
+          setSwapTokens([denom, toTokenDenom]);
+          setSwapAmount([0, 0]);
+        }}
       />
       <SwapInput
         tokens={filteredToTokens}
@@ -214,6 +218,10 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         prices={prices}
         onChangeAmount={() => {}}
         balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
+        setToken={denom => {
+          setSwapTokens([fromTokenDenom, denom]);
+          setSwapAmount([0, 0]);
+        }}
       />
       <Button
         type="submit"
@@ -225,11 +233,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
           cursor: accountOrai.isReadyToSendMsgs ? '' : 'pointer'
         }}
       >
-        <span className={style.sendBtnText}>
-          {intl.formatMessage({
-            id: 'send.button.send'
-          })}
-        </span>
+        <span className={style.sendBtnText}>Swap</span>
       </Button>
     </div>
   );
