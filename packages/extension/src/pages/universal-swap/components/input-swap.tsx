@@ -16,9 +16,10 @@ export const SwapInput: FunctionComponent<{
   prices: CoinGeckoPrices<string>;
   balanceValue: number;
   amount: string;
+  editable: boolean;
   onChangeAmount: Function;
   setToken: Function;
-}> = observer(({ tokens, selectedToken, prices, balanceValue, onChangeAmount, setToken, amount }) => {
+}> = observer(({ tokens, selectedToken, prices, balanceValue, onChangeAmount, setToken, amount, editable }) => {
   const [randomId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
@@ -106,6 +107,10 @@ export const SwapInput: FunctionComponent<{
             id={`input-${Math.random()}`}
             type="number"
             defaultValue={amount}
+            editable={editable}
+            onFocus={() => {
+              setAmount('');
+            }}
             value={inputAmount}
             onChange={e => {
               e.preventDefault();

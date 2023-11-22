@@ -307,6 +307,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         tokens={filteredToTokens}
         selectedToken={originalToToken}
         prices={prices}
+        editable={false}
         onChangeAmount={onChangeFromAmount}
         balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
         setToken={denom => {
