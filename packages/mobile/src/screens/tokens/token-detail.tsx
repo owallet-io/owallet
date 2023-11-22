@@ -168,14 +168,6 @@ export const TokenDetailScreen: FunctionComponent = observer((props) => {
   const renderItem = ({ item, index }) => {
     return <OWTransactionItem key={`item-${index}`} onPress={() => onTransactionDetail(item)} item={item} />;
   };
-  // const address = useMemo(() => {
-  //   if (chainStore.current.networkType === 'evm') {
-  //     return account?.evmosHexAddress;
-  //   } else if (chainStore.current.networkType === 'bitcoin') {
-  //     return account?.bech32Address;
-  //   }
-  //   return account?.bech32Address;
-  // }, [account?.evmosHexAddress, account?.bech32Address, chainStore.current.networkType]);
   const refreshData = useCallback(() => {
     page.current = 1;
     hasMore.current = true;
