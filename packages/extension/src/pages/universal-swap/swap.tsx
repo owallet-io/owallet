@@ -15,7 +15,8 @@ import {
   CWStargate,
   getEvmAddress,
   getTokenOnOraichain,
-  getTokenOnSpecificChainId
+  getTokenOnSpecificChainId,
+  calculateMinReceive
 } from '@owallet/common';
 import { SwapInput } from './components/input-swap';
 import { Button } from 'reactstrap';
@@ -30,6 +31,7 @@ import {
   UniversalSwapData,
   UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
+import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
 import {
   TokenItemType,
   NetworkChainId,
@@ -39,6 +41,7 @@ import {
   network,
   Networks
 } from '@oraichain/oraidex-common';
+import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 
 export const UniversalSwapPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, universalSwapStore } = useStore();
@@ -198,6 +201,63 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
   const toTokenBalance = originalToToken
     ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') + subAmountTo
     : BigInt(0);
+
+  const [ratio, setRatio] = useState(null);
+
+  const getSimulateSwap = async (initAmount?) => {
+    if (client) {
+      const routerClient = new OraiswapRouterQueryClient(client, network.router);
+
+      const data = await handleSimulateSwap({
+        originalFromInfo: originalFromToken,
+        originalToInfo: originalToToken,
+        originalAmount: initAmount ?? fromAmountToken,
+        routerClient
+      });
+      setAmountLoading(false);
+      return data;
+    }
+  };
+
+  const estimateAverageRatio = async () => {
+    const data = await getSimulateSwap(1);
+    setRatio(data);
+  };
+
+  const estimateSwapAmount = async fromAmountBalance => {
+    setAmountLoading(true);
+    try {
+      const data = await getSimulateSwap();
+      const minimumReceive = ratio?.amount
+        ? calculateMinReceive(
+            ratio.amount,
+            toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
+            userSlippage,
+            originalFromToken.decimals
+          )
+        : '0';
+
+      setMininumReceive(toDisplay(minimumReceive));
+      if (data) {
+        const isWarningSlippage = +minimumReceive > +data.amount;
+        setIsWarningSlippage(isWarningSlippage);
+        setSwapAmount([fromAmountBalance, Number(data.amount)]);
+      }
+      setAmountLoading(false);
+    } catch (error) {
+      console.log('error', error);
+
+      setAmountLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    estimateSwapAmount(fromAmountToken);
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken]);
+
+  useEffect(() => {
+    estimateAverageRatio();
+  }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
 
   return (
     <div>
