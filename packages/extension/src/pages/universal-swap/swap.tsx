@@ -236,16 +236,12 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     if (client) {
       const routerClient = new OraiswapRouterQueryClient(client, network.router);
 
-      console.log('g', fromAmountToken);
-
       const data = await handleSimulateSwap({
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
         originalAmount: initAmount ?? fromAmountToken,
         routerClient
       });
-
-      console.log('data getSimulateSwap', data);
 
       setAmountLoading(false);
       return data;
@@ -291,8 +287,6 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
   useEffect(() => {
     estimateAverageRatio();
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
-
-  console.log('toAmountToken', toAmountToken);
 
   return (
     <div>

@@ -109,7 +109,7 @@ export const SwapInput: FunctionComponent<{
             value={inputAmount}
             onChange={e => {
               e.preventDefault();
-              const newAmount = Number(e.target.value.replace(/,/g, '.'));
+              const newAmount = e.target.value.replace(/,/g, '.');
               setAmount(newAmount);
               debounceFn(newAmount);
             }}
