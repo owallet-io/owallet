@@ -31,17 +31,62 @@ export const AccountCard: FunctionComponent<{
 
   const stakedSum = delegated.add(unbonding);
 
-  const total = stakable.add(stakedSum);
+  const totalStake = stakable.add(stakedSum);
 
-  const totalPrice = priceStore.calculatePrice(total);
+  // const totalPrice = priceStore.calculatePrice(total);
+  // const totalPrice = (() => {
+  //   const fiatCurrency = priceStore.getFiatCurrency(
+  //     priceStore.defaultVsCurrency
+  //   );
+  //   if (!fiatCurrency) {
+  //     return undefined;
+  //   }
+
+  //   let res = priceStore.calculatePrice(total);
+
+  //   for (const viewToken of viewTokens) {
+  //     const price = priceStore.calculatePrice(viewToken.token);
+  //     if (price) {
+  //       res = res.add(price);
+  //     }
+  //   }
+
+  //   return res;
+  // })();
+
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
+  const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
+  const totalPrice = useMemo(() => {
+    const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    if (!fiatCurrency) {
+      return undefined;
+    }
+    if (!totalStake.isReady) {
+      return undefined;
+    }
+    let res = priceStore.calculatePrice(totalStake);
+    // if (!res) {
+    //   return undefined;
+    // }
+    for (const token of tokens) {
+      const price = priceStore.calculatePrice(token.balance);
+      if (price) {
+        res = res.add(price);
+      }
+    }
+
+    return res;
+  }, [totalStake]);
+  console.log('🚀 ~ file: account-card.tsx:79 ~ totalPrice ~ totalPrice:', totalPrice);
   const totalBalance = useMemo(() => {
     if (!!totalPrice) {
       return totalPrice?.toString();
     }
-    return total.shrink(true).maxDecimals(chainStore.current.stakeCurrency.coinDecimals)?.toString();
+    return totalStake.shrink(true).maxDecimals(chainStore.current.stakeCurrency.coinDecimals)?.toString();
   }, [
     totalPrice,
-    total,
+    totalStake,
     chainStore.current.stakeCurrency.coinDecimals,
     chainStore.current.networkType,
     chainStore.current.chainId,

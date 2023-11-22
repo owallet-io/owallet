@@ -42,25 +42,8 @@ export const TokensCard: FunctionComponent<{
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const queryBalances = queries.queryBalances.getQueryBech32Address(address);
 
-  const tokens = useMemo(() => {
-    const queryTokens = queryBalances.balances.concat(
-      queryBalances.nonNativeBalances,
-      queryBalances.positiveNativeUnstakables
-    );
-    const uniqTokens = [];
-    queryTokens.map((token) =>
-      uniqTokens.filter((ut) => ut.balance.currency.coinDenom == token.balance.currency.coinDenom).length > 0
-        ? null
-        : uniqTokens.push(token)
-    );
-    return uniqTokens;
-  }, [
-    chainStore.current.chainId,
-    account.bech32Address,
-    account.evmosHexAddress,
-    chainStore.current.networkType,
-    refreshDate
-  ]);
+  // TODO: Add sorting rule
+  const tokens = queryBalances.positiveBalances.slice(0, 3);
 
   const onActiveType = (i) => {
     setIndex(i);
@@ -131,7 +114,7 @@ export const TokensCard: FunctionComponent<{
         {index === 0 ? (
           <CardBody>
             {tokens?.length > 0 ? (
-              tokens.slice(0, 3).map((token, index) => {
+              tokens.map((token, index) => {
                 const priceBalance = priceStore.calculatePrice(token.balance);
                 return (
                   <TokenItem
