@@ -487,8 +487,8 @@ export const EmbedChainInfos: AppChainInfo[] = [
   },
 
   {
-    rpc: 'https://osmosis-rpc-global.orai.io',
-    rest: 'https://osmosis-lcd-global.orai.io',
+    rpc: 'https://rpc.cosmos.directory/osmosis',
+    rest: 'https://rest.cosmos.directory/osmosis',
     chainId: 'osmosis-1',
     chainName: 'Osmosis',
     networkType: 'cosmos',
