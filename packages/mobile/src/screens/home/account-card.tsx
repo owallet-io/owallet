@@ -33,27 +33,6 @@ export const AccountCard: FunctionComponent<{
 
   const totalStake = stakable.add(stakedSum);
 
-  // const totalPrice = priceStore.calculatePrice(total);
-  // const totalPrice = (() => {
-  //   const fiatCurrency = priceStore.getFiatCurrency(
-  //     priceStore.defaultVsCurrency
-  //   );
-  //   if (!fiatCurrency) {
-  //     return undefined;
-  //   }
-
-  //   let res = priceStore.calculatePrice(total);
-
-  //   for (const viewToken of viewTokens) {
-  //     const price = priceStore.calculatePrice(viewToken.token);
-  //     if (price) {
-  //       res = res.add(price);
-  //     }
-  //   }
-
-  //   return res;
-  // })();
-
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const queryBalances = queries.queryBalances.getQueryBech32Address(address);
   const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
@@ -66,9 +45,6 @@ export const AccountCard: FunctionComponent<{
       return undefined;
     }
     let res = priceStore.calculatePrice(totalStake);
-    // if (!res) {
-    //   return undefined;
-    // }
     for (const token of tokens) {
       const price = priceStore.calculatePrice(token.balance);
       if (price) {
