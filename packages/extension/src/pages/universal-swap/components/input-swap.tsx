@@ -14,9 +14,10 @@ export const SwapInput: FunctionComponent<{
   selectedToken: any;
   prices: CoinGeckoPrices<string>;
   balanceValue: number;
+  amount: string;
   onChangeAmount: Function;
   setToken: Function;
-}> = observer(({ tokens, selectedToken, prices, balanceValue, onChangeAmount, setToken }) => {
+}> = observer(({ tokens, selectedToken, prices, balanceValue, onChangeAmount, setToken, amount }) => {
   const [randomId] = useState(() => {
     const bytes = new Uint8Array(4);
     crypto.getRandomValues(bytes);
@@ -94,9 +95,11 @@ export const SwapInput: FunctionComponent<{
             className={classnames('form-control-alternative', styleCoinInput.input, styleCoinInput.right)}
             id={`input-${Math.random()}`}
             type="number"
-            defaultValue={0}
+            defaultValue={amount}
             onChange={e => {
               e.preventDefault();
+              const newAmount = Number(e.target.value.replace(/,/g, '.'));
+              onChangeAmount(newAmount);
             }}
             min={0}
             autoComplete="off"
@@ -104,6 +107,9 @@ export const SwapInput: FunctionComponent<{
           />
         </div>
       </FormGroup>
+      <span>
+        Balance {balanceValue || 0.0} {selectedToken.name}
+      </span>
     </React.Fragment>
   );
 });

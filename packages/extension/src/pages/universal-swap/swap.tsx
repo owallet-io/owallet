@@ -262,6 +262,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
   return (
     <div>
       <SwapInput
+        amount={fromAmountToken?.toString() ?? '0'}
         tokens={filteredFromTokens}
         selectedToken={originalFromToken}
         prices={prices}
@@ -273,6 +274,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         }}
       />
       <SwapInput
+        amount={toDisplay(toAmountToken.toString()).toString() ?? '0'}
         tokens={filteredToTokens}
         selectedToken={originalToToken}
         prices={prices}
