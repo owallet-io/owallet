@@ -24,3 +24,26 @@
 .dropdown {
   min-width: 270px;
 }
+
+.legend {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  .label {
+    letter-spacing: -0.3px;
+    flex: 1;
+    font-size: 14px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .value {
+    letter-spacing: -0.3px;
+    flex: 1;
+    font-size: 14px;
+    display: flex;
+    font-weight: 600;
+    align-items: center;
+  }
+}
