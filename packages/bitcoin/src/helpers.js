@@ -647,10 +647,7 @@ const getCoinNetwork = (coin = '') => {
 const getKeyPairByPrivateKey = ({ selectedCrypto = 'bitcoin', privateKey }) => {
   if (!privateKey) throw Error('Private Key is not Empty');
   const network = networks[selectedCrypto]; //Returns the network object based on the selected crypto.
-  const res = validatePrivateKey('0x90e64a1e46502f50cbf1793d9dd3efd7777f864227f1db6de7aec98d19011bdd');
-  console.log('🚀 ~ file: helpers.js:659 ~ getKeyPairByPrivateKey ~ res:', res);
   const keyPair = bitcoin.ECPair.fromPrivateKey(privateKey, { network: network });
-  console.log('🚀 ~ file: helpers.js:582 ~ getKeyPairByPrivateKey ~ keyPair:', keyPair);
   return keyPair;
 };
 const getKeyPairByMnemonic = ({ selectedCrypto = 'bitcoin', keyDerivationPath = '84', addressIndex = 0, mnemonic }) => {
