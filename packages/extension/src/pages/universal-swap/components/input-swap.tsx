@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 
 import classnames from 'classnames';
 import styleCoinInput from '../../../components/form/coin-input.module.scss';
@@ -8,6 +8,7 @@ import { observer } from 'mobx-react-lite';
 import { FormattedMessage } from 'react-intl';
 import { AmountDetails, CoinGeckoPrices, getTotalUsd, toDisplay, tokenMap } from '@owallet/common';
 import { useStore } from '../../../stores';
+import _debounce from 'lodash/debounce';
 
 export const SwapInput: FunctionComponent<{
   tokens: any[];
@@ -23,9 +24,18 @@ export const SwapInput: FunctionComponent<{
     crypto.getRandomValues(bytes);
     return Buffer.from(bytes).toString('hex');
   });
+
+  const [inputAmount, setAmount] = useState('0');
+
+  useEffect(() => {
+    setAmount(amount);
+  }, [amount]);
+
   const { universalSwapStore } = useStore();
 
   const [isOpenTokenSelector, setIsOpenTokenSelector] = useState(false);
+
+  const debounceFn = useCallback(_debounce(onChangeAmount, 500), []);
 
   return (
     <React.Fragment>
@@ -96,10 +106,12 @@ export const SwapInput: FunctionComponent<{
             id={`input-${Math.random()}`}
             type="number"
             defaultValue={amount}
+            value={inputAmount}
             onChange={e => {
               e.preventDefault();
               const newAmount = Number(e.target.value.replace(/,/g, '.'));
-              onChangeAmount(newAmount);
+              setAmount(newAmount);
+              debounceFn(newAmount);
             }}
             min={0}
             autoComplete="off"

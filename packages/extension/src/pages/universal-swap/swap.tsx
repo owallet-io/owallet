@@ -16,7 +16,7 @@ import {
   getEvmAddress,
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
-  calculateMinReceive
+  feeEstimate
 } from '@owallet/common';
 import { SwapInput } from './components/input-swap';
 import { Button } from 'reactstrap';
@@ -39,9 +39,15 @@ import {
   tokenMap,
   toAmount,
   network,
-  Networks
+  Networks,
+  calculateMinReceive
 } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
+
+const ONE_QUARTER = '25';
+const HALF = '50';
+const THREE_QUARTERS = '75';
+export const MAX = '100';
 
 export const UniversalSwapPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, universalSwapStore } = useStore();
@@ -202,11 +208,35 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     ? BigInt(universalSwapStore.getAmount?.[originalToToken.denom] ?? '0') + subAmountTo
     : BigInt(0);
 
+  const onChangeFromAmount = (amount: string | undefined) => {
+    if (!amount) return setSwapAmount([undefined, toAmountToken]);
+    setSwapAmount([parseFloat(amount), toAmountToken]);
+  };
+
+  const onMaxFromAmount = (amount: bigint, type: string) => {
+    const displayAmount = toDisplay(amount, originalFromToken?.decimals);
+    let finalAmount = displayAmount;
+
+    // hardcode fee when swap token orai
+    if (fromTokenDenom === ORAI) {
+      const estimatedFee = feeEstimate(originalFromToken, GAS_ESTIMATION_SWAP_DEFAULT);
+      const fromTokenBalanceDisplay = toDisplay(fromTokenBalance, originalFromToken?.decimals);
+      if (type === MAX) {
+        finalAmount = estimatedFee > displayAmount ? 0 : displayAmount - estimatedFee;
+      } else {
+        finalAmount = estimatedFee > fromTokenBalanceDisplay - displayAmount ? 0 : displayAmount;
+      }
+    }
+    setSwapAmount([finalAmount, toAmountToken]);
+  };
+
   const [ratio, setRatio] = useState(null);
 
   const getSimulateSwap = async (initAmount?) => {
     if (client) {
       const routerClient = new OraiswapRouterQueryClient(client, network.router);
+
+      console.log('g', fromAmountToken);
 
       const data = await handleSimulateSwap({
         originalFromInfo: originalFromToken,
@@ -214,6 +244,9 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         originalAmount: initAmount ?? fromAmountToken,
         routerClient
       });
+
+      console.log('data getSimulateSwap', data);
+
       setAmountLoading(false);
       return data;
     }
@@ -259,6 +292,8 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     estimateAverageRatio();
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
 
+  console.log('toAmountToken', toAmountToken);
+
   return (
     <div>
       <SwapInput
@@ -266,7 +301,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         tokens={filteredFromTokens}
         selectedToken={originalFromToken}
         prices={prices}
-        onChangeAmount={() => {}}
+        onChangeAmount={onChangeFromAmount}
         balanceValue={toDisplay(fromTokenBalance, originalFromToken?.decimals)}
         setToken={denom => {
           setSwapTokens([denom, toTokenDenom]);
@@ -278,7 +313,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         tokens={filteredToTokens}
         selectedToken={originalToToken}
         prices={prices}
-        onChangeAmount={() => {}}
+        onChangeAmount={onChangeFromAmount}
         balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
         setToken={denom => {
           setSwapTokens([fromTokenDenom, denom]);
