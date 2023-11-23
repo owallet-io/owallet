@@ -112,10 +112,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
 
   registerUnknownCurrencies(coinMinimalDenom: string): [AppCurrency | undefined, boolean] | undefined {
     const denomHelper = new DenomHelper(coinMinimalDenom);
-    console.log(
-      '🚀 ~ file: currency-registrar.ts:116 ~ IBCCurrencyRegsitrarInner<C ~ registerUnknownCurrencies ~ denomHelper:',
-      denomHelper.denom
-    );
+
     if (denomHelper.type !== 'native' || !denomHelper.denom?.startsWith('ibc/')) {
       // IBC Currency's denom should start with "ibc/"
       return;
@@ -133,13 +130,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
     const queries = this.queriesStore.get(this.chainInfoInner.chainId);
 
     const hash = denomHelper.denom.replace('ibc/', '');
-    console.log(
-      '🚀 ~ file: currency-registrar.ts:136 ~ IBCCurrencyRegsitrarInner<C ~ registerUnknownCurrencies ~ hash:',
-      hash
-    );
-
     const cached = this.getCacheIBCDenomData(hash);
-
     let counterpartyChainInfo: ChainInfoInner | undefined;
     let originChainInfo: ChainInfoInner | undefined;
     let denomTrace:
@@ -163,7 +154,6 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
     } else {
       const queryDenomTrace = queries.cosmos.queryIBCDenomTrace.getDenomTrace(hash);
       denomTrace = queryDenomTrace.denomTrace;
-      console.log('🚀 ~ file: currency-registrar.ts:184 ~ IBCCurrencyRegsitrarInner<C ~ denomTrace:', denomTrace);
 
       if (denomTrace) {
         const paths = denomTrace.paths;
