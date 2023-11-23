@@ -41,9 +41,6 @@ export const SwapInput: FunctionComponent<{
   return (
     <React.Fragment>
       <FormGroup>
-        <Label for={`selector-${randomId}`} className="form-control-label" style={{ width: '100%' }}>
-          <FormattedMessage id="component.form.coin-input.token.label" />
-        </Label>
         <div className={classnames('form-input-group', style.swapInputGroup)}>
           <div
             style={{ padding: 7.5, textAlign: 'center', cursor: 'pointer' }}

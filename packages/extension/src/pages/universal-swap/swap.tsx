@@ -16,7 +16,8 @@ import {
   getEvmAddress,
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
-  feeEstimate
+  feeEstimate,
+  getTransferTokenFee
 } from '@owallet/common';
 import { SwapInput } from './components/input-swap';
 import { Button } from 'reactstrap';
@@ -48,6 +49,7 @@ const ONE_QUARTER = '25';
 const HALF = '50';
 const THREE_QUARTERS = '75';
 export const MAX = '100';
+const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, universalSwapStore } = useStore();
@@ -68,7 +70,20 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
 
   const intl = useIntl();
   const { data: prices } = useCoinGeckoPrices();
+
   const taxRate = useTaxRate(client);
+  const relayerFee = useRelayerFee(client);
+  const relayerFeeToken = relayerFee.reduce((acc, cur) => {
+    if (
+      originalFromToken &&
+      originalToToken &&
+      originalFromToken.chainId !== originalToToken.chainId &&
+      (cur.prefix === originalFromToken.prefix || cur.prefix === originalToToken.prefix)
+    ) {
+      return +cur.amount + acc;
+    }
+    return acc;
+  }, 0);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -134,6 +149,30 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
       handleFetchAmounts();
     }, 2000);
   }, []);
+
+  const getTokenFee = async (
+    remoteTokenDenom: string,
+    fromChainId: NetworkChainId,
+    toChainId: NetworkChainId,
+    type: 'from' | 'to'
+  ) => {
+    // since we have supported evm swap, tokens that are on the same supported evm chain id don't have any token fees (because they are not bridged to Oraichain)
+    if (isEvmNetworkNativeSwapSupported(fromChainId) && fromChainId === toChainId) return;
+    if (remoteTokenDenom) {
+      let tokenFee = 0;
+      const ratio = await getTransferTokenFee({ remoteTokenDenom, client });
+
+      if (ratio) {
+        tokenFee = (ratio.nominator / ratio.denominator) * 100;
+      }
+
+      if (type === 'from') {
+        setFromTokenFee(tokenFee);
+      } else {
+        setToTokenFee(tokenFee);
+      }
+    }
+  };
 
   const getTokenInfos = async () => {
     const data = await fetchTokenInfos([fromToken!, toToken!], client);
@@ -248,6 +287,19 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     }
   };
 
+  useEffect(() => {
+    getTokenFee(originalToToken.prefix + originalToToken.contractAddress, fromToken.chainId, toToken.chainId, 'to');
+  }, [originalToToken, fromToken, toToken, originalToToken]);
+
+  useEffect(() => {
+    getTokenFee(
+      originalFromToken.prefix + originalFromToken.contractAddress,
+      fromToken.chainId,
+      toToken.chainId,
+      'from'
+    );
+  }, [originalToToken, fromToken, toToken, originalToToken]);
+
   const estimateAverageRatio = async () => {
     const data = await getSimulateSwap(1);
     setRatio(data);
@@ -315,6 +367,37 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
           setSwapAmount([0, 0]);
         }}
       />
+      <div className={style.legend}>
+        <div className={style.label}>Quote :</div>
+        <div style={{ minWidth: '16px' }} />
+        <div className={style.value}>
+          {`1 ${originalFromToken?.name} ≈ ${toDisplay(
+            ratio?.amount,
+            fromTokenInfoData?.decimals,
+            toTokenInfoData?.decimals
+          )} ${originalToToken?.name}`}
+        </div>
+      </div>
+      <div className={style.legend}>
+        <div className={style.label}>Minimum Receive :</div>
+        <div style={{ minWidth: '16px' }} />
+        <div className={style.value}>{(minimumReceive || '0') + ' ' + toToken.name}</div>
+      </div>
+
+      {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? (
+        <div className={style.legend}>
+          <div className={style.label}>Tax rate :</div>
+          <div style={{ minWidth: '16px' }} />
+          <div className={style.value}>{Number(taxRate) * 100}%</div>
+        </div>
+      ) : null}
+      {!!relayerFeeToken && (
+        <div className={style.legend}>
+          <div className={style.label}>Relayer Fee :</div>
+          <div style={{ minWidth: '16px' }} />
+          <div className={style.value}>{toAmount(relayerFeeToken, RELAYER_DECIMAL)} ORAI</div>
+        </div>
+      )}
       <Button
         type="submit"
         block
