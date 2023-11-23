@@ -36,9 +36,8 @@ export const AccountCard: FunctionComponent<{
   const totalStake = stakable.add(stakedSum);
 
   const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
-  const language = useLanguage();
 
-  const fiat = language.fiatCurrency;
+  const fiat = priceStore.defaultVsCurrency;
   const totalPrice = useMemo(() => {
     const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
     if (!fiatCurrency) {
