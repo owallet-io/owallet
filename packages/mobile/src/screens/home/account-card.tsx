@@ -39,7 +39,7 @@ export const AccountCard: FunctionComponent<{
 
   const fiat = priceStore.defaultVsCurrency;
   const totalPrice = useMemo(() => {
-    const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    const fiatCurrency = priceStore.getFiatCurrency(fiat);
     if (!fiatCurrency) {
       return undefined;
     }
