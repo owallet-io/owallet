@@ -19,7 +19,7 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  console.log('🚀 ~ file: account-card.tsx:22 ~ addressDisplay:', addressDisplay);
+
   const queryStakable = queries.queryBalances.getQueryBech32Address(addressDisplay).stakable;
 
   const stakable = queryStakable.balance;
@@ -54,7 +54,7 @@ export const AccountCard: FunctionComponent<{
 
     return res;
   }, [totalStake]);
-  console.log('🚀 ~ file: account-card.tsx:79 ~ totalPrice ~ totalPrice:', totalPrice);
+
   const totalBalance = useMemo(() => {
     if (!!totalPrice) {
       return totalPrice?.toString();
