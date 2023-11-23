@@ -101,7 +101,7 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
   const intl = useIntl();
   const language = useLanguage();
 
-  const fiatCurrency = language.fiatCurrency;
+  const fiat = language.fiatCurrency;
 
   const current = chainStore.current;
 
@@ -109,7 +109,8 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   const accountInfo = accountStore.getAccount(current.chainId);
 
-  const balanceStakableQuery = queries.queryBalances.getQueryBech32Address(accountInfo.bech32Address)?.stakable;
+  const queryBalances = queries.queryBalances.getQueryBech32Address(accountInfo.bech32Address);
+  const balanceStakableQuery = queryBalances.stakable;
 
   const stakable = balanceStakableQuery?.balance;
 
@@ -123,19 +124,27 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
 
   const stakedSum = delegated.add(unbonding);
 
-  const total = stakable.add(stakedSum);
+  const totalStake = stakable.add(stakedSum);
 
-  const stakablePrice = priceStore.calculatePrice(stakable, fiatCurrency);
-  const stakedSumPrice = priceStore.calculatePrice(stakedSum, fiatCurrency);
+  const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
+  const totalPrice = useMemo(() => {
+    const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    if (!fiatCurrency) {
+      return undefined;
+    }
+    if (!totalStake.isReady) {
+      return undefined;
+    }
+    let res = priceStore.calculatePrice(totalStake, fiat);
+    for (const token of tokens) {
+      const price = priceStore.calculatePrice(token.balance, fiat);
+      if (price) {
+        res = res.add(price);
+      }
+    }
 
-  const totalPrice = priceStore.calculatePrice(total, fiatCurrency);
-
-  // If fiat value is fetched, show the value that is multiplied with amount and fiat value.
-  // If not, just show the amount of asset.
-  const data: number[] = [
-    stakablePrice ? parseFloat(stakablePrice.toDec().toString()) : parseFloat(stakable.toDec().toString()),
-    stakedSumPrice ? parseFloat(stakedSumPrice.toDec().toString()) : parseFloat(stakedSum.toDec().toString())
-  ];
+    return res;
+  }, [totalStake, fiat]);
 
   return (
     <React.Fragment>
@@ -145,29 +154,8 @@ export const AssetStakedChartView: FunctionComponent = observer(() => {
             <FormattedMessage id="main.account.chart.total-balance" />
           </div>
           <div className={styleAsset.small}>
-            {totalPrice ? totalPrice.toString() : total.shrink(true).trim(true).maxDecimals(6).toString()}
+            {totalPrice ? totalPrice.toString() : totalStake.shrink(true).trim(true).maxDecimals(6).toString()}
           </div>
-          {/* <div className={styleAsset.indicatorIcon}>
-            <React.Fragment>
-              {balanceStakableQuery.isFetching ? (
-                <i className="fas fa-spinner fa-spin" />
-              ) : balanceStakableQuery.error ? (
-                <ToolTip
-                  tooltip={
-                    balanceStakableQuery.error?.message ||
-                    balanceStakableQuery.error?.statusText
-                  }
-                  theme="dark"
-                  trigger="hover"
-                  options={{
-                    placement: 'top'
-                  }}
-                >
-                  <i className="fas fa-exclamation-triangle text-danger" />
-                </ToolTip>
-              ) : null}
-            </React.Fragment>
-          </div> */}
         </div>
         <React.Suspense fallback={<div style={{ height: '150px' }} />}>
           <img src={require('../../public/assets/img/total-balance.svg')} alt="total-balance" />
@@ -313,7 +301,7 @@ export const AssetChartViewBtc: FunctionComponent = observer(() => {
   const chainId = chainStore.current.chainId;
   let address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const balance = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
-  
+
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
       balance: Number(balance?.toCoin().amount),

@@ -8,6 +8,7 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
 import { AccountBox } from './account-box';
+import { useLanguage } from '@owallet/common';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -19,8 +20,8 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-
-  const queryStakable = queries.queryBalances.getQueryBech32Address(addressDisplay).stakable;
+  const queryBalances = queries.queryBalances.getQueryBech32Address(addressDisplay);
+  const queryStakable = queryBalances.stakable;
 
   const stakable = queryStakable.balance;
   const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(addressDisplay);
@@ -33,9 +34,10 @@ export const AccountCard: FunctionComponent<{
 
   const totalStake = stakable.add(stakedSum);
 
-  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
   const tokens = queryBalances.positiveNativeUnstakables.concat(queryBalances.nonNativeBalances);
+  const language = useLanguage();
+
+  const fiat = language.fiatCurrency;
   const totalPrice = useMemo(() => {
     const fiatCurrency = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
     if (!fiatCurrency) {
@@ -44,16 +46,16 @@ export const AccountCard: FunctionComponent<{
     if (!totalStake.isReady) {
       return undefined;
     }
-    let res = priceStore.calculatePrice(totalStake);
+    let res = priceStore.calculatePrice(totalStake, fiat);
     for (const token of tokens) {
-      const price = priceStore.calculatePrice(token.balance);
+      const price = priceStore.calculatePrice(token.balance, fiat);
       if (price) {
         res = res.add(price);
       }
     }
 
     return res;
-  }, [totalStake]);
+  }, [totalStake, fiat]);
 
   const totalBalance = useMemo(() => {
     if (!!totalPrice) {
