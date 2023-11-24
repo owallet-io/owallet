@@ -8,7 +8,6 @@ import { colors, metrics, spacing, typography } from '../../themes';
 import { navigate } from '../../router/root';
 import { AddressQRCodeModal } from './components';
 import { AccountBox } from './account-box';
-import { useLanguage } from '@owallet/common';
 
 export const AccountCard: FunctionComponent<{
   containerStyle?: ViewStyle;
@@ -20,8 +19,7 @@ export const AccountCard: FunctionComponent<{
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
   const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const queryBalances = queries.queryBalances.getQueryBech32Address(address);
+  const queryBalances = queries.queryBalances.getQueryBech32Address(addressDisplay);
   const queryStakable = queryBalances.stakable;
 
   const stakable = queryStakable.balance;
