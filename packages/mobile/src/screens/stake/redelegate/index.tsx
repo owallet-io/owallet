@@ -371,32 +371,7 @@ export const RedelegateScreen: FunctionComponent = observer(() => {
           </View>
         </TouchableOpacity>
       </View>
-      {/* <SelectorButtonWithoutModal
-        label="Redelegate to"
-        placeHolder="Select Validator"
-        selected={
-          dstValidator
-            ? {
-                key: dstValidatorAddress,
-                label: dstValidator.description.moniker || dstValidatorAddress
-              }
-            : undefined
-        }
-        onPress={() => {
-          modalStore.setOpen();
-          modalStore.setChildren(
-            <ValidatorsList
-              onPressSelectValidator={onPressSelectValidator}
-              dstValidatorAddress={dstValidatorAddress}
-            />
-          );
-          // smartNavigation.pushSmart('Validator.List', {
-          //   validatorSelector: (validatorAddress: string) => {
-          //     setDstValidatorAddress(validatorAddress);
-          //   }
-          // });
-        }}
-      /> */}
+    
       {dstValidatorAddress ? (
         <View
           style={{
