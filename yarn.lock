@@ -3792,10 +3792,15 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.50.0.tgz#e3a6834cb8c19346efca214c1af84ed28e69dad9"
   integrity sha512-gu6aJ/BHuRlpU7kgVpy2vcYk6atjB4iauP2ymF7Gk0ez0Y/6VSMVSJvubeEQN+IV60+OBK0JgeIZG7OiHaw8ow==
 
-"@ledgerhq/errors@^6.10.1", "@ledgerhq/errors@^6.12.3", "@ledgerhq/errors@^6.12.5":
+"@ledgerhq/errors@^6.10.1", "@ledgerhq/errors@^6.12.3":
   version "6.15.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.15.0.tgz#45cda73915f695cc072cb8a99650830bc5dc6668"
   integrity sha512-6xaw5/mgoht62TnL3rXsaQYEFwpnXyNDk1AOSJksIjFHx9bHUnkyVmrnGQDj0JLzi+E7bHEgTrpCs8wpeDh9jA==
+
+"@ledgerhq/errors@^6.12.5":
+  version "6.16.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.16.0.tgz#0aaf16bbf649a3b43867746781b2e3adebf7fe3a"
+  integrity sha512-vnew6lf4jN6E+WI0DFhD4WY0uM8LYL8HCumtUr86hNwvmEfebi7LxxpJGmYfVQD5TgEC7NibYnQ+2q9XWAc02A==
 
 "@ledgerhq/hw-app-btc@6.27.1":
   version "6.27.1"
@@ -3843,12 +3848,12 @@
     "@ledgerhq/hw-transport" "^6.28.3"
 
 "@ledgerhq/hw-transport-mocker@^6.27.12":
-  version "6.27.20"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-mocker/-/hw-transport-mocker-6.27.20.tgz#d2b5f82797fad20544995220bb080a527f125198"
-  integrity sha512-o5nGuMLs/akXUvgD1f2u1DqhiC7Ii8x3fCmdE5KExCMo3dVWYkeeV3LTUzx+bp+daJFeYNKOa9+Z7XpqIuEJtA==
+  version "6.28.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-mocker/-/hw-transport-mocker-6.28.0.tgz#a664220338b56d62c8aca0a10c98e28484e4a889"
+  integrity sha512-svUgIRdoc69b49MHncKikoRgWIqn7ZR3IHP+nq4TCTYn2nm5LILJYyf8osnCg8brsXdEY68z++fr++GyF9vUIw==
   dependencies:
-    "@ledgerhq/hw-transport" "^6.29.0"
-    "@ledgerhq/logs" "^6.11.0"
+    "@ledgerhq/hw-transport" "^6.30.0"
+    "@ledgerhq/logs" "^6.12.0"
     rxjs "^7.8.1"
 
 "@ledgerhq/hw-transport-webhid@=6.27.12":
@@ -3871,7 +3876,7 @@
     "@ledgerhq/hw-transport" "^6.28.1"
     "@ledgerhq/logs" "^6.10.1"
 
-"@ledgerhq/hw-transport@6.27.2", "@ledgerhq/hw-transport@^5.26.0", "@ledgerhq/hw-transport@^6.27.1", "@ledgerhq/hw-transport@^6.27.2", "@ledgerhq/hw-transport@^6.28.1", "@ledgerhq/hw-transport@^6.28.3", "@ledgerhq/hw-transport@^6.29.0":
+"@ledgerhq/hw-transport@6.27.2", "@ledgerhq/hw-transport@^5.26.0", "@ledgerhq/hw-transport@^6.27.1", "@ledgerhq/hw-transport@^6.27.2", "@ledgerhq/hw-transport@^6.28.1", "@ledgerhq/hw-transport@^6.28.3", "@ledgerhq/hw-transport@^6.30.0":
   version "6.27.2"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.27.2.tgz#318e24b13b4bc392277d0b3b6fbc568f86b41f01"
   integrity sha512-GF4pmK78rEKhZfbmunwQ131c+0MGa6L5IoYlwgFcg6CaFpUjjPiTCKUFsm4flsE0Z0Ltn9QuKoe+xEHULo7rGA==
@@ -3880,10 +3885,15 @@
     "@ledgerhq/errors" "^6.10.1"
     events "^3.3.0"
 
-"@ledgerhq/logs@^6.10.0", "@ledgerhq/logs@^6.10.1", "@ledgerhq/logs@^6.11.0":
+"@ledgerhq/logs@^6.10.0", "@ledgerhq/logs@^6.10.1":
   version "6.11.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.11.0.tgz#0d28e7edcf71548506f4304686cba480ba91bbcf"
   integrity sha512-HHK9y4GGe4X7CXbRUCh7z8Mp+WggpJn1dmUjmuk1rNugESF6o8nAOnXA+BxwtRRNV3CgNJR3Wxdos4J9qV0Zsg==
+
+"@ledgerhq/logs@^6.12.0":
+  version "6.12.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.12.0.tgz#ad903528bf3687a44da435d7b2479d724d374f5d"
+  integrity sha512-ExDoj1QV5eC6TEbMdLUMMk9cfvNKhhv5gXol4SmULRVCx/3iyCPhJ74nsb3S0Vb+/f+XujBEj3vQn5+cwS0fNA==
 
 "@ledgerhq/react-native-hw-transport-ble@=6.28.3":
   version "6.28.3"
@@ -4799,6 +4809,11 @@
   version "9.4.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-9.4.1.tgz#7b880758adca65fe47ee866cf7b00416b9dcc192"
   integrity sha512-dAbY5mfw+6Kas/GJ6QX9AZyY+K+eq9ad4Su6utoph/nxyH3whp5cMSgRNgE2VhGQVRZ/OG0qq3IaD3+wzoqJXw==
+
+"@react-native-firebase/analytics@^18.6.2":
+  version "18.6.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/analytics/-/analytics-18.6.2.tgz#4594cdd2d1b410b1dd6a86659b42d0c1b2f3e178"
+  integrity sha512-SDvQvAq7NZZixG/gpzgdy4++bjCHlSXytg4gWXxfVZQSquY3K/wiGFxelAvHjYQRvJ9CAuZw7jvq/RbJ3wT4zg==
 
 "@react-native-firebase/app@=18.6.1":
   version "18.6.1"
