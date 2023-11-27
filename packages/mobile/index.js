@@ -14,7 +14,6 @@ import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 import firebase from '@react-native-firebase/app';
 import LogRocket from '@logrocket/react-native';
-import { useEffect } from 'react';
 LogRocket.init('swrly2/owallet', {
   redactionTags: ['private'],
   console: {
@@ -36,14 +35,6 @@ const config = {
 };
 
 firebase.initializeApp(config);
-
-useEffect(() => {
-  enableAnalytics();
-}, []);
-
-const enableAnalytics = async () => {
-  await firebase.analytics().setAnalyticsCollectionEnabled(true);
-};
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('remoteMessage background', remoteMessage);

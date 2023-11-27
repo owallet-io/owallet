@@ -12,8 +12,8 @@ import { LoadingScreenProvider } from './providers/loading-screen';
 import { ConfirmModalProvider } from './providers/confirm-modal';
 import { AppIntlProvider } from '@owallet/common/src/languages';
 import { IntlProvider } from 'react-intl';
-import ThemeProvider, { useTheme } from './themes/theme-provider';
-
+import ThemeProvider from './themes/theme-provider';
+import analytics from '@react-native-firebase/analytics';
 import FlashMessage from 'react-native-flash-message';
 
 import { colorsCode } from './themes/mode-colors';
@@ -69,7 +69,11 @@ const AppIntlProviderWithStorage = ({ children }) => {
   const store = useStore();
 
   return (
-    <AppIntlProvider additionalMessages={AdditonalIntlMessages} languageToFiatCurrency={LanguageToFiatCurrency} storage={store.uiConfigStore.Storage}>
+    <AppIntlProvider
+      additionalMessages={AdditonalIntlMessages}
+      languageToFiatCurrency={LanguageToFiatCurrency}
+      storage={store.uiConfigStore.Storage}
+    >
       {({ language, messages, automatic }) => (
         <IntlProvider
           locale={language}
@@ -103,6 +107,14 @@ export const App = () => {
   useEffect(() => {
     SplashScreen.hide();
     return () => {};
+  }, []);
+
+  const enableAnalytics = async () => {
+    await analytics().setAnalyticsCollectionEnabled(true);
+  };
+
+  useEffect(() => {
+    enableAnalytics();
   }, []);
 
   return (
