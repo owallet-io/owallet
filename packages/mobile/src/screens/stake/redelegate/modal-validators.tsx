@@ -9,17 +9,12 @@ import { ValidatorThumbnail } from '../../../components/thumbnail';
 import { useStore } from '../../../stores';
 import { colors, metrics, spacing, typography } from '../../../themes';
 import { _keyExtract } from '../../../utils/helper';
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 
-const Validators = ({
-  onPressSelectValidator,
-  styles,
-  dstValidatorAddress
-}) => {
+const Validators = ({ onPressSelectValidator, styles, dstValidatorAddress }) => {
   const { chainStore, queriesStore, accountStore, modalStore } = useStore();
   const queries = queriesStore.get(chainStore.current.chainId);
-  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(
-    BondStatus.Bonded
-  );
+  const bondedValidators = queries.cosmos.queryValidators.getQueryStatus(BondStatus.Bonded);
 
   const dataAll = bondedValidators.validators;
   const data = [...dataAll];
@@ -34,8 +29,7 @@ const Validators = ({
         onPress={() =>
           onPressSelectValidator(
             validatorsAddress,
-            ValidatorThumbnails[validatorsAddress] ??
-              bondedValidators.getValidatorThumbnail(validatorsAddress),
+            ValidatorThumbnails[validatorsAddress] ?? bondedValidators.getValidatorThumbnail(validatorsAddress),
             item?.description?.moniker
           )
         }
@@ -51,10 +45,7 @@ const Validators = ({
               marginRight: spacing['8']
             }}
             size={38}
-            url={
-              ValidatorThumbnails[validatorsAddress] ??
-              bondedValidators.getValidatorThumbnail(validatorsAddress)
-            }
+            url={ValidatorThumbnails[validatorsAddress] ?? bondedValidators.getValidatorThumbnail(validatorsAddress)}
           />
           <View
             style={{
@@ -80,10 +71,7 @@ const Validators = ({
                 }}
               >
                 {/* Stake {amount.maxDecimals(4).trim(true).shrink(true).toString()} */}
-                {new CoinPretty(
-                  chainStore.current.stakeCurrency,
-                  new Dec(item.tokens)
-                )
+                {new CoinPretty(chainStore.current.stakeCurrency, new Dec(item.tokens))
                   .maxDecimals(0)
                   .hideDenom(true)
                   .toString() + ' staked'}
@@ -99,9 +87,7 @@ const Validators = ({
               height: 24,
               borderRadius: spacing['32'],
               backgroundColor:
-                item.operator_address == dstValidatorAddress
-                  ? colors['background-btn-primary']
-                  : colors['gray-100'],
+                item.operator_address == dstValidatorAddress ? colors['background-btn-primary'] : colors['gray-100'],
               justifyContent: 'center',
               alignItems: 'center'
             }}
@@ -126,7 +112,7 @@ const Validators = ({
         height: metrics.screenHeight / 2
       }}
     >
-      <FlatList
+      <BottomSheetFlatList
         data={[...data]}
         showsVerticalScrollIndicator={false}
         renderItem={renderItem}
