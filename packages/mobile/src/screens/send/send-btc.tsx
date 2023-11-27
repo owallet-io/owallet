@@ -50,7 +50,6 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
-  const [customFee, setCustomFee] = useState(false);
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
@@ -59,9 +58,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
   const txStateIsValid = sendConfigError == null;
   const { colors } = useTheme();
-  const refreshBalance = async (address) => {
+  const refreshBalance = async address => {
     try {
-      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address).waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.waitFreshResponse();
     } catch (error) {
       console.log('🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:', error);
     }
@@ -95,7 +94,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
         },
 
         {
-          onFulfill: async (tx) => {
+          onFulfill: async tx => {
             console.log('🚀 ~ file: send-btc.tsx:109 ~ onSend ~ tx:', tx);
 
             if (tx) {
@@ -110,9 +109,8 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
             return;
           },
-          onBroadcasted: async (txHash) => {
+          onBroadcasted: async txHash => {
             try {
-           
               analyticsStore.logEvent('Send Btc tx broadcasted', {
                 chainId: chainId,
                 chainName: chainStore.current.chainName,
@@ -136,14 +134,14 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     } catch (error) {
       if (error?.message) {
         showToast({
-          type: 'error',
-          text2: error?.message
+          message: error?.message,
+          type: 'danger'
         });
         return;
       }
       showToast({
-        type: 'error',
-        text2: JSON.stringify(error)
+        type: 'danger',
+        message: JSON.stringify(error)
       });
       console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
     }

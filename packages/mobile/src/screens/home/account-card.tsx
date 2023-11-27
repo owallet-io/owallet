@@ -18,14 +18,15 @@ export const AccountCard: FunctionComponent<{
   const smartNavigation = useSmartNavigation();
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
-  const queryStakable = queries.queryBalances.getQueryBech32Address(account.bech32Address).stakable;
+  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+  console.log('🚀 ~ file: account-card.tsx:22 ~ addressDisplay:', addressDisplay);
+  const queryStakable = queries.queryBalances.getQueryBech32Address(addressDisplay).stakable;
 
   const stakable = queryStakable.balance;
-  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address);
+  const queryDelegated = queries.cosmos.queryDelegations.getQueryBech32Address(addressDisplay);
   const delegated = queryDelegated.total;
 
-  const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address);
+  const queryUnbonding = queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(addressDisplay);
   const unbonding = queryUnbonding.total;
 
   const stakedSum = delegated.add(unbonding);
@@ -44,7 +45,7 @@ export const AccountCard: FunctionComponent<{
     chainStore.current.stakeCurrency.coinDecimals,
     chainStore.current.networkType,
     chainStore.current.chainId,
-    account?.bech32Address
+    addressDisplay
   ]);
 
   const onPressBtnMain = (name) => {
@@ -72,7 +73,6 @@ export const AccountCard: FunctionComponent<{
     );
   };
 
-  const addressDisplay = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   return (
     <AccountBox
       totalBalance={totalBalance}

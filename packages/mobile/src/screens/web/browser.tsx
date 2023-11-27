@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  ReactPropTypes,
-  useEffect,
-  useState
-} from 'react';
+import React, { FunctionComponent, ReactPropTypes, useEffect, useState } from 'react';
 import { Image, View, Keyboard, StyleSheet } from 'react-native';
 import { Text } from '@src/components/text';
 import { useStyle } from '../../styles';
@@ -33,18 +28,9 @@ export const BrowserBookmark: FunctionComponent<{}> = ({}) => {
   const { colors } = useTheme();
 
   return (
-    <View
-      style={{ borderBottomColor: colors['border'], borderBottomWidth: 0.2 }}
-    >
+    <View style={{ borderBottomColor: colors['border'], borderBottomWidth: 0.2 }}>
       <View
-        style={style.flatten([
-          'width-full',
-          'height-66',
-          'flex-row',
-          'justify-between',
-          'items-center',
-          'padding-20'
-        ])}
+        style={style.flatten(['width-full', 'height-66', 'flex-row', 'justify-between', 'items-center', 'padding-20'])}
       >
         <Text
           style={{
@@ -82,13 +68,8 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
   const { colors } = useTheme();
 
   useEffect(() => {
-    navigation
-      .getParent()
-      ?.setOptions({ tabBarStyle: { display: 'none' }, tabBarVisible: false });
-    return () =>
-      navigation
-        .getParent()
-        ?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
+    navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' }, tabBarVisible: false });
+    return () => navigation.getParent()?.setOptions({ tabBarStyle: undefined, tabBarVisible: undefined });
   }, [navigation]);
 
   const [url, setUrl] = useState('');
@@ -170,18 +151,12 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
   };
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      () => {
-        setKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      () => {
-        setKeyboardVisible(false);
-      }
-    );
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardVisible(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardVisible(false);
+    });
 
     return () => {
       keyboardDidHideListener.remove();
@@ -198,14 +173,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
             paddingHorizontal: 20
           }}
           inputStyle={[
-            StyleSheet.flatten([
-              style.flatten([
-                'flex-row',
-                'items-center',
-                'padding-16',
-                'border-radius-8'
-              ])
-            ]),
+            StyleSheet.flatten([style.flatten(['flex-row', 'items-center', 'padding-16', 'border-radius-8'])]),
             {
               backgroundColor: colors['background'],
               borderColor: colors['border']
@@ -224,10 +192,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
           }
           inputRight={
             url ? (
-              <TouchableOpacity
-                style={{ width: 30 }}
-                onPress={() => setUrl('')}
-              >
+              <TouchableOpacity style={{ width: 30 }} onPress={() => setUrl('')}>
                 <XIcon />
               </TouchableOpacity>
             ) : null
@@ -235,7 +200,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
         />
 
         <BrowserBookmark />
-        <View
+        {/* <View
           style={{
             paddingHorizontal: 20,
             paddingTop: 20
@@ -266,12 +231,10 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
               >
                 {`Orderbook`}
               </Text>
-              <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-                {`https://orderbook.oraidex.io/`}
-              </Text>
+              <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{`https://orderbook.oraidex.io/`}</Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <OWFlatList
           style={{
@@ -285,11 +248,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
             return (
               <TouchableOpacity
                 key={e.id ?? e.uri}
-                style={style.flatten([
-                  'height-44',
-                  'margin-bottom-15',
-                  'flex-row'
-                ])}
+                style={style.flatten(['height-44', 'margin-bottom-15', 'flex-row'])}
                 onPress={() => onHandleUrl(e.uri)}
               >
                 <View style={style.flatten(['padding-top-5'])}>
@@ -312,9 +271,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
                   >
                     {e.name}
                   </Text>
-                  <Text style={{ color: colors['sub-text'], fontSize: 14 }}>
-                    {e.uri}
-                  </Text>
+                  <Text style={{ color: colors['sub-text'], fontSize: 14 }}>{e.uri}</Text>
                 </View>
               </TouchableOpacity>
             );
@@ -326,11 +283,7 @@ export const Browser: FunctionComponent<BrowserProps> = observer(props => {
 
   return (
     <PageWithView disableSafeArea backgroundColor={colors['background']}>
-      {isSwitchTab ? (
-        <SwtichTab onPressItem={handlePressItem} />
-      ) : (
-        renderBrowser()
-      )}
+      {isSwitchTab ? <SwtichTab onPressItem={handlePressItem} /> : renderBrowser()}
       <WebViewStateContext.Provider
         value={{
           webView: null,

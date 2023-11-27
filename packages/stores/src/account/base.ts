@@ -434,6 +434,7 @@ export class AccountSetBase<MsgOpts, Queries> {
         });
       }
     }
+
     const txTracer = new TendermintTxTracer(this.chainGetter.getChain(this.chainId).rpc, '/websocket', {
       wsObject: this.opts.wsObject
     });
@@ -642,7 +643,6 @@ export class AccountSetBase<MsgOpts, Queries> {
 
     try {
       const result = await this.broadcastBtcMsgs(msgs, fee, memo, signOptions, extraOptions);
-     
 
       txHash = result?.txHash;
     } catch (e: any) {
@@ -900,21 +900,17 @@ export class AccountSetBase<MsgOpts, Queries> {
   ): Promise<{
     txHash: Uint8Array;
   }> {
-    try {
-      if (this.walletStatus !== WalletStatus.Loaded) {
-        throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const owallet = (await this.getOWallet())!;
-
-      let sendTx = owallet.sendTx.bind(owallet);
-      const signedTx = await this.processSignedTxCosmos(msgs, fee, memo, owallet, signOptions);
-      return {
-        txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode)
-      };
-    } catch (error) {
-      console.log('Error on broadcastMsgs: ', error);
+    if (this.walletStatus !== WalletStatus.Loaded) {
+      throw new Error(`Wallet is not loaded: ${this.walletStatus}`);
     }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const owallet = (await this.getOWallet())!;
+
+    let sendTx = owallet.sendTx.bind(owallet);
+    const signedTx = await this.processSignedTxCosmos(msgs, fee, memo, owallet, signOptions);
+    return {
+      txHash: await sendTx(this.chainId, signedTx, mode as BroadcastMode)
+    };
   }
   protected async broadcastBtcMsgs(
     msgs: any,

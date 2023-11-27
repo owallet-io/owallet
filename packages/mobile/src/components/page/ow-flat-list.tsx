@@ -1,13 +1,4 @@
-import {
-  ActivityIndicator,
-  Animated,
-  FlatList,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle
-} from 'react-native';
+import { ActivityIndicator, Animated, FlatList, RefreshControl, StyleSheet, Text, View, ViewStyle } from 'react-native';
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { FlatListProps } from 'react-native';
 import { OWEmpty } from '../empty';
@@ -22,6 +13,7 @@ interface IOWFlatListProps extends FlatListProps<any> {
   loadMore?: boolean;
   isBottomSheet?: boolean;
   loading?: boolean;
+  hiddenButtonBottom?: boolean;
   containerSkeletonStyle?: ViewStyle;
   skeletonStyle?: ViewStyle;
   SkeletonComponent?: FlatListProps<any>['ListHeaderComponent'];
@@ -50,6 +42,7 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
     containerSkeletonStyle = {},
     skeletonStyle = {},
     isBottomSheet = false,
+    hiddenButtonBottom,
     ...rest
   } = props;
   const onScrollToTop = () => {
@@ -113,37 +106,28 @@ const OWFlatList: FC<IOWFlatListProps> = (props) => {
         showsHorizontalScrollIndicator={false}
         ListFooterComponent={
           <View>
-            <View style={styles.footer}>
-              {loadMore ? SkeletonComponent : null}
-            </View>
+            <View style={styles.footer}>{loadMore ? SkeletonComponent : null}</View>
           </View>
         }
         refreshControl={
           onRefresh ? (
-            <RefreshControl
-              tintColor={colors['text-title']}
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-            />
+            <RefreshControl tintColor={colors['text-title']} refreshing={refreshing} onRefresh={onRefresh} />
           ) : null
         }
         {...rest}
       />
-      <Animated.View
-        style={[
-          styles.fixedScroll,
-          {
-            opacity
-          }
-        ]}
-      >
-        <OWButtonIcon
-          onPress={onScrollToTop}
-          typeIcon="images"
-          source={images.scroll_to_top}
-          sizeIcon={48}
-        />
-      </Animated.View>
+      {!hiddenButtonBottom && (
+        <Animated.View
+          style={[
+            styles.fixedScroll,
+            {
+              opacity
+            }
+          ]}
+        >
+          <OWButtonIcon onPress={onScrollToTop} typeIcon="images" source={images.scroll_to_top} sizeIcon={48} />
+        </Animated.View>
+      )}
     </>
   );
 };

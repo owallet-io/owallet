@@ -559,4 +559,13 @@ export function createTxsHelper() {
   return new TxsHelper();
 }
 
+export const LRRedactProps = (redactionTag = 'lr-hide') => (
+  Platform.OS === 'ios'
+    ? {
+      testID: redactionTag,
+      accessible: false,
+    }
+    : { testID: redactionTag }
+);
+
 export { get };

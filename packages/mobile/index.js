@@ -13,6 +13,19 @@ import messaging from '@react-native-firebase/messaging';
 import CodePush from 'react-native-code-push';
 import { name as appName } from './app.json';
 import firebase from '@react-native-firebase/app';
+import LogRocket from '@logrocket/react-native';
+LogRocket.init('swrly2/owallet', {
+  redactionTags: ['private'],
+  console: {
+    isEnabled: {
+      error: true,
+      log: false,
+      warn: false,
+      debug: false,
+      info: false
+    }
+  }
+});
 
 const config = {
   apiKey: process.env.API_KEY,
