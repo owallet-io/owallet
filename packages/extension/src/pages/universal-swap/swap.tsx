@@ -13,7 +13,6 @@ import {
   toDisplay,
   getBase58Address,
   CWStargate,
-  getEvmAddress,
   getTokenOnOraichain,
   getTokenOnSpecificChainId,
   feeEstimate,
@@ -44,6 +43,8 @@ import {
   calculateMinReceive
 } from '@oraichain/oraidex-common';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { useNotification } from '../../components/notification';
+import { SwapCosmosWallet, SwapEvmWallet } from '@owallet/common';
 
 const ONE_QUARTER = '25';
 const HALF = '50';
@@ -55,6 +56,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
   const { chainStore, accountStore, universalSwapStore } = useStore();
   const { chainId } = chainStore.current;
   const [client, setClient] = useState(null);
+  const notification = useNotification();
 
   const getClient = async () => {
     const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
@@ -340,6 +342,97 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
     estimateAverageRatio();
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
 
+  const handleSubmit = async () => {
+    // account.handleUniversalSwap(chainId, { key: 'value' });
+    if (fromAmountToken <= 0) {
+      notification.push({
+        placement: 'top-center',
+        type: 'danger',
+        duration: 5,
+        content: 'From amount should be higher than 0!',
+        canDelete: true,
+        transition: {
+          duration: 0.25
+        }
+      });
+      return;
+    }
+
+    setSwapLoading(true);
+    try {
+      //@ts-ignore
+      const cosmosWallet = new SwapCosmosWallet({ client, owallet: window.owallet });
+
+      const isTron = Number(originalFromToken.chainId) === Networks.tron;
+      //@ts-ignore
+      const evmWallet = new SwapEvmWallet({ isTronToken: isTron, tronWeb: window.tronWeb, ethereum: window.ethereum });
+
+      const relayerFee = relayerFeeToken && {
+        relayerAmount: relayerFeeToken.toString(),
+        relayerDecimals: RELAYER_DECIMAL
+      };
+
+      const universalSwapData: UniversalSwapData = {
+        sender: {
+          cosmos: accountOrai.bech32Address,
+          evm: accountEvm.evmosHexAddress,
+          tron: getBase58Address(accountTron.evmosHexAddress)
+        },
+        originalFromToken: originalFromToken,
+        originalToToken: originalToToken,
+        simulateAmount: toAmountToken.toString(),
+        simulatePrice: ratio.amount,
+        userSlippage: userSlippage,
+        fromAmount: fromAmountToken,
+        relayerFee
+      };
+
+      const universalSwapHandler = new UniversalSwapHandler(
+        {
+          ...universalSwapData
+        },
+        {
+          cosmosWallet,
+          //@ts-ignore
+          evmWallet
+        }
+      );
+
+      const result = await universalSwapHandler.processUniversalSwap();
+
+      if (result) {
+        setSwapLoading(false);
+        notification.push({
+          placement: 'top-center',
+          type: 'success',
+          duration: 5,
+          content: 'Transaction successful',
+          canDelete: true,
+          transition: {
+            duration: 0.25
+          }
+        });
+        await handleFetchAmounts();
+      }
+    } catch (error) {
+      setSwapLoading(false);
+      console.log('error', error);
+
+      notification.push({
+        placement: 'top-center',
+        type: 'danger',
+        duration: 5,
+        content: 'Transaction failed',
+        canDelete: true,
+        transition: {
+          duration: 0.25
+        }
+      });
+    } finally {
+      setSwapLoading(false);
+    }
+  };
+
   return (
     <div>
       <SwapInput
@@ -406,6 +499,9 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
         className={style.sendBtn}
         style={{
           cursor: accountOrai.isReadyToSendMsgs ? '' : 'pointer'
+        }}
+        onClick={async e => {
+          handleSubmit();
         }}
       >
         <span className={style.sendBtnText}>Swap</span>
