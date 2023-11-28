@@ -20,20 +20,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const queryBalances = queriesStore.get(chainStore.current.chainId).queryBalances.getQueryBech32Address(address);
 
-  const tokens = queryBalances.balances.concat(
-    queryBalances.nonNativeBalances,
-    queryBalances.positiveNativeUnstakables
-  );
-
-  const unique = useMemo(() => {
-    const uniqTokens = [];
-    tokens.map((token) =>
-      uniqTokens.filter((ut) => ut.balance.currency.coinDenom == token.balance.currency.coinDenom).length > 0
-        ? null
-        : uniqTokens.push(token)
-    );
-    return uniqTokens;
-  }, [chainStore.current.chainId]);
+  const tokens = queryBalances.positiveBalances;
 
   return (
     <PageWithView backgroundColor={colors['background']}>
@@ -66,7 +53,7 @@ export const TokensScreen: FunctionComponent = observer(() => {
           </TouchableOpacity>
         </View>
         <OWFlatList
-          data={unique}
+          data={tokens}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => {
             const priceBalance = priceStore.calculatePrice(item.balance);

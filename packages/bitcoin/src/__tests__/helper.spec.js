@@ -7,7 +7,7 @@ const {
   getBaseDerivationPath,
   getCoinNetwork,
   getScriptHash,
-  getKeyPair,
+  getKeyPairByMnemonic,
   getAddress,
   convertStringToMessage,
   getByteCount,
@@ -223,12 +223,12 @@ describe('helper', () => {
       'tprv8kUr2PQcA1spigZD2FVbFZDtQcHUtZniwP75j4xGZmgjYfLydmGmcUYwEEBxCMPNgrxut21GkZDDgucQVxja1W9qfzidYTrsBGsGHrdQ1od'
     ]
   ])('Test getKeyPair for %p', (param, expected) => {
-    const res = getKeyPair(param);
+    const res = getKeyPairByMnemonic(param);
     expect(res.toBase58()).toEqual(expected);
   });
   it.each([
     [
-      getKeyPair({
+      getKeyPairByMnemonic({
         selectedCrypto: 'bitcoin',
         keyDerivationPath: '84',
         //this is mnemonic for test
@@ -238,7 +238,7 @@ describe('helper', () => {
       'bc1q0vh389f8xtr87jcnt0xhc5sh9c0ahrqwv9kz7j'
     ],
     [
-      getKeyPair({
+      getKeyPairByMnemonic({
         selectedCrypto: 'bitcoinTestnet',
         keyDerivationPath: '84',
         //this is mnemonic for test

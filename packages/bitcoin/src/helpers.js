@@ -9,10 +9,10 @@ const bip21 = require('bip21');
 const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
 const { getTransaction } = require('./electrum');
-
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
+
 const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selectedCrypto } = {}) => {
   try {
     const result = await walletHelpers.utxos.default({
@@ -470,7 +470,7 @@ const createTransaction = async ({
   utxos = [],
   blacklistedUtxos = [],
   changeAddress = '',
-  mnemonic,
+  keyPair,
   selectedCrypto = 'bitcoin',
   message = '',
   addressType = 'bech32'
@@ -512,8 +512,6 @@ const createTransaction = async ({
       targets.push({ script: embed.output, value: 0 });
     }
 
-    const seed = bip39.mnemonicToSeedSync(mnemonic);
-    const root = bip32.fromSeed(seed, network);
     const psbt = new bitcoin.Psbt({ network });
 
     //Add Inputs
@@ -522,9 +520,6 @@ const createTransaction = async ({
       try {
         const utxo = utxos[i];
         if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
-        const path = utxo.path;
-        const keyPair = root.derivePath(path);
-
         if (addressType === 'bech32') {
           const p2wpkh = bitcoin.payments.p2wpkh({
             pubkey: keyPair.publicKey,
@@ -562,7 +557,7 @@ const createTransaction = async ({
             txHash: utxo.txid,
             coin: selectedCrypto
           });
-          
+
           const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
           psbt.addInput({
             hash: utxo.txid,
@@ -605,8 +600,6 @@ const createTransaction = async ({
       try {
         const utxo = utxos[i];
         if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
-        const path = utxo.path;
-        const keyPair = root.derivePath(path);
         psbt.signInput(index, keyPair);
         index++;
       } catch (e) {
@@ -651,8 +644,13 @@ const fetchData = (type, params) => {
 const getCoinNetwork = (coin = '') => {
   return networks[coin];
 };
-
-const getKeyPair = ({ selectedCrypto = 'bitcoin', keyDerivationPath = '84', addressIndex = 0, mnemonic }) => {
+const getKeyPairByPrivateKey = ({ selectedCrypto = 'bitcoin', privateKey }) => {
+  if (!privateKey) throw Error('Private Key is not Empty');
+  const network = networks[selectedCrypto]; //Returns the network object based on the selected crypto.
+  const keyPair = bitcoin.ECPair.fromPrivateKey(privateKey, { network: network });
+  return keyPair;
+};
+const getKeyPairByMnemonic = ({ selectedCrypto = 'bitcoin', keyDerivationPath = '84', addressIndex = 0, mnemonic }) => {
   const coinTypePath = defaultWalletShape.coinTypePath[selectedCrypto];
   const network = networks[selectedCrypto]; //Returns the network object based on the selected crypto.
 
@@ -1260,7 +1258,8 @@ module.exports = {
   getCoinNetwork,
   generateAddresses,
   getAddress,
-  getKeyPair,
+  getKeyPairByMnemonic,
+  getKeyPairByPrivateKey,
   parseFiat,
   getNetworkType,
   capitalize,
