@@ -17,6 +17,7 @@ import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { getBase58Address } from '../../utils';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
+import { ethers } from 'ethers';
 
 export enum SwapDirection {
   From,
@@ -51,17 +52,14 @@ export function getTokenOnSpecificChainId(
   return flattenTokens.find(t => t.coinGeckoId === coingeckoId && t.chainId === chainId);
 }
 
-export const tronToEthAddress = (base58: string) => getEvmAddress(base58);
+export const tronToEthAddress = (base58: string) => {
+  const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(1, -4);
+  const hexString = Array.prototype.map.call(buffer, byte => ('0' + byte.toString(16)).slice(-2)).join('');
+  return '0x' + hexString;
+};
 
 export const ethToTronAddress = (address: string) => {
   return getBase58Address(address);
-};
-
-const getEvmAddress = (bech32Address: string) => {
-  if (!bech32Address) return;
-  const decoded = bech32.decode(bech32Address);
-  const evmAddress = '0x' + Buffer.from(bech32.fromWords(decoded.words)).toString('hex');
-  return evmAddress;
 };
 
 export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
