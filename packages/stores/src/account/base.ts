@@ -318,19 +318,15 @@ export class AccountSetBase<MsgOpts, Queries> {
     if (!!this._isNanoLedger) {
       if (networkType !== 'cosmos') {
         const address = findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
-        if (this.chainId === ChainIdEnum.TRON && isBase58(address)) {
-          if (!toDisplay) {
-            return getEvmAddress(address);
-          }
+        if (this.chainId === ChainIdEnum.TRON && isBase58(address) && !toDisplay) {
+          return getEvmAddress(address);
         }
         return address;
       }
     }
     if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
-      if (this.chainId === ChainIdEnum.TRON) {
-        if (toDisplay) {
-          return getBase58Address(this.evmosHexAddress);
-        }
+      if (this.chainId === ChainIdEnum.TRON && toDisplay) {
+        return getBase58Address(this.evmosHexAddress);
       }
       return this.evmosHexAddress;
     }
