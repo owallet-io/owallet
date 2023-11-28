@@ -15,6 +15,7 @@ const assetExts = require('metro-config/src/defaults/defaults').assetExts;
 const getWorkspaces = require('get-yarn-workspaces');
 const path = require('path');
 const fs = require('fs');
+const { createSentryMetroSerializer } = require('@sentry/react-native/dist/js/tools/sentryMetroSerializer');
 
 const workspaces = getWorkspaces(__dirname);
 
@@ -55,6 +56,9 @@ module.exports = mergeConfig(getDefaultConfig(__dirname), {
         inlineRequires: false
       }
     })
+  },
+  serializer: {
+    customSerializer: createSentryMetroSerializer()
   },
   server: {
     enhanceMiddleware: (middleare) => {
