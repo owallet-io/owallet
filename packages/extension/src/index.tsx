@@ -144,10 +144,10 @@ const firebaseConfig = {
   authDomain: 'owallet-829a1.firebaseapp.com',
   projectId: 'owallet-829a1',
   storageBucket: 'owallet-829a1.appspot.com',
-  messagingSenderId: process.env.SENDER_ID,
-  appId: '1:570000248707:web:212fb3f889fb816eb7f0b6',
-  apiKey: process.env.API_KEY,
-  measurementId: process.env.MEASUREMENT_ID
+  messagingSenderId: process.env.SENDER_ID_FIREBASE_EXTENSION,
+  appId: process.env.APP_ID_FIREBASE_EXTENSION,
+  apiKey: process.env.API_KEY_FIREBASE_EXTENSION,
+  measurementId: process.env.MEASUREMENT_ID_FIREBASE_EXTENSION
 };
 
 // Initialize Firebase
