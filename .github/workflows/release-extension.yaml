@@ -65,7 +65,11 @@ jobs:
       - name: Build extension
         working-directory: packages/extension
         run: yarn build
-
+        env:
+          REACT_APP_API_KEY_FIREBASE_EXTENSION: ${{ secrets.API_KEY_FIREBASE_EXTENSION }}
+          REACT_APP_SENDER_ID_FIREBASE_EXTENSION: ${{ secrets.SENDER_ID_FIREBASE_EXTENSION }}
+          REACT_APP_APP_ID_FIREBASE_EXTENSION: ${{ secrets.APP_ID_FIREBASE_EXTENSION }}
+          REACT_APP_MEASUREMENT_ID_FIREBASE_EXTENSION: ${{ secrets.MEASUREMENT_ID_FIREBASE_EXTENSION }}
       - name: Publish extension for test
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
