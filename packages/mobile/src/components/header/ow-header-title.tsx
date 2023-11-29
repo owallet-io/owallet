@@ -42,17 +42,7 @@ const OWHeaderTitle = observer(({ title, ...props }: IOWHeaderTitle) => {
         enableOverDrag: false
       }
     });
-    modalStore.setChildren(
-      NetworkModal({
-        profileColor,
-        chainStore,
-        modalStore,
-        keyRingStore,
-        bip44Option,
-        smartNavigation,
-        colors
-      })
-    );
+    modalStore.setChildren(<NetworkModal profileColor={profileColor} />);
   };
   if (title === HEADER_KEY.showNetworkHeader)
     return (

@@ -1,4 +1,4 @@
 export enum AddressBtcType {
-  Legacy = 'Legacy',
-  Bech32 = 'Bech32'
+  Legacy = 'legacy',
+  Bech32 = 'bech32'
 }

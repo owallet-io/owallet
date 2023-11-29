@@ -23,7 +23,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   const queries = queriesStore.get(chainStore.current.chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
+  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address, account.addressType)?.balance;
 
   const totalAmount = useMemo(() => {
     const amount = formatBalance({
@@ -32,7 +32,7 @@ export const AccountCardBitcoin: FunctionComponent<{
       coin: chainStore.current.chainId
     });
     return amount;
-  }, [chainStore.current.chainId, account?.bech32Address, chainStore.current.networkType, balanceBtc]);
+  }, [chainStore.current.chainId, address, chainStore.current.networkType, balanceBtc]);
   useEffect(() => {
     const getExchange = async () => {
       const exchange = (await getExchangeRate({
@@ -67,13 +67,7 @@ export const AccountCardBitcoin: FunctionComponent<{
       return handleBalanceBtc(balanceBtc, exchangeRate);
     }
     return '';
-  }, [
-    chainStore.current.stakeCurrency.coinDecimals,
-    chainStore.current.chainId,
-    account?.bech32Address,
-    exchangeRate,
-    balanceBtc
-  ]);
+  }, [chainStore.current.stakeCurrency.coinDecimals, chainStore.current.chainId, address, exchangeRate, balanceBtc]);
 
   const onPressBtnMain = (name) => {
     if (name === 'Buy') {
@@ -110,14 +104,6 @@ export const AccountCardBitcoin: FunctionComponent<{
           ? chainStore?.current?.bip44?.coinType
           : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
-      hdPath={
-        chainStore?.current?.networkType === 'bitcoin'
-          ? (getBaseDerivationPath({
-              selectedCrypto: chainStore?.current?.chainId as string,
-              keyDerivationPath: '84'
-            }) as string)
-          : ''
-      }
       totalAmount={totalBalance}
       // networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}

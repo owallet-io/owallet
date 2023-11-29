@@ -31,7 +31,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
     const resApi = await super.fetchResponse(cancelToken);
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath: '84'
+      keyDerivationPath: '44'
     }) as string;
     const scriptHash = getScriptHash(this.bech32Address, getCoinNetwork(this.chainId));
     const response = await getBalanceFromUtxos({

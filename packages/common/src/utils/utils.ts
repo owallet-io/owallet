@@ -1,4 +1,4 @@
-import { ChainInfo, BIP44HDPath } from '@owallet/types';
+import { ChainInfo, BIP44HDPath, AddressBtcType } from '@owallet/types';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { NetworkType } from '@owallet/types';
@@ -147,3 +147,9 @@ export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
   }
   return address;
 }
+export const getKeyDerivationFromAddressType = (type: AddressBtcType): '84' | '44' => {
+  if (type === AddressBtcType.Legacy) {
+    return '44';
+  }
+  return '84';
+};

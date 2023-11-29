@@ -336,8 +336,8 @@ export class AccountSetBase<MsgOpts, Queries> {
           return getBase58Address(this.evmosHexAddress);
         }
         return this.evmosHexAddress;
-      } else if (networkType === 'bitcoin' && this._addressType === AddressBtcType.Legacy) {
-        return this._legacyAddress;
+      } else if (networkType === 'bitcoin') {
+        return this.btcAddress;
       }
       return this._bech32Address;
     }
@@ -938,7 +938,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
         memo,
         fee,
-        address: this.bech32Address,
+        address: this.btcAddress,
         msgs,
         ...extraOptions
       });
@@ -1053,8 +1053,15 @@ export class AccountSetBase<MsgOpts, Queries> {
     return this._legacyAddress;
   }
   @computed
-  get addressType(): string {
+  get addressType(): AddressBtcType {
     return this._addressType;
+  }
+  @computed
+  get btcAddress(): string {
+    if (this._addressType === AddressBtcType.Legacy) {
+      return this.legacyAddress;
+    }
+    return this._bech32Address;
   }
   get isNanoLedger(): boolean {
     return this._isNanoLedger;

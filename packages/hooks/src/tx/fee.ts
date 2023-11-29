@@ -1,21 +1,9 @@
-import {
-  DefaultGasPriceStep,
-  FeeType,
-  IAmountConfig,
-  IFeeConfig,
-  IGasConfig,
-  IMemoConfig
-} from './types';
+import { DefaultGasPriceStep, FeeType, IAmountConfig, IFeeConfig, IGasConfig, IMemoConfig } from './types';
 import { TxChainSetter } from './chain';
-import {
-  ChainGetter,
-  CoinPrimitive,
-  ObservableQueryBitcoinBalance,
-  ObservableQueryEvmBalance
-} from '@owallet/stores';
+import { ChainGetter, CoinPrimitive, ObservableQueryBitcoinBalance, ObservableQueryEvmBalance } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
-import { Currency } from '@owallet/types';
+import { AddressBtcType, Currency } from '@owallet/types';
 import { computedFn } from 'mobx-utils';
 import { StdFee } from '@cosmjs/launchpad';
 import { useState } from 'react';
@@ -34,6 +22,8 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
   @observable
   protected _sender: string;
+  @observable
+  protected _addressType: AddressBtcType;
 
   @observable
   protected _senderEvm?: string;
@@ -68,12 +58,14 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     queryEvmBalances?: ObservableQueryEvmBalance,
     senderEvm?: string,
     queryBtcBalances?: ObservableQueryBitcoinBalance,
-    protected readonly memoConfig?: IMemoConfig
+    protected readonly memoConfig?: IMemoConfig,
+    addressType: AddressBtcType = AddressBtcType.Bech32
   ) {
     super(chainGetter, initialChainId);
 
     this._sender = sender;
     this._senderEvm = senderEvm;
+    this._addressType = addressType;
     this.queryBalances = queryBalances;
     this.queryEvmBalances = queryEvmBalances;
     this.additionAmountToNeedFee = additionAmountToNeedFee;
@@ -196,15 +188,14 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         : DefaultGasPriceStep;
       const gasPrice = new Dec(gasPriceStep[feeType].toString());
       if (this.chainInfo.networkType === 'bitcoin') {
-        const data = this.queryBtcBalances.getQueryBalance(this._sender)
-          ?.response?.data;
+        const data = this.queryBtcBalances.getQueryBalance(this._sender)?.response?.data;
         const utxos = data?.utxos;
         const amount = calculatorFee({
           changeAddress: this._sender,
           utxos: utxos,
           message: this.memoConfig.memo,
           transactionFee: gasPriceStep[feeType] as number,
-          addressType: 'bech32'
+          addressType: this._addressType
         });
         // const feeAmount = gasPrice.mul(new Dec(Number(amount)));
         return {
@@ -230,10 +221,7 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     const feeTypePrimitive = this.getFeeTypePrimitive(feeType);
     const feeCurrency = this.feeCurrency;
 
-    return new CoinPretty(
-      feeCurrency,
-      new Int(feeTypePrimitive.amount)
-    ).maxDecimals(feeCurrency.coinDecimals);
+    return new CoinPretty(feeCurrency, new Int(feeTypePrimitive.amount)).maxDecimals(feeCurrency.coinDecimals);
   });
 
   getError(): Error | undefined {
@@ -255,73 +243,50 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
       let need: Coin;
       if (this.additionAmountToNeedFee && fee && fee.denom === amount.denom) {
-        need = new Coin(
-          fee.denom,
-          new Int(fee.amount).add(new Int(amount.amount))
-        );
+        need = new Coin(fee.denom, new Int(fee.amount).add(new Int(amount.amount)));
       } else {
         need = new Coin(fee.denom, new Int(fee.amount));
       }
 
       if (need.amount.gt(new Int(0))) {
         if (this.chainInfo.networkType === 'evm') {
-          const balance = this.queryEvmBalances.getQueryBalance(
-            this._senderEvm
-          ).balance;
+          const balance = this.queryEvmBalances.getQueryBalance(this._senderEvm).balance;
           if (!balance) return new InsufficientFeeError('insufficient fee');
           else if (
             balance
               .toDec()
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  balance.currency.coinDecimals
-                )
-              )
+              .mul(DecUtils.getTenExponentNInPrecisionRange(balance.currency.coinDecimals))
               .truncate()
               .lt(need.amount)
           )
             return new InsufficientFeeError('insufficient fee');
         } else if (this.chainInfo.networkType === 'bitcoin') {
-          const balance = this.queryBtcBalances.getQueryBalance(
-            this._sender
-          )?.balance;
+          const balance = this.queryBtcBalances.getQueryBalance(this._sender)?.balance;
           if (!balance) return new InsufficientFeeError('insufficient fee');
           else if (
             balance
               .toDec()
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  balance.currency.coinDecimals
-                )
-              )
+              .mul(DecUtils.getTenExponentNInPrecisionRange(balance.currency.coinDecimals))
               .truncate()
               .lt(need.amount)
           ) {
             return new InsufficientFeeError('insufficient fee');
           }
         } else {
-          const bal = this.queryBalances
-            .getQueryBech32Address(this._sender)
-            .balances.find((bal) => {
-              return bal.currency.coinMinimalDenom === need.denom;
-            });
+          const bal = this.queryBalances.getQueryBech32Address(this._sender).balances.find((bal) => {
+            return bal.currency.coinMinimalDenom === need.denom;
+          });
 
           if (!bal) {
             return new InsufficientFeeError('insufficient fee');
           } else if (!bal.response && !bal.error) {
             // If fetching balance doesn't have the response nor error,
             // assume it is not loaded from KVStore(cache).
-            return new NotLoadedFeeError(
-              `${bal.currency.coinDenom} is not loaded yet`
-            );
+            return new NotLoadedFeeError(`${bal.currency.coinDenom} is not loaded yet`);
           } else if (
             bal.balance
               .toDec()
-              .mul(
-                DecUtils.getTenExponentNInPrecisionRange(
-                  bal.currency.coinDecimals
-                )
-              )
+              .mul(DecUtils.getTenExponentNInPrecisionRange(bal.currency.coinDecimals))
               .truncate()
               .lt(need.amount)
           ) {
@@ -355,7 +320,8 @@ export const useFeeConfig = (
   queryEvmBalances?: ObservableQueryEvmBalance,
   senderEvm?: string,
   queryBtcBalances?: ObservableQueryBitcoinBalance,
-  memoConfig?: IMemoConfig
+  memoConfig?: IMemoConfig,
+  addressType?: AddressBtcType
 ) => {
   const [config] = useState(
     () =>
@@ -370,7 +336,8 @@ export const useFeeConfig = (
         queryEvmBalances,
         senderEvm,
         queryBtcBalances,
-        memoConfig
+        memoConfig,
+        addressType
       )
   );
   config.setChain(chainId);

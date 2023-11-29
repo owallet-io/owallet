@@ -751,9 +751,8 @@ export const getTransaction = ({ id = Math.random(), txHash = '', coin = '' } = 
       if (clients.mainClient[coin] === false) await connectToRandomPeer(coin, clients.peers[coin]);
       const { error, data } = await promiseTimeout(
         getTimeout(),
-        clients.mainClient[coin].blockchain_transaction_get(txHash, true)
+        clients.mainClient[coin].blockchainTransaction_get(txHash, true)
       );
-
       resolve({ id, error, method, data, coin });
     } catch (e) {
       console.log(e);
@@ -761,7 +760,6 @@ export const getTransaction = ({ id = Math.random(), txHash = '', coin = '' } = 
     }
   });
 };
-
 export const getTransactions = ({ id = Math.random(), txHashes = [], coin = '' } = {}) => {
   const method = 'getTransactions';
   return new Promise(async (resolve) => {

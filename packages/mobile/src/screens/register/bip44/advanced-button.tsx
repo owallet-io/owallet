@@ -2,12 +2,7 @@ import { OWButton } from '@src/components/button';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { observer } from 'mobx-react-lite';
-import React, {
-  FunctionComponent,
-  useCallback,
-  useMemo,
-  useState
-} from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TextInput } from '../../../components/input';
 import { registerModal } from '../../../modals/base';
@@ -16,6 +11,7 @@ import { useStore } from '../../../stores';
 import { typography } from '../../../themes';
 import { BIP44Option } from './bip44-option';
 import { BottomSheetProps } from '@gorhom/bottom-sheet';
+import { getKeyDerivationFromAddressType } from '@owallet/common';
 export const BIP44AdvancedButton: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = observer(({ bip44Option }) => {
@@ -23,11 +19,7 @@ export const BIP44AdvancedButton: FunctionComponent<{
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <View>
-      <BIP44SelectModal
-        isOpen={isModalOpen}
-        close={() => setIsModalOpen(false)}
-        bip44Option={bip44Option}
-      />
+      <BIP44SelectModal isOpen={isModalOpen} close={() => setIsModalOpen(false)} bip44Option={bip44Option} />
       <OWButton
         label="Advanced Option"
         type="link"
@@ -76,28 +68,22 @@ export const BIP44SelectModal: FunctionComponent<{
   bip44Option: BIP44Option;
 }> = registerModal(
   observer(({ bip44Option, close }) => {
-    const { chainStore, appInitStore } = useStore();
+    const { chainStore, appInitStore, accountStore } = useStore();
 
     const scheme = appInitStore.getInitApp.theme;
+    const accountInfo = accountStore.getAccount(chainStore.current.chainId);
 
     const styles = styling(scheme);
 
-    const account = useZeroOrPositiveIntegerString(
-      bip44Option.account.toString()
-    );
+    const account = useZeroOrPositiveIntegerString(bip44Option.account.toString());
 
     const coinType = useZeroOrPositiveIntegerString(
-      bip44Option.coinType
-        ? bip44Option.coinType.toString()
-        : chainStore.current.bip44.coinType.toString() ?? ''
+      bip44Option.coinType ? bip44Option.coinType.toString() : chainStore.current.bip44.coinType.toString() ?? ''
     );
-    const change = useZeroOrPositiveIntegerString(
-      bip44Option.change.toString()
-    );
+    const change = useZeroOrPositiveIntegerString(bip44Option.change.toString());
     const index = useZeroOrPositiveIntegerString(bip44Option.index.toString());
 
-    const isChangeZeroOrOne =
-      change.isValid && (change.number === 0 || change.number === 1);
+    const isChangeZeroOrOne = change.isValid && (change.number === 0 || change.number === 1);
     const { colors } = useTheme();
     return (
       <CardModal title="HD Derivation Path">
@@ -124,7 +110,9 @@ export const BIP44SelectModal: FunctionComponent<{
               color: scheme === 'dark' ? colors['label'] : colors['sub-text']
             }}
           >{`m/${
-            chainStore.current.networkType === 'bitcoin' ? '84' : '44'
+            chainStore.current.networkType === 'bitcoin'
+              ? getKeyDerivationFromAddressType(accountInfo.addressType)
+              : '44'
           }’/`}</Text>
           <TextInput
             value={coinType.value}
@@ -209,12 +197,7 @@ export const BIP44SelectModal: FunctionComponent<{
         ) : null}
         <OWButton
           label="Confirm"
-          disabled={
-            !account.isValid ||
-            !change.isValid ||
-            !index.isValid ||
-            !isChangeZeroOrOne
-          }
+          disabled={!account.isValid || !change.isValid || !index.isValid || !isChangeZeroOrOne}
           onPress={() => {
             bip44Option.setCoinType(coinType.number);
             bip44Option.setAccount(account.number);
@@ -237,8 +220,7 @@ const styling = (scheme) => {
     borderInput: {
       borderColor: scheme === 'dark' ? colors['border'] : colors['gray-300'],
       borderWidth: 1,
-      backgroundColor:
-        scheme === 'dark' ? colors['input-background'] : colors['white'],
+      backgroundColor: scheme === 'dark' ? colors['input-background'] : colors['white'],
       paddingLeft: 11,
       paddingRight: 11,
       paddingTop: 12,

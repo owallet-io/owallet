@@ -4,23 +4,15 @@ import Axios, { AxiosInstance } from 'axios';
 import { override } from 'mobx';
 import { ChainGetter } from '../common';
 import { HasMapStore } from '../common';
+import { AddressBtcType } from '@owallet/types';
 
-export class ObservableChainQuery<
-  T = unknown,
-  E = unknown
-> extends ObservableQuery<T, E> {
+export class ObservableChainQuery<T = unknown, E = unknown> extends ObservableQuery<T, E> {
   // Chain Id should not be changed after creation.
   protected readonly _chainId: string;
   protected readonly _beta: boolean | undefined;
   protected readonly chainGetter: ChainGetter;
 
-  constructor(
-    kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
-    url: string,
-    data?: { [key: string]: any }
-  ) {
+  constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, url: string, data?: { [key: string]: any }) {
     const chainInfo = chainGetter.getChain(chainId);
 
     const instance = Axios.create({
@@ -59,15 +51,12 @@ export class ObservableChainQuery<
   }
 }
 
-export class ObservableChainQueryMap<
-  T = unknown,
-  E = unknown
-> extends HasMapStore<ObservableChainQuery<T, E>> {
+export class ObservableChainQueryMap<T = unknown, E = unknown> extends HasMapStore<ObservableChainQuery<T, E>> {
   constructor(
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
-    creater: (key: string) => ObservableChainQuery<T, E>
+    creater: (key: string, addressType?: AddressBtcType) => ObservableChainQuery<T, E>
   ) {
     super(creater);
   }

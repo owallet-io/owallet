@@ -30,7 +30,7 @@ export const AccountBox: FunctionComponent<{
   onPressBtnMain?: (name?: string) => void;
 }> = observer(({ totalBalance, coinType, addressComponent, name, hdPath, totalAmount, onPressBtnMain }) => {
   const { colors } = useTheme();
-  // const [selectedId, setSelectedId] = useState('bech32');
+
   const styles = styling(colors);
   const {
     chainStore,

@@ -69,7 +69,8 @@ export const SendBtcPage: FunctionComponent<{
     null,
     null,
     null,
-    queries.bitcoin.queryBitcoinBalance
+    queries.bitcoin.queryBitcoinBalance,
+    accountInfo.addressType
   );
 
   useEffect(() => {

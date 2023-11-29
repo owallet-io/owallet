@@ -158,7 +158,7 @@ export class RootStore {
             return new TronWeb(version, 'core', '0x2b6653dc', new RNMessageRequesterInternal());
           }
         },
-        chainOpts: this.chainStore.chainInfos.map(chainInfo => {
+        chainOpts: this.chainStore.chainInfos.map((chainInfo) => {
           if (chainInfo.chainId.startsWith('osmosis')) {
             return {
               chainId: chainInfo.chainId,

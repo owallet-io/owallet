@@ -19,13 +19,13 @@ import { AccountCardBitcoin } from './account-card-bitcoin';
 import { TokensBitcoinCard } from './tokens-bitcoin-card';
 import { TRON_ID } from '@owallet/common';
 
-export const HomeScreen: FunctionComponent = observer(props => {
+export const HomeScreen: FunctionComponent = observer((props) => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [refreshDate, setRefreshDate] = React.useState(Date.now());
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore, keyRingStore } = useStore();
 
   const scrollViewRef = useRef<ScrollView | null>(null);
 
@@ -35,6 +35,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   const previousChainId = usePrevious(currentChainId);
   const chainStoreIsInitializing = chainStore.isInitializing;
   const previousChainStoreIsInitializing = usePrevious(chainStoreIsInitializing, true);
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const checkAndUpdateChainInfo = useCallback(() => {
     if (!chainStoreIsInitializing) {
       (async () => {
@@ -94,25 +95,25 @@ export const HomeScreen: FunctionComponent = observer(props => {
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === 'bitcoin') {
-      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(account.bech32Address).waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address, account.addressType).waitFreshResponse();
       setRefreshing(false);
       setRefreshDate(Date.now());
       return;
     } else {
       await Promise.all([
         priceStore.waitFreshResponse(),
-        ...queries.queryBalances.getQueryBech32Address(account.bech32Address).balances.map(bal => {
+        ...queries.queryBalances.getQueryBech32Address(address).balances.map((bal) => {
           return bal.waitFreshResponse();
         }),
-        queries.cosmos.queryRewards.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
-        queries.cosmos.queryDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse(),
-        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(account.bech32Address).waitFreshResponse()
+        queries.cosmos.queryRewards.getQueryBech32Address(address).waitFreshResponse(),
+        queries.cosmos.queryDelegations.getQueryBech32Address(address).waitFreshResponse(),
+        queries.cosmos.queryUnbondingDelegations.getQueryBech32Address(address).waitFreshResponse()
       ]);
     }
 
     setRefreshing(false);
     setRefreshDate(Date.now());
-  }, [account.bech32Address, chainStore.current.chainId]);
+  }, [address, chainStore.current.chainId]);
   const renderAccountCard = (() => {
     if (chainStore.current.networkType === 'bitcoin') {
       return <AccountCardBitcoin containerStyle={styles.containerStyle} />;
@@ -146,7 +147,7 @@ export const HomeScreen: FunctionComponent = observer(props => {
   );
 });
 
-const styling = colors =>
+const styling = (colors) =>
   StyleSheet.create({
     containerStyle: {
       paddingBottom: 12,
