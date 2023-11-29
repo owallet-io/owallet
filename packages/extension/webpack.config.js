@@ -8,6 +8,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WriteFilePlugin = require('write-file-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserPlugin = require('terser-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const isEnvAnalyzer = process.env.ANALYZER === 'true';
@@ -28,7 +29,7 @@ const fallback = {
   assert: require.resolve('assert')
 };
 
-const commonResolve = (dir) => ({
+const commonResolve = dir => ({
   extensions: ['.ts', '.tsx', '.js', '.jsx', '.css', '.scss'],
   alias: {
     assets: path.resolve(__dirname, dir)
@@ -144,6 +145,7 @@ const extensionConfig = {
     // Remove all and write anyway
     // TODO: Optimizing build process
     new CleanWebpackPlugin(),
+    new Dotenv(),
     new ForkTsCheckerWebpackPlugin(),
     new CopyWebpackPlugin(
       [
