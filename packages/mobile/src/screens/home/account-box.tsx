@@ -18,6 +18,7 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import RadioGroup from 'react-native-radio-buttons-group';
+import { AddressBtcType } from '@owallet/types';
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;
   totalAmount?: string | React.ReactNode;
@@ -29,7 +30,7 @@ export const AccountBox: FunctionComponent<{
   onPressBtnMain?: (name?: string) => void;
 }> = observer(({ totalBalance, coinType, addressComponent, name, hdPath, totalAmount, onPressBtnMain }) => {
   const { colors } = useTheme();
-  const [selectedId, setSelectedId] = useState('bech32');
+  // const [selectedId, setSelectedId] = useState('bech32');
   const styles = styling(colors);
   const {
     chainStore,
@@ -83,26 +84,26 @@ export const AccountBox: FunctionComponent<{
   };
   const radioButtons = [
     {
-      id: 'bech32',
+      id: AddressBtcType.Bech32,
       label: 'SegWit(BECH32)',
-      value: 'bech32',
+      value: AddressBtcType.Bech32,
       borderColor: colors['primary-text'],
       labelStyle: {
         color: colors['primary-text']
       }
     },
     {
-      id: 'legacy',
+      id: AddressBtcType.Legacy,
       label: 'Bitcoin',
-      value: 'legacy',
+      value: AddressBtcType.Legacy,
       borderColor: colors['primary-text'],
       labelStyle: {
         color: colors['primary-text']
       }
     }
   ];
-  const onPressRadioButton = (idRadio) => {
-    setSelectedId(idRadio);
+  const onPressRadioButton = (type: AddressBtcType) => {
+    account.setAddressTypeBtc(type);
   };
   return (
     <View
@@ -195,7 +196,7 @@ export const AccountBox: FunctionComponent<{
               layout={'row'}
               radioButtons={radioButtons}
               onPress={onPressRadioButton}
-              selectedId={selectedId}
+              selectedId={account.addressType}
             />
           </View>
         )}

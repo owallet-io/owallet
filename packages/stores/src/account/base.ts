@@ -9,7 +9,8 @@ import {
   Ethereum,
   TronWeb,
   Bitcoin,
-  AminoSignResponse
+  AminoSignResponse,
+  AddressBtcType
 } from '@owallet/types';
 import { DeepReadonly, Mutable } from 'utility-types';
 import bech32, { fromWords } from 'bech32';
@@ -131,6 +132,8 @@ export class AccountSetBase<MsgOpts, Queries> {
   protected _bech32Address: string = '';
   @observable
   protected _legacyAddress: string = '';
+  @observable
+  protected _addressType: AddressBtcType = AddressBtcType.Bech32;
   @observable
   protected _address: Uint8Array = null;
 
@@ -297,10 +300,14 @@ export class AccountSetBase<MsgOpts, Queries> {
     this._bech32Address = '';
     this._name = '';
     this._legacyAddress = '';
+    this._addressType = AddressBtcType.Bech32;
     this._address = null;
     this.pubKey = new Uint8Array(0);
   }
-
+  @action
+  public setAddressTypeBtc(type: AddressBtcType): void {
+    this._addressType = type;
+  }
   get walletVersion(): string | undefined {
     return this._walletVersion;
   }
@@ -315,7 +322,7 @@ export class AccountSetBase<MsgOpts, Queries> {
   getAddressDisplay(keyRingLedgerAddresses: AddressesLedger, toDisplay: boolean = true): string {
     const chainInfo = this.chainGetter.getChain(this.chainId);
     const { networkType } = chainInfo;
-    if (!!this._isNanoLedger) {
+    if (this._isNanoLedger) {
       if (networkType !== 'cosmos') {
         const address = findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
         if (this.chainId === ChainIdEnum.TRON && isBase58(address) && !toDisplay) {
@@ -323,14 +330,17 @@ export class AccountSetBase<MsgOpts, Queries> {
         }
         return address;
       }
-    }
-    if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
-      if (this.chainId === ChainIdEnum.TRON && toDisplay) {
-        return getBase58Address(this.evmosHexAddress);
+    } else {
+      if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
+        if (this.chainId === ChainIdEnum.TRON && toDisplay) {
+          return getBase58Address(this.evmosHexAddress);
+        }
+        return this.evmosHexAddress;
+      } else if (networkType === 'bitcoin' && this._addressType === AddressBtcType.Legacy) {
+        return this._legacyAddress;
       }
-      return this.evmosHexAddress;
+      return this._bech32Address;
     }
-    return this._bech32Address;
   }
   async sendMsgs(
     type: string | 'unknown',
@@ -1041,6 +1051,10 @@ export class AccountSetBase<MsgOpts, Queries> {
   }
   get legacyAddress(): string {
     return this._legacyAddress;
+  }
+  @computed
+  get addressType(): string {
+    return this._addressType;
   }
   get isNanoLedger(): boolean {
     return this._isNanoLedger;
