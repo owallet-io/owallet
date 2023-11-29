@@ -40,9 +40,7 @@ export const AddressCopyable: FunctionComponent<{
       underlayColor={colors['primary-50']}
       activeOpacity={1}
     >
-      <Text
-        style={{ fontSize: 14, color: colors['sub-text'], fontWeight: '700' }}
-      >
+      <Text style={{ fontSize: 14, color: colors['sub-text'], fontWeight: '700' }}>
         {networkType === 'cosmos'
           ? Bech32Address.shortenAddress(address, maxCharacters)
           : formatContractAddress(address ?? '')}
@@ -53,11 +51,7 @@ export const AddressCopyable: FunctionComponent<{
           width: 20
         }}
       >
-        {isTimedOut ? (
-          <CheckIcon />
-        ) : (
-          <CopyFillIcon color={colors['sub-text']} />
-        )}
+        {isTimedOut ? <CheckIcon /> : <CopyFillIcon color={colors['sub-text']} />}
       </View>
     </RectButton>
   );

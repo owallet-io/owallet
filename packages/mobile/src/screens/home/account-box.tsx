@@ -158,50 +158,20 @@ export const AccountBox: FunctionComponent<{
             </View>
           )}
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              width: '100%',
-              alignItems: 'center'
-            }}
-          >
-            <View
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between'
-              }}
-            >
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  paddingBottom: spacing['2']
-                }}
-              >
+          <View style={styles.container}>
+            <View style={styles.containerInfoAccount}>
+              <TouchableOpacity onPress={_onPressMyWallet} style={styles.btnAcc}>
                 <Image
-                  style={{
-                    width: spacing['26'],
-                    height: spacing['26']
-                  }}
+                  style={styles.infoIcon}
                   source={require('../../assets/image/address_default.png')}
                   fadeDuration={0}
                 />
-                <Text
-                  style={{
-                    paddingLeft: spacing['6'],
-                    fontWeight: '700',
-                    fontSize: 16,
-                    color: colors['primary-text']
-                  }}
-                >
-                  {name}
-                </Text>
-              </View>
+                <Text style={styles.labelName}>{name}</Text>
+                <DownArrowIcon height={15} color={colors['primary-text']} />
+              </TouchableOpacity>
 
               {addressComponent || null}
-              <Text
+              {/* <Text
                 style={{
                   paddingLeft: spacing['6'],
                   fontSize: 14,
@@ -210,11 +180,11 @@ export const AccountBox: FunctionComponent<{
                 }}
               >
                 {hdPath ? `Path: ${hdPath}` : `Coin type: ${coinType}`}
-              </Text>
+              </Text> */}
             </View>
-            <TouchableOpacity onPress={_onPressMyWallet}>
+            {/* <TouchableOpacity onPress={_onPressMyWallet}>
               <DownArrowIcon height={28} color={colors['primary-text']} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           {/* <NetworkErrorView /> */}
           <OWButton
@@ -227,6 +197,9 @@ export const AccountBox: FunctionComponent<{
             label="Transactions history"
             type="secondary"
             size="medium"
+            style={{
+              marginTop: 16
+            }}
             icon={<OWIcon color={colors['purple-700']} size={18} name="history" />}
           />
           {chainStore.current.chainId == 'bitcoinTestnet' && (
@@ -254,6 +227,33 @@ export const AccountBox: FunctionComponent<{
 
 const styling = (colors) =>
   StyleSheet.create({
+    labelName: {
+      paddingLeft: spacing['6'],
+      paddingRight: 10,
+      fontWeight: '700',
+      fontSize: 16,
+      color: colors['primary-text']
+    },
+    infoIcon: {
+      width: spacing['26'],
+      height: spacing['26']
+    },
+    btnAcc: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingBottom: spacing['2']
+    },
+    containerInfoAccount: {
+      display: 'flex',
+      justifyContent: 'space-between'
+    },
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      alignItems: 'center'
+    },
     containerLoading: {
       position: 'absolute',
       bottom: 0,
