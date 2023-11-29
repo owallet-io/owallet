@@ -100,7 +100,7 @@ export const AccountCardEVM: FunctionComponent<{
           ? chainStore?.current?.bip44?.coinType
           : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
-      networkType={'evm'}
+      // networkType={'evm'}
       name={account.name || '...'}
       onPressBtnMain={onPressBtnMain}
       totalAmount={`$${

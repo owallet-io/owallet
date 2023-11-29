@@ -104,7 +104,7 @@ export const AccountCard: FunctionComponent<{
           ? chainStore?.current?.bip44?.coinType
           : selected?.bip44HDPath?.coinType ?? chainStore?.current?.bip44?.coinType
       }`}
-      networkType={'cosmos'}
+      // networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />
   );

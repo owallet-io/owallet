@@ -51,7 +51,7 @@ export const AccountCardBitcoin: FunctionComponent<{
       balance: Number(balanceBtc?.toCoin().amount),
       cryptoUnit: 'BTC'
     };
-    
+
     const amountData = getBalanceValue(balanceValueParams);
 
     const currencyFiat = priceStore.defaultVsCurrency;
@@ -119,7 +119,7 @@ export const AccountCardBitcoin: FunctionComponent<{
           : ''
       }
       totalAmount={totalBalance}
-      networkType={'cosmos'}
+      // networkType={'cosmos'}
       onPressBtnMain={onPressBtnMain}
     />
   );
