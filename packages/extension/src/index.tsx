@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 import './styles/global.scss';
@@ -140,19 +140,19 @@ import { getAnalytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  authDomain: 'owallet-829a1.firebaseapp.com',
-  projectId: 'owallet-829a1',
-  storageBucket: 'owallet-829a1.appspot.com',
-  messagingSenderId: process.env.REACT_APP_SENDER_ID_FIREBASE_EXTENSION,
-  appId: process.env.REACT_APP_APP_ID_FIREBASE_EXTENSION,
-  apiKey: process.env.REACT_APP_API_KEY_FIREBASE_EXTENSION,
-  measurementId: process.env.REACT_APP_MEASUREMENT_ID_FIREBASE_EXTENSION
-};
+// const firebaseConfig = {
+//   authDomain: 'owallet-829a1.firebaseapp.com',
+//   projectId: 'owallet-829a1',
+//   storageBucket: 'owallet-829a1.appspot.com',
+//   messagingSenderId: process.env.REACT_APP_SENDER_ID_FIREBASE_EXTENSION,
+//   appId: process.env.REACT_APP_APP_ID_FIREBASE_EXTENSION,
+//   apiKey: process.env.REACT_APP_API_KEY_FIREBASE_EXTENSION,
+//   measurementId: process.env.REACT_APP_MEASUREMENT_ID_FIREBASE_EXTENSION
+// };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
 
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
@@ -191,6 +191,31 @@ const StateRenderer: FunctionComponent = observer(() => {
 
 const AppIntlProviderWithStorage = ({ children }) => {
   const store = useStore();
+
+  useEffect(() => {
+    const DEFAULT_ENGAGEMENT_TIME_IN_MSEC = 100;
+
+    fetch(
+      `https://www.google-analytics.com/mp/collect?measurement_id=${process.env.REACT_APP_MEASUREMENT_ID_FIREBASE_EXTENSION}&api_secret=${process.env.REACT_APP_API_KEY_FIREBASE_EXTENSION}`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          client_id: self.crypto.randomUUID(),
+          events: [
+            {
+              name: 'page_view',
+              params: {
+                session_id: self.crypto.randomUUID(),
+                engagement_time_msec: DEFAULT_ENGAGEMENT_TIME_IN_MSEC,
+                page_title: document.title,
+                page_location: document.location.href
+              }
+            }
+          ]
+        })
+      }
+    );
+  }, []);
 
   return (
     <AppIntlProvider
