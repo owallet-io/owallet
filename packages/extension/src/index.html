@@ -3,21 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src *;img-src * 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *;style-src  'self' 'unsafe-inline' *"
+    />
     <title>OWallet</title>
     <script type="application/javascript" src="browser-polyfill.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4NJQ36ZNM1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-
-      gtag('config', 'G-4NJQ36ZNM1');
-      // Modifications:
-      gtag('set', 'checkProtocolTask', null); // Disables file protocol checking.
-      gtag('send', 'pageview', '/popup'); // Set page, avoiding rejection due to chrome-extension protocol
-    </script>
   </head>
   <body>
     <div id="app"></div>

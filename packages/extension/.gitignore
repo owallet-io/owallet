@@ -1,3 +1,6 @@
 *.crx
 *.pem
 *.zip
+.env
+.env.production
+.env.staging
