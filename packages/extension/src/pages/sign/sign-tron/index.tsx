@@ -1,10 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useRef, useState } from 'react';
 import style from '../style.module.scss';
 import { observer } from 'mobx-react-lite';
 import classnames from 'classnames';
@@ -24,13 +18,7 @@ enum Tab {
 export const SignTronPage: FunctionComponent = observer(() => {
   const intl = useIntl();
   const [tab, setTab] = useState<Tab>(Tab.Details);
-  const {
-    chainStore,
-    keyRingStore,
-    signInteractionStore,
-    accountStore,
-    queriesStore
-  } = useStore();
+  const { chainStore, keyRingStore, signInteractionStore, accountStore, queriesStore } = useStore();
   const history = useHistory();
   const interactionInfo = useInteractionInfo(() => {
     signInteractionStore.rejectAll();
@@ -105,31 +93,24 @@ export const SignTronPage: FunctionComponent = observer(() => {
             })}
           >
             {tab === Tab.Data && <TronDataTab data={dataSign} />}
-            {tab === Tab.Details && (
-              <TronDetailsTab intl={intl} dataSign={dataSign} />
-            )}
+            {tab === Tab.Details && <TronDetailsTab intl={intl} dataSign={dataSign} />}
           </div>
           <div style={{ flex: 1 }} />
           <div className={style.buttons}>
-            {keyRingStore.keyRingType === 'ledger' &&
-            signInteractionStore.isLoading ? (
+            {keyRingStore.keyRingType === 'ledger' && signInteractionStore.isLoading ? (
               <Button className={style.button} disabled={true} outline>
-                <FormattedMessage id="sign.button.confirm-ledger" />{' '}
-                <i className="fa fa-spinner fa-spin fa-fw" />
+                <FormattedMessage id="sign.button.confirm-ledger" /> <i className="fa fa-spinner fa-spin fa-fw" />
               </Button>
             ) : (
               <>
                 <Button
                   className={classnames(style.button, style.rejectBtn)}
                   color=""
-                  onClick={async (e) => {
+                  onClick={async e => {
                     e.preventDefault();
 
                     await signInteractionStore.reject();
-                    if (
-                      interactionInfo.interaction &&
-                      !interactionInfo.interactionInternal
-                    ) {
+                    if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
                       window.close();
                     }
                     history.goBack();
@@ -145,16 +126,13 @@ export const SignTronPage: FunctionComponent = observer(() => {
                   color=""
                   disabled={false}
                   data-loading={signInteractionStore.isLoading}
-                  onClick={async (e) => {
+                  onClick={async e => {
                     e.preventDefault();
 
                     //@ts-ignore
                     await signInteractionStore.approveTronAndWaitEnd();
 
-                    if (
-                      interactionInfo.interaction &&
-                      !interactionInfo.interactionInternal
-                    ) {
+                    if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
                       window.close();
                     }
                     history.goBack();
