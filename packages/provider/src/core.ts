@@ -302,12 +302,15 @@ export class Ethereum implements IEthereum {
 
   async request(args: RequestArguments): Promise<any> {
     if (args.method === 'wallet_switchEthereumChain') {
-      if ((args.chainId = '0x1')) {
-        this.initChainId = '0x01';
+      let tmpChainId = this.initChainId;
+      if (args.chainId === '0x1') {
+        // 0x1 is not valid chain id, so we set default chain id = 0x01 (eth)
+        tmpChainId = '0x01';
       } else {
-        this.initChainId = args.chainId;
+        tmpChainId = args.chainId;
       }
-      const msg = new RequestEthereumMsg(args.chainId, args.method, args.params);
+      this.initChainId = tmpChainId;
+      const msg = new RequestEthereumMsg(tmpChainId, args.method, args.params);
       return await this.requester.sendMessage(BACKGROUND_PORT, msg);
     } else if (args.method === 'eth_sendTransaction') {
       const msg = new RequestSignEthereumMsg(args.chainId ?? this.initChainId, args.params?.[0]);
