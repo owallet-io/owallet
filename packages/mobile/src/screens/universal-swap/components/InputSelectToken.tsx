@@ -1,5 +1,5 @@
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { IInputSelectToken } from '../types';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
@@ -7,6 +7,7 @@ import { BalanceText } from './BalanceText';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
+import _debounce from 'lodash/debounce';
 
 const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   tokenActive,
@@ -24,10 +25,11 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
     setText(amount);
   }, [amount]);
 
-  const handleChangeAmount = () => {
-    const newAmount = Number(txt.replace(/,/g, '.'));
-    onChangeAmount(newAmount);
+  const handleChangeAmount = amount => {
+    onChangeAmount(amount);
   };
+
+  const debounceFn = useCallback(_debounce(handleChangeAmount, 500), []);
 
   useEffect(() => {
     const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === tokenActive.coinGeckoId);
@@ -57,7 +59,16 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           placeholder="0"
           textAlign="right"
           value={txt}
-          onChangeText={t => setText(t)}
+          onFocus={() => {
+            if (!txt || Number(txt) === 0) {
+              setText('');
+            }
+          }}
+          onChangeText={t => {
+            const newAmount = t.replace(/,/g, '.');
+            setText(newAmount.toString());
+            debounceFn(newAmount);
+          }}
           defaultValue={amount ?? '0'}
           onBlur={handleChangeAmount}
           keyboardType="numeric"

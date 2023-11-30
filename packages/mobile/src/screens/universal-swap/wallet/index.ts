@@ -193,6 +193,7 @@ export class SwapEvmWallet extends EvmWallet {
     if (!token.contractAddress) return;
 
     const ownerHex = this.isTron(token.chainId) ? tronToEthAddress(owner) : owner;
+
     // using static rpc for querying both tron and evm
     const tokenContract = IERC20Upgradeable__factory.connect(
       token.contractAddress,
@@ -200,7 +201,6 @@ export class SwapEvmWallet extends EvmWallet {
     );
 
     const currentAllowance = await tokenContract.allowance(ownerHex, spender);
-
     if (BigInt(currentAllowance.toString()) >= BigInt(amount)) return;
 
     if (this.isTron(token.chainId)) {
@@ -219,9 +219,14 @@ export class SwapEvmWallet extends EvmWallet {
       // using window.ethereum for signing
       // if you call this function on evm, you have to switch network before calling. Otherwise, unexpected errors may happen
       const tokenContract = IERC20Upgradeable__factory.connect(token.contractAddress, this.getSigner());
-      const result = await tokenContract.approve(spender, amount, { from: ownerHex });
-      await result.wait();
-      return { transactionHash: result.hash };
+
+      try {
+        const result = await tokenContract.approve(spender, amount, { from: ownerHex });
+        await result.wait();
+        return { transactionHash: result.hash };
+      } catch (err) {
+        console.log('tokenContract err', err);
+      }
     }
   }
 }

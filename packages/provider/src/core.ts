@@ -172,7 +172,7 @@ export class OWallet implements IOWallet {
 
   async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
     const msg = new RequestSignTronMsg(chainId, data);
- 
+
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -304,7 +304,12 @@ export class Ethereum implements IEthereum {
   //   console.log('');
   // }
   async request(args: RequestArguments): Promise<any> {
-    const msg = new RequestEthereumMsg(args.chainId, args.method, args.params);
+    const msg = new RequestEthereumMsg(args.chainId ?? this.initChainId, args.method, args.params);
+
+    if (args.method === 'wallet_switchEthereumChain') {
+      this.initChainId = this.initChainId;
+    }
+
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -315,7 +320,7 @@ export class Ethereum implements IEthereum {
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
-  
+
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -323,7 +328,7 @@ export class Ethereum implements IEthereum {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-   
+
       return result;
     } catch (error) {
       console.log(error, 'error on send message!!!!!!!!!!!!!!!');
