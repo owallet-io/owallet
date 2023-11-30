@@ -57,7 +57,7 @@ import {
   RequestSendRawTransactionMsg,
   TriggerSmartContractMsg
 } from './msgs';
-import { TRON_ID } from '@owallet/common';
+import { ETH_ID, TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -305,7 +305,7 @@ export class Ethereum implements IEthereum {
       let tmpChainId = this.initChainId;
       if (args.chainId === '0x1') {
         // 0x1 is not valid chain id, so we set default chain id = 0x01 (eth)
-        tmpChainId = '0x01';
+        tmpChainId = ETH_ID;
       } else {
         tmpChainId = args.chainId;
       }
