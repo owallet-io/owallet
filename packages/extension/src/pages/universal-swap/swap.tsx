@@ -1,6 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 import style from './swap.module.scss';
-import classnames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../stores';
 import {

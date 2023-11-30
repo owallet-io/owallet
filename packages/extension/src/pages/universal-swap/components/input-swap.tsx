@@ -125,7 +125,7 @@ export const SwapInput: FunctionComponent<{
       </FormGroup>
       <div className={style.legend}>
         <div className={style.label}>Balance :</div>
-        <div style={{ minWidth: '16px' }} />
+        <div>({selectedToken.org})</div>
         <div className={style.value}>
           {balanceValue || 0.0} {selectedToken.name}
         </div>
