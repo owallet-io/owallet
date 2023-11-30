@@ -192,6 +192,8 @@ export class SwapEvmWallet extends EvmWallet {
     // we store the tron address in base58 form, so we need to convert to hex if its tron because the contracts are using the hex form as parameters
     if (!token.contractAddress) return;
 
+    console.log('token', token);
+
     const ownerHex = this.isTron(token.chainId) ? tronToEthAddress(owner) : owner;
 
     // using static rpc for querying both tron and evm
