@@ -9,14 +9,9 @@ export class HasMapStore<T> {
     makeObservable(this);
   }
 
-  protected get(key: string, addressType?: AddressBtcType): T {
+  protected get(key: string): T {
     if (!this.map.has(key)) {
-      let query;
-      if (addressType) {
-        query = this.creater(key, addressType);
-      }
-
-      query = this.creater(key);
+      let query = this.creater(key);
       runInAction(() => {
         this.map.set(key, query);
       });

@@ -9,7 +9,7 @@ import { getBaseDerivationPath } from '@owallet/bitcoin';
 import { getScriptHash, getBalanceFromUtxos, getCoinNetwork } from '@owallet/bitcoin';
 import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
 import { Currency } from '@owallet/types';
-
+import { getAddressInfo } from 'bitcoin-address-validation';
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected bech32Address: string;
 
@@ -29,10 +29,16 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   }
   protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result>> {
     const resApi = await super.fetchResponse(cancelToken);
+    const bitcoinInfo = getAddressInfo(this.bech32Address);
+    console.log(
+      '🚀 ~ file: bitcoin-query.ts:36 ~ ObservableQueryBitcoinBalanceInner ~ fetchResponse ~ bitcoinInfo:',
+      bitcoinInfo
+    );
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath: '44'
+      keyDerivationPath: !bitcoinInfo.bech32 ? '44' : '84'
     }) as string;
+
     const scriptHash = getScriptHash(this.bech32Address, getCoinNetwork(this.chainId));
     const response = await getBalanceFromUtxos({
       addresses: [{ address: this.bech32Address, path, scriptHash }],

@@ -48,7 +48,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     null,
     queries.bitcoin.queryBitcoinBalance
   );
-  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address, account.addressType)?.response?.data;
+  const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;
   const sendConfigError =
@@ -61,7 +61,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const { colors } = useTheme();
   const refreshBalance = async (address) => {
     try {
-      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address, account.addressType)?.waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.waitFreshResponse();
     } catch (error) {
       console.log('🚀 ~ file: send-btc.tsx:112 ~ refreshBalance ~ error:', error);
     }

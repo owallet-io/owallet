@@ -23,7 +23,7 @@ export const AccountCardBitcoin: FunctionComponent<{
   const queries = queriesStore.get(chainStore.current.chainId);
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
-  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address, account.addressType)?.balance;
+  const balanceBtc = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.balance;
 
   const totalAmount = useMemo(() => {
     const amount = formatBalance({

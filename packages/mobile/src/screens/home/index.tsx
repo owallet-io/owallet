@@ -95,7 +95,7 @@ export const HomeScreen: FunctionComponent = observer((props) => {
     // Because the components share the states related to the queries,
     // fetching new query responses here would make query responses on all other components also refresh.
     if (chainStore.current.networkType === 'bitcoin') {
-      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address, account.addressType).waitFreshResponse();
+      await queries.bitcoin.queryBitcoinBalance.getQueryBalance(address).waitFreshResponse();
       setRefreshing(false);
       setRefreshDate(Date.now());
       return;

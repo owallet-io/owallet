@@ -98,10 +98,7 @@ export class BitcoinAccount {
             this.txEventsWithPreOnFulfill(onTxEvents, (tx) => {
               if (tx) {
                 // After succeeding to send token, refresh the balance.
-                const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(
-                  this.base.btcAddress,
-                  this.base.addressType
-                );
+                const queryBtcBalance = this.queries.bitcoin.queryBitcoinBalance.getQueryBalance(this.base.btcAddress);
                 if (queryBtcBalance) {
                   queryBtcBalance.fetch();
                 }
