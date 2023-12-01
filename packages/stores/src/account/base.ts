@@ -282,6 +282,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     }
 
     const key = yield* toGenerator(owallet.getKey(this.chainId));
+    console.log('🚀 ~ file: base.ts:285 ~ AccountSetBase<MsgOpts, ~ *init ~ key:', key);
     this._bech32Address = key.bech32Address;
     this._address = key.address;
     this._isNanoLedger = key.isNanoLedger;
@@ -330,17 +331,16 @@ export class AccountSetBase<MsgOpts, Queries> {
         }
         return address;
       }
-    } else {
-      if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
-        if (this.chainId === ChainIdEnum.TRON && toDisplay) {
-          return getBase58Address(this.evmosHexAddress);
-        }
-        return this.evmosHexAddress;
-      } else if (networkType === 'bitcoin') {
-        return this.btcAddress;
-      }
-      return this._bech32Address;
     }
+    if (networkType === 'evm' && !!this.hasEvmosHexAddress) {
+      if (this.chainId === ChainIdEnum.TRON && toDisplay) {
+        return getBase58Address(this.evmosHexAddress);
+      }
+      return this.evmosHexAddress;
+    } else if (networkType === 'bitcoin') {
+      return this.btcAddress;
+    }
+    return this._bech32Address;
   }
   async sendMsgs(
     type: string | 'unknown',
