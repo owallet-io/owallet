@@ -9,6 +9,7 @@ const bip21 = require('bip21');
 const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
 const { getTransaction, getTransactionHex } = require('./electrum');
+const { validate, getAddressInfo } = require('bitcoin-address-validation');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
@@ -557,7 +558,6 @@ const createTransaction = async ({
             txId: utxo.txid,
             coin: selectedCrypto
           });
-          console.log('🚀 ~ file: helpers.js:560 ~ transaction:', transaction);
           const nonWitnessUtxo = Buffer.from(transaction.data, 'hex');
           psbt.addInput({
             hash: utxo.txid,
@@ -1239,8 +1239,18 @@ function toBufferLE(num, width) {
   buffer.reverse();
   return buffer;
 }
+const getAddressTypeByAddress = (address) => {
+  const isValid = validate(address);
+  if (!isValid) return null;
+  const infoAdd = getAddressInfo(address);
+  if (!infoAdd.bech32) {
+    return 'legacy';
+  }
+  return 'bech32';
+};
 module.exports = {
   toBufferLE,
+  getAddressTypeByAddress,
   validatePrivateKey,
   validateAddress,
   parsePaymentRequest,

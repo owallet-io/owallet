@@ -1,15 +1,15 @@
 import { Result } from './types';
-import { DenomHelper, KVStore, MyBigInt } from '@owallet/common';
+import { DenomHelper, KVStore, MyBigInt, getKeyDerivationFromAddressType } from '@owallet/common';
 import { ObservableChainQuery, ObservableChainQueryMap } from '../chain-query';
 import { ChainGetter, QueryResponse, StoreUtils } from '../../common';
 import { action, computed, makeObservable, override } from 'mobx';
 import { CoinPretty, Int } from '@owallet/unit';
 import { CancelToken } from 'axios';
-import { getBaseDerivationPath } from '@owallet/bitcoin';
+import { getAddressTypeByAddress, getBaseDerivationPath } from '@owallet/bitcoin';
 import { getScriptHash, getBalanceFromUtxos, getCoinNetwork } from '@owallet/bitcoin';
 import { BalanceRegistry, BalanceRegistryType, ObservableQueryBalanceInner } from '../balances';
-import { Currency } from '@owallet/types';
-import { getAddressInfo } from 'bitcoin-address-validation';
+import { AddressBtcType, Currency } from '@owallet/types';
+
 export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected bech32Address: string;
 
@@ -29,14 +29,12 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   }
   protected async fetchResponse(cancelToken: CancelToken): Promise<QueryResponse<Result>> {
     const resApi = await super.fetchResponse(cancelToken);
-    const bitcoinInfo = getAddressInfo(this.bech32Address);
-    console.log(
-      '🚀 ~ file: bitcoin-query.ts:36 ~ ObservableQueryBitcoinBalanceInner ~ fetchResponse ~ bitcoinInfo:',
-      bitcoinInfo
-    );
+
+    const addressType = getAddressTypeByAddress(this.bech32Address) as AddressBtcType;
+    const keyDerivation = getKeyDerivationFromAddressType(addressType);
     const path = getBaseDerivationPath({
       selectedCrypto: this.chainId as string,
-      keyDerivationPath: !bitcoinInfo.bech32 ? '44' : '84'
+      keyDerivationPath: keyDerivation
     }) as string;
 
     const scriptHash = getScriptHash(this.bech32Address, getCoinNetwork(this.chainId));

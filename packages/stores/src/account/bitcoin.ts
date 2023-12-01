@@ -85,8 +85,7 @@ export class BitcoinAccount {
             totalFee: Number(stdFee.amount[0].amount),
             selectedCrypto: signOptions.chainId,
             confirmedBalance: extraOptions.confirmedBalance,
-            gasPriceStep: extraOptions.gasPriceStep,
-            addressType: this.base.addressType
+            gasPriceStep: extraOptions.gasPriceStep
           };
 
           await this.base.sendBtcMsgs(

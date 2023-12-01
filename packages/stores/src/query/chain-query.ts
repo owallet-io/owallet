@@ -56,7 +56,7 @@ export class ObservableChainQueryMap<T = unknown, E = unknown> extends HasMapSto
     protected readonly kvStore: KVStore,
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
-    creater: (key: string, addressType?: AddressBtcType) => ObservableChainQuery<T, E>
+    creater: (key: string) => ObservableChainQuery<T, E>
   ) {
     super(creater);
   }
