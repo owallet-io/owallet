@@ -8,7 +8,7 @@ const moment = require('moment');
 const bip21 = require('bip21');
 const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
-const { getTransaction } = require('./electrum');
+const { getTransaction, getTransactionHex } = require('./electrum');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
@@ -553,13 +553,12 @@ const createTransaction = async ({
         }
 
         if (addressType === 'legacy') {
-          const transaction = await getTransaction({
-            txHash: utxo.txid,
+          const transaction = await getTransactionHex({
+            txId: utxo.txid,
             coin: selectedCrypto
           });
           console.log('🚀 ~ file: helpers.js:560 ~ transaction:', transaction);
-
-          const nonWitnessUtxo = Buffer.from(transaction.data.hex, 'hex');
+          const nonWitnessUtxo = Buffer.from(transaction.data, 'hex');
           psbt.addInput({
             hash: utxo.txid,
             index: utxo.vout,
