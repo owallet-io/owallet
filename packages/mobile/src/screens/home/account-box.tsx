@@ -19,32 +19,26 @@ import { navigate } from '@src/router/root';
 import { SCREENS } from '@src/common/constants';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { AddressBtcType } from '@owallet/types';
+import { getKeyDerivationFromAddressType } from '@owallet/common';
+import { useBIP44Option } from '../register/bip44';
 export const AccountBox: FunctionComponent<{
   totalBalance?: string | React.ReactNode;
   totalAmount?: string | React.ReactNode;
-  coinType?: any;
-
   name?: string;
   hdPath?: string;
   addressComponent?: React.ReactNode;
   onPressBtnMain?: (name?: string) => void;
-}> = observer(({ totalBalance, coinType, addressComponent, name, hdPath, totalAmount, onPressBtnMain }) => {
+}> = observer(({ totalBalance, addressComponent, name, hdPath, totalAmount, onPressBtnMain }) => {
   const { colors } = useTheme();
 
   const styles = styling(colors);
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-
-    modalStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, keyRingStore, modalStore } = useStore();
 
   const smartNavigation = useSmartNavigation();
-  const { networkType } = chainStore.current;
+  const { networkType, coinType, chainId, bip44 } = chainStore.current;
   const account = accountStore.getAccount(chainStore.current.chainId);
   const queries = queriesStore.get(chainStore.current.chainId);
-
+  const bip44Option = useBIP44Option();
   const queryStakable = queries.queryBalances.getQueryBech32Address(account.bech32Address).stakable;
 
   const _onPressMyWallet = () => {
@@ -104,6 +98,18 @@ export const AccountBox: FunctionComponent<{
   ];
   const onPressRadioButton = (type: AddressBtcType) => {
     account.setAddressTypeBtc(type);
+    const keyDerivation = (() => {
+      const keyMain = getKeyDerivationFromAddressType(type);
+      return keyMain;
+    })();
+
+    if (account.isNanoLedger) {
+      const path = `${keyDerivation}'/${bip44.coinType ?? coinType}'/${bip44Option.bip44HDPath.account}'/${
+        bip44Option.bip44HDPath.change
+      }/${bip44Option.bip44HDPath.addressIndex}`;
+      console.log('🚀 ~ file: account-box.tsx:110 ~ onPressRadioButton ~ path:', path);
+      keyRingStore.setKeyStoreLedgerAddress(path, chainId);
+    }
   };
   return (
     <View

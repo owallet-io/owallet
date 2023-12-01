@@ -1,4 +1,4 @@
-import { ChainInfo, BIP44HDPath, AddressBtcType } from '@owallet/types';
+import { ChainInfo, BIP44HDPath, AddressBtcType, HDPath, KeyDerivationTypeEnum } from '@owallet/types';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { NetworkType } from '@owallet/types';
@@ -105,6 +105,18 @@ export function splitPath(path: string): BIP44HDPath {
 
   return result;
 }
+export function splitPathStringToHDPath(path: string): HDPath {
+  if (!path) throw Error('path is not empty');
+  const bip44HDPathOrder = ['keyDerivation', 'coinType', 'account', 'change', 'addressIndex'];
+  const result = {} as HDPath;
+  const components = path.split('/');
+
+  if (components?.length < 5) throw Error('Array Path length is greater than 4');
+  components.forEach((element, index) => {
+    result[bip44HDPathOrder[index]] = element.replace("'", '');
+  });
+  return result;
+}
 export const isWeb = typeof document !== 'undefined';
 export const isReactNative = (): boolean => {
   if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
@@ -152,4 +164,19 @@ export const getKeyDerivationFromAddressType = (type: AddressBtcType): '84' | '4
     return '44';
   }
   return '84';
+};
+export const keyDerivationToAddressType = (keyDerivation: KeyDerivationTypeEnum): AddressBtcType => {
+  if (keyDerivation === KeyDerivationTypeEnum.BIP44) {
+    return AddressBtcType.Legacy;
+  }
+  return AddressBtcType.Bech32;
+};
+export const convertBip44ToHDPath = (bip44HDPath: BIP44HDPath, keyDerivation: number = 44): HDPath => {
+  return {
+    keyDerivation,
+    coinType: bip44HDPath.coinType,
+    addressIndex: bip44HDPath.addressIndex,
+    account: bip44HDPath.account,
+    change: bip44HDPath.change
+  };
 };

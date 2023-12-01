@@ -23,10 +23,20 @@ export const NetworkModal = ({ profileColor }) => {
   const bip44Option = useBIP44Option();
   // const smartNavigation = useSmartNavigation();
   const { modalStore, chainStore, keyRingStore, accountStore } = useStore();
+  const { networkType } = chainStore.current;
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
   const handleSwitchNetwork = async (item) => {
     try {
+      const keyDerivation = (() => {
+        const keyMain = getKeyDerivationFromAddressType(account.addressType);
+        console.log('🚀 ~ file: network-modal.tsx:33 ~ keyDerivation ~ keyMain:', keyMain);
+        if (networkType === 'bitcoin') {
+          return keyMain;
+        }
+        return '44';
+      })();
+      console.log('🚀 ~ file: network-modal.tsx:30 ~ handleSwitchNetwork ~ keyDerivation:', keyDerivation);
       if (keyRingStore.keyRingType === 'ledger') {
         Alert.alert(
           'Switch network',
@@ -48,11 +58,7 @@ export const NetworkModal = ({ profileColor }) => {
                 await chainStore.saveLastViewChainId();
                 if (typeof keyRingStore.setKeyStoreLedgerAddress === 'function') {
                   await keyRingStore.setKeyStoreLedgerAddress(
-                    `${
-                      chainStore.current.networkType === 'bitcoin'
-                        ? getKeyDerivationFromAddressType(account.addressType)
-                        : '44'
-                    }'/${item.bip44.coinType ?? item.coinType}'/${bip44Option.bip44HDPath.account}'/${
+                    `${keyDerivation}'/${item.bip44.coinType ?? item.coinType}'/${bip44Option.bip44HDPath.account}'/${
                       bip44Option.bip44HDPath.change
                     }/${bip44Option.bip44HDPath.addressIndex}`,
                     item?.chainId
