@@ -29,7 +29,8 @@ import {
   tokenMap,
   toAmount,
   network,
-  Networks
+  Networks,
+  TRON_DENOM
 } from '@oraichain/oraidex-common';
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
@@ -598,12 +599,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               )} ${originalToToken?.name}`}
             </BalanceText>
           </View>
+          {!swapLoading && (!fromAmountToken || !toAmountToken) && fromToken.denom === TRON_DENOM ? (
+            <View style={styles.itemBottom}>
+              <BalanceText>Minimum Amount</BalanceText>
+              <BalanceText>{(fromToken.minAmountSwap || '0') + ' ' + fromToken.name}</BalanceText>
+            </View>
+          ) : null}
+
           <View style={styles.itemBottom}>
-            <BalanceText>Minimum Amount</BalanceText>
-            <BalanceText>{(fromToken.minAmountSwap || '0') + ' ' + fromToken.name}</BalanceText>
-          </View>
-          <View style={styles.itemBottom}>
-            <BalanceText>Minimum Receive</BalanceText>
+            <BalanceText>Minimum Received after slippage ( {userSlippage}% )</BalanceText>
             <BalanceText>{(minimumReceive || '0') + ' ' + toToken.name}</BalanceText>
           </View>
           {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? (
