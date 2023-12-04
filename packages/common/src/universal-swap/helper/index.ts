@@ -1,5 +1,4 @@
 import Long from 'long';
-import bech32 from 'bech32';
 import { TokenItemType, network } from '@oraichain/oraidex-common';
 import {
   cosmosTokens,
@@ -11,8 +10,8 @@ import {
   IBC_WASM_CONTRACT
 } from '@oraichain/oraidex-common';
 import { HIGH_GAS_PRICE, MULTIPLIER, swapEvmRoutes } from '../config/constants';
-import { CosmWasmClient, OraiswapOracleQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { CwIcs20LatestQueryClient } from '@oraichain/common-contracts-sdk';
+import { OraiswapOracleQueryClient } from '@oraichain/oraidex-contracts-sdk';
+import { CwIcs20LatestQueryClient, SigningCosmWasmClient } from '@oraichain/common-contracts-sdk';
 import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { getBase58Address } from '../../utils';
@@ -69,7 +68,7 @@ export const getTokenOnOraichain = (coingeckoId: CoinGeckoId) => {
   return oraichainTokens.find(token => token.coinGeckoId === coingeckoId);
 };
 
-export async function fetchTaxRate(client: CosmWasmClient): Promise<TaxRateResponse> {
+export async function fetchTaxRate(client: SigningCosmWasmClient): Promise<TaxRateResponse> {
   const oracleContract = new OraiswapOracleQueryClient(client, network.oracle);
   try {
     const data = await oracleContract.treasury({ tax_rate: {} });
@@ -94,7 +93,7 @@ export const getTransferTokenFee = async ({ remoteTokenDenom, client }): Promise
   }
 };
 
-export async function fetchRelayerFee(client: CosmWasmClient): Promise<any> {
+export async function fetchRelayerFee(client: SigningCosmWasmClient): Promise<any> {
   const ics20Contract = new CwIcs20LatestQueryClient(client, IBC_WASM_CONTRACT);
   try {
     const { relayer_fees } = await ics20Contract.config();
