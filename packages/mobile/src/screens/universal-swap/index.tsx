@@ -50,7 +50,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useLoadTokens, useCoinGeckoPrices } from './hooks';
+import { useLoadTokens, useCoinGeckoPrices } from '@owallet/hooks';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
