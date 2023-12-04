@@ -1,24 +1,30 @@
 export type Uint128 = string;
-export type AssetInfo = {
-  token: {
-    contract_addr: Addr;
-  };
-} | {
-  native_token: {
-    denom: string;
-  };
-};
+export type AssetInfo =
+  | {
+      token: {
+        contract_addr: Addr;
+      };
+    }
+  | {
+      native_token: {
+        denom: string;
+      };
+    };
 export type Addr = string;
-export type Logo = {
-  url: string;
-} | {
-  embedded: EmbeddedLogo;
-};
-export type EmbeddedLogo = {
-  svg: Binary;
-} | {
-  png: Binary;
-};
+export type Logo =
+  | {
+      url: string;
+    }
+  | {
+      embedded: EmbeddedLogo;
+    };
+export type EmbeddedLogo =
+  | {
+      svg: Binary;
+    }
+  | {
+      png: Binary;
+    };
 export type Binary = string;
 export interface Cw20Coin {
   address: string;
@@ -39,4 +45,4 @@ export interface Config {
   factory_addr: Addr;
   owner: Addr;
 }
-export { CosmWasmClient, SigningCosmWasmClient, ExecuteResult } from "@cosmjs/cosmwasm-stargate";
+export { SigningCosmWasmClient, ExecuteResult } from '@cosmjs/cosmwasm-stargate';

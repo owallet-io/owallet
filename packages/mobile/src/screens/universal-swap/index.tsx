@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { PageWithScrollViewInBottomTabView } from '../../components/page';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
@@ -19,7 +19,9 @@ import {
   ETH_ID,
   ORAICHAIN_ID,
   toDisplay,
-  getBase58Address
+  getBase58Address,
+  fetchTaxRate,
+  fetchRelayerFee
 } from '@owallet/common';
 import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
@@ -48,7 +50,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useRelayerFee, useTaxRate, useLoadTokens, useCoinGeckoPrices } from '@owallet/hooks';
+import { useLoadTokens, useCoinGeckoPrices } from './hooks';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -96,19 +98,27 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     getClient();
   }, []);
 
-  const taxRate = useTaxRate(client);
-  const relayerFee = useRelayerFee(client);
-  const relayerFeeToken = relayerFee.reduce((acc, cur) => {
-    if (
-      originalFromToken &&
-      originalToToken &&
-      originalFromToken.chainId !== originalToToken.chainId &&
-      (cur.prefix === originalFromToken.prefix || cur.prefix === originalToToken.prefix)
-    ) {
-      return +cur.amount + acc;
-    }
-    return acc;
-  }, 0);
+  const [relayerFee, setRelayerFee] = useState([]);
+  const [taxRate, setTaxRate] = useState('');
+
+  const queryTaxRate = async () => {
+    const data = await fetchTaxRate(client);
+    setTaxRate(data?.rate);
+  };
+
+  useEffect(() => {
+    queryTaxRate();
+  }, [client]);
+
+  const queryRelayerFee = async () => {
+    const data = await fetchRelayerFee(client);
+
+    setRelayerFee(data);
+  };
+
+  useEffect(() => {
+    queryRelayerFee();
+  }, [client]);
 
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([undefined, toAmountToken]);
@@ -141,6 +151,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     fromContractAddr: originalFromToken.contractAddress,
     toContractAddr: originalToToken.contractAddress
   });
+
+  const relayerFeeToken = useMemo(() => {
+    return relayerFee.reduce((acc, cur) => {
+      if (
+        originalFromToken?.chainId !== originalToToken?.chainId &&
+        (cur.prefix === originalFromToken?.prefix || cur.prefix === originalToToken?.prefix)
+      ) {
+        return +cur.amount + acc;
+      }
+      return acc;
+    }, 0);
+  }, [relayerFee, originalFromToken, originalToToken]);
 
   // if evm swappable then no need to get token on oraichain because we can swap on evm. Otherwise, get token on oraichain. If cannot find => fallback to original token
   const fromToken = isEvmSwap
@@ -176,7 +198,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     getTokenFee(originalToToken.prefix + originalToToken.contractAddress, fromToken.chainId, toToken.chainId, 'to');
-  }, [originalToToken, fromToken, toToken, originalToToken]);
+  }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
   useEffect(() => {
     getTokenFee(
@@ -185,7 +207,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       toToken.chainId,
       'from'
     );
-  }, [originalToToken, fromToken, toToken, originalToToken]);
+  }, [originalToToken, fromToken, toToken, originalToToken, client]);
 
   const getTokenInfos = async () => {
     const data = await fetchTokenInfos([fromToken!, toToken!], client);
@@ -194,7 +216,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     getTokenInfos();
-  }, [toTokenDenom, fromTokenDenom]);
+  }, [toTokenDenom, fromTokenDenom, client]);
 
   const [isSelectFromTokenModal, setIsSelectFromTokenModal] = useState(false);
   const [isSelectToTokenModal, setIsSelectToTokenModal] = useState(false);
@@ -287,7 +309,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         routerClient
       });
       setAmountLoading(false);
-      console.log('data', data);
 
       return data;
     }
@@ -607,7 +628,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           ) : null}
 
           <View style={styles.itemBottom}>
-            <BalanceText>Minimum Received after slippage ( {userSlippage}% )</BalanceText>
+            <BalanceText>Minimum Received</BalanceText>
             <BalanceText>{(minimumReceive || '0') + ' ' + toToken.name}</BalanceText>
           </View>
           {(!fromTokenFee && !toTokenFee) || (fromTokenFee === 0 && toTokenFee === 0) ? (
@@ -619,7 +640,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           {!!relayerFeeToken && (
             <View style={styles.itemBottom}>
               <BalanceText>Relayer Fee</BalanceText>
-              <BalanceText>{toAmount(relayerFeeToken, RELAYER_DECIMAL)} ORAI</BalanceText>
+              <BalanceText>{toDisplay(relayerFeeToken.toString(), RELAYER_DECIMAL)} ORAI</BalanceText>
             </View>
           )}
           {!fromTokenFee && !toTokenFee && isWarningSlippage && (

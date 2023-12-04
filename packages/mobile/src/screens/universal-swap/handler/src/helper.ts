@@ -35,17 +35,12 @@ import {
   isInPairList
 } from '@oraichain/oraidex-common';
 import { OraiBridgeRouteData, SimulateResponse, SwapRoute, UniversalSwapConfig } from './types';
-import {
-  AssetInfo,
-  CosmWasmClient,
-  OraiswapRouterReadOnlyInterface,
-  OraiswapTokenQueryClient
-} from '@oraichain/oraidex-contracts-sdk';
+import { AssetInfo, OraiswapRouterReadOnlyInterface, OraiswapTokenQueryClient } from '@oraichain/oraidex-contracts-sdk';
 // import { SwapOperation } from '@oraichain/oraidex-contracts-sdk/build/OraiswapRouter.types';
 import { isEqual } from 'lodash';
 import { ethers } from 'ethers';
 import { Amount, CwIcs20LatestQueryClient, CwIcs20LatestReadOnlyInterface } from '@oraichain/common-contracts-sdk';
-import { toBinary } from '@cosmjs/cosmwasm-stargate';
+import { SigningCosmWasmClient, toBinary } from '@cosmjs/cosmwasm-stargate';
 
 export const tronToEthAddress = (base58: string) => {
   const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(1, -4);
@@ -551,7 +546,11 @@ export const checkBalanceChannelIbc = async (
   }
 };
 
-export const getBalanceIBCOraichain = async (token: TokenItemType, client: CosmWasmClient, ibcWasmContract: string) => {
+export const getBalanceIBCOraichain = async (
+  token: TokenItemType,
+  client: SigningCosmWasmClient,
+  ibcWasmContract: string
+) => {
   if (!token) return { balance: 0 };
   if (token.contractAddress) {
     const cw20Token = new OraiswapTokenQueryClient(client, token.contractAddress);
@@ -569,7 +568,7 @@ export const checkBalanceIBCOraichain = async (
   from: TokenItemType,
   fromAmount: number,
   toSimulateAmount: string,
-  client: CosmWasmClient,
+  client: SigningCosmWasmClient,
   ibcWasmContract: string
 ) => {
   const ics20Client = new CwIcs20LatestQueryClient(client, ibcWasmContract);

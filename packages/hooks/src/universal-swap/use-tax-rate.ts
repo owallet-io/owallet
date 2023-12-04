@@ -1,8 +1,8 @@
 import { fetchTaxRate } from '@owallet/common';
 import { useEffect, useState } from 'react';
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate';
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 
-export const useTaxRate = (client: CosmWasmClient) => {
+export const useTaxRate = (client: SigningCosmWasmClient) => {
   const [taxRate, setTaxRate] = useState('');
 
   const queryTaxRate = async () => {
