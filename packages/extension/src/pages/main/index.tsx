@@ -152,11 +152,11 @@ export const MainPage: FunctionComponent = observer(() => {
           </div>
         </CardBody>
       </Card>
-      <Card className={classnames(style.card, 'shadow')}>
+      {/* <Card className={classnames(style.card, 'shadow')}>
         <CardBody>
           <UniversalSwapPage />
         </CardBody>
-      </Card>
+      </Card> */}
       {networkType === 'cosmos' && (
         <>
           <Card className={classnames(style.card, 'shadow')}>

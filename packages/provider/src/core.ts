@@ -112,6 +112,7 @@ export class OWallet implements IOWallet {
     );
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async experimentalSignEIP712CosmosTx_v0(
     chainId: string,
     signer: string,
