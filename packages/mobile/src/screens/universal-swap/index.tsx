@@ -255,18 +255,18 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   useEffect(() => {
     const filteredToTokens = filterNonPoolEvmTokens(
-      fromToken.chainId,
-      fromToken.coinGeckoId,
-      fromTokenDenom,
+      originalFromToken.chainId,
+      originalFromToken.coinGeckoId,
+      originalFromToken.denom,
       searchTokenName,
       SwapDirection.To
     );
     setFilteredToTokens(filteredToTokens);
 
     const filteredFromTokens = filterNonPoolEvmTokens(
-      toToken.chainId,
-      toToken.coinGeckoId,
-      toTokenDenom,
+      originalToToken.chainId,
+      originalToToken.coinGeckoId,
+      originalToToken.denom,
       searchTokenName,
       SwapDirection.From
     );
@@ -286,6 +286,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         routerClient
       });
       setAmountLoading(false);
+      console.log('data', data);
+
       return data;
     }
   };
