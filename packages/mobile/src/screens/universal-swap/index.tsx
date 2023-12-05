@@ -90,13 +90,15 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
   const getClient = async () => {
-    const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
-    setClient(cwClient);
+    if (accountOrai) {
+      const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
+      setClient(cwClient);
+    }
   };
 
   useEffect(() => {
     getClient();
-  }, []);
+  }, [accountOrai]);
 
   const [relayerFee, setRelayerFee] = useState([]);
   const [taxRate, setTaxRate] = useState('');
