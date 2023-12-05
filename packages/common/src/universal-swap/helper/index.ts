@@ -51,12 +51,6 @@ export function getTokenOnSpecificChainId(
   return flattenTokens.find(t => t.coinGeckoId === coingeckoId && t.chainId === chainId);
 }
 
-export const tronToEthAddress = (base58: string) => {
-  const buffer = Buffer.from(ethers.utils.base58.decode(base58)).subarray(1, -4);
-  const hexString = Array.prototype.map.call(buffer, byte => ('0' + byte.toString(16)).slice(-2)).join('');
-  return '0x' + hexString;
-};
-
 export const ethToTronAddress = (address: string) => {
   return getBase58Address(address);
 };
