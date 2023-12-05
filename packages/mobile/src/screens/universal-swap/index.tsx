@@ -19,9 +19,7 @@ import {
   ETH_ID,
   ORAICHAIN_ID,
   toDisplay,
-  getBase58Address,
-  fetchTaxRate,
-  fetchRelayerFee
+  getBase58Address
 } from '@owallet/common';
 import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
@@ -37,7 +35,6 @@ import {
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, toSubAmount } from '@owallet/common';
-import { CWStargate } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
@@ -50,7 +47,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useLoadTokens, useCoinGeckoPrices } from '@owallet/hooks';
+import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -85,42 +82,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [ratio, setRatio] = useState(null);
 
-  const [client, setClient] = useState(null);
-
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
-  const getClient = async () => {
-    if (accountOrai) {
-      const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
-      setClient(cwClient);
-    }
-  };
-
-  useEffect(() => {
-    getClient();
-  }, [accountOrai]);
-
-  const [relayerFee, setRelayerFee] = useState([]);
-  const [taxRate, setTaxRate] = useState('');
-
-  const queryTaxRate = async () => {
-    const data = await fetchTaxRate(client);
-    setTaxRate(data?.rate);
-  };
-
-  useEffect(() => {
-    queryTaxRate();
-  }, [client]);
-
-  const queryRelayerFee = async () => {
-    const data = await fetchRelayerFee(client);
-
-    setRelayerFee(data);
-  };
-
-  useEffect(() => {
-    queryRelayerFee();
-  }, [client]);
+  const client = useClient(accountOrai);
+  const relayerFee = useRelayerFee(accountOrai);
+  const taxRate = useTaxRate(accountOrai);
 
   const onChangeFromAmount = (amount: string | undefined) => {
     if (!amount) return setSwapAmount([undefined, toAmountToken]);
