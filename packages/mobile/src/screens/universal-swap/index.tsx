@@ -225,6 +225,10 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
+      showToast({
+        message: error?.message ?? error?.ex?.message,
+        type: 'danger'
+      });
     }
   };
 
@@ -312,7 +316,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
       setAmountLoading(false);
       showToast({
-        message: error?.message ?? 'Something went wrong',
+        message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
         type: 'danger'
       });
     }
@@ -408,7 +412,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error', error);
 
       showToast({
-        message: error?.message ?? 'Failed',
+        message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
         type: 'danger'
       });
     } finally {
