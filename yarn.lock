@@ -4412,10 +4412,10 @@
   resolved "https://registry.yarnpkg.com/@oraichain/immutable/-/immutable-4.3.9.tgz#ff8d5a7b39b5b01f3f72a902cffbfea32ccb20c3"
   integrity sha512-INpHnhL970OCkR7I71Kssb2aLl2l4Y/x8W6FlyRO0KmC8GHjxc/hlNB1t44BiI7lkOYmcWMRQoC8dwParsp1RQ==
 
-"@oraichain/oraidex-common@^1.0.24", "@oraichain/oraidex-common@^1.0.34":
-  version "1.0.43"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.43.tgz#3ce40dfd1cc33c129253fd59c8e227c05837c7fa"
-  integrity sha512-Xtp00JnVUl1Z4QarJE+Gw02TrHcxUmXzuynGN9g/x7HVL5NymzbB//PShlJ2VFhJfZXHCBaSBqDniIBLPoQ+GQ==
+"@oraichain/oraidex-common@^1.0.44":
+  version "1.0.44"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-common/-/oraidex-common-1.0.44.tgz#88990da6104af1b0013a5746340915265f9b7eea"
+  integrity sha512-/bgbf0KcMWANms/ZaEc8KESAy9/UACPzgeGcGGXGhnIMsrvHOMc3a6EQpY40B4xqp/8Cs+up4Gww4o9DLNRj6g==
   dependencies:
     "@ethersproject/providers" "^5.0.10"
     "@keplr-wallet/types" "^0.11.38"
@@ -4431,12 +4431,12 @@
   resolved "https://registry.yarnpkg.com/@oraichain/oraidex-contracts-sdk/-/oraidex-contracts-sdk-1.0.26.tgz#83c4c80185396a9c62d7ced4437bef7b178e0c37"
   integrity sha512-Uai30rSSn7h46lBLFuVbW96ErXAWRxfvEP+CNm/TXyGIw8VRtTaebQAqldsbxzYwBVEYbwDwZMHRGQWrsJBkJg==
 
-"@oraichain/oraidex-universal-swap@^1.0.20":
-  version "1.0.33"
-  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.33.tgz#25d82e9f42d21573164c0d7377d787bae99e5f6e"
-  integrity sha512-nq0uJJxXn4B3yOlyKwbQugNjHkcl3OmnJTcLLdlrZgtfS6MbCDWhMYvCcCw0EDJC6Rc7PcvBPkOoODFea1SDgg==
+"@oraichain/oraidex-universal-swap@^1.0.34":
+  version "1.0.34"
+  resolved "https://registry.yarnpkg.com/@oraichain/oraidex-universal-swap/-/oraidex-universal-swap-1.0.34.tgz#535eb6a22238408c15ba5d5835e07a2219534070"
+  integrity sha512-j8Wz/hgle8Rgmve9OKO970l0HlXfVUoSgyI6HFgLAVoORPsTI7tH2rXxFRTZpLHb/7gQ7BN2R1U9u1ucJiTtXw==
   dependencies:
-    "@oraichain/oraidex-common" "^1.0.34"
+    "@oraichain/oraidex-common" "^1.0.44"
     "@oraichain/oraidex-contracts-sdk" "^1.0.24"
     bech32 "1.1.4"
     ethers "^5.0.15"
