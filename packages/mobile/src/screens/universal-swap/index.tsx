@@ -37,7 +37,6 @@ import {
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, toSubAmount } from '@owallet/common';
-import { CWStargate } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
@@ -50,7 +49,7 @@ import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
 import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
-import { useLoadTokens, useCoinGeckoPrices } from '@owallet/hooks';
+import { useLoadTokens, useCoinGeckoPrices, useClient } from '@owallet/hooks';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -85,18 +84,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
 
   const [ratio, setRatio] = useState(null);
 
-  const [client, setClient] = useState(null);
-
   const [balanceActive, setBalanceActive] = useState<BalanceType>(null);
 
-  const getClient = async () => {
-    const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
-    setClient(cwClient);
-  };
-
-  useEffect(() => {
-    getClient();
-  }, []);
+  const client = useClient(accountOrai);
 
   const [relayerFee, setRelayerFee] = useState([]);
   const [taxRate, setTaxRate] = useState('');
