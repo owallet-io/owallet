@@ -182,7 +182,7 @@ export const UniversalSwapPage: FunctionComponent = observer(() => {
 
   useEffect(() => {
     getTokenInfos();
-  }, [toTokenDenom, fromTokenDenom]);
+  }, [toTokenDenom, fromTokenDenom, client]);
 
   // get token on oraichain to simulate swap amount.
   const originalFromToken = tokenMap[fromTokenDenom];

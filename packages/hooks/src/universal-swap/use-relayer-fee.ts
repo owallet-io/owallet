@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { fetchRelayerFee } from '@owallet/common';
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
+import { CWStargate, fetchRelayerFee, oraichainNetwork, ORAICHAIN_ID } from '@owallet/common';
+import { AccountWithAll } from '@owallet/stores';
 
-export const useRelayerFee = (client: SigningCosmWasmClient) => {
+export const useRelayerFee = (accountOrai: AccountWithAll) => {
   const [relayerFee, setRelayerFee] = useState([]);
 
   const queryRelayerFee = async () => {
-    const data = await fetchRelayerFee(client);
-
+    const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
+    const data = await fetchRelayerFee(cwClient);
     setRelayerFee(data);
   };
 

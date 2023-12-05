@@ -1,12 +1,13 @@
-import { fetchTaxRate } from '@owallet/common';
+import { CWStargate, fetchTaxRate, oraichainNetwork, ORAICHAIN_ID } from '@owallet/common';
 import { useEffect, useState } from 'react';
-import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
+import { AccountWithAll } from '@owallet/stores';
 
-export const useTaxRate = (client: SigningCosmWasmClient) => {
+export const useTaxRate = (accountOrai: AccountWithAll) => {
   const [taxRate, setTaxRate] = useState('');
 
   const queryTaxRate = async () => {
-    const data = await fetchTaxRate(client);
+    const cwClient = await CWStargate.init(accountOrai, ORAICHAIN_ID, oraichainNetwork.rpc);
+    const data = await fetchTaxRate(cwClient);
     setTaxRate(data?.rate);
   };
 
