@@ -159,7 +159,7 @@ export class UniversalSwapHandler {
 
     const toTokenInOrai = getTokenOnOraichain(this.swapData.originalToToken.coinGeckoId);
     // then find new _toToken in Oraibridge that have same coingeckoId with originalToToken.
-    const newToToken = findToTokenOnOraiBridge(toTokenInOrai, this.swapData.originalToToken.chainId);
+    const newToToken = findToTokenOnOraiBridge(toTokenInOrai.coinGeckoId, this.swapData.originalToToken.chainId);
     // this.swapData.originalToToken = findToTokenOnOraiBridge(this.toTokenInOrai, this.swapData.originalToToken.chainId);
 
     const toAddress = await this.config.cosmosWallet.getKeplrAddr(newToToken.chainId as CosmosChainId);
