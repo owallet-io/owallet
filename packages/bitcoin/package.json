@@ -38,7 +38,8 @@
     "wif": "^2.0.6",
     "websocket": "^1.0.34",
     "ecpair":"2.1.0",
-    "bitcoin-address-validation":"2.2.3"
+    "bitcoin-address-validation":"2.2.3",
+    "coinselect":"3.1.13"
   },
   "devDependencies": {
     "@types/node": "^14.0.27"

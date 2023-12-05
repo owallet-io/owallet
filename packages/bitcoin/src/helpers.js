@@ -10,6 +10,7 @@ const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
 const { getTransaction, getTransactionHex } = require('./electrum');
 const { validate, getAddressInfo } = require('bitcoin-address-validation');
+const accumulative = require('coinselect/accumulative');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
@@ -616,7 +617,86 @@ const createTransaction = async ({
     return { error: true, data: e };
   }
 };
+/**
+ * Compile memo.
+ *
+ * @param {string} memo The memo to be compiled.
+ * @returns {Buffer} The compiled memo.
+ */
+const compileMemo = (memo) => {
+  const data = Buffer.from(memo, 'utf8'); // converts MEMO to buffer
+  return bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, data]); // Compile OP_RETURN script
+};
 
+const buildTxLegacy = async ({
+  recipient = '',
+  transactionFee = 1,
+  amount = 0,
+  utxos = [],
+  sender = '',
+  selectedCrypto = 'bitcoin',
+  memo = ''
+}) => {
+  console.log('🚀 ~ file: helpers.js:640 ~ utxos:', utxos, utxos.length);
+  if (memo && memo.length > 80) {
+    throw new Error('message too long, must not be longer than 80 chars.');
+  }
+  if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
+  if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
+  const feeRateWhole = Math.ceil(transactionFee);
+  console.log('🚀 ~ file: helpers.js:647 ~ feeRateWhole:', feeRateWhole);
+  const compiledMemo = memo ? compileMemo(memo) : null;
+
+  const targetOutputs = [];
+
+  //1. add output amount and recipient to targets
+  targetOutputs.push({
+    address: recipient,
+    value: amount
+  });
+  //2. add output memo to targets (optional)
+  if (compiledMemo) {
+    targetOutputs.push({ script: compiledMemo, value: 0 });
+  }
+  console.log('🚀 ~ file: helpers.js:662 ~ feeRateWhole:', feeRateWhole);
+  console.log('🚀 ~ file: helpers.js:662 ~ targetOutputs:', targetOutputs);
+
+  const { inputs, outputs, fee } = accumulative(utxos, targetOutputs, feeRateWhole);
+  console.log('🚀 ~ file: helpers.js:665 ~ fee:', fee);
+  console.log('🚀 ~ file: helpers.js:662 ~ outputs:', outputs);
+  console.log('🚀 ~ file: helpers.js:662 ~ inputs:', inputs);
+  // .inputs and .outputs will be undefined if no solution was found
+  if (!inputs || !outputs) throw new Error('Insufficient Balance for transaction');
+
+  const psbt = new bitcoin.Psbt({ network: networks[selectedCrypto] }); // Network-specific
+  console.log('🚀 ~ file: helpers.js:671 ~ psbt:', psbt);
+  // psbt add input from accumulative inputs
+  inputs.forEach((utxo) =>
+    psbt.addInput({
+      hash: utxo.txid,
+      index: utxo.vout,
+      nonWitnessUtxo: Buffer.from(utxo.hex, 'hex')
+    })
+  );
+
+  // psbt add outputs from accumulative outputs
+  outputs.forEach((output) => {
+    if (!output.address) {
+      //an empty address means this is the  change ddress
+      output.address = sender;
+    }
+    if (!output.script) {
+      psbt.addOutput(output);
+    } else {
+      //we need to add the compiled memo this way to
+      //avoid dust error tx when accumulating memo output with 0 value
+      if (compiledMemo) {
+        psbt.addOutput({ script: compiledMemo, value: 0 });
+      }
+    }
+  });
+  return { psbt, utxos, inputs, fee };
+};
 const fetchData = (type, params) => {
   switch (type.toLowerCase()) {
     case 'post':
@@ -1248,6 +1328,7 @@ const getAddressTypeByAddress = (address) => {
   }
   return 'bech32';
 };
+
 module.exports = {
   toBufferLE,
   getAddressTypeByAddress,
@@ -1305,5 +1386,6 @@ module.exports = {
   signAndCreateTransaction,
   BtcToSats,
   convertStringToMessage,
-  btcToFiat
+  btcToFiat,
+  buildTxLegacy
 };
