@@ -30,11 +30,12 @@ import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { FiatCurrency } from '@owallet/types';
 import { ModalStore } from './modal';
-import { version, name } from '../../package.json';
+import { version } from '../../package.json';
 import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
 import { TxsStore } from './txs';
+import { UniversalSwapStore } from './universal_swap';
 
 export class RootStore {
   public readonly uiConfigStore: UIConfigStore;
@@ -82,6 +83,7 @@ export class RootStore {
   public readonly modalStore: ModalStore;
   public readonly sendStore: SendStore;
   public readonly appInitStore: AppInit;
+  public readonly universalSwapStore: UniversalSwapStore;
   public readonly notificationStore: Notification;
   public readonly txsStore: (currentChain: ChainInfoInner<ChainInfo>) => TxsStore;
 
@@ -123,7 +125,7 @@ export class RootStore {
       new AsyncKVStore('store_queries_fix2'),
       this.chainStore,
       async () => {
-        return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
+        return new OWallet(version, 'core', new RNMessageRequesterInternal());
       },
       QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
@@ -146,7 +148,7 @@ export class RootStore {
           suggestChain: false,
           autoInit: true,
           getOWallet: async () => {
-            return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
+            return new OWallet(version, 'core', new RNMessageRequesterInternal());
           },
           getEthereum: async () => {
             return new Ethereum(version, 'core', '0x38', new RNMessageRequesterInternal());
@@ -248,6 +250,7 @@ export class RootStore {
     this.browserStore = browserStore;
     this.modalStore = new ModalStore();
     this.appInitStore = appInit;
+    this.universalSwapStore = new UniversalSwapStore();
     this.notificationStore = notification;
     this.sendStore = new SendStore();
     this.txsStore = (currentChain: ChainInfoInner<ChainInfo>): TxsStore => new TxsStore(currentChain);
