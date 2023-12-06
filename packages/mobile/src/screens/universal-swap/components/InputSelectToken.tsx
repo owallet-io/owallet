@@ -71,7 +71,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
           }}
           defaultValue={amount ?? '0'}
           onBlur={() => {
-            handleChangeAmount(amount);
+            handleChangeAmount(txt);
           }}
           keyboardType="numeric"
           style={[styles.textInput, styles.colorInput]}

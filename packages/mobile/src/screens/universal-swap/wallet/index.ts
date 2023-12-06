@@ -16,7 +16,6 @@ import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { OWallet, Ethereum, TronWeb } from '@owallet/types';
 import { SigningStargateClient, SigningStargateClientOptions } from '@cosmjs/stargate';
 import { ethers } from 'ethers';
-// import { tronToEthAddress } from '../handler/src';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
@@ -124,6 +123,7 @@ export class SwapEvmWallet extends EvmWallet {
     return this.provider.getSigner();
   }
 
+  // TODO: After the sdk issues were resolved, please remove this
   public async submitTronSmartContract(
     address: string,
     functionSelector: string,
@@ -184,6 +184,7 @@ export class SwapEvmWallet extends EvmWallet {
     }
   }
 
+  // TODO: After the sdk issues were resolved, please remove this
   public async checkOrIncreaseAllowance(
     token: TokenItemType,
     owner: string,
@@ -192,8 +193,6 @@ export class SwapEvmWallet extends EvmWallet {
   ): Promise<EvmResponse> {
     // we store the tron address in base58 form, so we need to convert to hex if its tron because the contracts are using the hex form as parameters
     if (!token.contractAddress) return;
-
-    console.log('token', token);
 
     const ownerHex = this.isTron(token.chainId) ? tronToEthAddress(owner) : owner;
 
