@@ -8,14 +8,15 @@ import {
   EvmResponse,
   Networks,
   IERC20Upgradeable__factory,
-  ethToTronAddress
+  ethToTronAddress,
+  tronToEthAddress
 } from '@oraichain/oraidex-common';
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate';
 import { OWallet, Ethereum, TronWeb } from '@owallet/types';
 import { SigningStargateClient, SigningStargateClientOptions } from '@cosmjs/stargate';
 import { ethers } from 'ethers';
-import { tronToEthAddress } from '../handler/src';
+// import { tronToEthAddress } from '../handler/src';
 
 export class SwapCosmosWallet extends CosmosWallet {
   private client: SigningCosmWasmClient;
