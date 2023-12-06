@@ -41,6 +41,7 @@ import {
   isEvmSwappable,
   isSupportedNoPoolSwapEvm,
   UniversalSwapData
+  // UniversalSwapHandler
 } from '@oraichain/oraidex-universal-swap';
 import { UniversalSwapHandler } from './handler/src';
 import { SwapCosmosWallet, SwapEvmWallet } from './wallet';
@@ -89,7 +90,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const taxRate = useTaxRate(accountOrai);
 
   const onChangeFromAmount = (amount: string | undefined) => {
-    if (!amount) return setSwapAmount([undefined, toAmountToken]);
+    if (!amount) return setSwapAmount([0, toAmountToken]);
     setSwapAmount([parseFloat(amount), toAmountToken]);
   };
 
@@ -410,7 +411,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     } catch (error) {
       setSwapLoading(false);
       console.log('error', error);
-
       showToast({
         message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
         type: 'danger'

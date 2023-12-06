@@ -314,7 +314,9 @@ export class Ethereum implements IEthereum {
       const msg = new RequestEthereumMsg(tmpChainId, args.method, args.params);
       return await this.requester.sendMessage(BACKGROUND_PORT, msg);
     } else if (args.method === 'eth_sendTransaction') {
-      return this.signAndBroadcastEthereum(args.chainId ?? this.initChainId, args.params?.[0]);
+      const msg = new RequestSignEthereumMsg(args.chainId ?? this.initChainId, args.params?.[0]);
+      const { rawTxHex } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      return rawTxHex;
     } else {
       const msg = new RequestEthereumMsg(args.chainId ?? this.initChainId, args.method, args.params);
       return await this.requester.sendMessage(BACKGROUND_PORT, msg);

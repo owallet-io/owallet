@@ -70,7 +70,9 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
             debounceFn(newAmount);
           }}
           defaultValue={amount ?? '0'}
-          onBlur={handleChangeAmount}
+          onBlur={() => {
+            handleChangeAmount(amount);
+          }}
           keyboardType="numeric"
           style={[styles.textInput, styles.colorInput]}
           placeholderTextColor={colors['text-place-holder']}
