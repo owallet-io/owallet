@@ -301,11 +301,11 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
             ratio.amount,
             toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
             userSlippage,
-            originalFromToken.decimals
+            toTokenInfoData?.decimals
           )
         : '0';
 
-      setMininumReceive(toDisplay(minimumReceive));
+      setMininumReceive(toDisplay(minimumReceive, toTokenInfoData?.decimals));
       if (data) {
         const isWarningSlippage = +minimumReceive > +data.amount;
         setIsWarningSlippage(isWarningSlippage);
@@ -536,7 +536,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={fromTokenFee}
             />
             <SwapBox
-              amount={toDisplay(toAmountToken.toString()).toString() ?? '0'}
+              amount={toDisplay(toAmountToken.toString(), originalToToken?.decimals).toString() ?? '0'}
               balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setIsSelectToTokenModal(true)}
