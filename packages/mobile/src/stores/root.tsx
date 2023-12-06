@@ -30,7 +30,7 @@ import { Amplitude } from '@amplitude/react-native';
 import { ChainIdHelper } from '@owallet/cosmos';
 import { FiatCurrency } from '@owallet/types';
 import { ModalStore } from './modal';
-import { version } from '../../package.json';
+import { version, name } from '../../package.json';
 import { SendStore } from './send';
 import { ChainInfoInner } from '@owallet/stores';
 import { ChainInfo } from '@owallet/types';
@@ -125,7 +125,7 @@ export class RootStore {
       new AsyncKVStore('store_queries_fix2'),
       this.chainStore,
       async () => {
-        return new OWallet(version, 'core', new RNMessageRequesterInternal());
+        return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
       },
       QueriesWithCosmosAndSecretAndCosmwasmAndEvmAndBitcoin
     );
@@ -148,7 +148,7 @@ export class RootStore {
           suggestChain: false,
           autoInit: true,
           getOWallet: async () => {
-            return new OWallet(version, 'core', new RNMessageRequesterInternal());
+            return new OWallet(`${name}-${version}`, 'core', new RNMessageRequesterInternal());
           },
           getEthereum: async () => {
             return new Ethereum(version, 'core', '0x38', new RNMessageRequesterInternal());
