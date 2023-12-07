@@ -3,13 +3,14 @@ import { TxChainSetter } from './chain';
 import { ChainGetter, CoinPrimitive, ObservableQueryBitcoinBalance, ObservableQueryEvmBalance } from '@owallet/stores';
 import { action, computed, makeObservable, observable } from 'mobx';
 import { Coin, CoinPretty, Dec, DecUtils, Int } from '@owallet/unit';
-import { AddressBtcType, Currency } from '@owallet/types';
+import { AddressBtcType, Currency, IFeeRate } from '@owallet/types';
 import { computedFn } from 'mobx-utils';
 import { StdFee } from '@cosmjs/launchpad';
 import { useState } from 'react';
 import { ObservableQueryBalances } from '@owallet/stores';
 import { InsufficientFeeError, NotLoadedFeeError } from './errors';
-import { calculatorFee } from '@owallet/bitcoin';
+import { calculatorFee, getFeeRate } from '@owallet/bitcoin';
+import { MIN_FEE_RATE } from '@owallet/common';
 
 export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable.ref
@@ -23,7 +24,11 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   @observable
   protected _sender: string;
   @observable
-  protected _addressType: AddressBtcType;
+  protected _feeRate: IFeeRate = {
+    low: MIN_FEE_RATE,
+    average: MIN_FEE_RATE,
+    high: MIN_FEE_RATE
+  };
 
   @observable
   protected _senderEvm?: string;
@@ -58,21 +63,38 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
     queryEvmBalances?: ObservableQueryEvmBalance,
     senderEvm?: string,
     queryBtcBalances?: ObservableQueryBitcoinBalance,
-    protected readonly memoConfig?: IMemoConfig,
-    addressType: AddressBtcType = AddressBtcType.Bech32
+    protected readonly memoConfig?: IMemoConfig
   ) {
     super(chainGetter, initialChainId);
 
     this._sender = sender;
     this._senderEvm = senderEvm;
-    this._addressType = addressType;
+
     this.queryBalances = queryBalances;
     this.queryEvmBalances = queryEvmBalances;
     this.additionAmountToNeedFee = additionAmountToNeedFee;
     this.queryBtcBalances = queryBtcBalances;
+    if (this.chainInfo.networkType === 'bitcoin') {
+      this.estimateFeeRate();
+    }
     makeObservable(this);
   }
-
+  @action
+  async estimateFeeRate() {
+    try {
+      await Promise.all(
+        Object.keys(this.chainInfo.gasPriceStep).map(async (item) => {
+          const feeRate = await getFeeRate({
+            selectedCrypto: this.chainInfo.chainId,
+            blocksWillingToWait: this.chainInfo.gasPriceStep[item]
+          });
+          this._feeRate[item] = feeRate;
+        })
+      );
+    } catch (error) {
+      console.log('🚀 ~ file: fee.ts:101 ~ FeeConfig ~ estimateFeeRate ~ error:', error);
+    }
+  }
   @action
   setAdditionAmountToNeedFee(additionAmountToNeedFee: boolean) {
     this.additionAmountToNeedFee = additionAmountToNeedFee;
@@ -154,6 +176,11 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
 
     return new CoinPretty(this.feeCurrency, new Int(feePrimitive.amount));
   }
+  @computed
+  get feeRate(): IFeeRate {
+    console.log('🚀 ~ file: fee.ts:161 ~ FeeConfig ~ getfeeRate ~ this._feeRate:', this._feeRate);
+    return this._feeRate;
+  }
 
   getFeePrimitive(): CoinPrimitive | undefined {
     try {
@@ -191,13 +218,10 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
         const data = this.queryBtcBalances.getQueryBalance(this._sender)?.response?.data;
         const utxos = data?.utxos;
         const amount = calculatorFee({
-          changeAddress: this._sender,
           utxos: utxos,
           message: this.memoConfig.memo,
-          transactionFee: gasPriceStep[feeType] as number,
-          addressType: this._addressType
+          transactionFee: this.feeRate[feeType]
         });
-        // const feeAmount = gasPrice.mul(new Dec(Number(amount)));
         return {
           denom: this.feeCurrency.coinMinimalDenom,
           amount: amount.toString()
@@ -320,8 +344,7 @@ export const useFeeConfig = (
   queryEvmBalances?: ObservableQueryEvmBalance,
   senderEvm?: string,
   queryBtcBalances?: ObservableQueryBitcoinBalance,
-  memoConfig?: IMemoConfig,
-  addressType?: AddressBtcType
+  memoConfig?: IMemoConfig
 ) => {
   const [config] = useState(
     () =>
@@ -336,8 +359,7 @@ export const useFeeConfig = (
         queryEvmBalances,
         senderEvm,
         queryBtcBalances,
-        memoConfig,
-        addressType
+        memoConfig
       )
   );
   config.setChain(chainId);

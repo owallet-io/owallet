@@ -37,6 +37,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
   const queries = queriesStore.get(chainId);
   const account = accountStore.getAccount(chainId);
   const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
+
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -48,6 +49,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
     null,
     queries.bitcoin.queryBitcoinBalance
   );
+
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
   const confirmedBalance = data?.balance;

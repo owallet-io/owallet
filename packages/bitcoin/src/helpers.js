@@ -10,7 +10,9 @@ const Url = require('url-parse');
 const { networks, availableCoins, defaultWalletShape, getCoinData } = require('./networks');
 const { getTransaction, getTransactionHex } = require('./electrum');
 const { validate, getAddressInfo } = require('bitcoin-address-validation');
+const BigNumber = require('bignumber.js');
 const accumulative = require('coinselect/accumulative');
+const { MIN_FEE_RATE } = require('@owallet/common');
 /*
 This batch sends addresses and returns the balance of utxos from them
  */
@@ -29,6 +31,18 @@ const getBalanceFromUtxos = async ({ addresses = [], changeAddresses = [], selec
   }
 };
 
+const getFeeRate = async ({ selectedCrypto, blocksWillingToWait = 2 }) => {
+  const res = await walletHelpers.feeEstimate.default({
+    selectedCrypto,
+    blocksWillingToWait
+  });
+
+  if (!res.error && res.data) {
+    const data = Math.round(new BigNumber(res.data).dividedBy(1024).multipliedBy(100000000).toNumber());
+    return data > MIN_FEE_RATE ? data : MIN_FEE_RATE;
+  }
+  return MIN_FEE_RATE;
+};
 //Returns: { error: bool, isPrivateKey: bool, network: Object }
 const validatePrivateKey = (privateKey = '') => {
   try {
@@ -73,7 +87,7 @@ const validateAddress = (address = '', selectedCrypto = '') => {
     }
     return { isValid: true, coin: selectedCrypto };
   } catch (e) {
-    console.log('🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:', e);
+    // console.log('🚀 ~ file: helpers.js:83 ~ validateAddress ~ e:', e);
     return { isValid: false, coin: selectedCrypto };
   }
 };
@@ -337,19 +351,19 @@ const convertStringToMessage = (str) => {
   const textHex = Buffer.from(text, 'hex');
   return textHex;
 };
-const calculatorFee = ({
-  changeAddress = '',
-  utxos = [],
-  addressType = 'bech32',
-  transactionFee = 1,
-  message = ''
-}) => {
-  if (message && typeof message === 'string') {
-    message = convertStringToMessage(message);
+const calculatorFee = ({ utxos = [], transactionFee = 1, message = '' }) => {
+  if (message && message.length > 80) {
+    throw new Error('message too long, must not be longer than 80 chars.');
   }
-  const totalFee =
-    getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message) * transactionFee;
-  return totalFee;
+
+  // if (utxos.length === 0) return 0;
+  const feeRateWhole = Math.ceil(transactionFee);
+  console.log('🚀 ~ file: helpers.js:361 ~ calculatorFee ~ feeRateWhole:', feeRateWhole);
+  const compiledMemo = message ? compileMemo(message) : null;
+
+  const fee = getFeeFromUtxos(utxos, feeRateWhole, compiledMemo);
+  console.log('🚀 ~ file: helpers.js:365 ~ calculatorFee ~ fee:', fee);
+  return fee;
 };
 const createMsg = ({ address, amount, totalFee, changeAddress, confirmedBalance, message = '', selectedCrypto }) => {
   const network = networks[selectedCrypto];
@@ -947,6 +961,39 @@ const getInfoFromAddressPath = async (path = '') => {
     return { error: true, isChangeAddress: false, addressIndex: 0 };
   }
 };
+const TX_EMPTY_SIZE = 4 + 1 + 1 + 4; //10
+const TX_INPUT_BASE = 32 + 4 + 1 + 4; // 41
+const TX_INPUT_PUBKEYHASH = 107;
+const TX_OUTPUT_BASE = 8 + 1; //9
+const TX_OUTPUT_PUBKEYHASH = 25;
+const inputBytes = (input) => {
+  return TX_INPUT_BASE + (input.witnessUtxo?.script ? input.witnessUtxo?.script.length : TX_INPUT_PUBKEYHASH);
+};
+const MIN_TX_FEE = 1000;
+const getFeeFromUtxos = (utxos, feeRate, data) => {
+  const inputSizeBasedOnInputs =
+    utxos.length > 0
+      ? utxos.reduce((a, x) => a + inputBytes(x), 0) + utxos.length // +1 byte for each input signature
+      : 0;
+  let sum =
+    TX_EMPTY_SIZE +
+    inputSizeBasedOnInputs +
+    TX_OUTPUT_BASE +
+    TX_OUTPUT_PUBKEYHASH +
+    TX_OUTPUT_BASE +
+    TX_OUTPUT_PUBKEYHASH;
+
+  if (data) {
+    sum += TX_OUTPUT_BASE + data.length;
+  }
+  console.log('🚀 ~ file: helpers.js:988 ~ getFeeFromUtxos ~ sum:', sum);
+  console.log('🚀 ~ file: helpers.js:991 ~ getFeeFromUtxos ~ feeRate:', feeRate);
+  const fee = sum * feeRate;
+
+  console.log('🚀 ~ file: helpers.js:991 ~ getFeeFromUtxos ~ fee:', fee);
+
+  return fee > MIN_TX_FEE ? fee : MIN_TX_FEE;
+};
 
 //Solution located here: https://stackoverflow.com/questions/3753483/javascript-thousand-separator-string-format/19840881
 //This inserts commas appropriately in a number and does not insert commas after a decimal.
@@ -1387,5 +1434,6 @@ module.exports = {
   BtcToSats,
   convertStringToMessage,
   btcToFiat,
-  buildTxLegacy
+  buildTxLegacy,
+  getFeeRate
 };

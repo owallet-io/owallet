@@ -180,3 +180,4 @@ export const convertBip44ToHDPath = (bip44HDPath: BIP44HDPath, keyDerivation: nu
     change: bip44HDPath.change
   };
 };
+export const MIN_FEE_RATE = 5;

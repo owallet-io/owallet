@@ -765,9 +765,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'bitcoin',
       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
       gasPriceStep: {
-        low: 1,
-        average: 15,
-        high: 22
+        low: 144,
+        average: 18,
+        high: 1
       }
     },
     bech32Config: Bech32Address.defaultBech32Config('tb'),
@@ -806,9 +806,9 @@ export const EmbedChainInfos: AppChainInfo[] = [
       coinGeckoId: 'bitcoin',
       coinImageUrl: 'https://assets.coingecko.com/coins/images/1/small/bitcoin.png',
       gasPriceStep: {
-        low: 1,
-        average: 15,
-        high: 22
+        low: 144,
+        average: 18,
+        high: 1
       }
     },
     bech32Config: Bech32Address.defaultBech32Config('bc'),
