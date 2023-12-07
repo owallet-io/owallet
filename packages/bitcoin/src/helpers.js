@@ -355,14 +355,10 @@ const calculatorFee = ({ utxos = [], transactionFee = 1, message = '' }) => {
   if (message && message.length > 80) {
     throw new Error('message too long, must not be longer than 80 chars.');
   }
-
-  // if (utxos.length === 0) return 0;
+  if (utxos.length === 0) return 0;
   const feeRateWhole = Math.ceil(transactionFee);
-  console.log('🚀 ~ file: helpers.js:361 ~ calculatorFee ~ feeRateWhole:', feeRateWhole);
   const compiledMemo = message ? compileMemo(message) : null;
-
   const fee = getFeeFromUtxos(utxos, feeRateWhole, compiledMemo);
-  console.log('🚀 ~ file: helpers.js:365 ~ calculatorFee ~ fee:', fee);
   return fee;
 };
 const createMsg = ({ address, amount, totalFee, changeAddress, confirmedBalance, message = '', selectedCrypto }) => {
@@ -649,16 +645,16 @@ const buildTxLegacy = async ({
   utxos = [],
   sender = '',
   selectedCrypto = 'bitcoin',
-  memo = ''
+  memo = '',
+  totalFee
 }) => {
-  console.log('🚀 ~ file: helpers.js:640 ~ utxos:', utxos, utxos.length);
   if (memo && memo.length > 80) {
     throw new Error('message too long, must not be longer than 80 chars.');
   }
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
   const feeRateWhole = Math.ceil(transactionFee);
-  console.log('🚀 ~ file: helpers.js:647 ~ feeRateWhole:', feeRateWhole);
+
   const compiledMemo = memo ? compileMemo(memo) : null;
 
   const targetOutputs = [];
@@ -672,13 +668,10 @@ const buildTxLegacy = async ({
   if (compiledMemo) {
     targetOutputs.push({ script: compiledMemo, value: 0 });
   }
-  console.log('🚀 ~ file: helpers.js:662 ~ feeRateWhole:', feeRateWhole);
-  console.log('🚀 ~ file: helpers.js:662 ~ targetOutputs:', targetOutputs);
 
   const { inputs, outputs, fee } = accumulative(utxos, targetOutputs, feeRateWhole);
-  console.log('🚀 ~ file: helpers.js:665 ~ fee:', fee);
-  console.log('🚀 ~ file: helpers.js:662 ~ outputs:', outputs);
-  console.log('🚀 ~ file: helpers.js:662 ~ inputs:', inputs);
+  if (totalFee !== fee) throw new Error('Fee not match');
+
   // .inputs and .outputs will be undefined if no solution was found
   if (!inputs || !outputs) throw new Error('Insufficient Balance for transaction');
 
