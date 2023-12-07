@@ -476,7 +476,7 @@ const signAndCreateTransaction = async ({ selectedCrypto, mnemonic, utxos, black
 //transactionFee = fee per byte.
 const createTransaction = async ({
   recipient = '',
-  transactionFee = 5,
+  transactionFee = MIN_FEE_RATE,
   amount = 0,
   utxos = [],
   sender = '',
@@ -528,11 +528,20 @@ const buildTx = async ({
   totalFee,
   keyPair
 }) => {
+  console.log('🚀 ~ file: helpers.js:531 ~ keyPair:', keyPair);
+  console.log('🚀 ~ file: helpers.js:531 ~ memo:', memo);
+  console.log('🚀 ~ file: helpers.js:531 ~ selectedCrypto:', selectedCrypto);
+  console.log('🚀 ~ file: helpers.js:531 ~ sender:', sender);
+  console.log('🚀 ~ file: helpers.js:531 ~ utxos:', utxos);
+  console.log('🚀 ~ file: helpers.js:531 ~ amount:', amount);
+  console.log('🚀 ~ file: helpers.js:531 ~ transactionFee:', transactionFee);
+  console.log('🚀 ~ file: helpers.js:531 ~ recipient:', recipient);
   if (memo && memo.length > 80) {
     throw new Error('message too long, must not be longer than 80 chars.');
   }
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
+  console.log('🚀 ~ file: helpers.js:544 ~ utxos:', utxos);
   const mapData = utxos.map(async (utxo) => {
     const transaction = await getTransactionHex({
       txId: utxo.txid,
@@ -544,8 +553,10 @@ const buildTx = async ({
       ...utxo
     };
   });
+  console.log('🚀 ~ file: helpers.js:556 ~ mapData ~ mapData:', mapData);
   const addressType = getAddressTypeByAddress(sender);
-  const utxosData = addressType === 'legacy' ? await Promise.all(mapData) : utxos;
+  const utxosData = await Promise.all(mapData);
+  console.log('🚀 ~ file: helpers.js:550 ~ utxosData:', utxosData);
   const feeRateWhole = Math.ceil(transactionFee);
   console.log('🚀 ~ file: helpers.js:657 ~ feeRateWhole:', feeRateWhole);
 
@@ -564,8 +575,9 @@ const buildTx = async ({
   }
 
   const { inputs, outputs, fee } = accumulative(utxosData, targetOutputs, feeRateWhole);
-  console.log('🚀 ~ file: helpers.js:676 ~ totalFee:', totalFee);
-  console.log('🚀 ~ file: helpers.js:676 ~ fee:', fee);
+  // console.log('🚀 ~ file: helpers.js:568 ~ inputs:', inputs);
+  // console.log('🚀 ~ file: helpers.js:676 ~ totalFee:', totalFee);
+  // console.log('🚀 ~ file: helpers.js:676 ~ fee:', fee);
   // if (totalFee !== fee) throw new Error('Fee not match');
 
   // .inputs and .outputs will be undefined if no solution was found
@@ -599,6 +611,7 @@ const buildTx = async ({
       ...extraData
     });
   });
+  console.log('🚀 ~ file: helpers.js:614 ~ inputs.forEach ~ inputs:', inputs);
 
   // psbt add outputs from accumulative outputs
   outputs.forEach((output) => {
@@ -616,7 +629,8 @@ const buildTx = async ({
       }
     }
   });
-  return { psbt, utxos, inputs, fee };
+  console.log('🚀 ~ file: helpers.js:632 ~ outputs.forEach ~ outputs:', outputs);
+  return { psbt, utxos: utxosData, inputs, fee };
 };
 const fetchData = (type, params) => {
   switch (type.toLowerCase()) {
