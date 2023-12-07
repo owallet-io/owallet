@@ -482,8 +482,7 @@ const createTransaction = async ({
   sender = '',
   keyPair,
   selectedCrypto = 'bitcoin',
-  message = '',
-  isLedger = false
+  message = ''
 } = {}) => {
   try {
     const { psbt } = await buildTx({
@@ -496,7 +495,7 @@ const createTransaction = async ({
       totalFee: 0,
       transactionFee,
       keyPair,
-      isLedger
+      isLedger: false
     });
     psbt.signAllInputs(keyPair); // Sign all inputs
     psbt.finalizeAllInputs(); // Finalise inputs
@@ -538,21 +537,38 @@ const buildTx = async ({
   }
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
+  var utxosWithHex = [];
 
-  const mapData = utxos.map(async (utxo) => {
+  for (let i = 0; i < utxos.length; i++) {
+    const utxo = utxos[i];
     const transaction = await getTransactionHex({
       txId: utxo.txid,
       coin: selectedCrypto
     });
+    if (!transaction.error) {
+      utxosWithHex.push({
+        hex: transaction.data,
+        ...utxo
+      });
+    }
+  }
+  console.log('🚀 ~ file: helpers.js:541 ~ utxosWithHex:', utxosWithHex);
+  // const mapData = utxos.map(async (utxo) => {
 
-    return {
-      hex: transaction.data,
-      ...utxo
-    };
-  });
+  //   if (!transaction.error) {
+  //     return {
+  //       hex: transaction.data,
+  //       ...utxo
+  //     };
+  //   }
+  //   console.log(transaction.data, 'error');
+  // });
 
   const addressType = getAddressTypeByAddress(sender);
-  const utxosData = addressType === 'bech32' && !isLedger ? utxos : await Promise.all(mapData);
+  console.log('🚀 ~ file: helpers.js:554 ~ addressType:', addressType);
+  console.log('🚀 ~ file: helpers.js:554 ~ sender:', sender);
+  const utxosData = addressType === 'bech32' && !isLedger ? utxos : utxosWithHex;
+  console.log('🚀 ~ file: helpers.js:555 ~ utxosData:', utxosData);
 
   const feeRateWhole = Math.ceil(transactionFee);
   const compiledMemo = memo ? compileMemo(memo) : null;
