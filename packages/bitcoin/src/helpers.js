@@ -475,149 +475,32 @@ const signAndCreateTransaction = async ({ selectedCrypto, mnemonic, utxos, black
 //amount = Amount to send to recipient.
 //transactionFee = fee per byte.
 const createTransaction = async ({
-  address = '',
-  transactionFee = 1,
+  recipient = '',
+  transactionFee = MIN_FEE_RATE,
   amount = 0,
-  confirmedBalance = 0,
   utxos = [],
-  blacklistedUtxos = [],
-  changeAddress = '',
+  sender = '',
   keyPair,
   selectedCrypto = 'bitcoin',
   message = '',
-  addressType = 'bech32'
+  isLedger = false
 } = {}) => {
   try {
-    if (message && typeof message === 'string') {
-      message = convertStringToMessage(message);
-    }
-
-    const network = networks[selectedCrypto];
-    const totalFee =
-      BigInt(getByteCount({ [addressType]: utxos.length }, { [addressType]: changeAddress ? 2 : 1 }, message)) *
-      BigInt(transactionFee);
-    addressType = addressType.toLowerCase();
-    let targets = [];
-    if (amount > 0) {
-      targets.push({ address, value: Number(amount.toString()) });
-    }
-
-    //Change address and amount to send back to wallet.
-    if (changeAddress) {
-      const totalBack = BigInt(confirmedBalance) - (BigInt(amount) + totalFee);
-      targets.push({
-        address: changeAddress,
-        value: Number(totalBack.toString())
-      });
-    }
-
-    //Embed any OP_RETURN messages.
-    if (message !== '') {
-      const messageLength = message.length;
-      const lengthMin = 5;
-      //This is a patch for the following: https://github.com/coreyphillips/moonshine/issues/52
-      const buffers = [message];
-      if (messageLength > 0 && messageLength < lengthMin)
-        buffers.push(Buffer.from(' '.repeat(lengthMin - messageLength), 'utf8'));
-      const data = Buffer.concat(buffers);
-      const embed = bitcoin.payments.embed({ data: [data], network });
-      targets.push({ script: embed.output, value: 0 });
-    }
-
-    const psbt = new bitcoin.Psbt({ network });
-
-    //Add Inputs
-    const utxosLength = utxos.length;
-    for (let i = 0; i < utxosLength; i++) {
-      try {
-        const utxo = utxos[i];
-        if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
-        if (addressType === 'bech32') {
-          const p2wpkh = bitcoin.payments.p2wpkh({
-            pubkey: keyPair.publicKey,
-            network
-          });
-          psbt.addInput({
-            hash: utxo.txid,
-            index: utxo.vout,
-            witnessUtxo: {
-              script: p2wpkh.output,
-              value: utxo.value
-            }
-          });
-        }
-
-        if (addressType === 'segwit') {
-          const p2wpkh = bitcoin.payments.p2wpkh({
-            pubkey: keyPair.publicKey,
-            network
-          });
-          const p2sh = bitcoin.payments.p2sh({ redeem: p2wpkh, network });
-          psbt.addInput({
-            hash: utxo.txid,
-            index: utxo.vout,
-            witnessUtxo: {
-              script: p2sh.output,
-              value: utxo.value
-            },
-            redeemScript: p2sh.redeem.output
-          });
-        }
-
-        if (addressType === 'legacy') {
-          const transaction = await getTransactionHex({
-            txId: utxo.txid,
-            coin: selectedCrypto
-          });
-          const nonWitnessUtxo = Buffer.from(transaction.data, 'hex');
-          psbt.addInput({
-            hash: utxo.txid,
-            index: utxo.vout,
-            nonWitnessUtxo
-          });
-        }
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    //Shuffle and add outputs.
-    try {
-      targets = shuffleArray(targets);
-    } catch (e) {}
-
-    targets.forEach((target) => {
-      //Check if OP_RETURN
-      let isOpReturn = false;
-      try {
-        isOpReturn = !!target.script;
-      } catch (e) {}
-      if (isOpReturn) {
-        psbt.addOutput({
-          script: target.script,
-          value: target.value
-        });
-      } else {
-        psbt.addOutput({
-          address: target.address,
-          value: target.value
-        });
-      }
+    const { psbt } = await buildTx({
+      recipient: recipient,
+      amount: amount,
+      utxos: utxos,
+      sender: sender,
+      memo: message,
+      selectedCrypto,
+      totalFee: 0,
+      transactionFee,
+      keyPair,
+      isLedger
     });
+    psbt.signAllInputs(keyPair); // Sign all inputs
+    psbt.finalizeAllInputs(); // Finalise inputs
 
-    //Loop through and sign
-    let index = 0;
-    for (let i = 0; i < utxosLength; i++) {
-      try {
-        const utxo = utxos[i];
-        if (blacklistedUtxos.includes(utxo.tx_hash)) continue;
-        psbt.signInput(index, keyPair);
-        index++;
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    psbt.finalizeAllInputs();
     const rawTx = psbt.extractTransaction(true).toHex();
     const data = { error: false, data: rawTx };
 
@@ -647,14 +530,15 @@ const buildTx = async ({
   selectedCrypto = 'bitcoin',
   memo = '',
   totalFee,
-  keyPair
+  keyPair,
+  isLedger = false
 }) => {
   if (memo && memo.length > 80) {
     throw new Error('message too long, must not be longer than 80 chars.');
   }
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
-  console.log('🚀 ~ file: helpers.js:544 ~ utxos:', utxos);
+
   const mapData = utxos.map(async (utxo) => {
     const transaction = await getTransactionHex({
       txId: utxo.txid,
@@ -668,7 +552,7 @@ const buildTx = async ({
   });
 
   const addressType = getAddressTypeByAddress(sender);
-  const utxosData = await Promise.all(mapData);
+  const utxosData = addressType === 'bech32' && !isLedger ? utxos : await Promise.all(mapData);
 
   const feeRateWhole = Math.ceil(transactionFee);
   const compiledMemo = memo ? compileMemo(memo) : null;
