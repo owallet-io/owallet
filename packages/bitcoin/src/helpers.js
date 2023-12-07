@@ -654,6 +654,7 @@ const buildTxLegacy = async ({
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
   const feeRateWhole = Math.ceil(transactionFee);
+  console.log('🚀 ~ file: helpers.js:657 ~ feeRateWhole:', feeRateWhole);
 
   const compiledMemo = memo ? compileMemo(memo) : null;
 
@@ -670,13 +671,14 @@ const buildTxLegacy = async ({
   }
 
   const { inputs, outputs, fee } = accumulative(utxos, targetOutputs, feeRateWhole);
+
   if (totalFee !== fee) throw new Error('Fee not match');
 
   // .inputs and .outputs will be undefined if no solution was found
   if (!inputs || !outputs) throw new Error('Insufficient Balance for transaction');
 
   const psbt = new bitcoin.Psbt({ network: networks[selectedCrypto] }); // Network-specific
-  console.log('🚀 ~ file: helpers.js:671 ~ psbt:', psbt);
+
   // psbt add input from accumulative inputs
   inputs.forEach((utxo) =>
     psbt.addInput({

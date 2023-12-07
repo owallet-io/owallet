@@ -131,7 +131,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           utxos: utxos,
           blacklistedUtxos: [],
           amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
-          gasPriceStep: chainStore.current.stakeCurrency.gasPriceStep[sendConfigs.feeConfig.feeType]
+          feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType]
         }
       );
     } catch (error) {

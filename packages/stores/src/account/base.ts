@@ -73,7 +73,7 @@ export type ExtraOptionSendToken = {
   confirmedBalance?: number;
   utxos?: any[];
   blacklistedUtxos?: any[];
-  gasPriceStep?: number;
+  feeRate?: number;
 };
 
 export interface MsgOpt {
