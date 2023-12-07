@@ -638,7 +638,7 @@ const compileMemo = (memo) => {
   return bitcoin.script.compile([bitcoin.opcodes.OP_RETURN, data]); // Compile OP_RETURN script
 };
 
-const buildTxLegacy = async ({
+const buildTx = async ({
   recipient = '',
   transactionFee = 1,
   amount = 0,
@@ -649,14 +649,6 @@ const buildTxLegacy = async ({
   totalFee,
   keyPair
 }) => {
-  console.log('🚀 ~ file: helpers.js:531 ~ keyPair:', keyPair);
-  console.log('🚀 ~ file: helpers.js:531 ~ memo:', memo);
-  console.log('🚀 ~ file: helpers.js:531 ~ selectedCrypto:', selectedCrypto);
-  console.log('🚀 ~ file: helpers.js:531 ~ sender:', sender);
-  console.log('🚀 ~ file: helpers.js:531 ~ utxos:', utxos);
-  console.log('🚀 ~ file: helpers.js:531 ~ amount:', amount);
-  console.log('🚀 ~ file: helpers.js:531 ~ transactionFee:', transactionFee);
-  console.log('🚀 ~ file: helpers.js:531 ~ recipient:', recipient);
   if (memo && memo.length > 80) {
     throw new Error('message too long, must not be longer than 80 chars.');
   }
@@ -674,13 +666,11 @@ const buildTxLegacy = async ({
       ...utxo
     };
   });
-  console.log('🚀 ~ file: helpers.js:556 ~ mapData ~ mapData:', mapData);
+
   const addressType = getAddressTypeByAddress(sender);
   const utxosData = await Promise.all(mapData);
-  console.log('🚀 ~ file: helpers.js:550 ~ utxosData:', utxosData);
-  const feeRateWhole = Math.ceil(transactionFee);
-  console.log('🚀 ~ file: helpers.js:657 ~ feeRateWhole:', feeRateWhole);
 
+  const feeRateWhole = Math.ceil(transactionFee);
   const compiledMemo = memo ? compileMemo(memo) : null;
 
   const targetOutputs = [];
@@ -696,9 +686,6 @@ const buildTxLegacy = async ({
   }
 
   const { inputs, outputs, fee } = accumulative(utxosData, targetOutputs, feeRateWhole);
-  // console.log('🚀 ~ file: helpers.js:568 ~ inputs:', inputs);
-  // console.log('🚀 ~ file: helpers.js:676 ~ totalFee:', totalFee);
-  // console.log('🚀 ~ file: helpers.js:676 ~ fee:', fee);
   // if (totalFee !== fee) throw new Error('Fee not match');
 
   // .inputs and .outputs will be undefined if no solution was found
@@ -724,7 +711,6 @@ const buildTxLegacy = async ({
         };
       }
     })();
-    console.log('🚀 ~ file: helpers.js:702 ~ extraData ~ extraData:', extraData);
 
     psbt.addInput({
       hash: utxo.txid,
@@ -732,7 +718,6 @@ const buildTxLegacy = async ({
       ...extraData
     });
   });
-  console.log('🚀 ~ file: helpers.js:614 ~ inputs.forEach ~ inputs:', inputs);
 
   // psbt add outputs from accumulative outputs
   outputs.forEach((output) => {
@@ -750,7 +735,6 @@ const buildTxLegacy = async ({
       }
     }
   });
-  console.log('🚀 ~ file: helpers.js:632 ~ outputs.forEach ~ outputs:', outputs);
   return { psbt, utxos: utxosData, inputs, fee };
 };
 const fetchData = (type, params) => {
@@ -1476,6 +1460,6 @@ module.exports = {
   BtcToSats,
   convertStringToMessage,
   btcToFiat,
-  buildTxLegacy,
+  buildTx,
   getFeeRate
 };
