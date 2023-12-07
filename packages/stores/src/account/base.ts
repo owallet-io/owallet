@@ -70,9 +70,7 @@ export type ExtraOptionSendToken = {
   token_id?: string;
   recipient?: string;
   amount?: string;
-  confirmedBalance?: number;
   utxos?: any[];
-  blacklistedUtxos?: any[];
   feeRate?: number;
 };
 
@@ -938,7 +936,7 @@ export class AccountSetBase<MsgOpts, Queries> {
       const signResponse = await bitcoin.signAndBroadcast(this.chainId, {
         memo,
         fee,
-        address: this.btcAddress,
+        recipient: this.btcAddress,
         msgs,
         ...extraOptions
       });
