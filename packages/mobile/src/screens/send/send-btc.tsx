@@ -52,6 +52,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
 
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
+  const confirmedBalance = data?.balance;
   const sendConfigError =
     sendConfigs.recipientConfig.getError() ??
     sendConfigs.amountConfig.getError() ??
@@ -126,7 +127,9 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
           }
         },
         {
+          confirmedBalance: confirmedBalance,
           utxos: utxos,
+          blacklistedUtxos: [],
           amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
           feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType]
         }
@@ -145,7 +148,7 @@ export const SendBtcScreen: FunctionComponent = observer(({}) => {
       });
       console.log('🚀 ~ file: send-btc.tsx:146 ~ onSend ~ error:', error);
     }
-  }, [chainStore.current.networkType, chainId, utxos, address]);
+  }, [chainStore.current.networkType, chainId, utxos, address, confirmedBalance]);
 
   const styles = styling(colors);
   return (

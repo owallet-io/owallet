@@ -15,7 +15,7 @@ import queryString from 'querystring';
 
 import { useSendTxConfig } from '@owallet/hooks';
 import { fitPopupWindow, openPopupWindow, PopupSize } from '@owallet/popup';
-
+import { EthereumEndpoint } from '@owallet/common';
 import { BtcToSats } from '@owallet/bitcoin';
 import { CoinInputBtc } from '../../components/form/coin-input-btc';
 import { Address } from '@owallet/crypto';
@@ -59,6 +59,7 @@ export const SendBtcPage: FunctionComponent<{
   const address = accountInfo.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   const data = queries.bitcoin.queryBitcoinBalance.getQueryBalance(address)?.response?.data;
   const utxos = data?.utxos;
+  const confirmedBalance = data?.balance;
   const sendConfigs = useSendTxConfig(
     chainStore,
     chainId,
@@ -179,7 +180,9 @@ export const SendBtcPage: FunctionComponent<{
                   }
                 },
                 {
+                  confirmedBalance: confirmedBalance,
                   utxos: utxos,
+                  blacklistedUtxos: [],
                   amount: BtcToSats(Number(sendConfigs.amountConfig.amount)),
                   feeRate: sendConfigs.feeConfig.feeRate[sendConfigs.feeConfig.feeType]
                 } as any

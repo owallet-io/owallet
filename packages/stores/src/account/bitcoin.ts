@@ -78,12 +78,13 @@ export class BitcoinAccount {
       switch (denomHelper.type) {
         case 'native':
           const msg: any = {
-            recipient: recipient,
-            sender: this.base.btcAddress,
+            address: recipient,
+            changeAddress: this.base.btcAddress,
             amount: Number(extraOptions.amount),
             message: memo,
             totalFee: Number(stdFee.amount[0].amount),
             selectedCrypto: signOptions.chainId,
+            confirmedBalance: extraOptions.confirmedBalance,
             feeRate: extraOptions.feeRate
           };
 
