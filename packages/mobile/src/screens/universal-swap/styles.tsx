@@ -52,9 +52,14 @@ export const styling = (colors: TypeTheme['colors']) =>
       paddingTop: 30
     },
     boxTop: {
-      paddingTop: 10,
+      paddingTop: 40,
       paddingBottom: 20,
       marginTop: 4,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    },
+    buttonGroup: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between'

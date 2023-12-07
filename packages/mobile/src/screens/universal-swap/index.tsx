@@ -512,16 +512,26 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           <Text color={colors['text-title-login']} variant="h3" weight="700">
             Universal Swap
           </Text>
-          <OWButtonIcon
-            fullWidth={false}
-            style={[styles.btnTitleRight]}
-            sizeIcon={24}
-            colorIcon={'#7C8397'}
-            name="setting-bold"
-            onPress={() => {
-              setIsSlippageModal(true);
-            }}
-          />
+          <View style={styles.buttonGroup}>
+            <OWButtonIcon
+              fullWidth={false}
+              style={[styles.btnTitleRight]}
+              sizeIcon={24}
+              colorIcon={'#7C8397'}
+              name="round_refresh"
+              onPress={onRefresh}
+            />
+            <OWButtonIcon
+              fullWidth={false}
+              style={[styles.btnTitleRight]}
+              sizeIcon={24}
+              colorIcon={'#7C8397'}
+              name="setting-bold"
+              onPress={() => {
+                setIsSlippageModal(true);
+              }}
+            />
+          </View>
         </View>
 
         <View>
