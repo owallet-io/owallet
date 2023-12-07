@@ -308,6 +308,8 @@ export const SignPage: FunctionComponent = observer(() => {
                         await signInteractionStore.approveAndWaitEnd(signDocHelper.signDocWrapper);
                       }
 
+                      history.goBack();
+
                       if (interactionInfo.interaction && !interactionInfo.interactionInternal) {
                         window.close();
                       }
