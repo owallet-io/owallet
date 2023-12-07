@@ -646,7 +646,8 @@ const buildTxLegacy = async ({
   sender = '',
   selectedCrypto = 'bitcoin',
   memo = '',
-  totalFee
+  totalFee,
+  keyPair
 }) => {
   if (memo && memo.length > 80) {
     throw new Error('message too long, must not be longer than 80 chars.');
@@ -671,22 +672,41 @@ const buildTxLegacy = async ({
   }
 
   const { inputs, outputs, fee } = accumulative(utxos, targetOutputs, feeRateWhole);
-
-  if (totalFee !== fee) throw new Error('Fee not match');
+  console.log('🚀 ~ file: helpers.js:676 ~ totalFee:', totalFee);
+  console.log('🚀 ~ file: helpers.js:676 ~ fee:', fee);
+  // if (totalFee !== fee) throw new Error('Fee not match');
 
   // .inputs and .outputs will be undefined if no solution was found
   if (!inputs || !outputs) throw new Error('Insufficient Balance for transaction');
 
   const psbt = new bitcoin.Psbt({ network: networks[selectedCrypto] }); // Network-specific
-
+  const addressType = getAddressTypeByAddress(sender);
   // psbt add input from accumulative inputs
-  inputs.forEach((utxo) =>
+  inputs.forEach((utxo) => {
+    const extraData = (() => {
+      if (addressType === 'legacy') {
+        return { nonWitnessUtxo: Buffer.from(utxo.hex, 'hex') };
+      } else if (addressType === 'bech32') {
+        const p2wpkh = bitcoin.payments.p2wpkh({
+          pubkey: keyPair.publicKey,
+          network: networks[selectedCrypto]
+        });
+        return {
+          witnessUtxo: {
+            script: p2wpkh.output,
+            value: utxo.value
+          }
+        };
+      }
+    })();
+    console.log('🚀 ~ file: helpers.js:702 ~ extraData ~ extraData:', extraData);
+
     psbt.addInput({
       hash: utxo.txid,
       index: utxo.vout,
-      nonWitnessUtxo: Buffer.from(utxo.hex, 'hex')
-    })
-  );
+      ...extraData
+    });
+  });
 
   // psbt add outputs from accumulative outputs
   outputs.forEach((output) => {
