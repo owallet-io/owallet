@@ -1,7 +1,5 @@
 export const EVMOS_NETWORKS = ['kawaii_6886-1'];
-export const ORAICHAIN_ID = 'Oraichain';
 export const KAWAII_ID = 'kawaii_6886-1';
-export const ETH_ID = '0x01';
 export const TRON_ID = '0x2b6653dc';
 export const TRON_BIP39_PATH_PREFIX = "m/44'/195'";
 export const BIP44_PATH_PREFIX = "m/44'";
