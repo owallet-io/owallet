@@ -16,9 +16,9 @@ import { spacing, typography } from '../../../themes';
 import { OWalletLogo } from '../owallet-logo';
 import OWButton from '@src/components/button/OWButton';
 import { SCREENS } from '@src/common/constants';
-import { LRRedact } from '@logrocket/react-native';
+// import { LRRedact } from '@logrocket/react-native';
 
-export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
+export const VerifyMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -55,7 +55,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       return Math.random() > 0.5 ? 1 : -1;
     });
     setCandidateWords(
-      randomSortedWords.map((word) => {
+      randomSortedWords.map(word => {
         return {
           word,
           usedIndex: -1
@@ -69,7 +69,7 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
     );
   }, [newMnemonicConfig.mnemonic]);
 
-  const firstEmptyWordSetIndex = wordSet.findIndex((word) => word === undefined);
+  const firstEmptyWordSetIndex = wordSet.findIndex(word => word === undefined);
 
   const [isCreating, setIsCreating] = useState(false);
   const styles = useStyles();
@@ -111,97 +111,97 @@ export const VerifyMnemonicScreen: FunctionComponent = observer((props) => {
       contentContainerStyle={styles.containerContentScroll}
       backgroundColor={colors['plain-background']}
     >
-      <LRRedact>
-        <View style={styles.headerView}>
-          <Text style={styles.titleHeaderView}>Create new wallet</Text>
-          <View>
-            <OWalletLogo size={72} />
-          </View>
+      {/* <LRRedact> */}
+      <View style={styles.headerView}>
+        <Text style={styles.titleHeaderView}>Create new wallet</Text>
+        <View>
+          <OWalletLogo size={72} />
         </View>
-        <Text
-          style={{
-            ...typography['h7'],
-            color: colors['text-label-input'],
-            marginTop: 32,
-            marginBottom: 4
-          }}
-        >
-          Confirm your mnemonic
-        </Text>
-        <WordsCard
-          wordSet={wordSet.map((word, i) => {
-            return {
-              word: word ?? '',
-              empty: word === undefined,
-              dashed: i === firstEmptyWordSetIndex
-            };
-          })}
-        />
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            flexWrap: 'wrap'
-          }}
-        >
-          {candidateWords.map(({ word, usedIndex }, i) => {
-            return (
-              <WordButton
-                key={i.toString()}
-                word={word}
-                used={usedIndex >= 0}
-                onPress={() => {
-                  const newWordSet = wordSet.slice();
-                  const newCandiateWords = candidateWords.slice();
-                  if (usedIndex < 0) {
-                    if (firstEmptyWordSetIndex < 0) {
-                      return;
-                    }
-
-                    newWordSet[firstEmptyWordSetIndex] = word;
-                    setWordSet(newWordSet);
-
-                    newCandiateWords[i].usedIndex = firstEmptyWordSetIndex;
-                    setCandidateWords(newCandiateWords);
-                  } else {
-                    newWordSet[usedIndex] = undefined;
-                    setWordSet(newWordSet);
-
-                    newCandiateWords[i].usedIndex = -1;
-                    setCandidateWords(newCandiateWords);
+      </View>
+      <Text
+        style={{
+          ...typography['h7'],
+          color: colors['text-label-input'],
+          marginTop: 32,
+          marginBottom: 4
+        }}
+      >
+        Confirm your mnemonic
+      </Text>
+      <WordsCard
+        wordSet={wordSet.map((word, i) => {
+          return {
+            word: word ?? '',
+            empty: word === undefined,
+            dashed: i === firstEmptyWordSetIndex
+          };
+        })}
+      />
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap'
+        }}
+      >
+        {candidateWords.map(({ word, usedIndex }, i) => {
+          return (
+            <WordButton
+              key={i.toString()}
+              word={word}
+              used={usedIndex >= 0}
+              onPress={() => {
+                const newWordSet = wordSet.slice();
+                const newCandiateWords = candidateWords.slice();
+                if (usedIndex < 0) {
+                  if (firstEmptyWordSetIndex < 0) {
+                    return;
                   }
-                }}
-              />
-            );
-          })}
-        </View>
-        <View
-          style={{
-            flex: 1
-          }}
-        />
 
-        <OWButton
-          label="Next"
-          loading={isCreating}
-          disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
-          onPress={onVerifyMnemonic}
-        />
+                  newWordSet[firstEmptyWordSetIndex] = word;
+                  setWordSet(newWordSet);
 
-        <OWButton
-          label="Go back"
-          type="link"
-          onPress={() => {
-            navigation.goBack();
-          }}
-        />
-        {/* Mock element for bottom padding */}
-        <View
-          style={{
-            height: 20
-          }}
-        />
-      </LRRedact>
+                  newCandiateWords[i].usedIndex = firstEmptyWordSetIndex;
+                  setCandidateWords(newCandiateWords);
+                } else {
+                  newWordSet[usedIndex] = undefined;
+                  setWordSet(newWordSet);
+
+                  newCandiateWords[i].usedIndex = -1;
+                  setCandidateWords(newCandiateWords);
+                }
+              }}
+            />
+          );
+        })}
+      </View>
+      <View
+        style={{
+          flex: 1
+        }}
+      />
+
+      <OWButton
+        label="Next"
+        loading={isCreating}
+        disabled={wordSet.join(' ') !== newMnemonicConfig.mnemonic}
+        onPress={onVerifyMnemonic}
+      />
+
+      <OWButton
+        label="Go back"
+        type="link"
+        onPress={() => {
+          navigation.goBack();
+        }}
+      />
+      {/* Mock element for bottom padding */}
+      <View
+        style={{
+          height: 20
+        }}
+      />
+      {/* </LRRedact> */}
     </PageWithScrollView>
   );
 });

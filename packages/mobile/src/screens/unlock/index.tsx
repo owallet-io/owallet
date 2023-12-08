@@ -22,15 +22,14 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { Text } from '@src/components/text';
 import OWIcon from '@src/components/ow-icon/ow-icon';
 import images from '@src/assets/images';
-import { showToast } from '@src/utils/helper';
-import { LRRedact } from '@logrocket/react-native';
+// import { LRRedact } from '@logrocket/react-native';
 
 async function waitAccountLoad(accountStore: AccountStore<any, any, any, any>, chainId: string): Promise<void> {
   if (accountStore.getAccount(chainId).bech32Address) {
     return;
   }
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const disposer = autorun(() => {
       if (accountStore.getAccount(chainId).bech32Address) {
         resolve();
@@ -102,7 +101,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
         // },
         installMode: CodePush.InstallMode.IMMEDIATE
       },
-      (status) => {
+      status => {
         switch (status) {
           case CodePush.SyncStatus.UP_TO_DATE:
             // Show "downloading" modal
@@ -205,7 +204,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [keyRingStore.status, navigateToHome, downloading]);
 
   // Notification setup section
-  const regisFcmToken = useCallback(async (FCMToken) => {
+  const regisFcmToken = useCallback(async FCMToken => {
     await AsyncStorage.setItem('FCM_TOKEN', FCMToken);
   }, []);
 
@@ -215,14 +214,14 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (!fcmToken) {
       messaging()
         .getToken()
-        .then(async (FCMToken) => {
+        .then(async FCMToken => {
           if (FCMToken) {
             regisFcmToken(FCMToken);
           } else {
             // Alert.alert('[FCMService] User does not have a device token');
           }
         })
-        .catch((error) => {
+        .catch(error => {
           // let err = `FCM token get error: ${error}`;
           // Alert.alert(err);
           console.log('[FCMService] getToken rejected ', error);
@@ -236,7 +235,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
     if (Platform.OS === 'ios') {
       messaging()
         .registerDeviceForRemoteMessages()
-        .then((register) => {
+        .then(register => {
           getToken();
         });
       //await messaging().setAutoInitEnabled(true);
@@ -251,7 +250,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       .then(() => {
         registerAppWithFCM();
       })
-      .catch((error) => {
+      .catch(error => {
         console.log('[FCMService] Requested persmission rejected ', error);
       });
   }, [registerAppWithFCM]);
@@ -259,7 +258,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   const checkPermission = useCallback(() => {
     messaging()
       .hasPermission()
-      .then((enabled) => {
+      .then(enabled => {
         if (enabled) {
           //user has permission
           registerAppWithFCM();
@@ -268,7 +267,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
           requestPermission();
         }
       })
-      .catch((error) => {
+      .catch(error => {
         requestPermission();
         let err = `check permission error${error}`;
         Alert.alert(err);
@@ -285,7 +284,7 @@ export const UnlockScreen: FunctionComponent = observer(() => {
   }, [requestPermission]);
 
   useEffect(() => {
-    const unsubscribe = messaging().onMessage(async (remoteMessage) => {});
+    const unsubscribe = messaging().onMessage(async remoteMessage => {});
     return unsubscribe;
   }, []);
 
@@ -371,71 +370,71 @@ export const UnlockScreen: FunctionComponent = observer(() => {
       }}
       backgroundColor={colors['plain-background']}
     >
-      <LRRedact>
-        <HeaderWelcome
-          style={{
-            marginTop: 0
+      {/* <LRRedact> */}
+      <HeaderWelcome
+        style={{
+          marginTop: 0
+        }}
+        title={'Sign in to OWallet'}
+      />
+      <View
+        style={{
+          paddingLeft: 20,
+          paddingRight: 20
+        }}
+      >
+        <TextInput
+          containerStyle={{
+            paddingBottom: 40
           }}
-          title={'Sign in to OWallet'}
-        />
-        <View
-          style={{
-            paddingLeft: 20,
-            paddingRight: 20
-          }}
-        >
-          <TextInput
-            containerStyle={{
-              paddingBottom: 40
-            }}
-            accessibilityLabel="password"
-            returnKeyType="done"
-            secureTextEntry={statusPass}
-            value={password}
-            error={isFailed ? 'Invalid password' : undefined}
-            onChangeText={setPassword}
-            onSubmitEditing={tryUnlock}
-            placeholder="Password"
-            inputLeft={
-              <View style={{ paddingRight: 10 }}>
-                <OWIcon type="images" size={25} source={images.lock_circle} />
-              </View>
-            }
-            inputRight={
-              <OWButtonIcon
-                style={styles.padIcon}
-                onPress={showPass}
-                name={statusPass ? 'eye' : 'eye-slash'}
-                colorIcon={colors['icon-purple-700-gray']}
-                sizeIcon={22}
-              />
-            }
-          />
-          <OWButton
-            label="Sign In"
-            disabled={isLoading || !password}
-            onPress={tryUnlock}
-            loading={isLoading || isBiometricLoading}
-          />
-          {keychainStore.isBiometryOn && (
-            <View>
-              <OrText />
-              <OWButton
-                disabled={isBiometricLoading || isLoading}
-                label="Use Biometric Authentication"
-                style={styles.useBiometric}
-                onPress={tryBiometric}
-                type="secondary"
-              />
+          accessibilityLabel="password"
+          returnKeyType="done"
+          secureTextEntry={statusPass}
+          value={password}
+          error={isFailed ? 'Invalid password' : undefined}
+          onChangeText={setPassword}
+          onSubmitEditing={tryUnlock}
+          placeholder="Password"
+          inputLeft={
+            <View style={{ paddingRight: 10 }}>
+              <OWIcon type="images" size={25} source={images.lock_circle} />
             </View>
-          )}
-        </View>
-        <View
-          style={{
-            height: 100
-          }}
-        ></View>
-      </LRRedact>
+          }
+          inputRight={
+            <OWButtonIcon
+              style={styles.padIcon}
+              onPress={showPass}
+              name={statusPass ? 'eye' : 'eye-slash'}
+              colorIcon={colors['icon-purple-700-gray']}
+              sizeIcon={22}
+            />
+          }
+        />
+        <OWButton
+          label="Sign In"
+          disabled={isLoading || !password}
+          onPress={tryUnlock}
+          loading={isLoading || isBiometricLoading}
+        />
+        {keychainStore.isBiometryOn && (
+          <View>
+            <OrText />
+            <OWButton
+              disabled={isBiometricLoading || isLoading}
+              label="Use Biometric Authentication"
+              style={styles.useBiometric}
+              onPress={tryBiometric}
+              type="secondary"
+            />
+          </View>
+        )}
+      </View>
+      <View
+        style={{
+          height: 100
+        }}
+      ></View>
+      {/* </LRRedact> */}
     </PageWithScrollView>
   );
 });

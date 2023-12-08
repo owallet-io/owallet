@@ -7,31 +7,19 @@ import { RegisterConfig } from '@owallet/hooks';
 import { useSmartNavigation } from '../../../navigation.provider';
 import { Controller, useForm } from 'react-hook-form';
 import { TextInput } from '../../../components/input';
-import {
-  Image,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Clipboard
-} from 'react-native';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, Clipboard } from 'react-native';
 import { Button } from '../../../components/button';
 import { useStore } from '../../../stores';
 import { BIP44AdvancedButton, useBIP44Option } from '../bip44';
 import { Buffer } from 'buffer';
-import {
-  checkRouter,
-  checkRouterPaddingBottomBar,
-  navigate
-} from '../../../router/root';
+import { checkRouter, checkRouterPaddingBottomBar, navigate } from '../../../router/root';
 import { OWalletLogo } from '../owallet-logo';
 import { spacing, typography } from '../../../themes';
 import { LoadingSpinner } from '../../../components/spinner';
 import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { SCREENS } from '@src/common/constants';
-import { LRRedact } from '@logrocket/react-native';
+// import { LRRedact } from '@logrocket/react-native';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const bip39 = require('bip39');
 
@@ -54,9 +42,7 @@ function trimWordsStr(str: string): string {
   str = str.trim();
   // Split on the whitespace or new line.
   const splited = str.split(/\s+/);
-  const words = splited
-    .map((word) => word.trim())
-    .filter((word) => word.trim().length > 0);
+  const words = splited.map(word => word.trim()).filter(word => word.trim().length > 0);
   return words.join(' ');
 }
 
@@ -67,7 +53,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
+export const RecoverMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -107,23 +93,14 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
 
     const mnemonic = trimWordsStr(getValues('mnemonic'));
     if (!isPrivateKey(mnemonic)) {
-      await registerConfig.createMnemonic(
-        getValues('name'),
-        mnemonic,
-        getValues('password'),
-        bip44Option.bip44HDPath
-      );
+      await registerConfig.createMnemonic(getValues('name'), mnemonic, getValues('password'), bip44Option.bip44HDPath);
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'mnemonic'
       });
     } else {
       const privateKey = Buffer.from(mnemonic.trim().replace('0x', ''), 'hex');
-      await registerConfig.createPrivateKey(
-        getValues('name'),
-        privateKey,
-        getValues('password')
-      );
+      await registerConfig.createPrivateKey(getValues('name'), privateKey, getValues('password'));
       analyticsStore.setUserProperties({
         registerType: 'seed',
         accountType: 'privateKey'
@@ -182,10 +159,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       }
 
       try {
-        if (
-          Buffer.from(value, 'hex').toString('hex').toLowerCase() !==
-          value.toLowerCase()
-        ) {
+        if (Buffer.from(value, 'hex').toString('hex').toLowerCase() !== value.toLowerCase()) {
           return 'Invalid private key';
         }
       } catch {
@@ -205,13 +179,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
           <View style={styles.containerInputMnemonic}>
             <View />
 
-            <OWButton
-              type="secondary"
-              label="Paste"
-              size="small"
-              fullWidth={false}
-              onPress={onPaste}
-            />
+            <OWButton type="secondary" label="Paste" size="small" fullWidth={false} onPress={onPaste} />
           </View>
         }
         style={{
@@ -280,13 +248,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
             style={styles.padIcon}
             type="link"
             onPress={() => setStatusPass(!statusPass)}
-            icon={
-              <OWIcon
-                name={!statusPass ? 'eye' : 'eye-slash'}
-                color={colors['icon-purple-700-gray']}
-                size={22}
-              />
-            }
+            icon={<OWIcon name={!statusPass ? 'eye' : 'eye-slash'} color={colors['icon-purple-700-gray']} size={22} />}
           />
         }
         secureTextEntry={!statusPass}
@@ -342,11 +304,8 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
     );
   };
   return (
-    <PageWithScrollView
-      contentContainerStyle={styles.container}
-      backgroundColor={colors['plain-background']}
-    >
-      <LRRedact>
+    <PageWithScrollView contentContainerStyle={styles.container} backgroundColor={colors['plain-background']}>
+      {/* <LRRedact> */}
       <View style={styles.headerView}>
         <Text style={styles.titleHeader}>Import wallet</Text>
         <View>
@@ -399,12 +358,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
       ) : null}
 
       <BIP44AdvancedButton bip44Option={bip44Option} />
-      <OWButton
-        loading={isCreating}
-        disabled={isCreating}
-        onPress={submit}
-        label={'Next'}
-      />
+      <OWButton loading={isCreating} disabled={isCreating} onPress={submit} label={'Next'} />
       <OWButton type="link" onPress={onGoBack} label={'Go back'} />
       {/* Mock element for bottom padding */}
       <View
@@ -412,7 +366,7 @@ export const RecoverMnemonicScreen: FunctionComponent = observer((props) => {
           height: 20
         }}
       />
-      </LRRedact>
+      {/* </LRRedact> */}
     </PageWithScrollView>
   );
 });

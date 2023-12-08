@@ -5,7 +5,7 @@ import { PasswordInputModal } from '../../../modals/password-input/modal';
 import { useStore } from '../../../stores';
 import { getPrivateDataTitle } from '../screens/view-private-data';
 import { useSmartNavigation } from '../../../navigation.provider';
-import { LRRedact } from '@logrocket/react-native';
+// import { LRRedact } from '@logrocket/react-native';
 
 export const SettingViewPrivateDataItem: FunctionComponent<{
   topBorder?: boolean;
@@ -18,8 +18,8 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
 
   return (
     <React.Fragment>
-     <LRRedact>
-     <SettingItem
+      {/* <LRRedact> */}
+      <SettingItem
         label={'Mnemonic'}
         onPress={() => {
           setIsOpenModal(true);
@@ -34,10 +34,8 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
           setIsOpenModal(false);
         }}
         title={getPrivateDataTitle(keyRingStore.keyRingType, true)}
-        onEnterPassword={async (password) => {
-          const index = keyRingStore.multiKeyStoreInfo.findIndex(
-            (keyStore) => keyStore.selected
-          );
+        onEnterPassword={async password => {
+          const index = keyRingStore.multiKeyStoreInfo.findIndex(keyStore => keyStore.selected);
 
           if (index >= 0) {
             const privateData = await keyRingStore.showKeyRing(index, password);
@@ -48,7 +46,7 @@ export const SettingViewPrivateDataItem: FunctionComponent<{
           }
         }}
       />
-     </LRRedact>
+      {/* </LRRedact> */}
     </React.Fragment>
   );
 });

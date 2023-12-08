@@ -20,7 +20,7 @@ import OWButton from '../../../components/button/OWButton';
 import OWIcon from '../../../components/ow-icon/ow-icon';
 import { spacing } from '../../../themes';
 import OWButtonIcon from '@src/components/button/ow-button-icon';
-import { LRRedact } from '@logrocket/react-native';
+// import { LRRedact } from '@logrocket/react-native';
 
 interface FormData {
   name: string;
@@ -28,7 +28,7 @@ interface FormData {
   confirmPassword: string;
 }
 
-export const NewMnemonicScreen: FunctionComponent = observer((props) => {
+export const NewMnemonicScreen: FunctionComponent = observer(props => {
   const route = useRoute<
     RouteProp<
       Record<
@@ -195,51 +195,51 @@ export const NewMnemonicScreen: FunctionComponent = observer((props) => {
   return (
     <PageWithScrollView contentContainerStyle={styles.container} backgroundColor={colors['plain-background']}>
       {/* Mock for flexible margin top */}
-      <LRRedact>
-        <View style={styles.headerContainer}>
-          <Text style={styles.title}>Create new wallet</Text>
-          <View>
-            <OWalletLogo size={72} />
-          </View>
+      {/* <LRRedact> */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.title}>Create new wallet</Text>
+        <View>
+          <OWalletLogo size={72} />
         </View>
-        <WordsCard words={words} />
-        <Controller
-          control={control}
-          rules={{
-            required: 'Name is required'
-          }}
-          render={renderUserName}
-          name="name"
-          defaultValue=""
-        />
-        {mode === 'create' ? (
-          <React.Fragment>
-            <Controller
-              control={control}
-              rules={{
-                required: 'Password is required',
-                validate: validatePassword
-              }}
-              render={renderPassword}
-              name="password"
-              defaultValue=""
-            />
-            <Controller
-              control={control}
-              rules={{
-                required: 'Confirm password is required',
-                validate: validateConfirmPassword
-              }}
-              render={renderConfirmPassword}
-              name="confirmPassword"
-              defaultValue=""
-            />
-          </React.Fragment>
-        ) : null}
-        <BIP44AdvancedButton bip44Option={bip44Option} />
-        <OWButton onPress={submit} label="Next" />
-        <OWButton onPress={onGoBack} label="Go back" type="link" />
-      </LRRedact>
+      </View>
+      <WordsCard words={words} />
+      <Controller
+        control={control}
+        rules={{
+          required: 'Name is required'
+        }}
+        render={renderUserName}
+        name="name"
+        defaultValue=""
+      />
+      {mode === 'create' ? (
+        <React.Fragment>
+          <Controller
+            control={control}
+            rules={{
+              required: 'Password is required',
+              validate: validatePassword
+            }}
+            render={renderPassword}
+            name="password"
+            defaultValue=""
+          />
+          <Controller
+            control={control}
+            rules={{
+              required: 'Confirm password is required',
+              validate: validateConfirmPassword
+            }}
+            render={renderConfirmPassword}
+            name="confirmPassword"
+            defaultValue=""
+          />
+        </React.Fragment>
+      ) : null}
+      <BIP44AdvancedButton bip44Option={bip44Option} />
+      <OWButton onPress={submit} label="Next" />
+      <OWButton onPress={onGoBack} label="Go back" type="link" />
+      {/* </LRRedact> */}
     </PageWithScrollView>
   );
 });

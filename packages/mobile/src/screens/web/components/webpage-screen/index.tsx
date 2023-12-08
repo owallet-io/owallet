@@ -18,7 +18,7 @@ import { WebViewStateContext } from '../context';
 import { BrowserFooterSection } from '../footer-section';
 import { OnScreenWebpageScreenHeader } from '../header';
 import { SwtichTab } from '../switch-tabs';
-import { LRRedactProps } from '@logrocket/react-native';
+// import { LRRedactProps } from '@logrocket/react-native';
 
 export const useInjectedSourceCode = () => {
   const [code, setCode] = useState<string | undefined>();
@@ -311,7 +311,7 @@ export const WebpageScreen: FunctionComponent<
                 decelerationRate="normal"
                 allowsBackForwardNavigationGestures={true}
                 // onScroll={_onScroll}
-                {...LRRedactProps()}
+                // {...LRRedactProps()}
                 {...props}
               />
               <WebViewStateContext.Provider

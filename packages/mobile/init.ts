@@ -3,7 +3,7 @@ import './src/background/background';
 import { version, name } from './package.json';
 import { OWallet, Ethereum, TronWeb } from '@owallet/provider';
 import { RNMessageRequesterInternal } from './src/router';
-
+import { TRON_ID, ETH_ID } from '@owallet/common';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 window.owallet = new OWallet(`${name}-${version}`, new RNMessageRequesterInternal());
