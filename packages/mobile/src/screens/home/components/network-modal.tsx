@@ -24,11 +24,11 @@ export const NetworkModal = ({ profileColor }) => {
   const bip44Option = useBIP44Option();
   // const smartNavigation = useSmartNavigation();
   const { modalStore, chainStore, keyRingStore, accountStore } = useStore();
-  const { selectChain, saveLastViewChainId } = chainStore;
-  const { networkType } = chainStore.current;
+
   const account = accountStore.getAccount(chainStore.current.chainId);
   const styles = styling(colors);
   const onConfirm = async (item: any) => {
+    const { networkType } = chainStore.getChain(item?.chainId);
     const keyDerivation = (() => {
       const keyMain = getKeyDerivationFromAddressType(account.addressType);
       if (networkType === 'bitcoin') {
