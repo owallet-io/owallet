@@ -482,7 +482,8 @@ const createTransaction = async ({
   sender = '',
   keyPair,
   selectedCrypto = 'bitcoin',
-  message = ''
+  message = '',
+  totalFee = 0
 } = {}) => {
   try {
     const { psbt } = await buildTx({
@@ -492,7 +493,7 @@ const createTransaction = async ({
       sender: sender,
       memo: message,
       selectedCrypto,
-      totalFee: 0,
+      totalFee,
       transactionFee,
       keyPair,
       isLedger: false
@@ -538,7 +539,6 @@ const buildTx = async ({
   if (!validateAddress(recipient, selectedCrypto).isValid) throw new Error('Invalid address');
   if (utxos.length === 0) throw new Error('Insufficient Balance for transaction');
   var utxosWithHex = [];
-
   for (let i = 0; i < utxos.length; i++) {
     const utxo = utxos[i];
     const transaction = await getTransactionHex({
@@ -552,27 +552,10 @@ const buildTx = async ({
       });
     }
   }
-  console.log('🚀 ~ file: helpers.js:541 ~ utxosWithHex:', utxosWithHex);
-  // const mapData = utxos.map(async (utxo) => {
-
-  //   if (!transaction.error) {
-  //     return {
-  //       hex: transaction.data,
-  //       ...utxo
-  //     };
-  //   }
-  //   console.log(transaction.data, 'error');
-  // });
-
   const addressType = getAddressTypeByAddress(sender);
-  console.log('🚀 ~ file: helpers.js:554 ~ addressType:', addressType);
-  console.log('🚀 ~ file: helpers.js:554 ~ sender:', sender);
   const utxosData = addressType === 'bech32' && !isLedger ? utxos : utxosWithHex;
-  console.log('🚀 ~ file: helpers.js:555 ~ utxosData:', utxosData);
-
   const feeRateWhole = Math.ceil(transactionFee);
   const compiledMemo = memo ? compileMemo(memo) : null;
-
   const targetOutputs = [];
 
   //1. add output amount and recipient to targets
@@ -584,9 +567,8 @@ const buildTx = async ({
   if (compiledMemo) {
     targetOutputs.push({ script: compiledMemo, value: 0 });
   }
-
   const { inputs, outputs, fee } = accumulative(utxosData, targetOutputs, feeRateWhole);
-  // if (totalFee !== fee) throw new Error('Fee not match');
+  if (fee > totalFee) throw new Error('Fee not match');
 
   // .inputs and .outputs will be undefined if no solution was found
   if (!inputs || !outputs) throw new Error('Insufficient Balance for transaction');

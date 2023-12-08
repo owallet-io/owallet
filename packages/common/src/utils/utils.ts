@@ -178,7 +178,7 @@ export function findLedgerAddress(AddressesLedger, chainInfo: ChainInfoWithoutEn
       return AddressesLedger?.eth;
     } else if (networkType === 'bitcoin') {
       const typeBtc = typeBtcLedgerByAddress(chainInfo, addressType);
-      return AddressesLedger[typeBtc];
+      return AddressesLedger?.[typeBtc];
     } else {
       return AddressesLedger?.cosmos;
     }

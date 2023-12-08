@@ -1,22 +1,11 @@
-import {
-  IFeeConfig,
-  IGasConfig,
-  InsufficientFeeError,
-  NotLoadedFeeError
-} from '@owallet/hooks';
+import { IFeeConfig, IGasConfig, InsufficientFeeError, NotLoadedFeeError } from '@owallet/hooks';
 import { CoinPretty, PricePretty } from '@owallet/unit';
 import { Text } from '@src/components/text';
 import { useTheme } from '@src/themes/theme-provider';
 import { action, makeObservable, observable } from 'mobx';
 import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent, useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewProps,
-  ViewStyle
-} from 'react-native';
+import { StyleSheet, TextStyle, View, ViewProps, ViewStyle } from 'react-native';
 import { useStore } from '../../stores';
 import { useStyle } from '../../styles';
 import { spacing, typography } from '../../themes';
@@ -55,21 +44,19 @@ class FeeButtonState {
   }
 }
 
-export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer(
-  (props) => {
-    // This may be not the good way to handle the states across the components.
-    // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
-    const [feeButtonState] = useState(() => new FeeButtonState());
-    return (
-      <React.Fragment>
-        {props.feeConfig.feeCurrency ? <FeeButtonsInner {...props} /> : null}
-        {feeButtonState.isGasInputOpen || !props.feeConfig.feeCurrency ? (
-          <GasInput label={props.gasLabel} gasConfig={props.gasConfig} />
-        ) : null}
-      </React.Fragment>
-    );
-  }
-);
+export const FeeButtons: FunctionComponent<FeeButtonsProps> = observer((props) => {
+  // This may be not the good way to handle the states across the components.
+  // But, rather than using the context API with boilerplate code, just use the mobx state to simplify the logic.
+  const [feeButtonState] = useState(() => new FeeButtonState());
+  return (
+    <React.Fragment>
+      {props.feeConfig.feeCurrency ? <FeeButtonsInner {...props} /> : null}
+      {feeButtonState.isGasInputOpen || !props.feeConfig.feeCurrency ? (
+        <GasInput label={props.gasLabel} gasConfig={props.gasConfig} />
+      ) : null}
+    </React.Fragment>
+  );
+});
 
 export const getFeeErrorText = (error: Error): string | undefined => {
   switch (error.constructor) {
@@ -83,14 +70,7 @@ export const getFeeErrorText = (error: Error): string | undefined => {
 };
 
 export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
-  ({
-    labelStyle,
-    containerStyle,
-    buttonsContainerStyle,
-    errorLabelStyle,
-    label,
-    feeConfig
-  }) => {
+  ({ labelStyle, containerStyle, buttonsContainerStyle, errorLabelStyle, label, feeConfig }) => {
     const { priceStore, chainStore } = useStore();
     const style = useStyle();
     const { colors } = useTheme();
@@ -136,11 +116,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
       }
     })();
 
-    const renderIconTypeFee = (
-      label: string,
-      selected?: boolean,
-      size = 16
-    ) => {
+    const renderIconTypeFee = (label: string, selected?: boolean, size = 16) => {
       switch (label) {
         case 'Slow':
           return (
@@ -231,10 +207,9 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
               color: colors['sub-primary-text']
             }}
           >
+            {chainStore.current.networkType === 'bitcoin' ? '≤' : null}{' '}
             {amount
-              .maxDecimals(
-                chainStore?.current?.stakeCurrency?.coinDecimals || 6
-              )
+              .maxDecimals(chainStore?.current?.stakeCurrency?.coinDecimals || 6)
               .trim(true)
               .separator(' ')
               .toString()}
@@ -247,7 +222,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
                 color: colors['sub-primary-text']
               }}
             >
-              {price.toString()}
+              {chainStore.current.networkType === 'bitcoin' ? '≤' : null} {price.toString()}
             </Text>
           ) : null}
         </RectButton>
@@ -264,11 +239,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
         <Text
           style={[
             StyleSheet.flatten([
-              style.flatten([
-                'subtitle3',
-                'color-text-black-medium',
-                'margin-bottom-3'
-              ]),
+              style.flatten(['subtitle3', 'color-text-black-medium', 'margin-bottom-3']),
               labelStyle
             ]),
             { color: colors['sub-primary-text'] }
@@ -281,49 +252,20 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
             flexDirection: 'row'
           }}
         >
-          {renderButton(
-            'Slow',
-            lowFeePrice,
-            lowFee,
-            feeConfig.feeType === 'low',
-            () => {
-              feeConfig.setFeeType('low');
-            }
-          )}
-          {renderButton(
-            'Average',
-            averageFeePrice,
-            averageFee,
-            feeConfig.feeType === 'average',
-            () => {
-              feeConfig.setFeeType('average');
-            }
-          )}
-          {renderButton(
-            'Fast',
-            highFeePrice,
-            highFee,
-            feeConfig.feeType === 'high',
-            () => {
-              feeConfig.setFeeType('high');
-            }
-          )}
+          {renderButton('Slow', lowFeePrice, lowFee, feeConfig.feeType === 'low', () => {
+            feeConfig.setFeeType('low');
+          })}
+          {renderButton('Average', averageFeePrice, averageFee, feeConfig.feeType === 'average', () => {
+            feeConfig.setFeeType('average');
+          })}
+          {renderButton('Fast', highFeePrice, highFee, feeConfig.feeType === 'high', () => {
+            feeConfig.setFeeType('high');
+          })}
         </View>
         {isFeeLoading ? (
           <View>
-            <View
-              style={style.flatten([
-                'absolute',
-                'height-16',
-                'justify-center',
-                'margin-top-2',
-                'margin-left-4'
-              ])}
-            >
-              <LoadingSpinner
-                size={14}
-                color={style.get('color-loading-spinner').color}
-              />
+            <View style={style.flatten(['absolute', 'height-16', 'justify-center', 'margin-top-2', 'margin-left-4'])}>
+              <LoadingSpinner size={14} color={style.get('color-loading-spinner').color} />
             </View>
           </View>
         ) : null}
@@ -331,13 +273,7 @@ export const FeeButtonsInner: FunctionComponent<FeeButtonsProps> = observer(
           <View>
             <Text
               style={StyleSheet.flatten([
-                style.flatten([
-                  'absolute',
-                  'text-caption1',
-                  'color-error',
-                  'margin-top-6',
-                  'margin-left-4'
-                ]),
+                style.flatten(['absolute', 'text-caption1', 'color-error', 'margin-top-6', 'margin-left-4']),
                 errorLabelStyle
               ])}
             >
