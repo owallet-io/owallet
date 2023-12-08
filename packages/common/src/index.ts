@@ -8,4 +8,5 @@ export * from './ui-config';
 export * from './languages';
 export * from './tx';
 export * from './escape';
-export * from "./json";
+export * from './json';
+export * from './universal-swap';
