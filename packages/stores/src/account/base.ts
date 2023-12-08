@@ -25,7 +25,7 @@ import {
   OwalletEvent,
   sortObjectByKey,
   escapeHTML,
-  findLedgerAddressWithChainId,
+  findLedgerAddress,
   ChainIdEnum,
   isBase58,
   getBase58Address,
@@ -325,7 +325,7 @@ export class AccountSetBase<MsgOpts, Queries> {
     const { networkType } = chainInfo;
     if (this._isNanoLedger) {
       if (networkType !== 'cosmos') {
-        const address = findLedgerAddressWithChainId(keyRingLedgerAddresses, this.chainId);
+        const address = findLedgerAddress(keyRingLedgerAddresses, chainInfo, this.addressType);
         if (this.chainId === ChainIdEnum.TRON && isBase58(address) && !toDisplay) {
           return getEvmAddress(address);
         }

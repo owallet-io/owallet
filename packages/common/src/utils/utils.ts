@@ -1,4 +1,12 @@
-import { ChainInfo, BIP44HDPath, AddressBtcType, HDPath, KeyDerivationTypeEnum } from '@owallet/types';
+import { getAddressTypeByAddress } from '@owallet/bitcoin';
+import {
+  ChainInfo,
+  BIP44HDPath,
+  AddressBtcType,
+  HDPath,
+  KeyDerivationTypeEnum,
+  ChainInfoWithoutEndpoints
+} from '@owallet/types';
 import bech32, { fromWords } from 'bech32';
 import { ETH } from '@hanchon/ethermint-address-converter';
 import { NetworkType } from '@owallet/types';
@@ -140,24 +148,41 @@ export function getNetworkTypeByBip44HDPath(path: BIP44HDPath): LedgerAppType {
   }
 }
 export const isBase58 = (value: string): boolean => /^[A-HJ-NP-Za-km-z1-9]*$/.test(value);
-export function findLedgerAddressWithChainId(AddressesLedger, chainId) {
-  let address;
-
+export const typeBtcLedgerByAddress = (
+  chainInfo: ChainInfoWithoutEndpoints,
+  addressType: AddressBtcType
+): 'btc44' | 'btc84' | 'tbtc44' | 'tbtc84' => {
+  if (chainInfo.networkType === 'bitcoin') {
+    if (chainInfo.chainId === 'bitcoinTestnet') {
+      if (addressType === 'bech32') {
+        return 'tbtc84';
+      } else if (addressType === 'legacy') {
+        return 'tbtc44';
+      }
+    } else {
+      if (addressType === 'bech32') {
+        return 'btc84';
+      } else if (addressType === 'legacy') {
+        return 'btc44';
+      }
+    }
+  }
+};
+export function findLedgerAddress(AddressesLedger, chainInfo: ChainInfoWithoutEndpoints, addressType: AddressBtcType) {
+  const chainId = chainInfo.chainId;
   if (chainId === TRON_ID) {
-    address = AddressesLedger?.trx;
-  } else if (chainId === ChainIdEnum.BitcoinTestnet) {
-    address = AddressesLedger?.tbtc;
+    return AddressesLedger?.trx;
   } else {
     const networkType = getNetworkTypeByChainId(chainId);
     if (networkType === 'evm') {
-      address = AddressesLedger?.eth;
+      return AddressesLedger?.eth;
     } else if (networkType === 'bitcoin') {
-      address = AddressesLedger?.btc;
+      const typeBtc = typeBtcLedgerByAddress(chainInfo, addressType);
+      return AddressesLedger[typeBtc];
     } else {
-      address = AddressesLedger?.cosmos;
+      return AddressesLedger?.cosmos;
     }
   }
-  return address;
 }
 export const getKeyDerivationFromAddressType = (type: AddressBtcType): '84' | '44' => {
   if (type === AddressBtcType.Legacy) {
