@@ -2,12 +2,7 @@ import React, { FunctionComponent } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from '@src/components/text';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import {
-  SendBridgeIcon,
-  SendCrossChainIcon,
-  SendQRCodeIcon,
-  SendWithinNetworkIcon
-} from '../../components/icon';
+import { SendBridgeIcon, SendCrossChainIcon, SendQRCodeIcon, SendWithinNetworkIcon } from '../../components/icon';
 import { spacing } from '../../themes';
 import { useSmartNavigation } from '../../navigation.provider';
 import { useStore } from '../../stores';
@@ -29,7 +24,8 @@ const styling = colors =>
     },
     sendTokenCardContent: {
       width: '47%',
-      padding: 0
+      padding: 0,
+      marginTop: 12
     },
     sendTokenCardText: {
       height: 130,
@@ -53,12 +49,11 @@ const tokenTransferInfo = [
     type: 'send',
     titleLine2: 'within network'
   },
-  // {
-  //   icon: <SendCrossChainIcon />,
-  //   titleLine1: 'Send cross-chain',
-  //   type: 'send_cross',
-  //   titleLine2: '(IBC Transfer)'
-  // },
+  {
+    icon: <SendCrossChainIcon />,
+    titleLine1: 'Universal Swap',
+    type: 'send_cross'
+  },
   // {
   //   icon: <SendBridgeIcon />,
   //   titleLine1: 'Bridge',
@@ -97,6 +92,9 @@ const TransferTokensOptions: FunctionComponent = () => {
           currency: chainStore.current.stakeCurrency.coinMinimalDenom
         });
         break;
+      case 'send_cross':
+        smartNavigation.navigateSmart('UniversalSwapScreen', {});
+        break;
       default:
         alert('Coming soon!');
         break;
@@ -108,10 +106,7 @@ const TransferTokensOptions: FunctionComponent = () => {
       <View style={styles.sendTokenCardbody}>
         {tokenTransferInfo.map((val, i) => (
           <OWBox type="shadow" style={styles.sendTokenCardContent} key={i}>
-            <TouchableOpacity
-              style={styles.sendTokenCardText}
-              onPress={() => onPress(val.type)}
-            >
+            <TouchableOpacity style={styles.sendTokenCardText} onPress={() => onPress(val.type)}>
               <View style={styles.iconSendToken}>{val.icon}</View>
               <Text style={styles.textSendToken}>{val.titleLine1}</Text>
               <Text style={styles.textSendToken}>{val.titleLine2}</Text>
