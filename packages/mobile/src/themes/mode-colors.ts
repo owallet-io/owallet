@@ -107,6 +107,7 @@ export const colorsCode = {
   'orange-800': '#EF6363',
   //blue
   'blue-300': '#8C93A7',
+  'blue-400': '#7C8397',
   'blue-600': '#5F5E77',
   'blue/Border-50': '#EDEDF8',
   'bg-icon-coin': '#D3D3DA'
@@ -118,7 +119,9 @@ const modeColors = {
   'primary-text': ['#E2DEEB', '#1C1C1E'],
   'icon-text': ['#E2DEEB', '#8C93A7'],
   border: ['#83838F', '#E2DEEB'],
+  'border-network-modal': ['#111111', colorsCode['blue/Border-50']],
   'border-gray': ['#111', '#C6C6CD'],
+  'border-input-slippage': ['#83838F', colorsCode['gray-300']],
   //splash-background
   'splash-background': ['#1E1E1E', '#FBF8FF'],
   'sub-primary': ['#434762', '#F3F1F5'],
@@ -134,10 +137,7 @@ const modeColors = {
   'btn-primary-background': ['#945EF8', '#945EF8'],
   'btn-disable-background': [colorsCode['blue-600'], colorsCode['gray-300']],
   // border
-  'border-purple-100-gray-800': [
-    colorsCode['gray-800'],
-    colorsCode['purple-100']
-  ],
+  'border-purple-100-gray-800': [colorsCode['gray-800'], colorsCode['purple-100']],
   // item
   item: ['#2B2D3B', '#fff'],
   icon: ['#E2DEEB', '#5F5E77'],
@@ -148,10 +148,7 @@ const modeColors = {
   'sub-text': ['#8C93A7', '#5F5E77'],
   'text-title': [colorsCode['white'], colorsCode['gray-900']],
   'text-btn-disable-color': [colorsCode['gray-500'], colorsCode['white']],
-  'text-gray-900-purple-700': [
-    colorsCode['purple-700'],
-    colorsCode['gray-900']
-  ],
+  'text-gray-900-purple-700': [colorsCode['purple-700'], colorsCode['gray-900']],
 
   //onBoarding page
   'background-container': ['#01040D', '#FFFFFF'], //
@@ -199,7 +196,10 @@ const modeColors = {
   'bg-icon-token': ['#E5E5EA', '#F3F1F5'],
   'bg-circle-select-modal': [colorsCode['gray-400'], colorsCode['purple-100']],
   'divided-border-transaction-detail': ['#2B2D3B', '#EDEDF8'],
-  skeleton: ['#36384a', '#f3f2f2']
+  skeleton: ['#36384a', '#f3f2f2'],
+  'bg-tonner': ['#191B21', '#F6EDFF'],
+  'bg-swap-box': ['#1E1E21', '#F6F9FF'],
+  'bg-btn-select-token': ['#333339', '#EAF1FF']
 };
 const typeColorsTheme = () => modeColors;
 type TypeTheme = { [P in keyof ReturnType<typeof typeColorsTheme>]: string };
