@@ -1,7 +1,7 @@
 import './src/background/background';
 
 import { version, name } from './package.json';
-import { OWallet } from '@owallet/provider';
+import { OWallet, Ethereum, TronWeb } from '@owallet/provider';
 import { RNMessageRequesterInternal } from './src/router';
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment

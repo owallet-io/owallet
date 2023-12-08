@@ -386,6 +386,8 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         relayerFee
       };
 
+      console.log('universalSwapData', universalSwapData);
+
       const universalSwapHandler = new UniversalSwapHandler(
         {
           ...universalSwapData
