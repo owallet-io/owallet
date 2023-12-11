@@ -301,9 +301,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = ratio?.displayAmount
+      const minimumReceive = ratio?.amount
         ? calculateMinReceive(
-            ratio.displayAmount,
+            ratio.amount,
             toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
             userSlippage,
             toTokenInfoData?.decimals
