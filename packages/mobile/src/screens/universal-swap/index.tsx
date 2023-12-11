@@ -42,7 +42,7 @@ import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
-import { handleErrorSwap } from './helpers';
+import { getTransactionUrl, handleErrorSwap } from './helpers';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -418,14 +418,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
           type: 'success',
           onPress: async () => {
             if (chainInfo.raw.txExplorer && transactionHash) {
-              await openLink(
-                chainInfo.raw.txExplorer.txUrl.replace(
-                  '{txHash}',
-                  chainInfo.chainId === ChainIdEnum.TRON || chainInfo.networkType === 'bitcoin'
-                    ? transactionHash
-                    : transactionHash.toUpperCase()
-                )
-              );
+              await openLink(getTransactionUrl(originalFromToken.chainId, transactionHash));
             }
           }
         });

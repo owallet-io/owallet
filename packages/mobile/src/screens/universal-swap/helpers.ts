@@ -1,5 +1,15 @@
 import { TypeTextAndCustomizeComponent } from './types';
-import { TokenItemType, CustomChainInfo } from '@oraichain/oraidex-common';
+import {
+  TokenItemType,
+  CustomChainInfo,
+  Networks,
+  BSC_SCAN,
+  ETHEREUM_SCAN,
+  TRON_SCAN,
+  KWT_SCAN,
+  network,
+  NetworkChainId
+} from '@oraichain/oraidex-common';
 import { showToast } from '@src/utils/helper';
 
 export const checkFnComponent = (titleRight: TypeTextAndCustomizeComponent, Element: React.ReactNode) => {
@@ -22,6 +32,26 @@ export const handleErrorSwap = message => {
         : 'Something went wrong! Please make sure you have enough fees to make this transaction.',
     type: 'danger'
   });
+};
+
+export const getTransactionUrl = (chainId: NetworkChainId, transactionHash: string) => {
+  switch (Number(chainId)) {
+    case Networks.bsc:
+      return `${BSC_SCAN}/tx/${transactionHash}`;
+    case Networks.mainnet:
+      return `${ETHEREUM_SCAN}/tx/${transactionHash}`;
+    case Networks.tron:
+      return `${TRON_SCAN}/#/transaction/${transactionHash.replace(/^0x/, '')}`;
+    default:
+      // raw string
+      switch (chainId) {
+        case 'kawaii_6886-1':
+          return `${KWT_SCAN}/tx/${transactionHash}`;
+        case 'Oraichain':
+          return `${network.explorer}/txs/${transactionHash}`;
+      }
+      return null;
+  }
 };
 
 const OraiIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';
