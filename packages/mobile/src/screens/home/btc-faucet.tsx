@@ -4,28 +4,23 @@ import { WebView } from 'react-native-webview';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@src/stores';
 const BtcFaucet = observer(() => {
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-
-    modalStore
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, keyRingStore, modalStore } = useStore();
   const account = accountStore.getAccount(chainStore.current.chainId);
+  const address = account.getAddressDisplay(keyRingStore.keyRingLedgerAddresses);
   return (
     <View
       style={{
         flex: 1
       }}
     >
-      {!!account.bech32Address && (
+      {!!address && (
         <WebView
           javaScriptEnabled={true}
           injectedJavaScript={`
               const inputValue = document.getElementById('validationTooltipAddress');
               
               if(!!inputValue){
-                  inputValue.value='${account.bech32Address}'   
+                  inputValue.value='${address}'   
                   }
               `}
           source={{ uri: 'https://bitcoinfaucet.uo1.net/' }}
