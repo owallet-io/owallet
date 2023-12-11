@@ -11,16 +11,7 @@ import OWButtonIcon from '@src/components/button/ow-button-icon';
 import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { showToast } from '@src/utils/helper';
-import {
-  DEFAULT_SLIPPAGE,
-  GAS_ESTIMATION_SWAP_DEFAULT,
-  ORAI,
-  TRON_ID,
-  ETH_ID,
-  ORAICHAIN_ID,
-  toDisplay,
-  getBase58Address
-} from '@owallet/common';
+import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
 import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
 import {
   TokenItemType,
@@ -34,7 +25,7 @@ import {
 } from '@oraichain/oraidex-common';
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
-import { fetchTokenInfos, toSubAmount } from '@owallet/common';
+import { fetchTokenInfos, toSubAmount, ChainIdEnum } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
   isEvmNetworkNativeSwapSupported,
@@ -55,9 +46,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
 
-  const accountEvm = accountStore.getAccount(ETH_ID);
-  const accountTron = accountStore.getAccount(TRON_ID);
-  const accountOrai = accountStore.getAccount(ORAICHAIN_ID);
+  const accountEvm = accountStore.getAccount(ChainIdEnum.Ethereum);
+  const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
+  const accountOrai = accountStore.getAccount(ChainIdEnum.Oraichain);
 
   const [isSlippageModal, setIsSlippageModal] = useState(false);
   const [minimumReceive, setMininumReceive] = useState(0);
@@ -198,7 +189,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     try {
       const cwStargate = {
         account: accountOrai,
-        chainId: ORAICHAIN_ID,
+        chainId: ChainIdEnum.Oraichain,
         rpc: oraichainNetwork.rpc
       };
 

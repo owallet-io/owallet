@@ -57,7 +57,7 @@ import {
   RequestSendRawTransactionMsg,
   TriggerSmartContractMsg
 } from './msgs';
-import { ETH_ID, TRON_ID } from '@owallet/common';
+import { ChainIdEnum } from '@owallet/common';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -306,7 +306,7 @@ export class Ethereum implements IEthereum {
       let tmpChainId = this.initChainId;
       if (args.chainId === '0x1') {
         // 0x1 is not valid chain id, so we set default chain id = 0x01 (eth)
-        tmpChainId = ETH_ID;
+        tmpChainId = ChainIdEnum.Ethereum;
       } else {
         tmpChainId = args.chainId;
       }
@@ -387,7 +387,7 @@ export class TronWeb implements ITronWeb {
   }
 
   async sign(transaction: object): Promise<object> {
-    const msg = new RequestSignTronMsg(TRON_ID, transaction);
+    const msg = new RequestSignTronMsg(ChainIdEnum.TRON, transaction);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -397,12 +397,12 @@ export class TronWeb implements ITronWeb {
     txID: string;
     visible?: boolean;
   }): Promise<object> {
-    const msg = new RequestSendRawTransactionMsg(TRON_ID, transaction);
+    const msg = new RequestSendRawTransactionMsg(ChainIdEnum.TRON, transaction);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
   async getDefaultAddress(): Promise<object> {
-    const msg = new GetDefaultAddressTronMsg(TRON_ID);
+    const msg = new GetDefaultAddressTronMsg(ChainIdEnum.TRON);
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -421,7 +421,7 @@ export class TronWeb implements ITronWeb {
       visible?: boolean;
     };
   }> {
-    const msg = new TriggerSmartContractMsg(TRON_ID, {
+    const msg = new TriggerSmartContractMsg(ChainIdEnum.TRON, {
       address,
       functionSelector,
       options,
