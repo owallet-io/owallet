@@ -261,16 +261,31 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     // TODO: need to automatically update from / to token to the correct swappable one when clicking the swap button
   }, [fromToken, toToken, toTokenDenom, fromTokenDenom]);
 
+  // TODO: use this constant so we can temporary simulate for all pair (specifically AIRI/USDC, ORAIX/USDC), update later after migrate contract
+  const isFromAiriToUsdc = originalFromToken.coinGeckoId === 'airight' && originalToToken.coinGeckoId === 'usd-coin';
+  const isFromOraixToUsdc = originalFromToken.coinGeckoId === 'oraidex' && originalToToken.coinGeckoId === 'usd-coin';
+  const isFromUsdc = originalFromToken.coinGeckoId === 'usd-coin';
+
+  const INIT_SIMULATE_AIRI_TO_USDC = 1000;
+  const INIT_SIMULATE_FROM_USDC = 10;
+  const INIT_AMOUNT =
+    isFromAiriToUsdc || isFromOraixToUsdc ? INIT_SIMULATE_AIRI_TO_USDC : isFromUsdc ? INIT_SIMULATE_FROM_USDC : 1;
+
   const getSimulateSwap = async (initAmount?) => {
     if (client) {
       const routerClient = new OraiswapRouterQueryClient(client, network.router);
+      let simulateAmount = INIT_AMOUNT;
+      if (fromAmountToken > 0) {
+        simulateAmount = fromAmountToken;
+      }
 
       const data = await handleSimulateSwap({
         originalFromInfo: originalFromToken,
         originalToInfo: originalToToken,
-        originalAmount: initAmount ?? fromAmountToken,
+        originalAmount: initAmount ?? simulateAmount,
         routerClient
       });
+
       setAmountLoading(false);
 
       return data;
@@ -278,7 +293,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   const estimateAverageRatio = async () => {
-    const data = await getSimulateSwap(1);
+    const data = await getSimulateSwap(INIT_AMOUNT);
     setRatio(data);
   };
 
@@ -286,9 +301,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = ratio?.amount
+      const minimumReceive = ratio?.displayAmount
         ? calculateMinReceive(
-            ratio.amount,
+            ratio.displayAmount,
             toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
             userSlippage,
             toTokenInfoData?.decimals
@@ -314,7 +329,9 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   };
 
   useEffect(() => {
-    estimateSwapAmount(fromAmountToken);
+    if (fromAmountToken > 0) {
+      estimateSwapAmount(fromAmountToken);
+    }
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, fromAmountToken]);
 
   useEffect(() => {
