@@ -157,7 +157,6 @@ export const AccountView: FunctionComponent = observer(() => {
           <div style={{ flex: 1 }} />
         </div>
       )}
-
       {networkType === 'bitcoin' && (
         <div
           style={{

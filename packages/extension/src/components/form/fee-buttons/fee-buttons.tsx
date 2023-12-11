@@ -13,6 +13,7 @@ import { useIntl } from 'react-intl';
 import { GasInput } from '../gas-input';
 import { action, makeObservable, observable } from 'mobx';
 import classNames from 'classnames';
+import { useStore } from '../../../stores';
 
 export interface FeeButtonsProps {
   feeConfig: IFeeConfig;
@@ -93,6 +94,7 @@ export const FeeButtonsInner: FunctionComponent<
     feeSelectLabels = { low: 'Low', average: 'Average', high: 'High' },
     feeButtonState
   }) => {
+    const { chainStore } = useStore();
     useEffect(() => {
       if (feeConfig.feeCurrency && !feeConfig.fee) {
         feeConfig.setFeeType('average');
@@ -196,6 +198,7 @@ export const FeeButtonsInner: FunctionComponent<
                     'text-muted': feeConfig.feeType !== fee
                   })}
                 >
+                  {chainStore.current.networkType === 'bitcoin' ? '≤' : null}{' '}
                   {[lowFee, averageFee, highFee][i].trim(true).toString() || 0}
                 </div>
                 {[lowFeePrice, averageFeePrice, highFeePrice][i] ? (
@@ -204,6 +207,7 @@ export const FeeButtonsInner: FunctionComponent<
                       'text-muted': feeConfig.feeType !== fee
                     })}
                   >
+                    {chainStore.current.networkType === 'bitcoin' ? '≤ ' : null}
                     {[lowFeePrice, averageFeePrice, highFeePrice][i].toString()}
                   </div>
                 ) : null}

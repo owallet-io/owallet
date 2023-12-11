@@ -43,6 +43,7 @@ export const BtcDetailsTab: FunctionComponent<{ dataSign; intl }> = observer(({ 
         </Label>
         <div id="fee-price">
           <div className={styleDetailsTab.feePrice}>
+            {'≤ '}
             {formatBalance({
               balance: Number(msgs?.totalFee),
               cryptoUnit: 'BTC',
