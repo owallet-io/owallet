@@ -21,7 +21,8 @@ import {
   toAmount,
   network,
   Networks,
-  TRON_DENOM
+  TRON_DENOM,
+  BigDecimal
 } from '@oraichain/oraidex-common';
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
@@ -39,6 +40,7 @@ import { styling } from './styles';
 import { BalanceType, MAX, balances } from './types';
 import { OraiswapRouterQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { useLoadTokens, useCoinGeckoPrices, useClient, useRelayerFee, useTaxRate } from '@owallet/hooks';
+import { handleErrorSwap } from './helpers';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
@@ -216,10 +218,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
-      showToast({
-        message: error?.message ?? error?.ex?.message,
-        type: 'danger'
-      });
+      handleErrorSwap(error?.message ?? error?.ex?.message);
     }
   };
 
@@ -301,16 +300,19 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      const minimumReceive = ratio?.amount
-        ? calculateMinReceive(
-            ratio.amount,
-            toAmount(fromAmountToken, fromTokenInfoData!.decimals).toString(),
-            userSlippage,
-            toTokenInfoData?.decimals
-          )
-        : '0';
+      // const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
+      const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100);
+      // ratio && ratio.amount
+      //   ? calculateMinReceive(
+      //       // @ts-ignore
+      //       Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
+      //       fromAmountTokenBalance.toString(),
+      //       userSlippage,
+      //       originalFromToken.decimals
+      //     )
+      //   : '0';
 
-      setMininumReceive(toDisplay(minimumReceive, toTokenInfoData?.decimals));
+      setMininumReceive(Number(minimumReceive.toFixed(6)));
       if (data) {
         const isWarningSlippage = +minimumReceive > +data.amount;
         setIsWarningSlippage(isWarningSlippage);
@@ -321,10 +323,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       console.log('error', error);
 
       setAmountLoading(false);
-      showToast({
-        message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
-        type: 'danger'
-      });
+      handleErrorSwap(error?.message ?? error?.ex?.message);
     }
   };
 
@@ -418,10 +417,7 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     } catch (error) {
       setSwapLoading(false);
       console.log('error', error);
-      showToast({
-        message: error?.message ?? error?.ex?.message ?? 'Something went wrong',
-        type: 'danger'
-      });
+      handleErrorSwap(error?.message ?? error?.ex?.message);
     } finally {
       setSwapLoading(false);
     }

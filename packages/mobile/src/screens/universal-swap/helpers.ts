@@ -1,5 +1,7 @@
 import { TypeTextAndCustomizeComponent } from './types';
 import { TokenItemType, CustomChainInfo } from '@oraichain/oraidex-common';
+import { showToast } from '@src/utils/helper';
+
 export const checkFnComponent = (titleRight: TypeTextAndCustomizeComponent, Element: React.ReactNode) => {
   if (!!titleRight) {
     if (typeof titleRight === 'string') {
@@ -10,6 +12,16 @@ export const checkFnComponent = (titleRight: TypeTextAndCustomizeComponent, Elem
     return titleRight;
   }
   return null;
+};
+
+export const handleErrorSwap = message => {
+  showToast({
+    message:
+      message && message.length < 250
+        ? message
+        : 'Something went wrong! Please make sure you have enough fees to make this transaction.',
+    type: 'danger'
+  });
 };
 
 const OraiIcon = 'https://s2.coinmarketcap.com/static/img/coins/64x64/7533.png';

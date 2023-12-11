@@ -9,7 +9,7 @@ import { isUndefined } from 'axios/lib/utils';
  * - Get response body
  * - Check if timeout
  */
-export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosResponse | AxiosError> => {
+export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosResponse> => {
   const request = createRequest(config);
   const promiseChain = [getResponse(request, config)];
 
