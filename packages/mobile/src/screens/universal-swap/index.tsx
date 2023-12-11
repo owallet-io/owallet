@@ -24,6 +24,8 @@ import {
   TRON_DENOM,
   BigDecimal
 } from '@oraichain/oraidex-common';
+import { openLink } from '../../utils/helper';
+
 import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
 import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, toSubAmount, ChainIdEnum } from '@owallet/common';
@@ -44,9 +46,11 @@ import { handleErrorSwap } from './helpers';
 const RELAYER_DECIMAL = 6; // TODO: hardcode decimal relayerFee
 
 export const UniversalSwapScreen: FunctionComponent = observer(() => {
-  const { accountStore, universalSwapStore } = useStore();
+  const { accountStore, universalSwapStore, chainStore } = useStore();
   const { colors } = useTheme();
   const { data: prices } = useCoinGeckoPrices();
+
+  const chainInfo = chainStore.getChain(ChainIdEnum.Oraichain);
 
   const accountEvm = accountStore.getAccount(ChainIdEnum.Ethereum);
   const accountTron = accountStore.getAccount(ChainIdEnum.TRON);
@@ -407,10 +411,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
       const result = await universalSwapHandler.processUniversalSwap();
 
       if (result) {
+        const { transactionHash } = result;
         setSwapLoading(false);
         showToast({
-          message: 'Success',
-          type: 'success'
+          message: 'Successful transaction. View on scan',
+          type: 'success',
+          onPress: async () => {
+            if (chainInfo.raw.txExplorer && transactionHash) {
+              await openLink(
+                chainInfo.raw.txExplorer.txUrl.replace(
+                  '{txHash}',
+                  chainInfo.chainId === ChainIdEnum.TRON || chainInfo.networkType === 'bitcoin'
+                    ? transactionHash
+                    : transactionHash.toUpperCase()
+                )
+              );
+            }
+          }
         });
         await handleFetchAmounts();
       }
