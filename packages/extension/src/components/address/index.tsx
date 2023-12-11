@@ -2,6 +2,7 @@ import React from 'react';
 
 import { ToolTip } from '../tooltip';
 import { Bech32Address } from '@owallet/cosmos';
+import { formatAddress } from '@owallet/common';
 
 export interface AddressProps {
   children: string;
@@ -19,9 +20,7 @@ export interface RawAddressProps {
   isRaw: true;
 }
 
-export class Address extends React.Component<
-  AddressProps & (Bech32AddressProps | RawAddressProps)
-> {
+export class Address extends React.Component<AddressProps & (Bech32AddressProps | RawAddressProps)> {
   copyRef = React.createRef<HTMLDivElement>();
 
   componentDidMount(): void {
@@ -38,9 +37,7 @@ export class Address extends React.Component<
 
   render() {
     const { tooltipFontSize, children } = this.props;
-    const tooltipAddress = this.props.tooltipAddress
-      ? this.props.tooltipAddress
-      : children;
+    const tooltipAddress = this.props.tooltipAddress ? this.props.tooltipAddress : children;
 
     if ('maxCharacters' in this.props) {
       const { lineBreakBeforePrefix } = this.props;
@@ -50,11 +47,7 @@ export class Address extends React.Component<
           trigger="hover"
           options={{ placement: 'top' }}
           tooltip={
-            <div
-              ref={this.copyRef}
-              className="address-tooltip"
-              style={{ fontSize: tooltipFontSize }}
-            >
+            <div ref={this.copyRef} className="address-tooltip" style={{ fontSize: tooltipFontSize }}>
               {lineBreakBeforePrefix && tooltipAddress.length > 0
                 ? tooltipAddress.split('1').map((item, i) => {
                     if (i === 0) {
@@ -66,7 +59,7 @@ export class Address extends React.Component<
             </div>
           }
         >
-          {Bech32Address.shortenAddress(children, this.props.maxCharacters)}
+          {formatAddress(children, this.props.maxCharacters)}
         </ToolTip>
       );
     } else {
@@ -75,11 +68,7 @@ export class Address extends React.Component<
           trigger="hover"
           options={{ placement: 'top' }}
           tooltip={
-            <div
-              ref={this.copyRef}
-              className="address-tooltip"
-              style={{ fontSize: tooltipFontSize }}
-            >
+            <div ref={this.copyRef} className="address-tooltip" style={{ fontSize: tooltipFontSize }}>
               {tooltipAddress}
             </div>
           }

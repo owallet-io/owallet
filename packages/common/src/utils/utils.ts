@@ -23,11 +23,11 @@ export const COINTYPE_NETWORK = {
   1: 'Bitcoin Testnet'
 };
 
-export const getEvmAddress = base58Address => {
+export const getEvmAddress = (base58Address) => {
   return base58Address ? '0x' + Buffer.from(bs58.decode(base58Address).slice(1, -4)).toString('hex') : '-';
 };
 
-export const getBase58Address = address => {
+export const getBase58Address = (address) => {
   if (!address) return null;
   const evmAddress = Buffer.from('41' + address.slice(2), 'hex');
   const hash = Hash.sha256(Hash.sha256(evmAddress));
@@ -35,7 +35,7 @@ export const getBase58Address = address => {
   return bs58.encode(Buffer.concat([evmAddress, checkSum]));
 };
 
-export const getAddressFromBech32 = bech32address => {
+export const getAddressFromBech32 = (bech32address) => {
   const address = Buffer.from(fromWords(bech32.decode(bech32address).words));
   return ETH.encoder(address);
 };
@@ -45,13 +45,13 @@ export const DEFAULT_BLOCK_TIME_IN_SECONDS = 2;
 export const DEFAULT_TX_BLOCK_INCLUSION_TIMEOUT_IN_MS =
   DEFAULT_BLOCK_TIMEOUT_HEIGHT * DEFAULT_BLOCK_TIME_IN_SECONDS * 1000;
 
-export const getCoinTypeByChainId = chainId => {
-  const network = EmbedChainInfos.find(nw => nw.chainId == chainId);
+export const getCoinTypeByChainId = (chainId) => {
+  const network = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   return network?.bip44?.coinType ?? network?.coinType ?? 60;
 };
 
 export const getChainInfoOrThrow = (chainId: string): ChainInfo => {
-  const chainInfo = EmbedChainInfos.find(nw => nw.chainId == chainId);
+  const chainInfo = EmbedChainInfos.find((nw) => nw.chainId == chainId);
   if (!chainInfo) {
     throw new Error(`There is no chain info for ${chainId}`);
   }
@@ -70,8 +70,8 @@ export const getUrlV1Beta = (isBeta: boolean) => {
   if (isBeta) return 'v1beta1';
   return 'v1';
 };
-export const bufferToHex = buffer => {
-  return [...new Uint8Array(buffer)].map(x => x.toString(16).padStart(2, '0')).join('');
+export const bufferToHex = (buffer) => {
+  return [...new Uint8Array(buffer)].map((x) => x.toString(16).padStart(2, '0')).join('');
 };
 
 export function getLedgerAppNameByNetwork(network: string, chainId?: string | number): LedgerAppType {
@@ -93,8 +93,8 @@ export function getLedgerAppNameByNetwork(network: string, chainId?: string | nu
   }
 }
 
-export const getNetworkTypeByChainId = chainId => {
-  const network = EmbedChainInfos.find(nw => nw.chainId === chainId);
+export const getNetworkTypeByChainId = (chainId) => {
+  const network = EmbedChainInfos.find((nw) => nw.chainId === chainId);
   return network?.networkType ?? 'cosmos';
 };
 
@@ -206,3 +206,10 @@ export const convertBip44ToHDPath = (bip44HDPath: BIP44HDPath, keyDerivation: nu
   };
 };
 export const MIN_FEE_RATE = 10;
+export const formatAddress = (address: string, limitFirst = 10) => {
+  if (!address || address?.length < 10) return null;
+  const fristLetter = address?.slice(0, limitFirst) ?? '';
+  const lastLetter = address?.slice(-5) ?? '';
+
+  return `${fristLetter}...${lastLetter}`;
+};

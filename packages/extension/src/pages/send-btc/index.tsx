@@ -64,7 +64,7 @@ export const SendBtcPage: FunctionComponent<{
     chainStore,
     chainId,
     accountInfo.msgOpts['send'],
-    accountInfo.bech32Address,
+    address,
     queries.queryBalances,
     null,
     null,
