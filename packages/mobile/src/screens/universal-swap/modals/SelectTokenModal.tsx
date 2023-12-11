@@ -9,7 +9,7 @@ import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
 import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
-import { getTotalUsd } from '@owallet/common';
+import { ChainIdEnum, getTotalUsd } from '@owallet/common';
 import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
@@ -37,11 +37,11 @@ export const SelectTokenModal: FunctionComponent<{
     } else {
       const tmpData = data.filter(
         d =>
-          d.chainId.toString().includes(keyword) ||
-          d.denom.toString().includes(keyword) ||
-          d.name.toString().includes(keyword) ||
-          d.org.toString().includes(keyword) ||
-          d.coinGeckoId.toString().includes(keyword)
+          d.chainId.toString().toLowerCase().includes(keyword.toLowerCase()) ||
+          d.denom.toString().toLowerCase().includes(keyword.toLowerCase()) ||
+          d.name.toString().toLowerCase().includes(keyword.toLowerCase()) ||
+          d.org.toString().toLowerCase().includes(keyword.toLowerCase()) ||
+          d.coinGeckoId.toString().toLowerCase().includes(keyword.toLowerCase())
       );
 
       setTokens(tmpData);
@@ -57,8 +57,7 @@ export const SelectTokenModal: FunctionComponent<{
     ) {
       setTokens(data);
     } else {
-      const tmpData = data.filter(d => d.chainId.toString().includes(selectedChainFilter));
-
+      const tmpData = data.filter(d => d.chainId.toString().toLowerCase().includes(selectedChainFilter.toLowerCase()));
       setTokens(tmpData);
     }
   }, [data, selectedChainFilter]);
@@ -152,7 +151,7 @@ export const SelectTokenModal: FunctionComponent<{
         >
           <OWIcon type="images" source={images.push} size={16} />
           <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
-            Network
+            {Object.keys(ChainIdEnum).find(key => ChainIdEnum[key] === selectedChainFilter) ?? 'Network'}
           </Text>
           <OWIcon size={16} color={colors['blue-400']} name="down" />
         </TouchableOpacity>
