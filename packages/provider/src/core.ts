@@ -57,7 +57,7 @@ import {
   RequestSendRawTransactionMsg,
   TriggerSmartContractMsg
 } from './msgs';
-import { TRON_ID } from '@owallet/common';
+import { ETH_ID, TRON_ID } from '@owallet/common';
 
 export class OWallet implements IOWallet {
   protected enigmaUtils: Map<string, SecretUtils> = new Map();
@@ -112,6 +112,7 @@ export class OWallet implements IOWallet {
     );
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
+
   async experimentalSignEIP712CosmosTx_v0(
     chainId: string,
     signer: string,
@@ -172,7 +173,7 @@ export class OWallet implements IOWallet {
 
   async signAndBroadcastTron(chainId: string, data: object): Promise<{}> {
     const msg = new RequestSignTronMsg(chainId, data);
- 
+
     return await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -300,12 +301,26 @@ export class Ethereum implements IEthereum {
     this.initChainId = initChainId;
   }
 
-  // async send(): Promise<void> {
-  //   console.log('');
-  // }
   async request(args: RequestArguments): Promise<any> {
-    const msg = new RequestEthereumMsg(args.chainId, args.method, args.params);
-    return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    if (args.method === 'wallet_switchEthereumChain') {
+      let tmpChainId = this.initChainId;
+      if (args.chainId === '0x1') {
+        // 0x1 is not valid chain id, so we set default chain id = 0x01 (eth)
+        tmpChainId = ETH_ID;
+      } else {
+        tmpChainId = args.chainId;
+      }
+      this.initChainId = tmpChainId;
+      const msg = new RequestEthereumMsg(tmpChainId, args.method, args.params);
+      return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    } else if (args.method === 'eth_sendTransaction') {
+      const msg = new RequestSignEthereumMsg(args.chainId ?? this.initChainId, args.params?.[0]);
+      const { rawTxHex } = await this.requester.sendMessage(BACKGROUND_PORT, msg);
+      return rawTxHex;
+    } else {
+      const msg = new RequestEthereumMsg(args.chainId ?? this.initChainId, args.method, args.params);
+      return await this.requester.sendMessage(BACKGROUND_PORT, msg);
+    }
   }
 
   async signAndBroadcastEthereum(chainId: string, data: object): Promise<{ rawTxHex: string }> {
@@ -315,7 +330,7 @@ export class Ethereum implements IEthereum {
 
   async experimentalSuggestChain(chainInfo: ChainInfo): Promise<void> {
     const msg = new SuggestChainInfoMsg(chainInfo);
-  
+
     await this.requester.sendMessage(BACKGROUND_PORT, msg);
   }
 
@@ -323,7 +338,7 @@ export class Ethereum implements IEthereum {
     try {
       const msg = new RequestSignEthereumTypedDataMsg(chainId, data);
       const result = await this.requester.sendMessage(BACKGROUND_PORT, msg);
-   
+
       return result;
     } catch (error) {
       console.log(error, 'error on send message!!!!!!!!!!!!!!!');

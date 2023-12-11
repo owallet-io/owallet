@@ -140,19 +140,19 @@ import { getAnalytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  authDomain: 'owallet-829a1.firebaseapp.com',
-  projectId: 'owallet-829a1',
-  storageBucket: 'owallet-829a1.appspot.com',
-  messagingSenderId: process.env.SENDER_ID,
-  appId: '1:570000248707:web:212fb3f889fb816eb7f0b6',
-  apiKey: process.env.API_KEY,
-  measurementId: process.env.MEASUREMENT_ID
-};
+// const firebaseConfig = {
+//   authDomain: 'owallet-829a1.firebaseapp.com',
+//   projectId: 'owallet-829a1',
+//   storageBucket: 'owallet-829a1.appspot.com',
+//   messagingSenderId: process.env.SENDER_ID,
+//   appId: '1:570000248707:web:212fb3f889fb816eb7f0b6',
+//   apiKey: process.env.API_KEY,
+//   measurementId: process.env.MEASUREMENT_ID
+// };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const app = initializeApp(firebaseConfig);
+// const analytics = getAnalytics(app);
 
 const StateRenderer: FunctionComponent = observer(() => {
   const { keyRingStore } = useStore();
