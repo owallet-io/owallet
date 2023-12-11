@@ -428,6 +428,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     onMaxFromAmount((fromTokenBalance * BigInt(item.value)) / BigInt(MAX), item.value);
   };
 
+  console.log('toAmountToken', toAmountToken);
+  console.log('originalToToken', originalToToken);
+  console.log(
+    'toAmountToken display',
+    toDisplay(toAmountToken?.toString(), fromTokenInfoData?.decimals, toTokenInfoData?.decimals)
+  );
+
   return (
     <PageWithScrollViewInBottomTabView
       backgroundColor={colors['plain-background']}
@@ -536,7 +543,13 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
               tokenFee={fromTokenFee}
             />
             <SwapBox
-              amount={toDisplay(toAmountToken.toString(), originalToToken?.decimals).toString() ?? '0'}
+              amount={
+                toDisplay(
+                  toAmountToken?.toString(),
+                  fromTokenInfoData?.decimals,
+                  toTokenInfoData?.decimals
+                ).toString() ?? '0'
+              }
               balanceValue={toDisplay(toTokenBalance, originalToToken?.decimals)}
               tokenActive={originalToToken}
               onOpenTokenModal={() => setIsSelectToTokenModal(true)}

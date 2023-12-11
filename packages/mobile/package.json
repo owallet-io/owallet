@@ -73,6 +73,7 @@
     "react-native-splash-screen": "^3.3.0",
     "react-native-skeleton-placeholder": "^5.2.4",
     "react-native-flash-message": "0.4.2",
+    "react-native-numeric-pad": "^1.1.5",
     "appcenter": "4.4.5",
     "appcenter-analytics": "4.4.5",
     "appcenter-crashes": "4.4.5",
