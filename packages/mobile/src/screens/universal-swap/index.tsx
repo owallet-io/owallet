@@ -12,7 +12,6 @@ import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { showToast } from '@src/utils/helper';
 import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
-import { evmTokens } from '@owallet/common';
 import {
   TokenItemType,
   NetworkChainId,
