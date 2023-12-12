@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { CWStargate, fetchRelayerFee, oraichainNetwork, ChainIdEnum } from '@owallet/common';
+import { CWStargate, fetchRelayerFee, ChainIdEnum } from '@owallet/common';
+import { oraichainNetwork } from '@oraichain/oraidex-common';
 import { AccountWithAll } from '@owallet/stores';
 
 export const useRelayerFee = (accountOrai: AccountWithAll) => {

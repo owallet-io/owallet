@@ -10,7 +10,7 @@ import { metrics } from '@src/themes';
 import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
 import { ChainIdEnum, getTotalUsd } from '@owallet/common';
-import { CoinGeckoPrices } from '@src/hooks/use-coingecko';
+import { CoinGeckoPrices } from '@owallet/hooks';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
 import images from '@src/assets/images';
@@ -32,7 +32,7 @@ export const SelectTokenModal: FunctionComponent<{
   const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
-    if (keyword === '' || keyword === null || keyword === undefined || !keyword) {
+    if (keyword === '' || !keyword) {
       setTokens(data);
     } else {
       const tmpData = data.filter(d => {
@@ -47,12 +47,7 @@ export const SelectTokenModal: FunctionComponent<{
   }, [data, keyword]);
 
   useEffect(() => {
-    if (
-      selectedChainFilter === '' ||
-      selectedChainFilter === null ||
-      selectedChainFilter === undefined ||
-      !selectedChainFilter
-    ) {
+    if (selectedChainFilter === '' || !selectedChainFilter) {
       setTokens(data);
     } else {
       const tmpData = data.filter(d => d.chainId.toString().toLowerCase().includes(selectedChainFilter.toLowerCase()));
@@ -147,7 +142,7 @@ export const SelectTokenModal: FunctionComponent<{
           }}
           style={styles.btnNetwork}
         >
-          <OWIcon type="images" source={images.push} size={16} />
+          <OWIcon name="browser-bold" size={16} />
           <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
             {Object.keys(ChainIdEnum).find(key => ChainIdEnum[key] === selectedChainFilter) ?? 'Network'}
           </Text>

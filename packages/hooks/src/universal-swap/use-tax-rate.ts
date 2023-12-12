@@ -1,4 +1,5 @@
-import { CWStargate, fetchTaxRate, oraichainNetwork, ChainIdEnum } from '@owallet/common';
+import { CWStargate, fetchTaxRate, ChainIdEnum } from '@owallet/common';
+import { oraichainNetwork } from '@oraichain/oraidex-common';
 import { useEffect, useState } from 'react';
 import { AccountWithAll } from '@owallet/stores';
 

@@ -1,18 +1,15 @@
 import Long from 'long';
 import { TokenItemType, network } from '@oraichain/oraidex-common';
 import {
-  cosmosTokens,
   flattenTokens,
   oraichainTokens,
   CoinGeckoId,
   NetworkChainId,
-  atomic,
   IBC_WASM_CONTRACT
 } from '@oraichain/oraidex-common';
-import { HIGH_GAS_PRICE, MULTIPLIER, swapEvmRoutes } from '../config/constants';
+import { HIGH_GAS_PRICE, MULTIPLIER } from '../config/constants';
 import { OraiswapOracleQueryClient } from '@oraichain/oraidex-contracts-sdk';
 import { CwIcs20LatestQueryClient, SigningCosmWasmClient } from '@oraichain/common-contracts-sdk';
-import { swapFromTokens, swapToTokens } from '../config';
 import { Ratio } from '@oraichain/common-contracts-sdk/build/CwIcs20Latest.types';
 import { getBase58Address } from '../../utils';
 import { TaxRateResponse } from '@oraichain/oraidex-contracts-sdk/build/OraiswapOracle.types';
@@ -101,99 +98,4 @@ export async function fetchRelayerFee(client: SigningCosmWasmClient): Promise<an
   } catch (error) {
     throw new Error(`Error when query Relayer Fee using oracle: ${error}`);
   }
-}
-
-export function isSupportedNoPoolSwapEvm(coingeckoId: CoinGeckoId) {
-  switch (coingeckoId) {
-    case 'wbnb':
-    case 'weth':
-      return true;
-    default:
-      return false;
-  }
-}
-
-export function filterTokens(
-  chainId: string,
-  coingeckoId: CoinGeckoId,
-  denom: string,
-  searchTokenName: string,
-  direction: SwapDirection
-) {
-  // basic filter. Dont include itself & only collect tokens with searched letters
-  let filteredToTokens = swapToTokens.filter(token => token.denom !== denom && token.name.includes(searchTokenName));
-  // special case for tokens not having a pool on Oraichain
-  if (isSupportedNoPoolSwapEvm(coingeckoId)) {
-    const swappableTokens = Object.keys(swapEvmRoutes[chainId]).map(key => key.split('-')[1]);
-    const filteredTokens = filteredToTokens.filter(token => swappableTokens.includes(token.contractAddress));
-
-    // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
-    if (direction === SwapDirection.To)
-      return [...new Set(filteredTokens.concat(filteredTokens.map(token => getTokenOnOraichain(token.coinGeckoId))))];
-    filteredToTokens = filteredTokens;
-  }
-  return filteredToTokens;
-}
-
-export const calculateMinimum = (simulateAmount: number | string, userSlippage: number): bigint | string => {
-  if (!simulateAmount) return '0';
-  try {
-    return (
-      BigInt(simulateAmount) - (BigInt(simulateAmount) * BigInt(userSlippage * atomic)) / (BigInt(100) * BigInt(atomic))
-    );
-  } catch (error) {
-    console.log({ error });
-    return '0';
-  }
-};
-
-export const findToTokenOnOraiBridge = (fromToken: TokenItemType, toNetwork: NetworkChainId) => {
-  const toToken = cosmosTokens.find(t =>
-    t.chainId === 'oraibridge-subnet-2' && t.coinGeckoId === fromToken.coinGeckoId && t?.bridgeNetworkIdentifier
-      ? t.bridgeNetworkIdentifier === toNetwork
-      : t.chainId === toNetwork
-  );
-  return toToken;
-};
-export function filterNonPoolEvmTokens(
-  chainId: string,
-  coingeckoId: CoinGeckoId,
-  denom: string,
-  searchTokenName: string,
-  direction: SwapDirection // direction = to means we are filtering to tokens
-) {
-  // basic filter. Dont include itself & only collect tokens with searched letters
-  const listTokens = direction === SwapDirection.From ? swapFromTokens : swapToTokens;
-  let filteredToTokens = listTokens.filter(
-    token => token.denom !== denom && token.name.toLowerCase().includes(searchTokenName.toLowerCase())
-  );
-  // special case for tokens not having a pool on Oraichain
-  if (isSupportedNoPoolSwapEvm(coingeckoId)) {
-    const swappableTokens = Object.keys(swapEvmRoutes[chainId]).map(key => key.split('-')[1]);
-    const filteredTokens = filteredToTokens.filter(token => swappableTokens.includes(token.contractAddress));
-
-    // tokens that dont have a pool on Oraichain like WETH or WBNB cannot be swapped from a token on Oraichain
-    if (direction === SwapDirection.To)
-      return [...new Set(filteredTokens.concat(filteredTokens.map(token => getTokenOnOraichain(token.coinGeckoId))))];
-    filteredToTokens = filteredTokens;
-  }
-  // special case filter. Tokens on networks other than supported evm cannot swap to tokens, so we need to remove them
-  if (!isEvmNetworkNativeSwapSupported(chainId as NetworkChainId))
-    return filteredToTokens.filter(t => {
-      // one-directional swap. non-pool tokens of evm network can swap be swapped with tokens on Oraichain, but not vice versa
-      const isSupported = isSupportedNoPoolSwapEvm(t.coinGeckoId);
-      if (direction === SwapDirection.To) return !isSupported;
-      if (isSupported) {
-        // if we cannot find any matched token then we dont include it in the list since it cannot be swapped
-        const sameChainId = getTokenOnSpecificChainId(coingeckoId, t.chainId as NetworkChainId);
-        if (!sameChainId) return false;
-        return true;
-      }
-      return true;
-    });
-  return filteredToTokens.filter(t => {
-    // filter out to tokens that are on a different network & with no pool because we are not ready to support them yet. TODO: support
-    if (isSupportedNoPoolSwapEvm(t.coinGeckoId)) return t.chainId === chainId;
-    return true;
-  });
 }
