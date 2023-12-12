@@ -751,7 +751,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rest: 'https://api.blockcypher.com/v1/btc/test3',
+    rest: 'https://blockstream.info/testnet/api',
     chainId: 'bitcoinTestnet',
     chainName: 'Bitcoin Testnet',
     bip44: {
@@ -792,7 +792,7 @@ export const EmbedChainInfos: AppChainInfo[] = [
     }
   },
   {
-    rest: 'https://api.blockcypher.com/v1/btc/main',
+    rest: 'https://blockstream.info/api',
     chainId: 'bitcoin',
     chainName: 'Bitcoin',
     bip44: {

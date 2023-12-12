@@ -224,7 +224,7 @@ const TransactionDetailScreen = observer(() => {
         />
         <ItemDetail label="Block height" value={data?.height === '-1' ? '0' : data?.height} />
         {data?.memo ? <ItemDetail label="Memo" value={limitString(data?.memo, 25)} /> : null}
-        {chainStore?.current?.networkType === 'bitcoin' ? (
+        {/* {chainStore?.current?.networkType === 'bitcoin' ? (
           <ItemDetail
             valueProps={{
               color:
@@ -238,7 +238,7 @@ const TransactionDetailScreen = observer(() => {
             label="Confirmations"
             value={`${data?.confirmations > 6 ? data?.confirmations : `${data?.confirmations}/6`}`}
           />
-        ) : null}
+        ) : null} */}
         {data?.gasUsed && data?.gasWanted && data?.gasUsed != '0' && data?.gasWanted != '0' ? (
           <ItemDetail label="Gas (used/ wanted)" value={`${data?.gasUsed}/${data?.gasWanted}`} />
         ) : null}

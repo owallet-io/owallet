@@ -16,7 +16,7 @@ export class ObservableQueryBtcBalances extends ObservableChainQuery<Result> {
   protected duplicatedFetchCheck: boolean = false;
 
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, bech32Address: string) {
-    super(kvStore, chainId, chainGetter, `/addrs/${bech32Address}/full`);
+    super(kvStore, chainId, chainGetter, `/address/${bech32Address}/txs`);
 
     this.bech32Address = bech32Address;
 

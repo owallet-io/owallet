@@ -10,7 +10,7 @@ import { getScriptHash, getBalanceFromUtxos, getCoinNetwork } from '@owallet/bit
 import { AddressBtcType } from '@owallet/types';
 export class ObservableQueryBitcoinBalanceInner extends ObservableChainQuery<Result> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter, protected readonly address: string) {
-    super(kvStore, chainId, chainGetter, `/addrs/${address}/full`);
+    super(kvStore, chainId, chainGetter, `/address/${address}/txs`);
   }
 
   @computed
