@@ -26,7 +26,7 @@ const InputSelectToken: FunctionComponent<IInputSelectToken> = ({
   }, [amount]);
 
   const handleChangeAmount = amount => {
-    onChangeAmount(amount);
+    onChangeAmount(Number(amount).toFixed(6).toString());
   };
 
   const debounceFn = useCallback(_debounce(handleChangeAmount, 500), []);

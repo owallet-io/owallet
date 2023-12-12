@@ -23,7 +23,8 @@ export enum ChainIdEnum {
   BNBChainTestNet = '0x61',
   TRON = '0x2b6653dc',
   BitcoinTestnet = 'bitcoinTestnet',
-  Bitcoin = 'bitcoin'
+  Bitcoin = 'bitcoin',
+  Injective = 'injective-1'
 }
 
 export const TRC20_LIST = [

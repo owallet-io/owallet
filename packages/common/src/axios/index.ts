@@ -1,6 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import settle from 'axios/lib/core/settle';
-import AxiosErrorFn from 'axios/lib/core/AxiosError';
 import buildURL from 'axios/lib/helpers/buildURL';
 import buildFullPath from 'axios/lib/core/buildFullPath';
 import { isUndefined } from 'axios/lib/utils';
@@ -16,9 +15,11 @@ export const fetchAdapter = async (config: AxiosRequestConfig): Promise<AxiosRes
 
   if (config.timeout && config.timeout > 0) {
     promiseChain.push(
-      new Promise((res) => {
+      new Promise(res => {
         setTimeout(() => {
-          const message = config.timeoutErrorMessage ? config.timeoutErrorMessage : 'timeout of ' + config.timeout + 'ms exceeded';
+          const message = config.timeoutErrorMessage
+            ? config.timeoutErrorMessage
+            : 'timeout of ' + config.timeout + 'ms exceeded';
           res(createError(message, config, 'ECONNABORTED', request));
         }, config.timeout);
       })
@@ -127,6 +128,22 @@ function createRequest(config: AxiosRequestConfig): Request {
  * @param {Object} [response] The response.
  * @returns {Error} The created error.
  */
-function createError(message: string, config: AxiosRequestConfig, code: string, request: Request, response?: any): AxiosResponse<AxiosError> {
-  return AxiosErrorFn(new Error(message ?? 'Unknown error'), config, code, request, response);
+function createError(
+  message: string,
+  config: AxiosRequestConfig,
+  code: string,
+  request: Request
+): AxiosResponse<AxiosError> {
+  const err = new AxiosError(message ?? 'Unknown error', code, config, request);
+
+  const response: AxiosResponse = {
+    status: Number(err.code),
+    statusText: err.status,
+    headers: Object.fromEntries(request.headers),
+    config,
+    request,
+    data: err
+  };
+
+  return response;
 }
