@@ -304,21 +304,23 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
     setAmountLoading(true);
     try {
       const data = await getSimulateSwap();
-      // const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
       const minimumReceive = Number(data.displayAmount - (data.displayAmount * userSlippage) / 100);
-      // ratio && ratio.amount
-      //   ? calculateMinReceive(
-      //       // @ts-ignore
-      //       Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
-      //       fromAmountTokenBalance.toString(),
-      //       userSlippage,
-      //       originalFromToken.decimals
-      //     )
-      //   : '0';
+
+      const fromAmountTokenBalance = fromTokenInfoData && toAmount(fromAmountToken, fromTokenInfoData!.decimals);
+      const warningMinimumReceive =
+        ratio && ratio.amount
+          ? calculateMinReceive(
+              // @ts-ignore
+              Math.trunc(new BigDecimal(ratio.amount) / INIT_AMOUNT).toString(),
+              fromAmountTokenBalance.toString(),
+              userSlippage,
+              originalFromToken.decimals
+            )
+          : '0';
 
       setMininumReceive(Number(minimumReceive.toFixed(6)));
       if (data) {
-        const isWarningSlippage = +minimumReceive > +data.amount;
+        const isWarningSlippage = +warningMinimumReceive > +data.amount;
         setIsWarningSlippage(isWarningSlippage);
         setSwapAmount([fromAmountBalance, Number(data.amount)]);
       }
