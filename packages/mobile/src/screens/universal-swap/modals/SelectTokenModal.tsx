@@ -7,9 +7,9 @@ import OWIcon from '@src/components/ow-icon/ow-icon';
 import { Text } from '@src/components/text';
 import { TypeTheme, useTheme } from '@src/themes/theme-provider';
 import { metrics } from '@src/themes';
-import { TokenItemType, tokenMap, toDisplay, AmountDetails } from '@oraichain/oraidex-common';
+import { TokenItemType, tokenMap, toDisplay, AmountDetails, getTotalUsd } from '@oraichain/oraidex-common';
 import { useStore } from '@src/stores';
-import { ChainIdEnum, getTotalUsd } from '@owallet/common';
+import { ChainIdEnum } from '@owallet/common';
 import { CoinGeckoPrices } from '@owallet/hooks';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
@@ -69,7 +69,7 @@ export const SelectTokenModal: FunctionComponent<{
 
         const tokenIcon = find(tokenImg, tk => tk.coinGeckoId === item.coinGeckoId);
 
-        const totalUsd = getTotalUsd(subAmounts, prices, item);
+        const totalUsd = getTotalUsd(subAmounts, prices);
         return (
           <TouchableOpacity
             onPress={() => {
