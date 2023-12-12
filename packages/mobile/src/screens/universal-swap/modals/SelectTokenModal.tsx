@@ -13,7 +13,6 @@ import { ChainIdEnum, getTotalUsd } from '@owallet/common';
 import { CoinGeckoPrices } from '@owallet/hooks';
 import { tokenImg } from '../helpers';
 import { find } from 'lodash';
-import images from '@src/assets/images';
 
 export const SelectTokenModal: FunctionComponent<{
   onNetworkModal?: () => void;
