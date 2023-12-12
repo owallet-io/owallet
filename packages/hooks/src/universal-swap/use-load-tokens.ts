@@ -7,7 +7,7 @@ import { fromBech32, toBech32 } from '@cosmjs/encoding';
 import { CustomChainInfo, EVM_BALANCE_RETRY_COUNT, ERC20__factory, evmChains } from '@oraichain/oraidex-common';
 import flatten from 'lodash/flatten';
 import { ContractCallResults, Multicall } from '@oraichain/ethereum-multicall';
-import { evmTokens, isEvmNetworkNativeSwapSupported, getEvmAddress } from '@owallet/common';
+import { evmTokens, isEvmNetworkNativeSwapSupported, getEvmAddress, tronToEthAddress } from '@owallet/common';
 import { chainInfos, network } from '@oraichain/oraidex-common';
 import { cosmosTokens, oraichainTokens, tokenMap } from '@oraichain/oraidex-common';
 import { CWStargate } from '@owallet/common';
@@ -54,26 +54,44 @@ async function loadNativeBalance(
   universalSwapStore.updateAmounts(amountDetails);
 }
 
+const timer = {};
 async function loadTokens(
   universalSwapStore: any,
   { oraiAddress, metamaskAddress, tronAddress, kwtAddress, cwStargate }: LoadTokenParams
 ) {
-  await Promise.all(
-    [
-      oraiAddress && loadTokensCosmos(universalSwapStore, kwtAddress, oraiAddress),
-      oraiAddress && cwStargate && loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
-      // different cointype but also require keplr connected by checking oraiAddress
-      kwtAddress && loadKawaiiSubnetAmount(universalSwapStore, kwtAddress),
-      metamaskAddress && loadEvmAmounts(universalSwapStore, metamaskAddress, evmChains),
-      tronAddress &&
-        loadEvmAmounts(
-          universalSwapStore,
-          getEvmAddress(tronAddress),
-          chainInfos.filter(c => c.chainId == '0x2b6653dc')
-        )
-    ].filter(Boolean)
-  );
+  if (oraiAddress) {
+    clearTimeout(timer[oraiAddress]);
+    // case get address when keplr ledger not support kawaii
+
+    timer[oraiAddress] = setTimeout(async () => {
+      await Promise.all([
+        loadTokensCosmos(universalSwapStore, kwtAddress, oraiAddress),
+        loadCw20Balance(universalSwapStore, oraiAddress, cwStargate),
+        // different cointype but also require keplr connected by checking oraiAddress
+        loadKawaiiSubnetAmount(universalSwapStore, kwtAddress)
+      ]);
+    }, 2000);
+  }
+
+  if (metamaskAddress) {
+    clearTimeout(timer[metamaskAddress]);
+    timer[metamaskAddress] = setTimeout(() => {
+      loadEvmAmounts(universalSwapStore, metamaskAddress, evmChains);
+    }, 2000);
+  }
+
+  if (tronAddress) {
+    clearTimeout(timer[tronAddress]);
+    timer[tronAddress] = setTimeout(() => {
+      loadEvmAmounts(
+        universalSwapStore,
+        tronToEthAddress(tronAddress),
+        chainInfos.filter(c => c.chainId == '0x2b6653dc')
+      );
+    }, 4000);
+  }
 }
+
 const getAddress = (addr, prefix: string) => {
   const { data } = fromBech32(addr);
   return toBech32(prefix, data);
@@ -199,6 +217,8 @@ async function loadEvmAmounts(universalSwapStore: any, evmAddress: string, chain
   const amountDetails = Object.fromEntries(
     flatten(await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain))))
   );
+
+  console.log('amountDetails', evmAddress, amountDetails);
 
   universalSwapStore.updateAmounts(amountDetails);
 }
