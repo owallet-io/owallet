@@ -142,7 +142,7 @@ export const SelectTokenModal: FunctionComponent<{
           }}
           style={styles.btnNetwork}
         >
-          <OWIcon type="images" source={images.push} size={16} />
+          <OWIcon name="browser-bold" size={16} />
           <Text style={styles.txtNetwork} color={colors['blue-400']} weight="500">
             {Object.keys(ChainIdEnum).find(key => ChainIdEnum[key] === selectedChainFilter) ?? 'Network'}
           </Text>

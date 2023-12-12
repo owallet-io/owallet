@@ -12,7 +12,7 @@ import { BalanceText } from './components/BalanceText';
 import { SelectNetworkModal, SelectTokenModal, SlippageModal } from './modals/';
 import { showToast } from '@src/utils/helper';
 import { DEFAULT_SLIPPAGE, GAS_ESTIMATION_SWAP_DEFAULT, ORAI, toDisplay, getBase58Address } from '@owallet/common';
-import { evmTokens, filterNonPoolEvmTokens } from '@owallet/common';
+import { evmTokens } from '@owallet/common';
 import {
   TokenItemType,
   NetworkChainId,
@@ -25,9 +25,8 @@ import {
   BigDecimal
 } from '@oraichain/oraidex-common';
 import { openLink } from '../../utils/helper';
-
-import { SwapDirection, feeEstimate, getTokenOnSpecificChainId, getTransferTokenFee } from '@owallet/common';
-import { handleSimulateSwap } from '@oraichain/oraidex-universal-swap';
+import { SwapDirection, feeEstimate, getTransferTokenFee } from '@owallet/common';
+import { handleSimulateSwap, filterNonPoolEvmTokens } from '@oraichain/oraidex-universal-swap';
 import { fetchTokenInfos, toSubAmount, ChainIdEnum } from '@owallet/common';
 import { calculateMinReceive, getTokenOnOraichain } from '@oraichain/oraidex-common';
 import {
@@ -342,20 +341,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
   useEffect(() => {
     estimateAverageRatio();
   }, [originalFromToken, toTokenInfoData, fromTokenInfoData, originalToToken, client]);
-
-  useEffect(() => {
-    // special case for tokens having no pools on Oraichain. When original from token is not swappable, then we switch to an alternative token on the same chain as to token
-    if (isSupportedNoPoolSwapEvm(toToken.coinGeckoId) && !isSupportedNoPoolSwapEvm(fromToken.coinGeckoId)) {
-      const fromTokenSameToChainId = getTokenOnSpecificChainId(fromToken.coinGeckoId, toToken.chainId);
-      if (!fromTokenSameToChainId) {
-        const sameChainIdTokens = evmTokens.find(t => t.chainId === toToken.chainId);
-        if (!sameChainIdTokens) throw Error('Impossible case! An EVM chain should at least have one token');
-        setSwapTokens([sameChainIdTokens.denom, toToken.denom]);
-        return;
-      }
-      setSwapTokens([fromTokenSameToChainId.denom, toToken.denom]);
-    }
-  }, [fromToken]);
 
   const handleBalanceActive = (item: BalanceType) => {
     setBalanceActive(item);
