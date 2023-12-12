@@ -27,7 +27,7 @@ export const checkFnComponent = (titleRight: TypeTextAndCustomizeComponent, Elem
 export const handleErrorSwap = message => {
   showToast({
     message:
-      message && message.length < 250
+      message && message.length < 300
         ? message
         : 'Something went wrong! Please make sure you have enough fees to make this transaction.',
     type: 'danger'

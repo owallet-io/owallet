@@ -35,14 +35,12 @@ export const SelectTokenModal: FunctionComponent<{
     if (keyword === '' || keyword === null || keyword === undefined || !keyword) {
       setTokens(data);
     } else {
-      const tmpData = data.filter(
-        d =>
-          d.chainId.toString().toLowerCase().includes(keyword.toLowerCase()) ||
-          d.denom.toString().toLowerCase().includes(keyword.toLowerCase()) ||
-          d.name.toString().toLowerCase().includes(keyword.toLowerCase()) ||
-          d.org.toString().toLowerCase().includes(keyword.toLowerCase()) ||
-          d.coinGeckoId.toString().toLowerCase().includes(keyword.toLowerCase())
-      );
+      const tmpData = data.filter(d => {
+        return (d.chainId + d.denom + d.name + d.org + d.coinGeckoId)
+          .toString()
+          .toLowerCase()
+          .includes(keyword.toLowerCase());
+      });
 
       setTokens(tmpData);
     }
