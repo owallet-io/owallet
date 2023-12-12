@@ -218,8 +218,6 @@ export const UniversalSwapScreen: FunctionComponent = observer(() => {
         };
       }
 
-      console.log('loadTokenParams', loadTokenParams);
-
       loadTokenAmounts(loadTokenParams);
     } catch (error) {
       console.log('error loadTokenAmounts', error);
