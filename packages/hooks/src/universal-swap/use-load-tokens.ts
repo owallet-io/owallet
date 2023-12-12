@@ -218,8 +218,6 @@ async function loadEvmAmounts(universalSwapStore: any, evmAddress: string, chain
     flatten(await Promise.all(chains.map(chain => loadEvmEntries(evmAddress, chain))))
   );
 
-  console.log('amountDetails', evmAddress, amountDetails);
-
   universalSwapStore.updateAmounts(amountDetails);
 }
 
