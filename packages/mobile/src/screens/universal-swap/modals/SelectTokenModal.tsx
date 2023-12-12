@@ -32,7 +32,7 @@ export const SelectTokenModal: FunctionComponent<{
   const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
-    if (keyword === '' || keyword === null || keyword === undefined || !keyword) {
+    if (keyword === '' || !keyword) {
       setTokens(data);
     } else {
       const tmpData = data.filter(d => {
@@ -47,12 +47,7 @@ export const SelectTokenModal: FunctionComponent<{
   }, [data, keyword]);
 
   useEffect(() => {
-    if (
-      selectedChainFilter === '' ||
-      selectedChainFilter === null ||
-      selectedChainFilter === undefined ||
-      !selectedChainFilter
-    ) {
+    if (selectedChainFilter === '' || !selectedChainFilter) {
       setTokens(data);
     } else {
       const tmpData = data.filter(d => d.chainId.toString().toLowerCase().includes(selectedChainFilter.toLowerCase()));
